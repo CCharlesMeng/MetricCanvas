@@ -183,6 +183,6 @@ Schema位置：`#/definitions/chartOption/propertyNames`。
 - `#/definitions/chartOptionValue/anyOf/0`：[合法完整页面](examples/dual-axis-alignment.json)，JSON Pointer `#/sections/0/components/1/props/echartsOption/xAxis/name`。
 - `#/definitions/chartOptionValue/anyOf/1`：[合法完整页面](examples/chart-series-visibility.json)，JSON Pointer `#/sections/1/components/0/props/echartsOption/series/2/lineStyle/width`。
 - `#/definitions/chartOptionValue/anyOf/2`：[合法完整页面](examples/chart-series-visibility.json)，JSON Pointer `#/sections/1/components/0/props/echartsOption/animation`。
-- `#/definitions/chartOptionValue/anyOf/3`：[合法完整页面](examples/chart-echarts-option-page.json)，JSON Pointer `#/sections/0/components/3/props/echartsOption/backgroundColor`。
+- `#/definitions/chartOptionValue/anyOf/3`：[合法完整页面](examples/rep-business-result.json)，JSON Pointer `#/sections/3/components/0/props/tabs/1/components/2/props/echartsOption/backgroundColor`。
 - `#/definitions/chartOptionValue/anyOf/4`：[合法完整页面](examples/chart-series-visibility.json)，JSON Pointer `#/sections/1/components/0/props/echartsOption/series`。
 - `#/definitions/chartOptionValue/anyOf/5`：[合法完整页面](examples/dual-axis-alignment.json)，JSON Pointer `#/sections/0/components/1/props/echartsOption/xAxis`。

@@ -42,7 +42,7 @@ function gateway(mode = 'ready') {
       const fields = (object ? item.output_fields : [...item.output_dims as string[], ...item.output_metrics as string[]]) as string[];
       const data = matching.slice(order.offset ?? 0, (order.offset ?? 0) + (order.limit ?? 1000)).map(row => Object.fromEntries(fields.map(field => [field, row[fieldIds[field]]])));
       const lookup = object && conditions.some(f => f.field !== '编号');
-      return { code: 'SUCCESS', total_count: lookup && mode === 'overflow' ? 1001 : matching.length, data: lookup && mode === 'truncated' ? [] : data };
+      return { code: 'SUCCESS', total_count: lookup && mode === 'overflow' ? 100001 : matching.length, data: lookup && mode === 'truncated' ? [] : data };
     });
     return Response.json({ retCode: 'CBC.0000', results });
   } });
@@ -90,7 +90,7 @@ describe('table supplementary-slot exact search', () => {
     expect(snapshots.get('main')).toMatchObject({ status: 'ready', rows: [{ code: 'B002', amount: 2 }], totalCount: 2 });
     expect(snapshots.get('basic')).toMatchObject({ status: 'ready', rows: [{ code: 'B002', owner: '乙', customer: '客户二' }] });
     expect(requests[0]).toMatchObject({ query_type: 'object', filter: { fields: [{ field_name: '责任人', value_list: ['乙'], operator: '=' }] } });
-    expect(requests[1]).toMatchObject({ filter: { dims: [{ dim_name: '编号', dim_value_list: ['B002', 'B004'] }] }, order: { offset: 0, limit: 1 } });
+    expect(requests[1]).toMatchObject({ filter: { dims: [{ dim_name: '编号', dim_value_list: ['B002', 'B004'] }] }, order: { offset: 0, limit: 200 } });
   });
   it('pages the matching main rows and only fills the requested page', async () => {
     const { snapshots } = await read(slotSearchPage(), 'owner', '乙', 1);
@@ -149,8 +149,9 @@ describe('table supplementary-slot exact search', () => {
     try {
       const result = await program.readColumnCandidates({ sourceId: 'main', field: 'code', conditions: new Map(), view });
       expect(result).toMatchObject({ kind: 'values', totalCount: 2 });
-      expect(queried?.filterValues).toContainEqual({ target: 'dimension', queryField: '编号', values: ['B002', 'B004'] });
-      expect(queried?.search).toBeUndefined();
+      expect(result).toMatchObject({ candidates: [{ value: 'B002', label: 'B002' }, { value: 'B004', label: 'B004' }] });
+      expect(queried).toBeUndefined();
+      expect(transport.requests[1]).toMatchObject({ filter: { dims: [{ dim_name: '编号', dim_value_list: ['B002', 'B004'] }] } });
     } finally { program.dispose(); }
   });
 });

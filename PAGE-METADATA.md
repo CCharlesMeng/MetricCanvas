@@ -10,7 +10,7 @@ IOC 父子表层级选择复用“全球＝不限区域”：保留全部父行�
 
 表头筛选修复：所有表格变体的已生效筛选入口统一使用黑色 #191919；pagedJoin 查询分页的补充成员列支持按所属成员自动预加载候选，维度与对象 output_fields 查询均复用现有映射，不触发完整组合读取。全选继续显式配置 `filterable.showSelectAll:true`，省略或 false 隐藏。见[列筛选候选值](docs/page-metadata/components/table.md#列筛选候选值)，入口 `/pages/paged-join-on-demand`。
 
-6.109：表格精确搜索的 `options[].field` 支持复用 `{data,field}` 指向补充数据槽。引擎先在补充查询中完整查出匹配行键，再约束主查询分页；不反转页面 `resultBindings`，不搜索当前页冒充全局结果。匹配上限沿用既有绑定限制、最多1000条，超限或回执不完整明确失败。见[跨槽搜索](docs/page-metadata/components/table.md#跨数据槽精确搜索6109)，入口 `/pages/rep-office-execution-efficiency` 的“商务审批明细”。
+6.109：表格精确搜索的 `options[].field` 支持复用 `{data,field}` 指向补充数据槽。引擎先在补充查询中完整查出匹配行键，再按每批最多1000个 ID（遵守更小的绑定 `maxValues`）分批读完主记录，统一筛选、排序、计数及分页；不反转页面 `resultBindings`。整次搜索独立限制累计100000行、64 MiB和180秒，超过1000条不再直接拒绝；完整成功结果供分页、候选和最多10000行Excel导出复用，失败不发布部分结果。本次修订不新增页面字段，普通结果绑定规则保持。见[跨槽搜索](docs/page-metadata/components/table.md#跨数据槽精确搜索6109)，入口 `/pages/rep-business-result` 的“合同风险率明细”。
 
 表格精确搜索的 `toolbar.search.options` 只有一项时，固定使用该字段，只显示输入框及其 placeholder；两项及以上才显示字段选择器。无需新增 Schema 字段。见[静态搜索选项](docs/page-metadata/components/table.md#静态搜索选项642)，验收入口 `/pages/region-auth-norms-detail` 与 `/pages/table-search-options-demo`。
 

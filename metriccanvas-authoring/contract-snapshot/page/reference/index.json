@@ -44,15 +44,23 @@
     },
     {
       "file": "packages/data-execution/src/source-program/column-candidates.ts",
-      "sha256": "264d497d8638f332a6b3150b448a0a26d7efa9ecb8edd1561567013159c38695"
+      "sha256": "716e181ea012d54158152bd33e8dad3f7ce00bdb19dd6e217f3007e72b582fa9"
     },
     {
       "file": "packages/data-execution/src/source-program/session.ts",
-      "sha256": "c81403cc2ca25803c6c1a69106e1eb8358530f015c6149b5859ecbce22b9b9a1"
+      "sha256": "3341741f0e68c7ef420ef36bb2193c2736dd1b97975c710770336d390e48745b"
+    },
+    {
+      "file": "packages/data-execution/src/source-program/slot-search-batches.ts",
+      "sha256": "8233bbca62f0a5435791f142c4bb571c5d5b654199cd78706cdf38bcf7cf1ebf"
+    },
+    {
+      "file": "packages/data-execution/src/source-program/slot-search-read.ts",
+      "sha256": "6440fa5852a6b630c5fe5774adaec7de69df2710e0802a2d6c08729eed993622"
     },
     {
       "file": "packages/data-execution/src/source-program/slot-search.ts",
-      "sha256": "336e6f85e2850ca03b0ff89ceaa4c7dcdfef159a657af3b14bb2d5fd22cf3755"
+      "sha256": "094d84152d63e45ff68baa9dc5b79e2b0fb3355e136ef37c8f96c0832cbf689a"
     },
     {
       "file": "packages/data-execution/src/table-defaults.ts",
@@ -105,6 +113,10 @@
     {
       "file": "packages/engine/runtime-ui/tests/ai-summary-tasks.test.ts",
       "sha256": "13b298128fa9b5adc0ba9be771dcaa81e4640f5149caa6d8b4e54e6cf06047ec"
+    },
+    {
+      "file": "packages/engine/runtime/src/export-snapshots.ts",
+      "sha256": "5e1e9ae09385334e50d8a02414059f622db51ab2bcfb8ab8caf07df788c835e7"
     },
     {
       "file": "packages/engine/runtime/src/navigate.ts",
@@ -1400,7 +1412,7 @@
         "table-header-select-all",
         "table-header-select-all-query",
         "table-default-sort",
-        "rep-office-execution-efficiency",
+        "rep-business-result",
         "table-header-filter-search"
       ],
       "sources": [
@@ -1414,6 +1426,9 @@
         "packages/data-execution/src/table-defaults.ts",
         "packages/page/src/table/slot-search.ts",
         "packages/data-execution/src/source-program/slot-search.ts",
+        "packages/data-execution/src/source-program/slot-search-read.ts",
+        "packages/data-execution/src/source-program/slot-search-batches.ts",
+        "packages/engine/runtime/src/export-snapshots.ts",
         "packages/data-execution/src/source-program/session.ts",
         "packages/data-execution/src/source-program/column-candidates.ts",
         "packages/engine/runtime/src/table/reconcile-view.ts",
@@ -22459,8 +22474,8 @@
     {
       "schemaPointer": "#/definitions/chartOptionValue/anyOf/3",
       "module": "chart-option.md",
-      "file": "examples/chart-echarts-option-page.json",
-      "pointer": "#/sections/0/components/3/props/echartsOption/backgroundColor"
+      "file": "examples/rep-business-result.json",
+      "pointer": "#/sections/3/components/0/props/tabs/1/components/2/props/echartsOption/backgroundColor"
     },
     {
       "schemaPointer": "#/definitions/chartOptionValue/anyOf/4",
@@ -22971,8 +22986,8 @@
     {
       "schemaPointer": "#/definitions/tabContent/oneOf/6",
       "module": "components/tabContainer.md",
-      "file": "examples/tab-content-piechart.json",
-      "pointer": "#/sections/0/components/0/props/tabs/0/component"
+      "file": "examples/rep-business-result.json",
+      "pointer": "#/sections/3/components/0/props/tabs/1/components/2"
     },
     {
       "schemaPointer": "#/definitions/tabContent/oneOf/7",

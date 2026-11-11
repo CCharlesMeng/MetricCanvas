@@ -880,7 +880,7 @@
         "table-header-select-all",
         "table-header-select-all-query",
         "table-default-sort",
-        "rep-office-execution-efficiency",
+        "rep-business-result",
         "table-header-filter-search"
       ],
       "sources": [
@@ -894,6 +894,9 @@
         "packages/data-execution/src/table-defaults.ts",
         "packages/page/src/table/slot-search.ts",
         "packages/data-execution/src/source-program/slot-search.ts",
+        "packages/data-execution/src/source-program/slot-search-read.ts",
+        "packages/data-execution/src/source-program/slot-search-batches.ts",
+        "packages/engine/runtime/src/export-snapshots.ts",
         "packages/data-execution/src/source-program/session.ts",
         "packages/data-execution/src/source-program/column-candidates.ts",
         "packages/engine/runtime/src/table/reconcile-view.ts",

@@ -613,7 +613,7 @@ Schema位置：`#/definitions/tabItem/anyOf/1/properties/components/items`。目
 - `#/definitions/tabContent/oneOf/3`：[合法完整页面](../examples/tab-mixed-content.json)，JSON Pointer `#/sections/0/components/0/props/tabs/0/components/0`。
 - `#/definitions/tabContent/oneOf/4`：[合法完整页面](../examples/tab-mixed-content.json)，JSON Pointer `#/sections/0/components/0/props/tabs/0/components/4`。
 - `#/definitions/tabContent/oneOf/5`：[合法完整页面](../examples/tab-mixed-content.json)，JSON Pointer `#/sections/0/components/0/props/tabs/1/components/1`。
-- `#/definitions/tabContent/oneOf/6`：[合法完整页面](../examples/tab-content-piechart.json)，JSON Pointer `#/sections/0/components/0/props/tabs/0/component`。
+- `#/definitions/tabContent/oneOf/6`：[合法完整页面](../examples/rep-business-result.json)，JSON Pointer `#/sections/3/components/0/props/tabs/1/components/2`。
 - `#/definitions/tabContent/oneOf/7`：[合法完整页面](../examples/tab-content-mapchart.json)，JSON Pointer `#/sections/0/components/0/props/tabs/0/components/1`。
 - `#/definitions/tabContent/oneOf/8`：[合法完整页面](../examples/tab-content-gauge.json)，JSON Pointer `#/sections/0/components/0/props/tabs/0/component`。
 - `#/definitions/tabContent/oneOf/9`：[合法完整页面](../examples/tab-mixed-content.json)，JSON Pointer `#/sections/0/components/0/props/tabs/0/components/1`。
