@@ -36,6 +36,7 @@ test('ordinary overflow header has no reserved title column and pins the same co
 test('pinned header does not drift between a scroll event and the next animation frame', async ({ page }) => {
   await page.setViewportSize({ width: 1000, height: 500 });
   await page.goto('/pages/ioc-header-flow-sticky');
+  await expect(page.locator('[data-ioc-header]')).toBeVisible();
   await page.mouse.wheel(0, 400);
   await expect(page.locator('[data-ioc-floating]')).toHaveCount(1);
   await page.evaluate(() => {
@@ -94,6 +95,21 @@ test('nested header stays at the viewport top when the outer page also scrolls',
   await expect.poll(async () => (await page.locator('[data-nested-scroll]').boundingBox())!.y).toBeLessThan(0);
   await expect.poll(async () => (await page.locator('[data-ioc-header]').boundingBox())!.y).toBeCloseTo(0, 0);
   await expectNoHeaderScrollbars(page.locator('[data-ioc-header]'));
+});
+
+test('shadow-mounted header respects the mount scroll region below the public header', async ({ page }) => {
+  await page.goto('/preview?prototype=ioc-header-component');
+  await page.getByLabel('验收模式').selectOption('mount-scroll');
+  const region = page.locator('[data-mount-scroll]');
+  const header = page.locator('[data-ioc-header]');
+  await expect(header).toBeVisible();
+  await region.evaluate(node => { node.scrollTop = 650; });
+  await expect(page.locator('[data-ioc-floating]')).toHaveCount(1);
+  await expect.poll(async () => (await header.boundingBox())!.y - (await region.boundingBox())!.y).toBeCloseTo(1, 0);
+  expect((await header.boundingBox())!.y).toBeGreaterThanOrEqual((await page.locator('[data-public-header]').boundingBox())!.y + 88);
+  await expectNoHeaderScrollbars(header);
+  await region.evaluate(node => { node.scrollTop = 0; });
+  await expect(page.locator('[data-ioc-floating]')).toHaveCount(0);
 });
 
 test('more filters stays inside the viewport when its trigger wraps onto another row', async ({ page }) => {

@@ -38,7 +38,7 @@
 </script>
 <label>验收模式<select bind:value={mode}>
   <option value="custom">定制分区布局</option><option value="nested">嵌套滚动</option>
-  <option value="shadow">ShadowRoot</option><option value="legacy-root">旧根级</option>
+  <option value="shadow">ShadowRoot</option><option value="mount-scroll">公共页头与 Mount 滚动区域</option><option value="legacy-root">旧根级</option>
   <option value="legacy-toolbar">旧工具栏</option><option value="no-header">新页无页头</option>
   <option value="export">静态导出</option><option value="export-hidden">条件隐藏导出</option>
   <option value="export-groups">分组导出</option><option value="export-legacy-root">旧根级导出</option>
@@ -48,6 +48,11 @@
 {#key mode}
   {#if mode==='shadow'}
     <div use:shadowRuntime data-shadow-host></div>
+  {:else if mode==='mount-scroll'}
+    <div class="mount-shell">
+      <header data-public-header>集成应用公共页头</header>
+      <div class="nested" data-mount-scroll><div use:shadowRuntime></div></div>
+    </div>
   {:else if mode.startsWith('export')}
     <ExportView state={exportState(document,mode==='export-hidden')} width={1000} padding="0px" gap="16px"/>
   {:else if mode==='custom'||mode.startsWith('legacy')}
@@ -65,4 +70,7 @@
 <style>
   label{display:inline-flex;gap:8px;padding:12px;}output{margin:12px;}
   .nested{height:440px;overflow:auto;border:1px solid #ddd;margin:20px;}
+  .mount-shell{margin:20px;border:1px solid #ddd;}
+  .mount-shell>header{height:88px;display:flex;align-items:center;padding:0 20px;background:#fff;}
+  .mount-shell>.nested{margin:0;}
 </style>

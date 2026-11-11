@@ -1,6 +1,12 @@
 /** One mounted Header; the native top layer preserves its DOM, theme and focus. */
+function composedParent(node:HTMLElement):HTMLElement|undefined {
+  if(node.assignedSlot)return node.assignedSlot;
+  if(node.parentElement)return node.parentElement;
+  const root=node.getRootNode();
+  return root instanceof ShadowRoot?root.host as HTMLElement:undefined;
+}
 function scrollBoundary(anchor:HTMLElement):HTMLElement|undefined {
-  for(let node=anchor.parentElement;node;node=node.parentElement){
+  for(let node=composedParent(anchor);node;node=composedParent(node)){
     if(/auto|scroll/.test(getComputedStyle(node).overflowY))return node;
   }
   return undefined;
@@ -40,10 +46,13 @@ export function attachHeaderFrame(anchor:HTMLElement,content:HTMLElement):()=>vo
   const resize=new ResizeObserver(schedule);resize.observe(anchor);resize.observe(content);resize.observe(root);
   const mutations=new MutationObserver(schedule);mutations.observe(root,{subtree:true,childList:true,attributes:true,attributeFilter:['hidden']});
   doc.addEventListener('scroll',onscroll,true);doc.defaultView?.addEventListener('resize',schedule);
+  boundary?.addEventListener('scroll',onscroll);
+  if(boundary)resize.observe(boundary);
   update();
   return ()=>{
     disposed=true;cancelAnimationFrame(frame);resize.disconnect();mutations.disconnect();
     doc.removeEventListener('scroll',onscroll,true);doc.defaultView?.removeEventListener('resize',schedule);
+    boundary?.removeEventListener('scroll',onscroll);
     restore();delete content.dataset.iocFloating;closePopovers(content);
   };
 }
