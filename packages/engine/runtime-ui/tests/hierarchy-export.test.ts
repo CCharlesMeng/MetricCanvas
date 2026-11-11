@@ -4,11 +4,11 @@ import {hierarchyFixture,hierarchySim,choose} from '../../runtime/tests/hierarch
 import {prepareHierarchyExport} from '../src/table/export/hierarchy';
 import {encodeWorkbookTables} from '../src/table/export/workbook';
 function state(filters:ReturnType<typeof choose>){return {filters,currentYear:2026,tables:{'region-office-table':{pageIndex:1,sort:[],headerFilters:{}}},headerFilters:{}};}
-it.each([[undefined,4,17],['R01',1,5],['O101',1,1]] as const)('exports complete parent and child ranges for %s without any expansion',async(value,parentCount,childCount)=>{
+it.each([[undefined,4,17],['全球',4,17],['R01',1,5],['O101',1,1]] as const)('exports complete parent and child ranges for %s without any expansion',async(value,parentCount,childCount)=>{
  const {page,table,filters}=hierarchyFixture(),sim=await hierarchySim(),controller=new AbortController();
  delete table.props.columns[0]!.title;page.dataSources['region-summary']!.fields['region-name']!.label='地区部归属';
  try{
-  const selected=choose(filters,value,value==='R01'?'region-dept':'office');
+  const selected=choose(filters,value,value==='R01'||value==='全球'?'region-dept':'office');
   const tables=await prepareHierarchyExport({page,component:table,gateway:sim.gateway,state:state(selected),params:new Map(),queries:new Map(),controller});
   const bytes=await encodeWorkbookTables(tables,controller.signal),workbook=new ExcelJS.Workbook();await workbook.xlsx.load(bytes.buffer);
   expect(workbook.worksheets.map(s=>s.name)).toEqual(['父子表格']);

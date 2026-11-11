@@ -46,3 +46,23 @@ test('exports complete children before expansion and ignores child-local paging 
   await expect(page.getByRole('cell', { name: '中国区', exact: true })).toBeVisible();
   expect(await exportCounts(page)).toEqual([4, 17]);
 });
+
+test('IOC global restores every parent and complete Excel after a region or office selection',async({page})=>{
+  await page.goto('/pages/table-hierarchy-selection');
+  const region=page.locator('[data-filter-id="region"]');
+  await chooseTree(region,'华东');
+  await expect(page.getByRole('cell',{name:'华东',exact:true})).toBeVisible();
+  await expect(page.getByRole('cell',{name:'中国区',exact:true})).toHaveCount(0);
+  expect(await exportCounts(page)).toEqual([1,5]);
+  await chooseTree(region,'全球');
+  await expect(page.getByRole('cell',{name:'中国区',exact:true})).toBeVisible();
+  await expect(page).toHaveURL(/region-dept=%E5%85%A8%E7%90%83/);
+  expect(await exportCounts(page)).toEqual([4,17]);
+  await chooseTree(region,'上海');
+  await expect(page.getByRole('cell',{name:'上海',exact:true})).toBeVisible();
+  expect(await exportCounts(page)).toEqual([1,1]);
+  await chooseTree(region,'全球');
+  await expect(page.getByRole('cell',{name:'中国区',exact:true})).toBeVisible();
+  await expect(page.getByRole('region',{name:'子表格',exact:true})).toHaveCount(0);
+  expect(await exportCounts(page)).toEqual([4,17]);
+});

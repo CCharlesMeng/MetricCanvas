@@ -6,6 +6,7 @@ import type { DimensionValueCandidate, FilterCandidate, FilterCandidatesResult }
 function regionTree(parents: DimensionValueCandidate[], offices: DimensionValueCandidate[]): FilterCandidate[] {
   const parentByOffice = new Map(fixture.lookup.map(row => [row.h_office, row.h_parent]));
   return [
+    {value:'全球',label:'全球',level:'region-dept'},
     ...parents.map(candidate => ({ ...candidate, level: 'region-dept' })),
     ...offices.map(candidate => {
       const parent = parentByOffice.get(candidate.value);

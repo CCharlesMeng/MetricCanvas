@@ -1,4 +1,5 @@
 import { expect, it } from 'vitest';
+import {iocHeaderDeclaration} from '@metriccanvas/page/internal';
 import { createHierarchyGateway } from '../fixtures/hierarchy-gateway';
 import { createDqeSimServer, DQE_EXECUTE_PATH } from '../../../tools/dqe-sim/src/server';
 import { hierarchyFixture } from '../../../packages/engine/runtime/tests/hierarchy-fixture';
@@ -17,7 +18,7 @@ it('the actual Playground page chooses an office inside one tree and resolves it
     const { page, table, filters } = hierarchyFixture();
     const region = page.filters!.find(filter => filter.id === 'region')!;
     if (region.type !== 'dimension') throw Error('region declaration');
-    expect(page.iocHeader!.filterIds).toContain(region.id);
+    expect(iocHeaderDeclaration(page)!.filterIds).toContain(region.id);
     expect(usesHierarchyTree(region.display!, region.selection?.mode, region.hierarchyPicker)).toBe(true);
     const signal = new AbortController().signal;
     const receipts: Record<string, import('@metriccanvas/engine').DimensionValuesSnapshot> = {};
@@ -32,7 +33,7 @@ it('the actual Playground page chooses an office inside one tree and resolves it
     const shanghai = tree.find(node => node.label === '华东')!.children!.find(node => node.label === '上海')!;
     const next = hierarchyTreeSelection(snapshot, [shanghai.value], 'region-dept')!;
     expect(next).toEqual({ level: 'office', values: ['O101'] });
-    const state = createFilterState(filters, page.filters, new Map(), {iocRegion:!!page.iocHeader});
+    const state = createFilterState(filters, page.filters, new Map(), {iocRegion:!!iocHeaderDeclaration(page)});
     const changes: FilterValues[] = [];
     const stop = state.subscribe(values => changes.push(values));
     state.write('region', { type: 'dimension', dimension: 'h_office', ...next });

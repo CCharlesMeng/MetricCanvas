@@ -4,7 +4,7 @@
   "layout": "dashboard",
   "meta": {
     "title": "父子表格与完整 Excel 导出（合成数据）",
-    "description": "合成 DQE Sim：完整地区部指标、独立归属定位与按需代表处明细。父指标始终为地区部整体；Excel在同一工作表逐父行展开子表，子表从B列开始缩进。"
+    "description": "合成 DQE Sim：全球保留全部地区部，具体地区部及代表处通过层级选择联动父子表。父指标始终为地区部整体，归属由独立查询定位；Excel在同一工作表逐父行展开子表，子表从B列开始缩进。"
   },
   "dataSources": {
     "region-summary": {

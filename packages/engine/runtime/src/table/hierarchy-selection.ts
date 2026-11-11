@@ -1,4 +1,4 @@
-import { expansionRowKey, sourceFilterIds, type Page, type TableComponent, type Row, type DisplaySnapshot, type DataSnapshot } from '@metriccanvas/page/internal';
+import { expansionRowKey, sourceFilterIds, isUnrestrictedIocRegion, type Page, type TableComponent, type Row, type DisplaySnapshot, type DataSnapshot } from '@metriccanvas/page/internal';
 import { createSourceProgram, createCandidateValidator } from '@metriccanvas/data-execution/runtime';
 import type { DataGateway } from '../ports';
 import type { FilterValues } from '../filter-state';
@@ -12,7 +12,7 @@ export interface HierarchyContext {
   filters:FilterValues; params:PageParamValues; blocked?:readonly string[];
   displaySnapshot?:DisplaySnapshot; filterRevision?:number;
 }
-export function hierarchyChoice(table:TableComponent,filters:FilterValues):HierarchySelection {
+export function hierarchyChoice(table:TableComponent,filters:FilterValues,page:Page):HierarchySelection {
   const s=table.props.rowExpansion?.selection;
   const value=s&&filters.get(s.filter);
   const identity=JSON.stringify(value?.type==='dimension'?[value.level,value.values]:null);
@@ -20,13 +20,14 @@ export function hierarchyChoice(table:TableComponent,filters:FilterValues):Hiera
   if(value && value.type!=='dimension')return {status:'error',identity,message:'层级选择类型无效'};
   if(!value||!value.values.length)return {status:'unrestricted',identity};
   if(value.values.length!==1||typeof value.values[0]!=='string'||!value.values[0])return {status:'error',identity,message:'层级选择必须是单个稳定值'};
+  if(isUnrestrictedIocRegion(page,s.filter,value))return {status:'unrestricted',identity};
   if(value.level===s.parentLevel)return {status:'selected',identity,parentValue:value.values[0]};
   if(value.level===s.childLevel)return {status:'pending',identity,childValue:value.values[0]};
   return {status:'error',identity,message:'层级选择不属于声明层级'};
 }
 /** A private lookup uses the same controlled source execution as all business queries. */
 export async function resolveHierarchySelection(page:Page,table:TableComponent,gateway:DataGateway,context:HierarchyContext,signal:AbortSignal):Promise<HierarchySelection>{
-  const choice=hierarchyChoice(table,context.filters), s=table.props.rowExpansion?.selection;
+  const choice=hierarchyChoice(table,context.filters,page), s=table.props.rowExpansion?.selection;
   if(!s)return choice;
   if(context.blocked?.includes(s.filter))throw new Error('层级筛选尚未通过候选确认');
   if(choice.status==='error')throw new Error(choice.message);
@@ -95,7 +96,7 @@ export function createHierarchySelectionSession(page:Page,table:TableComponent,g
   return {
     snapshot:()=>current,
     sync(context:HierarchyContext){
-      const s=table.props.rowExpansion!.selection!,choice=hierarchyChoice(table,context.filters);
+      const s=table.props.rowExpansion!.selection!,choice=hierarchyChoice(table,context.filters,page);
       const dependencies=new Set([s.filter,...sourceFilterIds(page.dataSources[s.parentLookup.source])]);
       for(const b of Object.values(s.parentLookup.bindings))if(b.source==='filter')dependencies.add(b.id);
       const next=JSON.stringify([choice.identity,[...context.filters].filter(([id])=>dependencies.has(id)),[...context.params]]);
