@@ -9,10 +9,10 @@ import { walkPageComponents } from '../../packages/page/src/component-walk';
 import { type MainDataSlots } from '../../packages/engine/widgets/src/shared/component-data';
 import { barOption } from '../../packages/engine/widgets/src/components/bar-chart/options';
 import { lineOption } from '../../packages/engine/widgets/src/components/line-chart/options';
-import { formatValue } from '../../packages/engine/widgets/src/shared/value-format';
+import { chartAxisField, numericAxisPresentation, type AxisField } from '../../packages/engine/widgets/src/shared/chart-axis-presentation';
 
 type Finding = { code: string; path: string; detail?: string };
-type Axis = { type?: string; axisLabel?: { show?: boolean; formatter?: (value: number) => string } };
+type Axis = { type?: string; name?: string; axisLabel?: { show?: boolean; formatter?: (value: number) => string } };
 
 /** Accept a page or one unambiguous previewJson inside a delivery envelope. */
 export function extractPreview(input: unknown): unknown {
@@ -64,25 +64,28 @@ export function auditPresentation(input: unknown) {
     const option = component.type === 'barChart' ? barOption(data, component.props) : lineOption(data, component.props);
     const axes = component.type === 'barChart' && component.props.horizontal ? option.xAxis : option.yAxis;
     const axisList = (Array.isArray(axes) ? axes : [axes]) as Axis[];
-    const groups = new Map<number, typeof formats>();
+    const groups = new Map<number, AxisField[]>();
     component.props.series.forEach((series, index) => {
       const explicit = component.type === 'barChart' && component.props.series.some(s => s.axis !== undefined || s.kind !== undefined);
       const axisIndex = explicit ? ('axis' in series && series.axis === 'secondary' ? 1 : 0)
         : component.props.dualAxis && index > 0 ? 1 : 0;
-      groups.set(axisIndex, [...(groups.get(axisIndex) ?? []), formats[index]]);
+      groups.set(axisIndex, [...(groups.get(axisIndex) ?? []), chartAxisField(fields[index]!, [], series.unit)]);
     });
     const axisChecks = [...groups].map(([axisIndex, group]) => {
       const axis = axisList[axisIndex];
       const hidden = axis?.axisLabel?.show === false;
-      const common = group[0] && group.every(format => format === group[0]) ? group[0] : undefined;
-      if (new Set(group).size > 1) findings.push({ code: 'AXIS_FORMAT_CONFLICT', path, detail: `axis=${axisIndex}; formats=${JSON.stringify(group)}` });
+      const groupFormats = group.map(field => field.format);
+      const common = groupFormats[0] && groupFormats.every(format => format === groupFormats[0]) ? groupFormats[0] : undefined;
+      const expected = numericAxisPresentation(group);
+      if (new Set(groupFormats).size > 1) findings.push({ code: 'AXIS_FORMAT_CONFLICT', path, detail: `axis=${axisIndex}; formats=${JSON.stringify(groupFormats)}` });
       const probes = [0, -10000, 10000, 100000000].map(value => ({ value,
-        expected: common ? formatValue(value, common) : null,
+        expected: expected.axisLabel.formatter(value),
         actual: axis?.axisLabel?.formatter ? axis.axisLabel.formatter(value) : null }));
       if (!hidden && common && common !== 'number' && probes.some(probe => probe.actual !== probe.expected)) {
         findings.push({ code: 'AXIS_FORMAT_NOT_APPLIED', path, detail: `axis=${axisIndex}` });
       }
-      return { axisIndex, hidden, format: common ?? null, probes };
+      if (!hidden && axis?.name !== expected.name) findings.push({ code: 'AXIS_UNIT_NOT_APPLIED', path, detail: `axis=${axisIndex}` });
+      return { axisIndex, hidden, format: common ?? null, unit: { actual: axis?.name, expected: expected.name }, probes };
     });
     charts.push({ path, componentId: component.id, formats, axisChecks });
   });

@@ -18,6 +18,15 @@ describe('offline page presentation audit', () => {
     expect(result.valid).toBe(true);
     expect(result.findings).toEqual([]);
     expect(result.charts).toHaveLength(1);
+    expect(result.charts[0]!.axisChecks).toEqual([expect.objectContaining({
+      unit: { actual: '万元', expected: '万元' },
+      probes: [
+        { value: 0, expected: '0', actual: '0' },
+        { value: -10000, expected: '-1', actual: '-1' },
+        { value: 10000, expected: '1', actual: '1' },
+        { value: 100000000, expected: '10,000', actual: '10,000' }
+      ]
+    })]);
     expect(extractPreview({ previewJson: JSON.stringify(document) })).toEqual(document);
   });
   it('rejects ambiguous envelopes and invalid page contracts', () => {
