@@ -114,7 +114,7 @@ Dashboard 正文通过独立 [filterGroup](filterGroup.md) 组件声明筛选按
 `stacked: true` 配合 `showStackTotalLabels: true` 在每个类别显示当前系列的数值合计，包含负数扣分。标签锚定可见堆叠的外端，与柱体保持 8 CSS px 间距；正负混合时置于正值柱顶，显示值仍为含扣分的净合计；全负数置于负值外端，横向条形相应置于右侧或左侧。无需声明额外的“总分”系列；未开启时不显示合计。`/pages/partner-health-interactions` 使用前端计算的合成得分，四类得分含负数风险扣分；业务 `/pages/partner-health` 的地区部和代表处图表均开启此配置。
 
 
-页面协议 6.112。结构真源为本册[schema.json](../schema.json)，SHA256 `05cac28216620d7f88c49ecfd90524ff5d5221011e28edcf6187b95a78326c12`。字段表自动生成；可选不等于有默认值。
+页面协议 6.113。结构真源为本册[schema.json](../schema.json)，SHA256 `fa5cfc21d4eab72d87cabdcf3386f830f2aa18f46f565b902350636ff6b072bf`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -548,12 +548,13 @@ Schema位置：`#/definitions/barChartSeries/anyOf/1/properties/format`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-3-signed","number-4-signed","number-5-signed","number-grouped-signed","number-2","number-3","number-4","number-5","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","cny-adaptive-trimmed","cny-adaptive-trimmed-no-yuan","usd-adaptive-km","count-adaptive","resource-adaptive","bytes-adaptive","minutes-adaptive","messages-adaptive","billing-hours","percent-adaptive","percent-adaptive-signed","percent-0","percent-1","percent-2","percent-raw","points-1-signed","yoy-p-signed","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 显示格式，不修改原始数据。 |
+| "string" | 本分支可选 | enum=["text","number","number-0","number-1","number-signed","number-1-signed","number-2-signed","number-3-signed","number-4-signed","number-5-signed","number-grouped-signed","number-2","number-3","number-4","number-5","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","cny-adaptive-trimmed","cny-adaptive-trimmed-no-yuan","usd-adaptive-km","count-adaptive","resource-adaptive","bytes-adaptive","minutes-adaptive","messages-adaptive","billing-hours","percent-adaptive","percent-adaptive-signed","percent-0","percent-1","percent-2","percent-raw","points-1-signed","yoy-p-signed","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 显示格式，不修改原始数据。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
 | "text" | 普通文本格式，不能执行HTML。 |
 | "number" | 数值标量或原数值格式，按所在字段解释。 |
+| "number-0" | 6.113新增：四舍五入为无千分位整数，半值远离零，舍入零为0，不缩放，不改变原值。 |
 | "number-1" | 保留1位小数。 |
 | "number-signed" | 保留普通数值精度，正数加正号，负数保留负号，零无符号；6.17新增。 |
 | "number-1-signed" | 保留一位小数，舍入后零无符号；表格正负颜色与指标卡变化箭头按展示方向判断；6.17新增。 |

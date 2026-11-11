@@ -34,7 +34,9 @@ text不执行HTML，日期格式只格式化日期值。语义HTML须用专用�
 
 ## 显式数值格式与精度
 
-组件绑定的显式format优先；未声明时先按可信字段类型、币种、单位及语义格式选择统一规则，再回退字段defaultFormat；不从指标名或字段id猜测。number保留数值语义，number-1/2/3/4/5控制最多小数位，number-grouped千分位；compact-wan/yi是数量单位缩放。percent-*直接以原数值加百分号，0.42不自动变42%；需要ratio.scale:100或正确的原始刻度。
+组件绑定的显式format优先；未声明时先按可信字段类型、币种、单位及语义格式选择统一规则，再回退字段defaultFormat；不从指标名或字段id猜测。number保留数值语义，number-0四舍五入显示整数，number-1/2/3/4/5控制最多小数位，number-grouped千分位；compact-wan/yi是数量单位缩放。percent-*直接以原数值加百分号，0.42不自动变42%；需要ratio.scale:100或正确的原始刻度。
+
+6.113 新增 `number-0`，绑定可写 `{"data":"main","field":"amount","format":"number-0"}`，字段默认用 `defaultFormat:"number-0"`，数字参数及筛选文本引用也可使用。不加千分位、不缩放，四舍五入到整数（半值远离零）：`12.4 → 12`、`12.5 → 13`、`-12.5 → -13`，`±0.4` 与负零均显示 `0`，缺失仍显示 `--`。只改变展示，原值、计算、排序不变；Excel 保留数值原值，以冻结的整数文本展示。6.112 及更早版本不能声明，未新增 `number-0-signed`。合成场景 `/pages/number-precision-five` 覆盖表格显式格式、字段默认、指标卡、柱图及数字参数标题。
 
 6.107 补齐 `number-3`、`number-4`、`number-5` 及对应的 `-signed` 格式，分别最多保留三、四、五位小数，四舍五入后去掉末尾零，不补零、不加千分位、不缩放。格式名仍为封闭枚举，不支持 `number-6` 或 `number-6-signed`。组件 `format`、字段 `defaultFormat`、数字参数及筛选文本引用共用这些预设；6.106 及更早版本不能声明新预设，旧格式行为保持。
 
@@ -89,7 +91,7 @@ XLSX 保留数值单元格的原始值及数值类型。当前未声明列级展
 
 ## 带符号普通数值（6.17起）
 
-全部 `number` 格式都有对应的带符号版本，保留原格式的精度与千分位规则。`number-signed` / `number-1-signed` 从6.17起可声明，`number-2-signed` / `number-grouped-signed` 从6.18起可声明；三至五位格式及版本边界见“显式数值格式与精度”。`number-grouped-signed` 沿用当前千分位格式默认最多三位小数的舍入策略。
+除 `number-0` 外，现有 `number` 格式都有对应的带符号版本，保留原格式的精度与千分位规则。`number-signed` / `number-1-signed` 从6.17起可声明，`number-2-signed` / `number-grouped-signed` 从6.18起可声明；三至五位格式及版本边界见“显式数值格式与精度”。`number-grouped-signed` 沿用当前千分位格式默认最多三位小数的舍入策略。
 
 `number-signed` 保留 `number` 的原始数值精度，正数加 `+`、负数保留 `-`、零无符号；`number-1-signed` 保留一位小数后判断符号。`1.24` 显示 `+1.2`，`-1.24` 显示 `-1.2`，`0.04`、`-0.04` 与负零均显示 `0`。不乘100、不追加百分号，适用于天数或次数的绝对变化。单位仍由组件的单位声明提供。空值及非有限数值显示缺失文案。
 
@@ -275,7 +277,7 @@ value:0 是有效常量；null 遵循该图表的缺失行为。常量可同级�
 `/pages/chart-table-unit` 的 inline 合成场景覆盖柱线混合图、饼图图例、分组列、汇总、缩放、百分号、零、负值及缺失；不代表真实 DQE/Relay。
 
 
-页面协议 6.112。结构真源为本册[schema.json](schema.json)，SHA256 `05cac28216620d7f88c49ecfd90524ff5d5221011e28edcf6187b95a78326c12`。字段表自动生成；可选不等于有默认值。
+页面协议 6.113。结构真源为本册[schema.json](schema.json)，SHA256 `fa5cfc21d4eab72d87cabdcf3386f830f2aa18f46f565b902350636ff6b072bf`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -417,12 +419,13 @@ Schema位置：`#/definitions/staticFieldBinding/anyOf/1/properties/format/anyOf
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 独立分支（不合并required） | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-3-signed","number-4-signed","number-5-signed","number-grouped-signed","number-2","number-3","number-4","number-5","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","cny-adaptive-trimmed","cny-adaptive-trimmed-no-yuan","usd-adaptive-km","count-adaptive","resource-adaptive","bytes-adaptive","minutes-adaptive","messages-adaptive","billing-hours","percent-adaptive","percent-adaptive-signed","percent-0","percent-1","percent-2","percent-raw","points-1-signed","yoy-p-signed","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+| "string" | 独立分支（不合并required） | enum=["text","number","number-0","number-1","number-signed","number-1-signed","number-2-signed","number-3-signed","number-4-signed","number-5-signed","number-grouped-signed","number-2","number-3","number-4","number-5","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","cny-adaptive-trimmed","cny-adaptive-trimmed-no-yuan","usd-adaptive-km","count-adaptive","resource-adaptive","bytes-adaptive","minutes-adaptive","messages-adaptive","billing-hours","percent-adaptive","percent-adaptive-signed","percent-0","percent-1","percent-2","percent-raw","points-1-signed","yoy-p-signed","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
 | "text" | 普通文本格式，不能执行HTML。 |
 | "number" | 数值标量或原数值格式，按所在字段解释。 |
+| "number-0" | 6.113新增：四舍五入为无千分位整数，半值远离零，舍入零为0，不缩放，不改变原值。 |
 | "number-1" | 保留1位小数。 |
 | "number-signed" | 保留普通数值精度，正数加正号，负数保留负号，零无符号；6.17新增。 |
 | "number-1-signed" | 保留一位小数，舍入后零无符号；表格正负颜色与指标卡变化箭头按展示方向判断；6.17新增。 |
@@ -839,7 +842,7 @@ Schema位置：`#/definitions/tableData/propertyNames`。
 - `presentation-capability`：颜色与图表标签声明由6.16引入。反例：[presentation-before-6.16](errors/presentation-before-6.16.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `signed-number-format-capability`：带符号普通数值格式由6.17引入。反例：[signed-number-binding-before-6.17](errors/signed-number-binding-before-6.17.json)、[signed-number-default-before-6.17](errors/signed-number-default-before-6.17.json)、[signed-number-param-before-6.17](errors/signed-number-param-before-6.17.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `signed-number-family-capability`：两位小数与千分位带符号数值格式由6.18引入。反例：[signed-number-two-decimal-before-6.18](errors/signed-number-two-decimal-before-6.18.json)、[signed-number-grouped-before-6.18](errors/signed-number-grouped-before-6.18.json)、[signed-number-family-param-before-6.18](errors/signed-number-family-param-before-6.18.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
-- `number-precision-five`：三至五位小数及带符号预设由6.107引入。反例：[number-precision-binding-before-6.107](errors/number-precision-binding-before-6.107.json)、[number-precision-default-before-6.107](errors/number-precision-default-before-6.107.json)、[number-precision-param-before-6.107](errors/number-precision-param-before-6.107.json)、[number-precision-six-unsupported](errors/number-precision-six-unsupported.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `number-precision-five`：三至五位小数及带符号预设由6.107引入，整数预设由6.113引入。反例：[number-precision-binding-before-6.107](errors/number-precision-binding-before-6.107.json)、[number-precision-default-before-6.107](errors/number-precision-default-before-6.107.json)、[number-precision-param-before-6.107](errors/number-precision-param-before-6.107.json)、[number-precision-six-unsupported](errors/number-precision-six-unsupported.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `currency-selection`：6.38金额范围和静态货币字段选择。反例：[currency-before-6.38](errors/currency-before-6.38.json)、[currency-case-missing](errors/currency-case-missing.json)、[currency-metric-mismatch](errors/currency-metric-mismatch.json)、[currency-negative-default](errors/currency-negative-default.json)、[currency-equal-default](errors/currency-equal-default.json)、[currency-compute-mixed](errors/currency-compute-mixed.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `adaptive-money-trimmed`：6.88 新金额格式与静态货币匹配，旧格式保持。反例：[adaptive-money-before-6.88](errors/adaptive-money-before-6.88.json)、[adaptive-money-default-currency](errors/adaptive-money-default-currency.json)、[adaptive-money-binding-currency](errors/adaptive-money-binding-currency.json)、[adaptive-money-nondefault-currency](errors/adaptive-money-nondefault-currency.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 

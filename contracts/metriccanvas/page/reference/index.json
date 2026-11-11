@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.112",
-  "schemaSha256": "05cac28216620d7f88c49ecfd90524ff5d5221011e28edcf6187b95a78326c12",
+  "schemaVersion": "6.113",
+  "schemaSha256": "fa5cfc21d4eab72d87cabdcf3386f830f2aa18f46f565b902350636ff6b072bf",
   "semanticSources": [
     {
       "file": "metriccanvas-authoring/core/page/analysis-report.ts",
@@ -516,7 +516,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "d7fd08c98732c4333935c97f5fb2a43ff4d6ace001ff070a7ef54548ce412e00"
+      "sha256": "bc63af02f03e7a512ba7c6b434ddf5135fab8688b31ff35330346cfdce6a7b4c"
     }
   ],
   "modules": {
@@ -2123,7 +2123,8 @@
         "6.109",
         "6.110",
         "6.111",
-        "6.112"
+        "6.112",
+        "6.113"
       ]
     },
     {
@@ -2190,6 +2191,7 @@
       "enum": [
         "text",
         "number",
+        "number-0",
         "number-1",
         "number-signed",
         "number-1-signed",
@@ -2261,6 +2263,7 @@
       "enum": [
         "text",
         "number",
+        "number-0",
         "number-1",
         "number-signed",
         "number-1-signed",
@@ -3406,6 +3409,7 @@
       "enum": [
         "text",
         "number",
+        "number-0",
         "number-1",
         "number-signed",
         "number-1-signed",
@@ -3512,6 +3516,7 @@
       "enum": [
         "text",
         "number",
+        "number-0",
         "number-1",
         "number-signed",
         "number-1-signed",
@@ -4608,6 +4613,7 @@
       "enum": [
         "text",
         "number",
+        "number-0",
         "number-1",
         "number-signed",
         "number-1-signed",
@@ -4720,6 +4726,7 @@
       "enum": [
         "text",
         "number",
+        "number-0",
         "number-1",
         "number-signed",
         "number-1-signed",
@@ -4987,6 +4994,7 @@
       "enum": [
         "text",
         "number",
+        "number-0",
         "number-1",
         "number-signed",
         "number-1-signed",
@@ -5119,6 +5127,7 @@
       "enum": [
         "text",
         "number",
+        "number-0",
         "number-1",
         "number-signed",
         "number-1-signed",
@@ -5224,6 +5233,7 @@
       "enum": [
         "text",
         "number",
+        "number-0",
         "number-1",
         "number-signed",
         "number-1-signed",
@@ -11522,6 +11532,7 @@
       "enum": [
         "text",
         "number",
+        "number-0",
         "number-1",
         "number-signed",
         "number-1-signed",
@@ -12467,6 +12478,7 @@
       "enum": [
         "text",
         "number",
+        "number-0",
         "number-1",
         "number-signed",
         "number-1-signed",
@@ -13084,6 +13096,7 @@
       "enum": [
         "text",
         "number",
+        "number-0",
         "number-1",
         "number-signed",
         "number-1-signed",
@@ -13539,6 +13552,7 @@
       "enum": [
         "text",
         "number",
+        "number-0",
         "number-1",
         "number-signed",
         "number-1-signed",
@@ -13954,6 +13968,7 @@
       "enum": [
         "text",
         "number",
+        "number-0",
         "number-1",
         "number-signed",
         "number-1-signed",
@@ -14141,6 +14156,7 @@
       "enum": [
         "text",
         "number",
+        "number-0",
         "number-1",
         "number-signed",
         "number-1-signed",
@@ -16927,6 +16943,7 @@
       "enum": [
         "text",
         "number",
+        "number-0",
         "number-1",
         "number-signed",
         "number-1-signed",
@@ -17128,6 +17145,7 @@
       "enum": [
         "text",
         "number",
+        "number-0",
         "number-1",
         "number-signed",
         "number-1-signed",
@@ -17611,6 +17629,7 @@
       "enum": [
         "text",
         "number",
+        "number-0",
         "number-1",
         "number-signed",
         "number-1-signed",
@@ -19209,6 +19228,7 @@
       "enum": [
         "text",
         "number",
+        "number-0",
         "number-1",
         "number-signed",
         "number-1-signed",

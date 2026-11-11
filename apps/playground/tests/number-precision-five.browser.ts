@@ -20,7 +20,7 @@ test('three to five decimals share rounding, colors and metric arrows', async ({
     [10, ['正向舍入零', '0', '0', '0', '0', '0', '0']],
     [13, ['缺失', '--', '--', '--', '--', '--', '--']]
   ] as const) {
-    await expect(rows.nth(index).locator('td')).toHaveText([...expected]);
+    await expect(rows.nth(index).locator('td:nth-child(-n+7)')).toHaveText([...expected]);
   }
   const neutral = rows.nth(10).locator('td').nth(6);
   expect(await neutral.getAttribute('style') ?? '').not.toContain('--mc-color-negative');
@@ -29,7 +29,7 @@ test('three to five decimals share rounding, colors and metric arrows', async ({
     '↑ +0.001', '↓ -0.001', '0', '↑ +0.0001', '↓ -0.0001', '0', '↑ +0.00001', '↓ -0.00001', '0'
   ]);
   await expect(page.locator('.trend-arrow')).toHaveCount(6);
-  await expect(page.locator('.bar-chart')).toBeVisible();
+  await expect(page.locator('.bar-chart').first()).toBeVisible();
   expect(errors).toEqual([]);
   await page.screenshot({ path: testInfo.outputPath('precision-five.png'), fullPage: true });
 });

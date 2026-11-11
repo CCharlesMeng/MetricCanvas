@@ -133,6 +133,7 @@ export function isTextValueReference(value: unknown): value is TextValueReferenc
 /** 数值语义的格式预设:只有 number 参数能引用。 */
 const NUMERIC_FORMATS = new Set<ValueFormatPreset>([
   'number',
+  'number-0',
   'number-1',
   'number-signed',
   'number-1-signed',

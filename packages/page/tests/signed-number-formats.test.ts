@@ -8,6 +8,7 @@ import report from '../../../pages/business/report/sdt/business-sdt-cascade-exam
 const document = () => JSON.parse(readFileSync('packages/page/fixtures/contract-valid/inline-report.json', 'utf8'));
 
 it.each([
+  ['number-0', 113],
   ['number-3', 107], ['number-4', 107], ['number-5', 107],
   ['number-3-signed', 107], ['number-4-signed', 107], ['number-5-signed', 107],
   ['number-signed', 17], ['number-1-signed', 17],
@@ -67,7 +68,7 @@ it('configures exactly the eight comparison bindings without changing their sour
   }
 });
 
-it.each(['number-6', 'number-6-signed', 'number-3-signed-extra'])('rejects unsupported precision %s at the binding', format => {
+it.each(['number-0-signed', 'number-6', 'number-6-signed', 'number-3-signed-extra'])('rejects unsupported precision %s at the binding', format => {
   const raw = document();
   raw.schemaVersion = '6.107';
   raw.sections[0].components[1].props.rows[0].valueField.format = format;

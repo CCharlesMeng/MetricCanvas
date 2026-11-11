@@ -2308,7 +2308,9 @@
     "6.109": "精确搜索可引用补充数据槽字段，先完整查找匹配行键再约束主查询分页。",
     "6.110": "兼容读取版本；本批未引入该版本专属能力。",
     "6.111": "IOC 页头支持 back:false 显式隐藏，旧 auto 废弃并兼容为 true。",
-    "6.112": "表头候选搜索框显式配置，新页面默认隐藏，旧页兼容保留原表现。"
+    "6.112": "表头候选搜索框显式配置，新页面默认隐藏，旧页兼容保留原表现。",
+    "number-0": "6.113新增：四舍五入为无千分位整数，半值远离零，舍入零为0，不缩放，不改变原值。",
+    "6.113": "number-0普通数值整数展示。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {

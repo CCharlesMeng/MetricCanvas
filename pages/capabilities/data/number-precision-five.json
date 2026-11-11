@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.107",
+  "schemaVersion": "6.113",
   "id": "number-precision-five",
   "layout": "dashboard",
   "meta": {
@@ -54,6 +54,25 @@
           "label": "number-5-signed",
           "nullable": true,
           "defaultFormat": "number-5-signed"
+        },
+        "integerRaw": {
+          "type": "number",
+          "role": "measure",
+          "label": "整数原值",
+          "nullable": true
+        },
+        "integerExplicit": {
+          "type": "number",
+          "role": "measure",
+          "label": "显式整数",
+          "nullable": true
+        },
+        "integerDefault": {
+          "type": "number",
+          "role": "measure",
+          "label": "默认整数",
+          "nullable": true,
+          "defaultFormat": "number-0"
         }
       },
       "source": {
@@ -66,7 +85,10 @@
             "plain4": 1234.12345678,
             "signed4": 1234.12345678,
             "plain5": 1234.12345678,
-            "signed5": 1234.12345678
+            "signed5": 1234.12345678,
+            "integerRaw": 1234.4,
+            "integerExplicit": 1234.4,
+            "integerDefault": 1234.4
           },
           {
             "name": "负数",
@@ -75,7 +97,10 @@
             "plain4": -1234.12345678,
             "signed4": -1234.12345678,
             "plain5": -1234.12345678,
-            "signed5": -1234.12345678
+            "signed5": -1234.12345678,
+            "integerRaw": -1234.5,
+            "integerExplicit": -1234.5,
+            "integerDefault": -1234.5
           },
           {
             "name": "去尾零",
@@ -84,7 +109,10 @@
             "plain4": 12.3,
             "signed4": 12.3,
             "plain5": 12.3,
-            "signed5": 12.3
+            "signed5": 12.3,
+            "integerRaw": 1234.5,
+            "integerExplicit": 1234.5,
+            "integerDefault": 1234.5
           },
           {
             "name": "进位",
@@ -93,7 +121,10 @@
             "plain4": 9.999999,
             "signed4": 9.999999,
             "plain5": 9.999999,
-            "signed5": 9.999999
+            "signed5": 9.999999,
+            "integerRaw": 9.999,
+            "integerExplicit": 9.999,
+            "integerDefault": 9.999
           },
           {
             "name": "三位正边界",
@@ -102,7 +133,10 @@
             "plain4": 0.0005,
             "signed4": 0.0005,
             "plain5": 0.0005,
-            "signed5": 0.0005
+            "signed5": 0.0005,
+            "integerRaw": 0.5,
+            "integerExplicit": 0.5,
+            "integerDefault": 0.5
           },
           {
             "name": "三位负边界",
@@ -111,7 +145,10 @@
             "plain4": -0.0005,
             "signed4": -0.0005,
             "plain5": -0.0005,
-            "signed5": -0.0005
+            "signed5": -0.0005,
+            "integerRaw": -0.5,
+            "integerExplicit": -0.5,
+            "integerDefault": -0.5
           },
           {
             "name": "四位正边界",
@@ -120,7 +157,10 @@
             "plain4": 5e-05,
             "signed4": 5e-05,
             "plain5": 5e-05,
-            "signed5": 5e-05
+            "signed5": 5e-05,
+            "integerRaw": 0.4,
+            "integerExplicit": 0.4,
+            "integerDefault": 0.4
           },
           {
             "name": "四位负边界",
@@ -129,7 +169,10 @@
             "plain4": -5e-05,
             "signed4": -5e-05,
             "plain5": -5e-05,
-            "signed5": -5e-05
+            "signed5": -5e-05,
+            "integerRaw": -0.4,
+            "integerExplicit": -0.4,
+            "integerDefault": -0.4
           },
           {
             "name": "五位正边界",
@@ -138,7 +181,10 @@
             "plain4": 5e-06,
             "signed4": 5e-06,
             "plain5": 5e-06,
-            "signed5": 5e-06
+            "signed5": 5e-06,
+            "integerRaw": 12.4,
+            "integerExplicit": 12.4,
+            "integerDefault": 12.4
           },
           {
             "name": "五位负边界",
@@ -147,7 +193,10 @@
             "plain4": -5e-06,
             "signed4": -5e-06,
             "plain5": -5e-06,
-            "signed5": -5e-06
+            "signed5": -5e-06,
+            "integerRaw": -12.4,
+            "integerExplicit": -12.4,
+            "integerDefault": -12.4
           },
           {
             "name": "正向舍入零",
@@ -156,7 +205,10 @@
             "plain4": 4e-06,
             "signed4": 4e-06,
             "plain5": 4e-06,
-            "signed5": 4e-06
+            "signed5": 4e-06,
+            "integerRaw": 0.4,
+            "integerExplicit": 0.4,
+            "integerDefault": 0.4
           },
           {
             "name": "负向舍入零",
@@ -165,7 +217,10 @@
             "plain4": -4e-06,
             "signed4": -4e-06,
             "plain5": -4e-06,
-            "signed5": -4e-06
+            "signed5": -4e-06,
+            "integerRaw": -0.4,
+            "integerExplicit": -0.4,
+            "integerDefault": -0.4
           },
           {
             "name": "零",
@@ -174,7 +229,10 @@
             "plain4": 0,
             "signed4": 0,
             "plain5": 0,
-            "signed5": 0
+            "signed5": 0,
+            "integerRaw": 0,
+            "integerExplicit": 0,
+            "integerDefault": 0
           },
           {
             "name": "缺失",
@@ -183,7 +241,10 @@
             "plain4": null,
             "signed4": null,
             "plain5": null,
-            "signed5": null
+            "signed5": null,
+            "integerRaw": null,
+            "integerExplicit": null,
+            "integerDefault": null
           }
         ]
       }
@@ -328,6 +389,26 @@
                   "positive": "red",
                   "negative": "green"
                 }
+              },
+              {
+                "title": "整数原值",
+                "field": {
+                  "data": "main",
+                  "field": "integerRaw",
+                  "format": "number"
+                }
+              },
+              {
+                "title": "显式整数",
+                "field": {
+                  "data": "main",
+                  "field": "integerExplicit",
+                  "format": "number-0"
+                }
+              },
+              {
+                "title": "默认整数",
+                "field": "integerDefault"
               }
             ],
             "pagination": {
@@ -487,8 +568,72 @@
             ],
             "showValueLabels": true
           }
+        },
+        {
+          "id": "integer-metric",
+          "type": "metricCard",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "samples"
+          },
+          "props": {
+            "title": "首行整数",
+            "rows": [
+              {
+                "label": "四舍五入",
+                "valueField": {
+                  "data": "main",
+                  "field": "integerExplicit",
+                  "format": "number-0"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "integer-chart",
+          "type": "barChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "samples"
+          },
+          "props": {
+            "categoryField": "name",
+            "series": [
+              {
+                "field": {
+                  "data": "main",
+                  "field": "integerExplicit",
+                  "format": "number-0"
+                },
+                "label": "整数"
+              }
+            ],
+            "showValueLabels": true
+          }
         }
-      ]
+      ],
+      "title": {
+        "parts": [
+          "整数格式（合成数据）目标：",
+          {
+            "param": "target",
+            "format": "number-0"
+          }
+        ]
+      }
+    }
+  ],
+  "params": [
+    {
+      "id": "target",
+      "type": "number",
+      "required": true,
+      "default": 12.5
     }
   ]
 }

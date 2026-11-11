@@ -487,7 +487,7 @@ export const invariants: InvariantDefinition[] = [
     ]
   },
   {
-    id: 'number-precision-five', description: '三至五位小数及带符号预设由6.107引入',
+    id: 'number-precision-five', description: '三至五位小数及带符号预设由6.107引入，整数预设由6.113引入',
     valid: ['number-precision-five'], cases: [
       { case: 'number-precision-binding-before-6.107', base: 'inline-report', expect: /由 6.107 引入/,
         mutate: d => { d.schemaVersion = '6.106'; firstComponent(d,0,1).props.rows[0].valueField.format = 'number-3-signed'; } },

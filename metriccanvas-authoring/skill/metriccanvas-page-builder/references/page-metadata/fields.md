@@ -66,7 +66,7 @@ recordList使用显式items.fields约束每条嵌套记录，限制在已支持�
 ready 数据快照和数据网关结果可以附带 cellFallbacks，按当前快照行下标及稳定页面字段 id 记录 raw 与 reason。所有行投影和序列化同步重排证据，派生计算不会把输入原文变成输出值。普通 query 初始行保存原始查询标量，重新打开时归一化；pagedJoin 的已归一化 initial 可附带相同证据，且不改变业务字段字典。初始行、动态查询和 Excel 保持一致。该字段是结果的展示证据，不是页面表达式或展示策略开关。
 
 
-页面协议 6.112。结构真源为本册[schema.json](schema.json)，SHA256 `05cac28216620d7f88c49ecfd90524ff5d5221011e28edcf6187b95a78326c12`。字段表自动生成；可选不等于有默认值。
+页面协议 6.113。结构真源为本册[schema.json](schema.json)，SHA256 `fa5cfc21d4eab72d87cabdcf3386f830f2aa18f46f565b902350636ff6b072bf`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -211,12 +211,13 @@ Schema位置：`#/definitions/scalarField/oneOf/0/properties/defaultFormat`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-3-signed","number-4-signed","number-5-signed","number-grouped-signed","number-2","number-3","number-4","number-5","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","cny-adaptive-trimmed","cny-adaptive-trimmed-no-yuan","usd-adaptive-km","count-adaptive","resource-adaptive","bytes-adaptive","minutes-adaptive","messages-adaptive","billing-hours","percent-adaptive","percent-adaptive-signed","percent-0","percent-1","percent-2","percent-raw","points-1-signed","yoy-p-signed","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 字段的缺省显示格式；显式绑定format优先。 |
+| "string" | 本分支可选 | enum=["text","number","number-0","number-1","number-signed","number-1-signed","number-2-signed","number-3-signed","number-4-signed","number-5-signed","number-grouped-signed","number-2","number-3","number-4","number-5","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","cny-adaptive-trimmed","cny-adaptive-trimmed-no-yuan","usd-adaptive-km","count-adaptive","resource-adaptive","bytes-adaptive","minutes-adaptive","messages-adaptive","billing-hours","percent-adaptive","percent-adaptive-signed","percent-0","percent-1","percent-2","percent-raw","points-1-signed","yoy-p-signed","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 字段的缺省显示格式；显式绑定format优先。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
 | "text" | 普通文本格式，不能执行HTML。 |
 | "number" | 数值标量或原数值格式，按所在字段解释。 |
+| "number-0" | 6.113新增：四舍五入为无千分位整数，半值远离零，舍入零为0，不缩放，不改变原值。 |
 | "number-1" | 保留1位小数。 |
 | "number-signed" | 保留普通数值精度，正数加正号，负数保留负号，零无符号；6.17新增。 |
 | "number-1-signed" | 保留一位小数，舍入后零无符号；表格正负颜色与指标卡变化箭头按展示方向判断；6.17新增。 |
@@ -361,12 +362,13 @@ Schema位置：`#/definitions/scalarField/oneOf/1/properties/defaultFormat`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-3-signed","number-4-signed","number-5-signed","number-grouped-signed","number-2","number-3","number-4","number-5","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","cny-adaptive-trimmed","cny-adaptive-trimmed-no-yuan","usd-adaptive-km","count-adaptive","resource-adaptive","bytes-adaptive","minutes-adaptive","messages-adaptive","billing-hours","percent-adaptive","percent-adaptive-signed","percent-0","percent-1","percent-2","percent-raw","points-1-signed","yoy-p-signed","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 字段的缺省显示格式；显式绑定format优先。 |
+| "string" | 本分支可选 | enum=["text","number","number-0","number-1","number-signed","number-1-signed","number-2-signed","number-3-signed","number-4-signed","number-5-signed","number-grouped-signed","number-2","number-3","number-4","number-5","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","cny-adaptive-trimmed","cny-adaptive-trimmed-no-yuan","usd-adaptive-km","count-adaptive","resource-adaptive","bytes-adaptive","minutes-adaptive","messages-adaptive","billing-hours","percent-adaptive","percent-adaptive-signed","percent-0","percent-1","percent-2","percent-raw","points-1-signed","yoy-p-signed","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 字段的缺省显示格式；显式绑定format优先。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
 | "text" | 普通文本格式，不能执行HTML。 |
 | "number" | 数值标量或原数值格式，按所在字段解释。 |
+| "number-0" | 6.113新增：四舍五入为无千分位整数，半值远离零，舍入零为0，不缩放，不改变原值。 |
 | "number-1" | 保留1位小数。 |
 | "number-signed" | 保留普通数值精度，正数加正号，负数保留负号，零无符号；6.17新增。 |
 | "number-1-signed" | 保留一位小数，舍入后零无符号；表格正负颜色与指标卡变化箭头按展示方向判断；6.17新增。 |
@@ -809,12 +811,13 @@ Schema位置：`#/definitions/queryScalarField/oneOf/0/properties/defaultFormat`
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-3-signed","number-4-signed","number-5-signed","number-grouped-signed","number-2","number-3","number-4","number-5","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","cny-adaptive-trimmed","cny-adaptive-trimmed-no-yuan","usd-adaptive-km","count-adaptive","resource-adaptive","bytes-adaptive","minutes-adaptive","messages-adaptive","billing-hours","percent-adaptive","percent-adaptive-signed","percent-0","percent-1","percent-2","percent-raw","points-1-signed","yoy-p-signed","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 字段的缺省显示格式；显式绑定format优先。 |
+| "string" | 本分支可选 | enum=["text","number","number-0","number-1","number-signed","number-1-signed","number-2-signed","number-3-signed","number-4-signed","number-5-signed","number-grouped-signed","number-2","number-3","number-4","number-5","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","cny-adaptive-trimmed","cny-adaptive-trimmed-no-yuan","usd-adaptive-km","count-adaptive","resource-adaptive","bytes-adaptive","minutes-adaptive","messages-adaptive","billing-hours","percent-adaptive","percent-adaptive-signed","percent-0","percent-1","percent-2","percent-raw","points-1-signed","yoy-p-signed","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 字段的缺省显示格式；显式绑定format优先。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
 | "text" | 普通文本格式，不能执行HTML。 |
 | "number" | 数值标量或原数值格式，按所在字段解释。 |
+| "number-0" | 6.113新增：四舍五入为无千分位整数，半值远离零，舍入零为0，不缩放，不改变原值。 |
 | "number-1" | 保留1位小数。 |
 | "number-signed" | 保留普通数值精度，正数加正号，负数保留负号，零无符号；6.17新增。 |
 | "number-1-signed" | 保留一位小数，舍入后零无符号；表格正负颜色与指标卡变化箭头按展示方向判断；6.17新增。 |
@@ -969,12 +972,13 @@ Schema位置：`#/definitions/queryScalarField/oneOf/1/properties/defaultFormat`
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-3-signed","number-4-signed","number-5-signed","number-grouped-signed","number-2","number-3","number-4","number-5","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","cny-adaptive-trimmed","cny-adaptive-trimmed-no-yuan","usd-adaptive-km","count-adaptive","resource-adaptive","bytes-adaptive","minutes-adaptive","messages-adaptive","billing-hours","percent-adaptive","percent-adaptive-signed","percent-0","percent-1","percent-2","percent-raw","points-1-signed","yoy-p-signed","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 字段的缺省显示格式；显式绑定format优先。 |
+| "string" | 本分支可选 | enum=["text","number","number-0","number-1","number-signed","number-1-signed","number-2-signed","number-3-signed","number-4-signed","number-5-signed","number-grouped-signed","number-2","number-3","number-4","number-5","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","cny-adaptive-trimmed","cny-adaptive-trimmed-no-yuan","usd-adaptive-km","count-adaptive","resource-adaptive","bytes-adaptive","minutes-adaptive","messages-adaptive","billing-hours","percent-adaptive","percent-adaptive-signed","percent-0","percent-1","percent-2","percent-raw","points-1-signed","yoy-p-signed","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 字段的缺省显示格式；显式绑定format优先。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
 | "text" | 普通文本格式，不能执行HTML。 |
 | "number" | 数值标量或原数值格式，按所在字段解释。 |
+| "number-0" | 6.113新增：四舍五入为无千分位整数，半值远离零，舍入零为0，不缩放，不改变原值。 |
 | "number-1" | 保留1位小数。 |
 | "number-signed" | 保留普通数值精度，正数加正号，负数保留负号，零无符号；6.17新增。 |
 | "number-1-signed" | 保留一位小数，舍入后零无符号；表格正负颜色与指标卡变化箭头按展示方向判断；6.17新增。 |
@@ -1302,12 +1306,13 @@ Schema位置：`#/definitions/groupedDimensionQueryFieldGroup/additionalProperti
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-3-signed","number-4-signed","number-5-signed","number-grouped-signed","number-2","number-3","number-4","number-5","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","cny-adaptive-trimmed","cny-adaptive-trimmed-no-yuan","usd-adaptive-km","count-adaptive","resource-adaptive","bytes-adaptive","minutes-adaptive","messages-adaptive","billing-hours","percent-adaptive","percent-adaptive-signed","percent-0","percent-1","percent-2","percent-raw","points-1-signed","yoy-p-signed","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 字段的缺省显示格式；显式绑定format优先。 |
+| "string" | 本分支可选 | enum=["text","number","number-0","number-1","number-signed","number-1-signed","number-2-signed","number-3-signed","number-4-signed","number-5-signed","number-grouped-signed","number-2","number-3","number-4","number-5","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","cny-adaptive-trimmed","cny-adaptive-trimmed-no-yuan","usd-adaptive-km","count-adaptive","resource-adaptive","bytes-adaptive","minutes-adaptive","messages-adaptive","billing-hours","percent-adaptive","percent-adaptive-signed","percent-0","percent-1","percent-2","percent-raw","points-1-signed","yoy-p-signed","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 字段的缺省显示格式；显式绑定format优先。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
 | "text" | 普通文本格式，不能执行HTML。 |
 | "number" | 数值标量或原数值格式，按所在字段解释。 |
+| "number-0" | 6.113新增：四舍五入为无千分位整数，半值远离零，舍入零为0，不缩放，不改变原值。 |
 | "number-1" | 保留1位小数。 |
 | "number-signed" | 保留普通数值精度，正数加正号，负数保留负号，零无符号；6.17新增。 |
 | "number-1-signed" | 保留一位小数，舍入后零无符号；表格正负颜色与指标卡变化箭头按展示方向判断；6.17新增。 |
@@ -1487,12 +1492,13 @@ Schema位置：`#/definitions/groupedMeasureQueryFieldGroup/additionalProperties
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-3-signed","number-4-signed","number-5-signed","number-grouped-signed","number-2","number-3","number-4","number-5","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","cny-adaptive-trimmed","cny-adaptive-trimmed-no-yuan","usd-adaptive-km","count-adaptive","resource-adaptive","bytes-adaptive","minutes-adaptive","messages-adaptive","billing-hours","percent-adaptive","percent-adaptive-signed","percent-0","percent-1","percent-2","percent-raw","points-1-signed","yoy-p-signed","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 字段的缺省显示格式；显式绑定format优先。 |
+| "string" | 本分支可选 | enum=["text","number","number-0","number-1","number-signed","number-1-signed","number-2-signed","number-3-signed","number-4-signed","number-5-signed","number-grouped-signed","number-2","number-3","number-4","number-5","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","cny-adaptive-trimmed","cny-adaptive-trimmed-no-yuan","usd-adaptive-km","count-adaptive","resource-adaptive","bytes-adaptive","minutes-adaptive","messages-adaptive","billing-hours","percent-adaptive","percent-adaptive-signed","percent-0","percent-1","percent-2","percent-raw","points-1-signed","yoy-p-signed","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 字段的缺省显示格式；显式绑定format优先。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
 | "text" | 普通文本格式，不能执行HTML。 |
 | "number" | 数值标量或原数值格式，按所在字段解释。 |
+| "number-0" | 6.113新增：四舍五入为无千分位整数，半值远离零，舍入零为0，不缩放，不改变原值。 |
 | "number-1" | 保留1位小数。 |
 | "number-signed" | 保留普通数值精度，正数加正号，负数保留负号，零无符号；6.17新增。 |
 | "number-1-signed" | 保留一位小数，舍入后零无符号；表格正负颜色与指标卡变化箭头按展示方向判断；6.17新增。 |
@@ -1633,12 +1639,13 @@ Schema位置：`#/definitions/groupedMeasureQueryFieldGroup/additionalProperties
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | enum=["text","number","number-1","number-signed","number-1-signed","number-2-signed","number-3-signed","number-4-signed","number-5-signed","number-grouped-signed","number-2","number-3","number-4","number-5","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","cny-adaptive-trimmed","cny-adaptive-trimmed-no-yuan","usd-adaptive-km","count-adaptive","resource-adaptive","bytes-adaptive","minutes-adaptive","messages-adaptive","billing-hours","percent-adaptive","percent-adaptive-signed","percent-0","percent-1","percent-2","percent-raw","points-1-signed","yoy-p-signed","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 字段的缺省显示格式；显式绑定format优先。 |
+| "string" | 本分支可选 | enum=["text","number","number-0","number-1","number-signed","number-1-signed","number-2-signed","number-3-signed","number-4-signed","number-5-signed","number-grouped-signed","number-2","number-3","number-4","number-5","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","cny-adaptive-trimmed","cny-adaptive-trimmed-no-yuan","usd-adaptive-km","count-adaptive","resource-adaptive","bytes-adaptive","minutes-adaptive","messages-adaptive","billing-hours","percent-adaptive","percent-adaptive-signed","percent-0","percent-1","percent-2","percent-raw","points-1-signed","yoy-p-signed","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 字段的缺省显示格式；显式绑定format优先。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
 | "text" | 普通文本格式，不能执行HTML。 |
 | "number" | 数值标量或原数值格式，按所在字段解释。 |
+| "number-0" | 6.113新增：四舍五入为无千分位整数，半值远离零，舍入零为0，不缩放，不改变原值。 |
 | "number-1" | 保留1位小数。 |
 | "number-signed" | 保留普通数值精度，正数加正号，负数保留负号，零无符号；6.17新增。 |
 | "number-1-signed" | 保留一位小数，舍入后零无符号；表格正负颜色与指标卡变化箭头按展示方向判断；6.17新增。 |

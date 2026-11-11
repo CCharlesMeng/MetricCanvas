@@ -59,8 +59,11 @@ function formatNumericValue(numeric: number, format: ValueFormatPreset, context:
 
 function formatStandardNumber(numeric: number, format: ValueFormatPreset): string {
   if (isSignedNumberFormat(format)) return signedNumberPresentation(numeric, format).text;
-  const precision = /^number-([1-5])$/.exec(format);
-  if (precision) return formatNumber(numeric, Number(precision[1]));
+  const precision = /^number-([0-5])$/.exec(format);
+  if (precision) {
+    const text = formatNumber(numeric, Number(precision[1]));
+    return format === 'number-0' && text === '-0' ? '0' : text;
+  }
   switch (format) {
     case 'number':
       return String(numeric);

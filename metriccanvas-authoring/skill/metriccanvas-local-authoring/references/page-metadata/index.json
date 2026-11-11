@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.112",
-  "schemaSha256": "05cac28216620d7f88c49ecfd90524ff5d5221011e28edcf6187b95a78326c12",
+  "schemaVersion": "6.113",
+  "schemaSha256": "fa5cfc21d4eab72d87cabdcf3386f830f2aa18f46f565b902350636ff6b072bf",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -1335,7 +1335,8 @@
         "6.109",
         "6.110",
         "6.111",
-        "6.112"
+        "6.112",
+        "6.113"
       ]
     },
     {
@@ -1402,6 +1403,7 @@
       "enum": [
         "text",
         "number",
+        "number-0",
         "number-1",
         "number-signed",
         "number-1-signed",
@@ -1473,6 +1475,7 @@
       "enum": [
         "text",
         "number",
+        "number-0",
         "number-1",
         "number-signed",
         "number-1-signed",
@@ -2618,6 +2621,7 @@
       "enum": [
         "text",
         "number",
+        "number-0",
         "number-1",
         "number-signed",
         "number-1-signed",
@@ -2724,6 +2728,7 @@
       "enum": [
         "text",
         "number",
+        "number-0",
         "number-1",
         "number-signed",
         "number-1-signed",
@@ -3820,6 +3825,7 @@
       "enum": [
         "text",
         "number",
+        "number-0",
         "number-1",
         "number-signed",
         "number-1-signed",
@@ -3932,6 +3938,7 @@
       "enum": [
         "text",
         "number",
+        "number-0",
         "number-1",
         "number-signed",
         "number-1-signed",
@@ -4199,6 +4206,7 @@
       "enum": [
         "text",
         "number",
+        "number-0",
         "number-1",
         "number-signed",
         "number-1-signed",
@@ -4331,6 +4339,7 @@
       "enum": [
         "text",
         "number",
+        "number-0",
         "number-1",
         "number-signed",
         "number-1-signed",
@@ -4436,6 +4445,7 @@
       "enum": [
         "text",
         "number",
+        "number-0",
         "number-1",
         "number-signed",
         "number-1-signed",
@@ -10734,6 +10744,7 @@
       "enum": [
         "text",
         "number",
+        "number-0",
         "number-1",
         "number-signed",
         "number-1-signed",
@@ -11679,6 +11690,7 @@
       "enum": [
         "text",
         "number",
+        "number-0",
         "number-1",
         "number-signed",
         "number-1-signed",
@@ -12296,6 +12308,7 @@
       "enum": [
         "text",
         "number",
+        "number-0",
         "number-1",
         "number-signed",
         "number-1-signed",
@@ -12751,6 +12764,7 @@
       "enum": [
         "text",
         "number",
+        "number-0",
         "number-1",
         "number-signed",
         "number-1-signed",
@@ -13166,6 +13180,7 @@
       "enum": [
         "text",
         "number",
+        "number-0",
         "number-1",
         "number-signed",
         "number-1-signed",
@@ -13353,6 +13368,7 @@
       "enum": [
         "text",
         "number",
+        "number-0",
         "number-1",
         "number-signed",
         "number-1-signed",
@@ -16139,6 +16155,7 @@
       "enum": [
         "text",
         "number",
+        "number-0",
         "number-1",
         "number-signed",
         "number-1-signed",
@@ -16340,6 +16357,7 @@
       "enum": [
         "text",
         "number",
+        "number-0",
         "number-1",
         "number-signed",
         "number-1-signed",
@@ -16823,6 +16841,7 @@
       "enum": [
         "text",
         "number",
+        "number-0",
         "number-1",
         "number-signed",
         "number-1-signed",
@@ -18421,6 +18440,7 @@
       "enum": [
         "text",
         "number",
+        "number-0",
         "number-1",
         "number-signed",
         "number-1-signed",
@@ -22539,5 +22559,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "6cbc8e40dbe966302f985ca40db3148520520551b8a3c2946d9a26b3536ae99c"
+  "semanticSourceDigest": "52e78b1e9d8e36e708b0af8e1f43aed2bd28ee8c8b012d9a7e9491bd393fd865"
 }

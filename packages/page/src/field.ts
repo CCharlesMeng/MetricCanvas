@@ -27,6 +27,7 @@ export type FieldRole = 'dimension' | 'measure' | 'detail';
 export const valueFormatPresets = [
   'text',
   'number',
+  'number-0',
   'number-1',
   'number-signed',
   'number-1-signed',

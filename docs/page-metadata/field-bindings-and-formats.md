@@ -34,7 +34,9 @@ text不执行HTML，日期格式只格式化日期值。语义HTML须用专用�
 
 ## 显式数值格式与精度
 
-组件绑定的显式format优先；未声明时先按可信字段类型、币种、单位及语义格式选择统一规则，再回退字段defaultFormat；不从指标名或字段id猜测。number保留数值语义，number-1/2/3/4/5控制最多小数位，number-grouped千分位；compact-wan/yi是数量单位缩放。percent-*直接以原数值加百分号，0.42不自动变42%；需要ratio.scale:100或正确的原始刻度。
+组件绑定的显式format优先；未声明时先按可信字段类型、币种、单位及语义格式选择统一规则，再回退字段defaultFormat；不从指标名或字段id猜测。number保留数值语义，number-0四舍五入显示整数，number-1/2/3/4/5控制最多小数位，number-grouped千分位；compact-wan/yi是数量单位缩放。percent-*直接以原数值加百分号，0.42不自动变42%；需要ratio.scale:100或正确的原始刻度。
+
+6.113 新增 `number-0`，绑定可写 `{"data":"main","field":"amount","format":"number-0"}`，字段默认用 `defaultFormat:"number-0"`，数字参数及筛选文本引用也可使用。不加千分位、不缩放，四舍五入到整数（半值远离零）：`12.4 → 12`、`12.5 → 13`、`-12.5 → -13`，`±0.4` 与负零均显示 `0`，缺失仍显示 `--`。只改变展示，原值、计算、排序不变；Excel 保留数值原值，以冻结的整数文本展示。6.112 及更早版本不能声明，未新增 `number-0-signed`。合成场景 `/pages/number-precision-five` 覆盖表格显式格式、字段默认、指标卡、柱图及数字参数标题。
 
 6.107 补齐 `number-3`、`number-4`、`number-5` 及对应的 `-signed` 格式，分别最多保留三、四、五位小数，四舍五入后去掉末尾零，不补零、不加千分位、不缩放。格式名仍为封闭枚举，不支持 `number-6` 或 `number-6-signed`。组件 `format`、字段 `defaultFormat`、数字参数及筛选文本引用共用这些预设；6.106 及更早版本不能声明新预设，旧格式行为保持。
 
@@ -89,7 +91,7 @@ XLSX 保留数值单元格的原始值及数值类型。当前未声明列级展
 
 ## 带符号普通数值（6.17起）
 
-全部 `number` 格式都有对应的带符号版本，保留原格式的精度与千分位规则。`number-signed` / `number-1-signed` 从6.17起可声明，`number-2-signed` / `number-grouped-signed` 从6.18起可声明；三至五位格式及版本边界见“显式数值格式与精度”。`number-grouped-signed` 沿用当前千分位格式默认最多三位小数的舍入策略。
+除 `number-0` 外，现有 `number` 格式都有对应的带符号版本，保留原格式的精度与千分位规则。`number-signed` / `number-1-signed` 从6.17起可声明，`number-2-signed` / `number-grouped-signed` 从6.18起可声明；三至五位格式及版本边界见“显式数值格式与精度”。`number-grouped-signed` 沿用当前千分位格式默认最多三位小数的舍入策略。
 
 `number-signed` 保留 `number` 的原始数值精度，正数加 `+`、负数保留 `-`、零无符号；`number-1-signed` 保留一位小数后判断符号。`1.24` 显示 `+1.2`，`-1.24` 显示 `-1.2`，`0.04`、`-0.04` 与负零均显示 `0`。不乘100、不追加百分号，适用于天数或次数的绝对变化。单位仍由组件的单位声明提供。空值及非有限数值显示缺失文案。
 

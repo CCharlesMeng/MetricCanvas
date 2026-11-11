@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.112",
+  "schemaVersion": "6.113",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "field-bindings-and-formats.section-47c542a9"
@@ -43,7 +43,7 @@
         },
         {
           "id": "number-precision-five",
-          "description": "三至五位小数及带符号预设由6.107引入",
+          "description": "三至五位小数及带符号预设由6.107引入，整数预设由6.113引入",
           "valid": [
             "number-precision-five"
           ],

@@ -545,7 +545,7 @@ sign 模式的零、负零及缺失不显示箭头；fixed 模式与固定颜色
 完整合成场景 `/pages/partner-health-interactions` 从业务页复用得分列和弹窗标题声明，以 `sumFields` 在前端计算总分；本地排序先处理完整计算结果，再分页，点击排序不发起 DQE 查询。业务入口 `/pages/partner-health` 的地区部和代表处表格沿用该本地路径；真实业务数据须由 DQE 提供。
 
 
-页面协议 6.112。结构真源为本册[schema.json](../schema.json)，SHA256 `05cac28216620d7f88c49ecfd90524ff5d5221011e28edcf6187b95a78326c12`。字段表自动生成；可选不等于有默认值。
+页面协议 6.113。结构真源为本册[schema.json](../schema.json)，SHA256 `fa5cfc21d4eab72d87cabdcf3386f830f2aa18f46f565b902350636ff6b072bf`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

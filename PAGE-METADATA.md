@@ -1,5 +1,7 @@
 # MetricCanvas 页面元数据规范
 
+6.113：新增 `number-0`，四舍五入显示整数，不加千分位、不缩放，正负半值均向远离零方向舍入，舍入零统一显示 `0`。复用 `format` / `defaultFormat`，原值、计算与排序保持；Excel 保留数值原值并展示同一整数。见[数值格式](docs/page-metadata/field-bindings-and-formats.md)，合成入口 `/pages/number-precision-five`。
+
 表格本地分页与查询分页统一使用数字页码。`pagination.mode:"local"` 的 `numbered` 保留历史兼容读取，true、false 或省略均显示数字页码，新页面无需填写；单页/空结果及不分页行为保持。字段净增0，无新增版本分支。见[分页说明](docs/page-metadata/components/table.md)，对照入口 `/pages/table-default-sort`、`/pages/table-row-number` 与 `/pages/paged-join-on-demand`。
 
 6.112：select 表头通过 `filterable.showSearch` 控制候选搜索，静态枚举和动态候选统一支持；新页面默认隐藏，旧页面保留动态搜索，显式升级时写入 true 保持原表现。全选开关独立。移除当前无法执行的“为空”菜单入口，内部空值条件的能力校验保留。见[列头候选搜索](docs/page-metadata/components/table.md#列头候选搜索6112)，入口 `/pages/table-header-filter-search` 与 `/pages/paged-join-on-demand`。
