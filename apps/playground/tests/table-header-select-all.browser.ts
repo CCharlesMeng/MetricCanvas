@@ -75,11 +75,11 @@ test('remote dynamic all waits for complete candidate pages and stays outside se
   await page.goto('/pages/table-header-select-all-query');
   const table=page.locator('.table-widget'),column=await openField(table,'office');
   const all=column.getByRole('checkbox',{name:'全选',exact:true});
-  await expect(all).toBeDisabled();await column.getByRole('button',{name:'加载更多（50/80）'}).click();
+  await expect(all).toBeDisabled();await column.locator('.list').hover();await page.mouse.wheel(0,2000);
   await expect(all).toBeEnabled();await all.click();await expect(all).toBeChecked();
   await expect(table).toContainText('总条数： 620');
   await column.getByRole('searchbox').fill('办事处80');await expect(all).toHaveCount(0);
   await column.getByRole('searchbox').fill('');await expect(all).toBeEnabled();
-  await column.getByRole('button',{name:'加载更多（50/80）'}).click();await expect(all).toBeChecked();
+  await column.locator('.list').hover();await page.mouse.wheel(0,2000);await expect(all).toBeChecked();
   await all.click();await expect(all).not.toBeChecked();await expect(table).toContainText('总条数： 620');
 });

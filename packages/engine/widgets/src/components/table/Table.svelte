@@ -502,6 +502,7 @@
                               <SelectAllOptions values={column.enumValues.map(option => option.value)} selected={selectedValues(columnField(column))} all={allFilterSelected(columnField(column))}
                                 onchange={(values, all) => setFilterValues(columnField(column), values, all)} />
                               {/if}
+                              <div class="option-list">
                               {#each enumOptions(column) as option (JSON.stringify([typeof option.value,option.value]))}
                                 <label class="option">
                                   <input type="checkbox" checked={selectedValues(columnField(column)).includes(option.value)} onchange={()=>toggleFilterValue(column,option.value)} />
@@ -510,6 +511,7 @@
                               {:else}
                                 <span class="hint">没有候选项</span>
                               {/each}
+                              </div>
                             {:else if columnCandidates}
                               <ColumnCandidateOptions field={columnField(column)} snapshot={columnCandidates[columnField(column)]}
                                 showSelectAll={column.filterable.showSelectAll} showSearch={showCandidateSearch(column)} all={allFilterSelected(columnField(column))} selected={selectedValues(columnField(column))} onchange={value => toggleFilterValue(column, value)}
@@ -521,6 +523,7 @@
                               disabled={!allFilterSelected(columnField(column)) && !!filterOptionsStatus[columnField(column)] && !['ready', 'empty'].includes(filterOptionsStatus[columnField(column)])}
                               onchange={(values, all) => setFilterValues(columnField(column), values, all)} />
                             {/if}
+                            <div class="option-list">
                             {#each filterOptions[columnField(column)] ?? [] as option (option)}
                               <label class="option">
                                 <input
@@ -534,6 +537,7 @@
                             {:else}
                               <span class="hint">{filterOptionsStatus[columnField(column)]==='denied'?'无权访问候选项':filterOptionsStatus[columnField(column)]==='unconfigured'?'候选能力未配置':filterOptionsStatus[columnField(column)]==='unavailable'?'候选值能力不可用':filterOptionsStatus[columnField(column)]==='error'?'候选项加载失败':['ready','empty'].includes(filterOptionsStatus[columnField(column)])?'没有候选项':'候选项加载中…'}</span>
                             {/each}
+                            </div>
                             {/if}
                           {:else if column.filterable.mode === 'dateRange'}
                             {@const range = dateRangeOf(columnField(column))}
@@ -1198,16 +1202,20 @@
     display: none;
   }
   .menu.select-menu {
+    overflow: hidden;
     box-sizing: border-box;
     width: max-content;
     min-width: min(160px, calc(100vw - 16px));
     max-width: min(360px, calc(100vw - 16px));
   }
+  .option-list { min-height: 0; flex: 0 1 auto; overflow: auto; }
+  .select-menu > :global(.candidate-option) { flex-shrink: 0; }
   .select-menu .option {
     white-space: normal;
     overflow-wrap: anywhere;
   }
   .enum-search {
+    flex-shrink: 0;
     width: 0;
     min-width: 100%;
     box-sizing: border-box;
