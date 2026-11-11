@@ -603,6 +603,8 @@
 
 首屏左表从合成地区部12开始，右表从合成地区部01开始；左表下一页只含合成地区部02、01。点击一张表的排序列不改变另一张表，清空排序回到输入顺序。结构和行为回归拒绝旧版本、未知或重复字段、空规则、非法方向及远程结果；真实 DQE、权限和 Relay 不在合成验收范围内。
 
+分页外观对照：左表省略 `numbered`，右表保留历史 `numbered:false`，均显示数字页码1、2；点击2或输入跳页只改变当前表。选择每页20条后显示全部12条并隐藏页码，条数选择器仍可用。`/pages/table-row-number` 验证历史 `numbered:true`，其内嵌表格保持不分页、空结果保留条数选择器；`/pages/paged-join-on-demand` 验证查询分页同样显示数字页码与省略号。`numbered:false` 仅作兼容见证，移植到新页面时省略该字段。自动回归 `apps/playground/tests/table-pagination-unified.browser.ts` 消费这些完整页面，不替换交互配置。
+
 ## 表头候选搜索开关
 
 入口 `/pages/table-header-filter-search`，运行 `pnpm dev:playground` 后访问，无需 URL 参数或数据服务。页面八张表均使用同一份内联合成数据：前六张分别展示静态枚举与动态候选的 showSearch:true、false 和省略；最后两张“静态枚举：不配置全选”和“动态候选：不配置全选”省略 showSelectAll，同时保留 showSearch:true，展示两个开关独立。Schema 6.112 新页面省略时隐藏搜索。参考对象是本项目既有表头候选面板，移植时保留列绑定与筛选作用范围，开关不能证明后端查询或权限能力。

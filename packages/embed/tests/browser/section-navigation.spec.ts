@@ -62,11 +62,11 @@ test('content groups retain table state; search resets hidden tables; anchors re
   await expect(b).toBeHidden();
   await a.locator('.sort-toggle').click();
   await a.getByRole('button', { name: '下一页' }).click();
-  await expect(a).toContainText('第 2 页');
+  await expect(a.getByRole('button', { name: '2', exact: true })).toHaveAttribute('aria-current', 'page');
   await host.locator('[data-section-group="b"]').click();
   await b.getByRole('button', { name: '下一页' }).click();
   await host.locator('[data-section-group="a"]').click();
-  await expect(a).toContainText('第 2 页');
+  await expect(a.getByRole('button', { name: '2', exact: true })).toHaveAttribute('aria-current', 'page');
   await expect(a.locator('[aria-label="排序:asc"]')).toBeVisible();
   await host.locator('input[type="search"]').fill('客户21');
   await expect(a).toContainText('客户21');

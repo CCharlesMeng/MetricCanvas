@@ -148,7 +148,7 @@ const paginationZ = z.discriminatedUnion('mode', [
     .object({
       mode: z.literal('local'),
       pageSize: z.int().min(1),
-      numbered: z.boolean().optional()
+      numbered: z.boolean().optional().describe('历史兼容字段；true、false 和省略均使用数字页码，新页面无需声明')
     })
     .strict(),
   z.object({ mode: z.literal('query') }).strict()

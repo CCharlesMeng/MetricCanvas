@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "de3851366be75801f1b775d26873adc1318e5b1dd7690e1d7dfbbb337d487c88",
+  "sha256": "8e656357975e4ec7b76c1457dd245283b38ca77800b91047b4197b4f5de64180",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -104,7 +104,7 @@
     },
     {
       "file": "docs/page-metadata/components/table.md",
-      "sha256": "43bdf94ef4ea235b7095a3554e1c41e9bd85ac0b0e6ae9209bebaf76444c86ea"
+      "sha256": "039561a0c69edaafe47dd586290011ee8f2b64954034b67fd9050576b616053b"
     },
     {
       "file": "docs/page-metadata/components/text.md",
@@ -1936,7 +1936,7 @@
     },
     {
       "file": "packages/page/src/schema/components/table.ts",
-      "sha256": "da7ae494850cfec43196034fa7cab4171b27ab4ddc668c63999c9d2fb243722d"
+      "sha256": "ec254484ea9197bdf198447f8f62c908b5c370fa54f262c4fc2569d0288ddda4"
     },
     {
       "file": "packages/page/src/schema/components/text.ts",
@@ -2684,7 +2684,7 @@
     },
     {
       "file": "pages/capabilities/ioc-header/section-component/README.md",
-      "sha256": "658231a9173eb9c7969db8c34fb95d904f59fb7ad8466a625829f850dae864dd"
+      "sha256": "40fbd741cbe5efaa2edd0a17b6ffd1a4c9754bc062bc2df7d548b831adf4ae82"
     },
     {
       "file": "pages/capabilities/ioc-header/section-component/ioc-header-flow-sticky.json",
@@ -2776,7 +2776,7 @@
     },
     {
       "file": "pages/capabilities/layout/schema-upgrade-demo.json",
-      "sha256": "effcfc410bd1cc23d787428c0d9cb78447f06fdd5536f7e24570b9ff7adf9e5c"
+      "sha256": "771006330f9d9ff492c5f4646d21b02d18fc175ce0fc9aa76502745680828ef8"
     },
     {
       "file": "pages/capabilities/layout/tab-mixed-content-report.json",
@@ -2916,7 +2916,7 @@
     },
     {
       "file": "pages/capabilities/table/README.md",
-      "sha256": "1207a99b0f5c2d41979676a3c0e67b370a1b159e82a2fe9607d3d3241902c449"
+      "sha256": "54c352dfd08248da5b3fb2c2037650b6d23138725a0cbc5a134281e712b96c61"
     },
     {
       "file": "pages/capabilities/table/decision-opinion-details.json",
@@ -3024,7 +3024,7 @@
     },
     {
       "file": "pages/capabilities/table/table-default-sort.json",
-      "sha256": "ff5cd8467e62f802bef68790107e2216748e8ac225016e3f576f46eb5c694fc8"
+      "sha256": "0b7880e45abd117f20a3e4512e6250571f41374e96a6a56618c83698069d4df3"
     },
     {
       "file": "pages/capabilities/table/table-detail-overlay.json",

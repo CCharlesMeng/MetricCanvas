@@ -10828,6 +10828,7 @@
                           "maximum": 9007199254740991
                         },
                         "numbered": {
+                          "description": "历史兼容字段；true、false 和省略均使用数字页码，新页面无需声明",
                           "type": "boolean"
                         }
                       },
@@ -12122,6 +12123,7 @@
                       "maximum": 9007199254740991
                     },
                     "numbered": {
+                      "description": "历史兼容字段；true、false 和省略均使用数字页码，新页面无需声明",
                       "type": "boolean"
                     }
                   },

@@ -4,7 +4,7 @@
   "layout": "dashboard",
   "meta": {
     "title": "前端计算总分默认排序（合成数据）",
-    "description": "完整本地结果计算后按总分降序，再按每页10行分页；同源表格状态独立。"
+    "description": "完整本地结果计算后排序，每页10行；左表省略 numbered、右表使用历史 numbered:false，均显示数字页码，同源表格状态独立。"
   },
   "dataSources": {
     "scores": {
@@ -186,7 +186,8 @@
             ],
             "pagination": {
               "mode": "local",
-              "pageSize": 10
+              "pageSize": 10,
+              "numbered": false
             }
           }
         }

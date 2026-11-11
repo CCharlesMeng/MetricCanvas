@@ -787,7 +787,7 @@
           >
             <TableControlIcon name="left" />
           </button>
-          {#if (props.pagination.mode === 'query' || props.pagination.numbered) && numberedPages.length > 0}
+          {#if numberedPages.length > 0}
             {#each numberedPages as item, itemIndex (`${item}:${itemIndex}`)}
               {#if item === '…'}
                 <span class="ellipsis">…</span>
@@ -802,8 +802,6 @@
                 >{item}</button>
               {/if}
             {/each}
-          {:else}
-            <span class="page-no">第 {view.pageIndex + 1} 页</span>
           {/if}
           <button
             type="button"
@@ -1480,9 +1478,6 @@
     color: #595959;
     line-height: 30px;
     text-align: center;
-  }
-  .page-no {
-    color: #71717a;
   }
   .page-jump {
     display: inline-flex;
