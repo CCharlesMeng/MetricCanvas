@@ -500,7 +500,13 @@
         "packages/page/src/field-selection.ts",
         "packages/page/src/semantic-format.ts",
         "packages/page/src/field-resolution.ts",
-        "packages/engine/widgets/src/shared/numeric-presentation.ts"
+        "packages/engine/widgets/src/shared/numeric-presentation.ts",
+        "packages/engine/widgets/src/shared/value-format.ts",
+        "packages/engine/widgets/src/shared/chart-axis-presentation.ts",
+        "packages/engine/widgets/src/shared/numeric-scale.ts",
+        "packages/engine/runtime-ui/src/table/export/workbook-number-format.ts",
+        "packages/engine/runtime-ui/src/table/export/workbook-cell.ts",
+        "packages/engine/runtime-ui/src/table/export/workbook.ts"
       ],
       "rules": [
         "data-slot-known-source",
@@ -764,7 +770,9 @@
         "packages/page/src/schema/components/charts.ts",
         "packages/embed/tests/browser/embed.spec.ts",
         "packages/page/src/query-output-measures.ts",
-        "packages/page/src/bar-average.ts"
+        "packages/page/src/bar-average.ts",
+        "packages/engine/widgets/src/shared/chart-axis-presentation.ts",
+        "packages/engine/widgets/src/shared/numeric-scale.ts"
       ],
       "rules": [
         "bar-forecast-boundary",
@@ -792,7 +800,9 @@
       ],
       "sources": [
         "packages/page/src/schema/components/charts.ts",
-        "packages/embed/tests/browser/embed.spec.ts"
+        "packages/embed/tests/browser/embed.spec.ts",
+        "packages/engine/widgets/src/shared/chart-axis-presentation.ts",
+        "packages/engine/widgets/src/shared/numeric-scale.ts"
       ],
       "rules": [
         "schema-structure",

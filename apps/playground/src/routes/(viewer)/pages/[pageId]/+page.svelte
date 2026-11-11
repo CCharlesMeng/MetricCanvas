@@ -135,8 +135,14 @@
     if(input==='region-url')return createRegionURLGateway();
     if(input==='row-cache')return createRowCachePreview().dataGateway;
     if(input==='ioc-region'||input==='ioc-region-dept')return withIocRegionCandidates(dataGateway,input==='ioc-region');
-    if(input==='query-join')return createPagedJoinPreview(80,page.url.searchParams.get('supplementKey')??'ready',page.url.searchParams.get('nulls')??'none').dataGateway;
+    if(input==='query-join')return pagedJoinGateway();
     if(input==='full-query-candidates')return createFullQueryCandidatesPreview(state).dataGateway;
+  }
+
+  function pagedJoinGateway(): DataGateway {
+    const supplement = page.url.searchParams.get('supplementKey') ?? 'ready';
+    const nulls = page.url.searchParams.get('nulls') ?? 'none';
+    return createPagedJoinPreview(80, supplement, nulls).dataGateway;
   }
 
   function previewDataGateway(pageId: string): DataGateway {

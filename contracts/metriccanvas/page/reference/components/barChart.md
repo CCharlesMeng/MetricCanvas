@@ -69,7 +69,7 @@ Dashboard 正文通过独立 [filterGroup](filterGroup.md) 组件声明筛选按
 
 ## 数值格式
 
-标签、悬浮提示及数值轴使用[统一数值格式规则](../field-bindings-and-formats.md#chart-number-format)。未声明格式时默认显示两位小数，不隐式缩放为万；显式 `number` 可保留原值，声明 `compact-wan-0` 可显式采用万单位。完整场景：`/pages/chart-number-format`。
+标签、悬浮提示及数值轴使用[统一数值格式规则](../field-bindings-and-formats.md#chart-number-format)。数值轴默认在轴顶显示单位，刻度只显示数字；横向图在数值轴末端显示，双轴分别处理。无格式与可信语义时默认两位小数，不隐式缩放为万；显式 `number` 保留原值，`compact-wan-0` 显式采用万单位。场景：`/pages/chart-number-format`、`/pages/chart-axis-unit`。
 
 <a id="chart-series-visibility"></a>
 
@@ -895,6 +895,8 @@ Schema位置：`#/definitions/barChartComponent/properties/props/properties/acti
 - 源码/验证定位：`packages/embed/tests/browser/embed.spec.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/query-output-measures.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/bar-average.ts`（仓库路径，非分发依赖）。
+- 源码/验证定位：`packages/engine/widgets/src/shared/chart-axis-presentation.ts`（仓库路径，非分发依赖）。
+- 源码/验证定位：`packages/engine/widgets/src/shared/numeric-scale.ts`（仓库路径，非分发依赖）。
 
 ## 联合分支见证（生成）
 

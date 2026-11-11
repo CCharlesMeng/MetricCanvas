@@ -103,6 +103,18 @@
       "sha256": "5a65ff2f61b13981bdf03857cf0bebc3b6568e526bdc6bca993d6e4eb45a0387"
     },
     {
+      "file": "packages/engine/runtime-ui/src/table/export/workbook-cell.ts",
+      "sha256": "e6d89d64546903adae37ca45722cf16093e9cc28b608b3d16bd0bc687c2ce968"
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/table/export/workbook-number-format.ts",
+      "sha256": "8624384b7a840997cf5d898e0e7cec94e265a2b7c519e43ffe19323b3cba119f"
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/table/export/workbook.ts",
+      "sha256": "f990fd99c2922eb025db5993a963512f99ec609b2f64b20fff958447ac54ba0f"
+    },
+    {
       "file": "packages/engine/runtime-ui/src/url-search.ts",
       "sha256": "2ac2a38cb66e2231196b91b999b916b6aae29acd0e82b48c18029e59b3685bb5"
     },
@@ -163,12 +175,24 @@
       "sha256": "d0654c4ab45eb5fb0a0d154bc6a1d91f7ff2490afd9ee32c85dd28d67be94973"
     },
     {
+      "file": "packages/engine/widgets/src/shared/chart-axis-presentation.ts",
+      "sha256": "9c7894b8c97d5de70e106d6aa32014937aea4f4866954a79b79808a09aaeb5cb"
+    },
+    {
       "file": "packages/engine/widgets/src/shared/numeric-presentation.ts",
-      "sha256": "616b45be8212f918ff7fa8788a8c92a38784d4fa583eec555fe6e99900f9f1f6"
+      "sha256": "7a163509f3779d2d323f0b26f14dc4c93a080f4258be5dc7bf4331cc560ba982"
+    },
+    {
+      "file": "packages/engine/widgets/src/shared/numeric-scale.ts",
+      "sha256": "9b0892cc515b236479505b7f89badf354d1fd24844c2710eac1ac6eece889645"
     },
     {
       "file": "packages/engine/widgets/src/shared/semantic-html.ts",
       "sha256": "be96fa5d63d13d68f65f130fcc1854e08ff185301d3d869d802c58e9dcfa0816"
+    },
+    {
+      "file": "packages/engine/widgets/src/shared/value-format.ts",
+      "sha256": "43cb98a9227a4ebc663228bf56383156a60e3578863dbab602df2ff7ed7dffbc"
     },
     {
       "file": "packages/page/src/ai-summary-region.ts",
@@ -1032,7 +1056,13 @@
         "packages/page/src/field-selection.ts",
         "packages/page/src/semantic-format.ts",
         "packages/page/src/field-resolution.ts",
-        "packages/engine/widgets/src/shared/numeric-presentation.ts"
+        "packages/engine/widgets/src/shared/numeric-presentation.ts",
+        "packages/engine/widgets/src/shared/value-format.ts",
+        "packages/engine/widgets/src/shared/chart-axis-presentation.ts",
+        "packages/engine/widgets/src/shared/numeric-scale.ts",
+        "packages/engine/runtime-ui/src/table/export/workbook-number-format.ts",
+        "packages/engine/runtime-ui/src/table/export/workbook-cell.ts",
+        "packages/engine/runtime-ui/src/table/export/workbook.ts"
       ],
       "rules": [
         "data-slot-known-source",
@@ -1296,7 +1326,9 @@
         "packages/page/src/schema/components/charts.ts",
         "packages/embed/tests/browser/embed.spec.ts",
         "packages/page/src/query-output-measures.ts",
-        "packages/page/src/bar-average.ts"
+        "packages/page/src/bar-average.ts",
+        "packages/engine/widgets/src/shared/chart-axis-presentation.ts",
+        "packages/engine/widgets/src/shared/numeric-scale.ts"
       ],
       "rules": [
         "bar-forecast-boundary",
@@ -1324,7 +1356,9 @@
       ],
       "sources": [
         "packages/page/src/schema/components/charts.ts",
-        "packages/embed/tests/browser/embed.spec.ts"
+        "packages/embed/tests/browser/embed.spec.ts",
+        "packages/engine/widgets/src/shared/chart-axis-presentation.ts",
+        "packages/engine/widgets/src/shared/numeric-scale.ts"
       ],
       "rules": [
         "schema-structure",

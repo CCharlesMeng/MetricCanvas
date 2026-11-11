@@ -1,5 +1,9 @@
 # MetricCanvas 页面元数据规范
 
+Excel 基础数字精度统一：number-0 至 number-5 及已有带符号/千分位格式保留原值和数值类型，按最多小数位去尾零，编辑后数字格式继续生效；原生条件格式处理整数小数点及舍入零符号。页面基础数字同样统一负零为0，无新增字段或版本。见[数字精度](docs/page-metadata/field-bindings-and-formats.md#numeric-value-display)，合成入口 `/pages/number-precision-five`、`/pages/numeric-value-display`。
+
+柱图、折线图、柱线混合图及横向条形图统一数值轴单位：单位默认在数值轴末端水平显示，刻度只显示数字；自适应格式整轴使用同一缩放档位，提示与标签保留原格式。旧页面随引擎采用新默认，显式 ECharts 配置优先，无新增字段或 Schema 版本。见[数值轴规则](docs/page-metadata/field-bindings-and-formats.md#chart-number-format)，合成入口 `/pages/chart-axis-unit`。
+
 IOC 父子表层级选择复用“全球＝不限区域”：保留全部父行，按父行查询子表，界面与 URL 保留全球；完整父子 Excel 共用解析。普通组织树和其他选择保持严格匹配，无新增 Schema 字段。见[层级筛选联动](docs/page-metadata/components/table.md#hierarchy-selection)，合成入口 `/pages/table-hierarchy-selection`。
 
 6.113：新增 `number-0`，四舍五入显示整数，不加千分位、不缩放，正负半值均向远离零方向舍入，舍入零统一显示 `0`。复用 `format` / `defaultFormat`，原值、计算与排序保持；Excel 保留数值原值并展示同一整数。见[数值格式](docs/page-metadata/field-bindings-and-formats.md)，合成入口 `/pages/number-precision-five`。

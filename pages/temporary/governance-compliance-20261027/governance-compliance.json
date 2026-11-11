@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.100",
+  "schemaVersion": "6.112",
   "id": "governance-compliance",
   "layout": "dashboard",
   "meta": {
@@ -133,28 +133,24 @@
           "type": "number",
           "role": "measure",
           "label": "商务代表处SDT平均决策时长",
-          "unit": "天",
           "queryField": "商审SDT平均决策时长"
         },
         "bizAvgDecisionCount": {
           "type": "number",
           "role": "measure",
           "label": "商务代表处平均决策人数",
-          "unit": "人",
           "queryField": "商审SDT平均决策人数"
         },
         "bizClosureRate": {
           "type": "number",
           "role": "measure",
           "label": "商务代表处闭环率",
-          "defaultFormat": "percent-1",
           "queryField": "区域商审闭环率"
         },
         "contractClosureRate": {
           "type": "number",
           "role": "measure",
           "label": "合同决策代表处闭环率",
-          "defaultFormat": "percent-1",
           "queryField": "销售合同决策代表处闭环率"
         }
       },
@@ -766,28 +762,46 @@
                 }
               },
               {
-                "field": "bizSdtAvgDuration",
+                "field": {
+                  "data": "main",
+                  "field": "bizSdtAvgDuration",
+                  "format": "number-1"
+                },
                 "title": "商务代表处SDT平均决策时长",
+                "unit": "天",
                 "width": 180,
                 "align": "right",
                 "sortable": true
               },
               {
-                "field": "bizAvgDecisionCount",
+                "field": {
+                  "data": "main",
+                  "field": "bizAvgDecisionCount",
+                  "format": "number-1"
+                },
                 "title": "商务代表处平均决策人数",
+                "unit": "人",
                 "width": 180,
                 "align": "right",
                 "sortable": true
               },
               {
-                "field": "bizClosureRate",
+                "field": {
+                  "data": "main",
+                  "field": "bizClosureRate",
+                  "format": "percent-1"
+                },
                 "title": "商务代表处闭环率",
                 "width": 150,
                 "align": "right",
                 "sortable": true
               },
               {
-                "field": "contractClosureRate",
+                "field": {
+                  "data": "main",
+                  "field": "contractClosureRate",
+                  "format": "percent-1"
+                },
                 "title": "合同决策代表处闭环率",
                 "width": 180,
                 "align": "right",
@@ -856,28 +870,46 @@
                 }
               },
               {
-                "field": "bizSdtAvgDuration",
+                "field": {
+                  "data": "main",
+                  "field": "bizSdtAvgDuration",
+                  "format": "number-1"
+                },
                 "title": "商务代表处SDT平均决策时长",
+                "unit": "天",
                 "width": 180,
                 "align": "right",
                 "sortable": true
               },
               {
-                "field": "bizAvgDecisionCount",
+                "field": {
+                  "data": "main",
+                  "field": "bizAvgDecisionCount",
+                  "format": "number-1"
+                },
                 "title": "商务代表处平均决策人数",
+                "unit": "人",
                 "width": 180,
                 "align": "right",
                 "sortable": true
               },
               {
-                "field": "bizClosureRate",
+                "field": {
+                  "data": "main",
+                  "field": "bizClosureRate",
+                  "format": "percent-1"
+                },
                 "title": "商务代表处闭环率",
                 "width": 150,
                 "align": "right",
                 "sortable": true
               },
               {
-                "field": "contractClosureRate",
+                "field": {
+                  "data": "main",
+                  "field": "contractClosureRate",
+                  "format": "percent-1"
+                },
                 "title": "合同决策代表处闭环率",
                 "width": 180,
                 "align": "right",
@@ -959,7 +991,8 @@
                       "field": "sdt-avg-duration",
                       "label": "代表处SDT平均决策时长",
                       "kind": "bar",
-                      "axis": "primary"
+                      "axis": "primary",
+                      "unit": "天"
                     },
                     {
                       "value": 2,
@@ -1064,16 +1097,22 @@
                   "dualAxis": true,
                   "series": [
                     {
-                      "field": "sdt-avg-count",
+                      "field": {
+                        "data": "main",
+                        "field": "sdt-avg-count",
+                        "format": "number-1"
+                      },
                       "label": "代表处SDT平均决策人数",
                       "kind": "bar",
-                      "axis": "primary"
+                      "axis": "primary",
+                      "unit": "人"
                     },
                     {
                       "value": 5,
                       "label": "基线",
                       "kind": "line",
                       "axis": "secondary",
+                      "format": "number-1",
                       "unit": "人"
                     }
                   ],
@@ -1175,13 +1214,15 @@
                       "field": "biz-decision-count",
                       "label": "商务决策数量",
                       "kind": "bar",
-                      "axis": "primary"
+                      "axis": "primary",
+                      "unit": "个"
                     },
                     {
                       "field": "biz-closure-rate",
                       "label": "商务决策闭环率",
                       "kind": "line",
-                      "axis": "secondary"
+                      "axis": "secondary",
+                      "unit": "%"
                     }
                   ],
                   "categoryLabels": {
@@ -1282,13 +1323,15 @@
                       "field": "contract-decision-count",
                       "label": "合同决策数量",
                       "kind": "bar",
-                      "axis": "primary"
+                      "axis": "primary",
+                      "unit": "个"
                     },
                     {
                       "field": "contract-closure-rate",
                       "label": "合同决策闭环率",
                       "kind": "line",
-                      "axis": "secondary"
+                      "axis": "secondary",
+                      "unit": "%"
                     }
                   ],
                   "categoryLabels": {

@@ -83,3 +83,8 @@ it('percentage grid input is converted against the actual drawing box before saf
   expect(result.option.grid).toMatchObject({ top: 40, left: 50, right: 50 });
   expect(result.minHeight).toBeGreaterThan(300);
 });
+
+it('reserves space for horizontal numeric-axis units without requiring expanded category labels', () => {
+  const result = cartesianFrame({ grid: { right: 12 }, xAxis: { type: 'value', name: 'GB/s' }, yAxis: { type: 'category', data: ['A'] } }, 300, false, 200);
+  expect(Number((result.option.grid as { right: number }).right)).toBeGreaterThan(40);
+});

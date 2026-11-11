@@ -79,3 +79,10 @@ PC下人民币显示1.23万，视口缩至390px后为1.2万；美元为12.3K。�
 移植边界：映射实际数字字段及数据源，整数能力要求版本至少6.113；合成数据无需移植。`number-0-signed` 未提供，原值与计算、排序保持。
 
 可观察预期与环境：执行 `pnpm dev:playground`，无参数、无需外部服务。末三列 `1234.4 → 1234`、`1234.5 → 1235`、`-1234.5 → -1235`、`±0.4 → 0`，空值为 `--`。分区目标显示13，整数指标卡显示1234，整数柱图标签及提示显示整数。Excel 保留原始数值，以相同整数文本展示。将 schemaVersion 改为6.112应因整数能力被拒绝；自动验收见 `apps/playground/tests/number-integer.browser.ts`。不代表真实 DQE/Relay 或部署验真。
+
+
+## Excel 基础数字精度统一
+
+入口 `/pages/numeric-precision-export`、`/pages/number-precision-five` 和 `/pages/numeric-value-display`，运行 `pnpm dev:playground`，无需 URL 参数或真实服务。三个页面均使用 inline 合成数据。页面普通及带符号的 number-0 至 number-5 按最大精度四舍五入、去尾零，舍入零为0。导出表格后核对原值未变，基础精度列不再使用固定显示文本；将单元格改成整数、小数或舍入零，Excel 原生数字格式与条件格式继续按列精度生效，不出现尾随小数点或正负零。父子表及分组表头沿最终工作表行列生成规则。
+
+`packages/engine/runtime-ui/tests/workbook-number-format.test.ts` 使用独立 ExcelJS 读取器验证真实 XLSX 的原值、类型、数字格式、条件公式及合并区域；`apps/playground/tests/numeric-precision-export.browser.ts` 覆盖0至5位页面显示和浏览器下载，`number-precision-five.browser.ts` 覆盖颜色与箭头。桌面 Excel 的实际打开与编辑属于另行验收，不以结构回读冒充。显式展示单位、自适应数字与百分比仍沿各自已定义的导出策略。

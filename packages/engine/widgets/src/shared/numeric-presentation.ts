@@ -1,4 +1,5 @@
 import type { ValueFormat } from '@metriccanvas/page/internal';
+import { numericScale } from './numeric-scale';
 
 export function decimalText(value: number, digits = 0, grouped = true): string {
   const text = new Intl.NumberFormat('en-US', {
@@ -24,54 +25,33 @@ function percentDigits(magnitude: number): number {
 }
 
 export function cnyPresentation(value: number, mobile: boolean): string {
-  const magnitude = Math.abs(value);
-  if (magnitude < 1e4) return `${decimalText(value)}元`;
-  if (magnitude < 1e5) return `${decimalText(value / 1e4, mobile ? 1 : 2)}万`;
-  if (magnitude < 1e8) return `${decimalText(value / 1e4)}万`;
-  if (magnitude < 1e9) return `${decimalText(value / 1e8, 2)}亿`;
-  return `${decimalText(value / 1e8, 1)}亿`;
+  return scaledText(value, 'cny-adaptive', '', mobile);
 }
 
 export function usdPresentation(value: number): string {
-  const magnitude = Math.abs(value);
-  if (magnitude < 1e4) return `${decimalText(value)}美元`;
-  if (magnitude < 1e6) return `${decimalText(value / 1e3, 1)}K`;
-  if (magnitude < 1e8) return `${decimalText(value / 1e3)}K`;
-  return `${decimalText(value / 1e6)}M`;
+  return scaledText(value, 'usd-adaptive');
 }
 
 function countPresentation(value: number, unit: string): string {
-  const magnitude = Math.abs(value);
-  if (magnitude < 1e4) return `${decimalText(value)}${unit}`;
-  return `${decimalText(value / 1e4, magnitude < 1e5 ? 1 : 0)}万${unit}`;
+  return scaledText(value, 'count-adaptive', unit);
 }
 
 function resourcePresentation(value: number, unit: string): string {
-  const magnitude = Math.abs(value);
-  if (magnitude < 1e4) return `${decimalText(value)}${unit}`;
-  if (magnitude < 1e8) return `${decimalText(value / 1e4, 2)}万${unit}`;
-  return `${decimalText(value / 1e8, 2)}亿${unit}`;
+  return scaledText(value, 'resource-adaptive', unit);
 }
 
 /** Normalize the declared input prefix, retaining bit/byte and per-second dimensions. */
 export function bytePresentation(value: number, unit = 'Bytes'): string {
-  const match = /^([KMGTPEZY]?)(Bytes|bytes|B|bits|bit|b)(\/s|ps)?$/.exec(unit);
-  if (!match) return `${decimalText(value, 2)} ${unit}`;
-  const prefixes = ['', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'];
-  const input = prefixes.indexOf(match[1]!);
-  const magnitude = Math.abs(value);
-  const exponent = magnitude === 0 ? 0 : Math.floor(Math.log2(magnitude) / 10 + input);
-  const output = Math.max(0, Math.min(8, exponent));
-  const bit = match[2] === 'bit' || match[2] === 'bits' || match[2] === 'b';
-  const base = bit ? 'bits' : 'Bytes';
-  const suffix = `${output === 0 ? base : `${prefixes[output]}${bit ? 'b' : 'B'}`}${match[3] ? '/s' : ''}`;
-  return `${decimalText(value * 1024 ** (input - output), output === 0 ? 0 : 2)} ${suffix}`;
+  return scaledText(value, 'bytes-adaptive', unit);
 }
 
 function minutesPresentation(value: number): string {
-  if (Math.abs(value) < 1000) return `${decimalText(value)}分钟`;
-  if (Math.abs(value) < 10000) return `${decimalText(value / 1000, 2)}千分钟`;
-  return `${decimalText(value / 10000, 2)}万分钟`;
+  return scaledText(value, 'minutes-adaptive');
+}
+
+function scaledText(value: number, format: ValueFormat, unit = '', mobile = false): string {
+  const scale = numericScale(format, Math.abs(value), unit, mobile)!;
+  return `${decimalText(value / scale.divisor, scale.digits, scale.grouped)}${scale.space ? ' ' : ''}${scale.unit}`;
 }
 
 export function adaptiveNumericText(value: number, format: ValueFormat, unit = '', mobile = false): string | undefined {
@@ -84,8 +64,8 @@ export function adaptiveNumericText(value: number, format: ValueFormat, unit = '
     case 'resource-adaptive': return resourcePresentation(value, unit);
     case 'bytes-adaptive': return bytePresentation(value, unit || 'Bytes');
     case 'minutes-adaptive': return minutesPresentation(value);
-    case 'messages-adaptive': return Math.abs(value) < 10000 ? `${decimalText(value)}条` : `${decimalText(value / 10000, 2)}万条`;
-    case 'billing-hours': return `${decimalText(value / 3600, 2)}小时`;
+    case 'messages-adaptive': return scaledText(value, format);
+    case 'billing-hours': return scaledText(value, format);
     default: return undefined;
   }
 }
