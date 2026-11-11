@@ -6,27 +6,28 @@
   import { createTableController } from '../controller';
   import Table from '../../../../widgets/src/components/table/Table.svelte';
 
-  let { instance, revision, onretry }: { instance: RowTableInstance; revision: number; onretry(): void } = $props();
+  let { instance, readRevision, onretry }: { instance: RowTableInstance; readRevision(): number; onretry(): void } = $props();
   let localRevision = $state(0);
   const controller = untrack(() => createTableController(instance.page, () => instance.stream ?? null, () => localRevision++,()=>instance.filters,()=>({displayInputs:instance.displaySnapshot,filterRevision:instance.filterRevision})));
   onDestroy(() => controller.dispose());
-  const snapshot = $derived.by(() => { void revision; return instance.snapshots.get(instance.table.data.main); });
-  const table = $derived.by(()=>{void revision;return controller.project(instance.table);});
-  $effect(()=>{void revision;untrack(()=>{controller.syncColumns(instance.table);localRevision++;});});
+  // An explicit call retains dependency tracking when consumers compress with pure_getters.
+  const snapshot = $derived.by(() => { readRevision(); return instance.snapshots.get(instance.table.data.main); });
+  const table = $derived.by(()=>{readRevision();return controller.project(instance.table);});
+  $effect(()=>{readRevision();untrack(()=>{controller.syncColumns(instance.table);localRevision++;});});
   const remote = $derived(table.props.pagination?.mode === 'query');
-  const view = $derived.by(() => { void revision; void localRevision; return controller.render(table); });
+  const view = $derived.by(() => { readRevision(); void localRevision; return controller.render(table); });
   const rows = $derived.by(() => {
     void localRevision;
     const raw: Row[] = snapshot?.status === 'ready' ? snapshot.rows : [];
     return remote ? raw : controller.present(table, raw, table.props.pagination?.mode !== 'local').rows;
   });
   const pagination = $derived.by(() => {
-    void localRevision; void revision;
+    void localRevision; readRevision();
     const raw = snapshot?.status === 'ready' ? snapshot.rows : [];
     return remote ? { pageSize: instance.stream?.getQueryPageSize(table.data.main) ?? 20, totalCount: snapshot && 'totalCount' in snapshot ? snapshot.totalCount ?? 0 : 0 }
       : { pageSize: controller.view(table).pageSize, totalCount: controller.present(table, raw, true).totalCount };
   });
-  const binding = $derived.by(() => { void localRevision; void revision; return controller.binding(table, { filterOptions: {}, paginationConfig: table.props.pagination, pagination, oncellselect() {} }); });
+  const binding = $derived.by(() => { void localRevision; readRevision(); return controller.binding(table, { filterOptions: {}, paginationConfig: table.props.pagination, pagination, oncellselect() {} }); });
 </script>
 
 {#if table.props.columns.length===0}

@@ -10,6 +10,7 @@
 
   let { component, data, binding, snapshot }: { snapshot: DataSnapshot; component: TableComponent; data: NamedDataSlots & { main: NonNullable<NamedDataSlots['main']> }; binding: TableRenderBinding } = $props();
   let revision = $state(0);
+  const readRevision = () => revision;
   let controller = $state.raw<ReturnType<typeof createRowExpansionController>>();
   const contextPage = $derived(binding.expansion!.page);
   const contextGateway = $derived(binding.expansion!.gateway);
@@ -59,7 +60,7 @@
   oncellselect={binding.oncellselect} onlink={binding.onlink} linkHref={binding.linkHref} {expansion}>
   {#snippet expandedRow(row)}
     {@const instance = controller?.get(row)}
-    {#if instance}<ScopedTableContent {instance} {revision} onretry={() => controller?.retry(row)} />{/if}
+    {#if instance}<ScopedTableContent {instance} {readRevision} onretry={() => controller?.retry(row)} />{/if}
   {/snippet}
 </Table>
 </div>

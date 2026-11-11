@@ -48,6 +48,8 @@ pnpm --filter @metriccanvas/embed build
 
 复制到 Webpack 5 项目的 `src/` 下时，连同 `package.json` 一起复制；其中的 `"type": "module"` 只作用于该分发目录，使构建器按 ESM 处理内部模块。旧版目录缺少此文件时，可在 `metriccanvas-runtime.es.js` 同级新增 `package.json`，内容为 `{"type":"module"}`，再重新构建项目。无需修改项目根目录的模块类型。缺失时，Webpack 可能对 Rolldown 的 CommonJS 兼容辅助代码产生 `Critical dependency: require function is used...` 警告。
 
+Webpack 5 二次打包支持 Terser `compress.pure_getters:true`。行内子表在首次异步查询、翻页及失败重试完成后直接更新，不需要收起重开，也不需要增加页面配置。兼容性回归复制完整分发目录，在仓外工程重新压缩后通过公开 `mount` 验证，同时覆盖折叠缓存和加载中折叠后的迟到响应隔离。
+
 通过 HTTP/HTTPS 提供文件，JS 响应使用 JavaScript MIME，图片响应使用对应图片 MIME；跨域部署须允许模块请求的 CORS，集成应用 CSP 须允许该资源地址的模块脚本与图片，并在 `img-src` 中允许内置小图使用的 `data:`。不要只复制入口文件，不使用 `file://` 直接打开。global 也消费同一份 ESM 模块，因此不作为旧浏览器降级包。
 
 升级时发布完整目录，入口不设永久缓存，带哈希的 chunks 可长期缓存；保留仍被旧页面引用的分块及旧版本资源，或采用版本目录发布。

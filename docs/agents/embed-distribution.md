@@ -25,6 +25,8 @@
 
 该矩阵同时执行 `distribution.spec.ts` 与 `webpack-consumer.spec.ts`：完整复制到仓外独立目录，原生 ES/global 接入通过；Webpack 5 development/production 默认模块解析不得出现构建错误或依赖警告，重新打包后挂载、按需 Excel 导出与销毁通过。不得通过忽略 Critical dependency 警告或更改集成应用根模块类型代替修复分发边界。
 
+`webpack-consumer.spec.ts` 另以 Webpack 5 production 和 Terser `compress.pure_getters:true` 二次压缩完整分发，挂载既有 `table-row-expansion-query` 页面。延迟子查询返回后首次展开及翻页必须直接结束 loading；失败重试、折叠缓存和加载中折叠后的迟到响应隔离也须通过。响应式依赖登记不能仅靠压缩器可删除的无用属性读取。
+
 验收记录给出源码提交/树与锁文件、构建参数、JS 文件数、最大文件及精确字节数、两种入口和浏览器结论。体积检查不能替代浏览器行为验收，源码检查不能替代发布归档核验。真实 DQE/Relay、远端 CI 与部署分别按实际证据报告。
 
 机器检查真源为 `packages/embed/tests/bundle-output.test.mjs`；本页拥有基线口径，接入代码与完整复制方式见 [embed README](../../packages/embed/README.md)。

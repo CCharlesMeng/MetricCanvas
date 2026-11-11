@@ -31,6 +31,7 @@
     "@metriccanvas/data-execution": "workspace:*",
     "@playwright/test": "^1.62.0",
     "@sveltejs/vite-plugin-svelte": "^7.2.0",
+    "minimizer-webpack-plugin": "5.14.0",
     "svelte-check": "^4.7.3",
     "typescript": "^5.9.3",
     "vite": "^8.1.5",
