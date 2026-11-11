@@ -622,13 +622,15 @@
                   {/if}
                 {/snippet}
                 {@const actionGate=row.kind === 'pinnedTop' ? {eligible:false,enabled:false} : interactionGate?.(row.main,column)??{eligible:true,enabled:true}}
+                {@const selectable = Boolean(hasValue && column.selection && interactive && actionGate.eligible)}
+                {@const linkable = Boolean(hasValue && column.link && interactive && !column.selection && actionGate.eligible)}
                 <td
-                  class:overflow-text={interactive && !staticExport && !column.selection && !column.link && typeof rawValue === 'string' && resolved.definition?.type === 'string' && semanticPresentation === undefined}
+                  class:overflow-text={interactive && !staticExport && !selectable && !linkable && typeof rawValue === 'string' && resolved.definition?.type === 'string' && semanticPresentation === undefined}
                   class:align-right={column.align === 'right'}
                   class:fixed={!!column.fixed}
                   class:emphasized={column.emphasis === 'strong'}
-                  class:selectable={Boolean(hasValue && column.selection && interactive && actionGate.eligible)}
-                  class:linkable={Boolean(hasValue && column.link && interactive && !column.selection && actionGate.eligible)}
+                  class:selectable={selectable}
+                  class:linkable={linkable}
                   class:selected={row.kind !== 'pinnedTop' && isSelected(row.bodyIndex ?? i, column)}
                   class:danger={isDanger(column, rawValue)}
                   class:negative={semanticPresentation === undefined && color === 'red'}
@@ -640,7 +642,7 @@
                   style={cellStyle(bodyColumn)}
                   style:color={column.colorRule ? valueColorStyle(color) : undefined}
                 >
-                  {#if hasValue && column.selection && interactive && actionGate.eligible}
+                  {#if selectable}
                     <button
                       type="button"
                       class="selectable-cell"
@@ -662,7 +664,7 @@
                         {@render supplementaryFields()}
                       </span>
                     </button>
-                  {:else if hasValue && column.link && interactive && !column.selection && actionGate.eligible}
+                  {:else if linkable}
                     <a
                       href={actionGate.enabled?linkHref?.(row.main, column):undefined}
                       aria-disabled={!actionGate.enabled}

@@ -32,6 +32,10 @@
             "opinion": "同意，按流程执行。"
           },
           {
+            "id": "未配置导航",
+            "opinion": "等待补充材料。"
+          },
+          {
             "id": "空意见",
             "opinion": null
           },
@@ -212,6 +216,47 @@
                 "title": "审批意见",
                 "width": 650,
                 "sortable": true
+              }
+            ]
+          }
+        },
+        {
+          "id": "link-fallback",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "opinions"
+          },
+          "props": {
+            "title": "链接未命中时保留普通文本",
+            "fit": "container",
+            "toolbar": {
+              "export": {
+                "format": "xlsx",
+                "filename": "链接回退审批意见"
+              }
+            },
+            "columns": [
+              {
+                "field": "id",
+                "title": "场景",
+                "width": 150
+              },
+              {
+                "field": "opinion",
+                "title": "审批意见",
+                "width": 650,
+                "link": true,
+                "navigateBySource": {
+                  "field": "id",
+                  "cases": {
+                    "短意见": {
+                      "href": "/pages/table-long-text"
+                    }
+                  }
+                }
               }
             ]
           }
