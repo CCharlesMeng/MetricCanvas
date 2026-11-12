@@ -5,7 +5,10 @@ import type { PagedJoinPlan } from './plan';
 export function memberQuery(plan: PagedJoinPlan, id: string, pageIndex?: number): EffectiveQuery {
   const sort = pageIndex === undefined ? [] : plan.view.sort.map(rule => ({ ...rule, field: plan.source.source.projection[rule.field].field }));
   const predicates: TablePredicate[] = pageIndex === undefined ? [] : plan.view.predicates.map(p => ({ ...p, field: plan.source.source.projection[p.field].field }));
-  return composeEffectiveQuery({ ...plan.context,now:plan.now,page:plan.page,filters:plan.page.filters, dataSource: plan.members.get(id)!, ...(pageIndex === undefined ? {} : { pagination: { limit: plan.view.pageSize } }) }, plan.conditions, pageIndex ?? 0, sort, tableHeaders(predicates));
+  const search = pageIndex === undefined || !plan.view.search?.query.trim() ? undefined : {
+    ...plan.view.search, fields: plan.view.search.fields.map(field => plan.source.source.projection[field].field)
+  };
+  return composeEffectiveQuery({ ...plan.context,now:plan.now,page:plan.page,filters:plan.page.filters, dataSource: plan.members.get(id)!, ...(pageIndex === undefined ? {} : { pagination: { limit: plan.view.pageSize } }) }, plan.conditions, pageIndex ?? 0, sort, tableHeaders(predicates), search);
 }
 /** Explicit key intersection preserves static and page conditions. Empty never means unfiltered. */
 export function restrictKeys(query: EffectiveQuery, queryField: string, keys: readonly (string | number)[]): (string | number)[] {

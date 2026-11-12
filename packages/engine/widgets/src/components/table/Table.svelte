@@ -229,7 +229,7 @@
    * Shift+点击保留其余列(先点先高,多列优先级映射 @order priority)。
    */
   function toggleSort(column: TableColumn, event: MouseEvent) {
-    if (!column.sortable) return;
+    if (!column.sortable || view.pausedFields?.includes(columnField(column))) return;
     const field = columnField(column);
     const current = view.sort.find((rule) => rule.field === field);
     const next: TableSortRule | null =
@@ -472,7 +472,8 @@
                       <button
                         type="button"
                         class="sort-toggle"
-                        title="点击排序,Shift+点击追加多列排序"
+                        disabled={view.pausedFields?.includes(columnField(column))}
+                        title={view.pausedFields?.includes(columnField(column)) ? '搜索期间暂停该列排序，清空搜索后恢复' : '点击排序,Shift+点击追加多列排序'}
                         onclick={(event) => toggleSort(column, event)}
                       >
                         <span>{cell.title}</span>
@@ -489,7 +490,7 @@
                       <span>{cell.title}</span>
                     {/if}
 
-                    {#if interactive && column.filterable}
+                    {#if interactive && column.filterable && !view.pausedFields?.includes(columnField(column))}
                       <details class="filter" use:tableFilterPopover ontoggle={event => { if (column.filterable?.mode === 'select' && !column.enumValues) oncandidateopen?.(columnField(column), event.currentTarget.open); }}>
                         <summary class:active={hasActiveFilter(columnField(column))} title="表头筛选">{#if props.variant === 'reportCompact'}▼{:else}<TableControlIcon name="filter" />{/if}</summary>
                         <div class="menu" class:select-menu={column.filterable.mode === 'select'} popover="auto">

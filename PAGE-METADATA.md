@@ -2,6 +2,8 @@
 
 IOC Header 期间控件分别保留最近已应用的季度与月份；选择年份后切回季／月，沿用当前年份和各自的选项，避免互相覆盖为 Q1 或 1 月。记忆限本次控件挂载，不新增页面字段或 URL 状态。见[期间选择](docs/page-metadata/filters.md#dashboard-期间选择627)，合成入口 `/pages/ioc-header-flow-sticky`。
 
+按需 `pagedJoin` 复用 `toolbar.search`，由搜索字段所属成员搜索并分页，暂停其他成员排序、清除其列头条件；清空搜索回到第一页并恢复默认排序。搜索、分页和 Excel 统一执行，不新增 JSON 字段、不扫描完整匹配键；包含搜索继续要求数据网关搜索适配。见[组合查询成员搜索](docs/page-metadata/data-sources.md#paged-join-member-search)，合成入口 `/pages/paged-join-search`。
+
 Excel 基础数字精度统一：number-0 至 number-5 及已有带符号/千分位格式保留原值和数值类型，按最多小数位去尾零，编辑后数字格式继续生效；原生条件格式处理整数小数点及舍入零符号。页面基础数字同样统一负零为0，无新增字段或版本。见[数字精度](docs/page-metadata/field-bindings-and-formats.md#numeric-value-display)，合成入口 `/pages/number-precision-five`、`/pages/numeric-value-display`。
 
 柱图、折线图、柱线混合图及横向条形图统一数值轴单位：单位默认在数值轴末端水平显示，刻度只显示数字；自适应格式整轴使用同一缩放档位，提示与标签保留原格式。旧页面随引擎采用新默认，显式 ECharts 配置优先，无新增字段或 Schema 版本。见[数值轴规则](docs/page-metadata/field-bindings-and-formats.md#chart-number-format)，合成入口 `/pages/chart-axis-unit`。

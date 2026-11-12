@@ -63,7 +63,7 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
     for (const id of ids) {
       const source = page.dataSources[id];
       if (source?.source.type !== 'inline') tables.set(id, createTableSession(initialTableView(page,id,compiled.limits.get(id),initialization.views), () => refetch(new Set([id])),
-        (view,field)=>program.prepareView(id,values,view,field),initialization.defaults.get(id)));
+        (view,field,previous)=>program.prepareView(id,values,view,field,previous),initialization.defaults.get(id)));
     }
     const reconcileColumns=()=>{
       const initialized=initializePendingTableDefaults(page,tables,initialization.pending,tableContext(),compiled.limits,initialViews);

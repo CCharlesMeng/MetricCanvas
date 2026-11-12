@@ -9,6 +9,7 @@
   import {createGlobalBenchmarkPreview} from '../../../../../fixtures/global-benchmark';
   import {createRowCachePreview} from '../../../../../fixtures/row-expansion-cache';
   import { createPagedJoinPreview } from '../../../../../fixtures/query-join-gateway';
+  import { createContractPreviewGateway } from '../../../../../fixtures/contract-closure-search';
   import {createPeriodComparisonPreview} from "../../../../../fixtures/period-comparison";
   import {createQueryComparisonPreview} from "../../../../../fixtures/query-comparison-gateway";
   const queryComparisonPreview = $derived(createQueryComparisonPreview(page.url.searchParams.get("state") ?? "ready"));
@@ -135,14 +136,13 @@
     if(input==='region-url')return createRegionURLGateway();
     if(input==='row-cache')return createRowCachePreview().dataGateway;
     if(input==='ioc-region'||input==='ioc-region-dept')return withIocRegionCandidates(dataGateway,input==='ioc-region');
-    if(input==='query-join')return pagedJoinGateway();
     if(input==='full-query-candidates')return createFullQueryCandidatesPreview(state).dataGateway;
+    return combinationTableGateway(input);
   }
 
-  function pagedJoinGateway(): DataGateway {
-    const supplement = page.url.searchParams.get('supplementKey') ?? 'ready';
-    const nulls = page.url.searchParams.get('nulls') ?? 'none';
-    return createPagedJoinPreview(80, supplement, nulls).dataGateway;
+  function combinationTableGateway(input: ReturnType<typeof pageExternalInputs>): DataGateway | undefined {
+    if(input==='contract-search')return createContractPreviewGateway();
+    if(input==='query-join')return createPagedJoinPreview(80,page.url.searchParams.get('supplementKey')??'ready',page.url.searchParams.get('nulls')??'none').dataGateway;
   }
 
   function previewDataGateway(pageId: string): DataGateway {

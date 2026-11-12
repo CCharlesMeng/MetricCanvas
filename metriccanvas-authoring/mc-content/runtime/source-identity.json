@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "16336dbc99c0acd4ce4a4f30010471a59272890a1b280759ea1adc4a691dcba1",
+  "sha256": "9a4b26662d5c5a2c404e744adb200852e626d2e935da8bb1c4cecb1ad1e6c0ae",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -104,7 +104,7 @@
     },
     {
       "file": "docs/page-metadata/components/table.md",
-      "sha256": "8a9c0a3dd2ff0ade734c1a68c87ef25ddd08b8b9b7501553cb4061dd07e94e2d"
+      "sha256": "eae3482ad10330c6184b67dd61751b85b5351736013d56f5644408ac9f45c09a"
     },
     {
       "file": "docs/page-metadata/components/text.md",
@@ -120,7 +120,7 @@
     },
     {
       "file": "docs/page-metadata/data-sources.md",
-      "sha256": "bc465993d33ac0274c66aed9f5f7fff77f1f0acd7ec3193908c8aa128e2df7c6"
+      "sha256": "2bbe850befe7826891f0bbdb9f518e16e4993e7b41d17fa11d26313fa9b8361e"
     },
     {
       "file": "docs/page-metadata/examples/README.md",
@@ -1720,7 +1720,7 @@
     },
     {
       "file": "packages/page/src/paged-join-view.ts",
-      "sha256": "67a50051cd27c7df4c76e66b2e6261aaf3a1bce102fa656b7c6ccae02134631f"
+      "sha256": "95dcf56295fdbe9da9212d11ef3fa4c3c3a2134acbd944eab73610f6f1d5cf36"
     },
     {
       "file": "packages/page/src/paged-join.ts",
@@ -2208,7 +2208,7 @@
     },
     {
       "file": "pages/business/dashboard/ioc/approval/rep-office-execution-efficiency.json",
-      "sha256": "10f56891eb1d1603d0f344dee4a108c1555f8dc5da391733dedc9683c51af4f0"
+      "sha256": "08ecd9591d1abc0aabb3771f8062a28fea8dc50db85ee806c365be261978733c"
     },
     {
       "file": "pages/business/dashboard/ioc/commercial/README.md",
@@ -2924,7 +2924,7 @@
     },
     {
       "file": "pages/capabilities/table/README.md",
-      "sha256": "ead581523790cf254c81ae1609e7be43d82868518e9bf2bb48f15b1bdac066e0"
+      "sha256": "66987478961fdfeb9df4be5d2ce33da70e859415362b88901c4f7c358ff43439"
     },
     {
       "file": "pages/capabilities/table/decision-opinion-details.json",
@@ -2961,6 +2961,10 @@
     {
       "file": "pages/capabilities/table/paged-join-on-demand.json",
       "sha256": "c05cdaa1f87f24a72193eb5bf53b5633209352741359a6b660de80d69d040098"
+    },
+    {
+      "file": "pages/capabilities/table/paged-join-search.json",
+      "sha256": "b85f0f1490164ed23b4944926e5df739dc7176119f962a7a840bdff5fb30bd28"
     },
     {
       "file": "pages/capabilities/table/partner-health-interactions.json",

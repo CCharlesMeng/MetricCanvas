@@ -2,6 +2,13 @@
 
 页面由 JSON 自动发现。本文件仅记录使用说明，不参与渲染或注册。
 
+## 组合查询成员搜索
+
+运行 `pnpm dev:playground`，打开 `/pages/paged-join-search`；无需 URL 参数或真实 DQE。`contract-closure-main` 与 `contract-closure-basic` 复用合同明细和基础资料查询形状，由内存仿真网关为2026年10月、11月各提供相同范围的36条合同，ID唯一。页面显式为 Dashboard，`contract-closure-joined` 独占合同表格，字段投影和搜索以页面声明为准。
+
+默认按基础资料“合同电子流创建时间”倒序，每页10条。搜索 `0012` 返回当前期间1条合同；搜索 `00` 可继续翻页，基础资料排序按钮在非空搜索期间禁用。搜索不存在的编码返回0条，清空后回第一页并恢复默认倒序。导出 Excel 应覆盖全部搜索匹配记录，保持搜索成员的顺序。可移植查询、成员键、投影、搜索和分页结构；真实账期字段、范围等价性、合同唯一键与包含搜索编码必须在真实接入验证，不能复制仿真网关作为业务实现。自动回归直接消费本页；此示例不证明真实 DQE/Relay 行为。
+
+
 ## 表格单位、颜色与上下箭头
 
 运行 `pnpm dev:playground`，打开 `/pages/table-trend-arrows`。无需 URL 参数，全部为 inline 合成数据，不需要 DQE。字段列 `arrowRule` 与 `colorRule` 独立，省略不显示。箭头默认前置，`position:"after"` 后置，两种 mode 均支持。

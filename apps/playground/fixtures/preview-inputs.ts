@@ -24,6 +24,7 @@ const exactInputs = new Map([
   ['ioc-project-overview','ioc-region'], ['ioc-opportunity-list','ioc-region'], ['ioc-opportunity-analysis','ioc-region-dept'],
   ['table-column-candidates-query', 'full-query-candidates'],
   ['paged-join-on-demand','query-join'],
+  ['paged-join-search','contract-search'],
   ['record-join-on-demand','record-join'],
   ['partner-health-union-null-probe', 'organization-union'],
   ['table-data-recovery', 'table-recovery'],

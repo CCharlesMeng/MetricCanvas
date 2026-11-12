@@ -2,6 +2,7 @@
 
 columns/children 定义字段列与递归列组；交互、查询与呈现约束见下列专题。
 
+
 <a id="local-default-sort"></a>
 
 ## 完整本地结果的默认排序（6.108）
@@ -226,6 +227,10 @@ Excel、PDF、PNG共用列规则，导出开始冻结筛选、事实、有效列
 无可展示明细行时统一显示“暂无数据”，包括零匹配、筛选空结果、查询失败及各表格变体；加载时显示“正在加载…”。保留表头、搜索框与关键词。置顶汇总不计明细行数，只有汇总时同时显示汇总和空提示。错误分类保留在控制台与 `data-error` 事件，不改为成功，也不放宽导出完整性。入口 `/pages/region-auth-norms-detail`、`/pages/table-pinned-summary`。
 
 内联及显式完整查询先搜索再排序、本地分页；其他普通查询将搜索下推，须由该表独占页面数据源。包含搜索要求网关配置已核验的 `encodeSearch`，缺失时报 `DQE_CONFIG_ERROR`，不筛当前页或自动拉全表替代。组合查询沿 `pagedJoin` 规则执行。
+
+### 按需组合查询的成员搜索
+
+`data.main` 为 `pagedJoin` 且 `pagination.mode:"query"` 时，既有 `toolbar.search` 引用最终页面字段，非空搜索由字段投影所属成员选页。搜索仅允许一个成员；搜索期间清除其他成员的表格排序和列头条件，其排序按钮禁用，同成员操作及页面业务条件保留。搜索、翻页、每页条数和完整 Excel 使用同一已提交视图；清空搜索回到第一页、清除列头条件并恢复组合源 `ordering.default`。无需新增 JSON 字段，不自动收集完整匹配键或全表读取。包含搜索需要真实数据网关的 `encodeSearch`，精确搜索保持原有语义。成员可选页前提、错误和执行规则见[成员搜索](../data-sources.md#paged-join-member-search)。合成入口 `/pages/paged-join-search`。
 
 ## Excel 导出（6.21）
 
