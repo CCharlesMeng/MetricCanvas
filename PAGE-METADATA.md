@@ -133,6 +133,8 @@ Schema 6.67 增加查询绑定 `periodPolicy`（固定粒度或按所选周期�
 
 表格自 6.62 起在字段列和分组列上声明 `visibleWhen`，搜索、用户列操作与冻结导出随可见列同步；旧表格保持原规则。见[列条件显隐](docs/page-metadata/components/table.md#table-column-visibility)。
 
+表格列与柱状图／折线图系列显隐共同参与按需取数，不新增 Schema 字段：无其他消费者或执行依赖的数据停止查询，共享查询保留类别粒度及必要依赖，恢复显示按当前筛选读取。普通单项查询可裁剪独立指标输出，复杂查询保守保留；声明和完整结果字段契约不变。边界见[列显隐](docs/page-metadata/components/table.md#table-column-visibility)与[系列显隐](docs/page-metadata/components/barChart.md#chart-series-visibility)，合成验收入口 `/pages/conditional-query-demand`。
+
 图表配置项自 6.59 起可从字段或常量取值，`field` / `value`（或 `valueField` / `value`）互斥；覆盖全部图表及仪表，详见[组件取值与空态](docs/page-metadata/field-bindings-and-formats.md#chart-constant-values)。
 
 页面元数据是统一运行时消费的声明式JSON文档。当前作者协议为 **6.107**。读取兼容范围与各能力的版本下限由 `packages/page/src/version.ts` 的 `versionPolicy`、`supportedVersions()` 和能力表定义；结构事实由 `packages/page/src/schema/` 单向导出，未声明属性不被接受。

@@ -1,5 +1,5 @@
 import {hierarchyRows,type HierarchySelection} from '../../../../runtime/src/table/hierarchy-selection';
-import { projectSnapshotRows, pinnedSnapshotError, tablePinnedSlots } from '@metriccanvas/page/internal';
+import { flattenPageComponents, projectSnapshotRows, pinnedSnapshotError, tablePinnedSlots } from '@metriccanvas/page/internal';
 import type { EffectiveQuery, Page, TableComponent } from '@metriccanvas/page/internal';
 import { projectComponentFields,resolveDataSourceFields } from '@metriccanvas/page/internal';
 import type { RuntimeDataGateway } from '../../../../runtime/src';
@@ -15,7 +15,9 @@ export async function prepareTableExport(input: {
 }): Promise<NamedDataSlots> {
   const page = JSON.parse(JSON.stringify(input.page)) as Page;
   const component = projectComponentFields(page,JSON.parse(JSON.stringify(input.component)),input.state.filters) as TableComponent;
-  page.sections = [{ id: 'table-export', components: [component] }];
+  // Execution needs the original conditional columns even when the screen already projected them.
+  const declaration = flattenPageComponents(page).find(node => node.id === component.id && node.type === 'table') ?? component;
+  page.sections = [{ id: 'table-export', components: [declaration] }];
   const queries = structuredClone(new Map(input.queries));
   const state = { ...input.state, filters: structuredClone(new Map(input.state.filters)), tables: JSON.parse(JSON.stringify(input.state.tables)), headerFilters: JSON.parse(JSON.stringify(input.state.headerFilters)) };
   const { signal } = input.controller;

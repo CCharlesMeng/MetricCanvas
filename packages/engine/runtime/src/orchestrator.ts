@@ -11,6 +11,7 @@ import { filterBlockedIds, initialFilterValues, type FilterState, type FilterVal
 import type { DataGateway, QueryDiagnosticContext } from './ports';
 import { createTableSession, type TableSession } from './table/session';
 import {isPagedJoinQuery} from '@metriccanvas/page/internal';
+import { presentationQuerySources } from '@metriccanvas/data-execution/runtime';
 
 export type PageDataSnapshots = ReadonlyMap<string, DataSnapshot>;
 export interface Subscribable<T> { subscribe(run: (value: T) => void): () => void; }
@@ -37,7 +38,6 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
   diagnostics?: Pick<QueryDiagnosticContext, 'pageRevisionId'>,
   execution?: Pick<import('./execution').ExecutionBootstrap, 'filters' | 'snapshots' | 'sourceKeys'>,timeContext:{displayInputs?:()=>import('@metriccanvas/page/internal').DisplayInputsSnapshot|undefined;filterRevision?:()=>number;now?:Date;clock?:()=>Date}={}, initialTabs: TabSelections = {}, initialViews:ReadonlyMap<string,TableQueryView> = new Map()): PageSnapshotStream {
   let selections = initialTabs;
-  const demand = () => activeSourceIds(page, selections);
   const ids = visibleSourceIds(page), compiled = compileSources(page), defaults = filters?new Map():initialFilterValues(page.filters ?? [],timeContext.now??timeContext.clock?.()??new Date(),timeContext.displayInputs?.(),timeContext.filterRevision?.());
   const subscribers = new Set<(value: PageDataSnapshots) => void>();
   let active: ReturnType<typeof start> | undefined;
@@ -48,6 +48,7 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
     let values: FilterValues = filters ? new Map() : defaults;
     const first = filters?.subscribe(next => values = next); first?.();
     const tableContext = () => ({declarations:page.filters??[],filters:values,displaySnapshot:timeContext.displayInputs?.(),filterRevision:timeContext.filterRevision?.()});
+    const demand = () => activeSourceIds(page, selections, tableContext());
     const initialization = initialTableViews(page,tableContext(),initialViews,compiled.limits);
     const unsafeReceipts = affectedSourceIds(page.dataSources,remoteHeaderDefaultSources(page));
     let blocked = new Set(filterBlockedIds(filters));
@@ -74,6 +75,28 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
     // Initial candidate loading may hide an otherwise valid initial snapshot.
     // Keep it only until the first release; later invalidation must fetch fresh data.
     const pendingInitial = new Map<string,DataSnapshot>();
+    let presentationIds = visibleSourceIds(page, tableContext());
+    const projectionKeys = () => new Map([...presentationQuerySources(page,tableContext())].map(([id,source]) => [id, JSON.stringify(Object.keys(source.fields))]));
+    let projectedKeys = projectionKeys();
+    const resumed = new Set<string>();
+    function reconcileDemand(): Set<string> {
+      const next = visibleSourceIds(page, tableContext());
+      const added = new Set([...next].filter(id => !presentationIds.has(id)));
+      const nextKeys = projectionKeys();
+      for (const id of next) if (projectedKeys.get(id) !== nextKeys.get(id)) added.add(id);
+      for (const id of new Set([...presentationIds].filter(id => !next.has(id)).concat([...added]))) {
+        if (page.dataSources[id]?.source.type === 'inline') continue;
+        tokens.set(id, (tokens.get(id) ?? 0) + 1);
+        requests.get(id)?.abort();
+        pendingInitial.delete(id);
+        matched.delete(id);
+        raw.set(id, { status: 'loading' });
+        if (added.has(id)) resumed.add(id);
+      }
+      presentationIds = next;
+      projectedKeys = nextKeys;
+      return added;
+    }
     const initialSnapshots=execution?new Map<string,DataSnapshot>():program.initialSnapshots({roots:[...ids],conditions:values,views:views()});
     initializeSnapshots();
     function initializeSnapshots(): void {
@@ -119,9 +142,11 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
       for (const run of subscribers) notify(run, snapshots);
     }
     function refetch(changed: Set<string>, firstRead = false, releaseInitial = false) {
-      if (disposed || !changed.size) return;
-      changed=new Set([...changed,...reconcileColumns()]);
-      const targets = new Set([...(firstRead ? changed : affectedSourceIds(page.dataSources, changed, false))].filter(id => ids.has(id) && demand().has(id)));
+      if (disposed) return;
+      changed=new Set([...changed,...reconcileColumns(),...reconcileDemand()]);
+      if (!changed.size) return;
+      const demanded = demand();
+      const targets = new Set([...(firstRead ? changed : affectedSourceIds(page.dataSources, changed, false))].filter(id => ids.has(id) && demanded.has(id)));
       if(!firstRead&&!releaseInitial)for(const id of targets)pendingInitial.delete(id);
       for (const id of targets) tokens.set(id, (tokens.get(id) ?? 0) + 1);
       for (const id of targets) {
@@ -150,9 +175,10 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
           }
           const controller = new AbortController();
           requests.set(root, controller);
+          const freshness = resumed.delete(root) ? 'refresh' as const : 'reuse' as const;
           void (async () => {
             try {
-              for await (const update of program.read({ roots: [root], conditions: values, views: views(), seeds, currentYear: year, signal: controller.signal })) {
+              for await (const update of program.read({ roots: [root], conditions: values, views: views(), seeds, currentYear: year, signal: controller.signal, freshness })) {
                 if (disposed || tokens.get(root) !== capturedTokens.get(root) || update.sourceId !== root)
                   continue;
                 if (update.viewCorrection) {
@@ -203,9 +229,10 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
         return sourceFilterIds(source).some(id => changed.has(id));
       })));
       for(const component of flattenPageComponents(page))if(component.type==='table'&&fieldSelectionIds(component.props).some(id=>changed.has(id))){tables.get(component.data.main)?.resetPresentation();targets.add(component.data.main);}
-      targets=new Set([...targets,...reconcileColumns()]);
+      const resetTargets = affectedSourceIds(page.dataSources,targets,false);
+      targets=new Set([...targets,...reconcileColumns(),...reconcileDemand()]);
       for (const id of affectedSourceIds(page.dataSources, targets, false)) {
-        tables.get(id)?.resetPage();
+        if (resetTargets.has(id)) tables.get(id)?.resetPage();
         if (!ids.has(id) || page.dataSources[id]?.source.type === 'inline') continue;
         tokens.set(id, (tokens.get(id) ?? 0) + 1);
         requests.get(id)?.abort();
@@ -216,7 +243,7 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
     });
     refetch(new Set([...demand()].filter(id => !matched.has(id) && raw.get(id)?.status === 'loading')), true);
     return {
-      syncPresentation() { const changed=reconcileColumns();if(changed.size)refetch(changed); },
+      syncPresentation() { const changed=new Set([...reconcileColumns(),...reconcileDemand()]);if(changed.size)refetch(changed);else publish(); },
       activate() { refetch(new Set([...demand()].filter(id => raw.get(id)?.status === 'loading')), true); },
       refresh: (id: string) => refetch(new Set([id])),
       program, tables, views, year, current: () => snapshots,

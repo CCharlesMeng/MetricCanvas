@@ -1,5 +1,11 @@
 # 数据计算场景
 
+## 条件显隐与按需取数
+
+入口 `/pages/conditional-query-demand`，显式 Dashboard，表格和柱线组合图复用现有布尔及维度筛选。页面声明合成查询；自动浏览器验收拦截 DQE HTTP 并返回合成数据，执行 `pnpm --filter playground exec playwright test tests/conditional-query-demand.browser.ts` 即可启动页面试验场并观察。手动浏览需向已配置的数据网关提供同名合成字段，不代表真实业务查询。
+
+初始勾选“显示明细”时查询评分与达成率；取消后评分列消失且补充查询停止，图表只请求销售额，类别维度保持。此时切换到“合成范围B”，评分和达成率仍不查询；重新勾选后两者以 B 范围恢复。浏览器 Network 中检查 `dsl_list[].output_metrics` 及范围条件；页面操作和自动断言消费同一份 JSON。共享消费者、默认排序、计算依赖、零业务列、外部事实等待/错误、取消及迟到响应另由运行时集成测试覆盖。合成 HTTP、静态校验和真实 DQE/Relay 分层报告。
+
 ## 当前值与前端均值并排柱
 
 入口 `/pages/sdt-period-aggregation`，执行 `pnpm dev:playground`，无需额外服务或参数。页面底部「代表处决策次数：当前值与均值」用两个柱系列绑定同一字段，均值系列声明 `aggregate: "avg"`。

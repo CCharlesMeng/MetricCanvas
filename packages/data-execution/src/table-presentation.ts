@@ -1,4 +1,5 @@
 import { evaluateCondition, hasColumnConditions, columnBindingKey, columnPrimaryFields, tableColumnLeaves, projectComponentFields, type ConditionContext, type Page, type TableColumnNode, type TableComponent } from '@metriccanvas/page/internal';
+import { projectPresentationData } from './presentation-data';
 type Search = NonNullable<TableComponent['props']['toolbar']>['search'];
 export interface TableColumnPresentation {
     enabled: boolean;
@@ -40,5 +41,5 @@ export function tableColumnPresentation(page: Page, table: TableComponent, conte
         search = visibleSearch(search, new Set(tableColumnLeaves(columns).flatMap(column => [column.field, column.secondaryField, column.badgeField]).filter((field): field is NonNullable<typeof field> => field !== undefined).map(columnBindingKey)));
     const component: TableComponent = enabled ? { ...bound, props: { ...bound.props, columns,
             toolbar: toolbar && columns.length ? { ...toolbar, search } : undefined } } : bound;
-    return { enabled, component, fields, search };
+    return { enabled, component: projectPresentationData(component, enabled), fields, search };
 }
