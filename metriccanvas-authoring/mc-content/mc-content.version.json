@@ -1,7 +1,7 @@
 {
   "interfaceVersion": "1.0",
-  "contentVersion": "1-e047b6dc2e00e263",
-  "contentSha256": "e047b6dc2e00e263d6861ae7dd0744aca8980e8021ccbb1a6d25d893430fb8e6",
+  "contentVersion": "1-cbb56905eddd6356",
+  "contentSha256": "cbb56905eddd635613c399d3acfb147467ecc42a128c1585bf050c0024a57176",
   "files": [
     {
       "file": "authoring-contracts/authored/adapter-interface.md",
@@ -1665,7 +1665,7 @@
     },
     {
       "file": "index.json",
-      "sha256": "e7a216c86bf9c41a20db6113c2f4399e024b48f275ce748dbf45d6666201915b"
+      "sha256": "b5f9ddd6276e2e97e59b9b5f5eee467f0d4f9fe3a7b98ecef81e65c8dd2ea065"
     },
     {
       "file": "knowledge/actions-and-navigation.overview.json",
@@ -2957,7 +2957,7 @@
     },
     {
       "file": "product-contracts/manifest.json",
-      "sha256": "118cbf9deec06062eaf49684f29dc70343a4edba3a168b9da77e43b7fd42c4ef"
+      "sha256": "3b9c49cb6bbacb507afd1489af6567f10729dde3bbefcb17531047627b19fd99"
     },
     {
       "file": "product-contracts/page/component-catalog.json",
@@ -5394,6 +5394,22 @@
     {
       "file": "product-contracts/page/conformance/valid/ioc-component-ioc-region-url-demo.json",
       "sha256": "70708c11b56141d86f58c19884cca22c9d2ef1d6df9d170c2910c5d747680478"
+    },
+    {
+      "file": "product-contracts/page/conformance/valid/ioc-component-key-office-filter-demo.json",
+      "sha256": "01477eb924209c23592560472ea107efedbfe772e24133928351c5a50d784770"
+    },
+    {
+      "file": "product-contracts/page/conformance/valid/ioc-component-key-office-filter-target.json",
+      "sha256": "90c29a151a1042821414c79db66f0c29b9ab3670180c9c90b2adc78d920a2200"
+    },
+    {
+      "file": "product-contracts/page/conformance/valid/ioc-component-key-office-priority-demo.json",
+      "sha256": "8ab340946b221fd1e003f74accc2ee06486cea21b79416dfe9971c1eafe81287"
+    },
+    {
+      "file": "product-contracts/page/conformance/valid/ioc-component-key-office-priority-target.json",
+      "sha256": "5e5709938544f1083883c34ca57976c22cda8f1bb9426383cc3b73e65e814c58"
     },
     {
       "file": "product-contracts/page/conformance/valid/ioc-component-navigation-detail-page.json",
@@ -9481,11 +9497,11 @@
     },
     {
       "file": "runtime/contract-alignment.json",
-      "sha256": "4aa566905ec5fa888e7f3ea8bbf2bb811525afce752d39289d9617224958b88f"
+      "sha256": "0c02711b02e30196ab89aeb8ca1e256d38592787c079dc6696dc8668d37ca726"
     },
     {
       "file": "runtime/coverage.json",
-      "sha256": "4a04fdb1532ce6d3075beb56fb96e6164a672e40b10ca6ffc63f4babc781e0eb"
+      "sha256": "e81985e9f97e46f422ff88c0faf8971bedb133614e37e2584856cb400ac372ca"
     },
     {
       "file": "runtime/delivery.md",
@@ -9529,7 +9545,7 @@
     },
     {
       "file": "runtime/source-identity.json",
-      "sha256": "66e3a117377ef5ae4f02126dd414d5b4a2be716995208cda80c9f3233acfec93"
+      "sha256": "cde39f3f9b85fed53361e418a31d0cb802b9c4c75afa69ff9dc0bc31363eac0e"
     },
     {
       "file": "runtime/tool-behavior.md",
@@ -9639,7 +9655,7 @@
   "alignedWith": {
     "productContractVersion": "1.0.0-rc.4",
     "productManifest": "contract-snapshot/manifest.json",
-    "productManifestSha256": "118cbf9deec06062eaf49684f29dc70343a4edba3a168b9da77e43b7fd42c4ef",
+    "productManifestSha256": "3b9c49cb6bbacb507afd1489af6567f10729dde3bbefcb17531047627b19fd99",
     "authoringContractVersion": "0.3.1",
     "authoringManifest": "contracts/manifest.json",
     "authoringManifestSha256": "fec61d127e70e48542a7dca80505befdf2a9d03418b301251ff4729a48adb98a",
