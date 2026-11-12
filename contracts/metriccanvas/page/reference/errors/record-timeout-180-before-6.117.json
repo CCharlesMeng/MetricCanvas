@@ -1,0 +1,25 @@
+{
+  "case": "record-timeout-180-before-6.117",
+  "invariant": "record-join-timeout-180",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "记录关联单批超时允许超过120秒，最多180秒 由 6.117 引入，文档声明的是 6.116",
+      "paths": [
+        "/dataSources/rejection-overview/source/records/timeoutMs"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "rejection-overview": {
+        "source": {
+          "records": {
+            "timeoutMs": 180000
+          }
+        }
+      }
+    }
+  },
+  "fullInput": "page/conformance/invalid/record-timeout-180-before-6.117.json"
+}

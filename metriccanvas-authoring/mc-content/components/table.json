@@ -25,7 +25,7 @@
   "knowledge": "table.overview",
   "reference": "references/page-metadata/components/table.md",
   "versionPolicy": "protocol/version-policy",
-  "currentWriter": "6.116",
+  "currentWriter": "6.117",
   "exampleVersionRequirements": [
     {
       "file": "references/page-metadata/examples/table-trend-arrows.json",
@@ -1306,12 +1306,17 @@
     },
     {
       "file": "references/page-metadata/examples/rep-business-result.json",
-      "requiredVersion": "6.112",
+      "requiredVersion": "6.117",
       "capabilities": [
         {
-          "id": "table-slot-search",
-          "minor": 109,
-          "description": "表格补充数据槽的单字段精确搜索与行键回查"
+          "id": "paged-join-record-timeout-180",
+          "minor": 117,
+          "description": "记录关联单批超时允许超过120秒，最多180秒"
+        },
+        {
+          "id": "time-value-format",
+          "minor": 102,
+          "description": "时间格式串按固定UTC+8统一展示与导出"
         },
         {
           "id": "table-filter-search",
@@ -1324,9 +1329,14 @@
           "description": "IOC 页头作为首分区首组件"
         },
         {
-          "id": "paged-join-query-pagination",
-          "minor": 76,
-          "description": "组合查询源按需分页与最后操作成员生效"
+          "id": "table-column-enum-values",
+          "minor": 80,
+          "description": "表格列前端枚举展示及静态筛选"
+        },
+        {
+          "id": "percentage-point-format",
+          "minor": 77,
+          "description": "带符号的一位小数百分点格式"
         },
         {
           "id": "paged-join-unbounded-rows",
@@ -1394,19 +1404,14 @@
           "description": "表格独立搜索与完整 Excel 导出工具区"
         },
         {
-          "id": "query-result-page-window",
-          "minor": 20,
-          "description": "查询分页窗口作为结果绑定输入，支持任意列查询排序驱动依赖更新"
+          "id": "signed-number-format-family",
+          "minor": 18,
+          "description": "补齐两位小数及千分位的带符号普通数值格式"
         },
         {
           "id": "explicit-value-colors",
           "minor": 16,
           "description": "数字展示位置显式声明固定颜色或正负颜色映射"
-        },
-        {
-          "id": "query-result-bindings",
-          "minor": 14,
-          "description": "上游原始查询维度集合作为下游查询输入"
         },
         {
           "id": "report-header-date-filters",

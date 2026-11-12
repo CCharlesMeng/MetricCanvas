@@ -1048,7 +1048,7 @@
                       "type": "integer"
                     },
                     "timeoutMs": {
-                      "maximum": 120000,
+                      "maximum": 180000,
                       "minimum": 1,
                       "type": "integer"
                     },
@@ -2467,7 +2467,7 @@
                   "type": "integer"
                 },
                 "timeoutMs": {
-                  "maximum": 120000,
+                  "maximum": 180000,
                   "minimum": 1,
                   "type": "integer"
                 },

@@ -149,7 +149,8 @@
         "paged-union-generated-key",
         "paged-join-query-page",
         "record-join-query-page",
-        "period-comparison-query-page"
+        "period-comparison-query-page",
+        "record-join-timeout-180-page"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -2338,7 +2339,8 @@
     "=": "维度绑定包含所选值，单选等值、多选集合包含。",
     "!=": "维度绑定排除全部所选值，单选不等、多选集合排除。",
     "#/properties/schemaVersion=\"6.115\"": "IOC 页头标题支持普通 URL 导航及显式页面参数、筛选传参。",
-    "6.116": "对象字段绑定省略data时固定引用main数据槽，组件数据源绑定和FieldReference约束保持。"
+    "6.116": "对象字段绑定省略data时固定引用main数据槽，组件数据源绑定和FieldReference约束保持。",
+    "#/properties/schemaVersion=\"6.117\"": "记录关联单批超时允许超过120秒，最多180秒，旧版本保持120秒上限。"
   },
   "branchExceptions": {
     "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/titleNavigate/properties/query/additionalProperties/oneOf/0": {

@@ -4,7 +4,7 @@
   "layout": "dashboard",
   "meta": {
     "title": "DQE 请求超时",
-    "description": "DQE Sim 审批合成数据；浏览器验收模拟45秒响应及120秒超时。"
+    "description": "DQE Sim 审批合成数据；浏览器验收模拟150秒响应及180秒超时。"
   },
   "dataSources": {
     "records": {

@@ -13,9 +13,9 @@
 - 行权效率：`/pages/rep-office-execution-efficiency`，[JSON](rep-office-execution-efficiency.json)。
 - 业务结果指标：`/pages/rep-business-result`，[JSON](rep-business-result.json)。
 
-启动：仓库根目录运行 `pnpm dev:dqe`，同时启动 Playground 与本地 DQE 仿真；无必填 URL 参数。两个入口均包含真实业务查询定义，需要实际 DQE 才能取得业务结果；内联数据不代表真实业务结果。业务结果页以2026-11-11用户提供的三段完整 JSON 为当前基线，合同风险明细的改造见下文。
+启动：仓库根目录运行 `pnpm dev:dqe`，同时启动 Playground 与本地 DQE 仿真；无必填 URL 参数。两个入口均包含真实业务查询定义，需要实际 DQE 才能取得业务结果；内联数据不代表真实业务结果。业务结果页以2026-11-12用户提供的三段完整 JSON 为当前基线，客户商务信息与合同风险明细的改造见下文。
 
-两个入口均使用 Dashboard，首分区首组件为 `iocHeader`。行权效率使用 Schema 6.109，业务结果使用6.113；业务结果从6.95通过升级工具迁移，为原动态列头筛选显式保留 `showSearch:true`。业务结果的页头继续保留统计期间、代表处、客户分类和原默认行为。
+两个入口均使用 Dashboard，首分区首组件为 `iocHeader`。行权效率使用 Schema 6.109，业务结果使用6.117；业务结果从6.95通过升级工具迁移，为原动态列头筛选显式保留 `showSearch:true`。业务结果的页头继续保留统计期间、代表处、客户分类和原默认行为。
 
 观察方式：
 
@@ -27,17 +27,21 @@
 
 完整数值合成演示位于 `/pages/metric-card-primary-detail` 的 `mixed-variants` 分区。前后几何/样式比对和数据边界见[验收记录](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-11-03-metric-card-height/acceptance.md)。本批未验收真实 DQE、Relay 或线上部署。
 
-## 业务结果的合同风险明细精确搜索
+## 业务结果的多源排序与合同风险明细精确搜索
 
-入口 `/pages/rep-business-result`，[JSON](rep-business-result.json) 的“合同风险率明细”Tab、`contract-risk-table`。启动方式同上，无必填 URL 参数；可选 `rep-office-name` 沿原页面绑定约束查询。三个选项分别输入完整项目名称、完整客户名称或合同编号；合同编号按已确认口径就是合同 ID，保留前导零，不做包含匹配。
+入口 `/pages/rep-business-result`，[JSON](rep-business-result.json)，无必填 URL 参数；可选 `rep-office-name` 沿原页面绑定约束查询。启动方式同上，真实业务结果需要实际 DQE 服务。页头已有 `iocHeader`，保留统计期间、代表处、客户分类和原默认值。客户维度的净商务折扣原价同比在目标列显式使用 `points-1-signed`，保留百分点口径；决策任务的落实时间显式使用 `{type:"time",pattern:"YYYYMMDD"}`，遵循固定 UTC+8，原值不变。
 
-主槽 `contract-risk-clause` 使用普通对象查询，按合同 ID 升序、每页10条读取风险记录；同一合同的多条风险记录全部保留。`basic` 槽通过单条 `resultBindings` 按本页合同 ID 查询 `contract-basic-info`，仅补齐项目、客户、责任人等资料。项目与客户搜索复用6.109跨槽精确搜索：先独立读取匹配基本信息的合同 ID，再与主查询原条件取交集，分批完整读取风险记录，统一筛选、排序、计数后分页；合同编号直接在主查询精确匹配。移植须保留两槽同名行键、查询字段映射、补充槽的单条结果绑定和 `maxValues:1000`。1000仅是单批 ID 上限；超过1000个匹配合同继续分批，整次搜索累计读取最多100000行、64 MiB，统一180秒。缺失总数、窗口不完整、超预算或任何批次失败均不返回部分结果。
+“框架执行率明细”的 `business-info-table` 绑定 `business-info-detail` 完整关联记录源。`business-info-framework` 按商务编码和站点分组，决定当期业务范围并消费期间、代表处和客户分类；`business-basic-info` 以商务编号补生效时间、失效时间、申请类型和有效期，`business-approval-detail` 以商务 ID 补审批通过时间。两份补充查询只消费原有区域和代表处参数，成员显式声明 `notApplicableFilters:["mtime","customer-category"]`，不猜测期间字段。三个来源的字段和查询定义保持原业务口径；真实服务须兑现商务编码、商务编号、商务 ID 可关联及补充成员同键唯一的契约，不能擅自从多条审批记录取最新一条。
 
-统计期间、代表处、客户分类、主查询列头筛选与排序继续约束主查询；基本信息仍只消费原来声明的区域和代表处条件。搜索提交、切换与清空回到第一页，清空保留已应用列头条件及排序。Excel 导出冻结已提交条件，准备全部匹配风险记录及其补充信息，不局限于当前页。同一合同多条风险记录均写入，列顺序、序号与原导出入口保持。清空搜索后，超过1000份合同的完整导出也按 ID 分批补齐基本信息，单次查询仍遵守原绑定上限。
+“合同风险率明细”的 `contract-risk-table` 改为单个 `data.main:"contract-risk-detail"`。`contract-risk-clause` 仍按原期间、区域、客户分类确定全部风险记录；`contract-basic-info` 按这些记录的合同 ID 补列，不消费期间和客户分类。成员普通查询均声明 `resultScope:"complete"`，移除旧固定窗口及当前页 `resultBindings`，由组合源读取；合同资料中的范围外合同不进入结果。合同 ID 仅作为关联键，`riskRowId` 使用现有记录模式的快照内标识，同一合同下多条风险记录全部保留；商务表的 `businessRowId` 同样保留同一商务编码下的多站点记录。快照标识不用于跨刷新业务定位，原业务编号及链接字段不变。
 
-“合同级别”仍来自基本信息补充槽，保留原列及 `filterable` 声明，但现有普通表格不提供该补充字段的全局列头候选与过滤。原 `pagedJoin` 同样因该成员 `canSelectPage:false` 且处于 records 模式而不支持此过滤；本次没有将其改成当前页过滤，也没有扩展引擎能力。
+两张表都采用现有 `pagination:{pageSize:10}` 和 `records:{batchSize:500,maxBytes:67108864,timeoutMs:180000}`，不声明 `pagination.mode:"query"` 或 `records.maxRows`。500仅为单批读取及补列键数量；执行器递增 offset，直到读完后端准确总数，再统一搜索、筛选、排序和分页，每页显示10条。`fallback.maxRows:1000` 是历史分支的结构要求，不限制 records 的正常完整读取行数。累计64 MiB和单批180秒仍生效，超预算明确失败；完整快照准备完成前不会把某一批当作全部结果。正常浏览不因超过500、1000或10000条截断，完整 Excel 仍受引擎现有单表10000行上限约束。源响应不完整或动态异常可能触发既有兼容整理并通过控制台告警，不能将此类结果当成上游完整性已确认。
 
-浏览器回归 `apps/playground/tests/rep-business-result-search.browser.ts` 直接读取本页，拦截 DQE HTTP 响应提供30份合同、60条合成风险记录，以及1205份合同、2410条风险记录，覆盖首屏外的项目/客户命中、合同 ID 精确匹配、10条分页、重复合同记录、列头风险等级筛选、时间列排序、零匹配、清空、全部匹配 Excel 导出及超预算拒绝。真实 DQE 的字段筛选、关联键、准确总数、分页稳定性与部署引擎版本须另验；浏览器合成数据不证明真实业务接通。
+商务表沿用已配置的七个可排序字段，包括基本资料的生效、失效、有效期和审批源的审批通过时间；合同表支持激活时间和三个风险评审时间排序。补充字段先按主查询全部键补齐，再对最终记录全局排序，空值排尾；不同成员的表头条件按 AND 保留，切换排序不清除其他成员条件。缺补列保留主行，重复补列键沿用引擎既有诊断和兼容边界，不新增业务去重口径。全局期间、区域、参数及权限条件保持。完整关联完成前首屏需等待，部分交互可能再次取数，不能承诺全部命中缓存。
+
+商务编号搜索继续输入完整编号。合同表可切换完整项目名称、完整客户名称、合同编号精确搜索；三个选项引用组合后的最终字段，搜索和候选均基于完整关联结果，合同级别筛选也由组合源执行。搜索提交、切换与清空回到第一页；Excel 冻结相同条件，保留重复关联键的全部业务记录。完整关联迁移沿用已有能力；180秒单批上限由 Schema 6.117 显式放宽，已有较短值不提升，不启用 `progressive`。
+
+浏览器回归 `apps/playground/tests/rep-business-result-search.browser.ts` 直接加载本页，配套 `rep-business-result-complete-fixture.ts` 在 DQE HTTP 边界注入合成响应：1205个商务编号加一条同编号不同站点记录，共1206行；1205份合同各两条风险明细，共2410行；另有仅存在于补充资料中的范围外编号。覆盖超过500/1000条的后续读取、商务三个成员排序、后续页、补充与主成员筛选交集、三项精确搜索及清空、完整Excel、缺补列保留重复记录、空结果和请求失败。另以6001份合同的12002条风险记录验证超过10000行仍可浏览最后一页。运行 `pnpm --filter playground exec playwright test tests/rep-business-result-search.browser.ts --workers=1`。另用虚拟时钟验证实际业务页的单次风险请求在150秒后成功返回，两个组合源均声明180秒单批预算。真实 DQE 的字段筛选、键唯一性、日期原值、准确总数、跨批顺序及实际耗时仍须在用户环境复验；合成数据不证明真实业务接通。
 
 ## 行权效率首个 Tab 的三份查询
 

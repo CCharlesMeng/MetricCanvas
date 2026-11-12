@@ -81,7 +81,7 @@ Playground：`/pages/report-ai-summary`。直接正文、结构回退与双区�
 字段与联合分支以生成结构表为准。完整页面用于结构/语义校验，渲染行为结合浏览器证据。返回[模块索引](../README.md)。
 
 
-页面协议 6.116。结构真源为本册[schema.json](../schema.json)，SHA256 `be6eded6142f276f4c29fddcc8d81d9fa1be3e77b36c5880538aa228c3b4264f`。字段表自动生成；可选不等于有默认值。
+页面协议 6.117。结构真源为本册[schema.json](../schema.json)，SHA256 `34a7d4eda47fe2d3e92139fa3ac19205eff9449610e48df4a48286fa6381d607`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

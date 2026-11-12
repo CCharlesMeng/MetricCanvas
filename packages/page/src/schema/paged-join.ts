@@ -18,7 +18,7 @@ export const pagedJoinSourceZ = z.object({
   onMissing: z.literal('null'), ordinalField: fieldNameZ.optional(),
   records: z.object({
     batchSize: z.int().min(1).max(1000).optional(), maxRows: z.int().min(1).max(100000).optional(),
-    maxBytes: z.int().min(1024).max(134217728), timeoutMs: z.int().min(1).max(120000),
+    maxBytes: z.int().min(1024).max(134217728), timeoutMs: z.int().min(1).max(180000),
     timeFilters: z.record(idZ, z.object({ field: fieldNameZ, valueFormat: z.enum(['iso', 'compact', 'datetime']) }).strict()).optional()
   }).strict().optional(),
   initial: z.object({ capturedAt: z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?(?:Z|[+-]\d{2}:\d{2})$/), rows: z.array(z.record(z.string(), fieldValueZ)),

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.113",
+  "schemaVersion": "6.117",
   "id": "rep-business-result",
   "meta": {
     "title": "业务结果指标-代表处",
@@ -601,14 +601,14 @@
           "type": "number",
           "role": "measure",
           "label": "净商务折扣同比",
-          "defaultFormat": "percent-1",
+          "defaultFormat": "points-1-signed",
           "queryField": "净商务折扣（原价）年变化"
         },
         "netDiscountMom": {
           "type": "number",
           "role": "measure",
           "label": "净商务折扣环比",
-          "defaultFormat": "percent-1",
+          "defaultFormat": "points-1-signed",
           "queryField": "净商务折扣（原价）月变化"
         }
       },
@@ -713,14 +713,14 @@
           "type": "number",
           "role": "measure",
           "label": "净商务折扣同比",
-          "defaultFormat": "percent-1",
+          "defaultFormat": "points-1-signed",
           "queryField": "净商务折扣（原价）年变化"
         },
         "netDiscountMom": {
           "type": "number",
           "role": "measure",
           "label": "净商务折扣环比",
-          "defaultFormat": "percent-1",
+          "defaultFormat": "points-1-signed",
           "queryField": "净商务折扣（原价）月变化"
         }
       },
@@ -819,14 +819,14 @@
           "type": "number",
           "role": "measure",
           "label": "净商务折扣同比",
-          "defaultFormat": "percent-1",
+          "defaultFormat": "points-1-signed",
           "queryField": "净商务折扣（原价）年变化"
         },
         "netDiscountMom": {
           "type": "number",
           "role": "measure",
           "label": "净商务折扣环比",
-          "defaultFormat": "percent-1",
+          "defaultFormat": "points-1-signed",
           "queryField": "净商务折扣（原价）月变化"
         }
       },
@@ -1072,11 +1072,17 @@
           "type": "number",
           "role": "measure",
           "label": "商务有效期(月)"
+        },
+        "businessRowId": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": false,
+          "label": "商务记录快照行标识"
         }
       },
       "source": {
         "type": "pagedJoin",
-        "rowKey": "businessCode",
+        "rowKey": "businessRowId",
         "domainMember": "business-info-framework",
         "members": {
           "business-info-framework": {
@@ -1085,7 +1091,7 @@
               "field": "businessCode",
               "queryField": "商务编码"
             },
-            "canSelectPage": true
+            "canSelectPage": false
           },
           "business-basic-info": {
             "source": "business-basic-info",
@@ -1197,14 +1203,16 @@
           "nulls": "last"
         },
         "pagination": {
-          "mode": "query",
-          "pageSize": 10,
-          "batchSize": 10
+          "pageSize": 10
         },
         "onMissing": "null",
         "records": {
           "maxBytes": 67108864,
-          "timeoutMs": 60000
+          "timeoutMs": 180000,
+          "batchSize": 500
+        },
+        "fallback": {
+          "maxRows": 1000
         }
       }
     },
@@ -1384,7 +1392,8 @@
           "type": "date",
           "role": "dimension",
           "label": "落实时间",
-          "queryField": "落实时间"
+          "queryField": "落实时间",
+          "defaultFormat": "date"
         },
         "responsibleName": {
           "type": "string",
@@ -2260,9 +2269,7 @@
                 },
                 "order": {
                   "order_by_field": "合同ID",
-                  "type": "asc",
-                  "offset": 0,
-                  "limit": 10
+                  "type": "asc"
                 }
               }
             ]
@@ -2292,7 +2299,8 @@
               "queryField": "代表处"
             }
           }
-        }
+        },
+        "resultScope": "complete"
       }
     },
     "contract-basic-info": {
@@ -2384,10 +2392,7 @@
                 "filter": {
                   "fields": []
                 },
-                "order": {
-                  "offset": 0,
-                  "limit": 1000
-                }
+                "order": {}
               }
             ]
           },
@@ -2406,17 +2411,9 @@
               "target": "dimension",
               "queryField": "代表处"
             }
-          },
-          "resultBindings": [
-            {
-              "source": "contract-risk-clause",
-              "field": "contractId",
-              "target": "dimension",
-              "queryField": "合同ID",
-              "maxValues": 1000
-            }
-          ]
-        }
+          }
+        },
+        "resultScope": "complete"
       }
     },
     "business-info-framework": {
@@ -2511,6 +2508,326 @@
           }
         }
       }
+    },
+    "contract-risk-detail": {
+      "fields": {
+        "contractId": {
+          "type": "string",
+          "role": "dimension",
+          "label": "合同ID",
+          "nullable": false
+        },
+        "dataSiteType": {
+          "type": "string",
+          "role": "dimension",
+          "label": "站点",
+          "nullable": false
+        },
+        "versionNo": {
+          "type": "string",
+          "role": "dimension",
+          "label": "版本号"
+        },
+        "additionType": {
+          "type": "string",
+          "role": "dimension",
+          "label": "新增/存量"
+        },
+        "reviewCreateTime": {
+          "type": "string",
+          "role": "dimension",
+          "label": "专业评审记录创建时间"
+        },
+        "approvalStartTime": {
+          "type": "string",
+          "role": "dimension",
+          "label": "审批人审批开始时间"
+        },
+        "approvalCompleteTime": {
+          "type": "string",
+          "role": "dimension",
+          "label": "审批人审批完成时间"
+        },
+        "reviewer": {
+          "type": "string",
+          "role": "dimension",
+          "label": "专业评审人"
+        },
+        "professionalElement": {
+          "type": "string",
+          "role": "dimension",
+          "label": "专业要素"
+        },
+        "role": {
+          "type": "string",
+          "role": "dimension",
+          "label": "角色"
+        },
+        "riskCategory": {
+          "type": "string",
+          "role": "dimension",
+          "label": "风险类别"
+        },
+        "riskLevel": {
+          "type": "string",
+          "role": "dimension",
+          "label": "风险等级"
+        },
+        "subModule": {
+          "type": "string",
+          "role": "dimension",
+          "label": "子模块"
+        },
+        "riskPoint": {
+          "type": "string",
+          "role": "dimension",
+          "label": "风险点"
+        },
+        "riskClause": {
+          "type": "string",
+          "role": "dimension",
+          "label": "风险条款"
+        },
+        "applicableScene": {
+          "type": "string",
+          "role": "dimension",
+          "label": "适用场景"
+        },
+        "clauseBaseline": {
+          "type": "string",
+          "role": "dimension",
+          "label": "条款基线"
+        },
+        "contractRiskText": {
+          "type": "string",
+          "role": "dimension",
+          "label": "合同风险原文"
+        },
+        "reviewOpinion": {
+          "type": "string",
+          "role": "dimension",
+          "label": "专业评审意见"
+        },
+        "reviewResult": {
+          "type": "string",
+          "role": "dimension",
+          "label": "专业评审结果"
+        },
+        "projectName": {
+          "type": "string",
+          "role": "dimension",
+          "label": "项目名称"
+        },
+        "region": {
+          "type": "string",
+          "role": "dimension",
+          "label": "区域"
+        },
+        "contractOwner": {
+          "type": "string",
+          "role": "dimension",
+          "label": "合同责任人"
+        },
+        "activationTime": {
+          "type": "string",
+          "role": "dimension",
+          "label": "合同激活时间"
+        },
+        "effectiveTime": {
+          "type": "string",
+          "role": "dimension",
+          "label": "实际生效时间"
+        },
+        "expiryTime": {
+          "type": "string",
+          "role": "dimension",
+          "label": "实际失效时间"
+        },
+        "customerName": {
+          "type": "string",
+          "role": "dimension",
+          "label": "客户名称"
+        },
+        "contractLevel": {
+          "type": "string",
+          "role": "dimension",
+          "label": "合同级别"
+        },
+        "riskRowId": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": false,
+          "label": "风险明细快照行标识"
+        }
+      },
+      "source": {
+        "type": "pagedJoin",
+        "rowKey": "riskRowId",
+        "domainMember": "risk",
+        "members": {
+          "risk": {
+            "source": "contract-risk-clause",
+            "key": {
+              "field": "contractId",
+              "queryField": "合同ID"
+            },
+            "canSelectPage": false
+          },
+          "basic": {
+            "source": "contract-basic-info",
+            "key": {
+              "field": "contractId",
+              "queryField": "合同ID"
+            },
+            "canSelectPage": false,
+            "notApplicableFilters": [
+              "mtime",
+              "customer-category"
+            ]
+          }
+        },
+        "projection": {
+          "contractId": {
+            "member": "risk",
+            "field": "contractId"
+          },
+          "dataSiteType": {
+            "member": "risk",
+            "field": "dataSiteType"
+          },
+          "versionNo": {
+            "member": "risk",
+            "field": "versionNo"
+          },
+          "additionType": {
+            "member": "risk",
+            "field": "additionType"
+          },
+          "reviewCreateTime": {
+            "member": "risk",
+            "field": "reviewCreateTime"
+          },
+          "approvalStartTime": {
+            "member": "risk",
+            "field": "approvalStartTime"
+          },
+          "approvalCompleteTime": {
+            "member": "risk",
+            "field": "approvalCompleteTime"
+          },
+          "reviewer": {
+            "member": "risk",
+            "field": "reviewer"
+          },
+          "professionalElement": {
+            "member": "risk",
+            "field": "professionalElement"
+          },
+          "role": {
+            "member": "risk",
+            "field": "role"
+          },
+          "riskCategory": {
+            "member": "risk",
+            "field": "riskCategory"
+          },
+          "riskLevel": {
+            "member": "risk",
+            "field": "riskLevel"
+          },
+          "subModule": {
+            "member": "risk",
+            "field": "subModule"
+          },
+          "riskPoint": {
+            "member": "risk",
+            "field": "riskPoint"
+          },
+          "riskClause": {
+            "member": "risk",
+            "field": "riskClause"
+          },
+          "applicableScene": {
+            "member": "risk",
+            "field": "applicableScene"
+          },
+          "clauseBaseline": {
+            "member": "risk",
+            "field": "clauseBaseline"
+          },
+          "contractRiskText": {
+            "member": "risk",
+            "field": "contractRiskText"
+          },
+          "reviewOpinion": {
+            "member": "risk",
+            "field": "reviewOpinion"
+          },
+          "reviewResult": {
+            "member": "risk",
+            "field": "reviewResult"
+          },
+          "projectName": {
+            "member": "basic",
+            "field": "projectName"
+          },
+          "region": {
+            "member": "basic",
+            "field": "region"
+          },
+          "contractOwner": {
+            "member": "basic",
+            "field": "contractOwner"
+          },
+          "activationTime": {
+            "member": "basic",
+            "field": "activationTime"
+          },
+          "effectiveTime": {
+            "member": "basic",
+            "field": "effectiveTime"
+          },
+          "expiryTime": {
+            "member": "basic",
+            "field": "expiryTime"
+          },
+          "customerName": {
+            "member": "basic",
+            "field": "customerName"
+          },
+          "contractLevel": {
+            "member": "basic",
+            "field": "contractLevel"
+          }
+        },
+        "ordering": {
+          "default": [
+            {
+              "field": "contractId",
+              "direction": "asc"
+            }
+          ],
+          "sortableFields": [
+            "activationTime",
+            "reviewCreateTime",
+            "approvalStartTime",
+            "approvalCompleteTime"
+          ],
+          "nulls": "last"
+        },
+        "pagination": {
+          "pageSize": 10
+        },
+        "onMissing": "null",
+        "records": {
+          "batchSize": 500,
+          "maxBytes": 67108864,
+          "timeoutMs": 180000
+        },
+        "fallback": {
+          "maxRows": 1000
+        }
+      }
     }
   },
   "sections": [
@@ -2537,7 +2854,8 @@
               "layout": "inline",
               "density": "normal",
               "collapse": "overflow"
-            }
+            },
+            "back": true
           }
         }
       ]
@@ -2744,14 +3062,13 @@
                           "sortable": true
                         },
                         {
-                          "field": "netPaymentYoy",
+                          "field": {
+                            "data": "main",
+                            "field": "netPaymentYoy",
+                            "format": "number-2-signed"
+                          },
                           "title": "净付费同比",
-                          "sortable": true,
-                          "colorRule": {
-                            "mode": "sign",
-                            "positive": "green",
-                            "negative": "red"
-                          }
+                          "sortable": true
                         },
                         {
                           "field": "couponAmount",
@@ -2764,24 +3081,20 @@
                           "sortable": true
                         },
                         {
-                          "field": "netDiscountYoy",
+                          "field": {
+                            "data": "main",
+                            "field": "netDiscountYoy",
+                            "format": "points-1-signed"
+                          },
                           "title": "净商务折扣(原价)同比",
                           "sortable": true,
-                          "colorRule": {
-                            "mode": "sign",
-                            "positive": "green",
-                            "negative": "red"
-                          }
+                          "visual": "signed"
                         },
                         {
                           "field": "netDiscountMom",
                           "title": "净商务折扣(原价)环比",
                           "sortable": true,
-                          "colorRule": {
-                            "mode": "sign",
-                            "positive": "green",
-                            "negative": "red"
-                          }
+                          "visual": "signed"
                         }
                       ],
                       "toolbar": {
@@ -2836,11 +3149,7 @@
                           "field": "netPaymentYoy",
                           "title": "净付费同比",
                           "sortable": true,
-                          "colorRule": {
-                            "mode": "sign",
-                            "positive": "green",
-                            "negative": "red"
-                          }
+                          "visual": "signed"
                         },
                         {
                           "field": "couponAmount",
@@ -2856,21 +3165,13 @@
                           "field": "netDiscountYoy",
                           "title": "净商务折扣(原价)同比",
                           "sortable": true,
-                          "colorRule": {
-                            "mode": "sign",
-                            "positive": "green",
-                            "negative": "red"
-                          }
+                          "visual": "signed"
                         },
                         {
                           "field": "netDiscountMom",
                           "title": "净商务折扣(原价)环比",
                           "sortable": true,
-                          "colorRule": {
-                            "mode": "sign",
-                            "positive": "green",
-                            "negative": "red"
-                          }
+                          "visual": "signed"
                         }
                       ],
                       "toolbar": {
@@ -2921,11 +3222,7 @@
                           "field": "netPaymentYoy",
                           "title": "净付费同比",
                           "sortable": true,
-                          "colorRule": {
-                            "mode": "sign",
-                            "positive": "green",
-                            "negative": "red"
-                          }
+                          "visual": "signed"
                         },
                         {
                           "field": "couponAmount",
@@ -2941,21 +3238,13 @@
                           "field": "netDiscountYoy",
                           "title": "净商务折扣(原价)同比",
                           "sortable": true,
-                          "colorRule": {
-                            "mode": "sign",
-                            "positive": "green",
-                            "negative": "red"
-                          }
+                          "visual": "signed"
                         },
                         {
                           "field": "netDiscountMom",
                           "title": "净商务折扣(原价)环比",
                           "sortable": true,
-                          "colorRule": {
-                            "mode": "sign",
-                            "positive": "green",
-                            "negative": "red"
-                          }
+                          "visual": "signed"
                         }
                       ],
                       "toolbar": {
@@ -3062,7 +3351,7 @@
                     },
                     "props": {
                       "title": "客户商务信息",
-                      "rowKey": "businessCode",
+                      "rowKey": "businessRowId",
                       "columns": [
                         {
                           "field": "businessNo",
@@ -3085,7 +3374,17 @@
                           "filterable": {
                             "mode": "select",
                             "showSearch": true
-                          }
+                          },
+                          "enumValues": [
+                            {
+                              "value": "CHANGE",
+                              "label": "变更"
+                            },
+                            {
+                              "value": "CREATE",
+                              "label": "新建"
+                            }
+                          ]
                         },
                         {
                           "field": "approvalDate",
@@ -3135,10 +3434,15 @@
                       ],
                       "toolbar": {
                         "search": {
-                          "fields": [
-                            "businessCode"
+                          "options": [
+                            {
+                              "value": "business-code",
+                              "label": "商务编号",
+                              "field": "businessCode",
+                              "placeholder": "请输入完整商务编号"
+                            }
                           ],
-                          "placeholder": "输入商务编码搜索"
+                          "defaultValue": "business-code"
                         },
                         "export": {
                           "format": "xlsx"
@@ -3403,7 +3707,14 @@
                           }
                         },
                         {
-                          "field": "implementationTime",
+                          "field": {
+                            "data": "main",
+                            "field": "implementationTime",
+                            "format": {
+                              "type": "time",
+                              "pattern": "YYYYMMDD"
+                            }
+                          },
                           "title": "落实时间"
                         },
                         {
@@ -3454,58 +3765,62 @@
                       "span": 12
                     },
                     "data": {
-                      "main": "contract-risk-clause",
-                      "basic": "contract-basic-info"
+                      "main": "contract-risk-detail"
                     },
                     "props": {
                       "title": "明细",
-                      "rowKey": "contractId",
+                      "rowKey": "riskRowId",
                       "columns": [
                         {
                           "field": {
-                            "data": "basic",
+                            "data": "main",
                             "field": "projectName"
                           },
                           "title": "项目名称"
                         },
                         {
                           "field": {
-                            "data": "basic",
+                            "data": "main",
                             "field": "region"
                           },
                           "title": "区域"
                         },
                         {
                           "field": {
-                            "data": "basic",
+                            "data": "main",
                             "field": "contractOwner"
                           },
                           "title": "合同责任人"
                         },
                         {
                           "field": {
-                            "data": "basic",
-                            "field": "activationTime"
+                            "data": "main",
+                            "field": "activationTime",
+                            "format": {
+                              "type": "time",
+                              "pattern": "YYYY-MM-DD"
+                            }
                           },
-                          "title": "合同激活时间"
+                          "title": "合同激活时间",
+                          "sortable": true
                         },
                         {
                           "field": {
-                            "data": "basic",
+                            "data": "main",
                             "field": "effectiveTime"
                           },
                           "title": "实际生效时间"
                         },
                         {
                           "field": {
-                            "data": "basic",
+                            "data": "main",
                             "field": "expiryTime"
                           },
                           "title": "实际失效时间"
                         },
                         {
                           "field": {
-                            "data": "basic",
+                            "data": "main",
                             "field": "customerName"
                           },
                           "title": "客户名称"
@@ -3563,7 +3878,7 @@
                         },
                         {
                           "field": {
-                            "data": "basic",
+                            "data": "main",
                             "field": "contractLevel"
                           },
                           "title": "合同级别",
@@ -3578,7 +3893,21 @@
                           "filterable": {
                             "mode": "select",
                             "showSearch": true
-                          }
+                          },
+                          "enumValues": [
+                            {
+                              "value": "QUALITATIVE",
+                              "label": "定性"
+                            },
+                            {
+                              "value": "QUANTITATIVE",
+                              "label": "定量"
+                            },
+                            {
+                              "value": "TRANSACTION_RISK",
+                              "label": "交易风险"
+                            }
+                          ]
                         },
                         {
                           "field": "riskLevel",
@@ -3586,7 +3915,21 @@
                           "filterable": {
                             "mode": "select",
                             "showSearch": true
-                          }
+                          },
+                          "enumValues": [
+                            {
+                              "value": "MEDIUM_RISK",
+                              "label": "中风险"
+                            },
+                            {
+                              "value": "LOW_RISK",
+                              "label": "低风险"
+                            },
+                            {
+                              "value": "HIGH_RISK",
+                              "label": "高风险"
+                            }
+                          ]
                         },
                         {
                           "field": "subModule",
@@ -3610,7 +3953,33 @@
                         },
                         {
                           "field": "applicableScene",
-                          "title": "适用场景"
+                          "title": "适用场景",
+                          "filterable": {
+                            "mode": "select",
+                            "showSearch": true
+                          },
+                          "enumValues": [
+                            {
+                              "value": "PUBLIC_CLOUND",
+                              "label": "公有云"
+                            },
+                            {
+                              "value": "ALL",
+                              "label": "所有场景"
+                            },
+                            {
+                              "value": "FULL_STACK_DEC",
+                              "label": "全栈专属云"
+                            },
+                            {
+                              "value": "E_GOVERNMNT_CLOUD",
+                              "label": "政务云"
+                            },
+                            {
+                              "value": "PARTNER_CLOUD",
+                              "label": "伙伴云"
+                            }
+                          ]
                         },
                         {
                           "field": "clauseBaseline",
@@ -3630,7 +3999,25 @@
                           "filterable": {
                             "mode": "select",
                             "showSearch": true
-                          }
+                          },
+                          "enumValues": [
+                            {
+                              "value": "DECISION_PENDING",
+                              "label": "待决策"
+                            },
+                            {
+                              "value": "DECISION_APPROVED",
+                              "label": "已批准"
+                            },
+                            {
+                              "value": "DECISION_REJECTED",
+                              "label": "已拒绝"
+                            },
+                            {
+                              "value": "DECISION_FINISHED",
+                              "label": "已完成"
+                            }
+                          ]
                         }
                       ],
                       "toolbar": {
@@ -3639,19 +4026,13 @@
                             {
                               "value": "project-name",
                               "label": "项目名称",
-                              "field": {
-                                "data": "basic",
-                                "field": "projectName"
-                              },
+                              "field": "projectName",
                               "placeholder": "请输入完整项目名称"
                             },
                             {
                               "value": "customer-name",
                               "label": "客户名称",
-                              "field": {
-                                "data": "basic",
-                                "field": "customerName"
-                              },
+                              "field": "customerName",
                               "placeholder": "请输入完整客户名称"
                             },
                             {

@@ -824,6 +824,17 @@
       ]
     },
     {
+      "id": "record-join-timeout-180",
+      "description": "6.117 放宽记录关联单批超时至180秒；旧版本保留120秒上限",
+      "valid": [
+        "record-join-timeout-180-page"
+      ],
+      "invalid": [
+        "record-timeout-180-before-6.117",
+        "record-timeout-over-180"
+      ]
+    },
+    {
       "id": "paged-join",
       "description": "6.22 组合表全局视图与普通查询定义引用；记录模式成员独立消费查询参数",
       "valid": [

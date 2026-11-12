@@ -4,7 +4,7 @@
 
 页面数据源使用inline静态行或query受控查询。源id来自dataSources对象键，组件data槽引用它。每个数据源声明结果字段契约；数据快照ready/empty/error是运行态，不回写文档。
 
-DQE 数据网关的单次 HTTP 请求默认超时为120秒，普通查询及维度候选值请求共用该默认值；可信接入配置 `createDqeGateway({timeoutMs})` 可覆盖，页面无需新增字段。页面显式声明的 `pagedJoin.records.timeoutMs`、完整读取及导出预算仍独立生效，较早到期的限制先终止读取。服务端与代理超时由部署环境控制。合成浏览器验收入口 `/pages/dqe-request-timeout`，覆盖45秒成功与120秒超时。
+DQE 数据网关的单次 HTTP 请求默认超时为180秒，普通查询及维度候选值请求共用该默认值；可信接入配置 `createDqeGateway({timeoutMs})` 可覆盖，页面无需新增字段。页面显式声明的 `pagedJoin.records.timeoutMs`、完整读取及导出预算仍独立生效，较早到期的限制先终止读取。服务端与代理超时由部署环境控制。合成浏览器验收入口 `/pages/dqe-request-timeout`，覆盖150秒成功与180秒超时。
 
 <a id="screen-loading"></a>
 
@@ -200,9 +200,9 @@ UUID 随已取回的行保存在缓冲区、检查点和 initial 中，复用时
 
 `pagedJoin.source.records` 显式启用记录模式，保留主表每条原始记录，成员 `key` 仅为关联键。旧页面不声明 `records`，继续使用原有一键一行、选页补列及最大1000行完整关联规则。
 
-记录模式配置 `batchSize`（1—1000）、`maxBytes`（1024—134217728）及 `timeoutMs`（1—120000）。6.69 起 `maxRows` 可省略，表示不限制主表行数；显式值仍为1—100000的正整数预算。旧版本须声明 `maxRows`。`fallback.maxRows` 不限制 records 行数。指标与对象查询均保留显式排序；未声明时仅按成员关联键升序，不追加排序字段。显式对象多字段排序仍需可信 `encodeObjectSort`，否则失败。表格排序在完整关联后执行。执行器检查准确 `totalCount`、完整窗口和跨批总数；按去重关联键分批补列。主表重复关联键保留，补列表重复键保留第一条，额外编码忽略，截断按可用结果告警；网络、权限、配置和超限仍失败。无事务快照令牌；关联键可重复，单字段排序与总数检查不能证明跨批内容稳定性，仍须真实 DQE 验真。
+记录模式配置 `batchSize`（1—1000）、`maxBytes`（1024—134217728）及 `timeoutMs`（1—180000；超过120000须 Schema 6.117）。6.69 起 `maxRows` 可省略，表示不限制主表行数；显式值仍为1—100000的正整数预算。旧版本须声明 `maxRows`。`fallback.maxRows` 不限制 records 行数。指标与对象查询均保留显式排序；未声明时仅按成员关联键升序，不追加排序字段。显式对象多字段排序仍需可信 `encodeObjectSort`，否则失败。表格排序在完整关联后执行。执行器检查准确 `totalCount`、完整窗口和跨批总数；按去重关联键分批补列。主表重复关联键保留，补列表重复键保留第一条，额外编码忽略，截断按可用结果告警；网络、权限、配置和超限仍失败。无事务快照令牌；关联键可重复，单字段排序与总数检查不能证明跨批内容稳定性，仍须真实 DQE 验真。
 
-`timeoutMs` 按批重置，验收 `/pages/record-join-batch-timeout`。
+`timeoutMs` 按批重置。6.117 起允许 `120001`—`180000` 毫秒；6.116 及更早声明仍最多 `120000` 毫秒。字段名和毫秒单位不变，已有较短值继续按原值执行，不自动提升；完整关联与按需记录分页共用该边界。声明示例：`records:{batchSize:500,maxBytes:67108864,timeoutMs:180000}`。验收 `/pages/record-join-batch-timeout` 的预算按批重置，以及 `/pages/rep-business-result` 两张表的180秒预算。
 
 配置示例：
 

@@ -1044,7 +1044,7 @@
                 "timeoutMs": {
                   "type": "integer",
                   "minimum": 1,
-                  "maximum": 120000
+                  "maximum": 180000
                 },
                 "timeFilters": {
                   "type": "object",

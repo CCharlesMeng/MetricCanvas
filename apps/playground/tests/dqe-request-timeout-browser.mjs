@@ -27,18 +27,21 @@ async function scenario(mode) {
     expect(heldRoute.request().postDataJSON()).toEqual(request);
     await page.clock.pauseAt(await page.evaluate(() => Date.now()));
     const table = page.locator('.table-widget');
-    await page.clock.fastForward(30_001);
+    await page.clock.fastForward(120_000);
     await expect(table).toHaveAttribute('aria-busy', 'true');
     expect(consoleErrors).toEqual([]);
     if (mode === 'success') {
-      await page.clock.fastForward(15_000);
+      await page.clock.fastForward(30_000);
       await heldRoute.fulfill({ json: response });
       await expect(table.getByRole('cell', { name: 'TIMEOUT-OK', exact: true })).toBeVisible();
       await expect(table).toHaveAttribute('aria-busy', 'false');
       expect(consoleErrors).toEqual([]);
     } else {
-      await page.clock.fastForward(90_000);
-      await expect.poll(() => consoleErrors.some(text => text.includes('DQE_TIMEOUT') && text.includes('120000'))).toBe(true);
+      await page.clock.fastForward(59_000);
+      await expect(table).toHaveAttribute('aria-busy', 'true');
+      expect(consoleErrors).toEqual([]);
+      await page.clock.fastForward(1_000);
+      await expect.poll(() => consoleErrors.some(text => text.includes('DQE_TIMEOUT') && text.includes('180000'))).toBe(true);
       await expect(table.getByRole('cell', { name: 'TIMEOUT-OK', exact: true })).toHaveCount(0);
       await expect(table).toHaveAttribute('aria-busy', 'false');
     }

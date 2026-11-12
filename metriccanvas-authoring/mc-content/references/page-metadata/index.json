@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.116",
-  "schemaSha256": "be6eded6142f276f4c29fddcc8d81d9fa1be3e77b36c5880538aa228c3b4264f",
+  "schemaVersion": "6.117",
+  "schemaSha256": "34a7d4eda47fe2d3e92139fa3ac19205eff9449610e48df4a48286fa6381d607",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -127,7 +127,8 @@
         "paged-union-generated-key",
         "paged-join-query-page",
         "record-join-query-page",
-        "period-comparison-query-page"
+        "period-comparison-query-page",
+        "record-join-timeout-180-page"
       ],
       "rules": [
         "query-initial-rows-normalize",
@@ -1347,7 +1348,8 @@
         "6.113",
         "6.114",
         "6.115",
-        "6.116"
+        "6.116",
+        "6.117"
       ]
     },
     {
@@ -22938,5 +22940,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "1a083dd4cba882a442012ef1a003fb3965dfc253b1ff25ab9c5deaf446471d37"
+  "semanticSourceDigest": "0f41e2f5d5a52aa2621e5345a1910924bb90150e77e776ec40aa61df3da800c0"
 }

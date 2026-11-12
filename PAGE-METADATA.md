@@ -1,5 +1,9 @@
 # MetricCanvas 页面元数据规范
 
+6.117：`pagedJoin.records.timeoutMs` 上限放宽至180000毫秒；超过120000的声明须使用6.117及以后版本，旧版本和已有较短超时保持原限制。无新增字段，仍按每批独立计时。见[记录关联](docs/page-metadata/data-sources.md#审批记录与当前信息补列666)，业务场景 `/pages/rep-business-result`。
+
+DQE 网关的单次查询、批量查询 HTTP 请求及维度候选值请求默认超时统一为180秒；显式接入配置及页面已有读取预算仍独立生效。见[数据源与查询超时](docs/page-metadata/data-sources.md)，合成入口 `/pages/dqe-request-timeout`。
+
 重点国代兼容旧筛选 ID `key-rep-only`，保留页面及 URL 标识，复用现有授权名单桥接并与 Region 取交集；勾选刷新全部已绑定查询，取消恢复，不新增 Schema 字段或版本。见[布尔筛选覆盖与交集](docs/page-metadata/filters.md#boolean-filter-overrides)，业务回归 `/pages/governance-compliance`。
 
 URL 缺少必需页面参数时保留页面结构，相关数据源及其依赖显示空态，不发送查询或复用旧数据；缺值文字显示“—”，无关内容正常工作。翻页、候选与导出共用空数据投影，补齐参数重新加载后恢复；无新增字段或 Schema 版本。见[缺参呈现](docs/page-metadata/params-and-text-values.md#url-缺参的页面呈现)，入口 `/pages/missing-url-inputs`。
@@ -370,7 +374,7 @@ Schema元数据另见[数据上下文规则](docs/schema-metadata.md)，页面�
 
 4. 页面数据源与结果字段契约 → [模块参考](contracts/metriccanvas/page/reference/data-sources.md)。
 
-DQE 数据网关单次 HTTP 请求默认超时为120秒，可信接入配置可覆盖；页面显式批次超时、完整读取和导出预算独立生效。无需新增字段或升级 Schema。合成验收入口 `/pages/dqe-request-timeout`，详见[页面数据源](docs/page-metadata/data-sources.md)。
+DQE 数据网关单次 HTTP 请求默认超时为180秒，可信接入配置可覆盖；页面显式批次超时、完整读取和导出预算独立生效。无需新增字段或升级 Schema。合成验收入口 `/pages/dqe-request-timeout`，详见[页面数据源](docs/page-metadata/data-sources.md)。
 
 <a id="41-数据模式"></a>
 

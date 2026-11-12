@@ -1,0 +1,25 @@
+{
+  "case": "record-timeout-over-180",
+  "invariant": "record-join-timeout-180",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must be <= 180000",
+      "paths": [
+        "/dataSources/rejection-overview/source/records/timeoutMs"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "rejection-overview": {
+        "source": {
+          "records": {
+            "timeoutMs": 180001
+          }
+        }
+      }
+    }
+  },
+  "fullInput": "page/conformance/invalid/record-timeout-over-180.json"
+}

@@ -447,6 +447,10 @@ export const invariants: InvariantDefinition[] = [
     { case: 'union-invalid-key', base: 'paged-union-page', expect: /来源内行键/, mutate: d => { d.dataSources.opinions.source.members.contract.rowKey = 'contract-decisionCount'; } },
     { case: 'union-source-navigation-field', base: 'paged-union-page', expect: /来源导航/, mutate: d => { d.sections[0].components[0].props.columns[0].navigateBySource.field = 'missing'; } }
   ] },
+  { id:'record-join-timeout-180',description:'6.117 放宽记录关联单批超时至180秒；旧版本保留120秒上限',valid:['record-join-timeout-180-page'],cases:[
+    {case:'record-timeout-180-before-6.117',base:'record-join-timeout-180-page',expect:/由 6.117 引入/,mutate:d=>{d.schemaVersion='6.116';}},
+    {case:'record-timeout-over-180',base:'record-join-timeout-180-page',expect:/180000|less|match/,mutate:d=>{d.dataSources['rejection-overview'].source.records.timeoutMs=180001;}}
+  ] },
   { id:'paged-join',description:'6.22 组合表全局视图与普通查询定义引用；记录模式成员独立消费查询参数', valid:['paged-join-page','table-number-range-page','record-join-query-params'],cases:[
     {case:'paged-join-non-record-member-parameter',base:'paged-join-page',expect:/每个成员必须显式消费全部组合查询参数/,mutate:d=>{d.params={query:{dimensions:[{id:'approver-name',dim_name:'审批人姓名',required:false}]}};d.dataSources['office-meeting'].source.query.paramBindings={'approver-name':{target:'dimension',queryField:'审批人姓名'}};}},
     {case:'record-join-unknown-member-parameter',base:'record-join-query-params',expect:/已声明的dimension参数/,mutate:d=>{d.params.query.dimensions=d.params.query.dimensions.filter((p:any)=>p.id!=='approver-name');}},

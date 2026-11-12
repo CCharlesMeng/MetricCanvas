@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.116",
+  "schemaVersion": "6.117",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "data-sources.overview"
@@ -9,7 +9,7 @@
       "module": "data-sources",
       "reference": "references/page-metadata/data-sources.md",
       "blocks": [
-        "# 页面数据源与初始行\n\n已有页面与指标说明可先形成组件/字段到指标候选、查询条件和缺口的对应表；同名不自动等同于同口径，物理表字段不自动等同于 DQE 指标/维度。缺时间、过滤编码、聚合或连接关系时保留未知；资料齐全再形成协议候选，真实执行并核对结果字段后才作为已验证查询写回页面。匹配报告不是页面字段。 局部修改已有可信绑定时，只核对受影响对象、共享消费者和源依赖；指标匹配报告按任务需要形成。独立 Skill 的组件范围仅缩小读取输出，全页校验与真实查询验真要求保持不变。`local-authoring-scoped-data-demo` 展示两表共享同一合成指标与独立内容，便于核对相关消费者和修改范围。`local-authoring-knowledge-demo` 用内联合成数据展示金额、百分刻度和列宽；真实服务验真另行举证。\n\n页面数据源使用inline静态行或query受控查询。源id来自dataSources对象键，组件data槽引用它。每个数据源声明结果字段契约；数据快照ready/empty/error是运行态，不回写文档。\n\nDQE 数据网关的单次 HTTP 请求默认超时为120秒，普通查询及维度候选值请求共用该默认值；可信接入配置 `createDqeGateway({timeoutMs})` 可覆盖，页面无需新增字段。页面显式声明的 `pagedJoin.records.timeoutMs`、完整读取及导出预算仍独立生效，较早到期的限制先终止读取。服务端与代理超时由部署环境控制。合成浏览器验收入口 `/pages/dqe-request-timeout`，覆盖45秒成功与120秒超时。\n\n<a id=\"screen-loading\"></a>"
+        "# 页面数据源与初始行\n\n已有页面与指标说明可先形成组件/字段到指标候选、查询条件和缺口的对应表；同名不自动等同于同口径，物理表字段不自动等同于 DQE 指标/维度。缺时间、过滤编码、聚合或连接关系时保留未知；资料齐全再形成协议候选，真实执行并核对结果字段后才作为已验证查询写回页面。匹配报告不是页面字段。 局部修改已有可信绑定时，只核对受影响对象、共享消费者和源依赖；指标匹配报告按任务需要形成。独立 Skill 的组件范围仅缩小读取输出，全页校验与真实查询验真要求保持不变。`local-authoring-scoped-data-demo` 展示两表共享同一合成指标与独立内容，便于核对相关消费者和修改范围。`local-authoring-knowledge-demo` 用内联合成数据展示金额、百分刻度和列宽；真实服务验真另行举证。\n\n页面数据源使用inline静态行或query受控查询。源id来自dataSources对象键，组件data槽引用它。每个数据源声明结果字段契约；数据快照ready/empty/error是运行态，不回写文档。\n\nDQE 数据网关的单次 HTTP 请求默认超时为180秒，普通查询及维度候选值请求共用该默认值；可信接入配置 `createDqeGateway({timeoutMs})` 可覆盖，页面无需新增字段。页面显式声明的 `pagedJoin.records.timeoutMs`、完整读取及导出预算仍独立生效，较早到期的限制先终止读取。服务端与代理超时由部署环境控制。合成浏览器验收入口 `/pages/dqe-request-timeout`，覆盖150秒成功与180秒超时。\n\n<a id=\"screen-loading\"></a>"
       ],
       "rules": [
         {
@@ -171,7 +171,8 @@
         "references/page-metadata/examples/paged-union-generated-key.json",
         "references/page-metadata/examples/paged-join-query-page.json",
         "references/page-metadata/examples/record-join-query-page.json",
-        "references/page-metadata/examples/period-comparison-query-page.json"
+        "references/page-metadata/examples/period-comparison-query-page.json",
+        "references/page-metadata/examples/record-join-timeout-180-page.json"
       ]
     }
   ],

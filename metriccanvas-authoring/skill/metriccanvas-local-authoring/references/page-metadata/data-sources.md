@@ -4,7 +4,7 @@
 
 页面数据源使用inline静态行或query受控查询。源id来自dataSources对象键，组件data槽引用它。每个数据源声明结果字段契约；数据快照ready/empty/error是运行态，不回写文档。
 
-DQE 数据网关的单次 HTTP 请求默认超时为120秒，普通查询及维度候选值请求共用该默认值；可信接入配置 `createDqeGateway({timeoutMs})` 可覆盖，页面无需新增字段。页面显式声明的 `pagedJoin.records.timeoutMs`、完整读取及导出预算仍独立生效，较早到期的限制先终止读取。服务端与代理超时由部署环境控制。合成浏览器验收入口 `/pages/dqe-request-timeout`，覆盖45秒成功与120秒超时。
+DQE 数据网关的单次 HTTP 请求默认超时为180秒，普通查询及维度候选值请求共用该默认值；可信接入配置 `createDqeGateway({timeoutMs})` 可覆盖，页面无需新增字段。页面显式声明的 `pagedJoin.records.timeoutMs`、完整读取及导出预算仍独立生效，较早到期的限制先终止读取。服务端与代理超时由部署环境控制。合成浏览器验收入口 `/pages/dqe-request-timeout`，覆盖150秒成功与180秒超时。
 
 <a id="screen-loading"></a>
 
@@ -200,9 +200,9 @@ UUID 随已取回的行保存在缓冲区、检查点和 initial 中，复用时
 
 `pagedJoin.source.records` 显式启用记录模式，保留主表每条原始记录，成员 `key` 仅为关联键。旧页面不声明 `records`，继续使用原有一键一行、选页补列及最大1000行完整关联规则。
 
-记录模式配置 `batchSize`（1—1000）、`maxBytes`（1024—134217728）及 `timeoutMs`（1—120000）。6.69 起 `maxRows` 可省略，表示不限制主表行数；显式值仍为1—100000的正整数预算。旧版本须声明 `maxRows`。`fallback.maxRows` 不限制 records 行数。指标与对象查询均保留显式排序；未声明时仅按成员关联键升序，不追加排序字段。显式对象多字段排序仍需可信 `encodeObjectSort`，否则失败。表格排序在完整关联后执行。执行器检查准确 `totalCount`、完整窗口和跨批总数；按去重关联键分批补列。主表重复关联键保留，补列表重复键保留第一条，额外编码忽略，截断按可用结果告警；网络、权限、配置和超限仍失败。无事务快照令牌；关联键可重复，单字段排序与总数检查不能证明跨批内容稳定性，仍须真实 DQE 验真。
+记录模式配置 `batchSize`（1—1000）、`maxBytes`（1024—134217728）及 `timeoutMs`（1—180000；超过120000须 Schema 6.117）。6.69 起 `maxRows` 可省略，表示不限制主表行数；显式值仍为1—100000的正整数预算。旧版本须声明 `maxRows`。`fallback.maxRows` 不限制 records 行数。指标与对象查询均保留显式排序；未声明时仅按成员关联键升序，不追加排序字段。显式对象多字段排序仍需可信 `encodeObjectSort`，否则失败。表格排序在完整关联后执行。执行器检查准确 `totalCount`、完整窗口和跨批总数；按去重关联键分批补列。主表重复关联键保留，补列表重复键保留第一条，额外编码忽略，截断按可用结果告警；网络、权限、配置和超限仍失败。无事务快照令牌；关联键可重复，单字段排序与总数检查不能证明跨批内容稳定性，仍须真实 DQE 验真。
 
-`timeoutMs` 按批重置，验收 `/pages/record-join-batch-timeout`。
+`timeoutMs` 按批重置。6.117 起允许 `120001`—`180000` 毫秒；6.116 及更早声明仍最多 `120000` 毫秒。字段名和毫秒单位不变，已有较短值继续按原值执行，不自动提升；完整关联与按需记录分页共用该边界。声明示例：`records:{batchSize:500,maxBytes:67108864,timeoutMs:180000}`。验收 `/pages/record-join-batch-timeout` 的预算按批重置，以及 `/pages/rep-business-result` 两张表的180秒预算。
 
 配置示例：
 
@@ -254,7 +254,7 @@ Excel 允许缺项，数据工作表导出整理后的全部匹配行，而非�
 合成入口 `/pages/table-data-recovery` 同时展示缺字段、对象值、不规则行、重复来源 key 与重复补充记录；`?recoveryState=ready` 演示数据准备好后恢复无告警。页面位于 `pages/capabilities/table/table-data-recovery.json`，模拟数据与故障注入在 `apps/playground/fixtures/table-recovery.ts`；无需 DQE Sim。真实 DQE/Relay 行为须另验。
 
 
-页面协议 6.116。结构真源为本册[schema.json](schema.json)，SHA256 `be6eded6142f276f4c29fddcc8d81d9fa1be3e77b36c5880538aa228c3b4264f`。字段表自动生成；可选不等于有默认值。
+页面协议 6.117。结构真源为本册[schema.json](schema.json)，SHA256 `34a7d4eda47fe2d3e92139fa3ac19205eff9449610e48df4a48286fa6381d607`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -1114,7 +1114,7 @@ Schema位置：`#/definitions/pagedJoinSource/properties/records/properties/time
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "integer" | 本分支必填 | minimum=1; maximum=120000 | Schema未设默认；装配/运行时默认见语义说明 | 主表/补列表每次分页请求的超时预算（含排队）；每批重置，不限整轮耗时。超时整轮失败且不缓存部分结果。 |
+| "integer" | 本分支必填 | minimum=1; maximum=180000 | Schema未设默认；装配/运行时默认见语义说明 | 主表/补列表每次分页请求的超时预算（含排队）；每批重置，不限整轮耗时。超时整轮失败且不缓存部分结果。 |
 
 <a id="schema-232f646566696e6974696f6e732f70616765644a6f696e536f757263652f70726f706572746965732f7265636f7264732f70726f706572746965732f74696d6546696c74657273"></a>
 
@@ -2905,6 +2905,7 @@ Schema位置：`#/definitions/pagedUnionSource/properties/initial/properties/vie
 - [paged-join-query-page](examples/paged-join-query-page.json)：完整合法页面；查询仅为静态契约证据。
 - [record-join-query-page](examples/record-join-query-page.json)：完整合法页面；查询仅为静态契约证据。
 - [period-comparison-query-page](examples/period-comparison-query-page.json)：完整合法页面；查询仅为静态契约证据。
+- [record-join-timeout-180-page](examples/record-join-timeout-180-page.json)：完整合法页面；查询仅为静态契约证据。
 
 ## 联合分支见证（生成）
 

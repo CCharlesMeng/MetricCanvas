@@ -10,52 +10,52 @@ const query: EffectiveQuery = {
 };
 
 function controlledUpstream() {
-  let signal: AbortSignal | null | undefined;
-  let respond!: (response: Response) => void;
+  const requests: Array<{ signal: AbortSignal | null | undefined; count: number; respond(response: Response): void }> = [];
   const fetchImpl: typeof fetch = async (_input, init) => {
-    signal = init?.signal;
+    const signal = init?.signal;
     return new Promise<Response>((resolve, reject) => {
-      respond = resolve;
+      requests.push({ signal, count: JSON.parse(String(init?.body)).dsl_list.length, respond: resolve });
       signal?.addEventListener('abort', () => reject(new DOMException('Aborted', 'AbortError')), { once: true });
     });
   };
   return {
     fetchImpl,
-    aborted: () => signal?.aborted,
+    aborted: () => requests.every(request => request.signal?.aborted),
     succeed() {
-      respond(new Response(JSON.stringify({ retCode: 'CBC.0000', results: [
+      for (const request of requests) request.respond(new Response(JSON.stringify({ retCode: 'CBC.0000', results: Array.from({ length: request.count }, () => (
         { code: 'SUCCESS', data: [{ region: 'east', amount: 7 }], total_count: 1 }
-      ] })));
+      )) })));
     }
   };
 }
 
 const operations = [
-  { name: 'query batch', start: (gateway: ReturnType<typeof createDqeGateway>) => gateway.fetchData(query) },
+  { name: 'single query', start: (gateway: ReturnType<typeof createDqeGateway>) => gateway.fetchData(query) },
+  { name: 'concurrent queries', start: (gateway: ReturnType<typeof createDqeGateway>) => Promise.all([gateway.fetchData(query), gateway.fetchData(query)]) },
   { name: 'dimension candidates', start: (gateway: ReturnType<typeof createDqeGateway>) => gateway.fetchDimensionValues('region') }
 ];
 
 afterEach(() => vi.useRealTimers());
 
 describe.each(operations)('DQE timeout: $name', ({ start }) => {
-  it('waits past 30s and aborts at the default 120s boundary', async () => {
+  it('waits past 120s and aborts at the default 180s boundary', async () => {
     vi.useFakeTimers();
     const upstream = controlledUpstream();
     const pending = start(createDqeGateway({ fetchImpl: upstream.fetchImpl })).catch(error => error);
-    await vi.advanceTimersByTimeAsync(30_000);
+    await vi.advanceTimersByTimeAsync(120_000);
     expect(upstream.aborted()).toBe(false);
-    await vi.advanceTimersByTimeAsync(89_999);
+    await vi.advanceTimersByTimeAsync(59_999);
     expect(upstream.aborted()).toBe(false);
     await vi.advanceTimersByTimeAsync(1);
     expect(upstream.aborted()).toBe(true);
-    expect(await pending).toMatchObject({ code: 'DQE_TIMEOUT', detail: { timeoutMs: 120_000 } });
+    expect(await pending).toMatchObject({ code: 'DQE_TIMEOUT', detail: { timeoutMs: 180_000 } });
   });
 
-  it('accepts a successful response after 45s', async () => {
+  it('accepts a successful response after 150s', async () => {
     vi.useFakeTimers();
     const upstream = controlledUpstream();
     const pending = start(createDqeGateway({ fetchImpl: upstream.fetchImpl })).catch(error => error);
-    await vi.advanceTimersByTimeAsync(45_000);
+    await vi.advanceTimersByTimeAsync(150_000);
     upstream.succeed();
     expect(await pending).not.toBeInstanceOf(Error);
     expect(vi.getTimerCount()).toBe(0);

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.116",
+  "schemaVersion": "6.117",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "data.query"
@@ -9,7 +9,7 @@
       "module": "data-sources",
       "reference": "references/page-metadata/data-sources.md",
       "blocks": [
-        "# 页面数据源与初始行\n\n已有页面与指标说明可先形成组件/字段到指标候选、查询条件和缺口的对应表；同名不自动等同于同口径，物理表字段不自动等同于 DQE 指标/维度。缺时间、过滤编码、聚合或连接关系时保留未知；资料齐全再形成协议候选，真实执行并核对结果字段后才作为已验证查询写回页面。匹配报告不是页面字段。 局部修改已有可信绑定时，只核对受影响对象、共享消费者和源依赖；指标匹配报告按任务需要形成。独立 Skill 的组件范围仅缩小读取输出，全页校验与真实查询验真要求保持不变。`local-authoring-scoped-data-demo` 展示两表共享同一合成指标与独立内容，便于核对相关消费者和修改范围。`local-authoring-knowledge-demo` 用内联合成数据展示金额、百分刻度和列宽；真实服务验真另行举证。\n\n页面数据源使用inline静态行或query受控查询。源id来自dataSources对象键，组件data槽引用它。每个数据源声明结果字段契约；数据快照ready/empty/error是运行态，不回写文档。\n\nDQE 数据网关的单次 HTTP 请求默认超时为120秒，普通查询及维度候选值请求共用该默认值；可信接入配置 `createDqeGateway({timeoutMs})` 可覆盖，页面无需新增字段。页面显式声明的 `pagedJoin.records.timeoutMs`、完整读取及导出预算仍独立生效，较早到期的限制先终止读取。服务端与代理超时由部署环境控制。合成浏览器验收入口 `/pages/dqe-request-timeout`，覆盖45秒成功与120秒超时。\n\n<a id=\"screen-loading\"></a>",
+        "# 页面数据源与初始行\n\n已有页面与指标说明可先形成组件/字段到指标候选、查询条件和缺口的对应表；同名不自动等同于同口径，物理表字段不自动等同于 DQE 指标/维度。缺时间、过滤编码、聚合或连接关系时保留未知；资料齐全再形成协议候选，真实执行并核对结果字段后才作为已验证查询写回页面。匹配报告不是页面字段。 局部修改已有可信绑定时，只核对受影响对象、共享消费者和源依赖；指标匹配报告按任务需要形成。独立 Skill 的组件范围仅缩小读取输出，全页校验与真实查询验真要求保持不变。`local-authoring-scoped-data-demo` 展示两表共享同一合成指标与独立内容，便于核对相关消费者和修改范围。`local-authoring-knowledge-demo` 用内联合成数据展示金额、百分刻度和列宽；真实服务验真另行举证。\n\n页面数据源使用inline静态行或query受控查询。源id来自dataSources对象键，组件data槽引用它。每个数据源声明结果字段契约；数据快照ready/empty/error是运行态，不回写文档。\n\nDQE 数据网关的单次 HTTP 请求默认超时为180秒，普通查询及维度候选值请求共用该默认值；可信接入配置 `createDqeGateway({timeoutMs})` 可覆盖，页面无需新增字段。页面显式声明的 `pagedJoin.records.timeoutMs`、完整读取及导出预算仍独立生效，较早到期的限制先终止读取。服务端与代理超时由部署环境控制。合成浏览器验收入口 `/pages/dqe-request-timeout`，覆盖150秒成功与180秒超时。\n\n<a id=\"screen-loading\"></a>",
         "## 加载时保留组件结构\n\n首次取数和 Tab 首次激活时，先呈现真实组件的标题、容器、字段标签、表头和工具栏，不用骨架块替换组件。指标卡主数值、次级指标、变化值和完成率数字显示静态 `--`；表格表体显示静态“正在加载…”，返回空结果后显示“暂无数据”。这两类组件不显示加载动画，展开子表格遵循同一规则。查询状态仍通过 `aria-busy` 标记。\n\n独立 DQE 查询各自使用一个 `dsl_list` 单项 HTTP 请求，不再将同一轮逻辑查询合并到一个响应信封；完成后独立发布，不等待其他无依赖查询。数据网关继续使用既有 `maxConcurrentBatches` 配置限制并发，默认5，维度候选请求共用额度；引擎查询调度另有默认5的上限。取消、超时、结果映射与诊断规则保持，级联仍等待本轮必要的上游结果。使用自定义数据网关的集成应用须自行兑现其请求调度。\n\n筛选重查、查询翻页和排序时，组件可继续显示上一份完整数据槽组合，按下文渐进补列规则切换，其他组件待本轮所需槽全部就绪后整体替换；不会将新主行与旧补充槽拼在一起。等待期间保留旧分页展示，暂时禁用旧内容中的链接、展开、分页等操作，避免以旧行触发新条件的动作。空结果替换旧内容，查询失败清除旧展示并沿用既有错误呈现。未有完整旧展示时，各槽仍按空行和静态占位呈现；表格渐进补列使用独立展示回执，不发布部分执行成功。\n\n展示回执仅存于当前引擎实例内存，最多保留4份页面文档/修订，每页最多20000个数据槽行引用；超出按先进入的组件回执淘汰。页面参数物化后的文档、修订、数据网关身份或字段契约变化不复用不匹配展示，权限修订变化和可信显示输入失效清空缓存。同一实例切页再返回可在重新查询期间恢复该页旧展示；集成应用销毁引擎实例或整页刷新后不保留，跨实例恢复由集成应用管理。当前查询仍使用当前筛选和视图，展示回执不恢复查询条件、不序列化为 initial，不为新一轮查询、计算、候选或完整导出提供数据。\n\n无需新增页面字段或升级 Schema。合成场景 `/pages/loading-structure-demo`、`/pages/metric-card-loading` 覆盖独立请求、首次加载、筛选、查询翻页、展开明细与 Tab 切换，操作与证据边界见 `pages/capabilities/layout/README.md`。\n\n<a id=\"progressive-table-columns\"></a>\n\n### 级联表格渐进补列\n\n无需新增页面 JSON 字段，由引擎根据现有依赖和表格视图确定何时可以显示。选页成员已确定正确行集、顺序和总数时，先显示本轮已就绪列；其他成员按本页稳定业务键补查，每个经过范围、行键和字段校验的批次返回后原位补齐。各补充成员受控并发，单成员的批次仍按序读取，不因返回顺序重排行。记录变体保留每条记录身份，多条记录共享补列键时不合并记录。已经完成选页的旧组合分支同样适用；需要完整关联、归并或全局计算后才能定页的分支等待完整结果，不以当前已到行冒充全局范围。\n\n普通多数据槽表格由 main 确定行集；其他槽等待或失败时，显示本轮 main 与已就绪槽。普通查询通过查询结果绑定驱动关联计算时，原始主行已就绪即可显示基本列；当前仅对保持行数的 joinAggregate、delta、ratio 逐依赖发布计算列。关联计算的本地主键须已有效且来自原始主行；缺失键或依赖计算产出的关联键仍等待完整结果。改变行域的 pivot、timeFill、unionKeys、汇总等算子仍等待完整计算。表格排序、表头筛选、搜索或行展示条件依赖未就绪字段时，推迟展示，直到可以确定正确行集与顺序。\n\n等待中的补列单元格与依赖其的计算列使用 `--`，不会提前套用 onMissing: zero 或零分母策略；完成批次确认缺记录后才应用声明的缺失策略。补列失败时，该成员的列与依赖它的计算列保持 `--`，其他有效列继续显示，正式执行仍为 error 并沿现有诊断打印来源；选择阶段失败不发布新行。刷新或翻页先保留上一份完整展示，新行集就绪后切到本轮主列与空占位，不拼接旧补充列。筛选、翻页、排序、取消与权限变化继续通过既有代次隔离，迟到回执不能补到新页。\n\n渐进回执仅用于屏幕，不进入原始快照、initial、查询缓存、查询结果绑定、计算依赖或导出。未完成的行暂时不接受值级点击、导航和展开；表头操作仍可发起新查询。补列尚未完整或存在失败时导出按钮不可用，完整导出通过原执行链重新检查全部必要结果。屏幕更新按约16毫秒合并，避免快速缓存命中或大量小批次重复触发整页计算。已有页无需升级 Schema；静态声明不证明真实 DQE 的选页和全局排序能力。\n\n合成场景 `/progressive-columns-review` 消费完整页面 `pages/capabilities/table/paged-join-progressive.json`，每页10行、每批5个键；可手动返回选页、逐批补列或制造补列失败。正常自动预览入口 `/pages/paged-join-progressive` 使用原有合成查询适配器。详细操作与边界见 `pages/capabilities/table/README.md`。\n\nquery.initial保存捕获时间和匹配该查询的初始行，只能在当前条件与声明初值匹配时使用；变更后由网关查询。执行bootstrap初始结果另走执行端口，条件标识与查询定义一致才复用，不与旧initial混用。非查询分页数据源即使 initial.rows.length 小于 initial.totalCount，也直接呈现内嵌初始行，不为补齐数据自动查询；当前载入条数与总数仅通过 `console.warn` 输出，不在组件中插入额外提示，不将部分数据当成完整结果。空 initial.rows 同样是可复用快照；未知总数不推断完整性。查询分页的持久化initial仍需有效totalCount与完整第一页，动态结果的总数不一致不阻止显示已有行。跨数据源计算继续使用本轮返回行。\n\n可选compute作用于已归一化行集。inline行使用页面字段id；query结果经queryField映射。静态JSON通过校验不证明真实DQE成功。\n\n查询数值度量在进入快照和 compute 前归一化为有限数字或 `null`，单个异常值不再拒绝整份查询；首屏 initial、动态响应和一层嵌套明细使用同一规则，详见[结果字段契约](fields.md#查询数值度量的容错)。`nullable: false` 的数值度量缺失只告警，普通 query 的缺字段和结构错误仍会失败；组合源可在有界整理阶段兼容，见下文。`query-numeric-tolerance` 是对应完整合成验收示例。"
       ],
       "rules": [
@@ -172,7 +172,8 @@
         "references/page-metadata/examples/paged-union-generated-key.json",
         "references/page-metadata/examples/paged-join-query-page.json",
         "references/page-metadata/examples/record-join-query-page.json",
-        "references/page-metadata/examples/period-comparison-query-page.json"
+        "references/page-metadata/examples/period-comparison-query-page.json",
+        "references/page-metadata/examples/record-join-timeout-180-page.json"
       ]
     }
   ],
@@ -193,7 +194,7 @@
           "sections"
         ],
         "title": "页面",
-        "$id": "https://metriccanvas/page/v6.116",
+        "$id": "https://metriccanvas/page/v6.117",
         "properties": {
           "schemaVersion": "#/properties/schemaVersion",
           "id": "#/properties/id",

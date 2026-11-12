@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "7feef2004a32862416ce6e41f57f7fa24f5020f4e2b0ae0cd41934f924f1d7bc",
+  "sha256": "7f165c57dbd39a033c66eff8c4d9e9ac033201198322a89604b654dd137daeec",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -120,7 +120,7 @@
     },
     {
       "file": "docs/page-metadata/data-sources.md",
-      "sha256": "0756104dd56d3f58bd77b2ed9bf6c21dd2447c7865347612bcc17ede41abd8af"
+      "sha256": "514752ed50fc640ef4891bb224a065dc19b1cd8d8aa7dbd7812cf7503e89404e"
     },
     {
       "file": "docs/page-metadata/examples/README.md",
@@ -160,7 +160,7 @@
     },
     {
       "file": "docs/page-metadata/reference-map.json",
-      "sha256": "34add49e1432dc03204244faa38d75004b3850d4c946bdc85db6020de6d856d0"
+      "sha256": "f932581b5952cec324b70395b0f75d77c3a81ecbb6b2f3dd9210d1276e298db2"
     },
     {
       "file": "docs/page-metadata/sections-and-layout.md",
@@ -1227,6 +1227,10 @@
       "sha256": "248818a124e8a5b79cdb68f2e8d3c674c40c998cec61dac64edffe5d71539f7b"
     },
     {
+      "file": "packages/page/fixtures/contract-valid/record-join-timeout-180-page.json",
+      "sha256": "d7f867f9924c9b00b366967a62d28ec77a8f7a3fd99d3ae744a89d33cd21e525"
+    },
+    {
       "file": "packages/page/fixtures/contract-valid/record-join-unbounded-page.json",
       "sha256": "c4f47b8a8b1ca5a03344ad15656bc9efcf95a4cef0c636b47f7fd20b6b54ff10"
     },
@@ -1988,7 +1992,7 @@
     },
     {
       "file": "packages/page/src/schema/paged-join.ts",
-      "sha256": "6af42f4f5806f2025e31a55c1191802643a65234f8c8c53b47025139138b5417"
+      "sha256": "2f703d10132b2086b8f44e129e92e61f07560ba0675b20f8ad3559146874226f"
     },
     {
       "file": "packages/page/src/schema/paged-union.ts",
@@ -2184,7 +2188,7 @@
     },
     {
       "file": "packages/page/src/version.ts",
-      "sha256": "59911317720a5d350967240054e785de0c07fe81cbb2b7ed09c8826ada5a9801"
+      "sha256": "c151d39ed7a2a974be51d52194d29339c1fa651295300a6da3a32e7af6b746dc"
     },
     {
       "file": "pages/README.md",
@@ -2196,7 +2200,7 @@
     },
     {
       "file": "pages/business/dashboard/ioc/approval/README.md",
-      "sha256": "d5b73a37151a1210bb6aa6be2d1ed9e835020fee319966042ebad407c4a3a03d"
+      "sha256": "1a7835a164d5e147fdd55991399253cd700063d38f352d797e057dbe3c796cf0"
     },
     {
       "file": "pages/business/dashboard/ioc/approval/authorization-norms.json",
@@ -2216,7 +2220,7 @@
     },
     {
       "file": "pages/business/dashboard/ioc/approval/rep-business-result.json",
-      "sha256": "a11630eef18072a076c4ac82346055604b075085167e26b0086b47f5ca844172"
+      "sha256": "7ffa4c4d950e0ad1d422f193d476b65eaf0e095c77d4f24336c29db04b914598"
     },
     {
       "file": "pages/business/dashboard/ioc/approval/rep-office-approval-detail.json",
@@ -2816,7 +2820,7 @@
     },
     {
       "file": "pages/capabilities/layout/schema-upgrade-demo.json",
-      "sha256": "2ad62fe463a6439d661b37beb762924f9111ada7d550a6da485959bdd3f04403"
+      "sha256": "ab0055d928d54e2a932fa16df7c54ebc2b88f9c5f8ca5db64e77b833e491c21f"
     },
     {
       "file": "pages/capabilities/layout/tab-mixed-content-report.json",
@@ -2908,7 +2912,7 @@
     },
     {
       "file": "pages/capabilities/query/README.md",
-      "sha256": "4441958c61489bc0737565bfaa5dabe1ab475a4459e40c23737003f88cadd686"
+      "sha256": "1bf8e932219d8aec74b856661f355ba3ddd959a584e1ce49c4c07ce1835ff101"
     },
     {
       "file": "pages/capabilities/query/authoring-contract-reliability.json",
@@ -2924,7 +2928,7 @@
     },
     {
       "file": "pages/capabilities/query/dqe-request-timeout.json",
-      "sha256": "aebc869cd2b69c29937bbeb5931f8ef88413df2cb3bc5deb210c681923fe3ad3"
+      "sha256": "0ae5f53ec63347facc89f435d005a68d2241c88e971d6cc6c49477ffcc605871"
     },
     {
       "file": "pages/capabilities/query/object-period-query.json",
@@ -3800,7 +3804,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "f333d21deef0bd9cf9bbe0925afddb3aac37d1dc7afb8363109b4b9795021ed0"
+      "sha256": "7109a363be150fb804222cb461e4e4f0d724940f61d93b22be8cbb25d89279fc"
     },
     {
       "file": "tools/scripts/page-files.d.mts",
