@@ -11,7 +11,7 @@ export * from './page-list-entry';
 export * from './data-source';
 export * from './field';
 export * from './filter';
-export { filterOverrideTargets, overriddenFilterIds, isUnrestrictedIocRegion } from './filter-overrides';
+export { IOC_KEY_OFFICE_FILTER_IDS, filterOverrideTargets, overriddenFilterIds, isUnrestrictedIocRegion } from './filter-overrides';
 export * from './query';
 export * from './query-error';
 export * from './query-rows';

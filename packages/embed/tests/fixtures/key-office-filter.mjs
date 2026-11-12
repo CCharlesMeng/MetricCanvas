@@ -31,6 +31,9 @@ function readLevelURLSelection(keys2, query) {
   return selected;
 }
 
+// packages/page/src/filter-overrides.ts
+var IOC_KEY_OFFICE_FILTER_IDS = ["key-office", "key-national-only", "key-rep-only"];
+
 // packages/embed/examples/shared-filter-bridge.ts
 function signature(filter) {
   if (filter.type === "dimension") return JSON.stringify([filter.type, filter.dimension, filter.hierarchy]);
@@ -91,7 +94,7 @@ async function prepareIocHeaderFilters(document, gateway, options) {
 function keyOfficeFilters(page) {
   const first = page.sections?.[0]?.components?.[0];
   const header = page.iocHeader ?? (first?.type === "iocHeader" ? first.props : void 0);
-  return (page.filters ?? []).filter((filter) => filter.type === "boolean" && ["key-office", "key-national-only"].includes(filter.id) && !!header?.filterIds?.includes(filter.id));
+  return (page.filters ?? []).filter((filter) => filter.type === "boolean" && IOC_KEY_OFFICE_FILTER_IDS.includes(filter.id) && !!header?.filterIds?.includes(filter.id));
 }
 async function keyOfficeNames(filter, gateway, signal) {
   signal.throwIfAborted();

@@ -12,11 +12,14 @@ export function isUnrestrictedIocRegion(page:Page|undefined,filterId:string,valu
 
 type Values = ReadonlyMap<string, {type:string;value?:unknown}>;
 
+/** Preserve legacy page IDs across roster binding, execution and snapshot validation. */
+export const IOC_KEY_OFFICE_FILTER_IDS:readonly string[]=['key-office','key-national-only','key-rep-only'];
+
 /** Standard key-office identifiers always intersect Region, including legacy explicit overrides. */
 export function filterOverrideTargets(filter:FilterDeclaration,_filters:readonly FilterDeclaration[]):readonly string[] {
   if(filter.type!=='boolean')return [];
   const explicit=filter.overridesFilters??[];
-  if(!['key-office','key-national-only'].includes(filter.id))return explicit;
+  if(!IOC_KEY_OFFICE_FILTER_IDS.includes(filter.id))return explicit;
   return explicit.filter(id=>id!=='region');
 }
 

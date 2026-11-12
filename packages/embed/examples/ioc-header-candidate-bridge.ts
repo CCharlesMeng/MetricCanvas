@@ -1,4 +1,5 @@
 import type {Page,PageDocument,DqeQueryDefinition,BooleanFilterDeclaration} from '@metriccanvas/page/internal';
+import {IOC_KEY_OFFICE_FILTER_IDS} from '@metriccanvas/page/internal';
 import type {RuntimeDataGateway,FilterCandidate} from '@metriccanvas/engine';
 
 /** Copyable integration example, not an embed public API. Upstream response formats belong to the Adapter. */
@@ -14,7 +15,7 @@ export async function prepareIocHeaderFilters(document:unknown,gateway:RuntimeDa
 function keyOfficeFilters(page:Pick<Page,'filters'|'iocHeader'|'sections'>):BooleanFilterDeclaration[] {
   const first=page.sections?.[0]?.components?.[0];
   const header=page.iocHeader??(first?.type==='iocHeader'?first.props:undefined);
-  return (page.filters??[]).filter((filter):filter is BooleanFilterDeclaration=>filter.type==='boolean'&&['key-office','key-national-only'].includes(filter.id)&&!!header?.filterIds?.includes(filter.id));
+  return (page.filters??[]).filter((filter):filter is BooleanFilterDeclaration=>filter.type==='boolean'&&IOC_KEY_OFFICE_FILTER_IDS.includes(filter.id)&&!!header?.filterIds?.includes(filter.id));
 }
 async function keyOfficeNames(filter:BooleanFilterDeclaration,gateway:RuntimeDataGateway,signal:AbortSignal):Promise<string[]> {
   signal.throwIfAborted();

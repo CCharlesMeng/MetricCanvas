@@ -1,5 +1,7 @@
 # MetricCanvas 页面元数据规范
 
+重点国代兼容旧筛选 ID `key-rep-only`，保留页面及 URL 标识，复用现有授权名单桥接并与 Region 取交集；勾选刷新全部已绑定查询，取消恢复，不新增 Schema 字段或版本。见[布尔筛选覆盖与交集](docs/page-metadata/filters.md#boolean-filter-overrides)，业务回归 `/pages/governance-compliance`。
+
 URL 缺少必需页面参数时保留页面结构，相关数据源及其依赖显示空态，不发送查询或复用旧数据；缺值文字显示“—”，无关内容正常工作。翻页、候选与导出共用空数据投影，补齐参数重新加载后恢复；无新增字段或 Schema 版本。见[缺参呈现](docs/page-metadata/params-and-text-values.md#url-缺参的页面呈现)，入口 `/pages/missing-url-inputs`。
 
 所有表头 select 筛选候选统一将显示名为 `--` 的选项放在列表最后，覆盖静态枚举、动态候选、搜索及失配已选项保留；其他选项保持原顺序，无新增 Schema 字段。见[列筛选候选值](docs/page-metadata/components/table.md#列筛选候选值)，合成入口 `/pages/table-header-placeholder-last`。
@@ -105,7 +107,7 @@ Embed 省略 `initialSearch` 时自动读取当前 URL（含 hash 路由 query�
 6.82：select 列头筛选支持 `filterable.defaultValues` 固定原始值，首屏查询与选中态同步；清空后保持清空。声明、重置例外和数据源所有权见[列头筛选默认值](docs/page-metadata/components/table.md#列头筛选默认值682)，入口 `/pages/table-header-filter-defaults` 与 `/pages/table-header-filter-defaults-query`。
 
 按需组合分页忽略补充来源的空关联键行并明确告警，主行、分页和单账号条件保留；页面及导出共享告警，原始数量、身份和执行错误边界保持。无需新增页面字段，见[按需组合查询分页](docs/page-metadata/data-sources.md#按需组合查询分页676)，合成入口 `/pages/paged-join-on-demand?supplementKey=empty`。
-6.84 增加 boolean 筛选器 `overridesFilters`：勾选后以已绑定的布尔查询条件覆盖指定维度筛选，保留原选择，取消后恢复；查询、候选校验与完整导出使用同一生效范围。IOC 重点国代（`key-office` / `key-national-only`）现统一与 Region 取交集，历史显式 Region 覆盖保持可读但不再生效，不增加字段或配置开关；中文值/客户级别映射见[布尔筛选覆盖](docs/page-metadata/filters.md#boolean-filter-overrides)，合成入口 `/pages/key-office-priority-demo`、`/pages/key-office-priority-target`。IOC Region 仅规范值 `全球` 不产生地区条件，中国/海外等节点仍过滤；其他筛选照常生效。真实组织与重点名单仍由集成应用提供。
+6.84 增加 boolean 筛选器 `overridesFilters`：勾选后以已绑定的布尔查询条件覆盖指定维度筛选，保留原选择，取消后恢复；查询、候选校验与完整导出使用同一生效范围。IOC 重点国代（`key-office` / `key-national-only` / `key-rep-only`）现统一与 Region 取交集，历史显式 Region 覆盖保持可读但不再生效，不增加字段或配置开关；中文值/客户级别映射见[布尔筛选覆盖](docs/page-metadata/filters.md#boolean-filter-overrides)，合成入口 `/pages/key-office-priority-demo`、`/pages/key-office-priority-target`。IOC Region 仅规范值 `全球` 不产生地区条件，中国/海外等节点仍过滤；其他筛选照常生效。真实组织与重点名单仍由集成应用提供。
 
 引擎统一兼容组织键计算中的空记录：`unionKeys`、`joinAggregate` 跳过空组织行，保留有效组织、零分、负分及脱值数量告警；页面 Schema 不新增字段或开关。限制及 `/pages/missing-organization-key` 合成验收入口见[空组织键兼容](docs/page-metadata/compute.md#空组织键兼容)。
 

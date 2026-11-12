@@ -22,7 +22,7 @@ import { intersectQueryFilters } from '../intersect-filters';
 import {selectQuerySource,requiresQueryContext,requiresTimeValidation,hasQuerySelection} from '@metriccanvas/page/internal';
 import {type DisplayInputsSnapshot} from '@metriccanvas/page/internal';
 import {queryFilterIds} from '@metriccanvas/page/internal';
-import {overriddenFilterIds,isUnrestrictedIocRegion} from '@metriccanvas/page/internal';
+import {IOC_KEY_OFFICE_FILTER_IDS,overriddenFilterIds,isUnrestrictedIocRegion} from '@metriccanvas/page/internal';
 import { createCandidateValidator } from '../candidate-validation';
 import { createColumnCandidatesReader, type ColumnCandidatesRead } from './column-candidates';
 import { initialFilterValues } from '../filter-values';
@@ -106,7 +106,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
   function overridesSource(id:string,values:FilterValues):boolean {
     const overridden=overriddenFilterIds(page.filters??[],values);
     // Authorized membership may change independently of the page's declared defaults.
-    for(const key of ['key-office','key-national-only']){
+    for(const key of IOC_KEY_OFFICE_FILTER_IDS){
       const value=values.get(key);
       if(value?.type==='boolean'&&value.value===true)overridden.add(key);
     }

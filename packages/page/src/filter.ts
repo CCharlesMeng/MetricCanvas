@@ -177,7 +177,7 @@ export interface BooleanFilterDeclaration extends FilterInteractionExtension {
   /** 显式 URL 参数名；缺省按筛选器 id 派生。 */
   urlParams?: { value?: string; from?: string; to?: string; level?: string };
   type: 'boolean';
-  /** Dimension overrides while true. key-office/key-national-only always intersect Region. */
+  /** Dimension overrides while true. key-office/key-national-only/key-rep-only always intersect Region. */
   overridesFilters?: string[];
   label?: string;
   visible?: boolean;

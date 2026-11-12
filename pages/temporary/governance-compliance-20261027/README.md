@@ -1,6 +1,8 @@
 # 行权效率：区域层级与站点筛选
 
-入口 `/pages/governance-compliance`，页面为用户提供的完整查询版，使用 Schema 6.112。启动 `pnpm dev:playground`；实际数据需要集成应用提供业务 DQE、组织候选及权限，不使用合成响应冒充真实结果。
+顶部“仅看重点国代”保留用户原有 `key-rep-only`，引擎将其与 `key-office` / `key-national-only` 同等识别。集成应用须在装载前复用 `prepareIocHeaderFilters`，从授权名单 Adapter 取得完整重点名单，给六条业务查询补齐 `代表处 / whenTrue`；Adapter 也需识别旧 ID。勾选后 Region 与名单取交集，取消仅移除名单条件，时间、客户与其他筛选保留。业务 JSON 不固化真实或合成名单，普通 Playground 入口未提供生产名单服务。
+
+入口 `/pages/governance-compliance`，页面为用户提供的完整查询版，使用 Schema 6.113。启动 `pnpm dev:playground`；实际数据需要集成应用提供业务 DQE、组织候选及权限，不使用合成响应冒充真实结果。
 
 四组“中国区 / 海外”按钮保持独立选择，默认“中国区”，查询值仍为“国内”。Region 处于 geo 层级或选中值为“全球”时显示并消费对应站点选择，包括 `region-dept=全球` 链接；进入具体地区部或代表处时隐藏按钮，四条站点绑定的 `when` 同时暂停各自谓词。期间、区域和客户分类绑定保留；返回全球恢复原站点选择，URL 继续保存该状态。
 
@@ -12,7 +14,7 @@
 
 四张柱线混合图沿用引擎统一默认单位位置，页面不再配置 yAxis 单位补丁：时长双轴“天”、人数双轴“人”，商务及合同图左轴“个”、右轴“%”，刻度仅显示数字。系列单位、提示格式和原值刻度保留，百分比不乘100。
 
-浏览器回归 `apps/playground/tests/governance-compliance-filters.browser.ts` 直接消费本页，使用拦截的合成响应覆盖全球 ready/empty/error、具体组织不带站点谓词，以及四图八条数值轴的轴顶单位；不代表真实 DQE 验真。
+浏览器回归 `apps/playground/tests/governance-compliance-filters.browser.ts` 直接消费本页，使用拦截的合成响应覆盖全球 ready/empty/error、具体组织不带站点谓词，以及四图八条数值轴的轴顶单位；重点国代回归在 `/preview` 装载经同一桥接准备的本页，注入合成授权名单，验证全球与具体地区部两种范围下全部六条查询重新请求、同时携带名单与生效 Region 条件，以及取消恢复。不代表真实名单 Adapter 或 DQE 验真。
 
 IOC 页头已从旧根级形状移到首分区首组件，保留标题、说明、筛选顺序与呈现设置。表格、指标、查询字段、排序、基线及原有正文条件沿用用户原件。旧版本引擎不支持 `when`；升级引擎后再加载该 JSON。
 

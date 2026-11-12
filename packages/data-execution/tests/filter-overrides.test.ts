@@ -35,7 +35,7 @@ function ordinaryOverride(){
 }
 
 describe('key offices always intersect Region; ordinary overrides remain explicit',()=>{
-  it.each(['key-office','key-national-only'])('intersects %s regardless of label and legacy explicit Region override',id=>{
+  it.each(['key-office','key-national-only','key-rep-only'])('intersects %s regardless of label and legacy explicit Region override',id=>{
     const document=JSON.parse(JSON.stringify(raw).replaceAll('key-office',id));document.filters[1].label='显示名称';
     const input=values();input.delete('key-office');input.set(id,{type:'boolean',value:true});
     expect(query(load(document),input).filterValues).toEqual([officePredicate,keyPredicate]);
