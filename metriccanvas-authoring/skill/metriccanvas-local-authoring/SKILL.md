@@ -2,7 +2,7 @@
 name: metriccanvas-local-authoring
 description: 在本地开发 MetricCanvas 看板、报表和 IOC：新建页面、对接数据与查询、调试页面问题、调整已有页面。附协议知识、数据分析与升级工具、独立校验器；线上保存和发布使用项目提供的接口。
 metadata:
-  version: "1.64.1"
+  version: "1.64.2"
 ---
 
 # 本地页面创作

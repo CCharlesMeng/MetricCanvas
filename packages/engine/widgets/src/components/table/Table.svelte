@@ -6,6 +6,7 @@
 <script lang="ts">
   import ColumnCandidateOptions from './ColumnCandidateOptions.svelte';
   import SelectAllOptions from './SelectAllOptions.svelte';
+  import { placeholderOptionsLast } from './candidate-order';
   import { visibleAfterPaint } from '../../shared/visible-after-paint';
   import TableWarnings from './TableWarnings.svelte';
   import { tableDataWarnings } from './warnings';
@@ -164,7 +165,7 @@
   }
   function enumOptions(column: TableColumn) {
     const term = showCandidateSearch(column) ? (enumSearch[columnField(column)] ?? '').trim().toLowerCase() : '';
-    return (column.enumValues ?? []).filter(option => option.label.toLowerCase().includes(term));
+    return placeholderOptionsLast((column.enumValues ?? []).filter(option => option.label.toLowerCase().includes(term)), option => option.label);
   }
 
   // 固定列的 sticky 偏移:左固定列累计其前方左固定列宽度,右固定列累计其后方右固定列宽度。
@@ -525,7 +526,7 @@
                               onchange={(values, all) => setFilterValues(columnField(column), values, all)} />
                             {/if}
                             <div class="option-list">
-                            {#each filterOptions[columnField(column)] ?? [] as option (option)}
+                            {#each placeholderOptionsLast(filterOptions[columnField(column)] ?? [], String) as option (option)}
                               <label class="option">
                                 <input
                                   type="checkbox"

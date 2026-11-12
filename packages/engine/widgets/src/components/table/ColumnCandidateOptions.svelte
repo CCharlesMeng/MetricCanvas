@@ -1,5 +1,6 @@
 <script lang="ts">
   import SelectAllOptions from './SelectAllOptions.svelte';
+  import { placeholderOptionsLast } from './candidate-order';
   import type { TableColumnCandidates } from './view-state';
   let { field, snapshot, selected, all = false, showSelectAll = false, showSearch = false, onchange, onselectall, onsearch, onmore, onretry }: {
     field: string; snapshot?: TableColumnCandidates; selected: (string | number)[];
@@ -14,6 +15,10 @@
   const key = (value: string | number) => JSON.stringify([typeof value, value]);
   const complete = $derived((snapshot?.status === 'ready' || snapshot?.status === 'empty') && !snapshot.search && snapshot.totalCount === snapshot.candidates.length);
   const missing = $derived(all ? [] : selected.filter(value => !snapshot?.candidates.some(c => c.value === value)));
+  const options = $derived(placeholderOptionsLast([
+    ...missing.map(value => ({ value, label: String(value), missing: true })),
+    ...(snapshot?.candidates ?? []).map(candidate => ({ ...candidate, missing: false }))
+  ], candidate => candidate.label));
   const limited = $derived(snapshot?.status === 'error' && snapshot.error?.code === 'DQE_CANDIDATE_LIMIT_EXCEEDED');
   function continueCandidates(event: Event) {
     if (snapshot?.status !== 'ready' || snapshot.candidates.length >= (snapshot.totalCount ?? 0)) return;
@@ -32,16 +37,10 @@
   {/if}
   {#key snapshot?.search}
   <div class="list" onscroll={continueCandidates}>
-    {#each missing as value (key(value))}
-      <label class="candidate candidate-option selected">
-        <input type="checkbox" checked disabled={all && !complete} onchange={() => onchange(value)} />
-        <span>{value} <small>已选{#if complete || snapshot?.status === 'empty' && !snapshot.search}，当前条件下无匹配{/if}</small></span>
-      </label>
-    {/each}
-    {#each snapshot?.candidates ?? [] as candidate (key(candidate.value))}
-      <label class="candidate candidate-option">
-        <input type="checkbox" checked={all || selected.includes(candidate.value)} disabled={all && !complete} onchange={() => onchange(candidate.value)} />
-        <span>{candidate.label}</span>
+    {#each options as candidate (key(candidate.value))}
+      <label class="candidate candidate-option" class:selected={candidate.missing}>
+        <input type="checkbox" checked={candidate.missing || all || selected.includes(candidate.value)} disabled={all && !complete} onchange={() => onchange(candidate.value)} />
+        <span>{candidate.label}{#if candidate.missing}{' '}<small>已选{#if complete || snapshot?.status === 'empty' && !snapshot.search}，当前条件下无匹配{/if}</small>{/if}</span>
       </label>
     {/each}
   </div>

@@ -11,7 +11,7 @@
     },
     {
       "file": "references/authoring-knowledge/model.json",
-      "sha256": "4987586415a27f5ff40022d9d59527d4042ff13f8297bc57c35447fbc0f34e5d"
+      "sha256": "db6a76072ea2065ce0a9aeddbf310a9130b14cbed5556f788746ed59ad11da76"
     },
     {
       "file": "references/example-guides/ioc-auto-back-detail/browser-back.md",
@@ -24,6 +24,10 @@
     {
       "file": "references/example-guides/table-column-enums/column-enums.md",
       "sha256": "3e5319cdc17b25b31b833a89b6abc6dca4aca111b72bbd7e4369fb6258527248"
+    },
+    {
+      "file": "references/example-guides/table-header-placeholder-last/placeholder-last.md",
+      "sha256": "166813a21230a6b8e27873d1d47fdf6f787617926d4d887f6a55b75f006b69f7"
     },
     {
       "file": "references/example-guides/table-time-format/time-format.md",
@@ -127,7 +131,7 @@
     },
     {
       "file": "references/page-metadata/components/table.md",
-      "sha256": "080669bfb8e9cc121b84b03cee793aa5a6cc72fdeab72ef5add18adafc0b5fcd"
+      "sha256": "313da3a84806158385b6a49ebe748c7ab55ed7da13dac2b4d37083989a870c1c"
     },
     {
       "file": "references/page-metadata/components/text.md",
@@ -3152,6 +3156,10 @@
     {
       "file": "references/page-metadata/examples/table-header-filter-search.json",
       "sha256": "3040cce9cea248a2e5a2f8ce3b402ac8d69afd65708916476f32128e90033f9f"
+    },
+    {
+      "file": "references/page-metadata/examples/table-header-placeholder-last.json",
+      "sha256": "ee413abeb5ded4374ca212486a23ecfdaea32313b28bcdca99b59a33e9c0306f"
     },
     {
       "file": "references/page-metadata/examples/table-header-select-all-query.json",

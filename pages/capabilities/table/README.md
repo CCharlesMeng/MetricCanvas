@@ -625,3 +625,15 @@
 5. 打开最后两张“不配置全选”表的“状态”：显示搜索框和单项复选框，没有“全选”；搜索“否”并勾选后总数1，清空搜索后仍没有全选，取消该项恢复4条（含空值）。其声明为 filterable:{mode:"select",showSearch:true}，未写 showSelectAll，而非显式 false。
 
 浏览器验收直接读取本页及旧页，协议回归覆盖 true/false 的版本下限、错误类型、错误拼写、范围筛选拒绝、升级幂等和输入不变。全部为内联合成数据，不证明真实 DQE/Relay 支持。
+
+## 表头筛选占位项置底
+
+<!-- example-guide: task=placeholder-last; page=table-header-placeholder-last; components=static-true,dynamic-true -->
+
+复用用途：验证所有表头 select 筛选中 `--` 固定放在候选列表最后，静态枚举和动态候选共用规则，无需额外页面配置。
+
+参考对象：`/pages/table-header-placeholder-last` 的 `static-true`、`dynamic-true` 表格，均绑定 `records.status`；静态枚举故意把 `--` 声明在第一项。
+
+移植边界：按目标页面映射数据源与列字段；示例仅使用内联合成数据，`--` 是字符串候选，不代表 null，也不改变候选取数范围或查询排序。
+
+可观察预期与环境：运行 `pnpm dev:playground` 后直接访问上述入口，无需 URL 参数或数据服务。打开两张表的状态筛选，`--` 均在最后，其他选项维持原顺序；勾选 `--` 后仅剩1行，搜索“否”时动态候选仍在最后保留已选 `--`，清空搜索后仍勾选；全选恢复4行（含 null），`--` 仍置底。浏览器覆盖搜索、勾选与全选；候选续载、失配已选项和兼容输入由组件呈现回归覆盖；真实 DQE 未在此合成场景验收。

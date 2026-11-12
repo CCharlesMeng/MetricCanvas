@@ -1,7 +1,7 @@
 {
   "interfaceVersion": "1.0",
-  "contentVersion": "1-cbb56905eddd6356",
-  "contentSha256": "cbb56905eddd635613c399d3acfb147467ecc42a128c1585bf050c0024a57176",
+  "contentVersion": "1-f7f43b3a4e51f47d",
+  "contentSha256": "f7f43b3a4e51f47d3af3021d9f49089cb4b4a888cc4d8768b7dcff1051e28dbf",
   "files": [
     {
       "file": "authoring-contracts/authored/adapter-interface.md",
@@ -1665,7 +1665,7 @@
     },
     {
       "file": "index.json",
-      "sha256": "b5f9ddd6276e2e97e59b9b5f5eee467f0d4f9fe3a7b98ecef81e65c8dd2ea065"
+      "sha256": "9b5d277a620dabafa8be9bbcc9f957dd237d4d247d492861703531c3676b2ac0"
     },
     {
       "file": "knowledge/actions-and-navigation.overview.json",
@@ -2705,7 +2705,7 @@
     },
     {
       "file": "knowledge/table.section-1f2915eb.json",
-      "sha256": "7cb9fe4ed9b89f6088092a6a332feccfd0b5ab57ba2f3f2fdced3d4ae2c7de26"
+      "sha256": "1f030afdf11ff6c1a34132cdd64d2a41e643fbd1b861e75313b834a80504e128"
     },
     {
       "file": "knowledge/table.section-227eec78.json",
@@ -2957,7 +2957,7 @@
     },
     {
       "file": "product-contracts/manifest.json",
-      "sha256": "3b9c49cb6bbacb507afd1489af6567f10729dde3bbefcb17531047627b19fd99"
+      "sha256": "abf82e2659790f49139c7845dda05cd7861fea6272f8f82e634e405bd605f4db"
     },
     {
       "file": "product-contracts/page/component-catalog.json",
@@ -6185,7 +6185,7 @@
     },
     {
       "file": "references/authoring-knowledge/model.json",
-      "sha256": "4987586415a27f5ff40022d9d59527d4042ff13f8297bc57c35447fbc0f34e5d"
+      "sha256": "db6a76072ea2065ce0a9aeddbf310a9130b14cbed5556f788746ed59ad11da76"
     },
     {
       "file": "references/example-guides/ioc-auto-back-detail/browser-back.md",
@@ -6198,6 +6198,10 @@
     {
       "file": "references/example-guides/table-column-enums/column-enums.md",
       "sha256": "3e5319cdc17b25b31b833a89b6abc6dca4aca111b72bbd7e4369fb6258527248"
+    },
+    {
+      "file": "references/example-guides/table-header-placeholder-last/placeholder-last.md",
+      "sha256": "166813a21230a6b8e27873d1d47fdf6f787617926d4d887f6a55b75f006b69f7"
     },
     {
       "file": "references/example-guides/table-time-format/time-format.md",
@@ -6297,7 +6301,7 @@
     },
     {
       "file": "references/page-metadata/components/table.md",
-      "sha256": "080669bfb8e9cc121b84b03cee793aa5a6cc72fdeab72ef5add18adafc0b5fcd"
+      "sha256": "313da3a84806158385b6a49ebe748c7ab55ed7da13dac2b4d37083989a870c1c"
     },
     {
       "file": "references/page-metadata/components/text.md",
@@ -9324,6 +9328,10 @@
       "sha256": "3040cce9cea248a2e5a2f8ce3b402ac8d69afd65708916476f32128e90033f9f"
     },
     {
+      "file": "references/page-metadata/examples/table-header-placeholder-last.json",
+      "sha256": "ee413abeb5ded4374ca212486a23ecfdaea32313b28bcdca99b59a33e9c0306f"
+    },
+    {
       "file": "references/page-metadata/examples/table-header-select-all-query.json",
       "sha256": "a27512e42c8908fded9e67fb21892898afa90466df9a60efcde0e73ce474de01"
     },
@@ -9497,7 +9505,7 @@
     },
     {
       "file": "runtime/contract-alignment.json",
-      "sha256": "0c02711b02e30196ab89aeb8ca1e256d38592787c079dc6696dc8668d37ca726"
+      "sha256": "1f4a45f74faf0b68b776085e236b62cd1653aceb01c2f2270a46db7049b8162b"
     },
     {
       "file": "runtime/coverage.json",
@@ -9545,7 +9553,7 @@
     },
     {
       "file": "runtime/source-identity.json",
-      "sha256": "cde39f3f9b85fed53361e418a31d0cb802b9c4c75afa69ff9dc0bc31363eac0e"
+      "sha256": "79ba412c4ee6d98c5087d839720d96c21b7ed15c57f2699858d3194869b453eb"
     },
     {
       "file": "runtime/tool-behavior.md",
@@ -9655,7 +9663,7 @@
   "alignedWith": {
     "productContractVersion": "1.0.0-rc.4",
     "productManifest": "contract-snapshot/manifest.json",
-    "productManifestSha256": "3b9c49cb6bbacb507afd1489af6567f10729dde3bbefcb17531047627b19fd99",
+    "productManifestSha256": "abf82e2659790f49139c7845dda05cd7861fea6272f8f82e634e405bd605f4db",
     "authoringContractVersion": "0.3.1",
     "authoringManifest": "contracts/manifest.json",
     "authoringManifestSha256": "fec61d127e70e48542a7dca80505befdf2a9d03418b301251ff4729a48adb98a",
