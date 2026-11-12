@@ -1,7 +1,7 @@
 {
   "interfaceVersion": "1.0",
-  "contentVersion": "1-402c2728c5d1d69b",
-  "contentSha256": "402c2728c5d1d69b7aa916649d26833a7ed59a1a5b1969befe5dfda0dceba1b3",
+  "contentVersion": "1-1ea15427a5fd3ae4",
+  "contentSha256": "1ea15427a5fd3ae4e82d3ad944859f11425e4848786aa559c6f4e908d13fee77",
   "files": [
     {
       "file": "authoring-contracts/authored/adapter-interface.md",
@@ -2957,7 +2957,7 @@
     },
     {
       "file": "product-contracts/manifest.json",
-      "sha256": "c404ea38e8379ecb67734fba78d8e198ecb5def836cd07b5fdc9b7ce66d761be"
+      "sha256": "6fa6f28c426fc3c34be4f139e7473ce865c5ca580ae47afe141caf870b437e6c"
     },
     {
       "file": "product-contracts/page/component-catalog.json",
@@ -9453,7 +9453,7 @@
     },
     {
       "file": "references/page-metadata/index.json",
-      "sha256": "d4b084e509fdd318908bff7b27f98d60774c1d003f7a235a68742db9f2aaa809"
+      "sha256": "3d3c0cfe2f739e6220d6b06a245ca4606b8c94a889f19e8355dbe22fc2a153f7"
     },
     {
       "file": "references/page-metadata/page.md",
@@ -9493,7 +9493,7 @@
     },
     {
       "file": "runtime/contract-alignment.json",
-      "sha256": "b69eff2a26f4b2bb68c31299103087e81e2ca320929502afbffe0d75a0bd0c50"
+      "sha256": "cd1a147bdf7dabaa0ef923ebf0c7025a61f3c754bf489761cd86f794697c4b6b"
     },
     {
       "file": "runtime/coverage.json",
@@ -9541,7 +9541,7 @@
     },
     {
       "file": "runtime/source-identity.json",
-      "sha256": "0852966d41c75fa025811e155000124bc5d5e8e1b8e2cb9ef1a8eef7678625f2"
+      "sha256": "a49d5b6fec0f6a60e105fe5b35e476efa200a94e93f193b80717eb3a89d04f52"
     },
     {
       "file": "runtime/tool-behavior.md",
@@ -9561,7 +9561,7 @@
     },
     {
       "file": "scripts/inspect-page.mjs",
-      "sha256": "53f587908f2ed3ecb8918d868680cf51a707e09ae8d54339913b57c17e6923ac"
+      "sha256": "be2b09a2f96533cea7f47c86b0344d2957a43a7f77baf999b8a1a1b45bda0dc7"
     },
     {
       "file": "scripts/inspect-page.mjs.LICENSES.md",
@@ -9605,7 +9605,7 @@
     },
     {
       "file": "scripts/upgrade-page.mjs",
-      "sha256": "1b7ace71bea2bd3666ba07043c1f138cc831a791b7a35ede9c08ae4bc3807124"
+      "sha256": "c19a156cbd83e2e474826c12c049b99501ceded181bd8f93c835777f2b20d6ce"
     },
     {
       "file": "scripts/upgrade-page.mjs.LICENSES.md",
@@ -9651,7 +9651,7 @@
   "alignedWith": {
     "productContractVersion": "1.0.0-rc.4",
     "productManifest": "contract-snapshot/manifest.json",
-    "productManifestSha256": "c404ea38e8379ecb67734fba78d8e198ecb5def836cd07b5fdc9b7ce66d761be",
+    "productManifestSha256": "6fa6f28c426fc3c34be4f139e7473ce865c5ca580ae47afe141caf870b437e6c",
     "authoringContractVersion": "0.3.1",
     "authoringManifest": "contracts/manifest.json",
     "authoringManifestSha256": "fec61d127e70e48542a7dca80505befdf2a9d03418b301251ff4729a48adb98a",

@@ -19,57 +19,53 @@ import { fieldTextComponentZ } from './field-text';
 import { aiSummaryComponentZ } from './ai-summary';
 
 // 有界内容联合：不引用顶层 componentZ，避免递归和两套类型名单。
-export const tabContentZ = z.discriminatedUnion('type', [
+const tabContentSchemas: readonly [
+  typeof filterGroupComponentZ, typeof buttonComponentZ, typeof tableComponentZ, typeof metricCardComponentZ,
+  typeof barChartComponentZ, typeof lineChartComponentZ, typeof pieChartComponentZ, typeof mapChartComponentZ,
+  typeof gaugeComponentZ, typeof compositeCardComponentZ, typeof categoryBreakdownComponentZ,
+  typeof rankingCardComponentZ, typeof rankingDetailCardComponentZ, typeof keyValuePanelComponentZ,
+  typeof textComponentZ, typeof fieldTextComponentZ, typeof aiSummaryComponentZ
+] = [
   filterGroupComponentZ, buttonComponentZ, tableComponentZ, metricCardComponentZ, barChartComponentZ, lineChartComponentZ,
   pieChartComponentZ, mapChartComponentZ, gaugeComponentZ, compositeCardComponentZ,
   categoryBreakdownComponentZ, rankingCardComponentZ, rankingDetailCardComponentZ,
   keyValuePanelComponentZ, textComponentZ, fieldTextComponentZ, aiSummaryComponentZ
-]).meta({ id: 'tabContent' });
+];
+// Preserve schema references in declarations instead of serializing the entire nested component union.
+export const tabContentZ: z.ZodDiscriminatedUnion<typeof tabContentSchemas, 'type'> = z.discriminatedUnion('type', tabContentSchemas).meta({ id: 'tabContent' });
 
-const tabItemZ = z
-  .union([
-    z
-      .object({
-        id: idZ,
-        ...visibilityShape,
-        label: nonEmptyTextValueZ,
-        component: tabContentZ
-      })
-      .strict(),
-    z
-      .object({
-        id: idZ,
-        ...visibilityShape,
-        label: nonEmptyTextValueZ,
-        components: z.array(tabContentZ).min(1)
-      })
-      .strict()
-  ])
-  .meta({ id: 'tabItem' });
+const tabItemBaseShape = {id: idZ, ...visibilityShape, label: nonEmptyTextValueZ};
+const singleTabItemShape: typeof tabItemBaseShape & {component: typeof tabContentZ} = {
+  ...tabItemBaseShape, component: tabContentZ
+};
+const multipleTabItemShape: typeof tabItemBaseShape & {components: z.ZodArray<typeof tabContentZ>} = {
+  ...tabItemBaseShape, components: z.array(tabContentZ).min(1)
+};
+const singleTabItemZ: z.ZodObject<typeof singleTabItemShape, z.core.$strict> = z.object(singleTabItemShape).strict();
+const multipleTabItemZ: z.ZodObject<typeof multipleTabItemShape, z.core.$strict> = z.object(multipleTabItemShape).strict();
+const tabItemSchemas: readonly [typeof singleTabItemZ, typeof multipleTabItemZ] = [singleTabItemZ, multipleTabItemZ];
+const tabItemZ: z.ZodUnion<typeof tabItemSchemas> = z.union(tabItemSchemas).meta({ id: 'tabItem' });
 
 /**
  * Tab 容器:卡内切换,每个 Tab 接受普通内容或组合卡，兼容旧单表与表格列表。
  * 显式 grid 复用 12 列栅格；缺省纵向全宽。
  */
-export const tabContainerComponentZ = z
-  .object({
-    id: componentIdZ,
-    ...visibilityShape,
-    type: z.literal('tabContainer'),
-    layout: componentLayoutZ,
-    props: z
-      .object({
-        title: textValueZ.optional(),
-        contentLayout: z.literal('grid').optional(),
-        variant: z.enum(['compact', 'analysisStack']).optional(),
-        defaultTab: idZ.optional(),
-        initialTabUrlParam: z.string().min(1).optional(),
-        tabs: z.array(tabItemZ).min(1)
-      })
-      .strict()
-  })
-  .strict()
-  .meta({ id: 'tabContainerComponent' });
+const tabContainerOptionalPropsShape = {
+  title: textValueZ.optional(),
+  contentLayout: z.literal('grid').optional(),
+  variant: z.enum(['compact', 'analysisStack']).optional(),
+  defaultTab: idZ.optional(),
+  initialTabUrlParam: z.string().min(1).optional()
+};
+const tabContainerPropsShape: typeof tabContainerOptionalPropsShape & {tabs: z.ZodArray<typeof tabItemZ>} = {
+  ...tabContainerOptionalPropsShape, tabs: z.array(tabItemZ).min(1)
+};
+const tabContainerPropsZ: z.ZodObject<typeof tabContainerPropsShape, z.core.$strict> = z.object(tabContainerPropsShape).strict();
+const tabContainerShape = {
+  id: componentIdZ, ...visibilityShape, type: z.literal('tabContainer'), layout: componentLayoutZ,
+  props: tabContainerPropsZ
+};
+export const tabContainerComponentZ: z.ZodObject<typeof tabContainerShape, z.core.$strict> = z.object(tabContainerShape).strict().meta({ id: 'tabContainerComponent' });
 
 componentCatalogRegistry.add(tabContainerComponentZ, {
   label: 'Tab 容器',
