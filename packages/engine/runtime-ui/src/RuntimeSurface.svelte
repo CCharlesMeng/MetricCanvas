@@ -1106,6 +1106,12 @@
     }
   }
 
+  function headerTitleLink(model:import('./ioc-header/model').ResolvedIocHeader) {
+    const target=model.titleNavigate;
+    if(!target || presentation?.gate(target).eligible===false)return;
+    return {...textLink({...target,label:model.title??''}),disabled:presentation?.gate(target).enabled===false};
+  }
+
   function textLink(link: TextLink) {
     return { label: link.label, href:targetHref(link), onclick: (event: MouseEvent) => navigateTarget(link,{},event) };
   }
@@ -1433,7 +1439,7 @@
         {@const slots = componentSnapshots(component)}
         <ComponentRenderer
           {component}
-          iocHeader={header.model?{model:header.model,filterIds:header.primary.map(filter=>filter.id),overflowIds:header.overflow.map(filter=>filter.id),controls:iocHeaderControls,
+          iocHeader={header.model?{model:header.model,titleLink:headerTitleLink(header.model),filterIds:header.primary.map(filter=>filter.id),overflowIds:header.overflow.map(filter=>filter.id),controls:iocHeaderControls,
             returnContext:navigation?.returnContext,onback:navigation?.back,readOnly:pageReadOnly,
             note:blockedFilters.length?`等待筛选确认或可信候选：${blockedFilters.map(id=>declarations.find(f=>f.id===id)?.label??id).join('、')}`:pageReadOnly?filterEditing?.reason??header.note??'筛选只读':header.note}:undefined}
           {initialTabs}

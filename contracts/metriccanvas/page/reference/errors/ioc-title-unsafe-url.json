@@ -1,0 +1,31 @@
+{
+  "case": "ioc-title-unsafe-url",
+  "invariant": "url-navigation-source-contract",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "导航只允许 HTTP(S) 或相对 URL",
+      "paths": [
+        "/sections/0/components/0/props/identity/titleNavigate/href"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "identity": {
+                "titleNavigate": {
+                  "href": "javascript:alert(1)"
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/ioc-title-unsafe-url.json"
+}

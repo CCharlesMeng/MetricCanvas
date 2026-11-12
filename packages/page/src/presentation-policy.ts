@@ -1,3 +1,4 @@
+import { headerDeclarations } from './header-binding';
 import {declaredFilterSample} from './filter-condition-sample';
 import {sourceFilterIds} from './data-source-references';
 import {expandedColumnFilterIds} from './table/condition-scope';
@@ -53,6 +54,10 @@ export function presentationPolicies(page: Page): PolicySite[] {
   page.sectionGroups?.forEach((node,i)=>add(node,`/sectionGroups/${i}`));
   page.sections.forEach((section,i)=>{ add(section,`/sections/${i}`); section.components.forEach((node,j)=>component(node,`/sections/${i}/components/${j}`)); });
   page.detailViews?.forEach((view,i)=>view.components.forEach((node,j)=>component(node,`/detailViews/${i}/components/${j}`)));
+  for(const header of headerDeclarations(page)){
+    const identity=header.props.identity as import('./schema/ioc-header').IocHeaderDeclaration['identity'];
+    add(identity?.titleNavigate,`${header.path}/identity/titleNavigate`);
+  }
   return sites;
 }
 function sampleForField(field: FieldDefinition): ConditionValue | undefined {

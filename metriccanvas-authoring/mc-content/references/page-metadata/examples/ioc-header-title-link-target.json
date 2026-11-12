@@ -1,0 +1,90 @@
+{
+  "schemaVersion": "6.115",
+  "id": "ioc-header-title-link-target",
+  "layout": "dashboard",
+  "meta": {
+    "title": "IOC 标题跳转目标（合成验收）"
+  },
+  "params": [
+    {
+      "id": "project",
+      "type": "string",
+      "required": true
+    },
+    {
+      "id": "reviewed",
+      "type": "boolean",
+      "required": false,
+      "default": false
+    },
+    {
+      "id": "source",
+      "type": "string",
+      "required": false
+    }
+  ],
+  "dataSources": {},
+  "sections": [
+    {
+      "id": "details",
+      "container": "plain",
+      "components": [
+        {
+          "id": "target-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "标题跳转目标"
+            },
+            "back": true,
+            "presentation": {
+              "layout": "inline"
+            }
+          }
+        },
+        {
+          "id": "values",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": {
+              "param": "project"
+            },
+            "body": {
+              "parts": [
+                "已审核：",
+                {
+                  "param": "reviewed"
+                }
+              ]
+            },
+            "links": [
+              {
+                "label": "返回标题跳转验收页",
+                "href": "/pages/ioc-header-title-link"
+              }
+            ]
+          }
+        },
+        {
+          "id": "origin",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "来源",
+            "body": {
+              "param": "source"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

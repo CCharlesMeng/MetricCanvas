@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.114",
+  "schemaVersion": "6.115",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "iocHeader.section-78cb7718"
@@ -48,6 +48,9 @@
         }
       ],
       "examples": [
+        "references/page-metadata/examples/ioc-header-title-link.json",
+        "references/page-metadata/examples/ioc-header-title-link-target.json",
+        "references/page-metadata/examples/ioc-header-title-link-legacy.json",
         "references/page-metadata/examples/ioc-header-section-placement.json",
         "references/page-metadata/examples/ioc-component-availability-page.json",
         "references/page-metadata/examples/ioc-component-ioc-header-page.json",

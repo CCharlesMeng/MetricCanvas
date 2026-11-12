@@ -83,7 +83,7 @@ filter 读取当前已应用筛选状态，初次从 default/initialParam/URL �
 表头 select 叶子列的 initialParam 引用 params.query.dimensions 字符串维度参数，作为实例初值，与 defaultValues 互斥；不要求固定 paramBindings，不得重复永久控制目标。参数保存值提供缺省，URL 重复键提供多值；缺席可选参数不限，非法值拒绝。初值只在新实例消费，TableSession 拥有之后的已提交选择，清空、分页、刷新、Tab、恢复空视图与导出不补回 URL。allBehavior 的全选规则、静态 main 范围和查询限制见[Table 正文](components/table.md#table-header-params)。
 
 
-页面协议 6.114。结构真源为本册[schema.json](schema.json)，SHA256 `68b8e6ee5220d47dcb44520d0ea4fda543f82323e511c5abfa76f8444ea3f2ba`。字段表自动生成；可选不等于有默认值。
+页面协议 6.115。结构真源为本册[schema.json](schema.json)，SHA256 `7614c0c4578fdd2e1c05d9a44a7ac2f2f21fd4facea5c80a920b9b96d024ed1b`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -1414,13 +1414,13 @@ Schema位置：`#/definitions/textValue/anyOf/3`。目标：[#/definitions/textV
 - `#/definitions/nonEmptyTextValue/anyOf/1`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/sections/0/components/0/props/title`。
 - `#/definitions/nonEmptyTextValue/anyOf/2`：[合法完整页面](examples/ioc-header-page.json)，JSON Pointer `#/iocHeader/identity/facts/0/value`。
 - `#/definitions/nonEmptyTextValue/anyOf/3`：[合法完整页面](examples/ioc-header-section-placement.json)，JSON Pointer `#/sections/0/components/0/props/identity/title`。
-- `#/definitions/textValueComposition/properties/parts/items/anyOf/0`：[合法完整页面](examples/ioc-header-section-placement.json)，JSON Pointer `#/sections/0/components/0/props/identity/title/parts/0`。
-- `#/definitions/textValueComposition/properties/parts/items/anyOf/1`：[合法完整页面](examples/text-composition-page.json)，JSON Pointer `#/sections/0/components/0/props/title/parts/2`。
+- `#/definitions/textValueComposition/properties/parts/items/anyOf/0`：[合法完整页面](examples/ioc-header-title-link-target.json)，JSON Pointer `#/sections/0/components/1/props/body/parts/0`。
+- `#/definitions/textValueComposition/properties/parts/items/anyOf/1`：[合法完整页面](examples/ioc-header-title-link-target.json)，JSON Pointer `#/sections/0/components/1/props/body/parts/1`。
 - `#/definitions/textValueComposition/properties/parts/items/anyOf/2`：[合法完整页面](examples/ioc-header-section-placement.json)，JSON Pointer `#/sections/0/components/0/props/identity/title/parts/1`。
-- `#/definitions/pageParam/anyOf/0`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/params/2`。
-- `#/definitions/pageParam/anyOf/0/properties/default/anyOf/0`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/params/2/default`。
+- `#/definitions/pageParam/anyOf/0`：[合法完整页面](examples/ioc-header-title-link.json)，JSON Pointer `#/params/0`。
+- `#/definitions/pageParam/anyOf/0/properties/default/anyOf/0`：[合法完整页面](examples/ioc-header-title-link.json)，JSON Pointer `#/params/0/default`。
 - `#/definitions/pageParam/anyOf/0/properties/default/anyOf/1`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/params/3/default`。
-- `#/definitions/pageParam/anyOf/0/properties/default/anyOf/2`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/params/4/default`。
+- `#/definitions/pageParam/anyOf/0/properties/default/anyOf/2`：[合法完整页面](examples/ioc-header-title-link-target.json)，JSON Pointer `#/params/1/default`。
 - `#/definitions/pageParam/anyOf/0/properties/value/anyOf/0`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/params/2/value`。
 - `#/definitions/pageParam/anyOf/0/properties/value/anyOf/1`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/params/3/value`。
 - `#/definitions/pageParam/anyOf/0/properties/value/anyOf/2`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/params/4/value`。
@@ -1440,6 +1440,6 @@ Schema位置：`#/definitions/textValue/anyOf/3`。目标：[#/definitions/textV
 - `#/definitions/timeWindow/oneOf/3`：[合法完整页面](examples/time-params-page.json)，JSON Pointer `#/dataSources/month-to-date/source/query/paramBindings/report-month/window`。
 - `#/definitions/timeWindow/oneOf/4`：[合法完整页面](examples/time-params-page.json)，JSON Pointer `#/dataSources/legacy-to-date/source/query/paramBindings/report-month/window`。
 - `#/definitions/textValue/anyOf/0`：[合法完整页面](examples/component-metricCard.json)，JSON Pointer `#/sections/0/components/0/props/title`。
-- `#/definitions/textValue/anyOf/1`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/sections/0/components/4/props/title`。
+- `#/definitions/textValue/anyOf/1`：[合法完整页面](examples/ioc-header-title-link-target.json)，JSON Pointer `#/sections/0/components/1/props/title`。
 - `#/definitions/textValue/anyOf/2`：[合法完整页面](examples/report-filter-text-page.json)，JSON Pointer `#/sections/2/components/0/props/body`。
-- `#/definitions/textValue/anyOf/3`：[合法完整页面](examples/text-composition-page.json)，JSON Pointer `#/sections/0/components/0/props/subtitle`。
+- `#/definitions/textValue/anyOf/3`：[合法完整页面](examples/ioc-header-title-link-target.json)，JSON Pointer `#/sections/0/components/1/props/body`。

@@ -11,6 +11,9 @@
         "页面、版本与布局"
       ],
       "examples": [
+        "ioc-header-title-link",
+        "ioc-header-title-link-target",
+        "ioc-header-title-link-legacy",
         "inline-report",
         "reference-branches-page",
         "detail-views",
@@ -1356,6 +1359,9 @@
         "页级筛选"
       ],
       "examples": [
+        "ioc-header-title-link",
+        "ioc-header-title-link-target",
+        "ioc-header-title-link-legacy",
         "ioc-header-section-placement",
         "ioc-component-availability-page",
         "ioc-component-ioc-header-page",
@@ -1744,6 +1750,7 @@
     "#/definitions/metricCardLayout/properties/before/properties/gap": "文字内容盒到两侧卡片的间距，单位CSS px，缺省8；不是卡片内部padding。",
     "#/properties/iocHeader": "IOC页级身份与筛选位置声明；不承担查询编排，见page.md的IOC公共页头。",
     "#/properties/iocHeader/properties/identity": "可选身份行；省略不自动使用目录标题。",
+    "#/properties/iocHeader/properties/identity/properties/titleNavigate": "6.115：标题的普通导航目标；必须有 title，无行上下文，静态导出仅保留文字。",
     "#/properties/iocHeader/properties/identity/properties/code": "标签与业务编码整体显示；缺值整体省略。",
     "#/properties/iocHeader/properties/identity/properties/description/properties/text": "纯文本说明，沿用TextValue引用。",
     "#/properties/iocHeader/properties/identity/properties/description/properties/presentation": "说明直接显示或通过键盘可达说明入口展开。",
@@ -1891,6 +1898,7 @@
     "enumValues": "列主字段的前端枚举字典，1至1000项；原始值类型敏感且不得重复，统一显示、静态选项和导出标签，不改写查询编码。",
     "#/definitions/tableColumn/properties/filterable/anyOf/0/properties/defaultValues": "select 列头初始选中的原始值数组；省略或空数组初始不筛选，用户清空后不补回。须符合静态 main 维度字段类型和已有列字典；详情及组合查询沿用各自执行约束。",
     "#/definitions/iocHeaderComponent/properties/props": "IOC页级身份与筛选位置声明；不承担查询编排，见page.md的IOC公共页头。",
+    "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/titleNavigate": "6.115：标题的普通导航目标；复用 href、query、目标校验与条件，无行上下文，省略为普通标题。",
     "#/definitions/iocHeaderComponent/properties/props/properties/identity": "可选身份行；省略不自动使用目录标题。",
     "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/code": "标签与业务编码整体显示；缺值整体省略。",
     "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/description/properties/text": "纯文本说明，沿用TextValue引用。",
@@ -2327,9 +2335,22 @@
     "6.113": "number-0普通数值整数展示。",
     "6.114": "普通及层级维度绑定显式包含与排除。",
     "=": "维度绑定包含所选值，单选等值、多选集合包含。",
-    "!=": "维度绑定排除全部所选值，单选不等、多选集合排除。"
+    "!=": "维度绑定排除全部所选值，单选不等、多选集合排除。",
+    "#/properties/schemaVersion=\"6.115\"": "IOC 页头标题支持普通 URL 导航及显式页面参数、筛选传参。"
   },
   "branchExceptions": {
+    "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/titleNavigate/properties/query/additionalProperties/oneOf/0": {
+      "case": "ioc-title-row-source",
+      "rule": "url-navigation-source-contract",
+      "reason": "IOC 页头标题没有行上下文；共享导航的 row 分支由导航语义拒绝。",
+      "source": "packages/page/src/navigate.ts"
+    },
+    "#/properties/iocHeader/properties/identity/properties/titleNavigate/properties/query/additionalProperties/oneOf/0": {
+      "case": "ioc-title-root-row-source",
+      "rule": "url-navigation-source-contract",
+      "reason": "IOC 页头标题没有行上下文；共享导航的 row 分支由导航语义拒绝。",
+      "source": "packages/page/src/navigate.ts"
+    },
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
       "case": "navigation-text-row-source",
       "rule": "url-navigation-source-contract",
@@ -3517,7 +3538,8 @@
       "数据源候选下拉（6.90）"
     ],
     "components/iocHeader.md": [
-      "页头子控件（6.91）"
+      "页头子控件（6.91）",
+      "标题跳转（6.115）"
     ],
     "authoring-analysis-rebind.md": [
       "完整基线和关联报告",

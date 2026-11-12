@@ -587,8 +587,12 @@ export const invariants: InvariantDefinition[] = [
   {
     id: 'url-navigation-source-contract',
     description: 'URL 与来源绑定可校验，目标存在性与必填项由目标负责',
-    valid: ['url-navigation-page'],
+    valid: ['url-navigation-page','ioc-header-title-link','ioc-header-title-link-legacy'],
     cases: [
+      {case:'ioc-title-row-source',base:'ioc-header-title-link',expect:/当前行缺少可传参的标量字段/,mutate:d=>{firstComponent(d).props.identity.titleNavigate.query.extra={source:'row',field:'code'};}},
+      {case:'ioc-title-root-row-source',base:'ioc-header-title-link-legacy',expect:/当前行缺少可传参的标量字段/,mutate:d=>{d.iocHeader.identity.titleNavigate.query.extra={source:'row',field:'code'};}},
+      {case:'ioc-title-unsafe-url',base:'ioc-header-title-link',expect:/导航只允许 HTTP/,mutate:d=>{firstComponent(d).props.identity.titleNavigate.href='javascript:alert(1)';}},
+      {case:'ioc-title-missing-title',base:'ioc-header-title-link',expect:/标题导航必须同时声明/,mutate:d=>{delete firstComponent(d).props.identity.title;}},
       {case:'navigation-invalid-authority',base:'url-navigation-page',expect:/导航只允许 HTTP/,mutate:d=>{firstComponent(d).props.actions[0].navigate.href='https://bad host/path';}},
       {case:'navigation-invalid-port',base:'url-navigation-page',expect:/导航只允许 HTTP/,mutate:d=>{firstComponent(d).props.actions[0].navigate.href='https://example.com:70000/path';}},
       {case:'navigation-scheme-without-authority',base:'url-navigation-page',expect:/导航只允许 HTTP/,mutate:d=>{firstComponent(d).props.actions[0].navigate.href='https:example.com/path';}},

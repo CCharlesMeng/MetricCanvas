@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { idZ, nonEmptyTextValueZ } from './primitives';
+import { navigationTargetZ } from './navigation';
 
 export const iocHeaderControlZ = z.discriminatedUnion('type', [
   z.object({id:idZ,type:z.literal('filterControl'),props:z.object({filterId:idZ}).strict()}).strict(),
@@ -11,6 +12,7 @@ export type IocHeaderControl = z.infer<typeof iocHeaderControlZ>;
 export const iocHeaderZ = z.object({
   identity: z.object({
     title: nonEmptyTextValueZ.optional(),
+    titleNavigate: navigationTargetZ.optional(),
     code: z.object({ label: nonEmptyTextValueZ, value: nonEmptyTextValueZ }).strict().optional(),
     description: z.object({ text: nonEmptyTextValueZ, presentation: z.enum(['inline', 'tooltip']).optional() }).strict().optional(),
     tags: z.array(z.object({ id: idZ, text: nonEmptyTextValueZ, tone: z.enum(['neutral', 'info', 'success', 'warning', 'danger']).optional() }).strict()).min(1).optional(),

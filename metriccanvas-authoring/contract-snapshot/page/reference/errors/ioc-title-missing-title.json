@@ -1,0 +1,52 @@
+{
+  "case": "ioc-title-missing-title",
+  "invariant": "url-navigation-source-contract",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "标题导航必须同时声明 identity.title",
+      "paths": [
+        "/sections/0/components/0/props/identity/titleNavigate"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "identity": {
+                "titleNavigate": {
+                  "href": "/pages/ioc-header-title-link-target?source=header#details",
+                  "validateTargetInputs": true,
+                  "query": {
+                    "project": {
+                      "…": "共2个键"
+                    },
+                    "reviewed": {
+                      "…": "共2个键"
+                    }
+                  },
+                  "visibleWhen": {
+                    "filter": "show-link",
+                    "op": "eq",
+                    "value": true,
+                    "part": "value"
+                  },
+                  "enabledWhen": {
+                    "filter": "allow-navigation",
+                    "op": "eq",
+                    "value": true,
+                    "part": "value"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/ioc-title-missing-title.json"
+}

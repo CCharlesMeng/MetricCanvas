@@ -1,0 +1,35 @@
+{
+  "case": "ioc-title-row-source",
+  "invariant": "url-navigation-source-contract",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "当前行缺少可传参的标量字段:code",
+      "paths": [
+        "/sections/0/components/0/props/identity/titleNavigate/query/extra/field"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "identity": {
+                "titleNavigate": {
+                  "query": {
+                    "extra": {
+                      "field": "code"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/ioc-title-row-source.json"
+}

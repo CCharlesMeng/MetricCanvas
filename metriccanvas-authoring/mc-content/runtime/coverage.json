@@ -288,6 +288,11 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/ioc-header-title-link-legacy.json",
+      "target": "product-contracts/page/conformance/valid/ioc-header-title-link-legacy.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/valid/ioc-header-unconfigured.json",
       "target": "product-contracts/page/conformance/valid/ioc-header-unconfigured.json",
       "scope": "exact product contract"
@@ -833,6 +838,16 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/ioc-header-title-link.json",
+      "target": "product-contracts/page/conformance/valid/ioc-header-title-link.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/ioc-header-title-link-target.json",
+      "target": "product-contracts/page/conformance/valid/ioc-header-title-link-target.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/valid/conditional-query-demand.json",
       "target": "product-contracts/page/conformance/valid/conditional-query-demand.json",
       "scope": "exact product contract"
@@ -1175,6 +1190,11 @@
     {
       "source": "product:page/conformance/valid/ioc-component-ioc-header-time.json",
       "target": "product-contracts/page/conformance/valid/ioc-component-ioc-header-time.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/ioc-component-ioc-header-title-link-legacy.json",
+      "target": "product-contracts/page/conformance/valid/ioc-component-ioc-header-title-link-legacy.json",
       "scope": "exact product contract"
     },
     {
@@ -2965,6 +2985,26 @@
     {
       "source": "product:page/conformance/invalid/layout-invalid-value.json",
       "target": "product-contracts/page/conformance/invalid/layout-invalid-value.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/ioc-title-row-source.json",
+      "target": "product-contracts/page/conformance/invalid/ioc-title-row-source.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/ioc-title-root-row-source.json",
+      "target": "product-contracts/page/conformance/invalid/ioc-title-root-row-source.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/ioc-title-unsafe-url.json",
+      "target": "product-contracts/page/conformance/invalid/ioc-title-unsafe-url.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/ioc-title-missing-title.json",
+      "target": "product-contracts/page/conformance/invalid/ioc-title-missing-title.json",
       "scope": "exact product contract"
     },
     {
@@ -5913,6 +5953,26 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/errors/ioc-title-row-source.json",
+      "target": "references/page-metadata/errors/ioc-title-row-source.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/ioc-title-root-row-source.json",
+      "target": "references/page-metadata/errors/ioc-title-root-row-source.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/ioc-title-unsafe-url.json",
+      "target": "references/page-metadata/errors/ioc-title-unsafe-url.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/ioc-title-missing-title.json",
+      "target": "references/page-metadata/errors/ioc-title-missing-title.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/errors/navigation-invalid-authority.json",
       "target": "references/page-metadata/errors/navigation-invalid-authority.json",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -6955,6 +7015,21 @@
     {
       "source": "product:page/reference/rules.json",
       "target": "references/page-metadata/rules.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/examples/ioc-header-title-link.json",
+      "target": "references/page-metadata/examples/ioc-header-title-link.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/examples/ioc-header-title-link-target.json",
+      "target": "references/page-metadata/examples/ioc-header-title-link-target.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/examples/ioc-header-title-link-legacy.json",
+      "target": "references/page-metadata/examples/ioc-header-title-link-legacy.json",
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
@@ -8284,11 +8359,11 @@
     }
   ],
   "counts": {
-    "product": 1624,
+    "product": 1639,
     "authoring": 32,
     "modules": 36,
-    "topics": 305,
-    "nodes": 2647,
+    "topics": 306,
+    "nodes": 2687,
     "tools": 9,
     "components": 20
   },

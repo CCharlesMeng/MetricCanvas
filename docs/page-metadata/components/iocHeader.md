@@ -36,3 +36,25 @@ RegionFilter 固定提供可搜索、可清空的单选组织树，层级为 `ge
 6.95 起，表格列可通过 `selection.writes.region: {field:"office-value",level:"office"}` 更新这个公共筛选，页头自动回显并沿用相同查询刷新链路。`regionFilter` 子控件 ID 无需被表格引用，页面无需重复声明 `filters.region`。详见[单元格点击与筛选联动](table.md#table-cell-selection)。
 
 完整合成验收入口 `/pages/ioc-header-controls`，声明与操作见场景目录 `pages/capabilities/ioc-header/controls/README.md`。真实 Operation Map 接口与 DQE 数据由集成环境另验。
+
+## 标题跳转（6.115）
+
+`props.identity.titleNavigate` 是可选的普通导航目标，复用表格列 `navigate` 的 `href`、`query`、`validateTargetInputs`、`visibleWhen` 和 `enabledWhen`。必须同时声明 `identity.title`；不增加 `link` 开关，不改变标题的文本取值写法。
+
+```json
+{
+  "id": "page-header", "type": "iocHeader", "layout": { "span": 12 },
+  "props": {
+    "identity": {
+      "title": "经营概览",
+      "titleNavigate": { "href": "/operation-map/overview" }
+    }
+  }
+}
+```
+
+`href` 允许 HTTP(S) 和相对 URL，沿用已有地址安全、路由解析与导航接管规则。`query` 可显式引用页面参数或已应用筛选，标题没有行上下文，拒绝 `source:"row"`。查询值沿用既有编码和目标输入校验，不自动携带未声明的参数或筛选。
+
+省略时呈现普通标题；声明时标题为原生链接，保留现有字号、字重与颜色，悬停显示下划线，可键盘激活、复制地址或在新标签页打开。`visibleWhen` 不满足时只取消链接，标题文字仍显示；`enabledWhen` 不满足时保留文字并标记禁用。返回按钮与标题导航各自独立。只读筛选不禁止导航；静态导出仅保留标题文字。旧根级 IOC 声明在版本满足时复用相同行为；已有无链接页面无需修改。
+
+完整合成入口 `/pages/ioc-header-title-link` 与 `/pages/ioc-header-title-link-target`，覆盖页面参数、布尔筛选、目标校验和条件；操作与证据边界见示例目录 README。该场景不验证真实业务地址或 DQE。

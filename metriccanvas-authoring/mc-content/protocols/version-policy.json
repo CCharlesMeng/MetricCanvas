@@ -1,7 +1,7 @@
 {
   "major": 6,
-  "minor": 114,
-  "current": "6.114",
+  "minor": 115,
+  "current": "6.115",
   "capabilities": {
     "dimension-binding-operator": {
       "minor": 114,
@@ -16,6 +16,11 @@
     "table-slot-search": {
       "minor": 109,
       "description": "表格补充数据槽的单字段精确搜索与行键回查",
+      "legacyReadable": false
+    },
+    "ioc-header-title-navigation": {
+      "minor": 115,
+      "description": "IOC 页头标题复用普通 URL 导航及页面参数、筛选传参",
       "legacyReadable": false
     },
     "table-default-sort": {
@@ -1029,6 +1034,7 @@
     "6.111",
     "6.112",
     "6.113",
-    "6.114"
+    "6.114",
+    "6.115"
   ]
 }

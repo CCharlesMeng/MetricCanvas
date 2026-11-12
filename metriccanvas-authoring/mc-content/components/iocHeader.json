@@ -23,8 +23,114 @@
   "knowledge": "iocHeader.overview",
   "reference": "references/page-metadata/components/iocHeader.md",
   "versionPolicy": "protocol/version-policy",
-  "currentWriter": "6.114",
+  "currentWriter": "6.115",
   "exampleVersionRequirements": [
+    {
+      "file": "references/page-metadata/examples/ioc-header-title-link.json",
+      "requiredVersion": "6.115",
+      "capabilities": [
+        {
+          "id": "ioc-header-title-navigation",
+          "minor": 115,
+          "description": "IOC 页头标题复用普通 URL 导航及页面参数、筛选传参"
+        },
+        {
+          "id": "ioc-header-component",
+          "minor": 81,
+          "description": "IOC 页头作为首分区首组件"
+        },
+        {
+          "id": "navigation-inputs",
+          "minor": 40,
+          "description": "显式跨页传值与目标输入契约验证"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "page-params",
+          "minor": 0,
+          "description": "顶层 params:页面参数声明(ADR-0047)"
+        },
+        {
+          "id": "filter-boolean",
+          "minor": 0,
+          "description": "boolean 筛选器(ADR-0050)"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/ioc-header-title-link-target.json",
+      "requiredVersion": "6.81",
+      "capabilities": [
+        {
+          "id": "ioc-header-component",
+          "minor": 81,
+          "description": "IOC 页头作为首分区首组件"
+        },
+        {
+          "id": "text-value-composition",
+          "minor": 23,
+          "description": "字面量、参数与已应用筛选值的显式文本片段组合"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "page-params",
+          "minor": 0,
+          "description": "顶层 params:页面参数声明(ADR-0047)"
+        },
+        {
+          "id": "text-value-reference",
+          "minor": 0,
+          "description": "文本取值引用页面参数而不是写字面量(ADR-0047)"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/ioc-header-title-link-legacy.json",
+      "requiredVersion": "6.115",
+      "capabilities": [
+        {
+          "id": "ioc-header-title-navigation",
+          "minor": 115,
+          "description": "IOC 页头标题复用普通 URL 导航及页面参数、筛选传参"
+        },
+        {
+          "id": "ioc-header-component",
+          "minor": 81,
+          "description": "IOC 页头作为首分区首组件"
+        },
+        {
+          "id": "navigation-inputs",
+          "minor": 40,
+          "description": "显式跨页传值与目标输入契约验证"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "page-params",
+          "minor": 0,
+          "description": "顶层 params:页面参数声明(ADR-0047)"
+        },
+        {
+          "id": "filter-boolean",
+          "minor": 0,
+          "description": "boolean 筛选器(ADR-0050)"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
     {
       "file": "references/page-metadata/examples/ioc-header-section-placement.json",
       "requiredVersion": "6.81",
