@@ -7,6 +7,7 @@ const exactInputs = new Map([
   ['table-child-keyless','child-keyless'],
   ['object-period-query','object-period'],
   ['filter-binding-when','binding-when'],
+  ['dimension-binding-operator','dimension-operator'],
   ['sdt-period-aggregation','period-aggregation'],
   ['table-header-select-all-query','full-query-candidates'],
   ['ioc-header-controls','header-controls'],

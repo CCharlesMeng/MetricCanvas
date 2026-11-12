@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from metriccanvas_authoring.bundle_lock import load_bundle_lock
 import json
 import tomllib
 import unittest
@@ -16,7 +17,7 @@ RELAY_CONFIG = (
 
 class DistributionContractTest(unittest.TestCase):
     def test_build_artifacts_are_not_source_bundle_inputs(self) -> None:
-        lock = json.loads((BUNDLE_ROOT / "bundle.lock.json").read_text(encoding="utf-8"))
+        lock = load_bundle_lock(BUNDLE_ROOT)
         self.assertFalse(any(
             "dist" in artifact["file"].split("/")
             for artifact in lock["artifacts"]
@@ -55,6 +56,7 @@ class DistributionContractTest(unittest.TestCase):
             "metriccanvas_authoring/_bundle/contracts/authored/authoring-turn.schema.json",
             "metriccanvas_authoring/_bundle/bundle.json",
             "metriccanvas_authoring/_bundle/bundle.lock.json",
+            "metriccanvas_authoring/_bundle/bundle-locks",
             "metriccanvas_authoring/_bundle/contract-lock.json",
             "metriccanvas_authoring/_bundle/contracts/authored/page-build-spec.schema.json",
             "metriccanvas_authoring/_bundle/contracts/authored/page-edit-request.schema.json",

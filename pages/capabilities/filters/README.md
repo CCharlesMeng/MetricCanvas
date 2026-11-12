@@ -328,3 +328,17 @@
 `?state=error` 模拟请求失败，missing无记录、invalid非法日期、conflict同名不同日期、timeout超时；各入口均回退执行环境当前日期所在月。URL明确传入例如 `?period-filter=month%3A2026-08` 时，定稿查询仍执行一次，再由既有导航流程应用8月。
 
 浏览器自动验收：`pnpm --filter playground exec playwright test tests/finalization-default.browser.ts`。场景仅证明协议与引擎，不证明真实截止表、DQE、Relay或生产权限接入。
+
+## 维度绑定包含与排除
+
+<!-- example:dimension-binding-operator -->
+入口：`/pages/dimension-binding-operator`；[页面 JSON](dimension-binding-operator.json)。启动 `pnpm dev:playground`，使用专属本地合成 Adapter，无需 DQE Sim。
+
+用途：复用普通和层级维度绑定的包含/排除声明。稳定参考对象是同页四张表及其查询；移植时替换真实查询字段与层级字段映射，不把合成组织或金额当业务依据。
+
+1. 默认“所选区域”为北区：省略 operator 和显式 `=` 两表显示北京10、天津20；对象 `!=` 表显示广州30。
+2. 默认“排除组织”为区域层级北区：层级 `!=` 表显示广州30。访问 `?organization.level=office&organization=北京` 时只向“代表处”字段排除北京，显示天津20、广州30。
+3. “所选区域”再勾选南区：包含两表显示全部三行，对象排除为空；清空后各普通维度表恢复三行。组织筛选独立保持，层级表不随普通区域选择变化。
+4. 各表 XLSX 导出使用本表完整筛选结果。`?state=error` 通过 `metriccanvas:dimension-operator-runtime` 上抛实际运行时 data-error（表格沿用空占位），`?state=empty` 显示空结果且不产生 data-error；非法 operator 如 `<>` 或版本低于6.114的显式 operator 由校验拒绝。
+
+自动验收：`pnpm --filter playground exec playwright test tests/dimension-binding-operator.browser.ts`。浏览器读取此 JSON 验证交互、层级切换和异常；执行层回归补充表头交集、关联键、缓存、完整读取与候选。合成 Adapter 调用实际 DQE 编码后筛选三条合成记录，不证明真实 DQE、Relay、空值或生产授权。

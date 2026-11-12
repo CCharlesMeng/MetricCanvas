@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.113",
+  "schemaVersion": "6.114",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "query.bindingWhen"
@@ -115,6 +115,7 @@
         }
       ],
       "examples": [
+        "references/page-metadata/examples/dimension-binding-operator.json",
         "references/page-metadata/examples/filter-binding-when.json",
         "references/page-metadata/examples/dimension-params-page.json",
         "references/page-metadata/examples/hierarchy-binding-page.json",
@@ -158,7 +159,7 @@
           "sections"
         ],
         "title": "页面",
-        "$id": "https://metriccanvas/page/v6.113",
+        "$id": "https://metriccanvas/page/v6.114",
         "properties": {
           "schemaVersion": "#/properties/schemaVersion",
           "id": "#/properties/id",
@@ -253,6 +254,7 @@
         "properties": {
           "target": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/0/properties/target",
           "queryField": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/0/properties/queryField",
+          "operator": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/0/properties/operator",
           "when": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/0/properties/when"
         },
         "additionalProperties": false
@@ -286,6 +288,7 @@
         ],
         "properties": {
           "target": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/1/properties/target",
+          "operator": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/1/properties/operator",
           "when": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/1/properties/when",
           "levelQueryFields": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/1/properties/levelQueryFields"
         },

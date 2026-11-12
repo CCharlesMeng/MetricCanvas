@@ -1,10 +1,11 @@
 """Negative build gates use fixtures and do not advertise product operations."""
+import hashlib
 from pathlib import Path
 from types import SimpleNamespace
 import tempfile
 import unittest
 
-from export import resolved_descriptions, write_examples, write_json
+from export import copy_lock_groups, resolved_descriptions, write_examples, write_json
 from python_closure import closure
 from release import ReleaseError, read_json
 
@@ -68,6 +69,33 @@ class ExportGates(unittest.TestCase):
         self.assertEqual(entry["operation"], "page.validate")
         self.assertEqual(entry["expectedStatus"], "error")
         self.assertEqual(entry["expectedDiagnostic"], "SCHEMA_ERROR")
+
+    def test_validator_import_closure_includes_the_shared_lock_reader(self):
+        root=Path(__file__).resolve().parents[2]/'metriccanvas-authoring/tool'
+        files, _ = closure(root, ['metriccanvas_authoring.pages.validation.node_validator'])
+        self.assertIn('metriccanvas_authoring.bundle_lock', files)
+
+
+class BundleLockResources(unittest.TestCase):
+    def test_copies_split_lock_closure_and_rejects_a_corrupted_shard(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);bundle=root/'source';target=root/'target'
+            (bundle/'bundle-locks').mkdir(parents=True);target.mkdir()
+            content=b'{"artifacts":[]}'
+            (bundle/'bundle-locks/runtime.json').write_bytes(content)
+            write_json(bundle/'bundle.lock.json',{'groups':[{'file':'bundle-locks/runtime.json','sha256':hashlib.sha256(content).hexdigest()}]})
+            copy_lock_groups(bundle,target)
+            self.assertEqual((target/'bundle-locks/runtime.json').read_bytes(),content)
+            (bundle/'bundle-locks/runtime.json').write_bytes(b'changed')
+            with self.assertRaises(ReleaseError):copy_lock_groups(bundle,target)
+
+    def test_group_reference_cannot_escape_the_resource_target(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);bundle=root/'source';target=root/'target'
+            bundle.mkdir();target.mkdir();content=b'{}'
+            (bundle/'group.json').write_bytes(content)
+            write_json(bundle/'bundle.lock.json',{'groups':[{'file':'../source/group.json','sha256':hashlib.sha256(content).hexdigest()}]})
+            with self.assertRaises(ReleaseError):copy_lock_groups(bundle,target)
 
 
 if __name__ == "__main__":

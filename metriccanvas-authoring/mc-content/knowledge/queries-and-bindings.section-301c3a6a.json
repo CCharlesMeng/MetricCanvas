@@ -1,0 +1,147 @@
+{
+  "schemaVersion": "6.114",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "queries-and-bindings.section-301c3a6a"
+  ],
+  "semantics": [
+    {
+      "module": "queries-and-bindings",
+      "reference": "references/page-metadata/queries-and-bindings.md",
+      "blocks": [
+        "# 查询定义与显式绑定\n\n<a id=\"filter-binding-when\"></a>",
+        "## 维度绑定包含与排除（6.114）\n\n`filterBindings` 的 `target:\"dimension\"` 可选声明 `operator:\"=\" | \"!=\"`，普通 `queryField` 与层级 `levelQueryFields` 两支均支持；也适用于 `queryModes`、`timeModes` 的各查询分支。省略保持既有包含行为，不自动改写历史声明。\n\n```json\n{\n  \"filterBindings\": {\n    \"area\": {\"target\":\"dimension\",\"queryField\":\"区域\",\"operator\":\"!=\"},\n    \"organization\": {\"target\":\"dimension\",\"levelQueryFields\":{\"area\":\"区域\",\"office\":\"代表处\"},\"operator\":\"!=\"}\n  }\n}\n```\n\n`=` 包含所选值，单选等值、多选集合包含；`!=` 排除全部所选值，单选不等于、多选集合排除（NOT IN），不是逐项不等再 OR。层级绑定只向当前层级字段生成条件。清空、既有全选不限和 IOC 全球不限仍不生成绑定条件；`when` 拒绝时暂停，错误或等待仍拒绝查询。空字段是否匹配由真实 DQE 的空值语义决定，不由页面补值或本地取反。\n\n显式 operator 的绑定拥有其目标字段比较方式，接管同字段静态默认条件；层级切换清除其他层级的静态默认条件。其他字段和权限范围不变。指标 DQE 使用既有 `dim_value_list` 加 `is_exclude:true` 编码排除，对象 DQE 使用 `value_list` 加 `operator:\"!=\"`；显式 `=` 编码普通包含。未声明 operator 的历史指标查询维持原有静态条件合成行为。\n\n表头筛选和搜索以 AND 继续收窄；包含集合与排除集合相减，多个排除集合取并集，交集为空不发送无条件查询。关联键、候选、排序分页、缓存及完整导出保留同一排除意图。期间字段聚合的每个单月查询先排除，再聚合，不把排除改成年度结果包含。\n\n完整示例 `/pages/dimension-binding-operator` 对照省略、显式等值、对象排除及指标层级排除。该页使用本地合成 Adapter 核对实际编码和结果，不证明真实 DQE 的排除、空值、授权及准确总数；接入时需按真实服务验证。字段净增一个可选 operator；不新增筛选器状态或表达式。"
+      ],
+      "rules": [
+        {
+          "id": "period-aggregation",
+          "description": "近一年按业务维度逐字段求和/取月均值平均，完整输入及版本约束",
+          "valid": [
+            "sdt-period-aggregation"
+          ],
+          "invalid": [
+            "period-aggregation-old-version",
+            "period-aggregation-unknown-field",
+            "period-aggregation-duplicate-field",
+            "period-aggregation-incomplete-source",
+            "period-aggregation-unknown-method"
+          ]
+        },
+        {
+          "id": "query-dimension-measures",
+          "description": "6.56 DQE output_dims 中的现成数值显式作为页面度量，不改变查询与行粒度",
+          "valid": [
+            "stored-count-measures"
+          ],
+          "invalid": [
+            "dimension-measure-version",
+            "dimension-measure-legacy",
+            "dimension-measure-time-qualified-version",
+            "dimension-measure-nonnumeric",
+            "dimension-number-not-series",
+            "dimension-measure-not-collapsible"
+          ]
+        },
+        {
+          "id": "time-extensions",
+          "description": "6.39 显式时间模式、可信期间事实、快捷范围及V2月份窗口",
+          "valid": [
+            "time-modes-page",
+            "time-presets-page",
+            "availability-page",
+            "calendar-window-page",
+            "time-binding-branches-page"
+          ],
+          "invalid": [
+            "time-before-6.39",
+            "time-case-missing",
+            "time-query-xor",
+            "time-period-mismatch",
+            "time-output-mismatch",
+            "time-default-week",
+            "time-availability-default",
+            "time-fact-kind",
+            "time-window-static-options"
+          ]
+        },
+        {
+          "id": "query-field-mapping",
+          "description": "query 数据源字段与 DQE 输出字段之间的显式、唯一、角色相容映射",
+          "valid": [
+            "query-dashboard",
+            "mixed-page",
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "map-page",
+            "forecast-page"
+          ],
+          "invalid": [
+            "query-field-without-mapping",
+            "query-field-duplicate-mapping",
+            "query-field-not-output",
+            "query-detail-item-duplicate-mapping",
+            "query-dimension-role-mismatch",
+            "query-role-mismatch",
+            "query-output-unmapped"
+          ]
+        },
+        {
+          "id": "filter-binding",
+          "description": "筛选绑定引用已声明筛选器，time / dimension 目标类型匹配，层级绑定逐级声明谓词字段",
+          "valid": [
+            "query-dashboard",
+            "filters-page",
+            "map-page",
+            "hierarchy-binding-page"
+          ],
+          "invalid": [
+            "level-query-fields-on-flat-filter",
+            "level-query-fields-missing-level",
+            "level-query-fields-undeclared-level",
+            "hierarchy-filter-flat-query-field",
+            "time-point-target-not-time-point",
+            "boolean-target-not-boolean",
+            "number-range-target-not-number-range",
+            "time-point-initial-param-not-times",
+            "time-point-initial-param-precision",
+            "time-point-initial-param-range",
+            "time-point-initial-param-and-default",
+            "time-point-initial-param-without-query-target",
+            "unknown-filter-binding",
+            "filter-binding-time-target-not-time-range",
+            "filter-binding-dimension-target-not-dimension"
+          ]
+        }
+      ],
+      "examples": [
+        "references/page-metadata/examples/dimension-binding-operator.json",
+        "references/page-metadata/examples/filter-binding-when.json",
+        "references/page-metadata/examples/dimension-params-page.json",
+        "references/page-metadata/examples/hierarchy-binding-page.json",
+        "references/page-metadata/examples/non-dimension-bindings-page.json",
+        "references/page-metadata/examples/query-cascade-page.json",
+        "references/page-metadata/examples/query-result-where-page.json",
+        "references/page-metadata/examples/query-result-where-branches.json",
+        "references/page-metadata/examples/query-result-page-window-page.json",
+        "references/page-metadata/examples/time-modes-page.json",
+        "references/page-metadata/examples/time-presets-page.json",
+        "references/page-metadata/examples/availability-page.json",
+        "references/page-metadata/examples/calendar-window-page.json",
+        "references/page-metadata/examples/time-binding-branches-page.json",
+        "references/page-metadata/examples/query-modes-page.json",
+        "references/page-metadata/examples/query-mode-binding-branches-page.json",
+        "references/page-metadata/examples/object-query-page.json",
+        "references/page-metadata/examples/stored-count-measures.json",
+        "references/page-metadata/examples/period-query-columns-demo.json",
+        "references/page-metadata/examples/period-query-branches.json",
+        "references/page-metadata/examples/period-comparison-demo.json",
+        "references/page-metadata/examples/period-comparison-query-page.json",
+        "references/page-metadata/examples/sdt-period-aggregation.json",
+        "references/page-metadata/examples/object-period-query.json"
+      ]
+    }
+  ],
+  "nodes": [],
+  "unresolvedRefs": []
+}

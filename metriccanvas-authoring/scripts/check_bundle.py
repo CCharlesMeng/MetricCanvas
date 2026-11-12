@@ -5,6 +5,7 @@ import json
 import re
 import unicodedata
 import tomllib
+from bundle_lock import load_bundle_lock
 from pathlib import Path
 from typing import Any
 from urllib.parse import unquote, urlsplit
@@ -161,7 +162,7 @@ def validate_mc_content(root, bundle, contract_lock):
 
 def main() -> None:
     bundle = read_json(BUNDLE_ROOT / "bundle.json")
-    bundle_lock = read_json(BUNDLE_ROOT / "bundle.lock.json")
+    bundle_lock = load_bundle_lock(BUNDLE_ROOT)
     contract_lock = read_json(BUNDLE_ROOT / bundle["contracts"]["productLock"])
     if bundle["bundleVersion"] != bundle_lock["bundleVersion"]:
         raise SystemExit("bundleVersion does not match bundle.lock.json")

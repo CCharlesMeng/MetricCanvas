@@ -1,0 +1,51 @@
+import {readFileSync} from 'node:fs';
+import {createRequire} from 'node:module';
+const ExcelJS:typeof import('../../../packages/engine/node_modules/exceljs')=createRequire(import.meta.url)('../../../packages/engine/node_modules/exceljs');
+import {expect,test,type Page} from '@playwright/test';
+const example=JSON.parse(readFileSync(new URL('../../../pages/capabilities/filters/dimension-binding-operator.json',import.meta.url),'utf8'));
+const table=(page:Page,id:string)=>page.locator(`[data-component="results/${id}-table"]`);
+const entry=`/pages/${example.id}`;
+test('ordinary inclusion, exclusion, multiselect, clear and XLSX share the selected set',async({page})=>{
+  const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
+  await page.goto(entry);
+  await expect(table(page,'included')).toContainText('总条数： 2');
+  await expect(table(page,'explicit')).toContainText('总条数： 2');
+  await expect(table(page,'excluded')).toContainText('总条数： 1');
+  await expect(table(page,'excluded').getByRole('cell',{name:'广州',exact:true})).toBeVisible();
+  const pending=page.waitForEvent('download');await table(page,'excluded').getByRole('button',{name:'导出',exact:true}).click();
+  const file=await (await pending).path();if(!file)throw Error('download missing');
+  const book=new ExcelJS.Workbook();await book.xlsx.readFile(file);
+  expect(book.worksheets[0].rowCount).toBe(2);
+  expect(book.worksheets[0].getRow(2).values).toEqual([,'南区','广州',30]);
+  await page.getByRole('button',{name:'打开所选区域：北区',exact:true}).click();
+  await page.getByRole('option',{name:'南区',exact:true}).click();
+  await expect(table(page,'included')).toContainText('总条数： 3');
+  await expect(table(page,'excluded')).toContainText('暂无数据');
+  await expect(table(page,'hierarchy')).toContainText('总条数： 1');
+  await page.getByRole('group',{name:'所选区域',exact:true}).hover();
+  await page.getByRole('button',{name:'清空所选区域',exact:true}).click();
+  await expect(table(page,'excluded')).toContainText('总条数： 3');
+  await expect(table(page,'explicit')).toContainText('总条数： 3');
+  expect(errors).toEqual([]);
+});
+test('switching the hierarchy field excludes the office and clearing removes only that condition',async({page})=>{
+  await page.goto(entry+'?organization.level=office&organization='+encodeURIComponent('北京'));
+  await expect(table(page,'hierarchy')).toContainText('总条数： 2');
+  await expect(table(page,'hierarchy').getByRole('cell',{name:'天津',exact:true})).toBeVisible();
+  await expect(table(page,'hierarchy').getByRole('cell',{name:'北京',exact:true})).toHaveCount(0);
+  await page.getByRole('group',{name:'排除组织',exact:true}).hover();
+  await page.getByRole('button',{name:'清空排除组织',exact:true}).click();
+  await expect(table(page,'hierarchy')).toContainText('总条数： 3');
+  await expect(table(page,'excluded')).toContainText('总条数： 1');
+});
+test('synthetic failures emit runtime diagnostics and empty responses do not',async({page})=>{
+  await page.addInitScript(()=>{
+    (window as any).__dimensionEvents=[];
+    window.addEventListener('metriccanvas:dimension-operator-runtime',event=>(window as any).__dimensionEvents.push((event as CustomEvent).detail));
+  });
+  await page.goto(entry+'?state=error');
+  await expect.poll(()=>page.evaluate(()=>(window as any).__dimensionEvents.filter((event:any)=>event.type==='data-error').length)).toBe(4);
+  await page.goto(entry+'?state=empty');
+  await expect(table(page,'excluded')).toContainText('暂无数据');
+  expect(await page.evaluate(()=>(window as any).__dimensionEvents.filter((event:any)=>event.type==='data-error'))).toEqual([]);
+});

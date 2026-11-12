@@ -38,7 +38,7 @@ node scripts/associate-data.mjs page.rebind --page page.json --input rebind.json
 可观察 Dashboard 场景：`/pages/authoring-analysis-rebind`。场景说明提供完整命令、候选与重复行键拒绝步骤。页面协议字段增减为零；关联、证据核对、范围比较及原子换源均由创作核心承接。
 
 
-页面协议 6.113。结构真源为本册[schema.json](schema.json)，SHA256 `fa5cfc21d4eab72d87cabdcf3386f830f2aa18f46f565b902350636ff6b072bf`。字段表自动生成；可选不等于有默认值。
+页面协议 6.114。结构真源为本册[schema.json](schema.json)，SHA256 `68b8e6ee5220d47dcb44520d0ea4fda543f82323e511c5abfa76f8444ea3f2ba`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

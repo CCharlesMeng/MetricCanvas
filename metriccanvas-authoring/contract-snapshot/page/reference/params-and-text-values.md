@@ -83,7 +83,7 @@ filter 读取当前已应用筛选状态，初次从 default/initialParam/URL �
 表头 select 叶子列的 initialParam 引用 params.query.dimensions 字符串维度参数，作为实例初值，与 defaultValues 互斥；不要求固定 paramBindings，不得重复永久控制目标。参数保存值提供缺省，URL 重复键提供多值；缺席可选参数不限，非法值拒绝。初值只在新实例消费，TableSession 拥有之后的已提交选择，清空、分页、刷新、Tab、恢复空视图与导出不补回 URL。allBehavior 的全选规则、静态 main 范围和查询限制见[Table 正文](components/table.md#table-header-params)。
 
 
-页面协议 6.113。结构真源为本册[schema.json](schema.json)，SHA256 `fa5cfc21d4eab72d87cabdcf3386f830f2aa18f46f565b902350636ff6b072bf`。字段表自动生成；可选不等于有默认值。
+页面协议 6.114。结构真源为本册[schema.json](schema.json)，SHA256 `68b8e6ee5220d47dcb44520d0ea4fda543f82323e511c5abfa76f8444ea3f2ba`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

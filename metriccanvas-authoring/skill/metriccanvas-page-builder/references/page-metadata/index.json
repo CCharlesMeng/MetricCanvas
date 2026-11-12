@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.113",
-  "schemaSha256": "fa5cfc21d4eab72d87cabdcf3386f830f2aa18f46f565b902350636ff6b072bf",
+  "schemaVersion": "6.114",
+  "schemaSha256": "68b8e6ee5220d47dcb44520d0ea4fda543f82323e511c5abfa76f8444ea3f2ba",
   "semanticSources": [
     {
       "file": "metriccanvas-authoring/core/page/analysis-report.ts",
@@ -188,7 +188,7 @@
     },
     {
       "file": "packages/page/src/dqe-object.ts",
-      "sha256": "edbde09dba86e8ee4c9f7a5bd618ce0e57e3fa510726eda88f2b16e70509b0af"
+      "sha256": "78aad278fcb2b9d4a331c9777eb2a0f1c8204cdc7c3600b0e0395dc4f299347a"
     },
     {
       "file": "packages/page/src/field-resolution.ts",
@@ -284,7 +284,7 @@
     },
     {
       "file": "packages/page/src/query.ts",
-      "sha256": "a914b806d039156f42871c264fec5d7a2c47a218e4151f02446a6140df325d93"
+      "sha256": "e954f862a94898abfd191f3d7d3e4ee304717db5f49e70fd127dcc77e3330e43"
     },
     {
       "file": "packages/page/src/report-date-filters.ts",
@@ -380,7 +380,7 @@
     },
     {
       "file": "packages/page/src/schema/data-source.ts",
-      "sha256": "77da0c27d9dfe60155910904acdf9368b45b95d2d896775cf3d75e57e33a67fc"
+      "sha256": "efe73f958c2647887b065b4e0815e0e29a7c045cd422ccc24048850b9aa63f11"
     },
     {
       "file": "packages/page/src/schema/filter.ts",
@@ -516,7 +516,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "bc63af02f03e7a512ba7c6b434ddf5135fab8688b31ff35330346cfdce6a7b4c"
+      "sha256": "001cbdce3afd09a09738a59bb37486e742fe600c8cd2bdf060984a36b4e1f883"
     }
   ],
   "modules": {
@@ -753,6 +753,7 @@
         "filter.fields"
       ],
       "examples": [
+        "dimension-binding-operator",
         "filter-binding-when",
         "dimension-params-page",
         "hierarchy-binding-page",
@@ -2124,7 +2125,8 @@
         "6.110",
         "6.111",
         "6.112",
-        "6.113"
+        "6.113",
+        "6.114"
       ]
     },
     {
@@ -6001,6 +6003,16 @@
       "module": "queries-and-bindings.md"
     },
     {
+      "pointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/0/properties/operator",
+      "path": "@dqeQuery.filterBindings{key} · anyOf[0].operator",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md",
+      "enum": [
+        "=",
+        "!="
+      ]
+    },
+    {
       "pointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/0/properties/when",
       "path": "@dqeQuery.filterBindings{key} · anyOf[0].when",
       "required": "本分支可选",
@@ -6614,6 +6626,16 @@
       "const": "dimension"
     },
     {
+      "pointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/1/properties/operator",
+      "path": "@dqeQuery.filterBindings{key} · anyOf[1].operator",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md",
+      "enum": [
+        "=",
+        "!="
+      ]
+    },
+    {
       "pointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/1/properties/when",
       "path": "@dqeQuery.filterBindings{key} · anyOf[1].when",
       "required": "本分支可选",
@@ -6985,6 +7007,16 @@
       "module": "queries-and-bindings.md"
     },
     {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/0/properties/operator",
+      "path": "@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[0].operator",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md",
+      "enum": [
+        "=",
+        "!="
+      ]
+    },
+    {
       "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/0/properties/when",
       "path": "@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[0].when",
       "required": "本分支可选",
@@ -7009,6 +7041,16 @@
       "required": "本分支必填",
       "module": "queries-and-bindings.md",
       "const": "dimension"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/1/properties/operator",
+      "path": "@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[1].operator",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md",
+      "enum": [
+        "=",
+        "!="
+      ]
     },
     {
       "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/1/properties/when",
@@ -7326,6 +7368,16 @@
       "module": "queries-and-bindings.md"
     },
     {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/0/properties/operator",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[0].operator",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md",
+      "enum": [
+        "=",
+        "!="
+      ]
+    },
+    {
       "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/0/properties/when",
       "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[0].when",
       "required": "本分支可选",
@@ -7350,6 +7402,16 @@
       "required": "本分支必填",
       "module": "queries-and-bindings.md",
       "const": "dimension"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/1/properties/operator",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[1].operator",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md",
+      "enum": [
+        "=",
+        "!="
+      ]
     },
     {
       "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/1/properties/when",

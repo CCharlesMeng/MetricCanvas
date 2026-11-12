@@ -119,7 +119,7 @@ function bindingPredicates(binding: FilterBinding, value: FilterValue | undefine
       if (value?.type !== 'dimension') return [];
       // A missing hierarchy level never borrows another level's predicate field.
       const queryField = bindingQueryField(binding, value.level);
-      return queryField === undefined ? [] : [{ target: 'dimension', queryField, values: value.values }];
+      return queryField === undefined ? [] : [{ target: 'dimension', queryField, values: value.values, ...(binding.operator ? {operator:binding.operator} : {}) }];
     }
     case 'time': return timePredicates(binding, value, context);
     case 'timePoint':

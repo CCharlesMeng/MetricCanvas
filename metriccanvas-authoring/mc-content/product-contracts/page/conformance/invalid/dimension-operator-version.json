@@ -1,0 +1,444 @@
+{
+  "case": "dimension-operator-version",
+  "invariant": "dimension-binding-operator",
+  "input": {
+    "schemaVersion": "6.113",
+    "id": "dimension-binding-operator",
+    "layout": "dashboard",
+    "meta": {
+      "title": "维度绑定包含与排除",
+      "description": "合成数据：包含、排除与层级排除对照，不代表真实 DQE 验收。"
+    },
+    "filters": [
+      {
+        "id": "area",
+        "type": "dimension",
+        "dimension": "demo_area",
+        "label": "所选区域",
+        "default": [
+          "北区"
+        ],
+        "options": [
+          {
+            "value": "北区",
+            "label": "北区"
+          },
+          {
+            "value": "南区",
+            "label": "南区"
+          }
+        ],
+        "selection": {
+          "mode": "multiple"
+        }
+      },
+      {
+        "id": "organization",
+        "type": "dimension",
+        "dimension": "demo_organization",
+        "label": "排除组织",
+        "display": "tree",
+        "treeSelection": "level",
+        "selection": {
+          "mode": "single"
+        },
+        "hierarchy": [
+          {
+            "id": "area",
+            "dimension": "demo_org_area",
+            "label": "区域层级"
+          },
+          {
+            "id": "office",
+            "dimension": "demo_org_office",
+            "label": "代表处层级"
+          }
+        ],
+        "defaultLevel": "area",
+        "default": [
+          "北区"
+        ]
+      }
+    ],
+    "dataSources": {
+      "included": {
+        "fields": {
+          "area": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "区域"
+          },
+          "office": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "代表处"
+          },
+          "amount": {
+            "type": "number",
+            "role": "measure",
+            "queryField": "金额"
+          }
+        },
+        "source": {
+          "type": "query",
+          "resultScope": "complete",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "区域",
+                    "代表处"
+                  ],
+                  "output_metrics": [
+                    "金额"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {}
+                }
+              ]
+            },
+            "filterBindings": {
+              "area": {
+                "target": "dimension",
+                "queryField": "区域"
+              }
+            }
+          }
+        }
+      },
+      "explicit": {
+        "fields": {
+          "area": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "区域"
+          },
+          "office": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "代表处"
+          },
+          "amount": {
+            "type": "number",
+            "role": "measure",
+            "queryField": "金额"
+          }
+        },
+        "source": {
+          "type": "query",
+          "resultScope": "complete",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "区域",
+                    "代表处"
+                  ],
+                  "output_metrics": [
+                    "金额"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {}
+                }
+              ]
+            },
+            "filterBindings": {
+              "area": {
+                "target": "dimension",
+                "queryField": "区域",
+                "operator": "="
+              }
+            }
+          }
+        }
+      },
+      "excluded": {
+        "fields": {
+          "area": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "区域"
+          },
+          "office": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "代表处"
+          },
+          "amount": {
+            "type": "number",
+            "role": "measure",
+            "queryField": "金额"
+          }
+        },
+        "source": {
+          "type": "query",
+          "resultScope": "complete",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "query_type": "object",
+                  "object_type": "OperatorDemo",
+                  "output_fields": [
+                    "区域",
+                    "代表处",
+                    "金额"
+                  ],
+                  "filter": {
+                    "fields": []
+                  },
+                  "order": {}
+                }
+              ]
+            },
+            "filterBindings": {
+              "area": {
+                "target": "dimension",
+                "queryField": "区域",
+                "operator": "!="
+              }
+            }
+          }
+        }
+      },
+      "hierarchy": {
+        "fields": {
+          "area": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "区域"
+          },
+          "office": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "代表处"
+          },
+          "amount": {
+            "type": "number",
+            "role": "measure",
+            "queryField": "金额"
+          }
+        },
+        "source": {
+          "type": "query",
+          "resultScope": "complete",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "区域",
+                    "代表处"
+                  ],
+                  "output_metrics": [
+                    "金额"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {}
+                }
+              ]
+            },
+            "filterBindings": {
+              "organization": {
+                "target": "dimension",
+                "levelQueryFields": {
+                  "area": "区域",
+                  "office": "代表处"
+                },
+                "operator": "!="
+              }
+            }
+          }
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "results",
+        "container": "card",
+        "components": [
+          {
+            "id": "included-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "included"
+            },
+            "props": {
+              "title": "省略 operator：包含",
+              "columns": [
+                {
+                  "field": "area",
+                  "title": "区域"
+                },
+                {
+                  "field": "office",
+                  "title": "代表处"
+                },
+                {
+                  "field": "amount",
+                  "title": "金额"
+                }
+              ],
+              "pagination": {
+                "mode": "local",
+                "pageSize": 10
+              },
+              "toolbar": {
+                "export": {
+                  "format": "xlsx",
+                  "filename": "included"
+                }
+              }
+            }
+          },
+          {
+            "id": "explicit-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "explicit"
+            },
+            "props": {
+              "title": "显式 =：包含",
+              "columns": [
+                {
+                  "field": "area",
+                  "title": "区域"
+                },
+                {
+                  "field": "office",
+                  "title": "代表处"
+                },
+                {
+                  "field": "amount",
+                  "title": "金额"
+                }
+              ],
+              "pagination": {
+                "mode": "local",
+                "pageSize": 10
+              },
+              "toolbar": {
+                "export": {
+                  "format": "xlsx",
+                  "filename": "explicit"
+                }
+              }
+            }
+          },
+          {
+            "id": "excluded-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "excluded"
+            },
+            "props": {
+              "title": "显式 !=：排除（对象查询）",
+              "columns": [
+                {
+                  "field": "area",
+                  "title": "区域"
+                },
+                {
+                  "field": "office",
+                  "title": "代表处"
+                },
+                {
+                  "field": "amount",
+                  "title": "金额"
+                }
+              ],
+              "pagination": {
+                "mode": "local",
+                "pageSize": 10
+              },
+              "toolbar": {
+                "export": {
+                  "format": "xlsx",
+                  "filename": "excluded"
+                }
+              }
+            }
+          },
+          {
+            "id": "hierarchy-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "hierarchy"
+            },
+            "props": {
+              "title": "层级 !=：排除（指标查询）",
+              "columns": [
+                {
+                  "field": "area",
+                  "title": "区域"
+                },
+                {
+                  "field": "office",
+                  "title": "代表处"
+                },
+                {
+                  "field": "amount",
+                  "title": "金额"
+                }
+              ],
+              "pagination": {
+                "mode": "local",
+                "pageSize": 10
+              },
+              "toolbar": {
+                "export": {
+                  "format": "xlsx",
+                  "filename": "hierarchy"
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/explicit/source/query",
+      "message": "普通与层级维度绑定显式包含或排除所选值 由 6.114 引入，文档声明的是 6.113"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/excluded/source/query",
+      "message": "普通与层级维度绑定显式包含或排除所选值 由 6.114 引入，文档声明的是 6.113"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/hierarchy/source/query",
+      "message": "普通与层级维度绑定显式包含或排除所选值 由 6.114 引入，文档声明的是 6.113"
+    }
+  ]
+}

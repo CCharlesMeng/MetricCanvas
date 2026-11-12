@@ -685,3 +685,5 @@ Tokens 百万选择、最终字段绑定检查及受控多槽表格装配见[创
 图表与表格的整数展示复用统一数值格式化，去掉小数尾零；`unit` 在格式化后追加，`-2 天`、`0 天` 和 `12.5 天` 对照见 `/pages/chart-table-unit`。
 
 空值占位统一修复：图表、表格、指标卡、进度环、仪表和期间占位共用 `--`，移除图表间隔转换及百分比空值后缀。既有业务自定义文案和真实字符串保持。无 Schema 字段增减，场景 `/pages/chart-table-unit`、`/pages/numeric-value-display` 和 `/pages/semantic-numeric-display`。
+
+维度绑定包含与排除（6.114）：`filterBindings` 的普通及层级 `dimension` 绑定支持可选 `operator:"=" | "!="`；省略维持原有包含，`!=` 排除整个所选集合，清空不生成条件。声明、静态条件归属和 DQE 编码见[维度绑定运算](docs/page-metadata/queries-and-bindings.md#dimension-binding-operator)，合成验收 `/pages/dimension-binding-operator`。

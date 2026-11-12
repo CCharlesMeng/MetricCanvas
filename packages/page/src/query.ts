@@ -51,6 +51,8 @@ export interface DqeRequestBody {
 export type DqeDimensionFilterBinding =
   ({ target: 'dimension'; queryField: string }
   | { target: 'dimension'; levelQueryFields: Record<string, string> }) & {
+    /** Inclusion by default; != excludes every selected value. */
+    operator?: '=' | '!=';
     /** Filter-only condition; suspends this predicate without clearing its stored choice. */
     when?: import('./schema/condition').Condition;
   };
@@ -229,6 +231,7 @@ export interface DqeEffectiveQuery {
         target: 'dimension';
         queryField: string;
         values: Array<string | number>;
+        operator?: '=' | '!=';
       }
     | {
         target: 'time';

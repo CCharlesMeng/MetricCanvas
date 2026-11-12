@@ -37,6 +37,8 @@ function withChangedFile(relative: string, content: string, verify: () => void, 
 it('完整 Bundle 来源锁文件不超过 1 MB', () => {
   const lock = readFileSync(path.join(root, 'metriccanvas-authoring/bundle.lock.json'));
   expect(lock.byteLength).toBeLessThanOrEqual(1_000_000);
+  const index=JSON.parse(lock.toString()) as {groups:Array<{file:string}>};
+  for(const group of index.groups)expect(readFileSync(path.join(root,'metriccanvas-authoring',group.file)).byteLength).toBeLessThanOrEqual(1_000_000);
 });
 
 describe.sequential('当前契约检查无需旧服务源码', () => {
@@ -139,7 +141,7 @@ describe.sequential('当前契约检查无需旧服务源码', () => {
     withChangedFile(relative, readFileSync(path.join(isolated,relative),'utf8') + '\nchanged shared reference\n', () => {
       const result = runExport();
       expect(result.status).not.toBe(0);
-      expect(result.stderr).toContain('bundle.lock.json: stale');
+      expect(result.stderr).toContain('bundle-locks/skill-metriccanvas-platform-authoring.json: stale');
     });
   }, scenarioTimeout);
 
@@ -152,7 +154,7 @@ describe.sequential('当前契约检查无需旧服务源码', () => {
       const result = runExport();
       expect(result.status).not.toBe(0);
       // The target workflow no longer directly links this retained projection; the bundle inventory still guards it.
-      expect(result.stderr).toContain('bundle.lock.json: stale');
+      expect(result.stderr).toContain('bundle-locks/skill-metriccanvas-platform-authoring.json: stale');
     } finally { writeFileSync(file,original); }
   }, scenarioTimeout);
 

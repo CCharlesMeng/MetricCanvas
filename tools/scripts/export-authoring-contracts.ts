@@ -1,3 +1,4 @@
+import {bundleLockOutputs} from './bundle-lock';
 import { authoringPresentationPolicy } from './export-authoring-presentation-policy';
 import {exportRelayReference} from './export-relay-reference';
 import { appendIocComponentFixtures,featureConformancePages } from './page-conformance-sources';
@@ -556,7 +557,7 @@ async function writeOutputs(
     await writeChangedFile(target,content);
   }
   await writeMcContent(mcOutputs, platformFacts);
-  await writeChangedFile(path.join(bundleRoot, 'bundle.lock.json'), await buildBundleLock());
+  await writeBundleLocks();
 }
 
 const generatedSkillTrees=['references/page-patterns','references/authoring-knowledge','references/example-guides'];
@@ -676,7 +677,7 @@ async function writeTree(root: string, outputs: OutputMap): Promise<void> {
   await syncGeneratedTree(root,outputs);
 }
 
-async function buildBundleLock(): Promise<string> {
+async function buildBundleLock(): Promise<OutputMap> {
   const bundle = JSON.parse(await readFile(path.join(bundleRoot, 'bundle.json'), 'utf8')) as {
     bundleVersion: string;
   };
@@ -687,6 +688,7 @@ async function buildBundleLock(): Promise<string> {
   const artifactPaths = (await listFiles(bundleRoot)).filter(
     (file) =>
       file !== 'bundle.lock.json' &&
+      !file.startsWith('bundle-locks/') &&
       !file.startsWith(ownership.internalRoot + '/') &&
       !file.startsWith('test-harness/model-evals/local-runs/') &&
       !file.includes('__pycache__') &&
@@ -699,11 +701,23 @@ async function buildBundleLock(): Promise<string> {
       return { file, sha256: sha256(content) };
     })
   );
-  return `${JSON.stringify({
-    bundleVersion: bundle.bundleVersion,
-    pageSchemaVersion: versionPolicy.current,
-    artifacts: artifacts.sort((left, right) => left.file.localeCompare(right.file))
-  })}\n`;
+  return bundleLockOutputs({bundleVersion:bundle.bundleVersion,pageSchemaVersion:versionPolicy.current},artifacts);
+}
+
+async function bundleLockReader():Promise<string> {
+  return readFile(path.join(bundleRoot,'tool/metriccanvas_authoring/bundle_lock.py'),'utf8');
+}
+async function writeBundleLocks():Promise<void> {
+  await writeChangedFile(path.join(bundleRoot,'scripts/bundle_lock.py'),await bundleLockReader());
+  const locks=await buildBundleLock();
+  await syncGeneratedTree(path.join(bundleRoot,'bundle-locks'),new Map([...locks].filter(([file])=>file.startsWith('bundle-locks/')).map(([file,text])=>[file.slice('bundle-locks/'.length),text])));
+  await writeChangedFile(path.join(bundleRoot,'bundle.lock.json'),locks.get('bundle.lock.json')!);
+}
+async function collectBundleLockDrift(drift:string[]):Promise<void> {
+  await collectFileDrift(path.join(bundleRoot,'scripts/bundle_lock.py'),await bundleLockReader(),'metriccanvas-authoring/scripts/bundle_lock.py',drift);
+  const outputs=await buildBundleLock();
+  for(const [file,content] of outputs)await collectFileDrift(path.join(bundleRoot,file),content,'metriccanvas-authoring/'+file,drift);
+  for(const file of await listFilesIfPresent(path.join(bundleRoot,'bundle-locks')))if(!outputs.has('bundle-locks/'+file))drift.push('metriccanvas-authoring/bundle-locks/'+file+': unexpected');
 }
 
 async function assertCurrent(
@@ -778,14 +792,9 @@ async function assertCurrent(
     const file=relative==='scripts/THIRD-PARTY-LICENSES.md'?'scripts/PAGE-VALIDATOR-LICENSES.md':relative;
     await collectFileDrift(path.join(bundleRoot,file),content,`metriccanvas-authoring/${file}`,drift);
   }
-  const expectedBundleLock = await buildBundleLock();
+
   await collectMcContentDrift(drift, productOutputs, authoringOutputs);
-  await collectFileDrift(
-    path.join(bundleRoot, 'bundle.lock.json'),
-    expectedBundleLock,
-    'metriccanvas-authoring/bundle.lock.json',
-    drift
-  );
+  await collectBundleLockDrift(drift);
 
   if (drift.length > 0) {
     throw new Error(`authoring contract export drifted:\n${drift.join('\n')}`);

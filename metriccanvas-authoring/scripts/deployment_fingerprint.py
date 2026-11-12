@@ -5,6 +5,7 @@ Matching hashes prove file consistency, never production integration readiness.
 """
 from __future__ import annotations
 
+from bundle_lock import load_bundle_lock
 import argparse
 import hashlib
 import importlib.util
@@ -50,7 +51,7 @@ def git_state(root):
 
 def fingerprint(root, adapter_root=None):
     root = root.resolve()
-    lock = json.loads((root / 'bundle.lock.json').read_text())
+    lock = load_bundle_lock(root)
     expected = {item['file']: item['sha256'] for item in lock['artifacts']}
     drift = []
     for name, sha in expected.items():

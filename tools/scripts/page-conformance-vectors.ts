@@ -57,6 +57,10 @@ function longString(length: number): string {
 }
 
 export const invariants: InvariantDefinition[] = [
+  {id:'dimension-binding-operator',description:'6.114 普通和层级维度绑定支持 = 与 !=，默认保持历史行为',valid:['dimension-binding-operator'],cases:[
+    {case:'dimension-operator-version',base:'dimension-binding-operator',expect:/由 6.114 引入/,mutate:d=>{d.schemaVersion='6.113';}},
+    {case:'dimension-operator-unknown',base:'dimension-binding-operator',expect:/must/,mutate:d=>{d.dataSources.excluded.source.query.filterBindings.area.operator='<>';}}
+  ]},
   {id:'ioc-header-back-hidden',description:'6.111 显式 back:false 隐藏，省略同样隐藏；auto 仅为 true 的兼容写法',valid:['ioc-back-hidden'],cases:[
     {case:'ioc-back-hidden-version',base:'ioc-back-hidden',expect:/由 6.111 引入/,mutate:d=>{d.schemaVersion='6.109';}}
   ]},

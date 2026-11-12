@@ -58,18 +58,20 @@ export const queryResultWhereZ: z.ZodType<QueryResultWhere> = z.lazy(() => z.uni
 ])).meta({ id: 'queryResultWhere' });
 
 const bindingWhenZ=conditionZ.optional().describe('只读取同页筛选条件；允许时应用该维度谓词，拒绝时暂停谓词并保留筛选状态；错误或等待拒绝查询，省略沿用原行为');
+const dimensionOperatorZ=z.enum(['=', '!=']).optional().describe('维度绑定包含或排除所选值；省略保持现有包含行为，多值 != 排除整个集合，清空不生成条件');
 function filterBindingsSchema(includePeriodPolicy:boolean){return z
       .record(
         idZ,
         z
           .union([
             z
-              .object({ target: z.literal('dimension'), queryField: z.string().min(1), when: bindingWhenZ })
+              .object({ target: z.literal('dimension'), queryField: z.string().min(1), operator: dimensionOperatorZ, when: bindingWhenZ })
               .strict(),
             // 层级维度筛选器逐级声明谓词字段(ADR-0084);层级 id 为键。
             z
               .object({
                 target: z.literal('dimension'),
+                operator: dimensionOperatorZ,
                 when: bindingWhenZ,
                 levelQueryFields: z
                   .record(idZ, z.string().min(1))

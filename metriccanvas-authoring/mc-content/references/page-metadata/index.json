@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.113",
-  "schemaSha256": "fa5cfc21d4eab72d87cabdcf3386f830f2aa18f46f565b902350636ff6b072bf",
+  "schemaVersion": "6.114",
+  "schemaSha256": "68b8e6ee5220d47dcb44520d0ea4fda543f82323e511c5abfa76f8444ea3f2ba",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -197,6 +197,7 @@
         "filter.fields"
       ],
       "examples": [
+        "dimension-binding-operator",
         "filter-binding-when",
         "dimension-params-page",
         "hierarchy-binding-page",
@@ -1336,7 +1337,8 @@
         "6.110",
         "6.111",
         "6.112",
-        "6.113"
+        "6.113",
+        "6.114"
       ]
     },
     {
@@ -5213,6 +5215,16 @@
       "module": "queries-and-bindings.md"
     },
     {
+      "pointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/0/properties/operator",
+      "path": "@dqeQuery.filterBindings{key} · anyOf[0].operator",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md",
+      "enum": [
+        "=",
+        "!="
+      ]
+    },
+    {
       "pointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/0/properties/when",
       "path": "@dqeQuery.filterBindings{key} · anyOf[0].when",
       "required": "本分支可选",
@@ -5826,6 +5838,16 @@
       "const": "dimension"
     },
     {
+      "pointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/1/properties/operator",
+      "path": "@dqeQuery.filterBindings{key} · anyOf[1].operator",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md",
+      "enum": [
+        "=",
+        "!="
+      ]
+    },
+    {
       "pointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/1/properties/when",
       "path": "@dqeQuery.filterBindings{key} · anyOf[1].when",
       "required": "本分支可选",
@@ -6197,6 +6219,16 @@
       "module": "queries-and-bindings.md"
     },
     {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/0/properties/operator",
+      "path": "@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[0].operator",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md",
+      "enum": [
+        "=",
+        "!="
+      ]
+    },
+    {
       "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/0/properties/when",
       "path": "@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[0].when",
       "required": "本分支可选",
@@ -6221,6 +6253,16 @@
       "required": "本分支必填",
       "module": "queries-and-bindings.md",
       "const": "dimension"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/1/properties/operator",
+      "path": "@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[1].operator",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md",
+      "enum": [
+        "=",
+        "!="
+      ]
     },
     {
       "pointer": "#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/1/properties/when",
@@ -6538,6 +6580,16 @@
       "module": "queries-and-bindings.md"
     },
     {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/0/properties/operator",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[0].operator",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md",
+      "enum": [
+        "=",
+        "!="
+      ]
+    },
+    {
       "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/0/properties/when",
       "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[0].when",
       "required": "本分支可选",
@@ -6562,6 +6614,16 @@
       "required": "本分支必填",
       "module": "queries-and-bindings.md",
       "const": "dimension"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/1/properties/operator",
+      "path": "@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[1].operator",
+      "required": "本分支可选",
+      "module": "queries-and-bindings.md",
+      "enum": [
+        "=",
+        "!="
+      ]
     },
     {
       "pointer": "#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/1/properties/when",
@@ -22559,5 +22621,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "52e78b1e9d8e36e708b0af8e1f43aed2bd28ee8c8b012d9a7e9491bd393fd865"
+  "semanticSourceDigest": "79524f3b29a50beb5821c1e6f23ec00ff8d719e341e139435715974c08bb1c0c"
 }

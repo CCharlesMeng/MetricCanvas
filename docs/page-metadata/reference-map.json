@@ -233,6 +233,7 @@
         "filter.fields"
       ],
       "examples": [
+        "dimension-binding-operator",
         "filter-binding-when",
         "dimension-params-page",
         "hierarchy-binding-page",
@@ -2310,7 +2311,10 @@
     "6.111": "IOC 页头支持 back:false 显式隐藏，旧 auto 废弃并兼容为 true。",
     "6.112": "表头候选搜索框显式配置，新页面默认隐藏，旧页兼容保留原表现。",
     "number-0": "6.113新增：四舍五入为无千分位整数，半值远离零，舍入零为0，不缩放，不改变原值。",
-    "6.113": "number-0普通数值整数展示。"
+    "6.113": "number-0普通数值整数展示。",
+    "6.114": "普通及层级维度绑定显式包含与排除。",
+    "=": "维度绑定包含所选值，单选等值、多选集合包含。",
+    "!=": "维度绑定排除全部所选值，单选不等、多选集合排除。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
@@ -3291,7 +3295,8 @@
       "指定时间字段的范围下推（6.68）",
       "查询时间精度与执行前校验",
       "自动同比环比查询（6.77）",
-      "期间比较按当前页业务键补查（6.78）"
+      "期间比较按当前页业务键补查（6.78）",
+      "维度绑定包含与排除（6.114）"
     ],
     "compute.md": [
       "独立单行指标关联（6.83）",

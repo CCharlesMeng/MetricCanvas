@@ -38,6 +38,7 @@
   import {createDecisionOpinionPreview} from '../../../../../fixtures/decision-opinion/preview';
   import {iocSelectionGateway} from '../../../../../fixtures/selection-gateway';
   import {pageExternalInputs,rejectionPreviewRowCount,rejectionPreviewDelay} from '../../../../../fixtures/preview-inputs';
+  import {createDimensionOperatorPreview} from '../../../../../fixtures/dimension-binding-operator';
   import {createFilterBindingWhenPreview} from '../../../../../fixtures/filter-binding-when';
   import {browser} from '$app/environment';
   const framed = browser && window.self !== window.top;
@@ -119,8 +120,14 @@
 
   function periodQueryGateway(input: ReturnType<typeof pageExternalInputs>, state: string): DataGateway | undefined {
     if(input==='finalization')return createFinalizationPreview(state).dataGateway;
+    if(input==='dimension-operator')return createDimensionOperatorPreview(state).dataGateway;
     if(input==='binding-when')return createFilterBindingWhenPreview(state).dataGateway;
     if(input==='period-aggregation')return createPeriodAggregationPreview(state).dataGateway;
+  }
+
+  function regionQueryGateway(input: ReturnType<typeof pageExternalInputs>): DataGateway | undefined {
+    if(input==='region-url')return createRegionURLGateway();
+    if(input==='ioc-region'||input==='ioc-region-dept')return withIocRegionCandidates(dataGateway,input==='ioc-region');
   }
 
   function queryTableGateway(input: ReturnType<typeof pageExternalInputs>): DataGateway | undefined {
@@ -132,9 +139,9 @@
     if(input==='header-controls')return createIocHeaderControlsPreview().dataGateway;
     if(input==='source-candidates')return createSourceCandidatesPreview(state).dataGateway;
     if(input==='global-benchmark')return createGlobalBenchmarkPreview(state).dataGateway;
-    if(input==='region-url')return createRegionURLGateway();
+    const regional=regionQueryGateway(input);
+    if(regional)return regional;
     if(input==='row-cache')return createRowCachePreview().dataGateway;
-    if(input==='ioc-region'||input==='ioc-region-dept')return withIocRegionCandidates(dataGateway,input==='ioc-region');
     if(input==='query-join')return createPagedJoinPreview(80,page.url.searchParams.get('supplementKey')??'ready',page.url.searchParams.get('nulls')??'none').dataGateway;
     if(input==='full-query-candidates')return createFullQueryCandidatesPreview(state).dataGateway;
   }
@@ -158,6 +165,7 @@
   }
 
   function recordSharedFilters(event:RuntimeViewEvent) {
+    if(pageExternalInputs(page.params.pageId)==='dimension-operator')window.dispatchEvent(new CustomEvent('metriccanvas:dimension-operator-runtime',{detail:event}));
     if(event.type!=='filter-change'||pageState.phase!=='ready'||!['key-office','key-office-priority'].includes(pageExternalInputs(page.params.pageId)??''))return;
     sharedKeyOfficeFilters.recordSearch(projectNavigationInputs(pageState.document),event.search,sharedBindings);
   }

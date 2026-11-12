@@ -74,10 +74,20 @@ export function dqeDefaultSort(item: JsonObject): Array<{ queryField: string; di
 /** An explicitly bound field belongs to page state even when the control is cleared. */
 export function bindingOwnedDqeBody(query: DqeQueryDefinition): DqeRequestBody {
   const body=query.body!,item=body.dsl_list[0];
-  if(!isObjectDqeItem(item) || !query.filterBindings)return body;
+  if(!isObjectDqeItem(item))return explicitDimensionBody(query);
+  if(!query.filterBindings)return body;
   const owned=new Set(Object.values(query.filterBindings).flatMap(objectBindingFields));
   const filter=dqeRecord(item.filter),fields=Array.isArray(filter.fields)?filter.fields:[];
   return {dsl_list:[{...item,filter:{...filter,fields:fields.filter(field=>!owned.has(String(dqeRecord(field).field_name)))}}]};
+}
+/** Explicit dimension comparison owns all levels, including cleared or suspended choices. */
+function explicitDimensionBody(query: DqeQueryDefinition): DqeRequestBody {
+  const body=query.body!,item=body.dsl_list[0];
+  const owned=new Set(Object.values(query.filterBindings??{}).filter(binding=>binding.target==='dimension'&&binding.operator!==undefined).flatMap(objectBindingFields));
+  if(!owned.size)return body;
+  const filter=dqeRecord(item.filter);
+  if(!Array.isArray(filter.dims))return body;
+  return {dsl_list:[{...item,filter:{...filter,dims:filter.dims.filter(entry=>!owned.has(String(dqeRecord(entry).dim_name)))}}]};
 }
 export function objectBindingFields(binding: DqeFilterBinding): string[] {
   if(isObjectPeriodBinding(binding))return ['周期类型','账期'];

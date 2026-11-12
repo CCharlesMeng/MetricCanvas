@@ -16,7 +16,7 @@ export function restrictKeys(query: EffectiveQuery, queryField: string, keys: re
     const values=entry.dim_value_list as unknown[];
     if (values.length) allowed=allowed.filter(key=>values.includes(key));
   }
-  for (const value of query.filterValues) if (value.target === 'dimension' && value.queryField === queryField && value.values.length) allowed = allowed.filter(key => value.values.includes(key));
+  for (const value of query.filterValues) if (value.target === 'dimension' && value.queryField === queryField && value.values.length) allowed = allowed.filter(key => value.operator === '!=' ? !value.values.includes(key) : value.values.includes(key));
   if (allowed.length) bindQueryResultValues(query, [{ target: 'dimension', queryField, values: allowed }]);
   return allowed;
 }
