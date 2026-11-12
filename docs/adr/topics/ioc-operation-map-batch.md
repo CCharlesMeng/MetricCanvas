@@ -8,6 +8,8 @@
 
 **IOC Region 的当前约束：** [ADR-0124](../0124-ioc-region-single-tree.md) 按用户要求只保留 IOC Header 中单个可搜索、单选层级节点的组织树，旧平面与外部切层写法受控迁移；普通维度筛选保留原能力。IOC Header 默认识别地区部 `region-dept` 与代表处 `rep-office` URL 输入，同组最后出现的参数生效；页面无需映射配置，旧 value/level 保留兼容。
 
+**重点国代与 Region（2026-11-12）：** 按用户确认统一取交集，勾选不再覆盖 Region；历史显式 Region 覆盖保持可读但不再生效，普通 boolean 的显式覆盖保留。不增加字段或开关；引擎统一处理同字段名单交集、候选门禁和导出范围。见 [ADR-0124](../0124-ioc-region-single-tree.md)。
+
 **已生效:** [ADR-0046](../0046-controlled-computation-with-named-operators.md) 在页面数据源上引入封闭具名算子(第一批),**这是对 ADR-0003 措辞的一次修订与对 ADR-0033 的部分恢复**,但不恢复计算数据集聚合根;[ADR-0047](../0047-first-class-page-parameters.md) 新增顶层 `params`,按"页面打开后还能不能变"把 URL 输入与筛选器分开;[ADR-0048](../0048-navigation-intent-and-host-routing.md) 把来源记录与自定义导航栈交给集成应用；2026-11-05 按用户确认，显式 IOC 页头默认用浏览器 history.back()，集成应用仍可覆盖，2026-11-10 按用户确认废弃 `props.back:"auto"` 的来源判定，旧声明兼容为 `true`，统一按浏览器后退能力显示及执行 `history.back()`，可选 `navigation.back` 覆盖；省略或 `false` 隐藏，不再要求下钻来源记录;[ADR-0050](../0050-filter-type-closure-and-hierarchical-dimensions.md) 把筛选器闭集从两类扩到六类并引入层级维度,顺带偿还 ADR-0035 的落地欠账;[ADR-0051](../0051-additive-minor-versions-for-page-schema.md) 把版本演进定为增量次版本,本批交付 5.1。
 
 **仍为提议:** [ADR-0045](../0045-graphql-query-branch-with-structured-predicates.md) 补齐 ADR-0034 留白的 GraphQL 分支形状,关键是把来源实现里的 WHERE 字符串模板换成结构化谓词,守住 ADR-0003——**本批未落地,`QUERY_LANGUAGES` 仍只有 `dqe`**;[ADR-0049](../0049-table-server-side-and-presentation-capabilities.md) 解除查询分页下的排序与列头筛选限制、改为按数据源模式整体下推(呈现已落地,拒绝规则未删)。

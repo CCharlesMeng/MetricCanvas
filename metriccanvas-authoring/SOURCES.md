@@ -45,3 +45,5 @@ pnpm authoring:test
 条件协议、纯求值及稳定目标修改的真源是packages/page/src/condition.ts、presentation-policy.ts、presentation-edit.ts和presentation-operation.ts；Node Bridge分发同一实现，Python只负责传输。两个page-visibility演示页面由导出器直接投影到契约见证，浏览器消费原页面。
 
 MC 完整内容由同一内存产品输出图构建：完整参考/知识核心和 local-authoring 同源；活动工具 inputSchema 从 FastMCP.list_tools 导出，公共错误来源排除内部 Adapter；作者参考在 tools/mc-content，兼容 Skill 参考单向生成。coverage 分母来自产品注册、reference-map、实际工具和 AUTHORING_CAPABILITIES。`authoring:contracts` 在写出前构建并检查派生图，`mc:content:coverage` 检查安装输出的覆盖；CI 持续运行，无路径免检。发布脚本先复制验证暂存目录再确定性归档，平台 wheel 不包含 MC 目录，二者不能替代。
+
+Bundle 公共清单由 `tools/scripts/bundle-lock.ts` 按职责生成根 `bundle.lock.json` 与 `bundle-locks/*.json`。所有文件仍随本仓交付；Python 包、Relay 资源复制和单向同步携带完整根/子锁闭包。共享解析真源是 `tool/metriccanvas_authoring/bundle_lock.py`，`scripts/bundle_lock.py` 为生成副本，不手工维护第二套解析规则。生成与漂移检查均沿用 `pnpm authoring:contracts` / `pnpm authoring:contracts:check`。

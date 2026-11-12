@@ -4,7 +4,8 @@
   import { onMount } from 'svelte';
   import type { ResolvedIocHeader } from './model';
   import { headerBackAction, type BrowserReturn } from './back';
-  let {model, filterIds, overflowIds=[], controls, returnContext, onback, readOnly=false, note, staticView=false}: {
+  let {model, titleLink, filterIds, overflowIds=[], controls, returnContext, onback, readOnly=false, note, staticView=false}: {
+    titleLink?:import('../../../widgets/src/components/text/links').TextBlockLink;
     model:ResolvedIocHeader;filterIds:string[];overflowIds?:string[];controls:Snippet<[string,boolean]>;
     returnContext?:{entryId:string;label?:string;back?:()=>void};onback?:()=>void;readOnly?:boolean;note?:string;staticView?:boolean;
   } = $props();
@@ -41,6 +42,9 @@
     measure();return()=>{active=false;observer.disconnect();};
   });
   const collapsed=$derived(!staticView && model.collapse==='firstRow' && overflowing && !expanded);
+  function activateTitleLink(event:KeyboardEvent){
+    if(!titleLink?.href && event.key==='Enter'){event.preventDefault();(event.currentTarget as HTMLAnchorElement).click();}
+  }
   function toggle(){
     if(expanded){for(const details of filters!.querySelectorAll('details[open]'))details.removeAttribute('open');const active=(filters!.getRootNode() as Document|ShadowRoot).activeElement;if(active && filters!.contains(active)) (active as HTMLElement).blur();}
     expanded=!expanded;
@@ -52,7 +56,7 @@
     <div class="identity">
       <div class="heading">
         {#if showBack}<button data-dashboard-back class="back" type="button" aria-label={model.legacyBack?'返回':returnContext?.label ?? '返回上一页'} onclick={backAction}>{flow?'<':'←'}</button>{/if}
-        {#if model.title}<h1 data-ioc-title>{model.title}</h1>{/if}
+        {#if model.title}<h1 data-ioc-title>{#if titleLink && !staticView && !titleLink.disabled}<a href={titleLink.href} role={titleLink.href?undefined:'link'} aria-disabled={titleLink.href?undefined:true} tabindex={titleLink.href?undefined:0} onkeydown={activateTitleLink} onclick={titleLink.onclick}>{model.title}</a>{:else}<span aria-disabled={titleLink?.disabled || undefined}>{model.title}</span>{/if}</h1>{/if}
         {#each model.tags as tag (tag.id)}<span data-ioc-tag={tag.id} data-tone={tag.tone} class="tag">{tag.text}</span>{/each}
       </div>
       {#if model.code}<div class="code" data-ioc-code><span>{model.code.label}：</span><span>{model.code.value}</span></div>{/if}
@@ -87,12 +91,12 @@
 </header>
 {/if}
 <style>
-  header{margin-bottom:16px;background:#fff;color:#191919;padding:22px 32px;min-width:0;max-width:100%;box-sizing:border-box;font-size:14px;}
-  header.compact{padding-block:16px;}
-  .identity{margin-bottom:16px;min-width:0;}.heading{display:flex;gap:12px;align-items:center;flex-wrap:wrap;min-width:0;}
-  h1{font-size:24px;line-height:36px;font-weight:600;margin:0 40px 0 0;overflow-wrap:anywhere;max-width:100%;}
-  .back{border:0;background:transparent;font-size:24px;width:32px;min-height:32px;cursor:pointer;flex:none;}
-  .tag{padding:3px 8px;background:#f4f4f5;color:#52525b;border-radius:4px;overflow-wrap:anywhere;max-width:100%;}
+  header{margin-bottom:16px;background:#fff;color:#191919;padding:22px 32px;min-height:77px;min-width:0;max-width:100%;box-sizing:border-box;font-size:14px;--mc-filter-control-height:33px;}
+  .identity{margin-bottom:16px;min-width:0;}.heading{display:flex;gap:0;align-items:center;flex-wrap:wrap;min-width:0;}
+  h1{font-size:24px;line-height:33px;font-weight:700;margin:0 40px 0 0;overflow-wrap:anywhere;max-width:100%;}
+  h1 a{color:inherit;font:inherit;text-decoration:none;}h1 a:hover{text-decoration:underline;}h1 a:focus-visible{outline:2px solid #1476ff;outline-offset:2px;}
+  .back{border:0;background:transparent;font-size:20px;font-weight:400;width:20px;min-height:32px;margin:0 4px 0 0;padding:0;cursor:pointer;flex:none;}
+  .tag{margin-right:12px;padding:3px 8px;background:#f4f4f5;color:#52525b;border-radius:4px;overflow-wrap:anywhere;max-width:100%;}
   [data-tone=info]{background:#e8f1ff;color:#1476ff;}[data-tone=success]{background:#eef8e8;color:#397b16;}[data-tone=warning]{background:#fff5df;color:#905800;}[data-tone=danger]{background:#fff0f0;color:#b91c1c;}
   .code,.description,dl{margin:8px 0 0;color:#71717a;overflow-wrap:anywhere;}.code{display:flex;flex-wrap:wrap;gap:4px;}
   dl{display:flex;flex-wrap:wrap;gap:8px 24px;}dl>div{display:flex;flex-wrap:wrap;}dt,dd{margin:0;}
@@ -102,9 +106,9 @@
   button:focus-visible{outline:2px solid #1476ff;outline-offset:2px;}
   .filter{--mc-filter-bar-padding:0;--mc-filter-bar-margin:0;--mc-filter-bar-border:0;--mc-filter-bar-background:transparent;--mc-filter-bar-gap:0;--mc-filter-label-display:inline;}
 
-  header.inline{display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px;min-height:80px;background:var(--mc-color-surface,#fff);}
+  header.inline{display:flex;flex-wrap:wrap;align-items:center;gap:12px 0;background:var(--mc-color-surface,#fff);}
   .inline .identity,.inline .heading{display:contents;}
-  .inline h1{font-weight:var(--mc-page-title-font-weight,500);white-space:normal;color:var(--mc-page-title-color,#191919);margin:0 24px 0 0;max-width:calc(100% - 24px);}
+  .inline h1{white-space:normal;color:var(--mc-page-title-color,#191919);max-width:100%;}
   .inline .code,.inline .description,.inline dl{flex-basis:100%;}
   .inline .filter-region{flex:1 1 240px;flex-wrap:wrap;align-items:center;}.inline .filters{gap:16px;align-items:center;}
   .inline .filter{--mc-filter-label-display:none;}
@@ -116,11 +120,8 @@
   .overflow-arrow{color:#8c8c8c;}.filter-overflow[open] .overflow-arrow{transform:rotate(180deg);}
   .overflow-panel{position:absolute;top:calc(100% + 10px);right:0;box-sizing:border-box;width:min(760px,calc(100cqi - 48px));max-width:calc(100cqi - 48px);display:flex;flex-wrap:wrap;gap:16px;padding:16px;background:#fff;border:1px solid var(--mc-color-border,#e4e4e7);border-radius:8px;box-shadow:0 12px 32px rgb(15 23 42 / .16);}
   .overflow-panel .filter{--mc-filter-bar-flex:0 1 auto;--mc-filter-bar-wrap:wrap;}
-  header.inline.compact{width:100%;min-height:56px;padding:12px 24px;border-bottom:1px solid #e8e8e8;}
-  .inline.compact .filters{gap:12px;}
-  .inline.compact h1{font-size:18px;font-weight:600;line-height:24px;}
-  @container mc-runtime (max-width: 1050px){header.inline{padding:18px 20px;}header.inline.compact{padding:12px 20px;}}
-
   .flow .filter-region,.flow .filters{display:contents;}
-  .flow .back{font-size:20px;width:20px;min-height:32px;padding:0;}
+  .flow .filter{margin-right:16px;}
+  .filter :global([data-period-filter] .segments){height:33px;box-sizing:border-box;}
+  .filter :global([data-period-filter] .segments button){height:31px;}
 </style>

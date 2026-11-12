@@ -2,11 +2,11 @@
   "case": "boolean-override-candidate-conflict",
   "invariant": "boolean-filter-overrides",
   "input": {
-    "schemaVersion": "6.84",
+    "schemaVersion": "6.113",
     "id": "key-office-priority-demo",
     "layout": "dashboard",
     "meta": {
-      "title": "重点国代优先 合成数据"
+      "title": "重点国代交集 合成数据"
     },
     "filters": [
       {
@@ -39,7 +39,7 @@
         "defaultLevel": "region-dept",
         "candidateContext": {
           "filterIds": [
-            "key-office"
+            "focus-only"
           ],
           "reconcile": "intersection"
         }
@@ -73,19 +73,15 @@
             "label": "卓越"
           }
         ]
+      },
+      {
+        "id": "focus-only",
+        "type": "boolean",
+        "overridesFilters": [
+          "region"
+        ]
       }
     ],
-    "iocHeader": {
-      "identity": {
-        "title": "重点国代优先"
-      },
-      "filterIds": [
-        "key-office",
-        "mtime",
-        "region",
-        "customer-category"
-      ]
-    },
     "dataSources": {
       "offices": {
         "fields": {
@@ -161,6 +157,24 @@
       {
         "id": "results",
         "components": [
+          {
+            "id": "ioc-header",
+            "type": "iocHeader",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "identity": {
+                "title": "重点国代交集"
+              },
+              "filterIds": [
+                "key-office",
+                "mtime",
+                "region",
+                "customer-category"
+              ]
+            }
+          },
           {
             "id": "office-table",
             "type": "table",
@@ -252,7 +266,7 @@
   "expected": [
     {
       "type": "SCHEMA_ERROR",
-      "path": "/filters/1",
+      "path": "/filters/4/overridesFilters",
       "message": "被覆盖筛选不能依赖覆盖它的布尔筛选，以保留原选择"
     }
   ]

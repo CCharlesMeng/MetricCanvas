@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.113",
+  "schemaVersion": "6.115",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "table.columns"
@@ -9,7 +9,7 @@
       "module": "table",
       "reference": "references/page-metadata/components/table.md",
       "blocks": [
-        "# 明细表 table\n\n首次加载保留表头和工具栏，表体仅显示静态“正在加载…”，不显示加载动画；刷新、查询翻页和排序期间保留上一份完整展示，当前结果就绪后替换。旧行暂时不可交互，不进入新查询或导出；完整边界见[加载时保留组件结构](../data-sources.md#screen-loading)。 级联查询按[渐进补列](../data-sources.md#progressive-table-columns)先显示已确定行集的就绪列，未完成和失败列显示 `--`；行集与顺序有待确认时继续保留旧展示。\n\ncolumns/children 定义字段列与递归列组；交互、查询与呈现约束见下列专题。\n\n<a id=\"local-default-sort\"></a>",
+        "# 明细表 table\n\n首次加载保留表头和工具栏，表体仅显示静态“正在加载…”，不显示加载动画；刷新、查询翻页和排序期间保留上一份完整展示，当前结果就绪后替换。旧行暂时不可交互，不进入新查询或导出；完整边界见[加载时保留组件结构](../data-sources.md#screen-loading)。 级联查询按[渐进补列](../data-sources.md#progressive-table-columns)先显示已确定行集的就绪列，未完成和失败列显示 `--`；行集与顺序有待确认时继续保留旧展示。\n\ncolumns/children 定义字段列与递归列组；交互、查询与呈现约束见下列专题。\n\n\n<a id=\"local-default-sort\"></a>",
         "## 前端列枚举（6.80）\n\n字段列可声明 `enumValues:[{\"value\":\"0\",\"label\":\"项目商务框架\"},{\"value\":\"1\",\"label\":\"项目非框架\"}]`。它是创作期已确认的有限字典，不从当前页推断全集。数组1—1000项，value为字符串或数值，同类型原始值不得重复；数字0与字符串\"0\"分别匹配，label为非空纯文本。\n\n仅主字段的单元格及 Excel/PDF/PNG 展示使用枚举名称，不改写数据快照、查询、排序、行键、导航和筛选编码。次字段、徽标独立展示。缺失继续遵循 missingText，未知值及失配原文证据保留原文，不替换成任一已知枚举。Excel 的已知枚举导出文字标签，其余值保持原导出行为。\n\n同时声明 `filterable:{mode:\"select\"}` 时，表头直接按字典顺序显示完整静态选项，提交原始 value；不预热、查询或搜索动态候选。此字典不证明记录存在或用户具有数据权限，也不改变后端筛选能力。省略 enumValues 的列沿用动态候选。组合源的跨成员筛选限制仍生效。\n\n可观察入口 `/pages/table-column-enums`：合成编码0、1、未知9、空值分别显示两种中文标签、9、—；选择项目商务框架仅保留 B-1，导出使用中文标签。业务页 `/pages/business-decision-all-details` 使用同一映射，DQE Sim 继续返回原始编码。",
         "## 期间模式列显隐（6.67）\n\n6.67 起可在字段列或分组列的 `visibleWhen` 读取期间筛选模式，例如 `{filter:\"statistics-period\",part:\"mode\",op:\"in\",values:[\"year\",\"quarter\"]}`。显示由已应用 selection.mode 决定，与查询 periodPolicy 独立。既有列投影同步表头、搜索、用户排序/筛选清理与 XLSX/PDF/PNG 导出；隐藏不停止共享查询。示例：[期间模式与查询策略](../examples/period-query-columns-demo.json)。\n\n<a id=\"hierarchy-selection\"></a>",
         "## 自定义展示单位\n\n6.94 起字段列可声明 `unit`，例如 `{\"field\":\"duration\",\"unit\":\"天\"}`。声明、单位与缩放组合、缺失及导出规则见[展示单位](../field-bindings-and-formats.md#display-unit)。场景 `/pages/chart-table-unit`。\n\n<a id=\"table-trend-arrows\"></a>"
@@ -350,7 +350,7 @@
         "references/page-metadata/examples/table-header-select-all.json",
         "references/page-metadata/examples/table-header-select-all-query.json",
         "references/page-metadata/examples/table-default-sort.json",
-        "references/page-metadata/examples/rep-office-execution-efficiency.json",
+        "references/page-metadata/examples/rep-business-result.json",
         "references/page-metadata/examples/table-header-filter-search.json"
       ]
     }
@@ -372,7 +372,7 @@
           "sections"
         ],
         "title": "页面",
-        "$id": "https://metriccanvas/page/v6.113",
+        "$id": "https://metriccanvas/page/v6.115",
         "properties": {
           "schemaVersion": "#/properties/schemaVersion",
           "id": "#/properties/id",

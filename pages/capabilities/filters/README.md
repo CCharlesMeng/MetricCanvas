@@ -246,9 +246,9 @@
 
 入口：[重点国代联动](./key-office-filter-demo.json) `/pages/key-office-filter-demo`；[目标页](./key-office-filter-target.json) `/pages/key-office-filter-target`。Region 必须为单个可搜索的单选组织树，不存在第二个地区部或代表处下拉。两页均为 Dashboard，查询和候选完全使用 `apps/playground/fixtures/key-office-filter/gateway.ts` 的合成数据：A1 重点 10、A2 普通 20、B1 重点 30、B2 普通 40。
 
-启动 `pnpm dev:playground -- --host 127.0.0.1 --port 5183 --strictPort`，按实际启动日志确认端口。无需选择 Region 即可勾选。选择地区 A 时显示 A1/A2，勾选后跨地区显示 A1/B1，取消后恢复 A1/A2。选择普通代表处 A2 再勾选，Region 仍保留 A2，完整组织候选不收窄；取消后恢复 A2。勾选期间改选地区 B，仍显示 A1/B1，取消后显示 B1/B2。导出 XLSX 使用相同范围。两页均省略 overridesFilters，验证引擎默认覆盖。
+启动 `pnpm dev:playground -- --host 127.0.0.1 --port 5183 --strictPort`，按实际启动日志确认端口。无需选择 Region 即可勾选。选择地区 A 时显示 A1/A2，勾选后仅显示 A1，取消后恢复 A1/A2。选择普通代表处 A2 再勾选，结果为空，Region 仍保留 A2，完整组织候选不收窄；取消后恢复 A2。勾选期间改选地区 B，立即显示 B1，取消后显示 B1/B2。导出 XLSX 使用相同范围。两页均省略 overridesFilters，验证引擎统一交集。
 
-选择地区 A、月份 2026-09、勾选重点国代，点击“切换页面”：目标页回填三项共享值，重新验证候选后显示 A1/B1；返回时继续继承。显式 URL `?key-office=false` 优先于宿主保存的 true；取消勾选、清空地区也写回共享值。清空 Region 后重点国代仍可操作，已勾选时继续显示 A1/B1。Playground 的两页共用局部宿主示例实例；刷新视为新会话。嵌入浏览器夹具则以 sessionStorage 模拟跨整页导航的宿主会话。
+选择地区 A、月份 2026-09、勾选重点国代，点击“切换页面”：目标页回填三项共享值，重新验证候选后显示 A1；返回时继续继承。显式 URL `?key-office=false` 优先于宿主保存的 true；取消勾选、清空地区也写回共享值。清空 Region 后重点国代仍可操作，已勾选时继续显示 A1/B1。Playground 的两页共用局部宿主示例实例；刷新视为新会话。嵌入浏览器夹具则以 sessionStorage 模拟跨整页导航的宿主会话。
 
 可复用宿主示例是 `packages/embed/examples/shared-filter-bridge.ts`，两个挂载入口使用相同实例。只将 projectNavigationInputs 投影出的公共筛选声明传给它。MC 每页持有独立候选与查询状态；本示例不接入真实 HeaderOptionService，不证明真实 DQE 或门户部署。
 
@@ -266,17 +266,17 @@
 
 在同一棵树中改选欧洲地区部，URL 只保留 `region-dept=欧洲地区部`，表格显示法国代表处；改选上海代表处则只保留 `rep-office=上海代表处`。无关 URL 参数应继续保留。无输入使用声明的中国地区部默认值。本地合成行为不证明真实组织接口、DQE/Relay、权限或部署验收。
 
-### 重点国代优先（6.84，中文筛选值）
+### 重点国代与 Region 交集（中文筛选值）
 
 入口：`/pages/key-office-priority-demo`、`/pages/key-office-priority-target`。运行 `pnpm dev:playground`，两页自动加载 `createKeyOfficePriorityGateway` 合成候选及查询，无需真实 DQE。完整声明分别为同目录两个 JSON。
 
 1. 打开 `/pages/key-office-priority-demo?rep-office=南京代表处`，只显示南京。
-2. 勾选“仅看重点国代”，显示上海、深圳两个跨地区重点代表处，Region 仍显示南京；XLSX 导出使用相同范围。
-3. 勾选期间选择华东地区部仍显示两个地区的重点代表处；取消后恢复华东的上海、南京。
+2. 勾选“仅看重点国代”，显示空结果，Region 仍显示南京；取消勾选恢复南京。
+3. 勾选期间选择华东地区部立即只显示上海；XLSX 完整导出只包含上海；取消后显示上海、南京。
 4. 客户类型候选值为战略/卓越，对应业务查询字段为 `客户级别`；它与时间等条件不被覆盖。
 5. 切换页面、刷新保留已勾选及原 Region；URL 中中文值与候选 value 一致。不选 Region 也允许勾选。
 
-两组重点国代场景均省略 `overridesFilters`，由引擎默认覆盖 Region，不把 Region 的候选依赖到重点国代。普通布尔筛选的候选依赖和显式覆盖仍由独立行为测试验证。所有组织、金额及 `重点国代=true` 字段均是合成输入；浏览器通过不证明生产重点名单、授权或 DQE 字段已接通。
+两组重点国代场景均省略 `overridesFilters`，由引擎统一与 Region 取交集，不把 Region 的候选依赖到重点国代。普通布尔筛选的候选依赖和显式覆盖仍由独立行为测试验证。所有组织、金额及 `重点国代=true` 字段均是合成输入；浏览器通过不证明生产重点名单、授权或 DQE 字段已接通。
 
 异常入口：`/pages/key-office-priority-demo?state=empty&key-office=true` 返回完整空名单，表格显示暂无数据；取消勾选后恢复四条普通数据。`?state=denied&key-office=true` 显示名单未就绪的加载错误，不进入全量查询。名单桥接与中文组织候选的真实服务接线由集成应用实现；完整说明在仓库 `docs/evidence/2026-11-04-ioc-header-filters/integration.md`。
 
@@ -287,7 +287,7 @@
 
 入口：`/pages/quarter-query-period`；[页面 JSON](quarter-query-period.json)。启动 `pnpm dev:playground`。
 
-默认选择 2026-Q3，IOC Header 认领的时间绑定仅声明 `target:"time"`，没有 periodPolicy，旧查询体保留 month 用于验证引擎默认覆盖。首次请求发送 `filter.time:{period:"quarter",start:"2026-Q3",end:"2026-Q3",is_aggregate:true}`；切换月、年时分别发送 month、year，近一年发送 month 和此前十二个完整月范围，聚合开关保留。显式 fixed/selection、期间比较、字段时间绑定的优先级由自动测试覆盖；月度趋势例外见 `ioc-header-demo` 的 trend 查询。Q0/Q5、日/月格式混入季度和倒置范围继续在发送前拒绝。
+默认选择 2026-Q3，IOC Header 认领的时间绑定仅声明 `target:"time"`，没有 periodPolicy，旧查询体保留 month 用于验证引擎统一交集。首次请求发送 `filter.time:{period:"quarter",start:"2026-Q3",end:"2026-Q3",is_aggregate:true}`；切换月、年时分别发送 month、year，近一年发送 month 和此前十二个完整月范围，聚合开关保留。显式 fixed/selection、期间比较、字段时间绑定的优先级由自动测试覆盖；月度趋势例外见 `ioc-header-demo` 的 trend 查询。Q0/Q5、日/月格式混入季度和倒置范围继续在发送前拒绝。
 
 自动验收：`node apps/playground/tests/quarter-query-browser.mjs <证据目录>`，环境变量 `QUARTER_QUERY_BASE_URL` 指向页面试验场（默认端口 5208）。浏览器测试按页面 JSON 驱动控件，以合成 HTTP 回执验证实际请求编码和表格渲染；未调用真实 DQE/Relay，页面脱离测试运行时需要可用的数据网关。
 ## 旧工具栏期间默认规则
@@ -328,3 +328,17 @@
 `?state=error` 模拟请求失败，missing无记录、invalid非法日期、conflict同名不同日期、timeout超时；各入口均回退执行环境当前日期所在月。URL明确传入例如 `?period-filter=month%3A2026-08` 时，定稿查询仍执行一次，再由既有导航流程应用8月。
 
 浏览器自动验收：`pnpm --filter playground exec playwright test tests/finalization-default.browser.ts`。场景仅证明协议与引擎，不证明真实截止表、DQE、Relay或生产权限接入。
+
+## 维度绑定包含与排除
+
+<!-- example:dimension-binding-operator -->
+入口：`/pages/dimension-binding-operator`；[页面 JSON](dimension-binding-operator.json)。启动 `pnpm dev:playground`，使用专属本地合成 Adapter，无需 DQE Sim。
+
+用途：复用普通和层级维度绑定的包含/排除声明。稳定参考对象是同页四张表及其查询；移植时替换真实查询字段与层级字段映射，不把合成组织或金额当业务依据。
+
+1. 默认“所选区域”为北区：省略 operator 和显式 `=` 两表显示北京10、天津20；对象 `!=` 表显示广州30。
+2. 默认“排除组织”为区域层级北区：层级 `!=` 表显示广州30。访问 `?organization.level=office&organization=北京` 时只向“代表处”字段排除北京，显示天津20、广州30。
+3. “所选区域”再勾选南区：包含两表显示全部三行，对象排除为空；清空后各普通维度表恢复三行。组织筛选独立保持，层级表不随普通区域选择变化。
+4. 各表 XLSX 导出使用本表完整筛选结果。`?state=error` 通过 `metriccanvas:dimension-operator-runtime` 上抛实际运行时 data-error（表格沿用空占位），`?state=empty` 显示空结果且不产生 data-error；非法 operator 如 `<>` 或版本低于6.114的显式 operator 由校验拒绝。
+
+自动验收：`pnpm --filter playground exec playwright test tests/dimension-binding-operator.browser.ts`。浏览器读取此 JSON 验证交互、层级切换和异常；执行层回归补充表头交集、关联键、缓存、完整读取与候选。合成 Adapter 调用实际 DQE 编码后筛选三条合成记录，不证明真实 DQE、Relay、空值或生产授权。

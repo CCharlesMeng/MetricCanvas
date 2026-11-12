@@ -12,6 +12,8 @@ export type TableHeaderFilterValue =
 export interface TableViewState {
   legacyCandidateSearch?:boolean;
   operationNotice?:string;
+  /** Runtime capability state; never part of the page JSON. */
+  pausedFields?:readonly string[];
   /** Submitted literal search; draft input is held separately by the runtime. */
   searchQuery?: string;
   search?: import('@metriccanvas/page/internal').TableQueryView['search'];

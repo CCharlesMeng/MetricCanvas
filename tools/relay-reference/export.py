@@ -42,9 +42,21 @@ def copy_resources(bundle, target):
         copy_tree(bundle / folder, target / folder)
     for name in ("bundle.json", "bundle.lock.json", "contract-lock.json"):
         shutil.copyfile(bundle / name, target / name)
+    copy_lock_groups(bundle, target)
     (target / "scripts").mkdir(exist_ok=True)
     for name in ("page-validation-bridge.mjs", "PAGE-VALIDATOR-LICENSES.md"):
         shutil.copyfile(bundle / "scripts" / name, target / "scripts" / name)
+
+
+def copy_lock_groups(bundle, target):
+    for group in read_json(bundle / 'bundle.lock.json').get('groups', []):
+        source = bundle / group['file']
+        require(source.resolve().is_relative_to(bundle.resolve()) and not source.is_symlink(), 'PRODUCT_PATH_INVALID', group['file'])
+        require(digest(source.read_bytes()) == group['sha256'], 'PRODUCT_RESOURCE_MISMATCH', group['file'])
+        destination = target / group['file']
+        require(destination.resolve().is_relative_to(target.resolve()), 'PRODUCT_PATH_INVALID', group['file'])
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(source, destination)
 
 
 def install_private(target):

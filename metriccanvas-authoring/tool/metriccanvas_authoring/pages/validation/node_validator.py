@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 from metriccanvas_authoring.runtime_assets import bundle_root
+from metriccanvas_authoring.bundle_lock import load_bundle_lock
 
 
 @dataclass(frozen=True, slots=True)
@@ -91,7 +92,7 @@ def validate_with_node(document: Any, *, resources: NodeValidationResources | No
     if not node or not bridge.is_file():
         return unavailable
     try:
-        lock=json.loads((bundle_root()/'bundle.lock.json').read_text(encoding="utf-8"))
+        lock=load_bundle_lock(bundle_root())
         expected=next((item['sha256'] for item in lock['artifacts'] if item['file']=='scripts/page-validation-bridge.mjs'),None)
         if expected!=hashlib.sha256(bridge.read_bytes()).hexdigest():return unavailable
         version = subprocess.run([node, "--version"], capture_output=True, text=True, encoding="utf-8", timeout=5, check=True)
@@ -116,7 +117,7 @@ def edit_presentation_with_node(document, operation):
     if not node or not bridge.is_file():
         return None
     try:
-        lock = json.loads((bundle_root() / 'bundle.lock.json').read_text(encoding="utf-8"))
+        lock = load_bundle_lock(bundle_root())
         expected = next((item['sha256'] for item in lock['artifacts'] if item['file'] == 'scripts/page-validation-bridge.mjs'), None)
         if expected != hashlib.sha256(bridge.read_bytes()).hexdigest():
             return None

@@ -20,8 +20,7 @@ function numericBounds(left: Bounds<number>, right: Bounds<number>): Bounds<numb
 function merge(previous: Predicate | undefined, value: Predicate): Predicate | undefined {
   if (!previous) return value;
   if (previous.target === 'dimension' && value.target === 'dimension') {
-    const values = value.values.filter(item => previous.values.some(other => typeof item === typeof other && item === other));
-    return values.length ? { ...value, values } : undefined;
+    return mergeDimensions(previous, value);
   }
   if (previous.target === 'time' && value.target === 'time') {
     if(previous.period !== value.period) throw Object.assign(new Error('不能对不同查询粒度的期间取交集'), {code:'DQE_QUERY_REJECTED'});
@@ -38,12 +37,25 @@ function merge(previous: Predicate | undefined, value: Predicate): Predicate | u
   }
   return value;
 }
+type Dimension = Extract<Predicate, {target:'dimension'}>;
+/** AND of memberships: exclusions combine by union; inclusion minus exclusion stays finite. */
+function mergeDimensions(left: Dimension, right: Dimension): Dimension | undefined {
+  if (left.operator === '!=' && right.operator === '!=') return {...right, values:[...new Set([...left.values, ...right.values])]};
+  if (right.operator === '!=') return subtractDimension(left, right);
+  if (left.operator === '!=') return subtractDimension(right, left);
+  const values = right.values.filter(item => left.values.includes(item));
+  return values.length ? {...right, values} : undefined;
+}
+function subtractDimension(included: Dimension, excluded: Dimension): Dimension | undefined {
+  const values = included.values.filter(item => !excluded.values.includes(item));
+  return values.length ? {...included, values} : undefined;
+}
 function inside(value: string | number, range: Bounds<string>): boolean {
   return (range.from === undefined || String(value) >= range.from) && (range.to === undefined || String(value) <= range.to);
 }
 function intersectEqualityRanges(merged: Map<string, Predicate>): boolean {
   for (const value of merged.values()) {
-    if (value.target !== 'dimension') continue;
+    if (value.target !== 'dimension' || value.operator === '!=') continue;
     const range = merged.get(`dimensionRange:${value.queryField}`);
     if (range?.target !== 'dimensionRange') continue;
     value.values = value.values.filter(item => inside(item, range));
@@ -52,16 +64,23 @@ function intersectEqualityRanges(merged: Map<string, Predicate>): boolean {
   }
   return true;
 }
-/** A single encoder input per target: no last-write-wins between public/local conditions. */
-export function intersectQueryFilters(query: EffectiveQuery): EffectiveQuery | undefined {
-  if(query.matchNone)return;
+function intersectPredicates(predicates: EffectiveQuery['filterValues']): EffectiveQuery['filterValues'] | undefined {
   const merged = new Map<string, Predicate>();
-  for (const candidate of query.filterValues) {
+  for (const candidate of predicates) {
     if (candidate.target === 'dimension' && !candidate.values.length) continue; // cleared control
     const value = merge(merged.get(key(candidate)), structuredClone(candidate));
     if (!value) return;
     merged.set(key(value), value);
   }
   if (!intersectEqualityRanges(merged)) return;
-  return { ...query, filterValues: [...merged.values()] };
+  return [...merged.values()];
+}
+/** Normalize business predicates independently before AND-narrowing with table conditions. */
+export function intersectQueryFilters(query: EffectiveQuery): EffectiveQuery | undefined {
+  if(query.matchNone)return;
+  const filterValues=intersectPredicates(query.filterValues);
+  if(!filterValues)return;
+  const bindingValues=query.bindingValues===undefined?undefined:intersectPredicates(query.bindingValues);
+  if(query.bindingValues&&!bindingValues)return;
+  return {...query,filterValues,...(bindingValues?{bindingValues}:{})};
 }

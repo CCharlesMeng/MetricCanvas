@@ -1,0 +1,71 @@
+{
+  "case": "dimension-operator-version",
+  "invariant": "dimension-binding-operator",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "普通与层级维度绑定显式包含或排除所选值 由 6.114 引入，文档声明的是 6.113",
+      "paths": [
+        "/dataSources/explicit/source/query",
+        "/dataSources/excluded/source/query",
+        "/dataSources/hierarchy/source/query"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "explicit": {
+        "source": {
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                "…（共1项）"
+              ]
+            },
+            "filterBindings": {
+              "area": {
+                "…": "共3个键"
+              }
+            }
+          }
+        }
+      },
+      "excluded": {
+        "source": {
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                "…（共1项）"
+              ]
+            },
+            "filterBindings": {
+              "area": {
+                "…": "共3个键"
+              }
+            }
+          }
+        }
+      },
+      "hierarchy": {
+        "source": {
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                "…（共1项）"
+              ]
+            },
+            "filterBindings": {
+              "organization": {
+                "…": "共3个键"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "fullInput": "page/conformance/invalid/dimension-operator-version.json"
+}

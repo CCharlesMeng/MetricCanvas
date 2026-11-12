@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.113",
+  "schemaVersion": "6.115",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "actions-and-navigation.section-8e9f2f0d"
@@ -17,9 +17,15 @@
           "id": "url-navigation-source-contract",
           "description": "URL 与来源绑定可校验，目标存在性与必填项由目标负责",
           "valid": [
-            "url-navigation-page"
+            "url-navigation-page",
+            "ioc-header-title-link",
+            "ioc-header-title-link-legacy"
           ],
           "invalid": [
+            "ioc-title-row-source",
+            "ioc-title-root-row-source",
+            "ioc-title-unsafe-url",
+            "ioc-title-missing-title",
             "navigation-invalid-authority",
             "navigation-invalid-port",
             "navigation-scheme-without-authority",

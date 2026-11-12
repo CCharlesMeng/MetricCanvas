@@ -1,0 +1,94 @@
+{
+  "schemaVersion": "6.115",
+  "id": "ioc-header-title-link-legacy",
+  "layout": "dashboard",
+  "meta": {
+    "title": "IOC 页头标题跳转（合成验收）"
+  },
+  "params": [
+    {
+      "id": "project",
+      "type": "string",
+      "required": true,
+      "default": "P001"
+    }
+  ],
+  "filters": [
+    {
+      "id": "show-link",
+      "type": "boolean",
+      "label": "显示标题链接",
+      "default": true
+    },
+    {
+      "id": "allow-navigation",
+      "type": "boolean",
+      "label": "允许标题跳转",
+      "default": true
+    },
+    {
+      "id": "reviewed",
+      "type": "boolean",
+      "label": "已审核",
+      "default": false
+    }
+  ],
+  "dataSources": {},
+  "sections": [
+    {
+      "id": "main",
+      "container": "plain",
+      "components": [
+        {
+          "id": "instructions",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成验收，无真实 DQE 请求。点击标题跳转目标页并携带 project 页面参数、reviewed 筛选值；取消允许标题跳转后保留禁用标题，取消显示标题链接后保留普通标题。可用 Tab 聚焦标题后按 Enter，或通过浏览器在新标签页打开链接。"
+          }
+        }
+      ]
+    }
+  ],
+  "iocHeader": {
+    "identity": {
+      "title": "经营概览",
+      "titleNavigate": {
+        "href": "/pages/ioc-header-title-link-target?source=header#details",
+        "validateTargetInputs": true,
+        "query": {
+          "project": {
+            "source": "param",
+            "id": "project"
+          },
+          "reviewed": {
+            "source": "filter",
+            "id": "reviewed"
+          }
+        },
+        "visibleWhen": {
+          "filter": "show-link",
+          "op": "eq",
+          "value": true,
+          "part": "value"
+        },
+        "enabledWhen": {
+          "filter": "allow-navigation",
+          "op": "eq",
+          "value": true,
+          "part": "value"
+        }
+      }
+    },
+    "filterIds": [
+      "show-link",
+      "allow-navigation",
+      "reviewed"
+    ],
+    "presentation": {
+      "layout": "inline"
+    }
+  }
+}

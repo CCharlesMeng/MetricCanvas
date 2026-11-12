@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.113",
+  "schemaVersion": "6.115",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "queries-and-bindings.section-9a18494d"
@@ -115,6 +115,7 @@
         }
       ],
       "examples": [
+        "references/page-metadata/examples/dimension-binding-operator.json",
         "references/page-metadata/examples/filter-binding-when.json",
         "references/page-metadata/examples/dimension-params-page.json",
         "references/page-metadata/examples/hierarchy-binding-page.json",

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.113",
+  "schemaVersion": "6.115",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "table.section-4e872e3a"
@@ -9,8 +9,8 @@
       "module": "table",
       "reference": "references/page-metadata/components/table.md",
       "blocks": [
-        "# 明细表 table\n\n首次加载保留表头和工具栏，表体仅显示静态“正在加载…”，不显示加载动画；刷新、查询翻页和排序期间保留上一份完整展示，当前结果就绪后替换。旧行暂时不可交互，不进入新查询或导出；完整边界见[加载时保留组件结构](../data-sources.md#screen-loading)。 级联查询按[渐进补列](../data-sources.md#progressive-table-columns)先显示已确定行集的就绪列，未完成和失败列显示 `--`；行集与顺序有待确认时继续保留旧展示。\n\ncolumns/children 定义字段列与递归列组；交互、查询与呈现约束见下列专题。\n\n<a id=\"local-default-sort\"></a>",
-        "## 跨数据槽精确搜索（6.109）\n\n表格的列与搜索可引用同一个补充数据槽。复用字段引用写法，不把页面数据源 id 填成槽名：\n\n```json\n{\n  \"search\": {\n    \"options\": [\n      {\"value\":\"owner\",\"label\":\"责任人\",\"field\":{\"data\":\"basic\",\"field\":\"owner-name\"},\"placeholder\":\"输入完整责任人姓名搜索\"},\n      {\"value\":\"customer\",\"label\":\"客户名称\",\"field\":{\"data\":\"basic\",\"field\":\"cust-company-name\"},\"placeholder\":\"输入完整客户名称搜索\"}\n    ]\n  }\n}\n```\n\n`basic` 是该表 `data` 中的槽名。主槽与补充槽都必须为普通查询，主表使用查询分页并声明 `rowKey`；两槽须有同名、同类型、具备查询字段映射的行键。补充查询只能声明一条从主查询行键取值的 `resultBinding`，不能带 `where` 或其他结果依赖。补充查询不能含固定 TopN。搜索字段必须是有 `queryField` 的文本标量；未声明槽、缺失映射、关联关系或不兼容类型均拒绝。`fields` 包含搜索不扩展到补充槽。\n\n提交后，引擎在当前筛选、参数和查询分支范围内独立执行补充查询的精确搜索，临时解除主表当前页的行键绑定；按行键稳定排序并完整读取匹配行。其后将匹配行键与主查询原有条件取交集，查询主表的分页结果，最后按主表结果补齐补充列。页面定义的依赖方向保持不变，查找回执不替换补充槽快照。查找只消费补充查询自己声明的条件，主表期间不会自动复制到补充对象；预算在主查交集前核对。空匹配跳过主查询及其补查；总数来自受限主查询。查找最多读取既有 `resultBinding.maxValues` 允许的匹配行，硬上限1000；超限、缺失总数、分页截断、总数变化和无效行键均明确失败，不截断集合后返回部分匹配。\n\n切换字段、提交或清空关键词均回到第一页，保留其他筛选与排序；清空恢复原有主查与按页补查。补充查询消费的页面筛选也会刷新搜索结果。取消及迟到响应沿用统一运行时的取消机制。Excel 导出冻结搜索字段和关键词，并通过同一执行路径准备全部匹配主行及其补充行，不能只导出当前页。主查询字段字符串写法与原包含搜索保持兼容；会话视图内部以 `search.data` 保留目标槽引用，省略表示主槽；这不是新增页面字段，也不能写进初始视图。\n\n入口 `/pages/rep-office-execution-efficiency` 的 `approval-detail-table`（“商务审批明细”）。保留商务编号搜索，增加 `basic` 槽的责任人和客户名称搜索。浏览器回归拦截真实页面请求，使用24条合成记录验证首屏之外的匹配、切换字段、零匹配与清空；执行回归覆盖分页、约束交集、完整导出、取消及不完整回执。真实 DQE 的对应对象字段筛选、行键稳定性和总数仍需部署环境复验。"
+        "# 明细表 table\n\n首次加载保留表头和工具栏，表体仅显示静态“正在加载…”，不显示加载动画；刷新、查询翻页和排序期间保留上一份完整展示，当前结果就绪后替换。旧行暂时不可交互，不进入新查询或导出；完整边界见[加载时保留组件结构](../data-sources.md#screen-loading)。 级联查询按[渐进补列](../data-sources.md#progressive-table-columns)先显示已确定行集的就绪列，未完成和失败列显示 `--`；行集与顺序有待确认时继续保留旧展示。\n\ncolumns/children 定义字段列与递归列组；交互、查询与呈现约束见下列专题。\n\n\n<a id=\"local-default-sort\"></a>",
+        "## 跨数据槽精确搜索（6.109）\n\n表格的列与搜索可引用同一个补充数据槽。复用字段引用写法，不把页面数据源 id 填成槽名：\n\n```json\n{\n  \"search\": {\n    \"options\": [\n      {\"value\":\"owner\",\"label\":\"责任人\",\"field\":{\"data\":\"basic\",\"field\":\"owner-name\"},\"placeholder\":\"输入完整责任人姓名搜索\"},\n      {\"value\":\"customer\",\"label\":\"客户名称\",\"field\":{\"data\":\"basic\",\"field\":\"cust-company-name\"},\"placeholder\":\"输入完整客户名称搜索\"}\n    ]\n  }\n}\n```\n\n`basic` 是该表 `data` 中的槽名。主槽与补充槽都必须为普通查询，主表使用查询分页并声明 `rowKey`；两槽须有同名、同类型、具备查询字段映射的行键。补充查询只能声明一条从主查询行键取值的 `resultBinding`，不能带 `where` 或其他结果依赖。补充查询不能含固定 TopN。搜索字段必须是有 `queryField` 的文本标量；未声明槽、缺失映射、关联关系或不兼容类型均拒绝。`fields` 包含搜索不扩展到补充槽。\n\n提交后，引擎在当前筛选、参数和查询分支范围内独立执行补充查询的精确搜索，临时解除主表当前页的行键绑定；每批最多200行，按行键稳定排序并完整读取匹配行。匹配行键去重后，以 `resultBinding.maxValues` 为单批 ID 上限（仍不超过1000，声明更小时遵守更小值），与主查询原业务条件取交集，逐批完整读取风险／审批等主记录。单个 ID 下的多条主记录全部保留，不按行键去重。超过1000个匹配 ID 会继续分批，不再因查找总数大于 `maxValues` 而拒绝。主查询的业务条件、授权及参数仍由后端执行；表格列头条件和排序在完整匹配主记录上统一求值，随后计数及分页，不能各批独立分页再拼接。页面定义的依赖方向保持不变。查找只消费补充查询自己声明的条件，主表期间不会自动复制到补充对象；空匹配跳过主查询及其他补查。\n\n整次搜索（查找、主记录及可按同名行键批量补齐的其他槽合计）独立受累计100000行、64 MiB数据及180秒预算限制；这些预算由引擎统一维护，不新增页面字段，不改变普通 `resultBindings` 的集合限制。缺失准确总数、分页截断、总数变化、无效或越界行键、超预算、超时与任一批次失败均明确失败，不发布或缓存部分结果。上游没有事务快照令牌时，准确总数检查仍不能证明跨请求内容完全稳定，真实服务须验真。\n\n完整成功结果按搜索字段／关键词、业务条件、查询分支、展示上下文及筛选修订隔离缓存；翻页、列头筛选、排序和导出复用它。显式刷新、上下文变化和销毁清理缓存，取消或迟到回执不能发布结果。搜索槽直接复用完整查找资料，其他采用同名行键、单条无附加条件结果绑定的普通补充槽分批补齐；发布到表格的数据槽只含当前主结果对应的资料。复杂依赖槽继续遵守其既有结果绑定与完整性规则，不从部分资料推断全量。\n\n切换字段、提交或清空关键词均回到第一页，保留其他筛选与排序；清空恢复原有主查与按页补查。补充查询消费的页面筛选也会刷新搜索结果。Excel 导出冻结搜索字段和关键词，使用同一完整结果及其补充行，仍最多10000条主记录，不能只导出当前页。清空搜索后的完整导出，同样把该表采用同名行键、单条无附加条件绑定的补充槽行键输入拆成不超过各自绑定 `maxValues` 的批次；普通单次结果绑定仍保持原上限，不用一次超长 ID 条件补查全部资料。主查询字段字符串写法与原包含搜索保持兼容；会话视图内部以 `search.data` 保留目标槽引用，省略表示主槽；这不是新增页面字段，也不能写进初始视图。\n\n入口 `/pages/rep-business-result` 的 `contract-risk-table`（“合同风险率明细”）。项目名称与客户名称通过 `basic` 槽查找，合同编号按合同 ID 直接精确筛选主查询。浏览器回归 `apps/playground/tests/rep-business-result-search.browser.ts` 直接读取此页，使用1205份合成合同、2410条风险记录验证超过1000个 ID 的分批读取、跨批全局排序、列头筛选、翻页、清空及 Excel 全部匹配结果；代码级回归另验更小批次声明、其他同名行键补充槽、取消、180秒超时及重试、超预算与不完整回执。该入口未验证真实 DQE 的对象字段、准确总数、跨请求稳定性与部署能力；其他业务页的当前搜索声明以各自 JSON 为准。"
       ],
       "rules": [
         {
@@ -348,7 +348,7 @@
         "references/page-metadata/examples/table-header-select-all.json",
         "references/page-metadata/examples/table-header-select-all-query.json",
         "references/page-metadata/examples/table-default-sort.json",
-        "references/page-metadata/examples/rep-office-execution-efficiency.json",
+        "references/page-metadata/examples/rep-business-result.json",
         "references/page-metadata/examples/table-header-filter-search.json"
       ]
     }

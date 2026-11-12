@@ -1,0 +1,81 @@
+{
+  "case": "dimension-operator-unknown",
+  "invariant": "dimension-binding-operator",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "取值不在允许范围:[\"=\",\"!=\"]",
+      "paths": [
+        "/dataSources/excluded/source/query/filterBindings/area/operator",
+        "/dataSources/excluded/source/query/filterBindings/area/operator"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 levelQueryFields",
+      "paths": [
+        "/dataSources/excluded/source/query/filterBindings/area/levelQueryFields"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 queryField(拼写错误?)",
+      "paths": [
+        "/dataSources/excluded/source/query/filterBindings/area/queryField",
+        "/dataSources/excluded/source/query/filterBindings/area/queryField"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 operator(拼写错误?)",
+      "paths": [
+        "/dataSources/excluded/source/query/filterBindings/area/operator",
+        "/dataSources/excluded/source/query/filterBindings/area/operator",
+        "/dataSources/excluded/source/query/filterBindings/area/operator",
+        "/dataSources/excluded/source/query/filterBindings/area/operator"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must be equal to constant",
+      "paths": [
+        "/dataSources/excluded/source/query/filterBindings/area/target",
+        "/dataSources/excluded/source/query/filterBindings/area/target",
+        "/dataSources/excluded/source/query/filterBindings/area/target",
+        "/dataSources/excluded/source/query/filterBindings/area/target"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 whenTrue",
+      "paths": [
+        "/dataSources/excluded/source/query/filterBindings/area/whenTrue"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must match a schema in anyOf",
+      "paths": [
+        "/dataSources/excluded/source/query/filterBindings/area"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "excluded": {
+        "source": {
+          "query": {
+            "filterBindings": {
+              "area": {
+                "target": "dimension",
+                "queryField": "区域",
+                "operator": "<>"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "fullInput": "page/conformance/invalid/dimension-operator-unknown.json"
+}

@@ -13,7 +13,7 @@ test('ordinary header consumes its real page, period anchor and queries; narrow 
   await expect.poll(()=>requests.filter(q=>q.filter?.time?.start==='2025-10'&&q.filter.time.end==='2026-09').length).toBe(1);
   expect(requests.filter(q=>q.output_dims[0]==='ioc_header_scope' && !q.filter?.time && !(q.filter?.dims?.length))).toHaveLength(1);
   await period.getByRole('button',{name:'月',exact:true}).click();await expect(period.getByRole('combobox')).toHaveValue('2026-09');
-  const geometry=await header.evaluate(node=>{const s=getComputedStyle(node),title=node.querySelector('h1')!;const t=getComputedStyle(title);return [s.paddingTop,s.paddingLeft,t.fontSize,t.lineHeight];});expect(geometry).toEqual(['22px','32px','24px','36px']);
+  const geometry=await header.evaluate(node=>{const s=getComputedStyle(node),title=node.querySelector('h1')!;const t=getComputedStyle(title);return [s.paddingTop,s.paddingLeft,t.fontSize,t.lineHeight];});expect(geometry).toEqual(['22px','32px','24px','33px']);
   for(const width of [1440,1024,390]){await page.setViewportSize({width,height:850});expect(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);await page.screenshot({path:info.outputPath(`overview-${width}.png`),fullPage:true});}
 });
 test('dense measured collapse, candidate retry, recursive gate and export safety',async({page},info)=>{

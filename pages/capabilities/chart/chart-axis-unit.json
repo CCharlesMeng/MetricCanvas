@@ -1,0 +1,270 @@
+{
+  "schemaVersion": "6.113",
+  "id": "chart-axis-unit",
+  "layout": "dashboard",
+  "meta": {
+    "title": "数值轴单位统一 · inline 合成数据"
+  },
+  "filters": [
+    {
+      "id": "show-rate",
+      "type": "boolean",
+      "label": "显示闭环率",
+      "default": true
+    }
+  ],
+  "dataSources": {
+    "sample": {
+      "fields": {
+        "category": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "duration": {
+          "type": "number",
+          "role": "measure",
+          "unit": "天"
+        },
+        "count": {
+          "type": "number",
+          "role": "measure",
+          "unit": "人"
+        },
+        "amount": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "unit": "元"
+        },
+        "rate": {
+          "type": "number",
+          "role": "measure",
+          "unit": "%"
+        },
+        "bytes": {
+          "type": "number",
+          "role": "measure",
+          "unit": "MB/s"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "category": "正值",
+            "duration": 12.5,
+            "count": 125000,
+            "amount": 125000,
+            "rate": 25,
+            "bytes": 2048
+          },
+          {
+            "category": "零",
+            "duration": 0,
+            "count": 0,
+            "amount": 0,
+            "rate": 0,
+            "bytes": 0
+          },
+          {
+            "category": "负值",
+            "duration": -2,
+            "count": -5000,
+            "amount": -5000,
+            "rate": -2,
+            "bytes": -512
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "header",
+      "container": "plain",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "数值轴单位统一 · inline 合成数据"
+            },
+            "filterIds": [
+              "show-rate"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "charts",
+      "container": "plain",
+      "components": [
+        {
+          "id": "duration",
+          "type": "barChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "sample"
+          },
+          "props": {
+            "title": "普通数字：单位默认在轴顶",
+            "categoryField": "category",
+            "series": [
+              {
+                "field": {
+                  "data": "main",
+                  "field": "duration",
+                  "format": "number-1"
+                },
+                "unit": "天"
+              }
+            ]
+          }
+        },
+        {
+          "id": "count",
+          "type": "lineChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "sample"
+          },
+          "props": {
+            "title": "自适应计数：整轴统一万人",
+            "xField": "category",
+            "series": [
+              {
+                "field": "count"
+              }
+            ]
+          }
+        },
+        {
+          "id": "mixed",
+          "type": "barChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "sample"
+          },
+          "props": {
+            "title": "双轴：万元与百分比",
+            "categoryField": "category",
+            "series": [
+              {
+                "field": "amount",
+                "kind": "bar",
+                "axis": "primary"
+              },
+              {
+                "field": "rate",
+                "kind": "line",
+                "axis": "secondary",
+                "visibleWhen": {
+                  "filter": "show-rate",
+                  "part": "value",
+                  "op": "eq",
+                  "value": true
+                }
+              }
+            ],
+            "dualAxis": true
+          }
+        },
+        {
+          "id": "bytes",
+          "type": "barChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "sample"
+          },
+          "props": {
+            "title": "横向数值轴：统一GB/s",
+            "categoryField": "category",
+            "series": [
+              {
+                "field": "bytes"
+              }
+            ],
+            "horizontal": true
+          }
+        },
+        {
+          "id": "baseline",
+          "type": "barChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "sample"
+          },
+          "props": {
+            "title": "字段与常量基线共用默认规则",
+            "categoryField": "category",
+            "series": [
+              {
+                "field": {
+                  "data": "main",
+                  "field": "count",
+                  "format": "number-1"
+                },
+                "kind": "bar",
+                "axis": "primary"
+              },
+              {
+                "value": 5,
+                "kind": "line",
+                "axis": "secondary",
+                "unit": "人",
+                "format": "number-1"
+              }
+            ],
+            "dualAxis": true
+          }
+        },
+        {
+          "id": "override",
+          "type": "barChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "sample"
+          },
+          "props": {
+            "title": "高级显式覆盖继续优先",
+            "categoryField": "category",
+            "series": [
+              {
+                "field": {
+                  "data": "main",
+                  "field": "duration",
+                  "format": "number-1"
+                }
+              }
+            ],
+            "echartsOption": {
+              "yAxis": {
+                "name": "定制天数",
+                "axisLabel": {
+                  "formatter": "{value} 天"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

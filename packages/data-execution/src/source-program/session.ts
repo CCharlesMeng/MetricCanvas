@@ -2,7 +2,8 @@ import type { ScreenProgress } from '../screen-progress';
 import { ordinaryScreenProgress } from './screen-progress';
 import {finalizationName} from '@metriccanvas/page/internal';
 import { sourceCandidatesGateway } from '../source-candidates';
-import { applyTableSlotSearch, mainTableSearch } from './slot-search';
+import { readSearchExportSlot } from './slot-search-read';
+import { createTableSlotSearchReader, mainTableSearch, selectSearchRows } from './slot-search';
 import {hasPeriodQueryDefault} from '@metriccanvas/page/internal';
 import {flattenPageComponents,hasHeaderDefaults,tableDefaultsRemote,normalizeTableSelectView} from '@metriccanvas/page/internal';
 import {hasPeriodComparison} from '@metriccanvas/page/internal';
@@ -43,6 +44,7 @@ import { compileSources, executionSourceIds } from './compiler';
 import { reportInitialSnapshotWarnings, reportInitialWarnings, reusableInitialSnapshot, checkOrdinaryRange, isBusinessSelection, correctedPageIndex, fetchComplete, SourceRangeError, EXPORT_PREPARATION_TIMEOUT_MS } from './range-policy';
 import { automaticQueryPageSize } from './table-pagination';
 import { describeExportSource } from './export-diagnostics';
+import { presentationQuerySources, projectCapturedQuery } from '../query-projection';
 
 export interface SourceRead {
   onProgress?: (sourceId: string, progress: ScreenProgress) => void;
@@ -79,6 +81,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
   for (const id of compiled.automatic) { const source = compiled.sources.get(id)!; if (source.source.type === 'query') { const size = automaticQueryPageSize(source as QueryDataSource, reusableInitialSnapshot(source)); if (size) compiled.limits.set(id, size); } }
   const runner = createQueryRunner(config);
   const union = createUnionReader(runner);
+  const slotSearch = createTableSlotSearchReader();
   const candidates = createCandidateValidator(page, config.gateway, config);
 
   const cascaded = cascadeSourceIds(page.dataSources);
@@ -102,6 +105,11 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
   let batch = 0, contextScope = 'session';
   function overridesSource(id:string,values:FilterValues):boolean {
     const overridden=overriddenFilterIds(page.filters??[],values);
+    // Authorized membership may change independently of the page's declared defaults.
+    for(const key of ['key-office','key-national-only']){
+      const value=values.get(key);
+      if(value?.type==='boolean'&&value.value===true)overridden.add(key);
+    }
     if(isUnrestrictedIocRegion(page,'region',values.get('region')))overridden.add('region');
     return [...conditionSourceIds(page,id)].some(key=>defaultPeriodSources.has(key)||sourceFilterIds(page.dataSources[key]).some(id=>overridden.has(id)));
   }
@@ -113,8 +121,8 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
   }
   function sourceReadScope(freshness: SourceRead['freshness'], inputs: DisplayInputsSnapshot | undefined): string {
     const nextScope = inputs ? `context:${canonicalizeJson(inputs)}` : 'session';
-    if (nextScope !== contextScope) { runner.forgetScope(contextScope); union.clear(); clearRecordJoinCache(runner); contextScope = nextScope; }
-    if (freshness === 'refresh') {union.clear(); clearRecordJoinCache(runner);}
+    if (nextScope !== contextScope) { runner.forgetScope(contextScope); union.clear(); slotSearch.clear(); clearRecordJoinCache(runner); contextScope = nextScope; }
+    if (freshness === 'refresh') {union.clear(); slotSearch.clear(); clearRecordJoinCache(runner);}
     return freshness === 'refresh' ? `fresh:${++batch}` : nextScope;
   }
   function requiresFreshTime(filter: NonNullable<Page['filters']>[number] | undefined, reuse: boolean): boolean {
@@ -125,14 +133,14 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
     return filter?.type === 'timeRange' && filter.display === 'period' && !!filter.default && typeof filter.default === 'object' && 'mode' in filter.default && (filter.default.mode === 'last12Months' || !('value' in filter.default) || !filter.default.value);
   }
   const program = {
-    prepareView(id:string,conditions:FilterValues,view:TableQueryView,field?:string):TableQueryView {
+    prepareView(id:string,conditions:FilterValues,view:TableQueryView,field?:string,previous?:TableQueryView):TableQueryView {
       const source=page.dataSources[id];
       const table=headerTables.find(table=>table.data.main===id);
       if(table)view=normalizeTableSelectView(page,id,table.props.columns,view);
       if(source?.source.type!=='pagedJoin'||!isPagedJoinQuery(source.source))return view;
-      return compilePagedJoin(page,id,conditions,reconcilePagedJoinView(source as PagedJoinDataSource,view,field),config.now??config.clock?.(),{displayInputs:config.displayInputs?.(),filterRevision:config.filterRevision?.()}).view;
+      return compilePagedJoin(page,id,conditions,reconcilePagedJoinView(source as PagedJoinDataSource,view,field,previous),config.now??config.clock?.(),{displayInputs:config.displayInputs?.(),filterRevision:config.filterRevision?.()}).view;
     },
-    readColumnCandidates(request: ColumnCandidatesRead) { return createColumnCandidatesReader(page, runner, value => program.read(value), compiled.limits, config)(request); },
+    readColumnCandidates(request: ColumnCandidatesRead) { return createColumnCandidatesReader(page, runner, value => program.read(value), compiled.limits, { ...config, slotSearch })(request); },
     initialSnapshots(request: Pick<SourceRead, 'roots' | 'conditions' | 'views'>): Map<string, DataSnapshot> {
       const snapshots = new Map<string, DataSnapshot>();
       for (const id of executionSourceIds(page, request.roots)) {
@@ -169,7 +177,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
       const scope = sourceReadScope(request.freshness, frozenInputs);
       try {
         const ids = executionSourceIds(page, request.roots);
-        const sources = new Map(compiled.sources);
+        const sources = presentationQuerySources(page, {declarations:page.filters??[],filters:request.conditions,displaySnapshot:frozenInputs,filterRevision:frozenRevision});
         const raw = new Map(request.seeds);
         removeUntrustedSeeds();
         const views = new Map(request.views);
@@ -219,13 +227,19 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
           const dependencies = queryResultDependencies(source);
           const missing = dependencies.filter(id => !raw.has(id));
           if (missing.length) await Promise.all(missing.map(run));
+          if (raw.has(id)) return;
           if (isCombinedDataSource(source)) { await executeCombined(id, source, view); return; }
+          await executeOrdinary(id, source as QueryDataSource, view);
+        }
+        async function executeOrdinary(id: string, source: QueryDataSource, view: TableQueryView): Promise<void> {
           const querySource = source as QueryDataSource;
+          if (request.purpose === 'complete' && queryResultDependencies(querySource).length && await executeBoundExport(id, querySource)) return;
           const input = readyQueryInputs(querySource);
           let snapshot: DataSnapshot;
           let resultLimit = limits.get(id) ?? declaredPaginationLimit(querySource.source.query);
           if (input.status === 'terminal') snapshot = input.snapshot;
           else {
+            if (view.search?.data && await executeSlotSearch(id, querySource, view, input.values)) return;
             const prepared = preparedQuery(id, source as QueryDataSource, view, input.values);
             let query = prepared instanceof Promise ? await prepared : prepared;
             const diagnostics = { ...config.diagnostics, pageId: page.id, dataSourceIds: [id] };
@@ -246,6 +260,33 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
           request.signal?.throwIfAborted();
           snapshot = checkOrdinaryRange(source, snapshot, resultLimit, { ...config.diagnostics, pageId: page.id, dataSourceIds: [id], pagination: queries.get(id)?.pagination }, { allowZeroTotal: request.purpose !== 'complete', describeSource: () => describeExportSource(page, id) });
           finishQueryRead(id, source as QueryDataSource, view, snapshot);
+        }
+        async function executeBoundExport(id: string, source: QueryDataSource): Promise<boolean> {
+          const bindings = selectQuerySource(source, request.conditions).source.query.resultBindings;
+          if (bindings?.length !== 1) return false;
+          const upstream = raw.get(bindings[0].source);
+          if (upstream?.status !== 'ready') return false;
+          const rows = await readSearchExportSlot({ page, sourceId: bindings[0].source, conditions: request.conditions, runner: execution,
+            scope: `${scope}:export-slot:${id}`, signal: request.signal, now: request.now, displayInputs: frozenInputs, filterRevision: frozenRevision }, id, upstream.rows);
+          if (!rows) return false;
+          raw.set(id, rawSnapshot(rows, rows.length));
+          return true;
+        }
+        async function executeSlotSearch(id: string, source: QueryDataSource, view: TableQueryView, values: EffectiveQuery['filterValues']): Promise<boolean> {
+          if (!view.search?.data || view.search.data === 'main' || !view.search.query.trim()) return false;
+          const query = composeEffectiveQuery({ page, filters: page.filters, dataSource: source, now: request.now,
+            displayInputs: frozenInputs, filterRevision: frozenRevision }, request.conditions, 0, [], {});
+          bindQueryResultValues(query, values);
+          const input = { page, sourceId: id, query, view, conditions: request.conditions, runner: execution, scope,
+            signal: request.signal, now: request.now, displayInputs: frozenInputs, filterRevision: frozenRevision };
+          const data = await slotSearch.read(input);
+          if (!data) return false;
+          const result = selectSearchRows(input, data, request.purpose === 'complete');
+          request.signal.throwIfAborted();
+          for (const [sourceId, snapshot] of result.snapshots) raw.set(sourceId, snapshot);
+          if (result.pageIndex !== view.pageIndex) corrections.set(id, { ...view, pageIndex: result.pageIndex });
+          queries.set(id, query);
+          return true;
         }
         function completeQuerySnapshot(id: string, source: QueryDataSource, query: EffectiveQuery, diagnostics: QueryDiagnosticContext): Promise<DataSnapshot> {
           const comparison = hasPeriodComparison(source.source.query);
@@ -327,6 +368,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
           return source.source.type === 'query' && !intersectQueryFilters(composeEffectiveQuery({ displayInputs: frozenInputs, filterRevision: frozenRevision, now: request.now, page:page,filters:page.filters, dataSource: source as QueryDataSource }, request.conditions, 0, [], {}));
         }
         function untrustedSeed(id: string): boolean {
+          if (slotSearch.owns({ page }, id, request.views)) return true;
           return [...conditionSourceIds(page, id)].some(key => {
             const source = page.dataSources[key];
             return source?.source.type === 'query' && (requiresQueryContext(source.source.query, page.filters) || overridesSource(key,request.conditions) || emptyBooleanMembership(source.source.query.filterBindings??{},request.conditions) || queryFilterIds(source.source.query).some(id => {
@@ -336,6 +378,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
           });
         }
         function availableInitial(id: string, source: DataSource, view: TableQueryView): DataSnapshot | undefined {
+          if (slotSearch.owns({ page }, id, request.views)) return undefined;
           const initial = request.useInitial && defaultConditions(id, request.conditions) ? reusableInitialSnapshot(source, view, limits.has(id)) : undefined;
           if (initial) return checkOrdinaryRange(source, initial, undefined, { ...config.diagnostics, pageId: page.id, dataSourceIds: [id] });
           if (source.source.type === 'inline') return rawSnapshot(source.source.rows);
@@ -365,15 +408,13 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
         const requiresCompleteRead = (preserveWindow: boolean, source: DataSource, query: EffectiveQuery) => (request.purpose === 'complete' && !preserveWindow) || objectCompleteSource(source,query);
         function preparedQuery(id: string, source: QueryDataSource, view: TableQueryView, values: EffectiveQuery['filterValues']): EffectiveQuery | Promise<EffectiveQuery> {
           const search = mainTableSearch(view.search);
-          const captured = request.queries?.get(id);
+          const captured = projectCapturedQuery(request.queries?.get(id), source);
           if (captured && requiresQueryContext(source.source.query, page.filters)) { const expected = composeEffectiveQuery({ displayInputs: frozenInputs, filterRevision: frozenRevision, now: request.now, page:page,filters:page.filters, dataSource: source as QueryDataSource }, request.conditions, view.pageIndex, view.sort, tableHeaders(view.predicates), search); if (canonicalizeJson(captured.body) !== canonicalizeJson(expected.body)) throw Object.assign(new Error('捕获查询与已应用查询模式不匹配'), { code: 'DQE_QUERY_REJECTED' }); }
           const fresh = () => composeEffectiveQuery({ displayInputs: frozenInputs, filterRevision: frozenRevision, now: request.now, page:page,filters:page.filters, dataSource: source as QueryDataSource, ...(limits.has(id) ? { pagination: { limit: view.pageSize } } : {}) }, request.conditions, view.pageIndex, view.sort, tableHeaders(view.predicates), search);
           const protectedConditions = requiresQueryContext(source.source.query, page.filters)||overridesSource(id,request.conditions);
           // Captured views may be reused; their old predicates cannot authorize a different range.
           let query = captured ? { ...structuredClone(captured), ...(protectedConditions ? { body:fresh().body,filterValues: fresh().filterValues, bindingValues: fresh().bindingValues, tableFilters: fresh().tableFilters, fieldMappings: fresh().fieldMappings,periodAggregation:fresh().periodAggregation } : {}) } : fresh();
           bindQueryResultValues(query, values);
-          if (view.search?.data) return applyTableSlotSearch({ page, sourceId: id, search: view.search, query, conditions: request.conditions, runner: execution, scope,
-            signal: request.signal, now: request.now, displayInputs: frozenInputs, filterRevision: frozenRevision }).then(applied => { queries.set(id, applied); return applied; });
           queries.set(id, query);
           return query;
         }
@@ -381,6 +422,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
           return isBusinessSelection(source, compiled.limits.has(id) || compiled.automatic.has(id)) || (cascaded.has(id) && (!request.completeSources?.includes(id) || isBoundedResultSource(page.dataSources, id)));
         }
         function defaultQueryView(id: string, view: TableQueryView): boolean {
+          if (Object.keys(sources.get(id)!.fields).length !== Object.keys(compiled.sources.get(id)!.fields).length) return false;
           return defaultConditions(id, request.conditions, false) && view.pageIndex === 0 && !view.sort.length && !view.predicates.length && !view.search?.query.trim() && (!compiled.limits.has(id) || view.pageSize === compiled.limits.get(id));
         }
         function finishQueryRead(id: string, source: QueryDataSource, view: TableQueryView, snapshot: DataSnapshot): void {
@@ -439,7 +481,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
         }
       } finally { controller.abort(); if (request.freshness === 'refresh' || scope !== contextScope) runner.forgetScope(scope); }
     },
-    dispose() { union.clear(); clearRecordJoinCache(runner); runner.dispose(); }
+    dispose() { union.clear(); slotSearch.clear(); clearRecordJoinCache(runner); runner.dispose(); }
   };
   return program;
 }

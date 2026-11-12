@@ -1,4 +1,4 @@
-import {isPagedJoinQuery,pagedJoinCandidateView,legacyTableCandidateSearch,type PagedJoinDataSource} from '@metriccanvas/page/internal';
+import {isPagedJoinQuery,pagedJoinCandidateView,pagedJoinPausedFields,legacyTableCandidateSearch,type PagedJoinDataSource} from '@metriccanvas/page/internal';
 import { declaredQuerySort } from './query-sort';
 import { createHierarchySelectionSession, hierarchyRows, type HierarchyContext, type HierarchySelection } from '../../../runtime/src/table/hierarchy-selection';
 import {normalizeTableSelectView,columnBindingKey,mainColumnField,tableColumnLeaves,type TableColumn} from '@metriccanvas/page/internal';
@@ -58,10 +58,16 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
     }
     function candidateViewFor(table:TableComponent,field:string){
       const source=page.dataSources[table.data.main];
+      if(pausedFields(table).includes(field))return view(table);
       return source.source.type==='pagedJoin'&&isPagedJoinQuery(source.source)?pagedJoinCandidateView(source as PagedJoinDataSource,view(table),field):view(table);
     }
+    function pausedFields(table:TableComponent):string[]{
+      const source=page.dataSources[table.data.main];
+      return source.source.type==='pagedJoin'&&isPagedJoinQuery(source.source)?pagedJoinPausedFields(source as PagedJoinDataSource,view(table)):[];
+    }
     function preloadFields(table:TableComponent){
-      return tableColumnLeaves(columns(table).component.props.columns).filter(column=>column.filterable?.mode==='select'&&!column.enumValues).flatMap(column=>{const field=mainColumnField(column.field);return field===undefined?[]:[field];});
+      const paused=new Set(pausedFields(table));
+      return tableColumnLeaves(columns(table).component.props.columns).filter(column=>column.filterable?.mode==='select'&&!column.enumValues).flatMap(column=>{const field=mainColumnField(column.field);return field===undefined?[]:[field];}).filter(field=>!paused.has(field));
     }
     const headers = new Map<string, Record<string, TableHeaderFilterValue>>();
     const searches = new Map<string, string>();
@@ -96,6 +102,7 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
         let session = candidates.get(table.id);
         if (!session) {
             session = createColumnCandidatesSession(async (field, search, offset, signal, preload) => {
+                if(pausedFields(table).includes(field))return {kind:'unavailable'};
                 const current = stream(), program = current?.getSourceProgram();
                 if (!current || !program)
                     return { kind: 'unavailable' };
@@ -197,7 +204,7 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
         render(table: TableComponent): TableViewState {
             const committed = view(table);
             const sort = committed.sort.length || sortTouched.has(table.id) ? committed.sort : declaredQuerySort(page.dataSources[table.data.main], conditions());
-            return { legacyCandidateSearch:legacyTableCandidateSearch(page.schemaVersion), operationNotice:notices.get(table.id), pageIndex: committed.pageIndex, sort, searchQuery: committed.search?.query, search: committed.search,
+            return { legacyCandidateSearch:legacyTableCandidateSearch(page.schemaVersion), pausedFields:pausedFields(table), operationNotice:notices.get(table.id), pageIndex: committed.pageIndex, sort, searchQuery: committed.search?.query, search: committed.search,
                 headerFilters: { ...renderHeaders(tableHeaders(committed.predicates)), ...headers.get(table.id) } };
         },
         headers(table: TableComponent) { return tableHeaders(view(table).predicates); },
@@ -221,7 +228,7 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
                 searchOptions.set(table.id, option);
             searches.set(table.id, query);
             if (remote(table))
-                stream()?.setQuerySearch(table.data.main, search);
+                operate(table, () => stream()?.setQuerySearch(table.data.main, search));
             else
                 local(table).setSearch(search);
             changed();

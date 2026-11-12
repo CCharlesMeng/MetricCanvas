@@ -94,7 +94,8 @@ function resultPredicates(query: EffectiveQuery, fields: Map<string, string>): T
     if (value.target === 'time') return [];
     const field = fields.get(value.target === 'metricRange' ? value.metric : value.queryField);
     if (!field) return [];
-    if (value.target === 'dimension') return [{ field, op: 'in', values: value.values }];
+    // Exclusions already constrain every monthly request; never reapply them as inclusion.
+    if (value.target === 'dimension') return value.operator === '!=' ? [] : [{ field, op: 'in', values: value.values }];
     if (value.target === 'dimensionRange') return [{ field, op: 'dateRange', from: value.from, to: value.to }];
     return [
       ...(value.from === undefined ? [] : [{ field, op: 'gte' as const, value: value.from }]),

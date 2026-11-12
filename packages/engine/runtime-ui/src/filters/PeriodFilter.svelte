@@ -11,6 +11,10 @@
   const modes=$derived(periodModes ? periodModes.map(id=>allModes.find(item=>item.id===id)!) : allModes);
   const mode=$derived(value?.selection?.mode ?? periodModes?.[0] ?? 'month');
   let anchor=$state(untrack(()=>anchorOf(value?.selection)));
+  // Keep each mode's last applied choice; the shared anchor only supplies the year
+  // and the initial value for a mode that has not been visited yet.
+  let rememberedQuarter=$state<string>();
+  let rememberedMonth=$state<string>();
   function anchorOf(selection?:AppliedPeriodSelection):string {
     if (selection?.mode==='last12Months' && selection.anchor) return selection.anchor;
     if (!selection || selection.mode==='last12Months') {const now=new Date();return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;}
@@ -22,16 +26,25 @@
     const selection=value?.selection;
     if(!selection || selection.mode==='last12Months')return;
     const previous=untrack(()=>anchor);
-    if(selection.mode==='month') anchor=selection.value;
+    if(selection.mode==='month') {
+      anchor=selection.value;
+      rememberedMonth=selection.value.slice(5,7);
+    }
     else if(selection.mode==='year') anchor=`${selection.value}-${previous.slice(5,7)}`;
     else {
       const quarter=Number(selection.value.slice(6));
       const month=Number(previous.slice(5,7));
       anchor=`${selection.value.slice(0,4)}-${String(Math.ceil(month/3)===quarter?month:(quarter-1)*3+1).padStart(2,'0')}`;
+      rememberedQuarter=selection.value.slice(5);
     }
   });
   function select(next:PeriodMode) {
-    const selection=next==='last12Months'?{mode:next,...(anchorLast12?{anchor}:{})} as const:{mode:next,value:next==='year'?anchor.slice(0,4):next==='quarter'?`${anchor.slice(0,4)}-Q${Math.ceil(Number(anchor.slice(5,7))/3)}`:anchor};
+    const year=anchor.slice(0,4);
+    const selection=next==='last12Months'
+      ? {mode:next,...(anchorLast12?{anchor}:{})} as const
+      : {mode:next,value:next==='year' ? year : next==='quarter'
+        ? `${year}-${rememberedQuarter??`Q${Math.ceil(Number(anchor.slice(5,7))/3)}`}`
+        : `${year}-${rememberedMonth??anchor.slice(5,7)}`};
     commit(resolvePeriodSelection(selection,new Date(),precision));
   }
   const selected=$derived(value?.selection?.mode==='last12Months'?undefined:value?.selection.value);

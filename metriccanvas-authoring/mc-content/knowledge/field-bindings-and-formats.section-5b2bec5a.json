@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.113",
+  "schemaVersion": "6.115",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "field-bindings-and-formats.section-5b2bec5a"
@@ -10,7 +10,7 @@
       "reference": "references/page-metadata/field-bindings-and-formats.md",
       "blocks": [
         "# 数据槽、字段绑定与格式\n\ndata槽把组件关联到页面数据源；字段绑定引用该槽中的结果字段，可用显式source指定受支持的其它槽。match按声明维度取值选择对应行，不能充当通用查询表达式。\n\n显式格式、精度与百分刻度见下文“显式数值格式与精度”；时间、单位及货币选择分别由对应章节定义。\n\ntext不执行HTML，日期格式只格式化日期值。语义HTML须用专用字段类型。\n\n<a id=\"time-format\"></a>",
-        "## 显式数值格式与精度\n\n组件绑定的显式format优先；未声明时先按可信字段类型、币种、单位及语义格式选择统一规则，再回退字段defaultFormat；不从指标名或字段id猜测。number保留数值语义，number-0四舍五入显示整数，number-1/2/3/4/5控制最多小数位，number-grouped千分位；compact-wan/yi是数量单位缩放。percent-*直接以原数值加百分号，0.42不自动变42%；需要ratio.scale:100或正确的原始刻度。\n\n6.113 新增 `number-0`，绑定可写 `{\"data\":\"main\",\"field\":\"amount\",\"format\":\"number-0\"}`，字段默认用 `defaultFormat:\"number-0\"`，数字参数及筛选文本引用也可使用。不加千分位、不缩放，四舍五入到整数（半值远离零）：`12.4 → 12`、`12.5 → 13`、`-12.5 → -13`，`±0.4` 与负零均显示 `0`，缺失仍显示 `--`。只改变展示，原值、计算、排序不变；Excel 保留数值原值，以冻结的整数文本展示。6.112 及更早版本不能声明，未新增 `number-0-signed`。合成场景 `/pages/number-precision-five` 覆盖表格显式格式、字段默认、指标卡、柱图及数字参数标题。\n\n6.107 补齐 `number-3`、`number-4`、`number-5` 及对应的 `-signed` 格式，分别最多保留三、四、五位小数，四舍五入后去掉末尾零，不补零、不加千分位、不缩放。格式名仍为封闭枚举，不支持 `number-6` 或 `number-6-signed`。组件 `format`、字段 `defaultFormat`、数字参数及筛选文本引用共用这些预设；6.106 及更早版本不能声明新预设，旧格式行为保持。\n\n组件显式 `percent-0/1/2` 保持对应最大精度，微小非零值如 `0.0001` 显式用 `percent-2` 显示 `0%`；作为来源默认建议时按统一语义规则自适应显示 `0.0001%`。零与缺失分别显示 `0%` 与缺失文案。格式仅改变展示，不修改原始数值、计算、排序或筛选；只改组件显示时保留共享字段契约及其他消费者。\n\n<a id=\"numeric-value-display\"></a>"
+        "## 显式数值格式与精度\n\n组件绑定的显式format优先；未声明时先按可信字段类型、币种、单位及语义格式选择统一规则，再回退字段defaultFormat；不从指标名或字段id猜测。number保留数值语义，number-0四舍五入显示整数，number-1/2/3/4/5控制最多小数位，number-grouped千分位；compact-wan/yi是数量单位缩放。percent-*直接以原数值加百分号，0.42不自动变42%；需要ratio.scale:100或正确的原始刻度。\n\n6.113 新增 `number-0`，绑定可写 `{\"data\":\"main\",\"field\":\"amount\",\"format\":\"number-0\"}`，字段默认用 `defaultFormat:\"number-0\"`，数字参数及筛选文本引用也可使用。不加千分位、不缩放，四舍五入到整数（半值远离零）：`12.4 → 12`、`12.5 → 13`、`-12.5 → -13`，`±0.4` 与负零均显示 `0`，缺失仍显示 `--`。只改变展示，原值、计算、排序不变；Excel 保留数值原值，使用原生整数数字格式，编辑后仍按整数显示。6.112 及更早版本不能声明，未新增 `number-0-signed`。合成场景 `/pages/number-precision-five` 覆盖表格显式格式、字段默认、指标卡、柱图及数字参数标题。\n\n6.107 补齐 `number-3`、`number-4`、`number-5` 及对应的 `-signed` 格式，分别最多保留三、四、五位小数，四舍五入后去掉末尾零，不补零、不加千分位、不缩放。格式名仍为封闭枚举，不支持 `number-6` 或 `number-6-signed`。组件 `format`、字段 `defaultFormat`、数字参数及筛选文本引用共用这些预设；6.106 及更早版本不能声明新预设，旧格式行为保持。\n\n组件显式 `percent-0/1/2` 保持对应最大精度，微小非零值如 `0.0001` 显式用 `percent-2` 显示 `0%`；作为来源默认建议时按统一语义规则自适应显示 `0.0001%`。零与缺失分别显示 `0%` 与缺失文案。格式仅改变展示，不修改原始数值、计算、排序或筛选；只改组件显示时保留共享字段契约及其他消费者。\n\n<a id=\"numeric-value-display\"></a>"
       ],
       "rules": [
         {

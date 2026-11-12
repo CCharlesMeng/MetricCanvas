@@ -1,0 +1,251 @@
+{
+  "schemaVersion": "6.112",
+  "id": "conditional-query-demand",
+  "layout": "dashboard",
+  "meta": {
+    "title": "条件显隐与按需取数（合成数据）",
+    "description": "开发验收：隐藏评分列后不查询score，隐藏图表达成率后从output_metrics移除rate；切换范围再显示，使用当前筛选重新查询。浏览器测试拦截DQE并提供合成数据。"
+  },
+  "filters": [
+    {
+      "id": "show-detail",
+      "type": "boolean",
+      "label": "显示明细",
+      "default": true
+    },
+    {
+      "id": "scope",
+      "type": "dimension",
+      "dimension": "scope",
+      "label": "合成范围",
+      "selection": {
+        "mode": "single",
+        "required": true
+      },
+      "options": [
+        {
+          "value": "A",
+          "label": "合成范围A"
+        },
+        {
+          "value": "B",
+          "label": "合成范围B"
+        }
+      ],
+      "default": [
+        "A"
+      ]
+    }
+  ],
+  "dataSources": {
+    "records": {
+      "fields": {
+        "name": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "name"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "amount",
+          "unit": "合成单位"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "name"
+                ],
+                "output_metrics": [
+                  "amount"
+                ]
+              }
+            ]
+          },
+          "filterBindings": {
+            "scope": {
+              "target": "dimension",
+              "queryField": "scope"
+            }
+          }
+        }
+      }
+    },
+    "details": {
+      "fields": {
+        "name": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "name"
+        },
+        "score": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "score",
+          "unit": "合成单位"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "name"
+                ],
+                "output_metrics": [
+                  "score"
+                ]
+              }
+            ]
+          },
+          "filterBindings": {
+            "scope": {
+              "target": "dimension",
+              "queryField": "scope"
+            }
+          }
+        }
+      }
+    },
+    "trend": {
+      "fields": {
+        "name": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "name"
+        },
+        "sales": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "sales",
+          "unit": "合成单位"
+        },
+        "rate": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "rate",
+          "unit": "合成单位"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "name"
+                ],
+                "output_metrics": [
+                  "sales",
+                  "rate"
+                ]
+              }
+            ]
+          },
+          "filterBindings": {
+            "scope": {
+              "target": "dimension",
+              "queryField": "scope"
+            }
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "body",
+      "components": [
+        {
+          "id": "records-table",
+          "type": "table",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "records",
+            "detail": "details"
+          },
+          "props": {
+            "title": "列独占补充查询",
+            "columns": [
+              {
+                "field": "name",
+                "title": "名称"
+              },
+              {
+                "field": "amount",
+                "title": "销售额"
+              },
+              {
+                "field": {
+                  "data": "detail",
+                  "field": "score"
+                },
+                "title": "评分",
+                "visibleWhen": {
+                  "filter": "show-detail",
+                  "part": "value",
+                  "op": "eq",
+                  "value": true
+                }
+              }
+            ],
+            "toolbar": {
+              "export": {
+                "format": "xlsx"
+              }
+            },
+            "rowKey": "name"
+          }
+        },
+        {
+          "id": "conditional-chart",
+          "type": "barChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "trend"
+          },
+          "props": {
+            "title": "系列共用查询",
+            "categoryField": "name",
+            "dualAxis": true,
+            "series": [
+              {
+                "field": "sales",
+                "label": "销售额",
+                "kind": "bar",
+                "axis": "primary"
+              },
+              {
+                "field": "rate",
+                "label": "达成率",
+                "kind": "line",
+                "axis": "secondary",
+                "visibleWhen": {
+                  "filter": "show-detail",
+                  "part": "value",
+                  "op": "eq",
+                  "value": true
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

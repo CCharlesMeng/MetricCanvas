@@ -1,28 +1,17 @@
-import { usesIocRegion, resolveHeaderBinding } from './header-binding';
+import { headerDeclarations, usesIocRegion, resolveHeaderBinding } from './header-binding';
 import { filterURLKeys } from './filter-url';
 export { filterURLKeys, readLevelURLSelection } from './filter-url';
-import {staticFieldBinding} from './field';
-import { resolveDataSourceFields } from './data-source';
+import { navigationTargetErrors } from './navigation-target-validation';
 import { walkPageComponents } from './component-walk';
 import type { DataRow as Row } from './field';
 import type { Page, TableColumn, TableColumnNode } from './page';
 import type { TypedError } from './errors';
 import type { NavigationTarget } from './schema/navigation';
 
-/** 静态地址边界；不请求目标，也不以本仓页面集合推断部署路径。 */
-export function isNavigationHref(href: string): boolean {
-  if (!href || href !== href.trim() || /[\u0000-\u001f\u007f\\]/.test(href)) return false;
-  if (/^https?:(?!\/\/)/i.test(href)) return false;
-  try {
-    const url = new URL(href, 'https://metriccanvas.invalid/');
-    return url.protocol === 'https:' || url.protocol === 'http:';
-  } catch { return false; }
-}
+export { isNavigationHref } from './navigation-target-validation';
 
 export function navigationErrors(page: Page): TypedError[] {
   const errors: TypedError[] = [];
-  const filters = new Map((page.filters ?? []).map(f => [f.id, f]));
-  const params = new Set((page.params ?? []).map(p => p.id));
   const fail = (path: string, message: string) => errors.push({ type: 'SCHEMA_ERROR', path, message });
   walkPageComponents(page, (component, path) => {
     const targets: Array<[NavigationTarget, string]> = [];
@@ -50,39 +39,15 @@ export function navigationErrors(page: Page): TypedError[] {
         if ('navigate' in a) targets.push([a.navigate, `${path}/props/actions/${i}/navigate`]);
       });
     }
-    for (const [target, targetPath] of targets) {
-      if (!isNavigationHref(target.href)) fail(`${targetPath}/href`, '导航只允许 HTTP(S) 或相对 URL');
-      for (const [key, binding] of Object.entries(target.query ?? {})) {
-        const p = `${targetPath}/query/${key.replaceAll('~','~0').replaceAll('/','~1')}`;
-        if (binding.source === 'param') {
-          if (!params.has(binding.id)) fail(`${p}/id`, `未声明的页面参数:${binding.id}`);
-        } else if (binding.source === 'filter') {
-          const filter = filters.get(binding.id);
-          if (!filter) { fail(`${p}/id`, `未声明的筛选器:${binding.id}`); continue; }
-          const part = binding.part ?? 'value';
-          const range = filter.type === 'timeRange' || filter.type === 'numberRange';
-          if (range ? !['from','to',...(filter.type==='timeRange'&&filter.display==='period'?['value']:[]),...(filter.type==='timeRange'&&filter.display==='modes'?['mode']:[])].includes(part) : part !== 'value' && !(part === 'level' && filter.type === 'dimension' && filter.hierarchy)) {
-            fail(`${p}/part`, `筛选器 ${binding.id} 不支持分量 ${part}`);
-          }
-        } else {
-          const linkedRows = component.type === 'metricCard'
-            ? [...component.props.rows, ...(component.props.secondaryRows ?? [])].filter(row => row.link)
-            : [];
-          const slots = linkedRows.length
-            ? linkedRows.map(row => {const binding=staticFieldBinding(row.valueField);return typeof binding==='string'?'main':binding.data;})
-            : ['main'];
-          const dataSlots: Readonly<Record<string, string | undefined>> = component.data ?? {};
-          const invalid = slots.some(slot => {
-            const sourceId = dataSlots[slot];
-            const source = sourceId ? page.dataSources[sourceId] : undefined;
-            const field = source && resolveDataSourceFields(source)[binding.field];
-            return !field || !['string', 'number', 'money', 'boolean', 'date', 'datetime'].includes(field.type);
-          });
-          if (invalid) fail(`${p}/field`, `当前行缺少可传参的标量字段:${binding.field}`);
-        }
-      }
-    }
+    for (const [target, targetPath] of targets) errors.push(...navigationTargetErrors(page,target,targetPath,component));
   });
+  for (const header of headerDeclarations(page)) {
+    const identity = header.props.identity as import('./schema/ioc-header').IocHeaderDeclaration['identity'];
+    if (!identity?.titleNavigate) continue;
+    const path = `${header.path}/identity/titleNavigate`;
+    if (!identity.title) fail(path, '标题导航必须同时声明 identity.title');
+    errors.push(...navigationTargetErrors(page,identity.titleNavigate,path));
+  }
   return errors;
 }
 
@@ -117,6 +82,10 @@ export function declaredNavigationTargets(page: Page): NavigationTarget[] {
     else if(component.props&&'actions' in component.props)for(const action of Array.isArray(component.props.actions)?component.props.actions:[])if('navigate' in action)result.push(action.navigate);
     if(component.type==='table')visit(component.props?.columns??[]);
   });
+  for(const header of headerDeclarations(page)){
+    const identity=header.props.identity as import('./schema/ioc-header').IocHeaderDeclaration['identity'];
+    if(identity?.titleNavigate)result.push(identity.titleNavigate);
+  }
   return result;
   function visit(columns:TableColumnNode[]){if(!Array.isArray(columns))return;for(const column of columns)if(column?.kind==='group')visit(column.children??[]);else {if(column?.navigate)result.push(column.navigate);if(column?.navigateBySource)result.push(...Object.values(column.navigateBySource.cases));}}
 }

@@ -105,3 +105,14 @@ it('rejects monthly input beyond the complete-read budget', async () => {
   const gateway = { async fetchData() { return { rows: Array.from({ length: 10001 }, (_, index) => ({ 'rep-office': String(index), 'decision-count': 1, 'avg-decision-time': 1 })), totalCount: 10001 }; } };
   expect(await executeQuery(test.query(), gateway, {})).toMatchObject({ status: 'error', error: { message: expect.stringContaining('10000') } });
 });
+it('retains dimension exclusion through monthly requests and annual projection', async () => {
+  const test = setup(), query = test.query();
+  query.filterValues.push({target:'dimension',queryField:'代表处',values:['合成代表处甲'],operator:'!='});
+  const gateway = {async fetchData(monthly:EffectiveQuery){
+    expect(monthly.filterValues).toContainEqual({target:'dimension',queryField:'代表处',values:['合成代表处甲'],operator:'!='});
+    const result=await test.preview.dataGateway.fetchData(monthly);
+    const rows=result.rows.filter(row=>row['rep-office']!=='合成代表处甲');
+    return {...result,rows,totalCount:rows.length};
+  }};
+  expect(await executeQuery(query,gateway,{})).toMatchObject({status:'ready',totalCount:2,rows:[{'rep-office':'合成代表处乙'},{'rep-office':'合成代表处丙'}]});
+});

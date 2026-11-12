@@ -2,6 +2,7 @@ import type { Snippet } from 'svelte';
 import type { ResolvedIocHeader } from './model';
 export interface IocHeaderRenderBinding {
   model:ResolvedIocHeader;
+  titleLink?:import('../../../widgets/src/components/text/links').TextBlockLink;
   filterIds:string[];
   overflowIds?:string[];
   controls:Snippet<[string,boolean]>;

@@ -13,6 +13,9 @@ export { rawSnapshot } from './snapshots';
 
 export * from './table-view';
 export * from './table-presentation';
+export * from './chart-series-presentation';
+export * from './chart-presentation';
+export { presentationQuerySources } from './query-projection';
 export * from './table-defaults';
 export * from './compute';
 export * from './compute/join-aggregate';

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.113",
+  "schemaVersion": "6.115",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "lineChart.section-c455a6e1"
@@ -10,7 +10,7 @@
       "reference": "references/page-metadata/components/lineChart.md",
       "blocks": [
         "# 折线图 lineChart\n\n展示指标随时间或有序维度的变化趋势。适用于趋势、走势、按日/月变化、时间序列。数据形状：一个 date/datetime/dimension 横轴字段 + 一个或多个 metric 字段。\n\n用于沿有序维度观察趋势；序列measure与横轴dimension显式绑定，不把随机类别顺序冒充时间趋势。",
-        "## 系列条件显隐（6.89）\n\n`props.series[].visibleWhen` 与柱线组合共用[系列条件显隐](barChart.md#chart-series-visibility)：字段与常量系列都可使用，省略时沿用原行为。条件不满足时同步移除折线、图例和提示项，隐藏无可见系列使用的数值轴；其他系列继续保留原颜色、格式、轴归属及高级补丁。全部系列隐藏时保留标题和容器。完整内联合成入口 `/pages/chart-series-visibility`。"
+        "## 系列条件显隐（6.89）\n\n`props.series[].visibleWhen` 与柱线组合共用[系列条件显隐](barChart.md#chart-series-visibility)：字段与常量系列都可使用，省略时沿用原行为。条件不满足时同步移除折线、图例和提示项，隐藏无可见系列使用的数值轴；其他系列继续保留原颜色、格式、轴归属及高级补丁。全部系列隐藏时保留标题和容器。无其他消费者或执行依赖的独立指标按同一规则停止取数，共享查询保留类别维度及必要依赖，重新显示按当前筛选恢复；不新增字段。完整内联合成入口 `/pages/chart-series-visibility`，查询输出验收入口 `/pages/conditional-query-demand`。"
       ],
       "rules": [
         {

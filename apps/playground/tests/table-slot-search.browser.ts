@@ -28,7 +28,7 @@ function execute(item: QueryItem) {
 
 function receipt(item: QueryItem, mode: string) {
   const result = execute(item);
-  if (mode === 'overflow' && item.filter?.fields?.some(filter => filter.field_name === '责任人名称')) return { ...result, total_count: 1001 };
+  if (mode === 'overflow' && item.filter?.fields?.some(filter => filter.field_name === '责任人名称')) return { ...result, total_count: 100001 };
   return result;
 }
 

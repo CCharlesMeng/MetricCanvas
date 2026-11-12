@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.113",
+  "schemaVersion": "6.115",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "table.selectAll"
@@ -9,8 +9,8 @@
       "module": "table",
       "reference": "references/page-metadata/components/table.md",
       "blocks": [
-        "# 明细表 table\n\n首次加载保留表头和工具栏，表体仅显示静态“正在加载…”，不显示加载动画；刷新、查询翻页和排序期间保留上一份完整展示，当前结果就绪后替换。旧行暂时不可交互，不进入新查询或导出；完整边界见[加载时保留组件结构](../data-sources.md#screen-loading)。 级联查询按[渐进补列](../data-sources.md#progressive-table-columns)先显示已确定行集的就绪列，未完成和失败列显示 `--`；行集与顺序有待确认时继续保留旧展示。\n\ncolumns/children 定义字段列与递归列组；交互、查询与呈现约束见下列专题。\n\n<a id=\"local-default-sort\"></a>",
-        "## 列头全选入口（6.98）\n\n在 select 列声明 `filterable: {\"mode\":\"select\",\"showSelectAll\":true}` 才展示“全选”。省略或 false 不展示；该属性不用于日期/数值范围。固定 `enumValues` 和从表格完整匹配结果取得的动态候选均支持。新页面只需配置 `showSelectAll`，不需要配置 `allBehavior`，动态候选也不需要补写枚举。\n\n```json\n{\"field\":\"status\",\"title\":\"是否有效\",\"filterable\":{\"mode\":\"select\",\"showSelectAll\":true}}\n```\n\n列头弹层不提供“清除筛选”按钮。选项通过取消勾选清空；日期和数值范围通过清空端点恢复。\n\n点击全选后该列不限，控件保持全选勾选；在完整候选已知时逐项选满也采用同一行为。取消单项后按剩余原始值筛选；取消全选或逐项取消勾选可清空选择并恢复该列不限。操作一次提交并回到第一页，翻页、排序、刷新及 Tab 切换保留用户选择。运行时用独立的全选意图保留显示状态，不把当前值集合写成 IN 条件；查询、筛选候选与导出都消费已提交视图。相同数据与其他条件下，全选和该列未过滤返回相同记录，包括 null 和枚举外值；页面业务条件、权限、搜索和其他列条件继续生效。显示名不进入查询，初值仍沿既有 defaultValues/initialParam 规则。\n\n动态候选 ready/empty、无搜索词且已加载数等于准确 totalCount 时可首次全选；尚有分页时先“加载更多”，不把当前页或搜索结果当全部。候选为空也可全选恢复含空值的记录。搜索时隐藏全选；已全选时可直接取消全选，取消单项则须先取得完整、无搜索的候选，未完整时单项暂不可改，以免漏掉未加载值。加载/失败/不可用不提供可用全选。失配值可在部分选择时逐项取消；取消全选显式清空本列所有选择。\n\n旧 `allBehavior` 从 6.85 起已存在，保留读取、校验和执行规则，已有页面无需改写；它不控制入口是否显示。新 `showSelectAll:true` 的用户全选操作固定为不限，不受旧 allBehavior 值影响。省略新开关的旧页面继续按原筛选声明运行。\n\n完整内联合成示例 `/pages/table-header-select-all` 对照静态/动态候选、true/false/省略、空值、其他列、Tab 与 Excel；无需外部数据服务。该例不代表真实 DQE 或 Relay 验收。"
+        "# 明细表 table\n\n首次加载保留表头和工具栏，表体仅显示静态“正在加载…”，不显示加载动画；刷新、查询翻页和排序期间保留上一份完整展示，当前结果就绪后替换。旧行暂时不可交互，不进入新查询或导出；完整边界见[加载时保留组件结构](../data-sources.md#screen-loading)。 级联查询按[渐进补列](../data-sources.md#progressive-table-columns)先显示已确定行集的就绪列，未完成和失败列显示 `--`；行集与顺序有待确认时继续保留旧展示。\n\ncolumns/children 定义字段列与递归列组；交互、查询与呈现约束见下列专题。\n\n\n<a id=\"local-default-sort\"></a>",
+        "## 列头全选入口（6.98）\n\n在 select 列声明 `filterable: {\"mode\":\"select\",\"showSelectAll\":true}` 才展示“全选”。省略或 false 不展示；该属性不用于日期/数值范围。固定 `enumValues` 和从表格完整匹配结果取得的动态候选均支持。新页面只需配置 `showSelectAll`，不需要配置 `allBehavior`，动态候选也不需要补写枚举。\n\n```json\n{\"field\":\"status\",\"title\":\"是否有效\",\"filterable\":{\"mode\":\"select\",\"showSelectAll\":true}}\n```\n\n列头弹层不提供“清除筛选”按钮。选项通过取消勾选清空；日期和数值范围通过清空端点恢复。\n\n点击全选后该列不限，控件保持全选勾选；在完整候选已知时逐项选满也采用同一行为。取消单项后按剩余原始值筛选；取消全选或逐项取消勾选可清空选择并恢复该列不限。操作一次提交并回到第一页，翻页、排序、刷新及 Tab 切换保留用户选择。运行时用独立的全选意图保留显示状态，不把当前值集合写成 IN 条件；查询、筛选候选与导出都消费已提交视图。相同数据与其他条件下，全选和该列未过滤返回相同记录，包括 null 和枚举外值；页面业务条件、权限、搜索和其他列条件继续生效。显示名不进入查询，初值仍沿既有 defaultValues/initialParam 规则。\n\n动态候选 ready/empty、无搜索词且已加载数等于准确 totalCount 时可首次全选；尚有分页时滚动选项列表到底部自动续载，不把当前页或搜索结果当全部。候选为空也可全选恢复含空值的记录。搜索时隐藏全选；已全选时可直接取消全选，取消单项则须先取得完整、无搜索的候选，未完整时单项暂不可改，以免漏掉未加载值。加载/失败/不可用不提供可用全选。失配值可在部分选择时逐项取消；取消全选显式清空本列所有选择。\n\n旧 `allBehavior` 从 6.85 起已存在，保留读取、校验和执行规则，已有页面无需改写；它不控制入口是否显示。新 `showSelectAll:true` 的用户全选操作固定为不限，不受旧 allBehavior 值影响。省略新开关的旧页面继续按原筛选声明运行。\n\n完整内联合成示例 `/pages/table-header-select-all` 对照静态/动态候选、true/false/省略、空值、其他列、Tab 与 Excel；无需外部数据服务。该例不代表真实 DQE 或 Relay 验收。"
       ],
       "rules": [
         {
@@ -348,7 +348,7 @@
         "references/page-metadata/examples/table-header-select-all.json",
         "references/page-metadata/examples/table-header-select-all-query.json",
         "references/page-metadata/examples/table-default-sort.json",
-        "references/page-metadata/examples/rep-office-execution-efficiency.json",
+        "references/page-metadata/examples/rep-business-result.json",
         "references/page-metadata/examples/table-header-filter-search.json"
       ]
     }
@@ -370,7 +370,7 @@
           "sections"
         ],
         "title": "页面",
-        "$id": "https://metriccanvas/page/v6.113",
+        "$id": "https://metriccanvas/page/v6.115",
         "properties": {
           "schemaVersion": "#/properties/schemaVersion",
           "id": "#/properties/id",

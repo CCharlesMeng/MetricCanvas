@@ -44,7 +44,7 @@ function applyBinding(item: JsonObject, predicate: EffectiveQuery['filterValues'
     return;
   }
   const name = predicate.target === 'metricRange' ? predicate.metric : predicate.queryField;
-  if (predicate.target === 'dimension') { setObjectFieldValues(item, name, predicate.values); return; }
+  if (predicate.target === 'dimension') { setObjectFieldValues(item, name, predicate.values, predicate.operator); return; }
   removeField(item, name);
   appendRange(item, name, predicate.from, predicate.to);
 }

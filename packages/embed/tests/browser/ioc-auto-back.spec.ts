@@ -22,10 +22,20 @@ test('old auto is a true alias without source context, including custom override
 test('old auto falls back to history.length without Navigation API',async({page})=>{
  await page.addInitScript(()=>Object.defineProperty(window,'navigation',{value:undefined,configurable:true}));
  await page.goto('/pages/ioc-auto-back-unrelated');await page.goto('/pages/ioc-auto-back-detail?project=1');
+ await expect(page.locator('[data-dashboard-back]')).toBeVisible();
  await page.evaluate(()=>{
   window.pageDocument.sections[0].components[0].props.back='auto';
   window.runtime.update({document:window.pageDocument});
  });
  const back=page.locator('[data-dashboard-back]');await expect(back).toBeVisible();
  await back.click();await expect(page).toHaveURL(/ioc-auto-back-unrelated/);
+});
+
+
+test('ordinary IOC headers initialize without the key-office membership adapter',async({page})=>{
+ await page.route('**/__fixtures/key-office-filter.js',route=>route.abort());
+ await page.goto('/pages/ioc-auto-back-unrelated');
+ await page.goto('/pages/ioc-auto-back-detail?project=1');
+ await expect(page.locator('[data-dashboard-back]')).toBeVisible();
+ expect(await page.evaluate(()=>!!window.runtime)).toBe(true);
 });

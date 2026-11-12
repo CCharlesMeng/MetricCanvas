@@ -1,0 +1,384 @@
+{
+  "schemaVersion": "6.113",
+  "id": "paged-join-search",
+  "meta": {
+    "title": "组合查询：合同编号搜索",
+    "description": "仿真数据：两个成员每月合同范围一致且合同ID唯一。无搜索按创建时间倒序；搜索由明细成员按页查找，暂停基础资料排序；清空恢复默认倒序。"
+  },
+  "layout": "dashboard",
+  "filters": [
+    {
+      "id": "period",
+      "type": "timeRange",
+      "display": "period",
+      "precision": "month",
+      "label": "统计期间",
+      "required": true,
+      "default": {
+        "mode": "month"
+      }
+    },
+    {
+      "id": "customer-category",
+      "type": "dimension",
+      "dimension": "customerCategory",
+      "label": "客户分类",
+      "display": "select",
+      "emptyLabel": "客户分类",
+      "selection": {
+        "mode": "multiple",
+        "allBehavior": "values"
+      },
+      "searchable": true,
+      "options": [
+        {
+          "label": "卓越NA",
+          "value": "卓越NA"
+        },
+        {
+          "label": "战略NA",
+          "value": "战略NA"
+        },
+        {
+          "label": "核心NA",
+          "value": "核心NA"
+        }
+      ]
+    }
+  ],
+  "params": {
+    "query": {
+      "dimensions": [
+        {
+          "id": "rep-office-name",
+          "dim_name": "代表处",
+          "required": false,
+          "label": "代表处"
+        }
+      ]
+    }
+  },
+  "dataSources": {
+    "contract-closure-main": {
+      "fields": {
+        "contract-code": {
+          "type": "string",
+          "role": "dimension",
+          "label": "合同编码",
+          "queryField": "合同编码",
+          "nullable": false
+        },
+        "contract-id": {
+          "type": "string",
+          "role": "dimension",
+          "label": "合同ID",
+          "queryField": "合同ID",
+          "nullable": false
+        },
+        "contract-type": {
+          "type": "string",
+          "role": "dimension",
+          "label": "合同类型",
+          "queryField": "合同类型",
+          "nullable": true
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "query_type": "object",
+                "object_type": "Contract-Rep_Contract_Decision_Closure_Metric_Detail",
+                "output_fields": [
+                  "合同编码",
+                  "合同ID",
+                  "合同类型"
+                ],
+                "filter": {
+                  "fields": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "period": {
+              "target": "time",
+              "queryField": "账期",
+              "valueFormat": "datetime"
+            },
+            "customer-category": {
+              "target": "dimension",
+              "queryField": "客户类型"
+            }
+          },
+          "paramBindings": {
+            "rep-office-name": {
+              "target": "dimension",
+              "queryField": "代表处"
+            }
+          }
+        },
+        "resultScope": "complete"
+      }
+    },
+    "contract-closure-basic": {
+      "fields": {
+        "contract-id": {
+          "type": "string",
+          "role": "dimension",
+          "label": "合同ID",
+          "queryField": "合同ID",
+          "nullable": false
+        },
+        "owner-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "责任人名称",
+          "queryField": "责任人名称",
+          "nullable": true
+        },
+        "eflow-create-time": {
+          "type": "string",
+          "role": "dimension",
+          "label": "合同电子流创建时间",
+          "queryField": "合同电子流创建时间",
+          "nullable": true
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "query_type": "object",
+                "object_type": "Contract/Customer Contract Basic Information",
+                "output_fields": [
+                  "合同ID",
+                  "责任人名称",
+                  "合同电子流创建时间"
+                ],
+                "filter": {
+                  "fields": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "customer-category": {
+              "target": "dimension",
+              "queryField": "客户类型"
+            },
+            "period": {
+              "target": "time",
+              "queryField": "账期",
+              "valueFormat": "datetime"
+            }
+          },
+          "paramBindings": {
+            "rep-office-name": {
+              "target": "dimension",
+              "queryField": "代表处"
+            }
+          }
+        },
+        "resultScope": "complete"
+      }
+    },
+    "contract-closure-joined": {
+      "fields": {
+        "contract-code": {
+          "type": "string",
+          "role": "dimension",
+          "label": "合同编码",
+          "nullable": false
+        },
+        "contract-id": {
+          "type": "string",
+          "role": "dimension",
+          "label": "合同ID",
+          "nullable": false
+        },
+        "contract-type": {
+          "type": "string",
+          "role": "dimension",
+          "label": "合同类型",
+          "nullable": true
+        },
+        "owner-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "责任人名称",
+          "nullable": true
+        },
+        "eflow-create-time": {
+          "type": "string",
+          "role": "dimension",
+          "label": "合同电子流创建时间",
+          "nullable": true
+        }
+      },
+      "source": {
+        "type": "pagedJoin",
+        "rowKey": "contract-id",
+        "domainMember": "main",
+        "members": {
+          "main": {
+            "source": "contract-closure-main",
+            "key": {
+              "field": "contract-id",
+              "queryField": "合同ID"
+            },
+            "canSelectPage": true
+          },
+          "basic": {
+            "source": "contract-closure-basic",
+            "key": {
+              "field": "contract-id",
+              "queryField": "合同ID"
+            },
+            "canSelectPage": true
+          }
+        },
+        "projection": {
+          "contract-code": {
+            "member": "main",
+            "field": "contract-code"
+          },
+          "contract-id": {
+            "member": "main",
+            "field": "contract-id"
+          },
+          "contract-type": {
+            "member": "main",
+            "field": "contract-type"
+          },
+          "owner-name": {
+            "member": "basic",
+            "field": "owner-name"
+          },
+          "eflow-create-time": {
+            "member": "basic",
+            "field": "eflow-create-time"
+          }
+        },
+        "ordering": {
+          "default": [
+            {
+              "field": "eflow-create-time",
+              "direction": "desc"
+            }
+          ],
+          "sortableFields": [
+            "contract-code",
+            "eflow-create-time"
+          ],
+          "nulls": "last"
+        },
+        "pagination": {
+          "mode": "query",
+          "pageSize": 10,
+          "batchSize": 10
+        },
+        "onMissing": "null"
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "组合查询：合同编号搜索"
+            },
+            "filterIds": [
+              "period",
+              "customer-category"
+            ],
+            "presentation": {
+              "layout": "inline",
+              "density": "normal",
+              "collapse": "none"
+            },
+            "back": "auto"
+          }
+        },
+        {
+          "id": "contract-closure-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "contract-closure-joined"
+          },
+          "props": {
+            "columns": [
+              {
+                "field": "contract-code",
+                "title": "合同编号",
+                "width": 180,
+                "sortable": true
+              },
+              {
+                "field": "contract-type",
+                "title": "合同类型",
+                "width": 120,
+                "filterable": {
+                  "mode": "select"
+                }
+              },
+              {
+                "field": "owner-name",
+                "title": "合同责任人",
+                "width": 120,
+                "filterable": {
+                  "mode": "select"
+                }
+              },
+              {
+                "field": "eflow-create-time",
+                "title": "合同电子流创建时间",
+                "width": 220,
+                "sortable": true
+              }
+            ],
+            "toolbar": {
+              "search": {
+                "fields": [
+                  "contract-code"
+                ],
+                "placeholder": "输入合同编号搜索"
+              },
+              "export": {
+                "format": "xlsx"
+              }
+            },
+            "pagination": {
+              "mode": "query"
+            },
+            "rowKey": "contract-id",
+            "fit": "container",
+            "rowNumber": {
+              "title": "序号",
+              "width": 60
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -57,6 +57,10 @@ function longString(length: number): string {
 }
 
 export const invariants: InvariantDefinition[] = [
+  {id:'dimension-binding-operator',description:'6.114 普通和层级维度绑定支持 = 与 !=，默认保持历史行为',valid:['dimension-binding-operator'],cases:[
+    {case:'dimension-operator-version',base:'dimension-binding-operator',expect:/由 6.114 引入/,mutate:d=>{d.schemaVersion='6.113';}},
+    {case:'dimension-operator-unknown',base:'dimension-binding-operator',expect:/must/,mutate:d=>{d.dataSources.excluded.source.query.filterBindings.area.operator='<>';}}
+  ]},
   {id:'ioc-header-back-hidden',description:'6.111 显式 back:false 隐藏，省略同样隐藏；auto 仅为 true 的兼容写法',valid:['ioc-back-hidden'],cases:[
     {case:'ioc-back-hidden-version',base:'ioc-back-hidden',expect:/由 6.111 引入/,mutate:d=>{d.schemaVersion='6.109';}}
   ]},
@@ -99,7 +103,7 @@ export const invariants: InvariantDefinition[] = [
   {id:'boolean-filter-overrides',description:'布尔覆盖只引用维度并要求替代查询条件',valid:['key-office-priority-demo','key-office-priority-target'],cases:[
     {case:'boolean-override-version',base:'key-office-priority-demo',expect:/由 6.84 引入/,mutate:d=>{d.schemaVersion='6.83';d.filters[1].overridesFilters=['region'];}},
     {case:'boolean-override-missing-target',base:'key-office-priority-demo',expect:/覆盖筛选必须引用/,mutate:d=>{d.filters[1].overridesFilters=['missing'];}},
-    {case:'boolean-override-candidate-conflict',base:'key-office-priority-demo',expect:/被覆盖筛选不能依赖/,mutate:d=>{d.filters[0].candidateContext={filterIds:['key-office'],reconcile:'intersection'};}}
+    {case:'boolean-override-candidate-conflict',base:'key-office-priority-demo',expect:/被覆盖筛选不能依赖/,mutate:d=>{d.filters.push({id:'focus-only',type:'boolean',overridesFilters:['region']});d.filters[0].candidateContext={filterIds:['focus-only'],reconcile:'intersection'};}}
   ]},
   {id:'ioc-region-default-url',description:'IOC Header 默认保留地区部与代表处 URL 参数名，页面无需映射',valid:['ioc-region-url-demo'],cases:[
     {case:'ioc-region-url-reserved-key',base:'ioc-region-url-demo',expect:/URL 参数名重复:rep-office/,mutate:d=>{d.filters.push({id:'rep-office',type:'search',visible:false});}},
@@ -109,7 +113,7 @@ export const invariants: InvariantDefinition[] = [
     {case:'ioc-region-flat',base:'key-office-filter-demo',expect:/IOC Region 必须声明/,mutate:d=>{delete d.filters[0].hierarchy;}},
     {case:'ioc-region-external-picker',base:'key-office-filter-demo',expect:/IOC Region 不再允许/,mutate:d=>{d.filters[0].hierarchyPicker='tabs';}},
     {case:'ioc-region-multiple',base:'key-office-filter-demo',expect:/IOC Region 只允许单选/,mutate:d=>{d.filters[0].selection.mode='multiple';}},
-    {case:'ioc-region-outside-header',base:'key-office-filter-demo',expect:/IOC Region 必须由/,mutate:d=>{d.iocHeader.filterIds=d.iocHeader.filterIds.filter((id:string)=>id!=='region');}}
+    {case:'ioc-region-outside-header',base:'key-office-filter-demo',expect:/IOC Region 必须由/,mutate:d=>{d.sections[0].components[0].props.filterIds=d.sections[0].components[0].props.filterIds.filter((id:string)=>id!=='region');}}
   ]},
   {
     id: 'metric-card-primary-detail',
@@ -583,8 +587,12 @@ export const invariants: InvariantDefinition[] = [
   {
     id: 'url-navigation-source-contract',
     description: 'URL 与来源绑定可校验，目标存在性与必填项由目标负责',
-    valid: ['url-navigation-page'],
+    valid: ['url-navigation-page','ioc-header-title-link','ioc-header-title-link-legacy'],
     cases: [
+      {case:'ioc-title-row-source',base:'ioc-header-title-link',expect:/当前行缺少可传参的标量字段/,mutate:d=>{firstComponent(d).props.identity.titleNavigate.query.extra={source:'row',field:'code'};}},
+      {case:'ioc-title-root-row-source',base:'ioc-header-title-link-legacy',expect:/当前行缺少可传参的标量字段/,mutate:d=>{d.iocHeader.identity.titleNavigate.query.extra={source:'row',field:'code'};}},
+      {case:'ioc-title-unsafe-url',base:'ioc-header-title-link',expect:/导航只允许 HTTP/,mutate:d=>{firstComponent(d).props.identity.titleNavigate.href='javascript:alert(1)';}},
+      {case:'ioc-title-missing-title',base:'ioc-header-title-link',expect:/标题导航必须同时声明/,mutate:d=>{delete firstComponent(d).props.identity.title;}},
       {case:'navigation-invalid-authority',base:'url-navigation-page',expect:/导航只允许 HTTP/,mutate:d=>{firstComponent(d).props.actions[0].navigate.href='https://bad host/path';}},
       {case:'navigation-invalid-port',base:'url-navigation-page',expect:/导航只允许 HTTP/,mutate:d=>{firstComponent(d).props.actions[0].navigate.href='https://example.com:70000/path';}},
       {case:'navigation-scheme-without-authority',base:'url-navigation-page',expect:/导航只允许 HTTP/,mutate:d=>{firstComponent(d).props.actions[0].navigate.href='https:example.com/path';}},

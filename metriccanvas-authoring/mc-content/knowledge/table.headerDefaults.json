@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.113",
+  "schemaVersion": "6.115",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "table.headerDefaults"
@@ -9,7 +9,7 @@
       "module": "table",
       "reference": "references/page-metadata/components/table.md",
       "blocks": [
-        "# 明细表 table\n\n首次加载保留表头和工具栏，表体仅显示静态“正在加载…”，不显示加载动画；刷新、查询翻页和排序期间保留上一份完整展示，当前结果就绪后替换。旧行暂时不可交互，不进入新查询或导出；完整边界见[加载时保留组件结构](../data-sources.md#screen-loading)。 级联查询按[渐进补列](../data-sources.md#progressive-table-columns)先显示已确定行集的就绪列，未完成和失败列显示 `--`；行集与顺序有待确认时继续保留旧展示。\n\ncolumns/children 定义字段列与递归列组；交互、查询与呈现约束见下列专题。\n\n<a id=\"local-default-sort\"></a>",
+        "# 明细表 table\n\n首次加载保留表头和工具栏，表体仅显示静态“正在加载…”，不显示加载动画；刷新、查询翻页和排序期间保留上一份完整展示，当前结果就绪后替换。旧行暂时不可交互，不进入新查询或导出；完整边界见[加载时保留组件结构](../data-sources.md#screen-loading)。 级联查询按[渐进补列](../data-sources.md#progressive-table-columns)先显示已确定行集的就绪列，未完成和失败列显示 `--`；行集与顺序有待确认时继续保留旧展示。\n\ncolumns/children 定义字段列与递归列组；交互、查询与呈现约束见下列专题。\n\n\n<a id=\"local-default-sort\"></a>",
         "## 列头筛选默认值（6.82）\n\nselect 叶子列可声明 `filterable: {\"mode\":\"select\",\"defaultValues\":[\"pending\"]}`，初次有效读取直接应用原始值，控件勾选、筛选标记、数据和导出保持一致。默认值为字符串或有限数值数组，保持原始类型，重复值非法；字段须是静态 main 维度绑定，普通远程查询还须有 queryField 映射，不能静默跳过条件。静态默认值不接受参数对象；参数初值使用下节 6.85 的 initialParam。不支持 byFilter、其他数据槽、日期范围、数值范围或行内子表。省略或空数组初始无该列条件；显式空数组仍要求本能力版本。\n\n有 enumValues 时默认项须属于字典，显示字典 label；无字典时沿用动态候选，不要求当前候选中存在默认项。候选尚未加载、无匹配或请求失败均保留已选值并允许取消，不自动扩大查询。多个默认值按集合 OR，多个列及页面业务条件继续 AND 收窄；空交集显示正常空态。默认值不改写原查询中的固定条件。\n\n首次初始化一次性提交全部默认项。用户清空后保持清空，翻页、排序、刷新数据、候选更新、Tab 切换及普通业务条件变化不补回默认值。列隐藏清除其条件，重显不恢复；展示字段切换仍遵循原有状态清理。组织父子表的地区选择属于完整重置，恢复当前可见列的声明默认值。显式恢复视图整体优先，包括已清空的空视图；重新打开页面运行实例按声明初始化。\n\ninline 与明确完整且无查询窗口的 query 按表格实例本地筛选，可共享源。远程默认筛选要求表格独占页面数据源，包括其他组件、AI 总结和查询依赖引用；不得让默认值影响共享消费者。按需 pagedJoin 的有效默认条件与默认排序须来自同一允许选页的查询成员，冲突拒绝，不逐列覆盖或退回当前页过滤。缺少视图证明的远程初始快照和执行回执不复用；独立取数与运行时遵循同一初始化规则。导出冻结当前已提交条件，用户已清空时不重新消费声明默认值。\n\n可观察入口 `/pages/table-header-filter-defaults` 使用内联合成数据，展示多列默认、数值类型、同源独立状态、候选缺项和列显隐；`/pages/table-header-filter-defaults-query` 使用默认网关通过 HTTP 代理访问 DQE Sim，验证首请求已带东区条件、查询分页、清空和 Excel。真实 DQE、Relay 和部署另验。\n\n<a id=\"table-header-params\"></a>"
       ],
       "rules": [
@@ -348,7 +348,7 @@
         "references/page-metadata/examples/table-header-select-all.json",
         "references/page-metadata/examples/table-header-select-all-query.json",
         "references/page-metadata/examples/table-default-sort.json",
-        "references/page-metadata/examples/rep-office-execution-efficiency.json",
+        "references/page-metadata/examples/rep-business-result.json",
         "references/page-metadata/examples/table-header-filter-search.json"
       ]
     }
@@ -370,7 +370,7 @@
           "sections"
         ],
         "title": "页面",
-        "$id": "https://metriccanvas/page/v6.113",
+        "$id": "https://metriccanvas/page/v6.115",
         "properties": {
           "schemaVersion": "#/properties/schemaVersion",
           "id": "#/properties/id",

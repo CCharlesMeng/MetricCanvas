@@ -48,11 +48,11 @@ describe('IOC Region has exactly one legal control shape',()=>{
   const raw=page();mutate(raw.filters[0]);expect(parsePage(raw).ok).toBe(false);
  });
  it('rejects a Region outside IOC Header ownership',()=>{
-  const raw=page();raw.iocHeader.filterIds=raw.iocHeader.filterIds.filter((id:string)=>id!=='region');expect(parsePage(raw).ok).toBe(false);
+  const raw=page();raw.sections[0].components[0].props.filterIds=raw.sections[0].components[0].props.filterIds.filter((id:string)=>id!=='region');expect(parsePage(raw).ok).toBe(false);
  });
  it('rejects splitting an IOC Region level into another header control',()=>{
   const raw=page();raw.filters.push({id:'rep-office',type:'dimension',dimension:'demo_office',label:'代表处'});
-  raw.iocHeader.filterIds.push('rep-office');expect(parsePage(raw).ok).toBe(false);
+  raw.sections[0].components[0].props.filterIds.push('rep-office');expect(parsePage(raw).ok).toBe(false);
  });
  it('rejects moving a split organization filter into IOC content',()=>{
   const raw=page();raw.filters.push({id:'rep-office',type:'dimension',dimension:'demo_office',label:'代表处'});
@@ -63,11 +63,11 @@ describe('IOC Region has exactly one legal control shape',()=>{
   expect(parsePage(raw).ok).toBe(true);
  });
  it('keeps ordinary multi-select dimensions legal outside the IOC contract',()=>{
-  const raw=page();delete raw.iocHeader;raw.filters[0].selection.mode='multiple';
+  const raw=page();raw.sections[0].components.shift();raw.filters[0].selection.mode='multiple';
   expect(parsePage(raw).ok).toBe(true);
  });
  it('keeps ordinary flat dimensions legal outside the IOC contract',()=>{
-  const raw=page();delete raw.iocHeader;
+  const raw=page();raw.sections[0].components.shift();
   raw.filters[0]={id:'region',type:'dimension',dimension:'demo_region',label:'普通维度'};
   raw.dataSources.offices.source.query.filterBindings.region={target:'dimension',queryField:'demo_region'};
   expect(parsePage(raw).ok).toBe(true);

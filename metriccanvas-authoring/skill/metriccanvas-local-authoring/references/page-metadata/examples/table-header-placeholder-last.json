@@ -1,0 +1,134 @@
+{
+  "schemaVersion": "6.112",
+  "id": "table-header-placeholder-last",
+  "layout": "dashboard",
+  "meta": {
+    "title": "表头筛选 -- 固定置底",
+    "description": "内联合成数据：静态枚举与动态候选均将 -- 放在列表最后，搜索、全选和已选项保留沿用同一规则。"
+  },
+  "dataSources": {
+    "records": {
+      "fields": {
+        "id": {
+          "type": "string",
+          "role": "dimension",
+          "label": "编号"
+        },
+        "status": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": true,
+          "label": "状态"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "id": "A",
+            "status": "--"
+          },
+          {
+            "id": "B",
+            "status": "是"
+          },
+          {
+            "id": "C",
+            "status": "否"
+          },
+          {
+            "id": "D",
+            "status": null
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "search-options",
+      "components": [
+        {
+          "id": "static-true",
+          "type": "table",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "records"
+          },
+          "props": {
+            "title": "static-true",
+            "rowKey": "id",
+            "columns": [
+              {
+                "field": "id",
+                "title": "编号"
+              },
+              {
+                "field": "status",
+                "title": "状态",
+                "filterable": {
+                  "mode": "select",
+                  "showSelectAll": true,
+                  "showSearch": true
+                },
+                "enumValues": [
+                  {
+                    "value": "--",
+                    "label": "--"
+                  },
+                  {
+                    "value": "是",
+                    "label": "是"
+                  },
+                  {
+                    "value": "否",
+                    "label": "否"
+                  }
+                ]
+              }
+            ],
+            "pagination": {
+              "mode": "local",
+              "pageSize": 10
+            }
+          }
+        },
+        {
+          "id": "dynamic-true",
+          "type": "table",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "records"
+          },
+          "props": {
+            "title": "dynamic-true",
+            "rowKey": "id",
+            "columns": [
+              {
+                "field": "id",
+                "title": "编号"
+              },
+              {
+                "field": "status",
+                "title": "状态",
+                "filterable": {
+                  "mode": "select",
+                  "showSelectAll": true,
+                  "showSearch": true
+                }
+              }
+            ],
+            "pagination": {
+              "mode": "local",
+              "pageSize": 10
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

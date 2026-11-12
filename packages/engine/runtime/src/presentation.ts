@@ -1,5 +1,5 @@
 import {tableColumnPresentation} from './table/column-presentation';
-import {projectChartSeries} from './chart-series-state';
+import {chartPresentation} from '@metriccanvas/data-execution/runtime';
 import { evaluateCondition, type ConditionContext, type ConditionResult, type Condition, type Component, type Page, type PageSection, type TableComponent, type Row, type PolicyNode } from '@metriccanvas/page/internal';
 export interface PresentationGate { eligible: boolean; enabled: boolean; reason?: string }
 const allowed:PresentationGate={eligible:true,enabled:true};
@@ -42,7 +42,7 @@ export function compilePresentation(page:Page) {
         }
         components.set(node.id,gate);
         if(!gate.eligible)return undefined;
-        if(node.type==='barChart'||node.type==='lineChart')return {...node,props:projectChartSeries(node.props,series=>policyGate(series,context,gate).eligible)} as Component;
+        if(node.type==='barChart'||node.type==='lineChart')return chartPresentation(page,node,context);
         if(node.type==='tabContainer')return {...node,props:{...node.props,tabs:node.props.tabs.flatMap(tab=>{
           const tabGate=policyGate(tab,context,gate);if(!tabGate.eligible)return [];
           if('components' in tab)return [{...tab,components:tab.components.flatMap(child=>component(child,tabGate)??[]) as typeof tab.components}];

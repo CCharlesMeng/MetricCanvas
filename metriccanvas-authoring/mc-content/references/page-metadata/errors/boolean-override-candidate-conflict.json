@@ -6,17 +6,20 @@
       "type": "SCHEMA_ERROR",
       "message": "被覆盖筛选不能依赖覆盖它的布尔筛选，以保留原选择",
       "paths": [
-        "/filters/1"
+        "/filters/4/overridesFilters"
       ]
     }
   ],
   "inputExcerpt": {
     "filters": [
       "…",
+      "…",
+      "…",
+      "…",
       {
-        "id": "key-office",
-        "type": "boolean",
-        "label": "仅看重点国代"
+        "overridesFilters": [
+          "region"
+        ]
       }
     ]
   },

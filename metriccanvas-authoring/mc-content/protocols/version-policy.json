@@ -1,8 +1,13 @@
 {
   "major": 6,
-  "minor": 113,
-  "current": "6.113",
+  "minor": 115,
+  "current": "6.115",
   "capabilities": {
+    "dimension-binding-operator": {
+      "minor": 114,
+      "description": "普通与层级维度绑定显式包含或排除所选值",
+      "legacyReadable": false
+    },
     "number-integer": {
       "minor": 113,
       "description": "普通数值四舍五入为无千分位整数，舍入零不显示负号",
@@ -11,6 +16,11 @@
     "table-slot-search": {
       "minor": 109,
       "description": "表格补充数据槽的单字段精确搜索与行键回查",
+      "legacyReadable": false
+    },
+    "ioc-header-title-navigation": {
+      "minor": 115,
+      "description": "IOC 页头标题复用普通 URL 导航及页面参数、筛选传参",
       "legacyReadable": false
     },
     "table-default-sort": {
@@ -1023,6 +1033,8 @@
     "6.110",
     "6.111",
     "6.112",
-    "6.113"
+    "6.113",
+    "6.114",
+    "6.115"
   ]
 }

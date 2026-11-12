@@ -133,8 +133,8 @@ describe('barOption 实际/预测系列', () => {
     expect(option.yAxis).toMatchObject({ type: 'value' });
     expect(option.legend).toEqual({ top: 0, right: 0 });
     expect(option.grid?.top).toBe(44);
-    expect(option.yAxis.name).toBeUndefined();
-    expect(option.yAxis.axisLabel?.formatter?.(12_000_000)).toBe('1,200万');
+    expect(option.yAxis.name).toBe('万元');
+    expect(option.yAxis.axisLabel?.formatter?.(12_000_000)).toBe('1,200');
     expect(option.series.map((series) => series.name)).toEqual([
       'Core流水',
       '云通信流水',
@@ -351,7 +351,7 @@ it('IOC F6 显式柱线共享横轴、正确分轴与单位、缺点不连成0',
     { field: 'income', kind: 'bar', axis: 'primary' }, { field: 'rate', kind: 'line', axis: 'secondary' }
   ] });
   expect(result).toMatchObject({
-    xAxis: { data: ['1月', '2月'] }, yAxis: [{ name: '元' }, { name: undefined }],
+    xAxis: { data: ['1月', '2月'] }, yAxis: [{ name: '元' }, { name: '%' }],
     series: [{ type: 'bar', yAxisIndex: 0, data: [100, 200] }, { type: 'line', yAxisIndex: 1, connectNulls: false, data: [10, null] }]
   });
 });

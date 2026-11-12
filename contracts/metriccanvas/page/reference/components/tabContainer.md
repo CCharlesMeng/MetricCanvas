@@ -47,7 +47,7 @@ Report整页导出按声明顺序展开全部Tab，补齐普通数据，只捕�
 6.49起声明混合内容或显式grid的容器使用 `tab.<组件id>` 保存活动项，优先于 `initialTabUrlParam` 的合法初值；旧表格容器仍按显式参数只初始化、不回写。两个入口均拒绝重复键并回退默认页签。独立筛选使用当前 `filterGroup` 组件，Tab内容包括已存在的筛选按钮组和受控按钮，仍遵守各自布局形态与动作约束。
 
 
-页面协议 6.113。结构真源为本册[schema.json](../schema.json)，SHA256 `fa5cfc21d4eab72d87cabdcf3386f830f2aa18f46f565b902350636ff6b072bf`。字段表自动生成；可选不等于有默认值。
+页面协议 6.115。结构真源为本册[schema.json](../schema.json)，SHA256 `7614c0c4578fdd2e1c05d9a44a7ac2f2f21fd4facea5c80a920b9b96d024ed1b`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -613,7 +613,7 @@ Schema位置：`#/definitions/tabItem/anyOf/1/properties/components/items`。目
 - `#/definitions/tabContent/oneOf/3`：[合法完整页面](../examples/tab-mixed-content.json)，JSON Pointer `#/sections/0/components/0/props/tabs/0/components/0`。
 - `#/definitions/tabContent/oneOf/4`：[合法完整页面](../examples/tab-mixed-content.json)，JSON Pointer `#/sections/0/components/0/props/tabs/0/components/4`。
 - `#/definitions/tabContent/oneOf/5`：[合法完整页面](../examples/tab-mixed-content.json)，JSON Pointer `#/sections/0/components/0/props/tabs/1/components/1`。
-- `#/definitions/tabContent/oneOf/6`：[合法完整页面](../examples/tab-content-piechart.json)，JSON Pointer `#/sections/0/components/0/props/tabs/0/component`。
+- `#/definitions/tabContent/oneOf/6`：[合法完整页面](../examples/rep-business-result.json)，JSON Pointer `#/sections/3/components/0/props/tabs/1/components/2`。
 - `#/definitions/tabContent/oneOf/7`：[合法完整页面](../examples/tab-content-mapchart.json)，JSON Pointer `#/sections/0/components/0/props/tabs/0/components/1`。
 - `#/definitions/tabContent/oneOf/8`：[合法完整页面](../examples/tab-content-gauge.json)，JSON Pointer `#/sections/0/components/0/props/tabs/0/component`。
 - `#/definitions/tabContent/oneOf/9`：[合法完整页面](../examples/tab-mixed-content.json)，JSON Pointer `#/sections/0/components/0/props/tabs/0/components/1`。

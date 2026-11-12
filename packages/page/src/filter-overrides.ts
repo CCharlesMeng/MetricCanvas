@@ -12,13 +12,12 @@ export function isUnrestrictedIocRegion(page:Page|undefined,filterId:string,valu
 
 type Values = ReadonlyMap<string, {type:string;value?:unknown}>;
 
-/** Standard key-office identifiers always override Region; explicit targets remain additive. */
-export function filterOverrideTargets(filter:FilterDeclaration,filters:readonly FilterDeclaration[]):readonly string[] {
+/** Standard key-office identifiers always intersect Region, including legacy explicit overrides. */
+export function filterOverrideTargets(filter:FilterDeclaration,_filters:readonly FilterDeclaration[]):readonly string[] {
   if(filter.type!=='boolean')return [];
   const explicit=filter.overridesFilters??[];
   if(!['key-office','key-national-only'].includes(filter.id))return explicit;
-  if(!filters.some(item=>item.id==='region'&&item.type==='dimension'))return explicit;
-  return explicit.includes('region')?explicit:[...explicit,'region'];
+  return explicit.filter(id=>id!=='region');
 }
 
 /** Execution projection only: neither URL state nor stored selections are mutated. */

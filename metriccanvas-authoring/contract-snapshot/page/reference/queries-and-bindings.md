@@ -391,8 +391,31 @@ SourceProgram、Node执行入口、分页/组合查询、导出统一选择合�
 
 合成验收 `/pages/period-comparison-query-page`（23对象，每页10条），`?state=large` 为十万对象，`?state=error|retry|duplicate|truncated` 为失败场景；页面和合成网关位置见同目录README。它证明本仓执行与显示，真实DQE的键粒度、筛选、聚合、稳定分页和总数需另验。
 
+<a id="dimension-binding-operator"></a>
 
-页面协议 6.113。结构真源为本册[schema.json](schema.json)，SHA256 `fa5cfc21d4eab72d87cabdcf3386f830f2aa18f46f565b902350636ff6b072bf`。字段表自动生成；可选不等于有默认值。
+## 维度绑定包含与排除（6.114）
+
+`filterBindings` 的 `target:"dimension"` 可选声明 `operator:"=" | "!="`，普通 `queryField` 与层级 `levelQueryFields` 两支均支持；也适用于 `queryModes`、`timeModes` 的各查询分支。省略保持既有包含行为，不自动改写历史声明。
+
+```json
+{
+  "filterBindings": {
+    "area": {"target":"dimension","queryField":"区域","operator":"!="},
+    "organization": {"target":"dimension","levelQueryFields":{"area":"区域","office":"代表处"},"operator":"!="}
+  }
+}
+```
+
+`=` 包含所选值，单选等值、多选集合包含；`!=` 排除全部所选值，单选不等于、多选集合排除（NOT IN），不是逐项不等再 OR。层级绑定只向当前层级字段生成条件。清空、既有全选不限和 IOC 全球不限仍不生成绑定条件；`when` 拒绝时暂停，错误或等待仍拒绝查询。空字段是否匹配由真实 DQE 的空值语义决定，不由页面补值或本地取反。
+
+显式 operator 的绑定拥有其目标字段比较方式，接管同字段静态默认条件；层级切换清除其他层级的静态默认条件。其他字段和权限范围不变。指标 DQE 使用既有 `dim_value_list` 加 `is_exclude:true` 编码排除，对象 DQE 使用 `value_list` 加 `operator:"!="`；显式 `=` 编码普通包含。未声明 operator 的历史指标查询维持原有静态条件合成行为。
+
+表头筛选和搜索以 AND 继续收窄；包含集合与排除集合相减，多个排除集合取并集，交集为空不发送无条件查询。关联键、候选、排序分页、缓存及完整导出保留同一排除意图。期间字段聚合的每个单月查询先排除，再聚合，不把排除改成年度结果包含。
+
+完整示例 `/pages/dimension-binding-operator` 对照省略、显式等值、对象排除及指标层级排除。该页使用本地合成 Adapter 核对实际编码和结果，不证明真实 DQE 的排除、空值、授权及准确总数；接入时需按真实服务验证。字段净增一个可选 operator；不新增筛选器状态或表达式。
+
+
+页面协议 6.115。结构真源为本册[schema.json](schema.json)，SHA256 `7614c0c4578fdd2e1c05d9a44a7ac2f2f21fd4facea5c80a920b9b96d024ed1b`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -1199,6 +1222,21 @@ Schema位置：`#/definitions/dqeQuery/properties/filterBindings/additionalPrope
 |---|---|---|---|---|
 | "string" | 本分支必填 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | DQE输出或目标字段名，不等于页面字段id。 |
 
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f302f70726f706572746965732f6f70657261746f72"></a>
+
+### `@dqeQuery.filterBindings{key} · anyOf[0].operator`
+
+Schema位置：`#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/0/properties/operator`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | enum=["=","!="] | Schema未设默认；装配/运行时默认见语义说明 | 维度绑定包含或排除所选值；省略保持现有包含行为，多值 != 排除整个集合，清空不生成条件 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "=" | 维度绑定包含所选值，单选等值、多选集合包含。 |
+| "!=" | 维度绑定排除全部所选值，单选不等、多选集合排除。 |
+
 <a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f302f70726f706572746965732f7768656e"></a>
 
 ### `@dqeQuery.filterBindings{key} · anyOf[0].when`
@@ -1242,6 +1280,21 @@ Schema位置：`#/definitions/dqeQuery/properties/filterBindings/additionalPrope
 | 允许值 | 解释与适用条件 |
 |---|---|
 | "dimension" | 分类维度或维度目标；不是数值度量。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f312f70726f706572746965732f6f70657261746f72"></a>
+
+### `@dqeQuery.filterBindings{key} · anyOf[1].operator`
+
+Schema位置：`#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/1/properties/operator`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | enum=["=","!="] | Schema未设默认；装配/运行时默认见语义说明 | 维度绑定包含或排除所选值；省略保持现有包含行为，多值 != 排除整个集合，清空不生成条件 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "=" | 维度绑定包含所选值，单选等值、多选集合包含。 |
+| "!=" | 维度绑定排除全部所选值，单选不等、多选集合排除。 |
 
 <a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f312f70726f706572746965732f7768656e"></a>
 
@@ -1862,6 +1915,21 @@ Schema位置：`#/definitions/dqeQuery/properties/timeModes/properties/cases/add
 |---|---|---|---|---|
 | "string" | 本分支必填 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | DQE输出或目标字段名，不等于页面字段id。 |
 
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f74696d654d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f302f70726f706572746965732f6f70657261746f72"></a>
+
+### `@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[0].operator`
+
+Schema位置：`#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/0/properties/operator`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | enum=["=","!="] | Schema未设默认；装配/运行时默认见语义说明 | 维度绑定包含或排除所选值；省略保持现有包含行为，多值 != 排除整个集合，清空不生成条件 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "=" | 维度绑定包含所选值，单选等值、多选集合包含。 |
+| "!=" | 维度绑定排除全部所选值，单选不等、多选集合排除。 |
+
 <a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f74696d654d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f302f70726f706572746965732f7768656e"></a>
 
 ### `@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[0].when`
@@ -1905,6 +1973,21 @@ Schema位置：`#/definitions/dqeQuery/properties/timeModes/properties/cases/add
 | 允许值 | 解释与适用条件 |
 |---|---|
 | "dimension" | 分类维度或维度目标；不是数值度量。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f74696d654d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f312f70726f706572746965732f6f70657261746f72"></a>
+
+### `@dqeQuery.timeModes.cases{key}.filterBindings{key} · anyOf[1].operator`
+
+Schema位置：`#/definitions/dqeQuery/properties/timeModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/1/properties/operator`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | enum=["=","!="] | Schema未设默认；装配/运行时默认见语义说明 | 维度绑定包含或排除所选值；省略保持现有包含行为，多值 != 排除整个集合，清空不生成条件 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "=" | 维度绑定包含所选值，单选等值、多选集合包含。 |
+| "!=" | 维度绑定排除全部所选值，单选不等、多选集合排除。 |
 
 <a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f74696d654d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f312f70726f706572746965732f7768656e"></a>
 
@@ -2433,6 +2516,21 @@ Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/ad
 |---|---|---|---|---|
 | "string" | 本分支必填 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | DQE输出或目标字段名，不等于页面字段id。 |
 
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f302f70726f706572746965732f6f70657261746f72"></a>
+
+### `@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[0].operator`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/0/properties/operator`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | enum=["=","!="] | Schema未设默认；装配/运行时默认见语义说明 | 维度绑定包含或排除所选值；省略保持现有包含行为，多值 != 排除整个集合，清空不生成条件 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "=" | 维度绑定包含所选值，单选等值、多选集合包含。 |
+| "!=" | 维度绑定排除全部所选值，单选不等、多选集合排除。 |
+
 <a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f302f70726f706572746965732f7768656e"></a>
 
 ### `@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[0].when`
@@ -2476,6 +2574,21 @@ Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/ad
 | 允许值 | 解释与适用条件 |
 |---|---|
 | "dimension" | 分类维度或维度目标；不是数值度量。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f312f70726f706572746965732f6f70657261746f72"></a>
+
+### `@dqeQuery.queryModes.cases{key}.filterBindings{key} · anyOf[1].operator`
+
+Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/additionalProperties/properties/filterBindings/additionalProperties/anyOf/1/properties/operator`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | enum=["=","!="] | Schema未设默认；装配/运行时默认见语义说明 | 维度绑定包含或排除所选值；省略保持现有包含行为，多值 != 排除整个集合，清空不生成条件 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "=" | 维度绑定包含所选值，单选等值、多选集合包含。 |
+| "!=" | 维度绑定排除全部所选值，单选不等、多选集合排除。 |
 
 <a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f71756572794d6f6465732f70726f706572746965732f63617365732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f312f70726f706572746965732f7768656e"></a>
 
@@ -3002,6 +3115,7 @@ Schema位置：`#/definitions/dqeQuery/properties/queryModes/properties/cases/pr
 
 ## 示例与溯源（生成）
 
+- [dimension-binding-operator](examples/dimension-binding-operator.json)：完整合法页面；查询仅为静态契约证据。
 - [filter-binding-when](examples/filter-binding-when.json)：完整合法页面；查询仅为静态契约证据。
 - [dimension-params-page](examples/dimension-params-page.json)：完整合法页面；查询仅为静态契约证据。
 - [hierarchy-binding-page](examples/hierarchy-binding-page.json)：完整合法页面；查询仅为静态契约证据。

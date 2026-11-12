@@ -26,18 +26,18 @@ Dashboard 正文通过独立 [filterGroup](filterGroup.md) 组件声明筛选按
 
 ## 数值格式
 
-标签、悬浮提示及数值轴使用[统一数值格式规则](../field-bindings-and-formats.md#chart-number-format)。未声明格式时默认显示两位小数，不隐式缩放为万；显式 `number` 可保留原值，声明 `compact-wan-0` 可显式采用万单位。完整场景：`/pages/chart-number-format`。
+标签、悬浮提示及数值轴使用[统一数值格式规则](../field-bindings-and-formats.md#chart-number-format)。数值轴默认在轴顶显示单位，刻度只显示数字，双轴分别处理。无格式与可信语义时默认两位小数，不隐式缩放为万；显式 `number` 保留原值，`compact-wan-0` 显式采用万单位。场景：`/pages/chart-number-format`、`/pages/chart-axis-unit`。
 
 ## 系列条件显隐（6.89）
 
-`props.series[].visibleWhen` 与柱线组合共用[系列条件显隐](barChart.md#chart-series-visibility)：字段与常量系列都可使用，省略时沿用原行为。条件不满足时同步移除折线、图例和提示项，隐藏无可见系列使用的数值轴；其他系列继续保留原颜色、格式、轴归属及高级补丁。全部系列隐藏时保留标题和容器。完整内联合成入口 `/pages/chart-series-visibility`。
+`props.series[].visibleWhen` 与柱线组合共用[系列条件显隐](barChart.md#chart-series-visibility)：字段与常量系列都可使用，省略时沿用原行为。条件不满足时同步移除折线、图例和提示项，隐藏无可见系列使用的数值轴；其他系列继续保留原颜色、格式、轴归属及高级补丁。全部系列隐藏时保留标题和容器。无其他消费者或执行依赖的独立指标按同一规则停止取数，共享查询保留类别维度及必要依赖，重新显示按当前筛选恢复；不新增字段。完整内联合成入口 `/pages/chart-series-visibility`，查询输出验收入口 `/pages/conditional-query-demand`。
 
 ## 自定义展示单位
 
 6.94 起系列可声明 `unit`，图例名称、数值标签与悬浮提示共用。声明、单位与缩放组合、缺失及导出规则见[展示单位](../field-bindings-and-formats.md#display-unit)。场景 `/pages/chart-table-unit`。
 
 
-页面协议 6.113。结构真源为本册[schema.json](../schema.json)，SHA256 `fa5cfc21d4eab72d87cabdcf3386f830f2aa18f46f565b902350636ff6b072bf`。字段表自动生成；可选不等于有默认值。
+页面协议 6.115。结构真源为本册[schema.json](../schema.json)，SHA256 `7614c0c4578fdd2e1c05d9a44a7ac2f2f21fd4facea5c80a920b9b96d024ed1b`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -679,6 +679,8 @@ Schema位置：`#/definitions/lineChartComponent/properties/props/properties/act
 
 - 源码/验证定位：`packages/page/src/schema/components/charts.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/embed/tests/browser/embed.spec.ts`（仓库路径，非分发依赖）。
+- 源码/验证定位：`packages/engine/widgets/src/shared/chart-axis-presentation.ts`（仓库路径，非分发依赖）。
+- 源码/验证定位：`packages/engine/widgets/src/shared/numeric-scale.ts`（仓库路径，非分发依赖）。
 
 ## 联合分支见证（生成）
 

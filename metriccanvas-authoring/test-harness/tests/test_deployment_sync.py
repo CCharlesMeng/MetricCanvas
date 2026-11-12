@@ -11,6 +11,10 @@ import unittest
 from unittest.mock import patch
 
 BUNDLE = Path(__file__).resolve().parents[2]
+lock_spec = importlib.util.spec_from_file_location('bundle_lock', BUNDLE/'scripts/bundle_lock.py')
+lock_module = importlib.util.module_from_spec(lock_spec)
+lock_spec.loader.exec_module(lock_module)
+sys.modules['bundle_lock'] = lock_module
 spec = importlib.util.spec_from_file_location('sync_upstream', BUNDLE/'scripts/sync_upstream.py')
 sync = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(sync)
@@ -121,6 +125,52 @@ class SyncTest(unittest.TestCase):
             git('add','metriccanvas-authoring/public.py'); git('commit','-m','bad lock')
             with self.assertRaisesRegex(ValueError,'digest mismatch'): sync.snapshot(repo,'HEAD')
             self.assertEqual(sync.snapshot(repo,original)[1]['public.py'],b'original')
+
+    def test_split_lock_sync_and_rollback_preserve_internal_files(self):
+        from test_bundle_lock import split_files
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            legacy = source_files(**{'public.py': 'legacy'})
+            install(root, legacy)
+            internal = root / sync.INTERNAL / 'factory.py'
+            original = internal.read_bytes()
+            incoming = {**split_files(), 'ownership.json': legacy['ownership.json']}
+            # Public ownership participates in the same signed inventory.
+            group = json.loads(incoming['bundle-locks/runtime.json'])
+            group['artifacts'].append({'file':'ownership.json','sha256':sync.digest(incoming['ownership.json'])})
+            incoming['bundle-locks/runtime.json'] = json.dumps(group).encode()
+            lock = json.loads(incoming['bundle.lock.json'])
+            lock['groups'][0]['sha256'] = sync.digest(incoming['bundle-locks/runtime.json'])
+            incoming['bundle.lock.json'] = json.dumps(lock).encode()
+            install(root, incoming)
+            self.assertEqual(internal.read_bytes(), original)
+            self.assertTrue((root/'scripts/page-validation-bridge.mjs').is_file())
+            install(root, legacy)
+            self.assertEqual((root/'public.py').read_bytes(), b'legacy')
+            self.assertFalse((root/'bundle-locks/runtime.json').exists())
+            self.assertEqual(internal.read_bytes(), original)
+
+    def test_pinned_git_snapshot_resolves_split_inventory_before_copying(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            data = source_files(**{'public.py': 'versioned'})
+            group = json.dumps({'lockVersion':2,'bundleVersion':'test','pageSchemaVersion':'6.114',
+                'artifacts':json.loads(data['bundle.lock.json'])['artifacts']}).encode()
+            data['bundle-locks/distribution.json'] = group
+            data['bundle.lock.json'] = json.dumps({'lockVersion':2,'bundleVersion':'test','pageSchemaVersion':'6.114',
+                'groups':[{'id':'distribution','file':'bundle-locks/distribution.json','sha256':sync.digest(group)}]}).encode()
+            for name, content in data.items():
+                file=repo/'metriccanvas-authoring'/name
+                file.parent.mkdir(parents=True,exist_ok=True);file.write_bytes(content)
+            def git(*args):
+                return subprocess.check_output(['git','-C',str(repo),*args],stderr=subprocess.DEVNULL)
+            git('init');git('config','user.name','Bundle test');git('config','user.email','bundle@example.test')
+            git('add','.');git('commit','-m','split lock')
+            self.assertEqual(sync.snapshot(repo,'HEAD')[1],data)
+            (repo/'metriccanvas-authoring/bundle-locks/distribution.json').write_bytes(b'{}')
+            git('add','.');git('commit','-m','tampered shard')
+            with self.assertRaisesRegex(ValueError,'digest mismatch'):
+                sync.snapshot(repo,'HEAD')
 
 
 class DeploymentFingerprintTest(unittest.TestCase):

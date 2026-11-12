@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.113",
+  "schemaVersion": "6.115",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "page.section-f3d21738"
@@ -185,6 +185,9 @@
         }
       ],
       "examples": [
+        "references/page-metadata/examples/ioc-header-title-link.json",
+        "references/page-metadata/examples/ioc-header-title-link-target.json",
+        "references/page-metadata/examples/ioc-header-title-link-legacy.json",
         "references/page-metadata/examples/inline-report.json",
         "references/page-metadata/examples/reference-branches-page.json",
         "references/page-metadata/examples/detail-views.json",

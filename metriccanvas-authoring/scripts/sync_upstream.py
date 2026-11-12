@@ -5,6 +5,7 @@ mutation. All conflicts are checked before writes; rollback uses another ref.
 """
 from __future__ import annotations
 
+from bundle_lock import resolve_bundle_lock
 import argparse
 import hashlib
 import io
@@ -33,14 +34,11 @@ def protected(name):
     return name == INTERNAL or name.startswith(INTERNAL + '/')
 
 
-def entries(lock):
-    result = {}
-    for entry in lock['artifacts']:
-        name = safe_name(entry['file'])
-        if name in result:
-            raise ValueError(f'Duplicate lock path: {name}')
-        result[name] = entry['sha256']
-    return result
+def entries(lock, read=None):
+    def unavailable(name):
+        raise ValueError('Bundle group reader unavailable: ' + name)
+    resolved = resolve_bundle_lock(json.dumps(lock).encode(), read or unavailable)
+    return {safe_name(entry['file']): entry['sha256'] for entry in resolved['artifacts']}
 
 
 def snapshot(repo, ref):
@@ -60,7 +58,7 @@ def snapshot(repo, ref):
                 raise ValueError(f'Symlink/special file not supported: {name}')
             files[name] = tar.extractfile(member).read()
     lock = json.loads(files['bundle.lock.json'])
-    names = entries(lock)
+    names = entries(lock, files.__getitem__)
     if any(protected(name) for name in names):
         raise ValueError('Source predates adapter ownership; use a migrated release')
     for name, expected in names.items():
@@ -135,7 +133,7 @@ def incoming_changes(root, incoming, previous):
 def plan(root, incoming):
     target_path(root, INTERNAL)
     old_lock = target_path(root, 'bundle.lock.json')
-    previous = entries(json.loads(old_lock.read_bytes())) if old_lock.exists() else {}
+    previous = entries(json.loads(old_lock.read_bytes()), lambda name: target_path(root, name).read_bytes()) if old_lock.exists() else {}
     previous = {name: sha for name, sha in previous.items() if not protected(name)}
     changes, conflicts = incoming_changes(root, incoming, previous)
     conflicts.extend(tracked_conflicts(root, previous))

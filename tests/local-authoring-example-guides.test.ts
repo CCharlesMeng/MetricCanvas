@@ -120,11 +120,11 @@ describe('README example guides', () => {
   });
 
   it('消费真实时间格式与枚举维护样板，保留操作、依赖与未验边界', () => {
-    const ids = ['table-time-format', 'table-column-enums'];
+    const ids = ['table-time-format', 'table-column-enums', 'table-header-placeholder-last'];
     const readme = 'pages/capabilities/table/README.md';
     const pages = new Map(ids.map(id => [`examples/${id}.json`, readFileSync(`pages/capabilities/table/${id}.json`, 'utf8')]));
     const index = buildExampleGuides(new Map([[readme, readFileSync(readme, 'utf8')]]), pages);
-    expect([...index.byPageId.keys()]).toEqual(['table-column-enums', 'table-time-format']);
+    expect([...index.byPageId.keys()]).toEqual(['table-column-enums', 'table-time-format', 'table-header-placeholder-last']);
     const time = index.byPageId.get('table-time-format')![0]!;
     const enums = index.byPageId.get('table-column-enums')![0]!;
     expect(time.components).toEqual(['times']);
@@ -134,5 +134,8 @@ describe('README example guides', () => {
     expect(enums.fields.expectations.summary).toContain('真实查询的下推行为另');
     expect(time.verified).toEqual([]);
     expect(index.references.get(time.content.file)).not.toContain('无行键子表');
+    const placeholder = index.byPageId.get('table-header-placeholder-last')![0]!;
+    expect(placeholder.components).toEqual(['static-true', 'dynamic-true']);
+    expect(placeholder.fields.expectations.summary).toContain('`--` 均在最后');
   });
 });

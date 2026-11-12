@@ -1,6 +1,7 @@
 import { appendDisplayUnit } from './display-unit';
 import type { FieldValue, ValueFormat } from '@metriccanvas/page/internal';
 import { formatValue } from './value-format';
+import { numericAxisPresentation, type AxisField } from './chart-axis-presentation';
 
 /**
  * 直角坐标系图表共用的 ECharts option 片段。
@@ -29,7 +30,7 @@ export function formatChartNumber(value: FieldValue | undefined, format?: ValueF
   return appendDisplayUnit(formatValue(value, format ?? 'number-2', missingText, { unit }), value, displayUnit, format);
 }
 
-type AxisFormat = ValueFormat | { format?: ValueFormat; unit?: string } | undefined;
+type AxisFormat = ValueFormat | AxisField | undefined;
 
 /** 双轴:第二个及之后的指标走右轴;单轴时只留左轴 */
 export function dualOrSingleAxis(
@@ -49,26 +50,17 @@ export function alignedSecondaryAxis<T extends object>(axis: T) {
   return { ...axis, alignTicks: true, splitLine: { show: false } };
 }
 
-/** Percent scales remain compatible when a semantic field shares an axis with a fixed-format constant. */
-function sharedAxisField(fields: Array<{ format?: ValueFormat; unit?: string }>) {
-  const first = fields[0];
-  if (fields.length && fields.every(field => typeof field.format === 'string' && field.format.startsWith('percent-'))) {
-    return { format: fields.every(field => field.format === first?.format) ? first?.format : 'percent-adaptive' as const };
-  }
-  return fields.every(field => field.format === first?.format && field.unit === first?.unit) ? first : undefined;
-}
-
 /** All numeric chart branches share the same format consensus and hidden-axis policy. */
 export function formattedValueAxis(group: AxisFormat[], hideAxis = false) {
   // One axis has one scale. Mixed formats use basic two-decimal ticks rather than choosing
   // the first series' unit for unrelated values on that axis.
   const fields = group.map(item => typeof item === 'object' && !('type' in item) ? item : { format: item });
-  const field = sharedAxisField(fields);
   return {
     type: 'value' as const,
-    axisLabel: { formatter: (value: number) => formatChartNumber(value, field?.format, undefined, field?.unit) },
+    ...numericAxisPresentation(fields),
     ...(hideAxis
       ? {
+          name: '',
           axisLabel: { show: false },
           axisTick: { show: false },
           axisLine: { show: false }

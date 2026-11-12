@@ -42,7 +42,7 @@ describe('AI authoring presentation policy, not page legality', () => {
     expect(inspectAuthoringPresentation(parsed.page).findings.map(f => f.code)).toEqual([
       'PRESENTATION_DOUBLE_SCALE', 'PRESENTATION_DOUBLE_SCALE']);
   });
-  it('actual chart axis, value label and tooltip share the existing formatter', () => {
+  it('actual chart axes separate scale units while labels and tooltips retain scalar formatting', () => {
     for (const type of ['barChart', 'lineChart'] as const) {
       const raw = document(); const chart = raw.sections[0]!.components[0]!;
       const data = { main: { fields: raw.dataSources.values.fields, snapshot: { status: 'ready', rows: [{ dimension: 'a', amount: 1000000 }] } } } as MainDataSlots;
@@ -51,7 +51,10 @@ describe('AI authoring presentation policy, not page legality', () => {
       expect(probes[0]!.axis.matches).toBe(true);
       expect(probes[0]!.label.matches).toBe(true);
       expect(probes[0]!.tooltip.matches).toBe(true);
-      expect(probes[0]!.axis.actual).toBe('1百万');
+      expect(probes[0]!.axis.actual).toBe('1');
+      expect(probes[0]!.unit).toEqual({ actual: '百万Tokens', expected: '百万Tokens', matches: true });
+      expect(probes[0]!.label.actual).toBe('1百万');
+      expect(probes[0]!.tooltip.actual).toBe('1百万');
     }
   });
 });

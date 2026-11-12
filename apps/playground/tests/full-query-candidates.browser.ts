@@ -48,15 +48,17 @@ test('remote candidates read across 200-row batches and keep alternatives after 
   await expect(table).toContainText('总条数： 620');
   const offices = table.locator('th[data-column-field="office"]');
   await offices.locator('summary').click();
-  await expect(offices.getByRole('button', { name: '加载更多（50/80）' })).toBeVisible();
+  await expect(offices.getByRole('checkbox')).toHaveCount(50);
+  await expect(offices.getByRole('button', { name: /加载更多/ })).toHaveCount(0);
   await offices.getByRole('searchbox').fill('办事处80');
   await expect(offices.getByRole('checkbox')).toHaveCount(1);
   await offices.getByRole('checkbox', { name: '办事处80', exact: true }).click();
   await expect(table).toContainText('总条数： 1');
   await openFilter(offices);
   await offices.getByRole('searchbox').fill('');
-  await expect(offices.getByRole('button', { name: '加载更多（50/80）' })).toBeVisible();
-  await offices.getByRole('button', { name: '加载更多（50/80）' }).click();
+  await expect(offices.locator('.candidate:not(.selected)')).toHaveCount(50);
+  await offices.locator('.list').hover();
+  await page.mouse.wheel(0, 2000);
   await expect(offices.getByRole('checkbox')).toHaveCount(80);
   await expect(offices.getByRole('checkbox', { name: '办事处80', exact: true })).toBeChecked();
   await offices.locator('summary').click();
@@ -95,7 +97,7 @@ test('an explicit runtime override permits the complete candidate range above 10
   await expect(table).toContainText('总条数： 1001');
   const offices = table.locator('th[data-column-field="office"]');
   await offices.locator('summary').click();
-  await expect(offices.getByRole('button', { name: '加载更多（50/80）' })).toBeVisible();
+  await expect(offices.getByRole('checkbox')).toHaveCount(50);
   await expect(offices.getByRole('status')).toHaveCount(0);
 });
 

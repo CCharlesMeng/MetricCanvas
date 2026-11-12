@@ -2,7 +2,7 @@ import {iocHeaderDeclaration} from '@metriccanvas/page/internal';
 import {readFileSync} from 'node:fs';
 import {describe,expect,it} from 'vitest';
 import {parsePage} from '@metriccanvas/page';
-import {filterOverrideTargets,queryLeaves,type QueryDataSource,type DataSnapshot} from '@metriccanvas/page/internal';
+import {queryLeaves,type QueryDataSource,type DataSnapshot} from '@metriccanvas/page/internal';
 import {pageFilesById} from '../../../tools/scripts/page-files.mjs';
 import {prepareIocHeaderFilters} from '../../embed/examples/ioc-header-candidate-bridge';
 import {createKeyOfficePriorityGateway} from '../../../apps/playground/fixtures/key-office-filter/gateway';
@@ -16,7 +16,7 @@ import {createSourceProgram} from '../src/source-program/session';
 const raw=JSON.parse(readFileSync('pages/capabilities/filters/key-office-priority-demo.json','utf8'));
 const options=()=>({signal:new AbortController().signal});
 describe('IOC upstream-format-independent candidate bridge',()=>{
-  it('never reuses old Region initial rows or seeded export snapshots while membership overrides it',async()=>{
+  it('never reuses old Region initial rows or seeded export snapshots when membership is active',async()=>{
     const input=structuredClone(raw);input.filters[1].default=true;
     input.dataSources.offices.source.initial={capturedAt:'2026-11-04T00:00:00Z',rows:[{'代表处':'南京代表处','金额':999,'客户级别':'卓越'}],totalCount:1};
     const gateway=createKeyOfficePriorityGateway(),prepared=await prepareIocHeaderFilters(input,gateway,options());
@@ -39,11 +39,22 @@ describe('IOC upstream-format-independent candidate bridge',()=>{
   });
   it('accepts the current first-section IOC header envelope',async()=>{
     const document=structuredClone(raw);
-    document.sections[0].components.unshift({id:'ioc-header',type:'iocHeader',layout:{span:12},props:document.iocHeader});
-    delete document.iocHeader;
+    expect(document.sections[0].components[0].type).toBe('iocHeader');
     const page=await prepareIocHeaderFilters(document,createKeyOfficePriorityGateway(),options());
     expect(parsePage(page).ok).toBe(true);
     expect((page.dataSources.offices as QueryDataSource).source.query.filterBindings!['key-office']).toMatchObject({queryField:'代表处',whenTrue:['上海代表处','深圳代表处']});
+  });
+  it('keeps the legacy root header readable while intersecting its explicit Region override',async()=>{
+    const document=structuredClone(raw);document.iocHeader=document.sections[0].components.shift().props;
+    document.schemaVersion='6.84';document.filters[1].overridesFilters=['region'];
+    const gateway=createKeyOfficePriorityGateway(),prepared=await prepareIocHeaderFilters(document,gateway,options());
+    const parsed=parsePage(prepared);if(!parsed.ok)throw Error(JSON.stringify(parsed.errors));
+    const page=parsed.page,conditions=new Map<string,FilterValue>([
+      ['key-office',{type:'boolean',value:true}],
+      ['region',{type:'dimension',dimension:'demo_office',level:'office',values:['南京代表处']}]
+    ]);
+    const query=composeEffectiveQuery({page,filters:page.filters,dataSource:page.dataSources.offices as QueryDataSource},conditions,0,[],{});
+    expect(await executeQuery(query,gateway,{})).toEqual({status:'empty',totalCount:0});
   });
   it.each(['denied','unavailable','unconfigured'] as const)('blocks %s membership before page initialization',async kind=>{
     const gateway:RuntimeDataGateway={async fetchData(){return {rows:[]};},async fetchFilterCandidates(){return {kind};}};
@@ -88,7 +99,7 @@ describe('IOC upstream-format-independent candidate bridge',()=>{
           expect(Object.keys(leaf.filterBindings??{})).toEqual(expect.arrayContaining(Object.keys(originalLeaves[index].filterBindings??{})));
           if(leaf.filterBindings?.region)expect(leaf.filterBindings.region).toMatchObject({target:'dimension',levelQueryFields:{'region-dept':'地区部',office:'代表处'}});
           for(const id of ['customer-category','na-type'])if(leaf.filterBindings?.[id]){expect(leaf.filterBindings[id]).toEqual(originalLeaves[index].filterBindings?.[id]);customerQueries++;}
-          const filter=page.filters?.find(f=>filterOverrideTargets(f,page.filters??[]).includes('region'));
+          const filter=page.filters?.find(f=>['key-office','key-national-only'].includes(f.id));
           if(filter&&leaf.filterBindings?.[filter.id])expect(leaf.filterBindings[filter.id]).toEqual({target:'boolean',queryField:'代表处',whenTrue:['上海代表处','深圳代表处']});
         }
       }

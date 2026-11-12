@@ -390,3 +390,26 @@ SourceProgram、Node执行入口、分页/组合查询、导出统一选择合�
 完整导出冻结条件与期间，逐页选主查询、补查并计算全部匹配对象，沿用10000行/60秒总预算；任一期失败不给不完整文件。浏览首屏不扫描全集，补列批次只控制本页键数。新能力限无 records 的查询分页 pagedJoin；legacy组合、pagedUnion或直接将普通比较源绑定查询分页仍拒绝。
 
 合成验收 `/pages/period-comparison-query-page`（23对象，每页10条），`?state=large` 为十万对象，`?state=error|retry|duplicate|truncated` 为失败场景；页面和合成网关位置见同目录README。它证明本仓执行与显示，真实DQE的键粒度、筛选、聚合、稳定分页和总数需另验。
+
+<a id="dimension-binding-operator"></a>
+
+## 维度绑定包含与排除（6.114）
+
+`filterBindings` 的 `target:"dimension"` 可选声明 `operator:"=" | "!="`，普通 `queryField` 与层级 `levelQueryFields` 两支均支持；也适用于 `queryModes`、`timeModes` 的各查询分支。省略保持既有包含行为，不自动改写历史声明。
+
+```json
+{
+  "filterBindings": {
+    "area": {"target":"dimension","queryField":"区域","operator":"!="},
+    "organization": {"target":"dimension","levelQueryFields":{"area":"区域","office":"代表处"},"operator":"!="}
+  }
+}
+```
+
+`=` 包含所选值，单选等值、多选集合包含；`!=` 排除全部所选值，单选不等于、多选集合排除（NOT IN），不是逐项不等再 OR。层级绑定只向当前层级字段生成条件。清空、既有全选不限和 IOC 全球不限仍不生成绑定条件；`when` 拒绝时暂停，错误或等待仍拒绝查询。空字段是否匹配由真实 DQE 的空值语义决定，不由页面补值或本地取反。
+
+显式 operator 的绑定拥有其目标字段比较方式，接管同字段静态默认条件；层级切换清除其他层级的静态默认条件。其他字段和权限范围不变。指标 DQE 使用既有 `dim_value_list` 加 `is_exclude:true` 编码排除，对象 DQE 使用 `value_list` 加 `operator:"!="`；显式 `=` 编码普通包含。未声明 operator 的历史指标查询维持原有静态条件合成行为。
+
+表头筛选和搜索以 AND 继续收窄；包含集合与排除集合相减，多个排除集合取并集，交集为空不发送无条件查询。关联键、候选、排序分页、缓存及完整导出保留同一排除意图。期间字段聚合的每个单月查询先排除，再聚合，不把排除改成年度结果包含。
+
+完整示例 `/pages/dimension-binding-operator` 对照省略、显式等值、对象排除及指标层级排除。该页使用本地合成 Adapter 核对实际编码和结果，不证明真实 DQE 的排除、空值、授权及准确总数；接入时需按真实服务验证。字段净增一个可选 operator；不新增筛选器状态或表达式。

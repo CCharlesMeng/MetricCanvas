@@ -22,16 +22,16 @@ it('exports integer display while retaining raw numeric values', async () => {
   await book.xlsx.load(bytes.buffer);
   const sheet = book.worksheets[0]!;
   expect(sheet.rowCount).toBe(15);
-  for (const [row, value, display] of [
-    [2, 1234.4, '1234'], [3, -1234.5, '-1235'], [4, 1234.5, '1235'],
-    [5, 9.999, '10'], [6, 0.5, '1'], [7, -0.5, '-1'], [8, 0.4, '0'], [9, -0.4, '0']
+  for (const [row, value] of [
+    [2, 1234.4], [3, -1234.5], [4, 1234.5],
+    [5, 9.999], [6, 0.5], [7, -0.5], [8, 0.4], [9, -0.4]
   ] as const) {
     expect(sheet.getCell(row, 8).value).toBe(value);
     for (const column of [9, 10]) {
       const cell = sheet.getCell(row, column);
       expect(cell.type).toBe(ExcelJS.ValueType.Number);
       expect(cell.value).toBe(value);
-      expect(cell.numFmt).toBe(`"${display}"`);
+      expect(cell.numFmt).toBe('0');
     }
   }
   expect(sheet.getCell('I15').value).toBeNull();

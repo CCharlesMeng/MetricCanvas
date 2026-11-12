@@ -1,3 +1,4 @@
+import {intersectQueryFilters} from '../intersect-filters';
 import {dimensionFilterCandidates} from './filter-candidates';
 import { encodeObjectQuery, type ObjectSortEncoder } from './object-query';
 import { fullQueryColumnCandidates } from './full-query-candidates';
@@ -659,7 +660,9 @@ function classifiedFetchError(
 export function effectiveDqeItem(query: EffectiveQuery): JsonObject { return encodedDqeItem(query); }
 
 function encodedDqeItem(query: EffectiveQuery, encodeSearch?: DqeGatewayConfig['encodeSearch'], encodeObjectSort?: ObjectSortEncoder): JsonObject {
-  if(query.matchNone)throw new EmptyTableQuery();
+  const combined=intersectQueryFilters(query);
+  if(!combined)throw new EmptyTableQuery();
+  query=combined;
   assertNoQueryParamReferences(query.body);
   if (isObjectDqeItem(query.body.dsl_list[0])) return encodedObjectItem(query, encodeSearch, encodeObjectSort);
   return encodedMetricItem(query, encodeSearch);
@@ -674,7 +677,7 @@ function encodedMetricItem(query: EffectiveQuery, encodeSearch?: DqeGatewayConfi
   const item = cloneJson(query.body.dsl_list[0]);
   for (const filter of query.bindingValues ?? query.filterValues) {
     if (filter.target === 'dimension') {
-      setDimensionFilter(item, filter.queryField, filter.values);
+      setDimensionFilter(item, filter.queryField, filter.values, filter.operator);
     } else if (filter.target === 'metricRange') {
       setMetricRangeFilter(item, filter.metric, filter.from, filter.to);
     } else if (filter.target === 'dimensionRange') {
@@ -741,7 +744,8 @@ function encodeTableSearch(item: JsonObject, search: NonNullable<EffectiveQuery[
 function setDimensionFilter(
   item: JsonObject,
   queryField: string,
-  values: Array<string | number>
+  values: Array<string | number>,
+  operator?: '=' | '!='
 ): void {
   const filter = ensureRecord(item, 'filter');
   const existing = Array.isArray(filter.dims)
@@ -751,7 +755,12 @@ function setDimensionFilter(
   if (values.length === 0) {
     if (index >= 0) existing.splice(index, 1);
   } else {
-    const next = { dim_name: queryField, dim_value_list: values } satisfies JsonObject;
+    const next: JsonObject = { dim_name: queryField, dim_value_list: values };
+    if (operator !== undefined) {
+      // Explicit binding intent owns the comparison, including stale static flags.
+      if (index >= 0) { delete existing[index].operator; delete existing[index].is_exclude; }
+      if (operator === '!=') next.is_exclude = true;
+    }
     if (index >= 0) existing[index] = { ...existing[index], ...next };
     else existing.push(next);
   }

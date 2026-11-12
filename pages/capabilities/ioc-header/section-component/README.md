@@ -13,3 +13,7 @@
 自动验收：`PLAYGROUND_BASE_URL=http://127.0.0.1:5189 node apps/playground/tests/ioc-header-component-browser.mjs`。此证据只覆盖本地产品与合成输入，不证明真实DQE、来源返回上下文或部署版本。
 
 布局与吸顶回归：`pnpm --filter playground test:ioc ioc-header-layout.browser.ts`。切换普通/紧凑、宽/窄屏，检查首行折叠展开、单实例吸顶、回顶状态和页头内部滚动条。正文使用合成文字，无需数据服务。
+
+期间选项记忆：打开 `/pages/ioc-header-flow-sticky`，选择 2025 年 Q3，再选 2025 年 1 月；切到年并选择 2024，切回季应为 2024 年 Q3，切回月应为 2024 年 1 月。反向选择 2025 年 8 月、2025 年 Q1，再选择 2024 年，切回月仍为 2024 年 8 月。季度与月份分别保留本次控件挂载中最近已应用的选项，年份跟随当前选择；首次访问的模式仍从当前期间推导，未来期间拒绝后不覆盖记忆。刷新只恢复当前已应用期间。自动回归：`pnpm --filter playground test:ioc ioc-period-memory.browser.ts`。复用本页完整 JSON 中的期间声明；合成文字页不验证真实 DQE 查询。
+
+标题跳转（6.115）：打开 `/pages/ioc-header-title-link?project=P002`，标题保持 24px/700 并链接到 `/pages/ioc-header-title-link-target?source=header&project=P002#details`；布尔筛选未选中时沿既有导航规则不写入 URL，目标默认 false；勾选“已审核”后目标携带 `reviewed=true`。用鼠标或 Tab/Enter 激活标题，目标显示项目号与审核值，页头返回可回到来源。取消“允许标题跳转”后标题不可点击；取消“显示标题链接”后仍显示普通标题文字。可复制链接或在新标签页打开；静态导出只显示文字。沿用本目录启动方式，无账号、网络数据或 DQE 要求；地址与内容均为本地合成验收，不证明真实业务集成。自动回归：`pnpm --filter playground test:ioc ioc-header-title-link.browser.ts`。

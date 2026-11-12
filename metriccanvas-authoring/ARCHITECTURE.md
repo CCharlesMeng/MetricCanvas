@@ -53,3 +53,7 @@
 公共 data/work 层维护可信轮次中的查询结果与元数据状态，使用现有 StateStore/CAS；参考 Java Adapter 提供可信来源身份、覆盖范围与原始读取。首次完整读取正常链只访问一次元数据 HTTP；部分失败可在发布前仅补取失败 dataset 一次，再固定复用可用快照。coverage 始终说明缺口，私有查询视图只投影成功来源并附 warning；不声明跨 dataset 原子一致性，不跨轮复用结果。身份、取消和精确查询授权持续核对。
 
 页面入口吸收有明确默认值的可选展示偏差，坏块和坏查询项局部失败；最终页面仍通过正式 Schema。resultRef 原字符串可直接用于 sources，不需要新的注册步骤。迁移与回滚边界见 [接入说明](AUTHORING-TOLERANCE-MIGRATION.md) 和 [ADR-0092](../docs/adr/0092-authoring-tolerance-and-turn-metadata-snapshots.md)。公共交付只更新参考模板，不覆盖内部 Adapter；部署方采用并验证后才能宣称内部生效。
+
+公共文件清单采用按职责分锁：`bundle.lock.json` 的 `lockVersion:2` 根索引记录 Bundle/页面版本，以及 `groups:[{id,file,sha256}]`；`bundle-locks/` 子锁按产品契约、MC、每个 Skill、运行时代码和分发材料分别记录 `artifacts:[{file,sha256}]`。根锁校验子锁原始字节，子锁覆盖全部公共文件；锁文件本身不进入子锁，避免自引用。生成器逐文件检查 1,000,000 字节上限，某职责超限时要求重新划分其职责，不按固定字节数切片。
+
+共享读取器位于 `tool/metriccanvas_authoring/bundle_lock.py`，独立脚本副本 `scripts/bundle_lock.py` 由契约导出器同源生成。读取器在返回完整清单前核验所有子锁摘要、版本、路径和重复项；缺失、损坏、递归引用或未知锁版本均拒绝。保留旧单文件 `artifacts` 格式读取，新格式不再保留根级 `artifacts`，使旧读取器明确失败，避免仅同步子锁而遗漏内容。升级时从可信新版本运行同步脚本；新脚本支持旧目录迁入以及回退到旧单文件锁。子锁随既有源码、安装包及同步流程一并分发，本批不改变 Git 提交与打包时机。
