@@ -35,7 +35,7 @@
       window.keyOfficeRequests=[];
       window.dataGateway=(id.startsWith('key-office-priority-')?fixture.createKeyOfficePriorityGateway:fixture.createKeyOfficeGateway)((kind,request)=>window.keyOfficeRequests.push({kind,request}),new URLSearchParams(location.search).get('state')??'ready');
     }
-    if(header){
+    if(header?.filterIds?.includes('key-office')||header?.filterIds?.includes('key-national-only')){
       const fixture=await import('/__fixtures/key-office-filter.js');
       window.pageDocument=await fixture.prepareIocHeaderFilters(window.pageDocument,window.dataGateway,{signal:new AbortController().signal});
     }

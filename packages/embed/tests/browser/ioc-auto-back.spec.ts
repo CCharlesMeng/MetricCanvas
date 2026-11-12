@@ -29,3 +29,12 @@ test('old auto falls back to history.length without Navigation API',async({page}
  const back=page.locator('[data-dashboard-back]');await expect(back).toBeVisible();
  await back.click();await expect(page).toHaveURL(/ioc-auto-back-unrelated/);
 });
+
+
+test('ordinary IOC headers initialize without the key-office membership adapter',async({page})=>{
+ await page.route('**/__fixtures/key-office-filter.js',route=>route.abort());
+ await page.goto('/pages/ioc-auto-back-unrelated');
+ await page.goto('/pages/ioc-auto-back-detail?project=1');
+ await expect(page.locator('[data-dashboard-back]')).toBeVisible();
+ expect(await page.evaluate(()=>!!window.runtime)).toBe(true);
+});
