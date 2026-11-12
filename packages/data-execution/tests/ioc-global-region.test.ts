@@ -28,7 +28,7 @@ describe('IOC global Region is unrestricted',()=>{
   values.set('key-office',{type:'boolean',value:true});expect(compose(page,values).filterValues).toContainEqual({target:'dimension',queryField:'重点国代',values:['true']});
  });
  it('keeps ordinary hierarchy geo filtering without an IOC header owner',()=>{
-  const document=structuredClone(raw);delete document.iocHeader;
+  const document=structuredClone(raw);document.sections[0].components.shift();
   const query=compose(pageOf(document));
   expect(query.filterValues).toContainEqual({target:'dimension',queryField:'全球编码',values:['全球']});
  });
@@ -61,7 +61,7 @@ describe('IOC global Region is unrestricted',()=>{
   const requests:unknown[]=[];const gateway=createKeyOfficePriorityGateway((kind,request)=>{if(kind==='query')requests.push(request);});
   const prepared=await prepareIocHeaderFilters(document,gateway,{signal:new AbortController().signal}),page=pageOf(prepared),values=selected(),program=createSourceProgram(page,{gateway});
   expect(program.initialSnapshots({roots:['offices'],conditions:values}).get('offices')).toEqual({status:'loading'});
-  const ordinary=structuredClone(document);delete ordinary.iocHeader;const stale=compose(pageOf(ordinary));
+  const ordinary=structuredClone(document);ordinary.sections[0].components.shift();const stale=compose(pageOf(ordinary));
   const seeds=new Map([['offices',{status:'ready' as const,rows:[{office:'南京代表处',amount:999,customer:'卓越'}],totalCount:1}]]);
   for(const purpose of ['screen','complete'] as const)for await(const update of program.read({roots:['offices'],conditions:values,purpose,freshness:'refresh',seeds,queries:new Map([['offices',stale]]),useInitial:true}))expect(update.snapshot).toMatchObject({status:'ready',rows:[{office:'上海代表处'},{office:'广州代表处'}]});
   expect(requests).toHaveLength(2);for(const request of requests)expect((request as {filterValues:unknown}).filterValues).toEqual(compose(page,values).filterValues);

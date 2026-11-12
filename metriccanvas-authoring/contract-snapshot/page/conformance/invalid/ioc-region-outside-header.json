@@ -2,7 +2,7 @@
   "case": "ioc-region-outside-header",
   "invariant": "ioc-region-single-tree",
   "input": {
-    "schemaVersion": "6.75",
+    "schemaVersion": "6.113",
     "id": "key-office-filter-demo",
     "layout": "dashboard",
     "meta": {
@@ -45,15 +45,6 @@
         "label": "数据月份"
       }
     ],
-    "iocHeader": {
-      "identity": {
-        "title": "重点国代联动"
-      },
-      "filterIds": [
-        "key-office",
-        "mtime"
-      ]
-    },
     "dataSources": {
       "offices": {
         "fields": {
@@ -114,6 +105,22 @@
         "id": "results",
         "components": [
           {
+            "id": "ioc-header",
+            "type": "iocHeader",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "identity": {
+                "title": "重点国代联动"
+              },
+              "filterIds": [
+                "key-office",
+                "mtime"
+              ]
+            }
+          },
+          {
             "id": "office-table",
             "type": "table",
             "layout": {
@@ -171,7 +178,7 @@
     {
       "type": "SCHEMA_ERROR",
       "path": "/filters/0/id",
-      "message": "IOC Region 必须由 iocHeader.filterIds 认领"
+      "message": "IOC Region 必须由 /sections/0/components/0/props/filterIds 认领"
     }
   ]
 }

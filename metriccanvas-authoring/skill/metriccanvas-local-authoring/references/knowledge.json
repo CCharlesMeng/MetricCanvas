@@ -11,7 +11,7 @@
     },
     {
       "file": "references/authoring-knowledge/model.json",
-      "sha256": "f7e35f23df1a18d07700805e91f369cc75baa06494841db2d166a7d23ddae8ec"
+      "sha256": "4987586415a27f5ff40022d9d59527d4042ff13f8297bc57c35447fbc0f34e5d"
     },
     {
       "file": "references/example-guides/ioc-auto-back-detail/browser-back.md",
@@ -83,7 +83,7 @@
     },
     {
       "file": "references/page-metadata/components/iocHeader.md",
-      "sha256": "7935bf0bc230ec411e4e0e125c8f6896295aab6a816bc6566bf8f35d7d5eab03"
+      "sha256": "5a542757bf718f0ab5a29f88649364f161c39a20db7b1f9b6680125650361af2"
     },
     {
       "file": "references/page-metadata/components/keyValuePanel.md",
@@ -279,7 +279,7 @@
     },
     {
       "file": "references/page-metadata/errors/boolean-override-candidate-conflict.json",
-      "sha256": "26db070d9ae0169bc8cfa75faa3f426f9ee015ab5046f2e62de869fa44139149"
+      "sha256": "c626f14125077f626c552fa8934d5011a2cbf9f0d9e3272b84bc5b4774633aea"
     },
     {
       "file": "references/page-metadata/errors/boolean-override-missing-target.json",
@@ -1003,7 +1003,7 @@
     },
     {
       "file": "references/page-metadata/errors/ioc-region-outside-header.json",
-      "sha256": "30169a49339a82901ebd06250edf089999c347abef1780ff6fe79fceadf1420f"
+      "sha256": "5356fac51ea8dc6e03cd641d85c9ca7583b8d11434f728dadbb1f86860dd0858"
     },
     {
       "file": "references/page-metadata/errors/ioc-region-url-no-custom-map.json",
@@ -2739,19 +2739,19 @@
     },
     {
       "file": "references/page-metadata/examples/key-office-filter-demo.json",
-      "sha256": "782f4bc94114b1b3afd076860d07039315fa1a1e55819d8ec27e297fc4dc70ea"
+      "sha256": "84b649486a26cf0aa8c4e7ed6f6fe970ec91c3519ba1dccf6eab63d6af67b81a"
     },
     {
       "file": "references/page-metadata/examples/key-office-filter-target.json",
-      "sha256": "b74b94c3c7a230b54458115e506251e413f38b972b3b4dd42fd786206d9e2dcb"
+      "sha256": "67a9e14d27bd6ebba44d6f0a9f0073a7773b425ddf93311c7ce495f2806baa85"
     },
     {
       "file": "references/page-metadata/examples/key-office-priority-demo.json",
-      "sha256": "79d2f6b5e070e3b7eff22e5a1146a870086165deabdd6e05a62013e22d29785a"
+      "sha256": "3507407e179aac9736131cf7fb4307be89f45cd056f4ed586fc5288d88cc662e"
     },
     {
       "file": "references/page-metadata/examples/key-office-priority-target.json",
-      "sha256": "367d3fdea0e427d264094a7951c1f0bd53211b355cef632fcd4bbf966cca87a6"
+      "sha256": "7f11a00e4ce35ea3649938088508b7a85463d39de8b603582b5ca4c7b271f749"
     },
     {
       "file": "references/page-metadata/examples/map-page.json",
@@ -3283,11 +3283,11 @@
     },
     {
       "file": "references/page-metadata/filters.md",
-      "sha256": "0f2f881078b632e3edcab74b84291f96adfd8a850e4d22ec31087977411d20fe"
+      "sha256": "cbd500a47de8be063dc8a20263eae4fbcd48e47aa8a49098cffd891bf0b3eb4e"
     },
     {
       "file": "references/page-metadata/index.json",
-      "sha256": "da89d4d20371f2b38299ea1c0d0bf56f322f69e51af5494e9f82726739cdec1a"
+      "sha256": "07fdab006deb0d567f3c21b3bbe430664f87c03b08775aebd8a1bc5fceabca86"
     },
     {
       "file": "references/page-metadata/page.md",
@@ -3355,11 +3355,11 @@
     },
     {
       "file": "scripts/analyze-data.mjs",
-      "sha256": "f8d03661fea740b3420cb720b44951d524aa851bfc9facea7be400908d03e774"
+      "sha256": "c01d61aa70b4cfa979277ffb81daed79bb54a3ed8ac493ede70a62868cb9562d"
     },
     {
       "file": "scripts/associate-data.mjs",
-      "sha256": "2b0590c2626c692954140b01c2120ecc5b6d4381bf8639b300c99ccfbd9aee3b"
+      "sha256": "3c9edd7489c6db1d3c2dcc170c6ee155d8a68f53b26563e2c8ac053e7c1c2fba"
     },
     {
       "file": "scripts/read-knowledge.mjs",
@@ -3371,11 +3371,11 @@
     },
     {
       "file": "scripts/upgrade-page.mjs",
-      "sha256": "c19a156cbd83e2e474826c12c049b99501ceded181bd8f93c835777f2b20d6ce"
+      "sha256": "55f2fe8c07da4ff118303d71ef525dd8c4de56f92966a33426126297da010226"
     },
     {
       "file": "scripts/validate-page.mjs",
-      "sha256": "f9d5c2f4668425f73f85ce835f339e8f15206148a982fa666b368240417692db"
+      "sha256": "277747d10ca4f45c6ab8f5578c17d55c88db39027b82bc2679a97d265f9f1ff3"
     }
   ]
 }

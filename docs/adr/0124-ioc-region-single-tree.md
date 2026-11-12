@@ -17,3 +17,7 @@ IOC 业务页此前允许平面 Region、外部层级按钮与隐藏切层，也
 ## 2026-11-02：Region 默认 URL 输入
 
 用户确认地区部和代表处以不同参数名表示层级：`region-dept=value` 与 `rep-office=value`，同时出现时按 URL 顺序取最后一项，重复同名键也遵循此规则。用户进一步否定额外的页面映射层；正式实现是 IOC Header 的默认行为，页面只保留原有 Region 组织树和 Header 认领。固定参数对应层级 ID region-dept / office，兼容已有 department 地区部 ID，不从业务值猜测层级。普通页面不隐式启用，目标输入契约由实际 Header 推导上下文；旧 value/level 兼容，候选与查询绑定保持。未发布的通用 urlParams.byLevel 字段撤回，不新增 Schema 能力下限。完整合成入口 `ioc-region-url-demo`。
+
+## 2026-11-12：重点国代统一与 Region 取交集
+
+用户明确批准统一交集口径。标准 boolean `key-office` / `key-national-only` 勾选后同时保留 Region 和完整授权重点名单；未选 Region 或选全球时仅受名单限制，非重点代表处与名单的空交集返回空结果。历史显式 Region 覆盖保持可读但不再生效，其他普通布尔筛选的显式覆盖能力保持。字段净增减为零，不增加配置开关、版本分支或页面逐一迁移要求。引擎负责执行交集、候选约束、初始快照安全及导出一致性；集成应用按标准筛选身份桥接完整名单，不再根据“是否覆盖 Region”识别重点国代。真实名单、权限和 DQE 接线仍需在实际环境验证。

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.75",
+  "schemaVersion": "6.113",
   "id": "key-office-filter-demo",
   "layout": "dashboard",
   "meta": {
@@ -42,16 +42,6 @@
       "label": "数据月份"
     }
   ],
-  "iocHeader": {
-    "identity": {
-      "title": "重点国代联动"
-    },
-    "filterIds": [
-      "key-office",
-      "mtime",
-      "region"
-    ]
-  },
   "dataSources": {
     "offices": {
       "fields": {
@@ -111,6 +101,23 @@
     {
       "id": "results",
       "components": [
+        {
+          "id": "ioc-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "重点国代联动"
+            },
+            "filterIds": [
+              "key-office",
+              "mtime",
+              "region"
+            ]
+          }
+        },
         {
           "id": "office-table",
           "type": "table",

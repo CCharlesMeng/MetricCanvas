@@ -1,16 +1,15 @@
 import {readFileSync} from 'node:fs';
 import {describe,expect,it} from 'vitest';
 import {parsePage} from '@metriccanvas/page';
-import {resolvePeriodSelection} from '@metriccanvas/page/internal';
 import type {DimensionFilterDeclaration,Page,QueryDataSource,EffectiveQuery} from '@metriccanvas/page/internal';
 import {composeEffectiveQuery} from '../src/effective-query';
-import {effectiveDqeItem} from '../src/dqe/dqe';
+import {effectiveDqeItem,createDqeGateway} from '../src/dqe/dqe';
 import {createCandidateValidator} from '../src/candidate-validation';
 import {candidateContextKey,filterCandidatesRequest} from '../src/filter-candidates';
 import {createFilterState} from '../../engine/runtime/src/filter-state';
 import type {FilterValues,FilterValue} from '../src/filter-values';
 import {createSourceProgram} from '../src/source-program/session';
-import {createKeyOfficePriorityGateway} from '../../../apps/playground/fixtures/key-office-filter/gateway';
+import {createKeyOfficePriorityGateway,prepareIocHeaderFilters} from '../../../apps/playground/fixtures/key-office-filter/gateway';
 
 const raw=JSON.parse(readFileSync('pages/capabilities/filters/key-office-priority-demo.json','utf8'));
 function load(document:unknown=raw):Page {
@@ -25,114 +24,106 @@ function values(selected=true):Map<string,FilterValue> {
   ]);
 }
 function query(page:Page,input:FilterValues):EffectiveQuery {
-  return composeEffectiveQuery({dataSource:page.dataSources.offices as QueryDataSource,filters:page.filters},input,0,[],{});
+  return composeEffectiveQuery({page,dataSource:page.dataSources.offices as QueryDataSource,filters:page.filters},input,0,[],{});
+}
+const officePredicate={target:'dimension',queryField:'代表处',values:['南京代表处']};
+const keyPredicate={target:'dimension',queryField:'重点国代',values:['true']};
+function ordinaryOverride(){
+  const document=JSON.parse(JSON.stringify(raw).replaceAll('key-office','focus-only'));
+  document.filters[1].overridesFilters=['region'];
+  return document;
 }
 
-describe('default key-office override and explicit boolean override contract',()=>{
-  it('uses no override declaration for the default, while explicit declarations retain their version floor',()=>{
-    expect(raw.filters[1]).not.toHaveProperty('overridesFilters');
-    expect(parsePage(raw).ok).toBe(true);
-    expect(parsePage({...raw,schemaVersion:'6.80'}).ok).toBe(true);
-    const explicit=structuredClone(raw);explicit.filters[1].overridesFilters=['region'];
-    expect(parsePage(explicit).ok).toBe(true);
-    expect(parsePage({...explicit,schemaVersion:'6.80'}).ok).toBe(false);
-  });
-  it.each(['key-office','key-national-only'])('defaults %s to Region override regardless of its display label',id=>{
+describe('key offices always intersect Region; ordinary overrides remain explicit',()=>{
+  it.each(['key-office','key-national-only'])('intersects %s regardless of label and legacy explicit Region override',id=>{
     const document=JSON.parse(JSON.stringify(raw).replaceAll('key-office',id));document.filters[1].label='显示名称';
-    const page=load(document),input=values();input.delete('key-office');input.set(id,{type:'boolean',value:true});
-    expect(query(page,input).filterValues).toEqual([{target:'dimension',queryField:'重点国代',values:['true']}]);
-    input.delete(id);expect(query(page,input).filterValues).toEqual([{target:'dimension',queryField:'代表处',values:['南京代表处']}]);
-  });
-  it('keeps ordinary booleans intersecting and explicit custom overrides readable',()=>{
-    const document=JSON.parse(JSON.stringify(raw).replaceAll('key-office','focus-only'));
-    const input=values();input.delete('key-office');input.set('focus-only',{type:'boolean',value:true});
-    expect(query(load(document),input).filterValues).toHaveLength(2);
+    const input=values();input.delete('key-office');input.set(id,{type:'boolean',value:true});
+    expect(query(load(document),input).filterValues).toEqual([officePredicate,keyPredicate]);
     document.filters[1].overridesFilters=['region'];
-    expect(query(load(document),input).filterValues).toEqual([{target:'dimension',queryField:'重点国代',values:['true']}]);
+    expect(query(load(document),input).filterValues).toEqual([officePredicate,keyPredicate]);
+    input.delete(id);expect(query(load(document),input).filterValues).toEqual([officePredicate]);
   });
-  it('does not require a Region declaration on a key-office-only page',()=>{
-    const document=structuredClone(raw);document.filters.shift();document.iocHeader.filterIds=document.iocHeader.filterIds.filter((id:string)=>id!=='region');
-    delete document.dataSources.offices.source.query.filterBindings.region;
-    document.sections[0].components.pop();
-    expect(query(load(document),values()).filterValues).toEqual([{target:'dimension',queryField:'重点国代',values:['true']}]);
+  it('keeps older pages readable with the unified intersection behavior',()=>{
+    const older=structuredClone(raw);older.schemaVersion='6.84';
+    expect(query(load(older),values()).filterValues).toEqual([officePredicate,keyPredicate]);
   });
-  it('keeps the default Region override when explicit targets add another dimension',()=>{
+  it('keeps ordinary boolean overrides and their version floor',()=>{
+    const document=ordinaryOverride(),input=values();input.delete('key-office');input.set('focus-only',{type:'boolean',value:true});
+    expect(query(load(document),input).filterValues).toEqual([keyPredicate]);
+    document.schemaVersion='6.83';expect(parsePage(document).ok).toBe(false);
+  });
+  it('does not implicitly override Region when another dimension is explicitly overridden',()=>{
     const document=structuredClone(raw);document.filters[1].overridesFilters=['customer-category'];
     const input=values();input.set('customer-category',{type:'dimension',dimension:'customer-level',values:['战略']});
-    expect(query(load(document),input).filterValues).toEqual([{target:'dimension',queryField:'重点国代',values:['true']}]);
-  });
-  it('uses the same default in the IOC header business showcase',()=>{
-    const page=load(JSON.parse(readFileSync('pages/capabilities/ioc-header/business/ioc-header-demo.json','utf8')));
-    const source=Object.values(page.dataSources).find(source=>source.source.type==='query') as QueryDataSource;
-    const input=new Map<string,FilterValue>([['key-office',{type:'boolean',value:true}],['region',{type:'dimension',dimension:'demo_office',level:'office',values:['CN-SH']}]]);
-    input.set('period',{type:'timeRange',...resolvePeriodSelection({mode:'quarter',value:'2026-Q3'},new Date(2026,9,15),'month')});
-    const q=composeEffectiveQuery({dataSource:source,filters:page.filters},input,0,[],{});
-    expect(q.filterValues).toEqual([{target:'time',period:'quarter',value:{from:'2026-Q3',to:'2026-Q3'}},{target:'dimension',queryField:'demo_key',values:['1']}]);
+    expect(query(load(document),input).filterValues).toEqual([officePredicate,keyPredicate]);
   });
   it.each([
     {ids:['missing'],message:'覆盖筛选必须引用'},
     {ids:['key-office'],message:'覆盖筛选必须引用'},
     {ids:['region','region'],message:'duplicate items'}
-  ])('rejects invalid override references $ids',({ids,message})=>{
+  ])('rejects invalid override declarations $ids',({ids,message})=>{
     const copy=structuredClone(raw);copy.filters[1].overridesFilters=ids;
     const result=parsePage(copy);expect(result.ok).toBe(false);
     if(!result.ok)expect(result.errors.some(error=>error.message.includes(message))).toBe(true);
   });
-  it('rejects a query missing the replacement binding before Region can be dropped',()=>{
-    const copy=structuredClone(raw);delete copy.dataSources.offices.source.query.filterBindings['key-office'];
-    expect(parsePage(copy).ok).toBe(true);
-    const page=load();delete (page.dataSources.offices as QueryDataSource).source.query.filterBindings!['key-office'];
-    expect(()=>query(page,values())).toThrow('缺少替代查询条件');
+  it('keeps empty override arrays invalid',()=>{
+    const copy=structuredClone(raw);copy.filters[1].overridesFilters=[];
+    expect(parsePage(copy).ok).toBe(false);
   });
-  it('rejects candidate narrowing that would erase the Region selection on check',()=>{
-    const copy=structuredClone(raw);copy.filters[0].candidateContext={filterIds:['key-office'],reconcile:'intersection'};
+  it('still rejects missing replacement bindings and conflicting candidates for ordinary overrides',()=>{
+    const page=load(ordinaryOverride()),input=values();input.set('focus-only',{type:'boolean',value:true});
+    delete (page.dataSources.offices as QueryDataSource).source.query.filterBindings!['focus-only'];
+    expect(()=>query(page,input)).toThrow('缺少替代查询条件');
+    const copy=ordinaryOverride();copy.filters[0].candidateContext={filterIds:['focus-only'],reconcile:'intersection'};
     expect(parsePage(copy).ok).toBe(false);
   });
 });
 
-describe('query, candidate and execution projections',()=>{
-  it('keeps stored Region while transmitting only the replacement and 客户级别',()=>{
+describe('intersection across queries, candidates and execution',()=>{
+  it('sends Region, key offices and customer together without changing the selection',()=>{
     const page=load(),input=values();input.set('customer-category',{type:'dimension',dimension:'customer-level',values:['战略']});
     const q=query(page,input);
-    expect(q.filterValues).toEqual([
-      {target:'dimension',queryField:'重点国代',values:['true']},
-      {target:'dimension',queryField:'客户级别',values:['战略']}
-    ]);
-    expect(effectiveDqeItem(q).filter).toMatchObject({dims:[{dim_name:'重点国代',dim_value_list:['true']},{dim_name:'客户级别',dim_value_list:['战略']}]});
+    expect(q.filterValues).toEqual([officePredicate,keyPredicate,{target:'dimension',queryField:'客户级别',values:['战略']}]);
+    expect(effectiveDqeItem(q).filter).toMatchObject({dims:[{dim_name:'代表处',dim_value_list:['南京代表处']},{dim_name:'重点国代',dim_value_list:['true']},{dim_name:'客户级别',dim_value_list:['战略']}]});
     expect(input.get('region')).toMatchObject({values:['南京代表处']});
-    expect(query(page,values(false)).filterValues).toEqual([{target:'dimension',queryField:'代表处',values:['南京代表处']}]);
-    input.set('region',{type:'dimension',dimension:'demo_region',level:'region-dept',values:['华东地区部']});input.set('key-office',{type:'boolean',value:false});
-    expect(query(page,input).filterValues[0]).toEqual({target:'dimension',queryField:'地区部',values:['华东地区部']});
+    expect(query(page,values(false)).filterValues).toEqual([officePredicate]);
   });
-  it('preserves fixed query restrictions when dropping a page filter',()=>{
+  it('preserves fixed query restrictions alongside both page filters',()=>{
     const page=load(),source=page.dataSources.offices as QueryDataSource;
     source.source.query.body!.dsl_list[0]!.filter={dims:[{dim_name:'权限域',dim_value_list:['授权域']}],metrics:[]};
-    expect(effectiveDqeItem(query(page,values())).filter).toMatchObject({dims:[{dim_name:'权限域',dim_value_list:['授权域']},{dim_name:'重点国代',dim_value_list:['true']}]});
+    expect(effectiveDqeItem(query(page,values())).filter).toMatchObject({dims:[{dim_name:'权限域',dim_value_list:['授权域']},{dim_name:'代表处',dim_value_list:['南京代表处']},{dim_name:'重点国代',dim_value_list:['true']}]});
   });
-  it('ignores a failed Region receipt only while true, restoring the gate on false',async()=>{
+  it('keeps a failed Region receipt blocking while the checkbox is checked',async()=>{
     const page=load(),state=createFilterState(values(),page.filters,new Map(),{candidates:true});
-    state.candidate('region','denied');expect(state.blocked().has('region')).toBe(false);
+    state.candidate('region','denied');expect(state.blocked().has('region')).toBe(true);
     expect(state.toURL()).toContain(encodeURIComponent('南京代表处'));
-    state.write('key-office',{type:'boolean',value:false});expect(state.blocked().has('region')).toBe(true);
     const validator=createCandidateValidator(page,{async fetchData(){return {rows:[]};},async fetchFilterCandidates(){return {kind:'denied'};}});
-    await expect(validator.verify('offices',values(),new AbortController().signal)).resolves.toBeUndefined();
-    await expect(validator.verify('offices',values(false),new AbortController().signal)).rejects.toMatchObject({code:'DQE_QUERY_REJECTED'});
+    await expect(validator.verify('offices',values(),new AbortController().signal)).rejects.toMatchObject({code:'DQE_QUERY_REJECTED'});
   });
-  it('removes the overridden dimension from dependent candidate requests and cache identities',()=>{
+  it('keeps Region in dependent candidate requests and cache identities',()=>{
     const page=load(),filter:DimensionFilterDeclaration={id:'customer',type:'dimension',dimension:'customer-level',candidateContext:{filterIds:['region'],reconcile:'intersection'}};
-    expect(filterCandidatesRequest(filter,page.filters!,values()).constraints.dimensions).toEqual({});
-    expect(filterCandidatesRequest(filter,page.filters!,values(false)).constraints.dimensions).toEqual({'demo_office':['南京代表处']});
-    expect(candidateContextKey(filter,page.filters!,values())).not.toBe(candidateContextKey(filter,page.filters!,values(false)));
+    expect(filterCandidatesRequest(filter,page.filters!,values()).constraints.dimensions).toEqual({'demo_office':['南京代表处']});
+    const changed=values();changed.set('region',{type:'dimension',dimension:'demo_region',level:'region-dept',values:['华东地区部']});
+    expect(candidateContextKey(filter,page.filters!,values())).not.toBe(candidateContextKey(filter,page.filters!,changed));
   });
-  it('executes screen and complete export over all authorized key offices and restores Region on cancel',async()=>{
-    const page=load(),requests:EffectiveQuery[]=[];
-    const gateway=createKeyOfficePriorityGateway((kind,request)=>{if(kind==='query')requests.push(request as EffectiveQuery);});
-    const program=createSourceProgram(page,{gateway});
+  it('applies Region immediately to screen and complete export, including an empty intersection',async()=>{
+    const page=load(),program=createSourceProgram(page,{gateway:createKeyOfficePriorityGateway()});
     for(const purpose of ['screen','complete'] as const){
-      for await(const result of program.read({roots:['offices'],conditions:values(),purpose,useInitial:false}))expect(result.snapshot).toMatchObject({status:'ready',rows:[{office:'上海代表处'},{office:'深圳代表处'}]});
+      for await(const result of program.read({roots:['offices'],conditions:values(),purpose,useInitial:false}))expect(result.snapshot).toMatchObject({status:'empty',totalCount:0});
+      const input=values();input.set('region',{type:'dimension',dimension:'demo_region',level:'region-dept',values:['华东地区部']});
+      for await(const result of program.read({roots:['offices'],conditions:input,purpose,useInitial:false}))expect(result.snapshot).toMatchObject({status:'ready',rows:[{office:'上海代表处'}]});
     }
     for await(const result of program.read({roots:['offices'],conditions:values(false),useInitial:false}))expect(result.snapshot).toMatchObject({status:'ready',rows:[{office:'南京代表处'}]});
-    expect(requests[0].filterValues.some(p=>p.target==='dimension'&&p.queryField==='代表处')).toBe(false);
     program.dispose();
+  });
+  it('intersects same-field membership before HTTP, including table-header candidate queries',async()=>{
+    const prepared=await prepareIocHeaderFilters(raw,createKeyOfficePriorityGateway(),{signal:new AbortController().signal}),page=load(prepared);
+    const input=values();input.set('region',{type:'dimension',dimension:'demo_office',level:'office',values:['上海代表处']});
+    const q=query(page,input);
+    expect(effectiveDqeItem(q).filter).toMatchObject({dims:[{dim_name:'代表处',dim_value_list:['上海代表处']}]});
+    const withHeader=composeEffectiveQuery({page,filters:page.filters,dataSource:page.dataSources.offices as QueryDataSource},input,0,[],{office:{mode:'select',values:['上海代表处']}});
+    expect(effectiveDqeItem(withHeader).filter).toMatchObject({dims:[{dim_name:'代表处',dim_value_list:['上海代表处']}]});
+    const gateway=createDqeGateway({fetchImpl:async()=>{throw Error('Empty intersection must not call HTTP');}});
+    expect(await gateway.fetchData(query(page,values()))).toEqual({rows:[],totalCount:0});
   });
 });

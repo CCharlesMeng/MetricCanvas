@@ -1298,26 +1298,6 @@
       "scope": "exact product contract"
     },
     {
-      "source": "product:page/conformance/valid/ioc-component-key-office-filter-demo.json",
-      "target": "product-contracts/page/conformance/valid/ioc-component-key-office-filter-demo.json",
-      "scope": "exact product contract"
-    },
-    {
-      "source": "product:page/conformance/valid/ioc-component-key-office-filter-target.json",
-      "target": "product-contracts/page/conformance/valid/ioc-component-key-office-filter-target.json",
-      "scope": "exact product contract"
-    },
-    {
-      "source": "product:page/conformance/valid/ioc-component-key-office-priority-demo.json",
-      "target": "product-contracts/page/conformance/valid/ioc-component-key-office-priority-demo.json",
-      "scope": "exact product contract"
-    },
-    {
-      "source": "product:page/conformance/valid/ioc-component-key-office-priority-target.json",
-      "target": "product-contracts/page/conformance/valid/ioc-component-key-office-priority-target.json",
-      "scope": "exact product contract"
-    },
-    {
       "source": "product:page/conformance/layout-compatibility.json",
       "target": "product-contracts/page/conformance/layout-compatibility.json",
       "scope": "exact product contract"
@@ -8284,7 +8264,7 @@
     }
   ],
   "counts": {
-    "product": 1624,
+    "product": 1620,
     "authoring": 32,
     "modules": 36,
     "topics": 305,

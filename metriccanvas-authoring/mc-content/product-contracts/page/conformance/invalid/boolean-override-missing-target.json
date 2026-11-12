@@ -2,11 +2,11 @@
   "case": "boolean-override-missing-target",
   "invariant": "boolean-filter-overrides",
   "input": {
-    "schemaVersion": "6.84",
+    "schemaVersion": "6.113",
     "id": "key-office-priority-demo",
     "layout": "dashboard",
     "meta": {
-      "title": "重点国代优先 合成数据"
+      "title": "重点国代交集 合成数据"
     },
     "filters": [
       {
@@ -72,17 +72,6 @@
         ]
       }
     ],
-    "iocHeader": {
-      "identity": {
-        "title": "重点国代优先"
-      },
-      "filterIds": [
-        "key-office",
-        "mtime",
-        "region",
-        "customer-category"
-      ]
-    },
     "dataSources": {
       "offices": {
         "fields": {
@@ -158,6 +147,24 @@
       {
         "id": "results",
         "components": [
+          {
+            "id": "ioc-header",
+            "type": "iocHeader",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "identity": {
+                "title": "重点国代交集"
+              },
+              "filterIds": [
+                "key-office",
+                "mtime",
+                "region",
+                "customer-category"
+              ]
+            }
+          },
           {
             "id": "office-table",
             "type": "table",

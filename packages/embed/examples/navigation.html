@@ -21,7 +21,8 @@
     // 宿主注入真实网关，不写死路径。
     window.dataGateway = MetricCanvas.createDqeGateway();
     // Only these synthetic acceptance pages use the local V2 fixture Adapter.
-    if(window.pageDocument.iocHeader?.filterIds?.includes('region')||id==='ioc-header-calendar-window-demo')window.dataGateway.fetchFilterCandidates=async(request,{signal})=>{
+    const header=window.pageDocument.iocHeader??(window.pageDocument.sections?.[0]?.components?.[0]?.type==='iocHeader'?window.pageDocument.sections[0].components[0].props:undefined);
+    if(header?.filterIds?.includes('region')||id==='ioc-header-calendar-window-demo')window.dataGateway.fetchFilterCandidates=async(request,{signal})=>{
       const response=await fetch('/__fixtures/filter-candidates',{method:'POST',headers:{'Content-Type':'application/json','x-ioc-region-values':window.pageDocument.filters?.find(filter=>filter.id==='region')?.hierarchy?.some(level=>level.dimension.endsWith('-name'))?'names':'codes','x-ioc-region-geo':window.pageDocument.filters?.find(filter=>filter.id==='region')?.hierarchy?.some(level=>level.id==='geo')?'yes':'no'},body:JSON.stringify(request),signal});
       if(!response.ok)throw new Error('本地候选服务不可用');return response.json();
     };
@@ -34,7 +35,7 @@
       window.keyOfficeRequests=[];
       window.dataGateway=(id.startsWith('key-office-priority-')?fixture.createKeyOfficePriorityGateway:fixture.createKeyOfficeGateway)((kind,request)=>window.keyOfficeRequests.push({kind,request}),new URLSearchParams(location.search).get('state')??'ready');
     }
-    if(window.pageDocument.iocHeader){
+    if(header){
       const fixture=await import('/__fixtures/key-office-filter.js');
       window.pageDocument=await fixture.prepareIocHeaderFilters(window.pageDocument,window.dataGateway,{signal:new AbortController().signal});
     }

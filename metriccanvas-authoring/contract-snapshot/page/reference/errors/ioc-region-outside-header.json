@@ -4,7 +4,7 @@
   "expected": [
     {
       "type": "SCHEMA_ERROR",
-      "message": "IOC Region 必须由 iocHeader.filterIds 认领",
+      "message": "IOC Region 必须由 /sections/0/components/0/props/filterIds 认领",
       "paths": [
         "/filters/0/id"
       ]

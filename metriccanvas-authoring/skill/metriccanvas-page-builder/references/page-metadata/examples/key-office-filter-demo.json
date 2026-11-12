@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.81",
+  "schemaVersion": "6.113",
   "id": "key-office-filter-demo",
   "layout": "dashboard",
   "meta": {
@@ -99,11 +99,10 @@
   },
   "sections": [
     {
-      "id": "page-header-section",
-      "container": "plain",
+      "id": "results",
       "components": [
         {
-          "id": "page-header",
+          "id": "ioc-header",
           "type": "iocHeader",
           "layout": {
             "span": 12
@@ -118,12 +117,7 @@
               "region"
             ]
           }
-        }
-      ]
-    },
-    {
-      "id": "results",
-      "components": [
+        },
         {
           "id": "office-table",
           "type": "table",

@@ -31,15 +31,6 @@ function readLevelURLSelection(keys2, query) {
   return selected;
 }
 
-// packages/page/src/filter-overrides.ts
-function filterOverrideTargets(filter, filters) {
-  if (filter.type !== "boolean") return [];
-  const explicit = filter.overridesFilters ?? [];
-  if (!["key-office", "key-national-only"].includes(filter.id)) return explicit;
-  if (!filters.some((item) => item.id === "region" && item.type === "dimension")) return explicit;
-  return explicit.includes("region") ? explicit : [...explicit, "region"];
-}
-
 // packages/embed/examples/shared-filter-bridge.ts
 function signature(filter) {
   if (filter.type === "dimension") return JSON.stringify([filter.type, filter.dimension, filter.hierarchy]);
@@ -100,7 +91,7 @@ async function prepareIocHeaderFilters(document, gateway, options) {
 function keyOfficeFilters(page) {
   const first = page.sections?.[0]?.components?.[0];
   const header = page.iocHeader ?? (first?.type === "iocHeader" ? first.props : void 0);
-  return (page.filters ?? []).filter((filter) => filter.type === "boolean" && filterOverrideTargets(filter, page.filters ?? []).includes("region") && !!header?.filterIds?.includes(filter.id));
+  return (page.filters ?? []).filter((filter) => filter.type === "boolean" && ["key-office", "key-national-only"].includes(filter.id) && !!header?.filterIds?.includes(filter.id));
 }
 async function keyOfficeNames(filter, gateway, signal) {
   signal.throwIfAborted();
@@ -131,11 +122,11 @@ function bindKeyOfficeQueries(page, filter, names) {
     if (source.source.type !== "query") continue;
     const query = source.source.query;
     const leaves = query.queryModes?.cases ?? query.timeModes?.cases ?? { ordinary: query };
-    for (const leaf of Object.values(leaves)) bindKeyOfficeQuery(leaf, filter, names, filterOverrideTargets(filter, page.filters ?? []));
+    for (const leaf of Object.values(leaves)) bindKeyOfficeQuery(leaf, filter, names);
   }
 }
-function bindKeyOfficeQuery(query, filter, names, targets) {
-  if (!targets.some((id) => query.filterBindings?.[id])) return;
+function bindKeyOfficeQuery(query, filter, names) {
+  if (!query.filterBindings?.region && !query.filterBindings?.[filter.id]) return;
   query.filterBindings[filter.id] = { target: "boolean", queryField: "\u4EE3\u8868\u5904", whenTrue: [...names] };
 }
 function normalizeIocRegionCandidates(candidates) {

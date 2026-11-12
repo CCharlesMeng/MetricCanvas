@@ -1,3 +1,4 @@
+import {intersectQueryFilters} from '../intersect-filters';
 import {dimensionFilterCandidates} from './filter-candidates';
 import { encodeObjectQuery, type ObjectSortEncoder } from './object-query';
 import { fullQueryColumnCandidates } from './full-query-candidates';
@@ -656,7 +657,9 @@ function classifiedFetchError(
 export function effectiveDqeItem(query: EffectiveQuery): JsonObject { return encodedDqeItem(query); }
 
 function encodedDqeItem(query: EffectiveQuery, encodeSearch?: DqeGatewayConfig['encodeSearch'], encodeObjectSort?: ObjectSortEncoder): JsonObject {
-  if(query.matchNone)throw new EmptyTableQuery();
+  const combined=intersectQueryFilters(query);
+  if(!combined)throw new EmptyTableQuery();
+  query=combined;
   assertNoQueryParamReferences(query.body);
   if (isObjectDqeItem(query.body.dsl_list[0])) return encodedObjectItem(query, encodeSearch, encodeObjectSort);
   return encodedMetricItem(query, encodeSearch);

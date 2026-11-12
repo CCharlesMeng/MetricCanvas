@@ -1,9 +1,9 @@
 {
-  "schemaVersion": "6.84",
+  "schemaVersion": "6.113",
   "id": "key-office-priority-demo",
   "layout": "dashboard",
   "meta": {
-    "title": "重点国代优先 合成数据"
+    "title": "重点国代交集 合成数据"
   },
   "filters": [
     {
@@ -139,18 +139,17 @@
   },
   "sections": [
     {
-      "id": "page-header-section",
-      "container": "plain",
+      "id": "results",
       "components": [
         {
-          "id": "page-header",
+          "id": "ioc-header",
           "type": "iocHeader",
           "layout": {
             "span": 12
           },
           "props": {
             "identity": {
-              "title": "重点国代优先"
+              "title": "重点国代交集"
             },
             "filterIds": [
               "key-office",
@@ -159,12 +158,7 @@
               "customer-category"
             ]
           }
-        }
-      ]
-    },
-    {
-      "id": "results",
-      "components": [
+        },
         {
           "id": "office-table",
           "type": "table",

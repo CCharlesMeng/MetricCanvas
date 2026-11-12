@@ -102,6 +102,11 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
   let batch = 0, contextScope = 'session';
   function overridesSource(id:string,values:FilterValues):boolean {
     const overridden=overriddenFilterIds(page.filters??[],values);
+    // Authorized membership may change independently of the page's declared defaults.
+    for(const key of ['key-office','key-national-only']){
+      const value=values.get(key);
+      if(value?.type==='boolean'&&value.value===true)overridden.add(key);
+    }
     if(isUnrestrictedIocRegion(page,'region',values.get('region')))overridden.add('region');
     return [...conditionSourceIds(page,id)].some(key=>defaultPeriodSources.has(key)||sourceFilterIds(page.dataSources[key]).some(id=>overridden.has(id)));
   }

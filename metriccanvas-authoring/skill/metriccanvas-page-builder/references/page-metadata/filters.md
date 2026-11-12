@@ -207,7 +207,9 @@ presets为`{id,label,range:{from?,to?}}[]`，输入和预设使用显示单位�
 
 ## 布尔筛选覆盖（6.84）
 
-IOC 重点国代默认采用“勾选后忽略 Region，查询当前用户有权限的全部重点国代”的口径。标准 boolean 筛选标识 `key-office` / `key-national-only` 在页面声明了维度筛选 `region` 时自动覆盖它，无需填写 `overridesFilters`，也不通过显示文案推断业务含义。只在明确 boolean true 时覆盖，false 与缺席均不覆盖。没有 Region 的页面不产生额外覆盖目标。普通 boolean 仍可用 `overridesFilters` 显式指定覆盖目标；数组必须非空且引用同作用域内已声明的维度筛选，不可重复。既有显式声明保持可读，重点国代的显式目标与默认 Region 取并集，不能通过省略或改写声明恢复交集行为。它只影响页面筛选的执行投影，不会移除查询体中的固定限制、页面参数约束、权限、表头筛选或客户/时间等其他条件。
+IOC 重点国代统一与 Region 取交集。标准 boolean 筛选标识 `key-office` / `key-national-only` 勾选后，同时保留当前 Region 和授权重点国代名单；取消勾选只移除重点条件。Region 未选或选择规范值 `全球` 时不附加区域限制；选择地区部时仅查询其范围内的重点代表处，选择非重点代表处时返回空结果。时间、客户级别、权限与固定查询限制继续生效。历史 `overridesFilters:["region"]` 保持可读但不再覆盖 Region；其他显式覆盖目标保持原语义。本次统一执行语义不增加字段、开关或版本分支，旧页面也采用交集。
+
+普通 boolean 仍可用 `overridesFilters` 显式指定覆盖目标；数组必须非空且引用同作用域内已声明的维度筛选，不可重复。覆盖只在明确 boolean true 时生效，false 与缺席均不覆盖。它只影响页面筛选的执行投影，不会移除查询体中的固定限制、页面参数约束、权限、表头筛选或客户/时间等其他条件。
 
 最小声明（完整页见合成示例）：
 
@@ -217,17 +219,17 @@ IOC 重点国代默认采用“勾选后忽略 Region，查询当前用户有权
     {"id":"region","type":"dimension","dimension":"region-dept-name","display":"tree","treeSelection":"level","selection":{"mode":"single"},"hierarchy":[{"id":"region-dept","dimension":"region-dept-name"},{"id":"office","dimension":"rep-office-name"}]},
     {"id":"key-office","type":"boolean","label":"仅看重点国代"}
   ],
-  "iocHeader":{"identity":{"title":"IOC"},"filterIds":["key-office","region"]}
+  "sections":[{"id":"main","components":[{"id":"header","type":"iocHeader","layout":{"span":12},"props":{"identity":{"title":"IOC"},"filterIds":["key-office","region"]}}]}]
 }
 ```
 
-每条消费被覆盖维度的查询都必须绑定覆盖它的 boolean 及真实 `whenTrue` 条件；集成应用可在装载前补齐名单绑定；勾选时缺少替代条件则拒绝执行，不能只删除 Region 后查询全部数据。覆盖不修改 Region 的存储值或 URL；可继续改选 Region，取消勾选后使用最新选择并重新通过候选校验。被覆盖维度自身的必选、候选失败及其阻断传播不阻断当前替代查询；其他生效筛选的门禁保留。依赖 Region 的候选查询不再携带被覆盖的 Region 约束，缓存按生效候选上下文隔离。被覆盖维度不能同时依赖覆盖它的 boolean，避免勾选触发交集调和而丢失原选择。
+以下覆盖规则仅适用于仍有生效覆盖目标的 boolean。每条消费被覆盖维度的查询都必须绑定覆盖它的 boolean 及真实 `whenTrue` 条件；集成应用可在装载前补齐名单绑定；勾选时缺少替代条件则拒绝执行，不能只删除 Region 后查询全部数据。覆盖不修改 Region 的存储值或 URL；可继续改选 Region，取消勾选后使用最新选择并重新通过候选校验。被覆盖维度自身的必选、候选失败及其阻断传播不阻断当前替代查询；其他生效筛选的门禁保留。依赖 Region 的候选查询不再携带被覆盖的 Region 约束，缓存按生效候选上下文隔离。被覆盖维度不能同时依赖覆盖它的 boolean，避免勾选触发交集调和而丢失原选择。
 
 中文名称必须由集成应用在候选 `value` 中提供，并保持 `parent.value`、URL 输入与业务查询一致；`label` 仅用于显示，不自动替代编码。`dimension` 是 ASCII 维度标识，业务查询的 `queryField` 则可使用中文。IOC 页面地区部/代表处分别绑定名称字段 `地区部`、`代表处`；IOC Header 认领的平面客户类型筛选（`customer-category`、`customer-type`、`na-type`）由组件查询规则固定使用 `客户级别`，实际 DQE `dim_name` 不随页面 `filterBindings.queryField` 或显示文案改变；旧页面误写 `客户类型` 等名称时执行层统一纠正，不修改原文档。查询仍须显式绑定该筛选，未绑定不会自动订阅；未被 IOC Header 认领的普通筛选及层级筛选保持显式字段语义。推荐新页面继续将绑定写为 `queryField:"客户级别"`。合成验收 `/pages/ioc-customer-query-field?customer-category=战略` 故意使用旧字段名，屏幕、表头候选与完整导出共用固定规则。IOC Header 认领的 `region` 仅在单选节点的规范值为 `全球` 时不生成 Region 查询条件，URL 和界面仍保留该选择；中国/海外等其他 geo 节点继续按原有字段契约过滤。上游全球编码须由 Adapter 归一为 `value:"全球"`，相关 `parent.value` 同步；可复制的 `normalizeIocRegionCandidates` 示例只按 `label:"全球"` 转换该节点，不改中国/海外。未归一的全球候选编码在业务查询前以 `DQE_CONFIG_ERROR` 阻断。该执行规则覆盖屏幕、候选约束、初始快照和完整导出，不移除权限、固定条件、客户或时间；普通组织树不受影响，不新增页面字段。
 
-重点国代 checkbox 只有 boolean 值，没有内置真实名单。集成应用须提供完整、当前授权范围内的重点名单；上游 payload 结构由 Adapter 转换，不要求新增重点标记字段。集成应用的名单桥接 在装载前通过现有候选端口获取完整平面成员列表，再为各查询绑定 `queryField:"代表处"` 与 `whenTrue:[中文名列表]`，不读取当前 Region。6.84 的 `whenTrue:[]` 表示成功取得的完整名单为空，勾选后查询、列候选和导出为空且不发主查询 HTTP，不能按清空筛选处理。失败、无权限、未配置或取消均不能用空数组代替；固定查询限制和其他筛选继续取交集。桥接是集成应用可复制的示例，不属于 embed 公共对象上的 API。
+重点国代 checkbox 只有 boolean 值，没有内置真实名单。集成应用须提供完整、当前授权范围内的重点名单；上游 payload 结构由 Adapter 转换，不要求新增重点标记字段。集成应用的名单桥接 在装载前通过现有候选端口获取完整平面成员列表，再为各查询绑定 `queryField:"代表处"` 与 `whenTrue:[中文名列表]`，不读取当前 Region。引擎保留 Region 条件并与名单按 AND 合并；同为 `代表处` 字段时先求名单交集，空交集不发主查询 HTTP。屏幕、列候选和完整导出使用同一范围；重点条件启用时不复用无法证明当前名单范围的内嵌初始行或旧查询快照。6.84 的 `whenTrue:[]` 表示成功取得的完整名单为空，勾选后查询、列候选和导出为空且不发主查询 HTTP，不能按清空筛选处理。失败、无权限、未配置或取消均不能用空数组代替；固定查询限制和其他筛选继续取交集。桥接是集成应用可复制的示例，不属于 embed 公共对象上的 API。
 
-完整合成页：[优先级来源页](examples/key-office-priority-demo.json)、[目标页](examples/key-office-priority-target.json)。选择南京代表处后勾选，显示上海及深圳两个跨地区重点代表处，取消后回到南京。还覆盖 Region 改选、中文 URL、刷新、跨页及完整 XLSX 导出。合成 `重点国代=true` 字段不是生产字段承诺。`key-office-filter-demo/target` 同样不填写覆盖声明，演示 A1/B1 跨地区重点范围、保留普通代表处 A2 及取消后的恢复。所有重点国代示例遵循相同默认行为。
+完整合成页：[交集来源页](examples/key-office-priority-demo.json)、[目标页](examples/key-office-priority-target.json)。选择南京代表处后勾选，结果为空；改选华东地区部后仅显示上海；取消后显示上海及南京。还覆盖 Region 改选、中文 URL、刷新、跨页及完整 XLSX 导出。合成 `重点国代=true` 字段不是生产字段承诺。`key-office-filter-demo/target` 演示地区 A 交集为 A1，选择普通代表处 A2 时为空。所有重点国代示例遵循相同交集行为。
 
 <a id="boolean-candidate-context"></a>
 
@@ -235,13 +237,13 @@ IOC 重点国代默认采用“勾选后忽略 Region，查询当前用户有权
 
 boolean 筛选器可声明 enabledWhen，使用既有 Condition，例如 `{filter:"region",part:"values",op:"isNotEmpty"}`。条件在统一运行时集中求值；允许时可用，拒绝、未知或错误时禁止鼠标和键盘操作，全页只读仍优先。省略时保持原行为。禁用不清除已有值，不撤销查询谓词；需要清值时另行声明业务状态规则，不能从启用条件推导。visibleWhen 继续只控制显隐。
 
-维度筛选器的 candidateContext.filterIds 从 6.75 起可引用 boolean。候选网关请求 constraints.booleans 使用筛选器 id 为键，传递明确 true/false，只收集声明及传递依赖，不包含其他页面筛选。default:false 保持既有不生成初始化筛选值的兼容行为；缺席和 false 不在引擎中混同。普通布尔候选依赖可由集成应用的 Adapter 按 true/false 提供不同候选；重点国代默认覆盖 Region，不用这种依赖收窄 Region 树。候选上下文及缓存区分 true、false 与缺席，旧回执不得覆盖新条件。
+维度筛选器的 candidateContext.filterIds 从 6.75 起可引用 boolean。候选网关请求 constraints.booleans 使用筛选器 id 为键，传递明确 true/false，只收集声明及传递依赖，不包含其他页面筛选。default:false 保持既有不生成初始化筛选值的兼容行为；缺席和 false 不在引擎中混同。普通布尔候选依赖可由集成应用的 Adapter 按 true/false 提供不同候选；重点国代查询与 Region 取交集，无需用这种依赖收窄 Region 树。候选上下文及缓存区分 true、false 与缺席，旧回执不得覆盖新条件。
 
 reconcile:intersection 等完整候选就绪后保留交集。原本没有选择的可选维度，在候选有效且非空后保持不限，不额外要求确认；已有选择全部失效时进入确认状态，只有显式选择或清空才能解除，继续变化上游不能绕过确认。空候选、加载失败、不可用、拒绝或无配置均不能当作“不限”。已有 required 选择限制继续适用。
 
 宿主跨页共享值通过 initialSearch 和 filter-change 示例 Adapter 接入，不共享整份 FilterState。只向目标公共筛选器投影，显式 URL 输入优先于共享值，再由页面默认值补足；字段映射、维度和时间精度不匹配时不自动继承。清空表示取消该共享值的继承，目标页仍遵守自身默认值；示例地区部和月份不设默认值。执行快照模式不合并这层输入。示例按一个活动页面设计，不提供多实例实时互控或外部持续推送。
 
-IOC 业务 Region 只允许 iocHeader 内的单个组织树，树内选择地区部或代表处，不另设 rep-office 下拉；其他 IOC Region 形态在校验阶段拒绝。重点国代不能作为 Region 树的候选依赖，勾选期间 Region 的完整组织候选和原选择保留。重点国代默认不依赖 Region 是否已选，作者无需增加 enabledWhen。其他普通维度失效后的确认规则继续适用。普通维度的平面、多选及显式切层能力保留。
+IOC 业务 Region 只允许 iocHeader 内的单个组织树，树内选择地区部或代表处，不另设 rep-office 下拉；其他 IOC Region 形态在校验阶段拒绝。标准重点国代场景保留 Region 的完整组织候选和原选择，交集由查询执行层处理。重点国代不依赖 Region 是否已选，作者无需增加 enabledWhen。其他普通维度失效后的确认规则继续适用。普通维度的平面、多选及显式切层能力保留。
 
 完整声明：[来源页](examples/key-office-filter-demo.json)、[目标页](examples/key-office-filter-target.json)。两页使用合成地区与代表处；浏览器操作、宿主示例和数据环境见仓库 pages/capabilities/filters/README.md 的重点国代场景。真实字段名、取值编码、权限和重点名单须由集成应用确认。
 
