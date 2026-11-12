@@ -1,0 +1,253 @@
+{
+  "schemaVersion": "6.113",
+  "id": "numeric-precision-export",
+  "layout": "dashboard",
+  "meta": {
+    "title": "基础数字精度与 Excel 导出 · inline 合成数据"
+  },
+  "dataSources": {
+    "sample": {
+      "fields": {
+        "case": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "raw": {
+          "type": "number",
+          "role": "measure"
+        },
+        "p0": {
+          "type": "number",
+          "role": "measure"
+        },
+        "p1": {
+          "type": "number",
+          "role": "measure"
+        },
+        "p2": {
+          "type": "number",
+          "role": "measure"
+        },
+        "p3": {
+          "type": "number",
+          "role": "measure"
+        },
+        "p4": {
+          "type": "number",
+          "role": "measure"
+        },
+        "p5": {
+          "type": "number",
+          "role": "measure"
+        },
+        "signed": {
+          "type": "number",
+          "role": "measure"
+        },
+        "grouped": {
+          "type": "number",
+          "role": "measure"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "case": "整数",
+            "raw": 50,
+            "p0": 50,
+            "p1": 50,
+            "p2": 50,
+            "p3": 50,
+            "p4": 50,
+            "p5": 50,
+            "signed": 50,
+            "grouped": 50
+          },
+          {
+            "case": "小数",
+            "raw": 12.345678,
+            "p0": 12.345678,
+            "p1": 12.345678,
+            "p2": 12.345678,
+            "p3": 12.345678,
+            "p4": 12.345678,
+            "p5": 12.345678,
+            "signed": 12.345678,
+            "grouped": 12.345678
+          },
+          {
+            "case": "负值",
+            "raw": -12.345678,
+            "p0": -12.345678,
+            "p1": -12.345678,
+            "p2": -12.345678,
+            "p3": -12.345678,
+            "p4": -12.345678,
+            "p5": -12.345678,
+            "signed": -12.345678,
+            "grouped": -12.345678
+          },
+          {
+            "case": "负零",
+            "raw": -1e-07,
+            "p0": -1e-07,
+            "p1": -1e-07,
+            "p2": -1e-07,
+            "p3": -1e-07,
+            "p4": -1e-07,
+            "p5": -1e-07,
+            "signed": -1e-07,
+            "grouped": -1e-07
+          },
+          {
+            "case": "进位",
+            "raw": 9.999999,
+            "p0": 9.999999,
+            "p1": 9.999999,
+            "p2": 9.999999,
+            "p3": 9.999999,
+            "p4": 9.999999,
+            "p5": 9.999999,
+            "signed": 9.999999,
+            "grouped": 9.999999
+          },
+          {
+            "case": "缺失",
+            "raw": null,
+            "p0": null,
+            "p1": null,
+            "p2": null,
+            "p3": null,
+            "p4": null,
+            "p5": null,
+            "signed": null,
+            "grouped": null
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "header",
+      "container": "plain",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "基础数字精度与 Excel 导出 · inline 合成数据"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "precision",
+      "container": "card",
+      "components": [
+        {
+          "id": "precision-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "sample"
+          },
+          "props": {
+            "columns": [
+              {
+                "field": "case",
+                "title": "场景"
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "raw",
+                  "format": "number"
+                },
+                "title": "原值"
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "p0",
+                  "format": "number-0"
+                },
+                "title": "最多0位"
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "p1",
+                  "format": "number-1"
+                },
+                "title": "最多1位"
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "p2",
+                  "format": "number-2"
+                },
+                "title": "最多2位"
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "p3",
+                  "format": "number-3"
+                },
+                "title": "最多3位"
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "p4",
+                  "format": "number-4"
+                },
+                "title": "最多4位"
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "p5",
+                  "format": "number-5"
+                },
+                "title": "最多5位"
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "signed",
+                  "format": "number-3-signed"
+                },
+                "title": "带符号3位"
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "grouped",
+                  "format": "number-grouped"
+                },
+                "title": "千分位"
+              }
+            ],
+            "toolbar": {
+              "export": {
+                "format": "xlsx",
+                "filename": "基础数字精度"
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

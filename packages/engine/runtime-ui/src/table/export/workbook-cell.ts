@@ -8,15 +8,15 @@ import { compatibleTableFormat, formatTableCell } from '../../../../widgets/src/
 import { tableEnumLabel } from '../../../../widgets/src/components/table/enum-values';
 import { resolvedUnit } from '../../../../widgets/src/shared/field-presentation';
 import { formatValue, hasDisplayValue } from '../../../../widgets/src/shared/value-format';
+import { basicWorkbookNumberFormat, registerWorkbookPrecision } from './workbook-number-format';
 
 /** Numbers retain raw values; scale formats display the frozen presentation. */
 function numberFormat(value: number, format?: ValueFormat, unit?: string, displayUnit?: string): string {
   if (displayUnit) return `"${appendDisplayUnit(formatValue(value, format, undefined, { unit }), value, displayUnit, format).replaceAll('"', '""')}"`;
   if (typeof format === 'object') return `"${formatValue(value, format)}"`;
+  const basic = basicWorkbookNumberFormat(format);
+  if (basic !== undefined) return basic;
   if (!format || format === 'number') return 'General';
-  if (format === 'number-grouped') return '#,##0.###############';
-  if (format === 'number-1') return '0.0';
-  if (format === 'number-2') return '0.00';
   if (/^percent-[012]$/.test(format)) {
     const precision = Number(format.slice(-1));
     return `0${precision ? `.${'0'.repeat(precision)}` : ''}"%"`;
@@ -59,8 +59,14 @@ export function tableWorkbookCell(bodyColumn: TableColumn, row: AlignedTableRow,
   const cell = valueCell(value, resolved.definition?.type, resolved.format, resolvedUnit(resolved), column.unit);
   const arrow = alignedCellArrow(column, data, row);
   const format = cell.format ?? 'General';
-  const arrowFormat = column.arrowRule?.position === 'after' ? `${format}" ${arrow}"` : `"${arrow} "${format}`;
-  return typeof value === 'number' && arrow ? { ...cell, format: arrowFormat } : cell;
+  const native = !column.unit && basicWorkbookNumberFormat(resolved.format) !== undefined;
+  const arrowFormat = arrowNumberFormat(format, arrow, column.arrowRule?.position === 'after', native);
+  const decorated = typeof value === 'number' && arrow ? { ...cell, format: arrowFormat } : cell;
+  return registerWorkbookPrecision(decorated, resolved.format, column.unit);
+}
+
+function arrowNumberFormat(format: string, arrow: string, after: boolean, native: boolean): string {
+  return (native ? format.split(';') : [format]).map(section => after ? `${section}" ${arrow}"` : `"${arrow} "${section}`).join(';');
 }
 
 /** Time exports are text, so authored arrows join the same text instead of a numeric format. */

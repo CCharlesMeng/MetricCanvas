@@ -57,6 +57,7 @@ export function cartesianFrame(option: EChartsOption, width: number, expand: boo
     labelSpace = Math.max(labelSpace, Math.ceil(longest * Math.sin(rotate) + 12 * Math.cos(rotate) + (axis.axisLabel?.margin ?? 8) + 12));
   }
   const fittedGrid: GridComponentOption = { ...grid, top,
+    ...numericXAxisSpace(option, grid, width),
     ...(expand ? { left: Math.max(number(grid.left, width), 24), right: Math.max(number(grid.right, width), 36,
       ...array(option.xAxis).map(axis => axis.name ? textWidth(String(axis.name)) + 20 : 0)) } : {}) };
   return {
@@ -66,6 +67,13 @@ export function cartesianFrame(option: EChartsOption, width: number, expand: boo
 }
 
 function textWidth(text: string) { return format.getTextRect(text, '12px sans-serif').width; }
+
+/** A horizontal value-axis name extends past the grid even in the normal category window. */
+function numericXAxisSpace(option: EChartsOption, grid: GridComponentOption, width: number) {
+  const names = array(option.xAxis).filter(axis => axis.type !== 'category' && axis.name);
+  if (!names.length) return {};
+  return { right: Math.max(number(grid.right, width), ...names.map(axis => textWidth(String(axis.name)) + 20)) };
+}
 function number(value: unknown, size: number) { return typeof value === 'number' ? value : typeof value === 'string' && /^\d+(?:\.\d+)?%$/.test(value) ? parseFloat(value) * size / 100 : 0; }
 function array<T>(value: T | T[] | undefined): T[] { return value === undefined ? [] : Array.isArray(value) ? value : [value]; }
 function first<T>(value: T | T[] | undefined): T | undefined { return array(value)[0]; }

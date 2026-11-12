@@ -10,7 +10,7 @@ import {createPagedJoinPreview} from '../../../apps/playground/fixtures/query-jo
 import {createUnionPreview} from '../../../apps/playground/fixtures/decision-opinion/union-gateway';
 import type {DataGateway} from '../src';
 function document(input:unknown,root:string,field:string,name:string,value:string):PageDocument{
-  const raw=structuredClone(input) as PageDocument;raw.schemaVersion='6.85';
+  const raw=structuredClone(input) as PageDocument;raw.schemaVersion=`6.${Math.max(85,Number(raw.schemaVersion.split('.')[1]))}`;
   raw.params={query:{dimensions:[{id:'header-input',dim_name:name,required:false,dim_value_list:[value]}]}};
   const table=flattenPageComponents(raw).find(node=>node.type==='table'&&node.data.main===root);
   if(table?.type!=='table')throw Error('table');

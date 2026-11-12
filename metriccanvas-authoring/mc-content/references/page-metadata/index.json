@@ -730,7 +730,7 @@
         "table-header-select-all",
         "table-header-select-all-query",
         "table-default-sort",
-        "rep-office-execution-efficiency",
+        "rep-business-result",
         "table-header-filter-search"
       ],
       "rules": [
@@ -21660,8 +21660,8 @@
     {
       "schemaPointer": "#/definitions/chartOptionValue/anyOf/3",
       "module": "chart-option.md",
-      "file": "examples/chart-echarts-option-page.json",
-      "pointer": "#/sections/0/components/3/props/echartsOption/backgroundColor"
+      "file": "examples/rep-business-result.json",
+      "pointer": "#/sections/3/components/0/props/tabs/1/components/2/props/echartsOption/backgroundColor"
     },
     {
       "schemaPointer": "#/definitions/chartOptionValue/anyOf/4",
@@ -22170,8 +22170,8 @@
     {
       "schemaPointer": "#/definitions/tabContent/oneOf/6",
       "module": "components/tabContainer.md",
-      "file": "examples/tab-content-piechart.json",
-      "pointer": "#/sections/0/components/0/props/tabs/0/component"
+      "file": "examples/rep-business-result.json",
+      "pointer": "#/sections/3/components/0/props/tabs/1/components/2"
     },
     {
       "schemaPointer": "#/definitions/tabContent/oneOf/7",
@@ -22621,5 +22621,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "79524f3b29a50beb5821c1e6f23ec00ff8d719e341e139435715974c08bb1c0c"
+  "semanticSourceDigest": "33220417184db637e7cd62910a4f46a422cb91b8462da2278468dab7c1aeefb8"
 }

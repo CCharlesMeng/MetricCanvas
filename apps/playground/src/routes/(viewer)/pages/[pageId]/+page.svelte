@@ -9,6 +9,7 @@
   import {createGlobalBenchmarkPreview} from '../../../../../fixtures/global-benchmark';
   import {createRowCachePreview} from '../../../../../fixtures/row-expansion-cache';
   import { createPagedJoinPreview } from '../../../../../fixtures/query-join-gateway';
+  import { createContractPreviewGateway } from '../../../../../fixtures/contract-closure-search';
   import {createPeriodComparisonPreview} from "../../../../../fixtures/period-comparison";
   import {createQueryComparisonPreview} from "../../../../../fixtures/query-comparison-gateway";
   const queryComparisonPreview = $derived(createQueryComparisonPreview(page.url.searchParams.get("state") ?? "ready"));
@@ -142,8 +143,13 @@
     const regional=regionQueryGateway(input);
     if(regional)return regional;
     if(input==='row-cache')return createRowCachePreview().dataGateway;
-    if(input==='query-join')return createPagedJoinPreview(80,page.url.searchParams.get('supplementKey')??'ready',page.url.searchParams.get('nulls')??'none').dataGateway;
     if(input==='full-query-candidates')return createFullQueryCandidatesPreview(state).dataGateway;
+    return combinationTableGateway(input);
+  }
+
+  function combinationTableGateway(input: ReturnType<typeof pageExternalInputs>): DataGateway | undefined {
+    if(input==='contract-search')return createContractPreviewGateway();
+    if(input==='query-join')return createPagedJoinPreview(80,page.url.searchParams.get('supplementKey')??'ready',page.url.searchParams.get('nulls')??'none').dataGateway;
   }
 
   function previewDataGateway(pageId: string): DataGateway {

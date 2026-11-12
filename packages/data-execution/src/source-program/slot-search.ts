@@ -1,80 +1,74 @@
-import { flattenPageComponents, hasQueryFieldMapping, selectQuerySource, tableSlotSearchPlan, type Page, type TableComponent, type TableQueryView, type EffectiveQuery, type TableSlotSearchPlan, type DisplayInputsSnapshot } from '@metriccanvas/page/internal';
-import type { FilterValues } from '../filter-values';
-import type { QueryRunner } from '../query-runner';
-import { composeEffectiveQuery } from '../effective-query';
-import { restrictKeys } from '../paged-join/member-query';
+import { canonicalizeJson, dqeDefaultSort, flattenPageComponents, hasQueryFieldMapping, type DataSnapshot, type Row, type TableQueryView } from '@metriccanvas/page/internal';
+import { evaluateTableView } from '../table-view';
+import { rawSnapshot } from '../snapshots';
+import { EXPORT_MAX_ROWS, SourceRangeError } from './range-policy';
+import { collectSearchRows, searchPlan, type SlotSearchRead, type SearchRows } from './slot-search-read';
+import { searchFailure, searchKey, SLOT_SEARCH_TIMEOUT_MS } from './slot-search-batches';
+export type { SlotSearchRead } from './slot-search-read';
 
-type Search = TableQueryView['search'];
-interface SlotSearchRead {
-    page: Page; sourceId: string; search: Search; query: EffectiveQuery;
-    conditions: FilterValues; runner: QueryRunner; scope: string; signal?: AbortSignal;
-    now?: Date; displayInputs?: DisplayInputsSnapshot; filterRevision?: number;
-}
-const rejected = (message: string, code = 'DQE_QUERY_REJECTED'): never => { throw Object.assign(new Error(message), { code }); };
-
-/** Main-only search remains an ordinary gateway predicate. */
-export function mainTableSearch(search: Search): Search {
-    return search?.data && search.data !== 'main' ? undefined : search;
+export function mainTableSearch(search: TableQueryView['search']): TableQueryView['search'] {
+  return search?.data && search.data !== 'main' ? undefined : search;
 }
 
-/** Lookup receipts never replace the supplementary slot's current-page snapshot. */
-export async function applyTableSlotSearch(input: SlotSearchRead): Promise<EffectiveQuery> {
-    const search = input.search;
-    if (!search?.data || search.data === 'main' || !search.query.trim()) return input.query;
-    if (search.match !== 'equals' || search.fields.length !== 1) return rejected('跨槽搜索仅支持单字段精确匹配');
-    const table = searchOwner(input.page, input.sourceId, search.data, search.fields[0]);
-    const plan = tableSlotSearchPlan(input.page, table, { data: search.data, field: search.fields[0] });
-    const keys = await lookupKeys(input, plan);
-    input.signal?.throwIfAborted();
-    const mainKey = input.query.fieldMappings[plan.key];
-    if (!mainKey || !hasQueryFieldMapping(mainKey)) return rejected('当前查询分支缺少关联行键映射');
-    if (!keys.length || !restrictKeys(input.query, mainKey.queryField, keys).length) input.query.matchNone = true;
-    return input.query;
+function defaultSort(input: SlotSearchRead) {
+  const rules = dqeDefaultSort(input.query.body.dsl_list[0]);
+  return rules.map(rule => {
+    const field = Object.entries(input.query.fieldMappings).find(([, field]) => hasQueryFieldMapping(field) && field.queryField === rule.queryField)?.[0];
+    if (!field) return searchFailure('跨槽搜索默认排序缺少字段映射');
+    return { field, direction: rule.direction };
+  });
 }
 
-function searchOwner(page: Page, sourceId: string, slot: string, field: string): TableComponent {
-    const owners = flattenPageComponents(page).filter((node): node is TableComponent => node.type === 'table' && node.data.main === sourceId);
-    if (owners.length !== 1) return rejected('跨槽搜索要求主查询由一个表格独占');
-    const search = owners[0].props.toolbar?.search;
-    if (!search || !('options' in search) || !search.options.some(option => typeof option.field !== 'string' && option.field.data === slot && option.field.field === field)) return rejected('跨槽搜索字段未在当前表格声明');
-    return owners[0];
-}
-
-function lookupQuery(input: SlotSearchRead, plan: TableSlotSearchPlan): EffectiveQuery {
-    const source = structuredClone(selectQuerySource(plan.source, input.conditions));
-    delete source.source.query.resultBindings;
-    return composeEffectiveQuery({ now: input.now, displayInputs: input.displayInputs, filterRevision: input.filterRevision, page: input.page,
-        filters: input.page.filters, dataSource: source }, input.conditions, 0, [{ field: plan.key, direction: 'asc' }], {}, { fields: [plan.field], query: input.search!.query, match: 'equals' });
-}
-
-async function lookupKeys(input: SlotSearchRead, plan: TableSlotSearchPlan): Promise<(string | number)[]> {
-    const query = lookupQuery(input, plan), keys = new Set<string | number>();
-    let offset = 0, expected: number | undefined;
-    while (true) {
+/** Only a complete successful materialization is cached. No pending or failed read can seed another view. */
+export function createTableSlotSearchReader() {
+  const cache = new Map<string, { key: string; value: SearchRows }>();
+  const scopes = new Map<string, { value: string; users: number }>();
+  let generation = 0, serial = 0;
+  return {
+    clear() { generation++; cache.clear(); },
+    owns(input: Pick<SlotSearchRead, 'page'>, id: string, views?: ReadonlyMap<string, TableQueryView>): boolean {
+      return flattenPageComponents(input.page).some(node => node.type === 'table' && Object.values(node.data).includes(id) &&
+        !!views?.get(node.data.main)?.search?.data && !!views.get(node.data.main)?.search?.query.trim());
+    },
+    async read(input: SlotSearchRead): Promise<SearchRows | undefined> {
+      const plan = searchPlan(input);
+      if (!plan) return undefined;
+      const key = canonicalizeJson([input.query, plan.lookup, input.displayInputs ?? null, input.filterRevision ?? null]);
+      input.signal?.throwIfAborted();
+      const hit = cache.get(input.sourceId);
+      if (hit?.key === key) return hit.value;
+      const revision = generation, timeout = AbortSignal.timeout(SLOT_SEARCH_TIMEOUT_MS);
+      const signal = AbortSignal.any([timeout, ...(input.signal ? [input.signal] : [])]);
+      const operationKey = `${generation}:${key}`;
+      const operation = scopes.get(operationKey) ?? { value: `${input.scope}:slot-search:${++serial}`, users: 0 };
+      scopes.set(operationKey, operation); operation.users++;
+      const scope = operation.value;
+      try {
+        const value = await collectSearchRows({ ...input, signal, scope }, plan, { rows: 0, bytes: 0, signal });
+        signal.throwIfAborted();
+        if (generation === revision) cache.set(input.sourceId, { key, value });
+        return value;
+      } catch (cause) {
         input.signal?.throwIfAborted();
-        const limit = Math.min(200, plan.maxValues - offset);
-        const snapshot = await input.runner.run({ ...query, pagination: { offset, limit } }, { pageId: input.page.id, dataSourceIds: [plan.mainId, plan.sourceId] }, input.scope, input.signal);
-        input.signal?.throwIfAborted();
-        if (snapshot.status === 'error') return rejected(snapshot.error.message, snapshot.error.code);
-        if (snapshot.status === 'loading') return rejected('跨槽搜索结果尚未就绪');
-        const rows = snapshot.status === 'ready' ? snapshot.rows : [];
-        expected = lookupTotal(snapshot.totalCount, expected, plan.maxValues);
-        if (rows.length !== Math.min(limit, expected - offset)) return rejected('跨槽搜索返回的分页不完整', 'DQE_ROW_CONTRACT_ERROR');
-        for (const row of rows) keys.add(lookupKey(row[plan.key]));
-        offset += rows.length;
-        if (offset === expected) return [...keys];
+        if (timeout.aborted) return searchFailure('跨槽搜索超过 180 秒，请缩小范围或重试', 'DQE_TIMEOUT');
+        throw cause;
+      } finally {
+        if (--operation.users === 0) { scopes.delete(operationKey); input.runner.forgetScope(scope); }
+      }
     }
+  };
 }
+export type TableSlotSearchReader = ReturnType<typeof createTableSlotSearchReader>;
 
-function lookupTotal(total: number | undefined, previous: number | undefined, max: number): number {
-    if (total === undefined || !Number.isSafeInteger(total) || total < 0) return rejected('跨槽搜索缺少准确的匹配总数', 'DQE_ROW_CONTRACT_ERROR');
-    if (previous !== undefined && previous !== total) return rejected('跨槽搜索期间匹配总数变化，请重试', 'DQE_ROW_CONTRACT_ERROR');
-    if (total > max) return rejected(`跨槽搜索匹配超过 ${max} 条，请缩小查询范围`);
-    return total;
-}
-
-function lookupKey(value: unknown): string | number {
-    if (typeof value === 'string' && value.trim()) return value;
-    if (typeof value === 'number' && Number.isFinite(value)) return value;
-    return rejected('跨槽搜索结果缺少有效的关联行键', 'DQE_ROW_CONTRACT_ERROR');
+export function selectSearchRows(input: SlotSearchRead, data: SearchRows, complete: boolean) {
+  const sort = input.view.sort.length ? input.view.sort : defaultSort(input);
+  const result = evaluateTableView(data.rows, { ...input.view, sort, search: undefined }, complete);
+  if (complete && result.totalCount > EXPORT_MAX_ROWS) throw new SourceRangeError('EXPORT_ROW_LIMIT', '导出单表超过 10000 行');
+  const keys = new Set(result.rows.map(row => searchKey(row[data.plan.binding.key])));
+  const snapshots = new Map<string, DataSnapshot>([[input.sourceId, rawSnapshot(result.rows, result.totalCount)]]);
+  for (const [id, rows] of data.slots) {
+    const selected = rows.filter(row => keys.has(searchKey(row[data.plan.binding.key])));
+    snapshots.set(id, rawSnapshot(selected, selected.length));
+  }
+  return { snapshots, pageIndex: result.pageIndex };
 }

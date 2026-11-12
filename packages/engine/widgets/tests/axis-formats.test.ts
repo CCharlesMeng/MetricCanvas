@@ -22,7 +22,8 @@ describe('numeric axis display formats', () => {
     for (const axis of [line.yAxis, bar.xAxis]) {
       expect(axis).toMatchObject({ axisLabel: { formatter: expect.any(Function) } });
       const formatter = (axis as { axisLabel: { formatter: (value: number) => string } }).axisLabel.formatter;
-      expect(formatter(11358989639011.566)).toBe('113,589.9亿');
+      expect(axis).toMatchObject({ name: '亿' });
+      expect(formatter(11358989639011.566)).toBe('113,589.9');
     }
     expect(line.series).toMatchObject([{ data: [11358989639011.566] }]);
     expect(bar.series).toMatchObject([{ data: [11358989639011.566] }]);
@@ -52,7 +53,7 @@ it('windows large category sets without discarding series or category rows', () 
   expect(line.series).toMatchObject([{ data: rows.map(r => r.tokens) }]);
 });
 
-it('uses the same fixed unit for numeric axes, bar labels, and tooltips', () => {
+it('puts the fixed unit above the axis while preserving units in labels and tooltips', () => {
   const fixed: MainDataSlots = { main: {
     fields: { month: { type: 'string', role: 'dimension' }, tokens: { type: 'number', role: 'measure', unit: '元', defaultFormat: 'compact-wan-1' } },
     snapshot: { status: 'ready', rows: [{ month: 'a', tokens: 5000 }, { month: 'b', tokens: 125000000 }] }
@@ -63,7 +64,8 @@ it('uses the same fixed unit for numeric axes, bar labels, and tooltips', () => 
       const axis = (horizontal ? option.xAxis : option.yAxis) as { axisLabel: { formatter: (v: number) => string } };
       const series = (option.series as Array<{ label: { formatter: (p: {value:number}) => string }; tooltip: { valueFormatter: (v: number) => string } }>)[0];
       for (const [value, expected] of [[5000, '0.5万'], [125000000, '12,500万']] as const) {
-        expect(axis.axisLabel.formatter(value)).toBe(expected);
+        expect(axis).toMatchObject({ name: '万元' });
+        expect(axis.axisLabel.formatter(value)).toBe(expected.replace('万', ''));
         expect(series.label.formatter({ value })).toBe(expected);
         expect(series.tooltip.valueFormatter(value)).toBe(expected);
       }
@@ -83,8 +85,10 @@ it('explicit mixed series use each axis group format, including reordered primar
     { field: 'amount', kind: 'bar', axis: 'primary' }
   ] });
   const axes = option.yAxis as Array<{ axisLabel: { formatter: (v: number) => string } }>;
-  expect(axes[0]?.axisLabel?.formatter(125000000)).toBe('12,500万');
-  expect(axes[1]?.axisLabel?.formatter(12)).toBe('12%');
+  expect(axes[0]).toMatchObject({ name: '万元' });
+  expect(axes[1]).toMatchObject({ name: '%' });
+  expect(axes[0]?.axisLabel?.formatter(125000000)).toBe('12,500');
+  expect(axes[1]?.axisLabel?.formatter(12)).toBe('12');
   expect(option.series).toMatchObject([{ yAxisIndex: 1, data: [12] }, { yAxisIndex: 0, data: [125000000] }]);
 });
 
@@ -93,13 +97,15 @@ it.each(['bar', 'line'] as const)('explicit %s respects binding override on the 
     { field: { data: 'main', field: 'tokens', format: 'compact-wan-1' }, kind, axis: 'primary' }
   ] });
   const axis = option.yAxis as { axisLabel: { formatter: (v: number) => string } };
-  expect(axis.axisLabel?.formatter(100000000)).toBe('10,000万');
+  expect(axis).toMatchObject({ name: '万' });
+  expect(axis.axisLabel?.formatter(100000000)).toBe('10,000');
 });
 
 it('keeps a shared percentage axis for adaptive fields and explicit fixed-format constants', () => {
   const axis = dualOrSingleAxis(false, 2, false, [
     { format: 'percent-adaptive', unit: '%' }, { format: 'percent-0' }
   ]) as { axisLabel: { formatter: (value: number) => string } };
-  expect(axis.axisLabel.formatter(25)).toBe('25%');
-  expect(axis.axisLabel.formatter(12.345)).toBe('12.3%');
+  expect(axis).toMatchObject({ name: '%' });
+  expect(axis.axisLabel.formatter(25)).toBe('25');
+  expect(axis.axisLabel.formatter(12.345)).toBe('12.3');
 });

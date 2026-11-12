@@ -7,7 +7,7 @@ import type { BarChartProps, ValueFormat } from '@metriccanvas/page/internal';
 import type { EChartsOption, LabelLayoutOptionCallbackParams } from 'echarts';
 import type { MainDataSlots } from '../../shared/component-data';
 import { resolveField } from '../../shared/component-data';
-import { fieldUnitText } from '../../shared/field-presentation';
+import { chartAxisField } from '../../shared/chart-axis-presentation';
 import { finiteNumber, formatValue } from '../../shared/value-format';
 import { CHART_PALETTE, GRID, alignedSecondaryAxis, categoryWindow, dualOrSingleAxis, formattedValueAxis, formatterValue, formatChartNumber } from '../../shared/chart-option';
 import { serialColor, type ColorList } from '../../shared/chart-palette';
@@ -44,7 +44,7 @@ export function barOption(
     ...(props.horizontal ? { inverse: true } : {}),
     ...categoryLabelOption(props.categoryLabels, props.showValueLabels) };
   const valueAxis = dualOrSingleAxis(props.dualAxis, chartDeclaration(props).series.length, false,
-    chartAxisFormats(props, props.series.map(series => resolveBarSeriesValue(series, data, props.emptyBehavior))));
+    chartAxisFormats(props, props.series.map(series => chartAxisField(resolveBarSeriesValue(series, data, props.emptyBehavior), rows, series.unit))));
   const horizontalAxis = Array.isArray(valueAxis)
     ? valueAxis.map(horizontalValueLabels)
     : horizontalValueLabels(valueAxis);
@@ -268,10 +268,8 @@ function mixedOption(data: MainDataSlots, props: BarChartProps, palette?: ColorL
   const category = resolveField(props.categoryField, data);
   const axis = (name: 'primary' | 'secondary') => {
     const fields = props.series.filter(series => (series.axis ?? 'primary') === name)
-      .map(series => resolveBarSeriesValue(series, data, props.emptyBehavior));
-    const field = fields[0];
-    return { ...formattedValueAxis(fields),
-      name: fieldUnitText(field?.unit, field?.format) };
+      .map(series => chartAxisField(resolveBarSeriesValue(series, data, props.emptyBehavior), rows, series.unit));
+    return formattedValueAxis(fields);
   };
   return {
     color: [...(palette ?? CHART_PALETTE)], grid: GRID,

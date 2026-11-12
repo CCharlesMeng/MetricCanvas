@@ -48,7 +48,7 @@ it('round-trips types, formats, merged headers, frozen rows and styles with an i
   expect(sheet.getCell('C4').value).toBe(true);
   expect(sheet.getCell('D3').value).toBe(1234.5);
   expect(sheet.getCell('D4').value).toBe(0);
-  expect(sheet.getCell('D3').numFmt).toBe('0.00');
+  expect(sheet.getCell('D3').numFmt).toBe('0.##;-0.##;0');
   expect(sheet.getCell('E3').value).toBe(25.5);
   expect(sheet.getCell('E3').numFmt).toBe('0.0"%"');
   expect(sheet.getCell('F3').value).toEqual(new Date('2026-11-05'));

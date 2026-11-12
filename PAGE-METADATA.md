@@ -1,5 +1,13 @@
 # MetricCanvas 页面元数据规范
 
+IOC Header 期间控件分别保留最近已应用的季度与月份；选择年份后切回季／月，沿用当前年份和各自的选项，避免互相覆盖为 Q1 或 1 月。记忆限本次控件挂载，不新增页面字段或 URL 状态。见[期间选择](docs/page-metadata/filters.md#dashboard-期间选择627)，合成入口 `/pages/ioc-header-flow-sticky`。
+
+按需 `pagedJoin` 复用 `toolbar.search`，由搜索字段所属成员搜索并分页，暂停其他成员排序、清除其列头条件；清空搜索回到第一页并恢复默认排序。搜索、分页和 Excel 统一执行，不新增 JSON 字段、不扫描完整匹配键；包含搜索继续要求数据网关搜索适配。见[组合查询成员搜索](docs/page-metadata/data-sources.md#paged-join-member-search)，合成入口 `/pages/paged-join-search`。
+
+Excel 基础数字精度统一：number-0 至 number-5 及已有带符号/千分位格式保留原值和数值类型，按最多小数位去尾零，编辑后数字格式继续生效；原生条件格式处理整数小数点及舍入零符号。页面基础数字同样统一负零为0，无新增字段或版本。见[数字精度](docs/page-metadata/field-bindings-and-formats.md#numeric-value-display)，合成入口 `/pages/number-precision-five`、`/pages/numeric-value-display`。
+
+柱图、折线图、柱线混合图及横向条形图统一数值轴单位：单位默认在数值轴末端水平显示，刻度只显示数字；自适应格式整轴使用同一缩放档位，提示与标签保留原格式。旧页面随引擎采用新默认，显式 ECharts 配置优先，无新增字段或 Schema 版本。见[数值轴规则](docs/page-metadata/field-bindings-and-formats.md#chart-number-format)，合成入口 `/pages/chart-axis-unit`。
+
 IOC 父子表层级选择复用“全球＝不限区域”：保留全部父行，按父行查询子表，界面与 URL 保留全球；完整父子 Excel 共用解析。普通组织树和其他选择保持严格匹配，无新增 Schema 字段。见[层级筛选联动](docs/page-metadata/components/table.md#hierarchy-selection)，合成入口 `/pages/table-hierarchy-selection`。
 
 6.113：新增 `number-0`，四舍五入显示整数，不加千分位、不缩放，正负半值均向远离零方向舍入，舍入零统一显示 `0`。复用 `format` / `defaultFormat`，原值、计算与排序保持；Excel 保留数值原值并展示同一整数。见[数值格式](docs/page-metadata/field-bindings-and-formats.md)，合成入口 `/pages/number-precision-five`。
@@ -10,7 +18,7 @@ IOC 父子表层级选择复用“全球＝不限区域”：保留全部父行�
 
 表头筛选修复：所有表格变体的已生效筛选入口统一使用黑色 #191919；pagedJoin 查询分页的补充成员列支持按所属成员自动预加载候选，维度与对象 output_fields 查询均复用现有映射，不触发完整组合读取。全选继续显式配置 `filterable.showSelectAll:true`，省略或 false 隐藏。见[列筛选候选值](docs/page-metadata/components/table.md#列筛选候选值)，入口 `/pages/paged-join-on-demand`。
 
-6.109：表格精确搜索的 `options[].field` 支持复用 `{data,field}` 指向补充数据槽。引擎先在补充查询中完整查出匹配行键，再约束主查询分页；不反转页面 `resultBindings`，不搜索当前页冒充全局结果。匹配上限沿用既有绑定限制、最多1000条，超限或回执不完整明确失败。见[跨槽搜索](docs/page-metadata/components/table.md#跨数据槽精确搜索6109)，入口 `/pages/rep-office-execution-efficiency` 的“商务审批明细”。
+6.109：表格精确搜索的 `options[].field` 支持复用 `{data,field}` 指向补充数据槽。引擎先在补充查询中完整查出匹配行键，再按每批最多1000个 ID（遵守更小的绑定 `maxValues`）分批读完主记录，统一筛选、排序、计数及分页；不反转页面 `resultBindings`。整次搜索独立限制累计100000行、64 MiB和180秒，超过1000条不再直接拒绝；完整成功结果供分页、候选和最多10000行Excel导出复用，失败不发布部分结果。本次修订不新增页面字段，普通结果绑定规则保持。见[跨槽搜索](docs/page-metadata/components/table.md#跨数据槽精确搜索6109)，入口 `/pages/rep-business-result` 的“合同风险率明细”。
 
 表格精确搜索的 `toolbar.search.options` 只有一项时，固定使用该字段，只显示输入框及其 placeholder；两项及以上才显示字段选择器。无需新增 Schema 字段。见[静态搜索选项](docs/page-metadata/components/table.md#静态搜索选项642)，验收入口 `/pages/region-auth-norms-detail` 与 `/pages/table-search-options-demo`。
 
@@ -109,7 +117,7 @@ IOC Header 默认用 `region-dept=value` / `rep-office=value` 表达地区部或
 
 6.75 增加 boolean 筛选器的 enabledWhen 和 boolean 候选依赖；候选约束传递显式 true/false，原本未选代表处时不因交集更新要求额外确认。跨页共享值由宿主显式接入，各页面独立管理候选与查询状态。见[重点国代筛选集成](docs/page-metadata/filters.md#boolean-candidate-context)，合成验收入口 `/pages/key-office-filter-demo` 和 `/pages/key-office-filter-target`。
 
-表格 select 表头候选的共用 DQE 网关已接入完整结果分批读取及前端去重：保留原指标与维度，默认最多扫描1000条原始结果、每批200条（最多5批），更大范围须在集成配置中显式提高上限；超限、缺总数或截断不展示部分选项，完整后独立搜索和分页。表格可见且绘制后空闲预加载、点击菜单按需获取；主查询可抢占后台候选，候选状态不阻塞整表渲染。页面声明不变。见[列筛选候选值](docs/page-metadata/components/table.md#列筛选候选值)，合成 DQE 验收入口 `/pages/table-column-candidates-query`。
+表格 select 表头候选的共用 DQE 网关已接入完整结果分批读取及前端去重：保留原指标与维度，默认最多扫描1000条原始结果、每批200条（最多5批），更大范围须在集成配置中显式提高上限；超限、缺总数或截断不展示部分选项，完整后独立搜索和分页。选项列表滚动到底部自动续载，不再显示“加载更多”按钮；搜索框固定，仅列表滚动，切换关键词后回到顶部。表格可见且绘制后空闲预加载、点击菜单按需获取；主查询可抢占后台候选，候选状态不阻塞整表渲染。页面声明不变。见[列筛选候选值](docs/page-metadata/components/table.md#列筛选候选值)，合成 DQE 验收入口 `/pages/table-column-candidates-query`。
 
 6.74 增加受控计算 `unionKeys`：从多个完整结果按同名稳定维度键取并集，再用 `joinAggregate` 补齐单项、`sumFields` 计算总分。单项缺失保留 null；查询数值空文本归为缺项并使用 missingText，真实 0 保留。见[组织键并集](docs/page-metadata/compute.md#组织键并集674)，验收入口 `/pages/union-keys-demo`、`/pages/partner-health-union-null-probe`（Mock）。
 

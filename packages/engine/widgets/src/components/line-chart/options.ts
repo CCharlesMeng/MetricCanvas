@@ -2,6 +2,7 @@ import { seriesDisplayName, chartLegendVisible } from '../../shared/display-unit
 import { chartDeclaration, chartSeriesAxis, chartSeriesIndex, chartAxisFormats } from '../../../../runtime/src/chart-series-state';
 import { chartSeriesColor } from '../../shared/chart-series-presentation';
 import { resolveComponentValue } from '../../shared/component-value';
+import { chartAxisField } from '../../shared/chart-axis-presentation';
 import type { LineChartProps } from '@metriccanvas/page/internal';
 import type { EChartsOption } from 'echarts';
 import type { MainDataSlots } from '../../shared/component-data';
@@ -39,7 +40,7 @@ export function lineOption(
       ...categoryLabelOption(props.categoryLabels, props.showValueLabels)
     },
     yAxis: dualOrSingleAxis(props.dualAxis, chartDeclaration(props).series.length, props.hideYAxis,
-      chartAxisFormats(props, props.series.map(series => resolveComponentValue(series, data, props.emptyBehavior)))),
+      chartAxisFormats(props, props.series.map(series => chartAxisField(resolveComponentValue(series, data, props.emptyBehavior), rows, series.unit)))),
     series: props.series.map((series, i) => {
       const field = resolveComponentValue(series, data, props.emptyBehavior);
       return {

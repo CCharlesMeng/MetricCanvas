@@ -9,7 +9,7 @@
       "module": "table",
       "reference": "references/page-metadata/components/table.md",
       "blocks": [
-        "# 明细表 table\n\ncolumns/children 定义字段列与递归列组；交互、查询与呈现约束见下列专题。\n\n<a id=\"local-default-sort\"></a>",
+        "# 明细表 table\n\ncolumns/children 定义字段列与递归列组；交互、查询与呈现约束见下列专题。\n\n\n<a id=\"local-default-sort\"></a>",
         "## 完整本地结果的默认排序（6.108）\n\n`props.defaultSort: [{\"field\":\"total-score\",\"direction\":\"desc\"}]` 声明表格实例的初始排序。规则使用最终页面字段，支持计算字段与多字段优先级；字段须属于已声明的静态 main 列，字段不可重复，数组不能为空。方向为 `asc` / `desc`。无需为了默认排序额外声明 `sortable`；只在需要用户点击列头排序时启用该列入口。\n\n引擎在完整结果计算完成后排序，再做本地分页；null 沿现有规则排末尾，同值保留输入顺序。声明适用于 inline 和明确 `resultScope:\"complete\"`、无查询窗口的普通 query；查询分页及 pagedJoin/pagedUnion 不接受本字段，沿用查询或组合源的默认排序。\n\n默认值只初始化表格会话，同源表格各自独立；用户排序、清空、翻页、普通业务筛选及显式恢复的视图不会重复初始化。列头沿现有无排序→升序→降序→清空循环，清空后使用输入顺序。导出冻结当前已提交排序。省略字段保留既有行为。\n\n完整合成场景 `/pages/table-default-sort` 的 `descending` / `ascending` 两张表共享计算源 `scores`，分别默认降序和升序、每页 10 行；用于验证计算后排序、连续分页与实例隔离，不连接真实服务。业务页 `/pages/partner-health` 的两张健康度表默认总分降序。"
       ],
       "rules": [
@@ -348,7 +348,7 @@
         "references/page-metadata/examples/table-header-select-all.json",
         "references/page-metadata/examples/table-header-select-all-query.json",
         "references/page-metadata/examples/table-default-sort.json",
-        "references/page-metadata/examples/rep-office-execution-efficiency.json",
+        "references/page-metadata/examples/rep-business-result.json",
         "references/page-metadata/examples/table-header-filter-search.json"
       ]
     }

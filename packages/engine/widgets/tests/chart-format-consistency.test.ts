@@ -53,7 +53,8 @@ describe('chart numeric display consistency', () => {
     formatted.main.fields.value = { type: 'number', role: 'measure', defaultFormat: 'compact-wan-1' };
     for (const [format, expected] of [[undefined, '1.2万'], ['number-1', '12345.7'], ['number', '12345.6789'], ['number-3', '12345.679'], ['number-4', '12345.6789'], ['number-5', '12345.6789'], ['number-3-signed', '+12345.679'], ['number-4-signed', '+12345.6789'], ['number-5-signed', '+12345.6789']] as const) {
       for (const option of options(formatted, format)) {
-        expect(option.yAxis.axisLabel.formatter(12345.6789)).toBe(expected);
+        expect(option.yAxis.axisLabel.formatter(12345.6789)).toBe(format === undefined ? '1.2' : expected);
+        expect(option.yAxis.name).toBe(format === undefined ? '万' : undefined);
         expect(option.series[0]!.tooltip.valueFormatter(12345.6789)).toBe(expected);
         expect(option.series[0]!.label.formatter({ value: 12345.6789 })).toBe(expected);
       }

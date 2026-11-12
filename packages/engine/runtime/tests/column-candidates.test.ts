@@ -18,3 +18,25 @@ it('ignores old successes and failures when an adapter ignores abort, and keeps 
   session.dispose(); calls[4].resolve({ kind: 'values', candidates: [{ value: 2, label: 'late' }], totalCount: 1 });
   await Promise.resolve(); expect(session.snapshots()).toEqual({});
 });
+
+it('coalesces repeated bottom-scroll continuations while loading and stops after the final page', async () => {
+  const offsets: number[] = [];
+  const pending: Array<(page: ColumnCandidatesPage) => void> = [];
+  const session = createColumnCandidatesSession((_field, _search, offset) => {
+    offsets.push(offset);
+    return new Promise(resolve => pending.push(resolve));
+  }, () => 'same-context', () => {});
+  session.open('office');
+  pending[0]({ kind: 'values', candidates: [{ value: 'A', label: 'A' }], totalCount: 2 });
+  await Promise.resolve();
+  session.more('office');
+  session.more('office');
+  session.more('office');
+  expect(offsets).toEqual([0, 1]);
+  pending[1]({ kind: 'values', candidates: [{ value: 'B', label: 'B' }], totalCount: 2 });
+  await Promise.resolve();
+  session.more('office');
+  expect(offsets).toEqual([0, 1]);
+  expect(session.snapshots().office.candidates.map(candidate => candidate.value)).toEqual(['A', 'B']);
+  session.dispose();
+});

@@ -11,7 +11,7 @@ export async function prepareExportSnapshots(page: Page, gateway: DataGateway, q
   const program = sharedProgram ?? createSourceProgram(page, { gateway, diagnostics: diagnosticBase });
   const result = new Map<string, DataSnapshot>();
   try {
-    for await (const update of program.read({ roots: [...visibleSourceIds(page)], conditions: filters, queries, views, purpose: 'complete', freshness: 'refresh', signal, currentYear, completeSources, allowPartial: options.allowPartial,displayInputs:options.displayInputs,filterRevision:options.filterRevision,now:options.now })) result.set(update.sourceId, update.snapshot);
+    for await (const update of program.read({ roots: [...visibleSourceIds(page)], conditions: filters, queries, views, purpose: 'complete', freshness: exportFreshness(sharedProgram, views), signal, currentYear, completeSources, allowPartial: options.allowPartial,displayInputs:options.displayInputs,filterRevision:options.filterRevision,now:options.now })) result.set(update.sourceId, update.snapshot);
     if (!options.allowPartial) for (const value of result.values()) if (value.status === 'error' || value.status === 'loading') throw new ExportViewError('EXPORT_INCOMPLETE_DATA', '导出查询或数据计算未完成');
     return result;
   } catch (cause) {
@@ -20,4 +20,9 @@ export async function prepareExportSnapshots(page: Page, gateway: DataGateway, q
     if (!signal.aborted && !(cause instanceof ExportViewError)) throw new ExportViewError('EXPORT_INCOMPLETE_DATA', '导出查询或数据计算未完成');
     throw cause;
   } finally { if (!sharedProgram) program.dispose(); }
+}
+
+function exportFreshness(program: SourceProgram | undefined, views: ReadonlyMap<string, import('@metriccanvas/page/internal').TableQueryView> | undefined): 'reuse' | 'refresh' {
+  const materialized = [...views?.values() ?? []].some(view => view.search?.data && view.search.data !== 'main' && view.search.query.trim());
+  return program && materialized ? 'reuse' : 'refresh';
 }

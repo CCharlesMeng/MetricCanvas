@@ -5,6 +5,7 @@ import { lineOption } from '../packages/engine/widgets/src/components/line-chart
 import { resolveComponentValue } from '../packages/engine/widgets/src/shared/component-value';
 import type { MainDataSlots } from '../packages/engine/widgets/src/shared/component-data';
 import { formatValue } from '../packages/engine/widgets/src/shared/value-format';
+import { chartAxisField, numericAxisPresentation } from '../packages/engine/widgets/src/shared/chart-axis-presentation';
 
 type Surface = { actual: string | null; expected: string; matches: boolean | null };
 function observed(actual: string | null, expected: string): Surface {
@@ -22,15 +23,19 @@ function axisIndex(props: BarChartProps | LineChartProps, index: number): number
 export function chartPresentationProbes(type: 'barChart' | 'lineChart', props: BarChartProps | LineChartProps, data: MainDataSlots) {
   const option = type === 'barChart' ? barOption(data, props as BarChartProps) : lineOption(data, props as LineChartProps);
   const axisOption = type === 'barChart' && (props as BarChartProps).horizontal ? option.xAxis : option.yAxis;
-  const axes = (Array.isArray(axisOption) ? axisOption : [axisOption]) as Array<{ axisLabel?: { formatter?: (value: number) => string } }>;
+  const axes = (Array.isArray(axisOption) ? axisOption : [axisOption]) as Array<{ name?: string; axisLabel?: { formatter?: (value: number) => string } }>;
   const series = option.series as Array<{ label?: { formatter?: (value: unknown) => string }; tooltip?: { valueFormatter?: (value: unknown) => string } }>;
+  const axisFields = props.series.map(entry => chartAxisField(resolveComponentValue(entry, data), data.main.snapshot.rows, entry.unit));
   return props.series.map((entry, index) => {
     const resolved = resolveComponentValue(entry, data);
     const value = 1000000;
     const expected = formatValue(value, resolved.format);
     const actual = series[index];
     const axis = axes[axisIndex(props, index)];
-    return { index, format: resolved.format, axis: observed(axis?.axisLabel?.formatter?.(value) ?? null, expected), label: observed(actual?.label?.formatter?.({ value }) ?? null, expected),
+    const expectedAxis = numericAxisPresentation(axisFields.filter((_, fieldIndex) => axisIndex(props, fieldIndex) === axisIndex(props, index)));
+    return { index, format: resolved.format, axis: observed(axis?.axisLabel?.formatter?.(value) ?? null, expectedAxis.axisLabel.formatter(value)),
+      unit: { actual: axis?.name, expected: expectedAxis.name, matches: axis?.name === expectedAxis.name },
+      label: observed(actual?.label?.formatter?.({ value }) ?? null, expected),
       tooltip: observed(actual?.tooltip?.valueFormatter?.(value) ?? null, expected) };
   });
 }

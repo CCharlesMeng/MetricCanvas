@@ -41,7 +41,7 @@ it('interleaves each child below its parent, shifting the complete merged header
   expect([sheet.getCell('C5').value, sheet.getCell('C6').value]).toEqual(['=同名代表处', '=同名代表处']);
   expect(sheet.getCell('C5').type).toBe(ExcelJS.ValueType.String);
   expect([sheet.getCell('D5').value, sheet.getCell('D6').value]).toEqual([0, 2.5]);
-  expect(sheet.getCell('D5').numFmt).toBe('0.0');
+  expect(sheet.getCell('D5').numFmt).toBe('0.#;-0.#;0');
   expect([sheet.getCell('A7').value, sheet.getCell('B7').value]).toEqual([2, '华南']);
   expect(sheet.getCell('B10').value).toBe('暂无数据');
   expect(sheet.getCell('D10').master.address).toBe('B10');

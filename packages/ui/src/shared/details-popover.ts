@@ -34,10 +34,17 @@ export function detailsPopover(details: HTMLDetailsElement) {
     details.open = false;
     anchor.focus({ preventScroll: true });
   }
+  // A constrained panel may keep its size when its options change, so its
+  // ResizeObserver alone cannot restore the height after an empty search.
+  const contentObserver = new MutationObserver(() => {
+    if (details.open) position();
+  });
+  contentObserver.observe(panel, { childList: true, subtree: true, characterData: true });
   details.addEventListener('toggle', sync);
   details.addEventListener('keydown', keys);
   panel.addEventListener('toggle', closed);
   return { destroy() {
+    contentObserver.disconnect();
     details.removeEventListener('toggle', sync);
     details.removeEventListener('keydown', keys);
     panel.removeEventListener('toggle', closed);

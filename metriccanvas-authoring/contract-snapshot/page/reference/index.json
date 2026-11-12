@@ -44,15 +44,23 @@
     },
     {
       "file": "packages/data-execution/src/source-program/column-candidates.ts",
-      "sha256": "264d497d8638f332a6b3150b448a0a26d7efa9ecb8edd1561567013159c38695"
+      "sha256": "716e181ea012d54158152bd33e8dad3f7ce00bdb19dd6e217f3007e72b582fa9"
     },
     {
       "file": "packages/data-execution/src/source-program/session.ts",
-      "sha256": "c81403cc2ca25803c6c1a69106e1eb8358530f015c6149b5859ecbce22b9b9a1"
+      "sha256": "9c6eec570d5cc8a51af14cab9abaca36f39226fde1f6b6d934a99bddec99ddc8"
+    },
+    {
+      "file": "packages/data-execution/src/source-program/slot-search-batches.ts",
+      "sha256": "8233bbca62f0a5435791f142c4bb571c5d5b654199cd78706cdf38bcf7cf1ebf"
+    },
+    {
+      "file": "packages/data-execution/src/source-program/slot-search-read.ts",
+      "sha256": "6440fa5852a6b630c5fe5774adaec7de69df2710e0802a2d6c08729eed993622"
     },
     {
       "file": "packages/data-execution/src/source-program/slot-search.ts",
-      "sha256": "336e6f85e2850ca03b0ff89ceaa4c7dcdfef159a657af3b14bb2d5fd22cf3755"
+      "sha256": "094d84152d63e45ff68baa9dc5b79e2b0fb3355e136ef37c8f96c0832cbf689a"
     },
     {
       "file": "packages/data-execution/src/table-defaults.ts",
@@ -95,6 +103,18 @@
       "sha256": "5a65ff2f61b13981bdf03857cf0bebc3b6568e526bdc6bca993d6e4eb45a0387"
     },
     {
+      "file": "packages/engine/runtime-ui/src/table/export/workbook-cell.ts",
+      "sha256": "e6d89d64546903adae37ca45722cf16093e9cc28b608b3d16bd0bc687c2ce968"
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/table/export/workbook-number-format.ts",
+      "sha256": "8624384b7a840997cf5d898e0e7cec94e265a2b7c519e43ffe19323b3cba119f"
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/table/export/workbook.ts",
+      "sha256": "f990fd99c2922eb025db5993a963512f99ec609b2f64b20fff958447ac54ba0f"
+    },
+    {
       "file": "packages/engine/runtime-ui/src/url-search.ts",
       "sha256": "2ac2a38cb66e2231196b91b999b916b6aae29acd0e82b48c18029e59b3685bb5"
     },
@@ -105,6 +125,10 @@
     {
       "file": "packages/engine/runtime-ui/tests/ai-summary-tasks.test.ts",
       "sha256": "13b298128fa9b5adc0ba9be771dcaa81e4640f5149caa6d8b4e54e6cf06047ec"
+    },
+    {
+      "file": "packages/engine/runtime/src/export-snapshots.ts",
+      "sha256": "5e1e9ae09385334e50d8a02414059f622db51ab2bcfb8ab8caf07df788c835e7"
     },
     {
       "file": "packages/engine/runtime/src/navigate.ts",
@@ -124,7 +148,7 @@
     },
     {
       "file": "packages/engine/runtime/src/table/session.ts",
-      "sha256": "7dc960b2ce452ec18f09c8a9273469cc2e33eb32c2e906bd0d944e52c045f1f5"
+      "sha256": "65e2170238c69601753e0005d228eb647e5822b032fc272f2c84526de7420256"
     },
     {
       "file": "packages/engine/widgets/src/components/gauge/Gauge.svelte",
@@ -151,12 +175,24 @@
       "sha256": "d0654c4ab45eb5fb0a0d154bc6a1d91f7ff2490afd9ee32c85dd28d67be94973"
     },
     {
+      "file": "packages/engine/widgets/src/shared/chart-axis-presentation.ts",
+      "sha256": "9c7894b8c97d5de70e106d6aa32014937aea4f4866954a79b79808a09aaeb5cb"
+    },
+    {
       "file": "packages/engine/widgets/src/shared/numeric-presentation.ts",
-      "sha256": "616b45be8212f918ff7fa8788a8c92a38784d4fa583eec555fe6e99900f9f1f6"
+      "sha256": "7a163509f3779d2d323f0b26f14dc4c93a080f4258be5dc7bf4331cc560ba982"
+    },
+    {
+      "file": "packages/engine/widgets/src/shared/numeric-scale.ts",
+      "sha256": "9b0892cc515b236479505b7f89badf354d1fd24844c2710eac1ac6eece889645"
     },
     {
       "file": "packages/engine/widgets/src/shared/semantic-html.ts",
       "sha256": "be96fa5d63d13d68f65f130fcc1854e08ff185301d3d869d802c58e9dcfa0816"
+    },
+    {
+      "file": "packages/engine/widgets/src/shared/value-format.ts",
+      "sha256": "43cb98a9227a4ebc663228bf56383156a60e3578863dbab602df2ff7ed7dffbc"
     },
     {
       "file": "packages/page/src/ai-summary-region.ts",
@@ -1021,7 +1057,13 @@
         "packages/page/src/field-selection.ts",
         "packages/page/src/semantic-format.ts",
         "packages/page/src/field-resolution.ts",
-        "packages/engine/widgets/src/shared/numeric-presentation.ts"
+        "packages/engine/widgets/src/shared/numeric-presentation.ts",
+        "packages/engine/widgets/src/shared/value-format.ts",
+        "packages/engine/widgets/src/shared/chart-axis-presentation.ts",
+        "packages/engine/widgets/src/shared/numeric-scale.ts",
+        "packages/engine/runtime-ui/src/table/export/workbook-number-format.ts",
+        "packages/engine/runtime-ui/src/table/export/workbook-cell.ts",
+        "packages/engine/runtime-ui/src/table/export/workbook.ts"
       ],
       "rules": [
         "data-slot-known-source",
@@ -1285,7 +1327,9 @@
         "packages/page/src/schema/components/charts.ts",
         "packages/embed/tests/browser/embed.spec.ts",
         "packages/page/src/query-output-measures.ts",
-        "packages/page/src/bar-average.ts"
+        "packages/page/src/bar-average.ts",
+        "packages/engine/widgets/src/shared/chart-axis-presentation.ts",
+        "packages/engine/widgets/src/shared/numeric-scale.ts"
       ],
       "rules": [
         "bar-forecast-boundary",
@@ -1313,7 +1357,9 @@
       ],
       "sources": [
         "packages/page/src/schema/components/charts.ts",
-        "packages/embed/tests/browser/embed.spec.ts"
+        "packages/embed/tests/browser/embed.spec.ts",
+        "packages/engine/widgets/src/shared/chart-axis-presentation.ts",
+        "packages/engine/widgets/src/shared/numeric-scale.ts"
       ],
       "rules": [
         "schema-structure",
@@ -1401,7 +1447,7 @@
         "table-header-select-all",
         "table-header-select-all-query",
         "table-default-sort",
-        "rep-office-execution-efficiency",
+        "rep-business-result",
         "table-header-filter-search"
       ],
       "sources": [
@@ -1415,6 +1461,9 @@
         "packages/data-execution/src/table-defaults.ts",
         "packages/page/src/table/slot-search.ts",
         "packages/data-execution/src/source-program/slot-search.ts",
+        "packages/data-execution/src/source-program/slot-search-read.ts",
+        "packages/data-execution/src/source-program/slot-search-batches.ts",
+        "packages/engine/runtime/src/export-snapshots.ts",
         "packages/data-execution/src/source-program/session.ts",
         "packages/data-execution/src/source-program/column-candidates.ts",
         "packages/engine/runtime/src/table/reconcile-view.ts",
@@ -22521,8 +22570,8 @@
     {
       "schemaPointer": "#/definitions/chartOptionValue/anyOf/3",
       "module": "chart-option.md",
-      "file": "examples/chart-echarts-option-page.json",
-      "pointer": "#/sections/0/components/3/props/echartsOption/backgroundColor"
+      "file": "examples/rep-business-result.json",
+      "pointer": "#/sections/3/components/0/props/tabs/1/components/2/props/echartsOption/backgroundColor"
     },
     {
       "schemaPointer": "#/definitions/chartOptionValue/anyOf/4",
@@ -23033,8 +23082,8 @@
     {
       "schemaPointer": "#/definitions/tabContent/oneOf/6",
       "module": "components/tabContainer.md",
-      "file": "examples/tab-content-piechart.json",
-      "pointer": "#/sections/0/components/0/props/tabs/0/component"
+      "file": "examples/rep-business-result.json",
+      "pointer": "#/sections/3/components/0/props/tabs/1/components/2"
     },
     {
       "schemaPointer": "#/definitions/tabContent/oneOf/7",

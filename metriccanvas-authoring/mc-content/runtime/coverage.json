@@ -848,8 +848,8 @@
       "scope": "exact product contract"
     },
     {
-      "source": "product:page/conformance/valid/rep-office-execution-efficiency.json",
-      "target": "product-contracts/page/conformance/valid/rep-office-execution-efficiency.json",
+      "source": "product:page/conformance/valid/rep-business-result.json",
+      "target": "product-contracts/page/conformance/valid/rep-business-result.json",
       "scope": "exact product contract"
     },
     {
@@ -7798,8 +7798,8 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
-      "source": "product:page/reference/examples/rep-office-execution-efficiency.json",
-      "target": "references/page-metadata/examples/rep-office-execution-efficiency.json",
+      "source": "product:page/reference/examples/rep-business-result.json",
+      "target": "references/page-metadata/examples/rep-business-result.json",
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {

@@ -14,7 +14,8 @@ export async function queryJoinCandidates(page:Page,data:PagedJoinDataSource,req
   if(!hasQueryFieldMapping(field))return {kind:'unavailable'};
   const view=pagedJoinCandidateView(data,request.view,request.field);
   const predicates=view.predicates.map(rule=>({...rule,field:data.source.projection[rule.field].field}));
-  const query=composeEffectiveQuery({displayInputs:request.displayInputs,filterRevision:request.filterRevision,now:request.now,page:page,filters:page.filters,dataSource:selected},request.conditions,0,[],tableHeaders(predicates));
+  const search=view.search?.query.trim()?{...view.search,fields:view.search.fields.map(id=>data.source.projection[id].field)}:undefined;
+  const query=composeEffectiveQuery({displayInputs:request.displayInputs,filterRevision:request.filterRevision,now:request.now,page:page,filters:page.filters,dataSource:selected},request.conditions,0,[],tableHeaders(predicates),search);
   return runner.runCandidates({query,field:projection.field,queryField:field.queryField,search:request.candidateSearch??'',offset:request.offset??0,limit:request.pageSize??50},
     {pageId:page.id,dataSourceIds:[request.sourceId,member.source]},scope,signal);
 }

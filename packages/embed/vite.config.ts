@@ -62,7 +62,7 @@ export default defineConfig({
     rolldownOptions: {
       output: {
         minify: true,
-        chunkFileNames: 'chunks/[name]-[hash].js',
+        chunkFileNames: chunk => chunk.name === 'excel' ? 'chunks/excel~codec-[hash].js' : 'chunks/[name]-[hash].js',
         assetFileNames: 'assets/[name]-[hash][extname]',
         codeSplitting: {
           groups: chunkGroups.map((group, index) => ({
@@ -70,7 +70,8 @@ export default defineConfig({
             // Rolldown can pass native Windows IDs alongside Vite-normalized IDs.
             test: (moduleId: string) => group.test.test(moduleId.replaceAll('\\', '/')),
             priority: chunkGroups.length - index,
-            entriesAware: true
+            // Workbook writing and conditional precision share one optional codec group.
+            entriesAware: group.name !== 'excel'
           }))
         },
         strictExecutionOrder: true

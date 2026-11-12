@@ -4,6 +4,7 @@ import { formatTime } from './time-format';
 import { formatAdaptiveMoney } from './adaptive-money-format';
 import { adaptiveNumericText } from './numeric-presentation';
 import { mobilePresentation } from './presentation-environment';
+import { numericScale } from './numeric-scale';
 
 export type ValuePolarity = 'positive' | 'negative' | 'neutral';
 type SignedNumberFormat = Extract<ValueFormat, `number${string}-signed`>;
@@ -62,13 +63,13 @@ function formatStandardNumber(numeric: number, format: ValueFormatPreset): strin
   const precision = /^number-([0-5])$/.exec(format);
   if (precision) {
     const text = formatNumber(numeric, Number(precision[1]));
-    return format === 'number-0' && text === '-0' ? '0' : text;
+    return text === '-0' ? '0' : text;
   }
   switch (format) {
     case 'number':
       return String(numeric);
     case 'number-grouped':
-      return formatNumber(numeric, undefined, true);
+      return formatNumber(numeric, undefined, true).replace(/^-0$/, '0');
     case 'cny-adaptive-trimmed':
     case 'cny-adaptive-trimmed-no-yuan':
     case 'usd-adaptive-km':
@@ -170,19 +171,6 @@ function formatDate(value: FieldValue): string {
 }
 
 function formatCompactNumber(numeric: number, format: ValueFormatPreset): string {
-  switch (format) {
-    case 'compact-wan-0':
-      return `${wanUnits(numeric, 0)}万`;
-    case 'compact-wan-1':
-      return `${wanUnits(numeric, 1)}万`;
-    case 'compact-million-0':
-      return `${formatNumber(numeric / 1e6, 0, true)}百万`;
-    case 'compact-million-1':
-      return `${formatNumber(numeric / 1e6, 1, true)}百万`;
-    case 'compact-million-2':
-      return `${formatNumber(numeric / 1e6, 2, true)}百万`;
-    case 'compact-yi-1':
-      return `${formatNumber(numeric / 1e8, 1, true)}亿`;
-    default: return String(numeric);
-  }
+  const scale = numericScale(format, Math.abs(numeric));
+  return scale ? `${formatNumber(numeric / scale.divisor, scale.digits, scale.grouped)}${scale.unit}` : String(numeric);
 }

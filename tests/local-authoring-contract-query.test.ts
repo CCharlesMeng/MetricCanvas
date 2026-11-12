@@ -43,7 +43,8 @@ describe('目标字段关联的结构和行为契约', () => {
     expect(text).toContain('6.106 及更早版本不能声明新预设');
     expect(text).toContain('其他显式业务 `missingText` 保留');
     expect(text).toContain('XLSX 保留数值单元格的原始值及数值类型');
-    expect(text).toContain('可能显示末尾零');
+    expect(text).toContain('基础 `number-0/1/2/3/4/5`');
+    expect(text).toContain('编辑数值后继续生效');
     expect(text).not.toContain('PRESENTATION_FORMAT_ADJUSTED');
     expect(text).not.toContain('PRESENTATION_PRECISION_LIMIT');
     expect(text).not.toContain('colorRule');

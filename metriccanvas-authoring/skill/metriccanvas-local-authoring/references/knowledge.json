@@ -11,7 +11,7 @@
     },
     {
       "file": "references/authoring-knowledge/model.json",
-      "sha256": "d9aff8e790aceeeec3e4912304d3eff338b4d6acea048f0dc590dc7282522134"
+      "sha256": "c020f6fd9ee1819446bd902e300bcb38fd908bc618790b37d51b9b7d9bc0c827"
     },
     {
       "file": "references/example-guides/ioc-auto-back-detail/browser-back.md",
@@ -47,7 +47,7 @@
     },
     {
       "file": "references/page-metadata/chart-option.md",
-      "sha256": "0d247833184bc4a6b1677afc620a19570586b61dfdf1897b4bfcda9478a86aff"
+      "sha256": "0f39783de54b8741b6794abc0853cb68128d459ae72057b10e0ba7048f5848c0"
     },
     {
       "file": "references/page-metadata/components/aiSummary.md",
@@ -55,7 +55,7 @@
     },
     {
       "file": "references/page-metadata/components/barChart.md",
-      "sha256": "cfc222052603abae91cc95000e078a9471f259567f6a37ad4c96ef34923c5c49"
+      "sha256": "705b2f510ee77f885c874790debc7483bb982a2d52036d1e1e10db267c2689e9"
     },
     {
       "file": "references/page-metadata/components/button.md",
@@ -91,7 +91,7 @@
     },
     {
       "file": "references/page-metadata/components/lineChart.md",
-      "sha256": "9fb8d62dbd46d95eae21ba91a09eb7d2425eb29dab3f25530fba5d91666193c7"
+      "sha256": "e71720820f850210aa38e9c9478ea5f2467e9b293f2def2edfc7336c66e2e820"
     },
     {
       "file": "references/page-metadata/components/mapChart.md",
@@ -123,11 +123,11 @@
     },
     {
       "file": "references/page-metadata/components/tabContainer.md",
-      "sha256": "20485c91dffdf7f120d60ff0dbdb044cfef40c75c436c9f04463faf0795077a0"
+      "sha256": "7e2f6a6bd00e6a67c43978826f1d56f822161ce6b254cfca0e19096f6a752303"
     },
     {
       "file": "references/page-metadata/components/table.md",
-      "sha256": "bf3c25881d3467cb4719ccc88a5f605f5736ee61d62f76058b32273d14def240"
+      "sha256": "313cefdb12ebacd0f95e50ec50804d528fea4427f841ec051209ad788b78b8ba"
     },
     {
       "file": "references/page-metadata/components/text.md",
@@ -143,7 +143,7 @@
     },
     {
       "file": "references/page-metadata/data-sources.md",
-      "sha256": "72fdf59f7665f90697f2340cfb57826983afdd2a227e776c0ab6a9412f504887"
+      "sha256": "1820d4abe50fb9ebf7856bd95caf00be5514470bd273e692ef01e758c524d94c"
     },
     {
       "file": "references/page-metadata/errors/actual-after-captured-month.json",
@@ -2982,8 +2982,8 @@
       "sha256": "12135a492f8c174f8bf2eb75468f88bf63dd7ac834166f4be563e4ce6d0d1a17"
     },
     {
-      "file": "references/page-metadata/examples/rep-office-execution-efficiency.json",
-      "sha256": "10f56891eb1d1603d0f344dee4a108c1555f8dc5da391733dedc9683c51af4f0"
+      "file": "references/page-metadata/examples/rep-business-result.json",
+      "sha256": "a11630eef18072a076c4ac82346055604b075085167e26b0086b47f5ca844172"
     },
     {
       "file": "references/page-metadata/examples/report-ai-summary-regions.json",
@@ -3275,7 +3275,7 @@
     },
     {
       "file": "references/page-metadata/field-bindings-and-formats.md",
-      "sha256": "6ba33bdd686797641bceacb7dec6e3f6d0a8656e9f458ac3aefe8fd18aca2cc5"
+      "sha256": "2bf464f1ffbf8b91452fb7c15633902a667b7912f2c6e2db982265825987f951"
     },
     {
       "file": "references/page-metadata/fields.md",
@@ -3283,11 +3283,11 @@
     },
     {
       "file": "references/page-metadata/filters.md",
-      "sha256": "7d07009758141864406a4d206b94c087d72e8d3a950d1ffca42daebc39fb5d31"
+      "sha256": "0f2f881078b632e3edcab74b84291f96adfd8a850e4d22ec31087977411d20fe"
     },
     {
       "file": "references/page-metadata/index.json",
-      "sha256": "aa55a0cdca06f996c71257e34c263c74266517d0e933a9295b6f033a659dd38d"
+      "sha256": "d4b084e509fdd318908bff7b27f98d60774c1d003f7a235a68742db9f2aaa809"
     },
     {
       "file": "references/page-metadata/page.md",
@@ -3355,11 +3355,11 @@
     },
     {
       "file": "scripts/analyze-data.mjs",
-      "sha256": "7b9ac5e6d8e90cd2b0b1e0e2d52da1f07483fdcefaa3ea42791f3f20e253e5f6"
+      "sha256": "d62661e041351003950ae4ed066a330fd6bf434c9fcfa967df2e932662265dcf"
     },
     {
       "file": "scripts/associate-data.mjs",
-      "sha256": "ffb1d677b089b33a937e26f85350ad80486d577f75a3121dbdfc558515c178de"
+      "sha256": "4e94f18e1a1a70d149531c468c015a0087482ac0018d84845ee26fe74a207578"
     },
     {
       "file": "scripts/read-knowledge.mjs",
@@ -3371,11 +3371,11 @@
     },
     {
       "file": "scripts/upgrade-page.mjs",
-      "sha256": "846680dd90e4ba8fc3d3744b4c2b87fac03f1b3064aa649aa9dfe949569b0e16"
+      "sha256": "1b7ace71bea2bd3666ba07043c1f138cc831a791b7a35ede9c08ae4bc3807124"
     },
     {
       "file": "scripts/validate-page.mjs",
-      "sha256": "cc98b8512e53bf2e5a0deb08bc770e5220c07021bf1fa805fcb306bb6be49729"
+      "sha256": "52d509f3aaa536e1797aa8b491bc90f5a8ac923de83e6aad2d786151523f3aba"
     }
   ]
 }

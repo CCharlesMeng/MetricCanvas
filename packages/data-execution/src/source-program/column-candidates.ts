@@ -15,7 +15,7 @@ import type { SourceRead, SourceUpdate } from './session';
 import { candidateView, localColumnCandidates } from '../column-candidates';
 import { composeEffectiveQuery, bindQueryResultValues } from '../effective-query';
 import { resolveQueryResultInputs } from '../query-result-inputs';
-import { applyTableSlotSearch, mainTableSearch } from './slot-search';
+import { mainTableSearch, type TableSlotSearchReader } from './slot-search';
 
 function appliedInputSources(page:Page,source:QueryDataSource,conditions:FilterValues) {
   const sources=new Map(Object.entries(page.dataSources));
@@ -35,7 +35,7 @@ export interface ColumnCandidatesRead {
   candidateSearch?: string; offset?: number; pageSize?: number; currentYear?: number; signal?: AbortSignal;
 }
 type Read = (request: SourceRead) => AsyncGenerator<SourceUpdate>;
-type CandidateContext={gateway:RuntimeDataGateway;displayInputs?:()=>DisplayInputsSnapshot|undefined;filterRevision?:()=>number;now?:Date;clock?:()=>Date};
+type CandidateContext={gateway:RuntimeDataGateway;slotSearch?:TableSlotSearchReader;displayInputs?:()=>DisplayInputsSnapshot|undefined;filterRevision?:()=>number;now?:Date;clock?:()=>Date};
 
 function freezeCandidateRequest(input:ColumnCandidatesRead,context:CandidateContext):ColumnCandidatesRead{
   return structuredClone({...input,signal:undefined,now:input.now??context.now??context.clock?.()??new Date(),
@@ -68,7 +68,7 @@ export function createColumnCandidatesReader(page: Page, runner: QueryRunner, re
     const scope = request.displayInputs ? `context:${canonicalizeJson([request.displayInputs, request.filterRevision ?? null])}` : 'session';
     const view = candidateView(request.view, request.field);
     const views = new Map(request.views); views.set(request.sourceId, view);
-    if (source.source.type === 'query' && source.source.resultScope !== 'complete') return ordinaryCandidates(page,source as QueryDataSource,request,view,limits,execution,scope,signal);
+    if (source.source.type === 'query' && source.source.resultScope !== 'complete') return ordinaryCandidates(page,source as QueryDataSource,request,view,limits,execution,scope,signal,context.slotSearch);
     if (source.source.type === 'pagedUnion') return unionCandidates(page, request, execution, scope, signal);
     if (source.source.type === 'pagedJoin') return isPagedJoinQuery(source.source)?queryJoinCandidates(page,source as PagedJoinDataSource,request,execution,scope,signal):joinedCandidates(page, request, view, execution, scope, signal);
     return localCandidates(page,request,view,views,read,signal);
@@ -85,10 +85,10 @@ async function joinedCandidates(page: Page, request: ColumnCandidatesRead, view:
       return localColumnCandidates(pageSearchRows(rows, request.conditions, page.dataSources[request.sourceId].fields), request.field, view, request.candidateSearch ?? '', request.offset ?? 0, request.pageSize ?? 50);
  }
 
-async function ordinaryCandidates(page:Page,source:QueryDataSource,request:ColumnCandidatesRead,view:TableQueryView,limits:ReadonlyMap<string,number>,runner:QueryRunner,scope:string,signal?:AbortSignal):Promise<ColumnCandidatesPage>{
+async function ordinaryCandidates(page:Page,source:QueryDataSource,request:ColumnCandidatesRead,view:TableQueryView,limits:ReadonlyMap<string,number>,runner:QueryRunner,scope:string,signal?:AbortSignal,slotSearch?:TableSlotSearchReader):Promise<ColumnCandidatesPage>{
       const views=new Map(request.views);views.set(request.sourceId,view);
       const offset=request.offset??0,limit=request.pageSize??50;
-      let query: EffectiveQuery = composeEffectiveQuery({ now: request.now, page:page,filters:page.filters, dataSource: source as QueryDataSource }, request.conditions, 0, [], tableHeaders(view.predicates), mainTableSearch(view.search));
+      let query: EffectiveQuery = composeEffectiveQuery({ now: request.now, displayInputs: request.displayInputs, filterRevision: request.filterRevision, page:page,filters:page.filters, dataSource: source as QueryDataSource }, request.conditions, 0, [], tableHeaders(view.predicates), mainTableSearch(view.search));
       const mappedField=query.fieldMappings[request.field];
       if (!hasQueryFieldMapping(mappedField)) return { kind: 'unavailable' };
       const windows = new Map(limits);
@@ -100,10 +100,19 @@ async function ordinaryCandidates(page:Page,source:QueryDataSource,request:Colum
         throw Object.assign(new Error('候选查询的业务输入不可用'), { code: 'DQE_QUERY_REJECTED' });
       }
       bindQueryResultValues(query, inputs.values);
-      query = await applyTableSlotSearch({ page, sourceId: request.sourceId, search: view.search, query, conditions: request.conditions, runner, scope, signal,
-        now: request.now, displayInputs: request.displayInputs, filterRevision: request.filterRevision });
+      const materialized = await searchCandidates(page, request, view, query, runner, scope, signal, slotSearch);
+      if (materialized) return materialized;
       return runner.runCandidates({ query, field: request.field, queryField: mappedField.queryField, search: request.candidateSearch ?? '', offset, limit },
         { pageId: page.id, dataSourceIds: [request.sourceId] }, scope, signal);
+}
+
+async function searchCandidates(page: Page, request: ColumnCandidatesRead, view: TableQueryView, query: EffectiveQuery, runner: QueryRunner, scope: string, signal?: AbortSignal, reader?: TableSlotSearchReader): Promise<ColumnCandidatesPage | undefined> {
+  if (!reader || !view.search?.data || view.search.data === 'main' || !view.search.query.trim()) return undefined;
+  const base = { ...query, filterValues: query.bindingValues ?? query.filterValues, bindingValues: undefined, tableFilters: undefined };
+  const data = await reader.read({ page, sourceId: request.sourceId, view, query: base, conditions: request.conditions, runner, scope, signal,
+    now: request.now, displayInputs: request.displayInputs, filterRevision: request.filterRevision });
+  if (!data) return undefined;
+  return localColumnCandidates(data.rows, request.field, { ...view, search: undefined }, request.candidateSearch ?? '', request.offset ?? 0, request.pageSize ?? 50);
 }
 
 async function localCandidates(page:Page,request:ColumnCandidatesRead,view:TableQueryView,views:Map<string,TableQueryView>,read:Read,signal?:AbortSignal):Promise<ColumnCandidatesPage>{
