@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.113",
+  "schemaVersion": "6.116",
   "id": "number-precision-five",
   "layout": "dashboard",
   "meta": {
@@ -319,6 +319,99 @@
           }
         ]
       }
+    },
+    "binding-samples": {
+      "fields": {
+        "id": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "name": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "change": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true
+        },
+        "explicitChange": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "id": "a",
+            "name": "正数",
+            "change": 1.234,
+            "explicitChange": 1.234
+          },
+          {
+            "id": "b",
+            "name": "负数",
+            "change": -1.234,
+            "explicitChange": -1.234
+          },
+          {
+            "id": "c",
+            "name": "舍入零",
+            "change": -0.004,
+            "explicitChange": -0.004
+          },
+          {
+            "id": "d",
+            "name": "缺失",
+            "change": null,
+            "explicitChange": null
+          }
+        ]
+      }
+    },
+    "binding-supplement": {
+      "fields": {
+        "id": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "name": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "change": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "id": "a",
+            "name": "正数",
+            "change": 50
+          },
+          {
+            "id": "b",
+            "name": "负数",
+            "change": 51
+          },
+          {
+            "id": "c",
+            "name": "舍入零",
+            "change": 52
+          },
+          {
+            "id": "d",
+            "name": "缺失",
+            "change": 53
+          }
+        ]
+      }
     }
   },
   "sections": [
@@ -626,6 +719,141 @@
           }
         ]
       }
+    },
+    {
+      "id": "default-main",
+      "components": [
+        {
+          "id": "single-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "binding-samples"
+          },
+          "props": {
+            "title": "单数据源：简写与显式绑定一致",
+            "rowKey": "id",
+            "columns": [
+              {
+                "title": "场景",
+                "field": "name"
+              },
+              {
+                "title": "省略槽名",
+                "field": {
+                  "field": "change",
+                  "format": "number-2-signed"
+                }
+              },
+              {
+                "title": "显式 main",
+                "field": {
+                  "data": "main",
+                  "field": "explicitChange",
+                  "format": "number-2-signed"
+                }
+              }
+            ],
+            "pagination": {
+              "mode": "none"
+            }
+          }
+        },
+        {
+          "id": "multi-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "binding-samples",
+            "extra": "binding-supplement"
+          },
+          "props": {
+            "title": "多数据源：省略始终读取 main",
+            "rowKey": "id",
+            "columns": [
+              {
+                "title": "场景",
+                "field": "name"
+              },
+              {
+                "title": "省略槽名",
+                "field": {
+                  "field": "change",
+                  "format": "number-2-signed"
+                }
+              },
+              {
+                "title": "显式补充槽",
+                "field": {
+                  "data": "extra",
+                  "field": "change",
+                  "format": "number-2-signed"
+                }
+              }
+            ],
+            "pagination": {
+              "mode": "none"
+            }
+          }
+        },
+        {
+          "id": "summary",
+          "type": "metricCard",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "binding-samples"
+          },
+          "props": {
+            "title": "指标卡共享默认槽",
+            "rows": [
+              {
+                "label": "正数变化",
+                "valueField": {
+                  "field": "change",
+                  "format": "number-2-signed",
+                  "match": {
+                    "field": "id",
+                    "equals": "a"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "chart",
+          "type": "barChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "binding-samples"
+          },
+          "props": {
+            "title": "图表共享默认槽",
+            "categoryField": {
+              "field": "name"
+            },
+            "series": [
+              {
+                "field": {
+                  "field": "change",
+                  "format": "number-2-signed"
+                },
+                "label": "变化量"
+              }
+            ],
+            "showValueLabels": true
+          }
+        }
+      ],
+      "title": "对象字段绑定默认 main"
     }
   ],
   "params": [

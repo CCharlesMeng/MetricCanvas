@@ -415,7 +415,7 @@ SourceProgram、Node执行入口、分页/组合查询、导出统一选择合�
 完整示例 `/pages/dimension-binding-operator` 对照省略、显式等值、对象排除及指标层级排除。该页使用本地合成 Adapter 核对实际编码和结果，不证明真实 DQE 的排除、空值、授权及准确总数；接入时需按真实服务验证。字段净增一个可选 operator；不新增筛选器状态或表达式。
 
 
-页面协议 6.115。结构真源为本册[schema.json](schema.json)，SHA256 `7614c0c4578fdd2e1c05d9a44a7ac2f2f21fd4facea5c80a920b9b96d024ed1b`。字段表自动生成；可选不等于有默认值。
+页面协议 6.116。结构真源为本册[schema.json](schema.json)，SHA256 `be6eded6142f276f4c29fddcc8d81d9fa1be3e77b36c5880538aa228c3b4264f`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

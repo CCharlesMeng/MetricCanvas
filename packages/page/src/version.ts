@@ -1,3 +1,4 @@
+import { defaultMainBindingPaths } from './field-binding-defaults';
 import { headerDeclarations } from './header-binding';
 import { comparisonCapabilityPaths,comparisonJoinCapabilityPaths } from './period-comparison-validation';
 import { periodCapabilityPaths, quarterQueryCapabilityPaths } from './period-capability';
@@ -24,7 +25,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 115;
+const CURRENT_MINOR = 116;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -69,6 +70,8 @@ function bindingOperatorUsed(query:Record<string,unknown>|undefined):boolean {
 
 export const pageCapabilities = {
   'dimension-binding-operator': {minor:114,legacyReadable:false,description:'普通与层级维度绑定显式包含或排除所选值',usedAt:document=>dataSourcePaths(document,data=>bindingOperatorUsed(record(record(data.source)?.query))).map(path=>path+'/source/query')},
+
+  'field-binding-default-main': { minor: 116, legacyReadable: false, description: '对象字段绑定省略 data 时固定引用 main 数据槽', usedAt: defaultMainBindingPaths },
   'number-integer': {minor:113,legacyReadable:false,description:'普通数值四舍五入为无千分位整数，舍入零不显示负号',usedAt:document=>namedFormatPaths(document,/^number-0$/)},
   'table-slot-search': {
     minor: 109, legacyReadable: false, description: '表格补充数据槽的单字段精确搜索与行键回查',

@@ -1,11 +1,16 @@
 {
   "major": 6,
-  "minor": 115,
-  "current": "6.115",
+  "minor": 116,
+  "current": "6.116",
   "capabilities": {
     "dimension-binding-operator": {
       "minor": 114,
       "description": "普通与层级维度绑定显式包含或排除所选值",
+      "legacyReadable": false
+    },
+    "field-binding-default-main": {
+      "minor": 116,
+      "description": "对象字段绑定省略 data 时固定引用 main 数据槽",
       "legacyReadable": false
     },
     "number-integer": {
@@ -1035,6 +1040,7 @@
     "6.112",
     "6.113",
     "6.114",
-    "6.115"
+    "6.115",
+    "6.116"
   ]
 }

@@ -40,7 +40,7 @@ describe('installed knowledge workflow', () => {
     expect(field).toBeDefined();
     const placement = read(['show', '--id', field.id, '--owner', field.owner, '--select', 'placement']);
     expect(placement.path).toBe('tableColumn.field.format');
-    expect(placement.parentRequired).toContain('data');
+    expect(placement.parentRequired).toEqual(['field']);
     expect(placement.contextRules.some((item:{id:string})=>item.id==='rule:table-column-binding-unique')).toBe(true);
     const shape = read(['show', '--id', field.id, '--owner', field.owner, '--select', 'shape']);
     expect(shape.items.some((item: {kind: string}) => item.kind === 'branch')).toBe(true);

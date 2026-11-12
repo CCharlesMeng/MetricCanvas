@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.115",
+  "schemaVersion": "6.116",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "field-bindings-and-formats.section-31106d3a"
@@ -9,7 +9,7 @@
       "module": "field-bindings-and-formats",
       "reference": "references/page-metadata/field-bindings-and-formats.md",
       "blocks": [
-        "# 数据槽、字段绑定与格式\n\ndata槽把组件关联到页面数据源；字段绑定引用该槽中的结果字段，可用显式source指定受支持的其它槽。match按声明维度取值选择对应行，不能充当通用查询表达式。\n\n显式格式、精度与百分刻度见下文“显式数值格式与精度”；时间、单位及货币选择分别由对应章节定义。\n\ntext不执行HTML，日期格式只格式化日期值。语义HTML须用专用字段类型。\n\n<a id=\"time-format\"></a>",
+        "# 数据槽、字段绑定与格式\n\ndata槽把组件关联到页面数据源；字段绑定引用该槽中的结果字段，可用显式source指定受支持的其它槽。match按声明维度取值选择对应行，不能充当通用查询表达式。\n\n**对象字段绑定默认 main（6.116）**\n\n字符串字段绑定 `\"change\"` 始终引用组件的 `main` 数据槽。从6.116起，共用字段绑定的表格、指标卡、图表等组件中，对象写法也可省略 `data`：\n\n```json\n{\"title\":\"变化量\",\"field\":{\"field\":\"change\",\"format\":\"number-2-signed\"}}\n```\n\n等价于显式写 `{\"data\":\"main\",\"field\":\"change\",\"format\":\"number-2-signed\"}`。省略始终固定指向 `main`，多数据源组件也相同；引用补充数据槽时继续显式填写 `data`。组件自己的 `data` 绑定仍按原规则声明，不因只有一个数据源而推断任意槽名。`data:null`、空字符串、未知槽及 main 中不存在的字段继续报错，不会尝试其他槽。只放宽 `FieldBinding` 的静态对象及 `byFilter.cases` 叶子；用于搜索、选择等位置的 `FieldReference` 对象仍须声明 `data`。\n\n`format`、`missingText`、`match` 和字段默认格式的优先级保持。引擎只在解析后的运行态补齐 `main`，不改写输入、持久化简写、数据行、导航输入或 `echartsOption` 的任意对象。显式旧声明继续可读；6.115及更早版本不能声明对象省略槽的新写法。字段净增0，默认槽解析由引擎统一承担。\n\n合成入口 `/pages/number-precision-five` 覆盖单源表格显式/省略槽对照、多源明确读取 main、指标卡与柱图；来源全为 inline，不代表真实 DQE/Relay 验收。表格对照的 `explicitChange` 是与 `change` 相同原值的独立字段，避免重复绑定同一列。\n\n\n显式格式、精度与百分刻度见下文“显式数值格式与精度”；时间、单位及货币选择分别由对应章节定义。\n\ntext不执行HTML，日期格式只格式化日期值。语义HTML须用专用字段类型。\n\n<a id=\"time-format\"></a>",
         "## 带符号普通数值（6.17起）\n\n除 `number-0` 外，现有 `number` 格式都有对应的带符号版本，保留原格式的精度与千分位规则。`number-signed` / `number-1-signed` 从6.17起可声明，`number-2-signed` / `number-grouped-signed` 从6.18起可声明；三至五位格式及版本边界见“显式数值格式与精度”。`number-grouped-signed` 沿用当前千分位格式默认最多三位小数的舍入策略。\n\n`number-signed` 保留 `number` 的原始数值精度，正数加 `+`、负数保留 `-`、零无符号；`number-1-signed` 保留一位小数后判断符号。`1.24` 显示 `+1.2`，`-1.24` 显示 `-1.2`，`0.04`、`-0.04` 与负零均显示 `0`。不乘100、不追加百分号，适用于天数或次数的绝对变化。单位仍由组件的单位声明提供。空值及非有限数值显示缺失文案。\n\n```json\n{ \"data\": \"main\", \"field\": \"avg-decision-time-change\", \"format\": \"number-1-signed\" }\n```\n\n表格数字列与指标卡变化项采用以上格式时，`colorRule.mode: \"sign\"` 的颜色及变化箭头与展示精度一致：舍入后零为普通文字且无箭头；显示非零才按正负映射颜色和方向。字段 `defaultFormat` 继承后遵循相同规则，显式绑定 `format` 仍优先。`fixed` 颜色继续按声明包含有效零。既有格式（包括 `percent-2-signed`）继续按原始值判断方向。仅影响展示，不修改查询、原始数据、计算或排序；6.16 可读但不能声明这些新格式。"
       ],
       "rules": [
@@ -43,7 +43,7 @@
         },
         {
           "id": "number-precision-five",
-          "description": "三至五位小数及带符号预设由6.107引入，整数预设由6.113引入",
+          "description": "三至五位小数及带符号预设由6.107引入，整数预设由6.113引入，对象字段绑定省略data由6.116引入",
           "valid": [
             "number-precision-five"
           ],

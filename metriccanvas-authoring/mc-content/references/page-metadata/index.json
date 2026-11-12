@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.115",
-  "schemaSha256": "7614c0c4578fdd2e1c05d9a44a7ac2f2f21fd4facea5c80a920b9b96d024ed1b",
+  "schemaVersion": "6.116",
+  "schemaSha256": "be6eded6142f276f4c29fddcc8d81d9fa1be3e77b36c5880538aa228c3b4264f",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -1345,7 +1345,8 @@
         "6.112",
         "6.113",
         "6.114",
-        "6.115"
+        "6.115",
+        "6.116"
       ]
     },
     {
@@ -10917,7 +10918,7 @@
     {
       "pointer": "#/definitions/staticFieldBinding/anyOf/1/properties/data",
       "path": "@staticFieldBinding · anyOf[1].data",
-      "required": "本分支必填",
+      "required": "本分支可选",
       "module": "field-bindings-and-formats.md"
     },
     {
@@ -20941,7 +20942,7 @@
       "schemaPointer": "#/definitions/scalar/anyOf/0",
       "module": "fields.md",
       "file": "examples/component-metricCard-primaryDetail.json",
-      "pointer": "#/dataSources/rates/source/rows/0/case"
+      "pointer": "#/dataSources/binding-samples/source/rows/0/id"
     },
     {
       "schemaPointer": "#/definitions/scalar/anyOf/1",
@@ -20959,7 +20960,7 @@
       "schemaPointer": "#/definitions/scalar/anyOf/3",
       "module": "fields.md",
       "file": "examples/component-metricCard-primaryDetail.json",
-      "pointer": "#/dataSources/rates/source/rows/4/rate"
+      "pointer": "#/dataSources/binding-samples/source/rows/3/change"
     },
     {
       "schemaPointer": "#/definitions/fieldValue/anyOf/1",
@@ -21780,14 +21781,14 @@
     {
       "schemaPointer": "#/definitions/staticFieldBinding/anyOf/1",
       "module": "field-bindings-and-formats.md",
-      "file": "examples/inline-report.json",
-      "pointer": "#/sections/0/components/1/props/rows/0/valueField"
+      "file": "examples/component-metricCard-primaryDetail.json",
+      "pointer": "#/sections/0/components/0/props/rows/0/valueField"
     },
     {
       "schemaPointer": "#/definitions/staticFieldBinding/anyOf/1/properties/format/anyOf/0",
       "module": "field-bindings-and-formats.md",
-      "file": "examples/inline-report.json",
-      "pointer": "#/sections/0/components/1/props/rows/0/valueField/format"
+      "file": "examples/component-metricCard-primaryDetail.json",
+      "pointer": "#/sections/0/components/0/props/rows/0/valueField/format"
     },
     {
       "schemaPointer": "#/definitions/staticFieldBinding/anyOf/1/properties/format/anyOf/1",
@@ -22936,5 +22937,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "e096e1e716fe23089b5f07c47f7d013eb1721c3768f0ef1aff09bf2a3c3ef5a0"
+  "semanticSourceDigest": "b7a220785fca241a238a7d8c847a5127fcb1d289cc1c3adaf21a6f55cd238a9b"
 }

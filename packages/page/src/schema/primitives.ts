@@ -323,7 +323,7 @@ export const staticFieldBindingZ = z
     fieldNameZ,
     z
       .object({
-        data: idZ,
+        data: idZ.optional().meta({ default: 'main', description: '字段绑定的数据槽；省略时固定引用 main，不按数据源数量推断' }),
         field: fieldNameZ,
         missingText: z.string().min(1).max(100).optional(),
         format: fieldValueFormatZ.optional().meta({

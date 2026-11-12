@@ -2,6 +2,21 @@
 
 data槽把组件关联到页面数据源；字段绑定引用该槽中的结果字段，可用显式source指定受支持的其它槽。match按声明维度取值选择对应行，不能充当通用查询表达式。
 
+**对象字段绑定默认 main（6.116）**
+
+字符串字段绑定 `"change"` 始终引用组件的 `main` 数据槽。从6.116起，共用字段绑定的表格、指标卡、图表等组件中，对象写法也可省略 `data`：
+
+```json
+{"title":"变化量","field":{"field":"change","format":"number-2-signed"}}
+```
+
+等价于显式写 `{"data":"main","field":"change","format":"number-2-signed"}`。省略始终固定指向 `main`，多数据源组件也相同；引用补充数据槽时继续显式填写 `data`。组件自己的 `data` 绑定仍按原规则声明，不因只有一个数据源而推断任意槽名。`data:null`、空字符串、未知槽及 main 中不存在的字段继续报错，不会尝试其他槽。只放宽 `FieldBinding` 的静态对象及 `byFilter.cases` 叶子；用于搜索、选择等位置的 `FieldReference` 对象仍须声明 `data`。
+
+`format`、`missingText`、`match` 和字段默认格式的优先级保持。引擎只在解析后的运行态补齐 `main`，不改写输入、持久化简写、数据行、导航输入或 `echartsOption` 的任意对象。显式旧声明继续可读；6.115及更早版本不能声明对象省略槽的新写法。字段净增0，默认槽解析由引擎统一承担。
+
+合成入口 `/pages/number-precision-five` 覆盖单源表格显式/省略槽对照、多源明确读取 main、指标卡与柱图；来源全为 inline，不代表真实 DQE/Relay 验收。表格对照的 `explicitChange` 是与 `change` 相同原值的独立字段，避免重复绑定同一列。
+
+
 显式格式、精度与百分刻度见下文“显式数值格式与精度”；时间、单位及货币选择分别由对应章节定义。
 
 text不执行HTML，日期格式只格式化日期值。语义HTML须用专用字段类型。

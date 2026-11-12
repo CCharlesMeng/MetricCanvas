@@ -64,6 +64,7 @@ import {
 } from './compute';
 import type { TypedError } from './errors';
 import {
+  fieldSlot,
   staticFieldBinding,
   moneyFormatMatchesCurrency,
   fieldName as fieldNameOf,
@@ -2260,7 +2261,7 @@ function categoryDomainKey(
   const resolved = resolveBinding(page, component, binding);
   if ('error' in resolved) return undefined;
   binding=staticFieldBinding(binding);
-  const slot = typeof binding === 'string' ? 'main' : binding.data;
+  const slot = fieldSlot(binding);
   const sourceId = (component.data as ComponentData | undefined)?.[slot];
   return sourceId === undefined ? undefined : `${sourceId}.${resolved.fieldName}`;
 }
@@ -2500,7 +2501,7 @@ function resolveBinding(
   | { field: FieldDefinition; fieldName: string }
   | { error: string } {
   binding=staticFieldBinding(binding);
-  const slot = typeof binding === 'string' ? 'main' : binding.data;
+  const slot = fieldSlot(binding);
   const fieldName = fieldNameOf(binding);
   const sourceId = (component.data as ComponentData | undefined)?.[slot];
   if (sourceId === undefined) {

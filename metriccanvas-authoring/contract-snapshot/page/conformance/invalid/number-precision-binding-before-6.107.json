@@ -61,7 +61,6 @@
                 {
                   "label": "当日",
                   "valueField": {
-                    "data": "main",
                     "field": "gmv",
                     "format": "number-3-signed"
                   }
@@ -74,6 +73,11 @@
     ]
   },
   "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/rows/0/valueField",
+      "message": "对象字段绑定省略 data 时固定引用 main 数据槽 由 6.116 引入，文档声明的是 6.106"
+    },
     {
       "type": "SCHEMA_ERROR",
       "path": "/sections/0/components/1/props/rows/0/valueField/format",

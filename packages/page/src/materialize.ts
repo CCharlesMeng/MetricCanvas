@@ -1,3 +1,4 @@
+import { materializeMainBindingSlots } from './field-binding-defaults';
 import type { CellFallbacks } from './cell-fallback';
 import type {
   QueryDataSourceFieldDefinition,
@@ -30,7 +31,7 @@ export interface MaterializedPageDocument {
 /**
  * 把 query 页面数据源中按角色分组的局部显式字段展开，按 queryField 将 DQE
  * 原始内嵌初始行归一化为稳定页面字段，并把文本取值引用整值替换为字符串，
- * 最终解析为完整 Page。这是纯计算接缝：不读取局部或跨页定义，不做默认值
+ * 将对象字段绑定省略的数据槽物化为 main，最终解析为完整 Page。这是纯计算接缝：不读取局部或跨页定义，不做默认值
  * 继承，不修改输入。
  */
 export function materializePageDocument(
@@ -49,6 +50,7 @@ export function materializePageDocument(
       filterValues: textValues?.filterValues ?? initialFilterTextValues((cloned.filters ?? []) as FilterDeclaration[]) }
   ) as Record<string, unknown>;
   removeAbsentMetricBefore(document);
+  materializeMainBindingSlots(document);
   const errors: TypedError[] = [];
   const initialFallbacks: Record<string, CellFallbacks> = {};
   const initialWarnings: Record<string, import('./query-rows').QueryRowNormalizationWarning[]> = {};

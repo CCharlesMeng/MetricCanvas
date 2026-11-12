@@ -877,7 +877,7 @@
     },
     {
       "id": "number-precision-five",
-      "description": "三至五位小数及带符号预设由6.107引入，整数预设由6.113引入",
+      "description": "三至五位小数及带符号预设由6.107引入，整数预设由6.113引入，对象字段绑定省略data由6.116引入",
       "valid": [
         "number-precision-five"
       ],

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.115",
+  "schemaVersion": "6.116",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "field-bindings-and-formats.section-de5cc92c"
@@ -9,7 +9,7 @@
       "module": "field-bindings-and-formats",
       "reference": "references/page-metadata/field-bindings-and-formats.md",
       "blocks": [
-        "# 数据槽、字段绑定与格式\n\ndata槽把组件关联到页面数据源；字段绑定引用该槽中的结果字段，可用显式source指定受支持的其它槽。match按声明维度取值选择对应行，不能充当通用查询表达式。\n\n显式格式、精度与百分刻度见下文“显式数值格式与精度”；时间、单位及货币选择分别由对应章节定义。\n\ntext不执行HTML，日期格式只格式化日期值。语义HTML须用专用字段类型。\n\n<a id=\"time-format\"></a>",
+        "# 数据槽、字段绑定与格式\n\ndata槽把组件关联到页面数据源；字段绑定引用该槽中的结果字段，可用显式source指定受支持的其它槽。match按声明维度取值选择对应行，不能充当通用查询表达式。\n\n**对象字段绑定默认 main（6.116）**\n\n字符串字段绑定 `\"change\"` 始终引用组件的 `main` 数据槽。从6.116起，共用字段绑定的表格、指标卡、图表等组件中，对象写法也可省略 `data`：\n\n```json\n{\"title\":\"变化量\",\"field\":{\"field\":\"change\",\"format\":\"number-2-signed\"}}\n```\n\n等价于显式写 `{\"data\":\"main\",\"field\":\"change\",\"format\":\"number-2-signed\"}`。省略始终固定指向 `main`，多数据源组件也相同；引用补充数据槽时继续显式填写 `data`。组件自己的 `data` 绑定仍按原规则声明，不因只有一个数据源而推断任意槽名。`data:null`、空字符串、未知槽及 main 中不存在的字段继续报错，不会尝试其他槽。只放宽 `FieldBinding` 的静态对象及 `byFilter.cases` 叶子；用于搜索、选择等位置的 `FieldReference` 对象仍须声明 `data`。\n\n`format`、`missingText`、`match` 和字段默认格式的优先级保持。引擎只在解析后的运行态补齐 `main`，不改写输入、持久化简写、数据行、导航输入或 `echartsOption` 的任意对象。显式旧声明继续可读；6.115及更早版本不能声明对象省略槽的新写法。字段净增0，默认槽解析由引擎统一承担。\n\n合成入口 `/pages/number-precision-five` 覆盖单源表格显式/省略槽对照、多源明确读取 main、指标卡与柱图；来源全为 inline，不代表真实 DQE/Relay 验收。表格对照的 `explicitChange` 是与 `change` 相同原值的独立字段，避免重复绑定同一列。\n\n\n显式格式、精度与百分刻度见下文“显式数值格式与精度”；时间、单位及货币选择分别由对应章节定义。\n\ntext不执行HTML，日期格式只格式化日期值。语义HTML须用专用字段类型。\n\n<a id=\"time-format\"></a>",
         "## 图表系列与表格列展示单位（6.94）\n\n柱/线/混合图用 `series[].unit`：图例为“审批时长（天）”，标签及提示为“12.5 天”；非空单位使单系列也显示图例。表格字段列 `unit` 作用于主数值与置顶汇总，支持列组及展开子表；次字段、徽标、枚举、异常回退原文不追加。饼图沿用 `legend.columns[].unit`。\n\n```json\n{\"type\":\"barChart\",\"id\":\"duration-chart\",\"layout\":{\"span\":6},\"data\":{\"main\":\"sample\"},\"props\":{\"categoryField\":\"category\",\"series\":[{\"field\":{\"data\":\"main\",\"field\":\"duration\",\"format\":\"number-1\"},\"label\":\"审批时长\",\"unit\":\"天\"}],\"showValueLabels\":true}}\n```\n\n```json\n{\"type\":\"table\",\"id\":\"duration-table\",\"layout\":{\"span\":12},\"data\":{\"main\":\"sample\"},\"props\":{\"columns\":[{\"field\":{\"data\":\"main\",\"field\":\"duration\",\"format\":\"number-1\"},\"title\":\"审批时长\",\"unit\":\"天\"}]}}\n```\n\n以上声明要求 `sample` 含有类别与数值字段。单位是组件局部展示声明，不从结果字段契约 `unit` 自动追加到图例、标签或表格单元格，不改变查询、数值、计算、排序、筛选或货币语义；币种字段选择保留显式局部单位。空字符串表示不追加；有效零与负值追加，缺失与非数字保留原文。数值轴单位与刻度拆分，按[统一数值轴规则](#chart-number-format)优先使用系列声明，并可从字段或格式取得默认单位，不逐刻度追加。\n\n`format` 独立负责精度及缩放。`compact-wan-1` 与 `unit:\"万元\"` 将原值125000显示为“12.5 万元”，运行时合并预设“万”与显式“万元”的重叠后缀；`percent-1` 与 `unit:\"%\"` 保持“25%”。格式已完整包含指定单位时不再追加，其他单位在格式化结果后以一个空格连接，不猜测业务换算。Excel 保留基本单位数值，通过单元格数字格式展示捕获的单位文本；PNG/PDF沿运行时呈现。\n\n`/pages/chart-table-unit` 的 inline 合成场景覆盖柱线混合图、饼图图例、分组列、汇总、缩放、百分号、零、负值及缺失；不代表真实 DQE/Relay。"
       ],
       "rules": [
@@ -43,7 +43,7 @@
         },
         {
           "id": "number-precision-five",
-          "description": "三至五位小数及带符号预设由6.107引入，整数预设由6.113引入",
+          "description": "三至五位小数及带符号预设由6.107引入，整数预设由6.113引入，对象字段绑定省略data由6.116引入",
           "valid": [
             "number-precision-five"
           ],

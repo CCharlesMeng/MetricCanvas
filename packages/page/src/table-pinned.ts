@@ -1,6 +1,6 @@
 import {tableColumnLeaves as tableLeafColumns} from './table/columns';
 export {tableColumnLeaves as tableLeafColumns} from './table/columns';
-import { fieldBindingLeaves, fieldName, type FieldBinding, type FieldDefinition } from './field';
+import { fieldSlot, fieldBindingLeaves, fieldName, type FieldBinding, type FieldDefinition } from './field';
 import type { Page, TableComponent, TableColumn } from './page';
 import { resolveDataSourceFields } from './data-source';
 import { conditionSourceIds } from './data-source-references';
@@ -16,7 +16,7 @@ export function tableAlignedSlots(table: TableComponent): [string, string][] {
   return Object.entries(table.data).filter(([slot]) => !pinned.has(slot));
 }
 function bindingDefinition(page: Page, table: TableComponent, binding: FieldBinding): FieldDefinition | undefined {
-  const slot = typeof binding === 'string' ? 'main' : 'data' in binding ? binding.data : '';
+  const slot = fieldSlot(binding);
   const source = page.dataSources[table.data[slot]];
   return source && resolveDataSourceFields(source)[fieldName(binding)];
 }

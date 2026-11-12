@@ -2,6 +2,21 @@
 
 data槽把组件关联到页面数据源；字段绑定引用该槽中的结果字段，可用显式source指定受支持的其它槽。match按声明维度取值选择对应行，不能充当通用查询表达式。
 
+**对象字段绑定默认 main（6.116）**
+
+字符串字段绑定 `"change"` 始终引用组件的 `main` 数据槽。从6.116起，共用字段绑定的表格、指标卡、图表等组件中，对象写法也可省略 `data`：
+
+```json
+{"title":"变化量","field":{"field":"change","format":"number-2-signed"}}
+```
+
+等价于显式写 `{"data":"main","field":"change","format":"number-2-signed"}`。省略始终固定指向 `main`，多数据源组件也相同；引用补充数据槽时继续显式填写 `data`。组件自己的 `data` 绑定仍按原规则声明，不因只有一个数据源而推断任意槽名。`data:null`、空字符串、未知槽及 main 中不存在的字段继续报错，不会尝试其他槽。只放宽 `FieldBinding` 的静态对象及 `byFilter.cases` 叶子；用于搜索、选择等位置的 `FieldReference` 对象仍须声明 `data`。
+
+`format`、`missingText`、`match` 和字段默认格式的优先级保持。引擎只在解析后的运行态补齐 `main`，不改写输入、持久化简写、数据行、导航输入或 `echartsOption` 的任意对象。显式旧声明继续可读；6.115及更早版本不能声明对象省略槽的新写法。字段净增0，默认槽解析由引擎统一承担。
+
+合成入口 `/pages/number-precision-five` 覆盖单源表格显式/省略槽对照、多源明确读取 main、指标卡与柱图；来源全为 inline，不代表真实 DQE/Relay 验收。表格对照的 `explicitChange` 是与 `change` 相同原值的独立字段，避免重复绑定同一列。
+
+
 显式格式、精度与百分刻度见下文“显式数值格式与精度”；时间、单位及货币选择分别由对应章节定义。
 
 text不执行HTML，日期格式只格式化日期值。语义HTML须用专用字段类型。
@@ -281,7 +296,7 @@ value:0 是有效常量；null 遵循该图表的缺失行为。常量可同级�
 `/pages/chart-table-unit` 的 inline 合成场景覆盖柱线混合图、饼图图例、分组列、汇总、缩放、百分号、零、负值及缺失；不代表真实 DQE/Relay。
 
 
-页面协议 6.115。结构真源为本册[schema.json](schema.json)，SHA256 `7614c0c4578fdd2e1c05d9a44a7ac2f2f21fd4facea5c80a920b9b96d024ed1b`。字段表自动生成；可选不等于有默认值。
+页面协议 6.116。结构真源为本册[schema.json](schema.json)，SHA256 `be6eded6142f276f4c29fddcc8d81d9fa1be3e77b36c5880538aa228c3b4264f`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -373,7 +388,7 @@ Schema位置：`#/definitions/staticFieldBinding/anyOf/1`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "object" | 独立分支（不合并required） | required=["data","field"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+| "object" | 独立分支（不合并required） | required=["field"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f7374617469634669656c6442696e64696e672f616e794f662f312f70726f706572746965732f64617461"></a>
 
@@ -383,7 +398,7 @@ Schema位置：`#/definitions/staticFieldBinding/anyOf/1/properties/data`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 组件数据槽与页面数据源的显式关联。 |
+| "string" | 本分支可选 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema default="main" | 字段绑定的数据槽；省略时固定引用 main，不按数据源数量推断 |
 
 <a id="schema-232f646566696e6974696f6e732f7374617469634669656c6442696e64696e672f616e794f662f312f70726f706572746965732f6669656c64"></a>
 
@@ -846,7 +861,7 @@ Schema位置：`#/definitions/tableData/propertyNames`。
 - `presentation-capability`：颜色与图表标签声明由6.16引入。反例：[presentation-before-6.16](errors/presentation-before-6.16.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `signed-number-format-capability`：带符号普通数值格式由6.17引入。反例：[signed-number-binding-before-6.17](errors/signed-number-binding-before-6.17.json)、[signed-number-default-before-6.17](errors/signed-number-default-before-6.17.json)、[signed-number-param-before-6.17](errors/signed-number-param-before-6.17.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `signed-number-family-capability`：两位小数与千分位带符号数值格式由6.18引入。反例：[signed-number-two-decimal-before-6.18](errors/signed-number-two-decimal-before-6.18.json)、[signed-number-grouped-before-6.18](errors/signed-number-grouped-before-6.18.json)、[signed-number-family-param-before-6.18](errors/signed-number-family-param-before-6.18.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
-- `number-precision-five`：三至五位小数及带符号预设由6.107引入，整数预设由6.113引入。反例：[number-precision-binding-before-6.107](errors/number-precision-binding-before-6.107.json)、[number-precision-default-before-6.107](errors/number-precision-default-before-6.107.json)、[number-precision-param-before-6.107](errors/number-precision-param-before-6.107.json)、[number-precision-six-unsupported](errors/number-precision-six-unsupported.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `number-precision-five`：三至五位小数及带符号预设由6.107引入，整数预设由6.113引入，对象字段绑定省略data由6.116引入。反例：[number-precision-binding-before-6.107](errors/number-precision-binding-before-6.107.json)、[number-precision-default-before-6.107](errors/number-precision-default-before-6.107.json)、[number-precision-param-before-6.107](errors/number-precision-param-before-6.107.json)、[number-precision-six-unsupported](errors/number-precision-six-unsupported.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `currency-selection`：6.38金额范围和静态货币字段选择。反例：[currency-before-6.38](errors/currency-before-6.38.json)、[currency-case-missing](errors/currency-case-missing.json)、[currency-metric-mismatch](errors/currency-metric-mismatch.json)、[currency-negative-default](errors/currency-negative-default.json)、[currency-equal-default](errors/currency-equal-default.json)、[currency-compute-mixed](errors/currency-compute-mixed.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `adaptive-money-trimmed`：6.88 新金额格式与静态货币匹配，旧格式保持。反例：[adaptive-money-before-6.88](errors/adaptive-money-before-6.88.json)、[adaptive-money-default-currency](errors/adaptive-money-default-currency.json)、[adaptive-money-binding-currency](errors/adaptive-money-binding-currency.json)、[adaptive-money-nondefault-currency](errors/adaptive-money-nondefault-currency.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
@@ -873,8 +888,8 @@ Schema位置：`#/definitions/tableData/propertyNames`。
 
 - `#/definitions/fieldBinding/anyOf/0`：[合法完整页面](examples/component-metricCard.json)，JSON Pointer `#/sections/0/components/0/props/rows/0/valueField`。
 - `#/definitions/staticFieldBinding/anyOf/0`：[合法完整页面](examples/component-metricCard.json)，JSON Pointer `#/sections/0/components/0/props/rows/0/valueField`。
-- `#/definitions/staticFieldBinding/anyOf/1`：[合法完整页面](examples/inline-report.json)，JSON Pointer `#/sections/0/components/1/props/rows/0/valueField`。
-- `#/definitions/staticFieldBinding/anyOf/1/properties/format/anyOf/0`：[合法完整页面](examples/inline-report.json)，JSON Pointer `#/sections/0/components/1/props/rows/0/valueField/format`。
+- `#/definitions/staticFieldBinding/anyOf/1`：[合法完整页面](examples/component-metricCard-primaryDetail.json)，JSON Pointer `#/sections/0/components/0/props/rows/0/valueField`。
+- `#/definitions/staticFieldBinding/anyOf/1/properties/format/anyOf/0`：[合法完整页面](examples/component-metricCard-primaryDetail.json)，JSON Pointer `#/sections/0/components/0/props/rows/0/valueField/format`。
 - `#/definitions/staticFieldBinding/anyOf/1/properties/format/anyOf/1`：[合法完整页面](examples/table-time-format.json)，JSON Pointer `#/sections/0/components/0/props/columns/1/field/format`。
 - `#/definitions/fieldBinding/anyOf/1`：[合法完整页面](examples/time-binding-branches-page.json)，JSON Pointer `#/sections/0/components/0/props/rows/0/valueField`。
 - `#/definitions/colorRule/oneOf/0`：[合法完整页面](examples/explicit-presentation-page.json)，JSON Pointer `#/sections/0/components/0/props/columns/2/colorRule`。

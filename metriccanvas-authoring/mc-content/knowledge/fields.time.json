@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.115",
+  "schemaVersion": "6.116",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "fields.time"
@@ -9,7 +9,7 @@
       "module": "field-bindings-and-formats",
       "reference": "references/page-metadata/field-bindings-and-formats.md",
       "blocks": [
-        "# 数据槽、字段绑定与格式\n\ndata槽把组件关联到页面数据源；字段绑定引用该槽中的结果字段，可用显式source指定受支持的其它槽。match按声明维度取值选择对应行，不能充当通用查询表达式。\n\n显式格式、精度与百分刻度见下文“显式数值格式与精度”；时间、单位及货币选择分别由对应章节定义。\n\ntext不执行HTML，日期格式只格式化日期值。语义HTML须用专用字段类型。\n\n<a id=\"time-format\"></a>",
+        "# 数据槽、字段绑定与格式\n\ndata槽把组件关联到页面数据源；字段绑定引用该槽中的结果字段，可用显式source指定受支持的其它槽。match按声明维度取值选择对应行，不能充当通用查询表达式。\n\n**对象字段绑定默认 main（6.116）**\n\n字符串字段绑定 `\"change\"` 始终引用组件的 `main` 数据槽。从6.116起，共用字段绑定的表格、指标卡、图表等组件中，对象写法也可省略 `data`：\n\n```json\n{\"title\":\"变化量\",\"field\":{\"field\":\"change\",\"format\":\"number-2-signed\"}}\n```\n\n等价于显式写 `{\"data\":\"main\",\"field\":\"change\",\"format\":\"number-2-signed\"}`。省略始终固定指向 `main`，多数据源组件也相同；引用补充数据槽时继续显式填写 `data`。组件自己的 `data` 绑定仍按原规则声明，不因只有一个数据源而推断任意槽名。`data:null`、空字符串、未知槽及 main 中不存在的字段继续报错，不会尝试其他槽。只放宽 `FieldBinding` 的静态对象及 `byFilter.cases` 叶子；用于搜索、选择等位置的 `FieldReference` 对象仍须声明 `data`。\n\n`format`、`missingText`、`match` 和字段默认格式的优先级保持。引擎只在解析后的运行态补齐 `main`，不改写输入、持久化简写、数据行、导航输入或 `echartsOption` 的任意对象。显式旧声明继续可读；6.115及更早版本不能声明对象省略槽的新写法。字段净增0，默认槽解析由引擎统一承担。\n\n合成入口 `/pages/number-precision-five` 覆盖单源表格显式/省略槽对照、多源明确读取 main、指标卡与柱图；来源全为 inline，不代表真实 DQE/Relay 验收。表格对照的 `explicitChange` 是与 `change` 相同原值的独立字段，避免重复绑定同一列。\n\n\n显式格式、精度与百分刻度见下文“显式数值格式与精度”；时间、单位及货币选择分别由对应章节定义。\n\ntext不执行HTML，日期格式只格式化日期值。语义HTML须用专用字段类型。\n\n<a id=\"time-format\"></a>",
         "## 时间格式串与固定 UTC+8（6.102）\n\n组件字段绑定的 `format` 继续接受原有字符串预设，新增结构 `{\"type\":\"time\",\"pattern\":\"YYYY-MM-DD HH:mm:ss\"}`。不增加表格列级字段，不配置其它时区。仅显式采用此对象的绑定转换；旧 `date`、`date-month-day` 与文本行为保持。`defaultFormat` 和参数/筛选文本引用继续使用原有字符串预设。\n\n```json\n{\"title\":\"创建时间\",\"field\":{\"data\":\"main\",\"field\":\"createdAt\",\"format\":{\"type\":\"time\",\"pattern\":\"YYYY-MM-DD HH:mm:ss\"}}}\n```\n\n按固定 UTC+8 换算后再格式化，不依赖运行机器时区，也不采用历史夏令时。`2026-11-09T18:30:00Z` 显示为 `2026-11-10 02:30:00`。`pattern` 为1—100字符，支持区分大小写的 `YYYY`、`MM`、`DD`、`HH`、`mm`、`ss`，以及连字符、斜杠、冒号、点、空格、T、年月日时分秒；至少一个有效 token。示例：`YYYY-MM-DD`、`YYYY/MM/DD HH:mm`、`HH:mm:ss`、`YYYY年MM月DD日`。不执行脚本或任意格式表达式。\n\n输入支持以下明确结构，不调用浏览器的宽松日期字符串解析：\n\n- ISO 日期时间，含 `Z`、`±HH:mm`、`±HHmm` 或无时区；秒可省略，小数秒支持1—9位并截取毫秒。明确偏移按实际时刻换算，不重复加八小时。\n- 年在前的日期：`YYYY-MM-DD`、`YYYY/MM/DD`、`YYYY.MM.DD`、`YYYY年MM月DD日`（分隔形式的月日允许单数位），以及 `YYYYMMDD`；后接空格或 T 及 `HH:mm[:ss]` / `HHmm[ss]`，紧凑的 `YYYYMMDDHHmm[ss]` 也支持。空格后缀 UTC/GMT 表示 UTC。\n- 10位 Unix 秒或13位 Unix 毫秒时间戳，支持数值或数字字符串、负值及最多3位小数；零也有效。8位数字只按紧凑日历日期解释，11/12位及微秒/纳秒时间戳不猜测单位。\n\n**无时区输入统一解释为 UTC**；纯日期按 UTC 零点解释。需要表示本地时刻时，来源须携带 `+08:00`，例如 `2026-11-10T02:30:00+08:00`。字段可保持来源已有的 string/number/datetime 类型；查询标量失配保留的原文证据也可在此展示格式下解析，但不提升为有效业务值。\n\n严格检查日历、时分秒和偏移（最大±14:00）；错误日期、歧义日/月顺序、越界年份及无法识别的输入保留原文，表格沿用格式不兼容诊断。空值沿用 `missingText`，默认 `--`。不重写结果快照、查询、排序、筛选、行键或导航。\n\n表格、PDF/PNG 和 Excel 共用格式化逻辑；Excel 将转换结果写为文本，空值沿用原有空单元格/缺失文案规则，避免宿主再次解释时区。枚举名称仍优先于普通格式；原始值和交互编码保持。\n\n完整合成入口 `/pages/table-time-format` 展示原始值、UTC+8 时间与日期、跨年、非法值和空值，并提供 Excel；不依赖后端，也不代表真实 DQE/Relay 验收。"
       ],
       "rules": [
@@ -43,7 +43,7 @@
         },
         {
           "id": "number-precision-five",
-          "description": "三至五位小数及带符号预设由6.107引入，整数预设由6.113引入",
+          "description": "三至五位小数及带符号预设由6.107引入，整数预设由6.113引入，对象字段绑定省略data由6.116引入",
           "valid": [
             "number-precision-five"
           ],
@@ -222,7 +222,7 @@
           "sections"
         ],
         "title": "页面",
-        "$id": "https://metriccanvas/page/v6.115",
+        "$id": "https://metriccanvas/page/v6.116",
         "properties": {
           "schemaVersion": "#/properties/schemaVersion",
           "id": "#/properties/id",
@@ -267,7 +267,6 @@
       "facts": {
         "type": "object",
         "required": [
-          "data",
           "field"
         ],
         "properties": {

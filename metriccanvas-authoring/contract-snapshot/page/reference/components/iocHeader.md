@@ -60,7 +60,7 @@ RegionFilter 固定提供可搜索、可清空的单选组织树，层级为 `ge
 完整合成入口 `/pages/ioc-header-title-link` 与 `/pages/ioc-header-title-link-target`，覆盖页面参数、布尔筛选、目标校验和条件；操作与证据边界见示例目录 README。该场景不验证真实业务地址或 DQE。
 
 
-页面协议 6.115。结构真源为本册[schema.json](../schema.json)，SHA256 `7614c0c4578fdd2e1c05d9a44a7ac2f2f21fd4facea5c80a920b9b96d024ed1b`。字段表自动生成；可选不等于有默认值。
+页面协议 6.116。结构真源为本册[schema.json](../schema.json)，SHA256 `be6eded6142f276f4c29fddcc8d81d9fa1be3e77b36c5880538aa228c3b4264f`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

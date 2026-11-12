@@ -8,7 +8,7 @@ test('number-0 rounds table values, field defaults, metrics and chart labels', a
   page.on('pageerror', error => errors.push(error.message));
   await page.addInitScript(() => performance.setResourceTimingBufferSize(10000));
   await page.goto(`/pages/${fixture.id}`);
-  const rows = page.locator('tbody tr');
+  const rows = page.locator('table').first().locator('tbody tr');
   await expect(rows).toHaveCount(14);
   for (const [index, expected] of [
     [0, ['1234.4', '1234', '1234']], [1, ['-1234.5', '-1235', '-1235']],
@@ -18,9 +18,9 @@ test('number-0 rounds table values, field defaults, metrics and chart labels', a
     await expect(rows.nth(index).locator('td:nth-child(n+8)')).toHaveText([...expected]);
   }
   await expect(page.getByText('整数格式（合成数据）目标：13', { exact: true })).toBeVisible();
-  await expect(page.locator('.row-value').last()).toHaveText('1234');
-  await expect(page.locator('.bar-chart').last()).toBeVisible();
-  const chart = page.locator('.bar-chart .echart').last();
+  await expect(page.locator('.metric-card').nth(1).locator('.row-value')).toHaveText('1234');
+  await expect(page.locator('.bar-chart').nth(1)).toBeVisible();
+  const chart = page.locator('.bar-chart .echart').nth(1);
   await expect(chart).toHaveAttribute('_echarts_instance_', /.+/);
   const labels = await chart.evaluate(async element => {
     const url = performance.getEntriesByType('resource').map(entry => entry.name).find(name => /\/echarts-runtime\.ts(?:\?|$)/.test(name));

@@ -1,4 +1,4 @@
-import type { FieldBinding } from '../field';
+import { fieldSlot, type FieldBinding } from '../field';
 import type { TableColumn, TableColumnNode } from '../page';
 import { walkDocumentComponents } from '../component-walk';
 type ColumnShape = {
@@ -26,7 +26,7 @@ export function tableColumnLeaves(nodes: readonly TableColumnNode[]): TableColum
 export function mainColumnField(binding: FieldBinding | undefined): string | undefined {
     if (typeof binding === 'string')
         return binding;
-    return binding && 'field' in binding && binding.data === 'main' ? binding.field : undefined;
+    return binding && 'field' in binding && fieldSlot(binding) === 'main' ? binding.field : undefined;
 }
 export function columnMainFields(nodes: readonly TableColumnNode[], compound = false): Set<string> {
     const fields = tableColumnLeaves(nodes).flatMap(column => compound ? [column.field, column.secondaryField, column.badgeField] : [column.field]);
@@ -87,6 +87,6 @@ export function columnPrimaryFields(nodes:readonly TableColumnNode[]):Set<string
 /** Stable slot/field identity; presentation overrides and byFilter case insertion order are irrelevant. */
 export function columnBindingKey(binding:FieldBinding):string{
  if(typeof binding==='string')return JSON.stringify(['main',binding]);
- if ('field' in binding) return JSON.stringify([binding.data, binding.field]);
+ if ('field' in binding) return JSON.stringify([fieldSlot(binding), binding.field]);
  return JSON.stringify(['byFilter', binding.byFilter.filterId, Object.keys(binding.byFilter.cases).sort().map(key => [key, columnBindingKey(binding.byFilter.cases[key])])]);
 }

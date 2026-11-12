@@ -1,7 +1,7 @@
 import {chartOptionScopes,isExtensibleChart} from './chart-option';
 import type {Page,Component,ComponentData} from './page';
 import type {FieldBinding,StaticFieldBinding,FieldDefinition} from './field';
-import {fieldName,moneyFormatCurrency,moneyFormatMatchesCurrency} from './field';
+import {fieldSlot,fieldName,moneyFormatCurrency,moneyFormatMatchesCurrency} from './field';
 import {walkPageComponents} from './component-walk';
 import {exhaustiveCases,selectedCase} from './amount-filter';
 import type {TypedError} from './errors';
@@ -16,7 +16,7 @@ function visit(value:unknown,fn:(binding:Extract<FieldBinding,{byFilter:unknown}
 }
 export function fieldSelectionIds(value:unknown):string[]{const ids=new Set<string>();const opaque=chartOptionScopes(value);const collect=(props:unknown)=>visit(props,binding=>ids.add(binding.byFilter.filterId),opaque);if(value&&typeof value==='object'&&'sections' in value){walkPageComponents(value as Page,component=>collect(component.props));}else collect(value);return [...ids];}
 function definition(page:Page,component:Component,binding:StaticFieldBinding):FieldDefinition|undefined {
- const slot=typeof binding==='string'?'main':binding.data;return page.dataSources[(component.data as ComponentData|undefined)?.[slot]??'']?.fields[fieldName(binding)];
+ const slot=fieldSlot(binding);return page.dataSources[(component.data as ComponentData|undefined)?.[slot]??'']?.fields[fieldName(binding)];
 }
 export function projectComponentFields(page:Page,component:Component,values:SelectionValues):Component {
  const opaque=isExtensibleChart(component.type)&&'echartsOption' in component.props?component.props.echartsOption:undefined;

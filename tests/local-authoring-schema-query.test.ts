@@ -194,6 +194,6 @@ describe('按对象读取 Schema 契约', () => {
     expect(result.items).toEqual(expect.arrayContaining([expect.objectContaining({ owner: 'tableColumn', path: 'tableColumn.field.format' })]));
     const id = 'schema:#/definitions/staticFieldBinding/anyOf/1/properties/format';
     expect(showSchema(document, { id, owner: 'tableColumn', select: 'placement' }))
-      .toMatchObject({ path: 'tableColumn.field.format', parentRequired: ['data', 'field'] });
+      .toMatchObject({ path: 'tableColumn.field.format', parentRequired: ['field'] });
   });
 });

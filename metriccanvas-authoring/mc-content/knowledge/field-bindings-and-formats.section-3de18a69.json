@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.115",
+  "schemaVersion": "6.116",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "field-bindings-and-formats.section-3de18a69"
@@ -9,7 +9,7 @@
       "module": "field-bindings-and-formats",
       "reference": "references/page-metadata/field-bindings-and-formats.md",
       "blocks": [
-        "# 数据槽、字段绑定与格式\n\ndata槽把组件关联到页面数据源；字段绑定引用该槽中的结果字段，可用显式source指定受支持的其它槽。match按声明维度取值选择对应行，不能充当通用查询表达式。\n\n显式格式、精度与百分刻度见下文“显式数值格式与精度”；时间、单位及货币选择分别由对应章节定义。\n\ntext不执行HTML，日期格式只格式化日期值。语义HTML须用专用字段类型。\n\n<a id=\"time-format\"></a>",
+        "# 数据槽、字段绑定与格式\n\ndata槽把组件关联到页面数据源；字段绑定引用该槽中的结果字段，可用显式source指定受支持的其它槽。match按声明维度取值选择对应行，不能充当通用查询表达式。\n\n**对象字段绑定默认 main（6.116）**\n\n字符串字段绑定 `\"change\"` 始终引用组件的 `main` 数据槽。从6.116起，共用字段绑定的表格、指标卡、图表等组件中，对象写法也可省略 `data`：\n\n```json\n{\"title\":\"变化量\",\"field\":{\"field\":\"change\",\"format\":\"number-2-signed\"}}\n```\n\n等价于显式写 `{\"data\":\"main\",\"field\":\"change\",\"format\":\"number-2-signed\"}`。省略始终固定指向 `main`，多数据源组件也相同；引用补充数据槽时继续显式填写 `data`。组件自己的 `data` 绑定仍按原规则声明，不因只有一个数据源而推断任意槽名。`data:null`、空字符串、未知槽及 main 中不存在的字段继续报错，不会尝试其他槽。只放宽 `FieldBinding` 的静态对象及 `byFilter.cases` 叶子；用于搜索、选择等位置的 `FieldReference` 对象仍须声明 `data`。\n\n`format`、`missingText`、`match` 和字段默认格式的优先级保持。引擎只在解析后的运行态补齐 `main`，不改写输入、持久化简写、数据行、导航输入或 `echartsOption` 的任意对象。显式旧声明继续可读；6.115及更早版本不能声明对象省略槽的新写法。字段净增0，默认槽解析由引擎统一承担。\n\n合成入口 `/pages/number-precision-five` 覆盖单源表格显式/省略槽对照、多源明确读取 main、指标卡与柱图；来源全为 inline，不代表真实 DQE/Relay 验收。表格对照的 `explicitChange` 是与 `change` 相同原值的独立字段，避免重复绑定同一列。\n\n\n显式格式、精度与百分刻度见下文“显式数值格式与精度”；时间、单位及货币选择分别由对应章节定义。\n\ntext不执行HTML，日期格式只格式化日期值。语义HTML须用专用字段类型。\n\n<a id=\"time-format\"></a>",
         "## 整数与缺失值的统一显示\n\n系统缺失占位符统一为 `--`：两个相邻的 ASCII 短横线（U+002D），不含空格。表格、指标卡、进度环、仪表、图表画布及悬浮提示使用同一文案，百分比缺失也只显示 `--`，不追加百分号或数值单位。旧 `—`、`–`、`-`、`- -`、`--%`、`- -%` 占位符在缺失时归一；其他显式业务 `missingText` 保留。真实字符串不改写。null、undefined 和非有限数值是缺失；0、false 仍为真实值。空结果的“暂无数据”状态保持。\n\n屏幕数值预设在原精度、千分位及单位换算后，舍弃小数末尾零；若小数部分全为零，就省略小数点。例如 `number-2` 的 50 显示 `50`，`percent-1/2` 的 50 均显示 `50%`，`compact-wan-1` 的 10000 显示 `1万`。舍入后成为整数也遵循此规则；非整数按声明精度四舍五入后舍弃小数末尾零，如 `number-2` 的 12.5 显示 `12.5`。带符号、金额、百分点与图表默认格式共用这一规则，仅改变展示文本，不改变原值、计算、排序或导出数值类型。\n\nXLSX 保留数值单元格的原始值及数值类型。未声明列级展示单位时，基础 `number-0/1/2/3/4/5`、`number-signed` 及其已有带符号/千分位版本统一使用原生数字格式，最多小数位、去尾零、千分位及正负号与页面一致。普通数值舍入为零时统一显示 `0`，不显示负零；带符号数字的正负号同样以舍入结果判断。Excel 中有小数精度的列通过原生条件数字格式去掉整数后多余的小数点，并去掉舍入零的符号；规则按同列、同格式合并连续区域，父子表按最终工作表位置生成，编辑数值后继续生效。条件格式不写回原始值，不使用 TEXT 公式替代数字。显式列单位、自适应格式及百分比的导出保持各自既有约定；本次不把不同业务刻度混成基础数字。\n\n完整合成场景 `/pages/numeric-value-display` 覆盖表格、指标卡、缺失进度环、整数百分比、真实零、负数、单位缩放和自定义缺失文案；图表标签、提示和坐标轴在 `/pages/chart-number-format` 对照。"
       ],
       "rules": [
@@ -43,7 +43,7 @@
         },
         {
           "id": "number-precision-five",
-          "description": "三至五位小数及带符号预设由6.107引入，整数预设由6.113引入",
+          "description": "三至五位小数及带符号预设由6.107引入，整数预设由6.113引入，对象字段绑定省略data由6.116引入",
           "valid": [
             "number-precision-five"
           ],

@@ -204,11 +204,11 @@ export type ResolvedFieldDefinition = FieldDefinition;
 /** 字段引用。字符串简写始终引用 `main` 数据槽。 */
 export type FieldReference = string | { data: string; field: string };
 
-/** 组件字段绑定；format 只控制当前视图。 */
+/** 组件字段绑定；对象省略 data 时固定引用 main，format 只控制当前视图。 */
 export type StaticFieldBinding =
   | string
   | {
-      data: string;
+      data?: string;
       field: string;
       format?: ValueFormat;
       missingText?: string;
@@ -216,11 +216,21 @@ export type StaticFieldBinding =
     };
 
 export type FieldBinding = StaticFieldBinding | {byFilter:{filterId:string;cases:Record<string,StaticFieldBinding>}};
-export function staticFieldBinding(binding:FieldBinding):StaticFieldBinding {
-  if(typeof binding==='object'&&'byFilter' in binding)throw new Error('字段选择必须先按已应用筛选投影');
-  return binding;
+export type ResolvedStaticFieldBinding = string | (Exclude<StaticFieldBinding, string> & { data: string });
+function hasBindingData(binding: Exclude<StaticFieldBinding, string>): binding is Exclude<ResolvedStaticFieldBinding, string> {
+  return binding.data !== undefined;
 }
-export function fieldBindingLeaves(binding:FieldBinding):StaticFieldBinding[]{return typeof binding==='object'&&'byFilter' in binding?Object.values(binding.byFilter.cases):[binding];}
+export function staticFieldBinding(binding:FieldBinding):ResolvedStaticFieldBinding {
+  if(typeof binding==='object'&&'byFilter' in binding)throw new Error('字段选择必须先按已应用筛选投影');
+  if (typeof binding === 'string' || hasBindingData(binding)) return binding;
+  return { ...binding, data: 'main' };
+}
+export function fieldBindingLeaves(binding:FieldBinding):ResolvedStaticFieldBinding[]{return (typeof binding==='object'&&'byFilter' in binding?Object.values(binding.byFilter.cases):[binding]).map(staticFieldBinding);}
+
+export function fieldSlot(binding: FieldBinding | FieldReference): string {
+  const resolved = staticFieldBinding(binding);
+  return typeof resolved === 'string' ? 'main' : resolved.data;
+}
 
 export type DataRow = Record<string, FieldValue>;
 

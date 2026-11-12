@@ -4,6 +4,13 @@
   "expected": [
     {
       "type": "SCHEMA_ERROR",
+      "message": "对象字段绑定省略 data 时固定引用 main 数据槽 由 6.116 引入，文档声明的是 6.106",
+      "paths": [
+        "/sections/0/components/1/props/rows/0/valueField"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
       "message": "普通数值及带符号数值支持最多三、四、五位小数 由 6.107 引入，文档声明的是 6.106",
       "paths": [
         "/sections/0/components/1/props/rows/0/valueField/format"
@@ -20,6 +27,7 @@
               "rows": [
                 {
                   "valueField": {
+                    "field": "gmv",
                     "format": "number-3-signed"
                   }
                 }

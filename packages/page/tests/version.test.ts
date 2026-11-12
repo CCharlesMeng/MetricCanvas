@@ -4,6 +4,8 @@ import { PAGE_SCHEMA_MAJOR, pageCapabilities, requiredMinorVersion, supportedVer
 const introducedAt: Record<string, number> = {
   'ioc-header-title-navigation':115,
   'dimension-binding-operator':114,
+
+  'field-binding-default-main': 116,
   'number-integer':113,
   'table-filter-search':112,
   'ioc-header-back-hidden':111,

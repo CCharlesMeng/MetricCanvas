@@ -10,6 +10,8 @@ Excel 基础数字精度统一：number-0 至 number-5 及已有带符号/千分
 
 柱图、折线图、柱线混合图及横向条形图统一数值轴单位：单位默认在数值轴末端水平显示，刻度只显示数字；自适应格式整轴使用同一缩放档位，提示与标签保留原格式。旧页面随引擎采用新默认，显式 ECharts 配置优先，无新增字段或 Schema 版本。见[数值轴规则](docs/page-metadata/field-bindings-and-formats.md#chart-number-format)，合成入口 `/pages/chart-axis-unit`。
 
+6.116：对象字段绑定可省略 `data`，固定默认 `main`，与字符串简写一致；适用于共用字段绑定的组件及 `byFilter` 叶子，多源组件也不推断其他槽。组件数据源绑定和 `FieldReference` 约束保持，旧显式写法兼容。见[默认数据槽](docs/page-metadata/field-bindings-and-formats.md)，合成入口 `/pages/number-precision-five`。字段净增0。
+
 IOC 父子表层级选择复用“全球＝不限区域”：保留全部父行，按父行查询子表，界面与 URL 保留全球；完整父子 Excel 共用解析。普通组织树和其他选择保持严格匹配，无新增 Schema 字段。见[层级筛选联动](docs/page-metadata/components/table.md#hierarchy-selection)，合成入口 `/pages/table-hierarchy-selection`。
 
 6.115：IOC 页头通过 `identity.titleNavigate` 为标题配置跳转地址，复用普通 URL 导航、页面参数和筛选传参、目标校验及条件；无行上下文，省略时保持普通标题。见[标题跳转](docs/page-metadata/components/iocHeader.md#标题跳转6115)，合成入口 `/pages/ioc-header-title-link`。

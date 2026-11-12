@@ -7,7 +7,7 @@ test('three to five decimals share rounding, colors and metric arrows', async ({
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.goto(`/pages/${fixture.id}`);
-  const rows = page.locator('tbody tr');
+  const rows = page.locator('table').first().locator('tbody tr');
   await expect(rows).toHaveCount(14);
   for (const [index, expected] of [
     [0, ['正数', '1234.123', '+1234.123', '1234.1235', '+1234.1235', '1234.12346', '+1234.12346']],

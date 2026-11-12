@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.115",
-  "schemaSha256": "7614c0c4578fdd2e1c05d9a44a7ac2f2f21fd4facea5c80a920b9b96d024ed1b",
+  "schemaVersion": "6.116",
+  "schemaSha256": "be6eded6142f276f4c29fddcc8d81d9fa1be3e77b36c5880538aa228c3b4264f",
   "semanticSources": [
     {
       "file": "metriccanvas-authoring/core/page/analysis-report.ts",
@@ -228,11 +228,11 @@
     },
     {
       "file": "packages/page/src/field-resolution.ts",
-      "sha256": "026ea931a1a6e3eed56be7cf25982da7ccfa613b1b0d0920529dfd30a6ebf79f"
+      "sha256": "740f8a914b38c86bcc163361197c766798e39518313261683b8006e75764693e"
     },
     {
       "file": "packages/page/src/field-selection.ts",
-      "sha256": "3e58ab8b05ac2418a43c738960daa732b1fabb827c870d93d6298ba1f71f85ed"
+      "sha256": "3132a7b2066360b8efac62188f704da9326cb754b70b53fe96f28acf99fd12ca"
     },
     {
       "file": "packages/page/src/filter-dependencies.ts",
@@ -444,7 +444,7 @@
     },
     {
       "file": "packages/page/src/schema/primitives.ts",
-      "sha256": "7ef8a54e6b15e8b250bda5aac566ff039d33b0cde783c104b18fa162569c96b6"
+      "sha256": "f0e0ad17fc6beb7c9353cacd643f2609d12a387c0091e3907aed23153c4619d4"
     },
     {
       "file": "packages/page/src/semantic-format.ts",
@@ -540,7 +540,7 @@
     },
     {
       "file": "packages/page/src/validate.ts",
-      "sha256": "828d1ed35f38ca6b495efb5939c4c3210a0ef3751c45b53507eb805420f6a733"
+      "sha256": "f6a1a50071813143b1235c7073f1c8651ce8af648f150569b02281064464cff7"
     },
     {
       "file": "packages/page/tests/ai-summary-regions.test.ts",
@@ -552,7 +552,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "aee1a11982cc6fc9d99c1ba5c4ece5ed59519297e6974a21b4d8393bf1ad7249"
+      "sha256": "f333d21deef0bd9cf9bbe0925afddb3aac37d1dc7afb8363109b4b9795021ed0"
     }
   ],
   "modules": {
@@ -2182,7 +2182,8 @@
         "6.112",
         "6.113",
         "6.114",
-        "6.115"
+        "6.115",
+        "6.116"
       ]
     },
     {
@@ -11754,7 +11755,7 @@
     {
       "pointer": "#/definitions/staticFieldBinding/anyOf/1/properties/data",
       "path": "@staticFieldBinding · anyOf[1].data",
-      "required": "本分支必填",
+      "required": "本分支可选",
       "module": "field-bindings-and-formats.md"
     },
     {
@@ -20955,7 +20956,7 @@
       "variant": "primaryDetail",
       "file": "examples/component-metricCard-primaryDetail.json",
       "pointer": "#/sections/0/components/0",
-      "source": "page/conformance/valid/authoring-percent-coverage.json"
+      "source": "page/conformance/valid/number-precision-five.json"
     },
     {
       "type": "barChart",
@@ -21838,7 +21839,7 @@
       "schemaPointer": "#/definitions/scalar/anyOf/0",
       "module": "fields.md",
       "file": "examples/component-metricCard-primaryDetail.json",
-      "pointer": "#/dataSources/rates/source/rows/0/case"
+      "pointer": "#/dataSources/binding-samples/source/rows/0/id"
     },
     {
       "schemaPointer": "#/definitions/scalar/anyOf/1",
@@ -21856,7 +21857,7 @@
       "schemaPointer": "#/definitions/scalar/anyOf/3",
       "module": "fields.md",
       "file": "examples/component-metricCard-primaryDetail.json",
-      "pointer": "#/dataSources/rates/source/rows/4/rate"
+      "pointer": "#/dataSources/binding-samples/source/rows/3/change"
     },
     {
       "schemaPointer": "#/definitions/fieldValue/anyOf/1",
@@ -22691,14 +22692,14 @@
     {
       "schemaPointer": "#/definitions/staticFieldBinding/anyOf/1",
       "module": "field-bindings-and-formats.md",
-      "file": "examples/inline-report.json",
-      "pointer": "#/sections/0/components/1/props/rows/0/valueField"
+      "file": "examples/component-metricCard-primaryDetail.json",
+      "pointer": "#/sections/0/components/0/props/rows/0/valueField"
     },
     {
       "schemaPointer": "#/definitions/staticFieldBinding/anyOf/1/properties/format/anyOf/0",
       "module": "field-bindings-and-formats.md",
-      "file": "examples/inline-report.json",
-      "pointer": "#/sections/0/components/1/props/rows/0/valueField/format"
+      "file": "examples/component-metricCard-primaryDetail.json",
+      "pointer": "#/sections/0/components/0/props/rows/0/valueField/format"
     },
     {
       "schemaPointer": "#/definitions/staticFieldBinding/anyOf/1/properties/format/anyOf/1",

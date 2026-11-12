@@ -92,3 +92,13 @@ PC下人民币显示1.23万，视口缩至390px后为1.2万；美元为12.3K。�
 入口 `/pages/numeric-precision-export`、`/pages/number-precision-five` 和 `/pages/numeric-value-display`，运行 `pnpm dev:playground`，无需 URL 参数或真实服务。三个页面均使用 inline 合成数据。页面普通及带符号的 number-0 至 number-5 按最大精度四舍五入、去尾零，舍入零为0。导出表格后核对原值未变，基础精度列不再使用固定显示文本；将单元格改成整数、小数或舍入零，Excel 原生数字格式与条件格式继续按列精度生效，不出现尾随小数点或正负零。父子表及分组表头沿最终工作表行列生成规则。
 
 `packages/engine/runtime-ui/tests/workbook-number-format.test.ts` 使用独立 ExcelJS 读取器验证真实 XLSX 的原值、类型、数字格式、条件公式及合并区域；`apps/playground/tests/numeric-precision-export.browser.ts` 覆盖0至5位页面显示和浏览器下载，`number-precision-five.browser.ts` 覆盖颜色与箭头。桌面 Excel 的实际打开与编辑属于另行验收，不以结构回读冒充。显式展示单位、自适应数字与百分比仍沿各自已定义的导出策略。
+
+## 字段绑定默认 main
+
+复用用途：在对象字段绑定中配置 format、missingText 或 match 时省略重复的 data，适用于 Schema6.116 及以后。入口 `/pages/number-precision-five`。
+
+参考对象：[完整页面](number-precision-five.json) 的 single-table、multi-table、summary 与 chart；省略槽的 change 与显式 main 的 explicitChange 是同值的独立字段，extra 中的 change 刻意使用不同值。
+
+移植边界：映射目标页字段与组件数据源绑定，引用非 main 槽仍须显式声明 data。省略固定指向 main，不随组件数据源数量改变；FieldReference 对象不适用该简写。样本值仅为 inline 合成数据。
+
+可观察预期与环境：启动 `pnpm dev:playground`，无需 URL 参数或数据服务。单源表格两种绑定依次显示 +1.23、-1.23、0、--；多源表格省略槽列同样显示这四项，显式 extra 列显示 +50 至 +53。指标卡显示 +1.23，柱图标签按两位带符号格式显示。表格导出保留原始数值与数值格式，显示仍一致；切换窄屏后表格可正常查看。版本下限、无效槽、未知字段、byFilter、非活动 Tab、详情视图与子表由定向行为测试覆盖；不代表真实 DQE、Relay 或部署验收。
