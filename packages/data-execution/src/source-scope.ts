@@ -1,6 +1,7 @@
 import { activePageComponents } from '@metriccanvas/page/internal';
 import type { Page } from '@metriccanvas/page';
 import { rowExpansionQuerySources, computeDependencies, definitionSourceIds, flattenPageComponents, queryResultDependencies } from '@metriccanvas/page/internal';
+import { activeSourceIds } from './source-program/compiler';
 
 function referencedSources(page: Pick<Page, 'sections' | 'detailViews'>): Set<string> {
   const ids = new Set<string>();
@@ -24,13 +25,13 @@ function dependencies(page: Page, ids: Set<string>): Set<string> {
 }
 
 /** All declared sources except sources used exclusively by click-time query views. */
-export function initialQuerySourceIds(page: Page): string[] {
+export function initialQuerySourceIds(page: Page, context?: import('@metriccanvas/page/internal').ConditionContext): string[] {
   const live = dependencies(page, referencedSources({
     sections: page.sections,
     detailViews: page.detailViews?.filter(view => view.mode === 'snapshot')
   }));
   const allLive = new Set(live);
-  const active = dependencies(page, new Set(activePageComponents(page).flatMap(component => [...Object.values(component.data ?? {}), ...(component.type === 'aiSummary' ? Object.values(component.props.relatedData ?? {}).map(data => data.source) : [])])));
+  const active = context ? activeSourceIds(page, {}, context) : dependencies(page, new Set(activePageComponents(page).flatMap(component => [...Object.values(component.data ?? {}), ...(component.type === 'aiSummary' ? Object.values(component.props.relatedData ?? {}).map(data => data.source) : [])])));
   const delayed = dependencies(page, referencedSources({
     sections: [], detailViews: page.detailViews?.filter(view => view.mode === 'query')
   }));

@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "433d783cfaa562a187b81e0aacb3b0a1330e1ef6570ed3efab480ce34826ce39",
+  "sha256": "d5c27bb93355b4f5c9e81148799c9e1eb7c5f342ec38e0d2f6aefde95a4c0e6b",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -36,7 +36,7 @@
     },
     {
       "file": "docs/page-metadata/components/barChart.md",
-      "sha256": "c5914d866d97d4eca9f4f886fa27fd21ad6b8848d024351ca93a89246c7305ba"
+      "sha256": "b71e1c6bec8fdb98f81acbe29c56ae4d1827254599e2fe29bc433c7b70337987"
     },
     {
       "file": "docs/page-metadata/components/button.md",
@@ -72,7 +72,7 @@
     },
     {
       "file": "docs/page-metadata/components/lineChart.md",
-      "sha256": "76d62a5e4fe1a26e27fd7ff1e0675da8c820e82797dfb6304ee58ce9650a4e8d"
+      "sha256": "816cd253cdf991b2746f6b7c7e798e708a3c4b90ae55c06f39cf01a088e28564"
     },
     {
       "file": "docs/page-metadata/components/mapChart.md",
@@ -104,7 +104,7 @@
     },
     {
       "file": "docs/page-metadata/components/table.md",
-      "sha256": "eae3482ad10330c6184b67dd61751b85b5351736013d56f5644408ac9f45c09a"
+      "sha256": "9dc7e37152233a2c37d2d0ab94f6bd442491dd3804ed3c9d3e93d321b1aa637c"
     },
     {
       "file": "docs/page-metadata/components/text.md",
@@ -116,7 +116,7 @@
     },
     {
       "file": "docs/page-metadata/conditions.md",
-      "sha256": "23e6f412243879c66fc63dae938794122863ec8f52aa1d58392bc096666192d2"
+      "sha256": "7d18d490b44e384d2a4760d49d59714c6f7a18f6ec2a7e69569c6faaf086cfdf"
     },
     {
       "file": "docs/page-metadata/data-sources.md",
@@ -2392,11 +2392,15 @@
     },
     {
       "file": "pages/capabilities/data/README.md",
-      "sha256": "3c71f98b1ecbc2540bc60fb2dd3a1c2d5311a0c3b88e53ff9ef41addcefadb82"
+      "sha256": "7c16f78ca51b331c0c95cf7a0fdf3a5f68f053d3e405d32045670fd0436ddb8e"
     },
     {
       "file": "pages/capabilities/data/authoring-percent-coverage.json",
       "sha256": "ac6ac50ffcc73b1e19e814623fe762300f9eb86026088287d611ca5a46d976fc"
+    },
+    {
+      "file": "pages/capabilities/data/conditional-query-demand.json",
+      "sha256": "7b0c2010804590b7e24a3b64922de749339b5f0690d7fc3a33e0dc9898eab2c7"
     },
     {
       "file": "pages/capabilities/data/missing-organization-key.json",
@@ -3752,7 +3756,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-sources.ts",
-      "sha256": "d0b9ed0b35b31037e2b58a45554aa7a104c0eb4e5fba94c32a310ba668b7e9fd"
+      "sha256": "24e0e0179cede18d271a774634a3dcfdedabc80b03a80547d3ddfe3b96f4cd9d"
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",

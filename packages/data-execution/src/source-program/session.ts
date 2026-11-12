@@ -42,6 +42,7 @@ import { compileSources, executionSourceIds } from './compiler';
 import { reportInitialSnapshotWarnings, reportInitialWarnings, reusableInitialSnapshot, checkOrdinaryRange, isBusinessSelection, correctedPageIndex, fetchComplete, SourceRangeError, EXPORT_PREPARATION_TIMEOUT_MS } from './range-policy';
 import { automaticQueryPageSize } from './table-pagination';
 import { describeExportSource } from './export-diagnostics';
+import { presentationQuerySources, projectCapturedQuery } from '../query-projection';
 
 export interface SourceRead {
   /** Speculative reads share caches but yield execution priority to interactive reads. */
@@ -168,7 +169,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
       const scope = sourceReadScope(request.freshness, frozenInputs);
       try {
         const ids = executionSourceIds(page, request.roots);
-        const sources = new Map(compiled.sources);
+        const sources = presentationQuerySources(page, {declarations:page.filters??[],filters:request.conditions,displaySnapshot:frozenInputs,filterRevision:frozenRevision});
         const raw = new Map(request.seeds);
         removeUntrustedSeeds();
         const views = new Map(request.views);
@@ -399,7 +400,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
         const requiresCompleteRead = (preserveWindow: boolean, source: DataSource, query: EffectiveQuery) => (request.purpose === 'complete' && !preserveWindow) || objectCompleteSource(source,query);
         function preparedQuery(id: string, source: QueryDataSource, view: TableQueryView, values: EffectiveQuery['filterValues']): EffectiveQuery | Promise<EffectiveQuery> {
           const search = mainTableSearch(view.search);
-          const captured = request.queries?.get(id);
+          const captured = projectCapturedQuery(request.queries?.get(id), source);
           if (captured && requiresQueryContext(source.source.query, page.filters)) { const expected = composeEffectiveQuery({ displayInputs: frozenInputs, filterRevision: frozenRevision, now: request.now, page:page,filters:page.filters, dataSource: source as QueryDataSource }, request.conditions, view.pageIndex, view.sort, tableHeaders(view.predicates), search); if (canonicalizeJson(captured.body) !== canonicalizeJson(expected.body)) throw Object.assign(new Error('捕获查询与已应用查询模式不匹配'), { code: 'DQE_QUERY_REJECTED' }); }
           const fresh = () => composeEffectiveQuery({ displayInputs: frozenInputs, filterRevision: frozenRevision, now: request.now, page:page,filters:page.filters, dataSource: source as QueryDataSource, ...(limits.has(id) ? { pagination: { limit: view.pageSize } } : {}) }, request.conditions, view.pageIndex, view.sort, tableHeaders(view.predicates), search);
           const protectedConditions = requiresQueryContext(source.source.query, page.filters)||overridesSource(id,request.conditions);
@@ -413,6 +414,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
           return isBusinessSelection(source, compiled.limits.has(id) || compiled.automatic.has(id)) || (cascaded.has(id) && (!request.completeSources?.includes(id) || isBoundedResultSource(page.dataSources, id)));
         }
         function defaultQueryView(id: string, view: TableQueryView): boolean {
+          if (Object.keys(sources.get(id)!.fields).length !== Object.keys(compiled.sources.get(id)!.fields).length) return false;
           return defaultConditions(id, request.conditions, false) && view.pageIndex === 0 && !view.sort.length && !view.predicates.length && !view.search?.query.trim() && (!compiled.limits.has(id) || view.pageSize === compiled.limits.get(id));
         }
         function finishQueryRead(id: string, source: QueryDataSource, view: TableQueryView, snapshot: DataSnapshot): void {

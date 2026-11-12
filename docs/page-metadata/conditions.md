@@ -1,6 +1,6 @@
 # 条件显隐与动作资格
 
-6.89 将既有 `visibleWhen` 扩展到柱状图（含组合图）和折线图的 `props.series[]`。系列没有行上下文；复用已有类型、来源、错误/等待与组合条件规则。系列、图例、提示项及无使用者的数值轴同步显隐，父图表标题和容器保留，隐藏不停止查询。声明与边界见[系列条件显隐](components/barChart.md#chart-series-visibility)，入口 `/pages/chart-series-visibility`。
+6.89 将既有 `visibleWhen` 扩展到柱状图（含组合图）和折线图的 `props.series[]`。系列没有行上下文；复用已有类型、来源、错误/等待与组合条件规则。系列、图例、提示项及无使用者的数值轴同步显隐，父图表标题和容器保留。表格列与图表系列显隐参与依赖分析：无其他消费者或执行依赖的数据停止取数，共享查询保留类别粒度及必要依赖，重新显示按当前筛选恢复；不新增字段。声明与保守保留边界见[列显隐](components/table.md#table-column-visibility)及[系列条件显隐](components/barChart.md#chart-series-visibility)，入口 `/pages/chart-series-visibility`、`/pages/conditional-query-demand`。
 
 6.75 将既有 enabledWhen 扩展到 boolean 筛选器，禁用只约束编辑，保留已应用值与查询条件；完整行为见[布尔候选依赖](filters.md#boolean-candidate-context)。
 
@@ -26,7 +26,7 @@ text的props.parts可声明{id,text,visibleWhen?}，与body/bodyFormat互斥，�
 
 集成应用可提供displayInputs的getSnapshot/subscribe，携带permissionRevision、permissions、values及依赖筛选的filterRevision。筛选条件页无需外部输入。权限会话变化立即停用旧内容、详情及导出，集成应用用当前身份重新初始化；页面无法改写已有权限。
 
-PDF/PNG导出捕获当前条件和筛选，展开所有允许的分区/Tab，不受当前选项限制；条件禁止的内容不导出，允许的空父容器保留。XLSX使用同一表格行投影。普通筛选变化不修改已捕获导出，权限修订变化取消下载；隐藏不会自动停止查询。
+PDF/PNG导出捕获当前条件和筛选，展开所有允许的分区/Tab，不受当前选项限制；条件禁止的内容不导出，允许的空父容器保留。XLSX使用同一表格行投影。普通筛选变化不修改已捕获导出，权限修订变化取消下载；一般节点隐藏仍不自动停查，表格列与图表系列按上述依赖规则裁剪取数。
 
 验收入口：[层级联动](examples/page-visibility-region-linkage.json)、[外部事实Sim](examples/page-visibility-inputs.json)。示例使用明确的本地演示输入；内联数据与Sim事实不能替代真实CloudIOC/DQE联调。
 

@@ -833,6 +833,11 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/conditional-query-demand.json",
+      "target": "product-contracts/page/conformance/valid/conditional-query-demand.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/valid/dimension-binding-operator.json",
       "target": "product-contracts/page/conformance/valid/dimension-binding-operator.json",
       "scope": "exact product contract"
@@ -8279,7 +8284,7 @@
     }
   ],
   "counts": {
-    "product": 1623,
+    "product": 1624,
     "authoring": 32,
     "modules": 36,
     "topics": 305,
