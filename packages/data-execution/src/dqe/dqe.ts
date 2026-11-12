@@ -116,6 +116,7 @@ export interface DqeGatewayConfig {
   fetchImpl?: typeof fetch;
   /** 单次 HTTP 请求超时，默认 120000ms；显式配置优先。 */
   timeoutMs?: number;
+  /** Maximum concurrent HTTP requests (default 5); each request contains one query. */
   maxConcurrentBatches?: number;
   credentials?: RequestCredentials;
   diagnostics?: DqeDiagnostics;
@@ -295,8 +296,8 @@ export function createDqeGateway(
     let requestId: string | undefined;
     let timedOut = false;
     const controller = new AbortController();
-    // 批量信封由多个逻辑查询共享:单个查询取消只结算它自己,
-    // 全员结算后才中止共享的 HTTP 请求,不误伤同批次其他查询。
+    // Each transport now owns one logical query; cancellation aborts its HTTP request.
+    // Keep settlement idempotent so a late transport response cannot publish success.
     const abortIfAllSettled = () => {
       if (calls.every((call) => call.settled)) controller.abort();
     };
@@ -424,7 +425,9 @@ export function createDqeGateway(
     // 进入批次前已被取消的查询不再发往上游(它们已按 DQE_CANCELLED 结算)。
     const calls = pending.filter((call) => !call.settled);
     pending = [];
-    if (calls.length > 0) void executeBatch(calls);
+    // Independent queries must not wait for the slowest item in one HTTP envelope.
+    // The existing semaphore still bounds transport concurrency, including candidates.
+    for (const call of calls) void executeBatch([call]);
   }
 
   const gateway: DataGateway & DimensionValuesGateway & FilterCandidatesGateway = {

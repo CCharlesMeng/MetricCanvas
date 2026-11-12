@@ -53,7 +53,7 @@ function dqeQuery(
 }
 
 describe('DQE 数据网关', () => {
-  it('完整保留复杂 DQE 项，并把同一轮逻辑查询合并为一个请求', async () => {
+  it('完整保留复杂 DQE 项，并以独立请求执行同一轮逻辑查询', async () => {
     const sent: unknown[] = [];
     const secondItem: JsonObject = {
       ...fullDslItem,
@@ -68,7 +68,8 @@ describe('DQE 数据网关', () => {
     const gateway = createDqeGateway({
       endpoint: '/rest/cdi/cdinl2databuilderservice/v1/dsl/execute',
       fetchImpl: (async (_input, init) => {
-        sent.push(JSON.parse(String(init?.body)));
+        const body = JSON.parse(String(init?.body));
+        sent.push(body);
         return new Response(
           JSON.stringify({
             retCode: 'CBC.0000',
@@ -76,12 +77,8 @@ describe('DQE 数据网关', () => {
             results: [
               {
                 code: 'SUCCESS',
-                data: [{ 客户级别: '卓越NA', NA客户数: 15 }],
-                total_count: 1
-              },
-              {
-                code: 'SUCCESS',
-                data: [{ 客户级别: '卓越TOP', NA客户数: 8 }],
+                data: body.dsl_list[0].filter.dims[1].dim_value_list[0] === '卓越NA'
+                  ? [{ 客户级别: '卓越NA', NA客户数: 15 }] : [{ 客户级别: '卓越TOP', NA客户数: 8 }],
                 total_count: 1
               }
             ]
@@ -95,7 +92,7 @@ describe('DQE 数据网关', () => {
       gateway.fetchData(dqeQuery(secondItem))
     ]);
 
-    expect(sent).toEqual([{ dsl_list: [fullDslItem, secondItem] }]);
+    expect(sent).toEqual([{ dsl_list: [fullDslItem] }, { dsl_list: [secondItem] }]);
     expect(naRows).toEqual({
       rows: [{ 'customer-level': '卓越NA', 'na-customer-count': 15 }],
       totalCount: 1
@@ -107,14 +104,13 @@ describe('DQE 数据网关', () => {
   });
 
   it('单项失败只拒绝对应逻辑查询', async () => {
+    let call = 0;
     const gateway = createDqeGateway({
       fetchImpl: (async () =>
         new Response(
           JSON.stringify({
             retCode: 'CBC.0000',
-            results: [
-              { code: 'FAILED', data: [], total_count: 'ignored' },
-              {
+            results: [++call === 1 ? { code: 'FAILED', data: [], total_count: 'ignored' } : {
                 code: 'SUCCESS',
                 data: [{ 客户级别: '卓越NA', NA客户数: 15 }],
                 total_count: 1

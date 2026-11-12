@@ -118,6 +118,7 @@ export function alignedCellText(binding: FieldBinding, data: NamedDataSlots, row
   const fallback = alignedFallback(binding, data, row);
   if (fallback) return typeof resolved.format === 'object' ? formatTableCell(fallback.raw, resolved.format) : String(fallback.raw);
   const value = alignedFieldValue(binding, data, row);
+  if (value == null && (data[resolved.data]?.sourceStatus === 'loading' || data[resolved.data]?.sourceStatus === 'error' || data[resolved.data]?.progress?.pendingFields.includes(resolved.field))) return '--';
   const enumLabel = tableEnumLabel(value, enumValues);
   if (enumLabel !== undefined) return enumLabel;
   const text = formatTableCell(value, resolved.format, resolved.missingText,

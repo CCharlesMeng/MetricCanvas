@@ -43,7 +43,9 @@ test('first expansion renders a child response received after the loading view h
   await expect(child.getByRole('cell', { name: 'C01-001', exact: true })).toBeVisible();
   await expect(child.getByRole('cell', { name: 'C01-001', exact: true })).toBeInViewport();
   await child.getByRole('button', { name: '下一页', exact: true }).click();
-  await expect(child.getByText('正在加载…', { exact: true })).toBeVisible();
+  await expect(child.getByRole('cell', { name: 'C01-001', exact: true })).toBeVisible();
+  await expect(child.locator('.table-widget')).toHaveAttribute('aria-busy', 'true');
+  await expect(child.locator('.loading-spinner')).toHaveCount(0);
   await page.evaluate(() => (window as unknown as { releaseChildQueries(): void }).releaseChildQueries());
   await expect(child.getByRole('cell', { name: 'C01-011', exact: true })).toBeVisible();
   await expect(child.getByRole('cell', { name: 'C01-011', exact: true })).toBeInViewport();

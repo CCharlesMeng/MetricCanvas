@@ -51,6 +51,9 @@
   import { AiSummary, AiSummaryView, exportSummarySnapshot, type AiSummaryConfig } from './ai-summary';
   import { fieldRow } from '../../widgets/src/shared/component-data';
   import WidgetHost from './WidgetHost.svelte';
+  import { createRetainedScreenData, RETAINED_SCREEN_DATA, type RetainedScreenData } from './retained-screen-data';
+  import { progressiveSlotData } from './table/screen-progress';
+  const retainedScreenData = getContext<RetainedScreenData | undefined>(RETAINED_SCREEN_DATA) ?? createRetainedScreenData();
   import {SOURCE_FILTER_CONTEXT,type SourceFilterReader} from './dashboard/source-filter-context';
   const sourceFilters=getContext<SourceFilterReader|undefined>(SOURCE_FILTER_CONTEXT);
   import FilterGroup from './dashboard/FilterGroup.svelte';
@@ -112,17 +115,21 @@
     onmetriclink,
     metricHref,
     onback,
-    table,
+    table: requestedTable,
     map,
     nested
   }: Props = $props();
 
-  // Pending or failed slots must not combine values from different query states.
+  // Display receipts are isolated from the current execution snapshots.
   const gate=$derived(presentation?.()?.component(component.id));
-  const visibleData = $derived(snapshot.status === 'error' || snapshot.status === 'loading'
+  const progressing = $derived(exportMode ? undefined : progressiveSlotData(component, data, requestedTable?.view));
+  const screen = $derived(exportMode ? { data, retained: false, table: undefined }
+    : retainedScreenData.read(component, progressing ?? data, snapshot, requestedTable));
+  const table = $derived(requestedTable ? { ...requestedTable, ...screen.table } : undefined);
+  const visibleData = $derived(progressing ?? (screen.retained ? screen.data : snapshot.status === 'error' || snapshot.status === 'loading'
     ? Object.fromEntries(Object.keys(component.data ?? {}).map(slot => [slot, {
       fields: data[slot]?.fields ?? {}, diagnostics: data[slot]?.diagnostics, sourceStatus: snapshot.status, snapshot: { status: 'ready' as const, rows: [] }
-    }])) : data);
+    }])) : data));
   const mainData = $derived({ main: visibleData.main! } as MainDataSlots);
   const metricData = $derived({
     main: visibleData.main!,
@@ -242,10 +249,10 @@
 {:else if component.type === 'table' && table?.expansion && !exportMode}
   <ExpandableTable {component} data={tableData} binding={table} {snapshot} />
 {:else}
-  <WidgetHost {snapshot} showLoadingIndicator={component.type !== 'table' && component.type !== 'metricCard'} notices={component.type === 'table' && snapshot.status === 'error' ? [] : componentDataNotices(component, snapshot, pageSnapshots, table)}>
+  <WidgetHost {snapshot} retained={screen.retained} showLoadingIndicator={component.type !== 'table' && component.type !== 'metricCard'} notices={component.type === 'table' && snapshot.status === 'error' ? [] : componentDataNotices(component, snapshot, pageSnapshots, table)}>
     {#snippet ready(_readySnapshot)}
       {#if component.type === 'metricCard'}
-        <MetricCard loading={snapshot.status === 'loading'} data={metricData} props={component.props} onlink={onmetriclink} linkHref={metricHref} />
+        <MetricCard loading={snapshot.status === 'loading' && !screen.retained} data={metricData} props={component.props} onlink={onmetriclink} linkHref={metricHref} />
       {:else if component.type === 'barChart'}
         <BarChart
           diagnostic={ { componentId: component.id, componentType: component.type, path: optionPaths?.().get(component.id) ?? '/props/echartsOption' } }

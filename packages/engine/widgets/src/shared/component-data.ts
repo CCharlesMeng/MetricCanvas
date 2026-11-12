@@ -13,6 +13,8 @@ export type ReadyDataSnapshot = Extract<DataSnapshot, { status: 'ready' }>;
 
 /** 统一运行时已解析的数据槽：数据快照与其数据源字段契约保持同槽交付。 */
 export interface ComponentDataSlot {
+  /** Screen-only incomplete columns; never supplied to computation or export. */
+  progress?: { pendingFields: readonly string[] };
   /** Original source state, preserved before the rendering projection erases empty/error. */
   sourceStatus?: DataSnapshot['status'];
   diagnostics?: { componentId?: string; sourceId?: string; snapshot: DataSnapshot };

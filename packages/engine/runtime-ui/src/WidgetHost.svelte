@@ -9,10 +9,11 @@
     snapshot: DataSnapshot;
     notices?: string[];
     showLoadingIndicator?: boolean;
+    retained?: boolean;
     ready: Snippet<[Extract<DataSnapshot, { status: 'ready' }>]>;
   }
 
-  let { snapshot, ready, notices = [], showLoadingIndicator = true }: Props = $props();
+  let { snapshot, ready, notices = [], showLoadingIndicator = true, retained = false }: Props = $props();
   const renderable = $derived(displayDataSnapshot(snapshot));
 
   $effect(() => {
@@ -20,8 +21,8 @@
   });
 </script>
 
-<div class="widget-content" aria-busy={snapshot.status === 'loading'}>
-  {#if snapshot.status === 'loading' && showLoadingIndicator}
+<div class="widget-content" aria-busy={snapshot.status === 'loading'} inert={retained} data-retained={retained || undefined}>
+  {#if snapshot.status === 'loading' && showLoadingIndicator && !retained}
     <span class="loading-indicator"><LoadingSpinner /></span>
   {/if}
   {@render ready(renderable)}

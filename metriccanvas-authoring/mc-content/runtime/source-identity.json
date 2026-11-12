@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "09fb82f6ec4a0f5e351176b218816237ca40deba1fa3f33b1b2b17278d2d5514",
+  "sha256": "8c1760ae67dbf0838ab0d2550abc26a49366ba31f9fcf51d60de39e9cc01bd3b",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -80,7 +80,7 @@
     },
     {
       "file": "docs/page-metadata/components/metricCard.md",
-      "sha256": "dffd810920088546e2dba9e9abd70b665286898d6dd4f89d1229a256b2e0c247"
+      "sha256": "3b80aa958c984ae2c5f712a11e63d5e96bd6526c1940cc21416149db7a59f0e2"
     },
     {
       "file": "docs/page-metadata/components/pieChart.md",
@@ -104,7 +104,7 @@
     },
     {
       "file": "docs/page-metadata/components/table.md",
-      "sha256": "99be2bd0d9480baf40c7bae2e566d590eb3e388bb95ae92e4d0729ff5215eaed"
+      "sha256": "030c0a4bdbf811c75875d437f4d31ca85109a6279822fda8393dc1d50656979b"
     },
     {
       "file": "docs/page-metadata/components/text.md",
@@ -120,7 +120,7 @@
     },
     {
       "file": "docs/page-metadata/data-sources.md",
-      "sha256": "bc465993d33ac0274c66aed9f5f7fff77f1f0acd7ec3193908c8aa128e2df7c6"
+      "sha256": "cb70772e6b60ab3044e0d7b6083af4441dcf750bfe5bc3602192b36fd6294635"
     },
     {
       "file": "docs/page-metadata/examples/README.md",
@@ -2712,7 +2712,7 @@
     },
     {
       "file": "pages/capabilities/layout/README.md",
-      "sha256": "e3f26e8138412c752bed9b79641dd562519438dde765565f73ba976e04fcc8b5"
+      "sha256": "7a136d3b246a54615cf5c002e22a9dcab6b84d5af4e72322b0bc699e5c92af0e"
     },
     {
       "file": "pages/capabilities/layout/dashboard-title-styles.json",
@@ -2916,7 +2916,7 @@
     },
     {
       "file": "pages/capabilities/table/README.md",
-      "sha256": "ee1be26c0139f435dc600ae1599bb61d7f5b7629405525ce210e23e6a4bdea19"
+      "sha256": "506a053b3830b4067733f616fd221615fa8276aa7f9a29896271abc3afd81269"
     },
     {
       "file": "pages/capabilities/table/decision-opinion-details.json",
@@ -2953,6 +2953,10 @@
     {
       "file": "pages/capabilities/table/paged-join-on-demand.json",
       "sha256": "c05cdaa1f87f24a72193eb5bf53b5633209352741359a6b660de80d69d040098"
+    },
+    {
+      "file": "pages/capabilities/table/paged-join-progressive.json",
+      "sha256": "f4fdda6e13612535a70f5a79ab486fac5b5993b495b62dd3e6549cea8d8f466b"
     },
     {
       "file": "pages/capabilities/table/partner-health-interactions.json",

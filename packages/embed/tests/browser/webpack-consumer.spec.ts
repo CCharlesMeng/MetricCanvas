@@ -189,7 +189,8 @@ test('Webpack 5 pure_getters compression preserves async child updates without f
     await expect(child.getByRole('cell', { name: 'C01-001', exact: true })).toBeVisible();
     await expect(child.getByText('正在加载…', { exact: true })).toHaveCount(0);
     await child.getByRole('button', { name: '下一页', exact: true }).click();
-    await expect(child.getByText('正在加载…', { exact: true })).toBeVisible();
+    await expect(child.getByRole('cell', { name: 'C01-001', exact: true })).toBeVisible();
+    await expect(child.locator('.table-widget')).toHaveAttribute('aria-busy', 'true');
     await page.evaluate(() => window.webpackChildProbe.release());
     await expect(child.getByRole('cell', { name: 'C01-011', exact: true })).toBeVisible();
     await toggle.click();
@@ -204,7 +205,7 @@ test('Webpack 5 pure_getters compression preserves async child updates without f
     await expect(child.getByRole('cell', { name: 'C01-021', exact: true })).toBeVisible();
     await child.getByLabel('每页 10 条', { exact: true }).click();
     await child.getByRole('option', { name: '20', exact: true }).click();
-    await expect(child.getByText('正在加载…', { exact: true })).toBeVisible();
+    await expect(child.locator('.table-widget')).toHaveAttribute('aria-busy', 'true');
     await toggle.click();
     await expect(child).toHaveCount(0);
     await page.evaluate(() => window.webpackChildProbe.release());

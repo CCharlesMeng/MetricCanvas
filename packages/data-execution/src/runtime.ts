@@ -34,3 +34,5 @@ export { createCandidateValidator } from './candidate-validation';
 export { sourceCandidatesGateway, projectSourceCandidates } from './source-candidates';
 
 export {resolveFinalizationDates,type FinalizationSourceDefinition} from './finalization';
+
+export type { ScreenProgress } from './screen-progress';

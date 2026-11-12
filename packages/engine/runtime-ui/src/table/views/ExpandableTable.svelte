@@ -48,7 +48,7 @@
   }; });
 </script>
 
-<div aria-busy={snapshot.status === 'loading'} hidden={Boolean(component.props.rowExpansion?.selection && snapshot.status === 'error')}>
+<div aria-busy={snapshot.status === 'loading'} inert={snapshot.status === 'loading' && !data.main.progress} hidden={Boolean(component.props.rowExpansion?.selection && snapshot.status === 'error' && !data.main.progress)}>
 <Table data={safeData} props={{ ...component.props, pagination: binding.paginationConfig }} view={binding.view}
   columnCandidates={binding.columnCandidates} oncandidatepreloadvisible={binding.oncandidatepreloadvisible}
   oncandidateopen={binding.oncandidateopen} oncandidatesearch={binding.oncandidatesearch} oncandidatemore={binding.oncandidatemore} oncandidateretry={binding.oncandidateretry}
@@ -64,4 +64,4 @@
   {/snippet}
 </Table>
 </div>
-{#if snapshot.status==='error' && component.props.rowExpansion?.selection}<div role="alert">{snapshot.error.message}</div>{/if}
+{#if snapshot.status==='error' && component.props.rowExpansion?.selection && !data.main.progress}<div role="alert">{snapshot.error.message}</div>{/if}

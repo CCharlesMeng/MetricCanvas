@@ -1,3 +1,5 @@
+import { createJoinProgress } from './progress';
+import type { ScreenProgressSink } from '../screen-progress';
 import {recordJoinReader} from './records-reader';
 import {isObjectDqeItem,type EffectiveQuery} from '@metriccanvas/page/internal';
 import {fetchComplete} from '../source-program/range-policy';
@@ -10,29 +12,38 @@ import { memberRows, projectRows, ordinalRows, rowFailure } from './rows';
 import type { PagedJoinPlan } from './plan';
 import { executeQueryPagedJoin } from './query-page';
 
-export async function executePagedJoin(plan: PagedJoinPlan, runner: QueryRunner, scope: string, signal?: AbortSignal, complete = false): Promise<{ snapshot: DataSnapshot; viewCorrection?: TableQueryView }> {
+export async function executePagedJoin(plan: PagedJoinPlan, runner: QueryRunner, scope: string, signal?: AbortSignal, complete = false, progress?: ScreenProgressSink): Promise<{ snapshot: DataSnapshot; viewCorrection?: TableQueryView }> {
   signal?.throwIfAborted();
-  if(plan.strategy==='queryPage')return executeQueryPagedJoin(plan,runner,scope,signal);
+  if(plan.strategy==='queryPage')return executeQueryPagedJoin(plan,runner,scope,signal,progress);
   if(plan.source.source.records)return recordJoinReader(runner).read(plan,scope,signal,complete);
   const run = (id: string, query = memberQuery(plan, id)) => runMemberQuery(plan,id,query,runner,scope,signal);
   if (!plan.selection) return executeCompleteJoin(plan,run,signal,complete);
+  return executeSelectedJoin(plan,run,signal,progress);
+}
+
+async function executeSelectedJoin(plan:PagedJoinPlan,run:(id:string,query?:EffectiveQuery)=>Promise<DataSnapshot>,signal?:AbortSignal,progress?:ScreenProgressSink):Promise<{snapshot:DataSnapshot;viewCorrection?:TableQueryView}>{
   let pageIndex = plan.view.pageIndex;
-  let selection = await run(plan.selection, memberQuery(plan, plan.selection, pageIndex));
+  let selection = await run(plan.selection!, memberQuery(plan, plan.selection!, pageIndex));
   if (selection.status === 'ready' || selection.status === 'empty') {
     const total = selection.totalCount;
     if (total !== undefined && pageIndex > 0 && pageIndex * plan.view.pageSize >= total) {
       pageIndex = Math.max(0, Math.ceil(total / plan.view.pageSize) - 1);
-      selection = await run(plan.selection, memberQuery(plan, plan.selection, pageIndex));
+      selection = await run(plan.selection!, memberQuery(plan, plan.selection!, pageIndex));
     }
   }
-  const selected = memberRows(plan, plan.selection, selection, undefined, { offset: pageIndex * plan.view.pageSize, limit: plan.view.pageSize });
-  const keys = [...selected.keys()], members = new Map([[plan.selection, selected]]);
+  const selected = memberRows(plan, plan.selection!, selection, undefined, { offset: pageIndex * plan.view.pageSize, limit: plan.view.pageSize });
+  const keys = [...selected.keys()];
+  const state=createJoinProgress(plan,{rows:[...selected.values()],keys,total:'totalCount' in selection?selection.totalCount:undefined,pageIndex},progress && (value=>{signal?.throwIfAborted();progress(value);}));
+  state.accept(plan.selection!,selected,keys);
+  const members=state.members;
   if (keys.length) await Promise.all([...plan.members.keys()].filter(id => id !== plan.selection).map(async id => {
     const query = memberQuery(plan, id), member = plan.source.source.members[id];
     const allowed = restrictKeys(query, member.key.queryField, keys);
-    members.set(id, memberRows(plan, id, allowed.length ? await run(id, query) : rawSnapshot([], 0), allowed));
+    try {state.accept(id,memberRows(plan, id, allowed.length ? await run(id, query) : rawSnapshot([], 0), allowed),allowed);}
+    catch(cause){signal?.throwIfAborted();state.fail(id,cause);}
   }));
   signal?.throwIfAborted();
+  state.finish();
   const rows = keys.length ? projectRows(plan, keys, members) : [];
   if (selection.status !== 'ready' && selection.status !== 'empty') throw rowFailure('选页未完成');
   return { snapshot: rawSnapshot(ordinalRows(plan, rows, pageIndex * plan.view.pageSize), selection.totalCount),

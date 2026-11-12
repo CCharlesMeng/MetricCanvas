@@ -264,12 +264,12 @@ Tab不允许页头或嵌套Tab；Report导出不补生成未访问的AI总结。
 
 启动 Playground 与 Sim：`pnpm dev:playground`，另开终端 `DQE_LOADING_DEMO_DELAY_MS=3000 pnpm sim:dqe`。延迟只作用于此命名演示查询，默认0；AI 总结走本地 Mock，自有生成等待。
 
-1. 点击“重新播放全部加载”，两个运行时重新挂载，当前页可见的取数组件重新查询，等待3秒；标题、缺省值、图表容器、表头与搜索框保留，指标卡在每个数字位置显示圆圈（含变化值及完成率），其他组件圆圈居中显示，表格圆圈位于表体加载提示旁。
+1. 点击“重新播放全部加载”，两个运行时重新挂载，当前页可见的取数组件重新查询，等待3秒；标题、缺省值、图表容器、表头与搜索框保留，指标卡每个数字位置显示静态 `--`（含变化值及完成率），表格显示静态“正在加载…”，其他组件沿用现有加载提示。
 2. 文本、页头、按钮、筛选器和容器没有独立请求，直接显示；已访问筛选条件与 Tab 命中缓存时直接显示。切换测试轮次或使用重播可观察新的请求。
-3. 查看指标卡、仪表盘、键值面板、柱状图、折线图、饼图、地图、排行榜、排名详情、分类明细、字段文本、普通表格及组合卡子组件；数据返回后圆圈消失，原节点仍在。AI 总结在相关查询完成后生成本地 Mock 分析。
-4. 下方 Tab 保留订单／收入切换、查询分页与展开明细；子表在回执前已有表头，筛选重查不混用上次条件的数据。390px 下按栅格堆叠，无页面横向溢出。
+3. 查看指标卡、仪表盘、键值面板、柱状图、折线图、饼图、地图、排行榜、排名详情、分类明细、字段文本、普通表格及组合卡子组件；数据返回后恢复真实值，原节点仍在。AI 总结在相关查询完成后生成本地 Mock 分析。
+4. 下方 Tab 保留订单／收入切换、查询分页与展开明细；子表在回执前已有表头；筛选重查和翻页保留旧展示，待新数据整体就绪后替换，旧行暂时不可操作。390px 下按栅格堆叠，无页面横向溢出。
 
-自动验收：`pnpm --filter playground exec playwright test loading-structure.browser.ts`。以可控的合成 HTTP 回执暂停查询，覆盖全部数据组件圆圈、AI、重播、首次加载、筛选、分页、展开子表、Tab 激活、原节点持续挂载及宽窄屏。组件目录与页面类型集合由 `tools/dqe-sim/tests/loading-structure.test.ts` 对账。合成回执不代表真实 DQE／Relay 或已部署环境验收。
+自动验收：`pnpm --filter playground exec playwright test loading-structure.browser.ts`。以可控的合成 HTTP 回执暂停查询，覆盖表格/指标卡静态占位、其他组件加载提示、AI、重播、首次加载、筛选与分页旧展示保留、展开子表、Tab 激活、原节点持续挂载及宽窄屏。组件目录与页面类型集合由 `tools/dqe-sim/tests/loading-structure.test.ts` 对账。合成回执不代表真实 DQE／Relay 或已部署环境验收。
 
 
 ## Tab 表格筛选后动态高度
@@ -283,8 +283,10 @@ Tab不允许页头或嵌套Tab；Report导出不补生成未访问的AI总结。
 
 验证正式运行时的搜索筛选、自然高度、空态和页签保活。数据来自 inline，未验证真实 DQE、Relay 或部署环境。本修复不新增 Schema 字段或高度配置，由引擎统一维护占位。
 
-## 指标卡逐数值加载
+## 指标卡静态加载占位
 
-入口：`/pages/metric-card-loading`，完整声明为 [metric-card-loading.json](metric-card-loading.json)。启动 `pnpm dev:playground`，另开终端运行 `DQE_LOADING_DEMO_DELAY_MS=3000 pnpm sim:dqe`，页面使用 `MC_LOADING_STRUCTURE_DEMO` 合成查询，无需 URL 参数。刷新页面观察首次加载：全部8种形态的主数值、次级指标、变化值和完成率均在各自位置显示动画；标题、字段标签和环形容器保留，卡片中央没有额外动画。响应返回后各位置恢复数值、格式和单位。
+入口：`/pages/metric-card-loading`，完整声明为 [metric-card-loading.json](metric-card-loading.json)。启动 `pnpm dev:playground`，另开终端运行 `DQE_LOADING_DEMO_DELAY_MS=3000 pnpm sim:dqe`，页面使用 `MC_LOADING_STRUCTURE_DEMO` 合成查询，无需 URL 参数。刷新页面观察首次加载：全部8种形态的主数值、次级指标、变化值和完成率均在各自位置显示静态 `--`；标题、字段标签和环形容器保留，卡片没有加载动画。响应返回后各位置恢复数值、格式和单位。
 
-自动验收：`pnpm --filter playground exec playwright test loading-structure.browser.ts`。浏览器暂停同一页面的合成 HTTP 回执，覆盖加载、成功、空结果和 HTTP 错误；错误或空结果后动画消失并显示缺失占位，不残留单位或趋势箭头；在390px窄屏检查加载时无横向溢出。该场景不证明真实 DQE／Relay 接入。
+自动验收：`pnpm --filter playground exec playwright test loading-structure.browser.ts`。浏览器暂停同一页面的合成 HTTP 回执，覆盖加载、成功、空结果和 HTTP 错误；错误或空结果后显示缺失占位，不残留单位或趋势箭头；在390px窄屏检查加载时无横向溢出。该场景不证明真实 DQE／Relay 接入。
+
+独立请求与返回补充验收：同一轮每个 HTTP 请求仅含一个 DQE 项；挂起慢查询时其他组件先显示。同一引擎实例切到另一页面再返回时，恢复旧展示并重新查询；整页刷新或销毁实例后不保留。数据网关及权限变化不复用缓存。缓存仅服务屏幕展示，执行和导出仍检查当前快照。

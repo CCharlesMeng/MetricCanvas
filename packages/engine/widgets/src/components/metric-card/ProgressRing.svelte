@@ -1,8 +1,8 @@
 <svelte:options css="injected" />
 <script lang="ts">
+  import { DEFAULT_NULL_TEXT } from '../../shared/value-format';
   import type { ValueFormat } from '@metriccanvas/page/internal';
   import { formatValue, hasDisplayValue } from '../../shared/value-format';
-  import LoadingSpinner from '../../shared/LoadingSpinner.svelte';
   import EChart from '../../shared/EChart.svelte';
   import { normalizeProgressValue, progressRingOption } from './ring-options';
 
@@ -27,7 +27,7 @@
   <div class="chart" aria-hidden="true">
     <EChart {option} updateMode="merge" />
   </div>
-  <div class="number">{#if loading}<LoadingSpinner />{:else}<span class="value">{display.endsWith('%') ? display.slice(0, -1) : display}</span>{#if display.endsWith('%')}<span class="percent">%</span>{/if}{/if}</div>
+  <div class="number">{#if loading}{DEFAULT_NULL_TEXT}{:else}<span class="value">{display.endsWith('%') ? display.slice(0, -1) : display}</span>{#if display.endsWith('%')}<span class="percent">%</span>{/if}{/if}</div>
   <span class="label">{label}</span>
 </div>
 

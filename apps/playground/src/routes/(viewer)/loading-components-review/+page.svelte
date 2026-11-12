@@ -11,7 +11,7 @@
 <div class="review-tools">
   <h1>全部组件加载总览</h1>
   <Button onclick={() => replay += 1}>重新播放全部加载</Button>
-  <p>19种组件与IOC页头。查询等待3秒；AI总结使用本地Mock。静态组件直接显示，数据返回后转圈消失。</p>
+  <p>19种组件与IOC页头。查询等待3秒；AI总结使用本地Mock。表格显示静态加载文案，指标卡显示 --；数据各自就绪后显示。</p>
 </div>
 {#key replay}
   <section aria-label="Dashboard 组件" data-review-surface="dashboard">

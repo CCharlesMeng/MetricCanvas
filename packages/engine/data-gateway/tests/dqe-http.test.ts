@@ -257,7 +257,7 @@ describe('DQE 数据网关真实 HTTP 集成', () => {
     ).resolves.toEqual({ kind: 'unavailable' });
   });
 
-  it('把同一轮 NA 与 Top100 逻辑查询合并为一个真实 HTTP 请求', async () => {
+  it('把同一轮 NA 与 Top100 逻辑查询分别发送真实 HTTP 请求', async () => {
     const requests: string[] = [];
     const server = createDqeSimServer({
       logger(message) {
@@ -278,10 +278,10 @@ describe('DQE 数据网关真实 HTTP 集成', () => {
 
     expect(naRows.rows).toHaveLength(3);
     expect(top100Rows.rows).toHaveLength(3);
-    expect(requests).toHaveLength(1);
+    expect(requests).toHaveLength(2);
     expect(requests[0]).toContain('"dsl_list": [');
     expect(requests[0]).toContain('"NA客户数"');
-    expect(requests[0]).toContain('"alias": "数量"');
+    expect(requests[1]).toContain('"alias": "数量"');
   });
 });
 

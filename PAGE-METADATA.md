@@ -101,7 +101,7 @@ IOC Header 认领的客户类型筛选由组件查询规则固定使用 `dim_nam
 IOC Header 默认用 `region-dept=value` / `rep-office=value` 表达地区部或代表处，页面无需增加 URL 映射字段。同组参数按 URL 顺序取最后项，旧 value/level 链接继续兼容，普通页面筛选保持原行为。见[Region 默认 URL 输入](docs/page-metadata/filters.md#region-level-url)，合成入口 `/pages/ioc-region-url-demo`。本更新不新增页面字段或 Schema 能力下限。
 6.80：表格列支持 `enumValues` 前端枚举，统一用于单元格、静态筛选选项和导出；原始编码仍参与条件与交互。见[表格列枚举](docs/page-metadata/components/table.md#前端列枚举680)。
 
-数据加载时先呈现真实组件结构，保留标题、容器、表头及工具栏；首次加载、筛选重查、查询翻页和 Tab 激活均不再用骨架块替换组件。指标卡在每个数字位置显示加载动画，覆盖主数值、次级指标、变化值及完成率，合成验收入口 `/pages/metric-card-loading`。声明与边界见[加载时保留组件结构](docs/page-metadata/data-sources.md#加载时保留组件结构)，合成验收入口 `/pages/loading-structure-demo`。无需新增页面字段或升级 Schema。
+数据加载时保留真实组件结构。独立 DQE 查询分别发送请求并受控并发；表格首次加载显示静态“正在加载…”，指标卡数值显示 `--`，均不使用加载动画。筛选、翻页或同一引擎实例内返回页面时，保留上一份完整组件展示，当前结果就绪后整体替换；旧展示不进入查询、计算或导出。声明与边界见[加载时保留组件结构](docs/page-metadata/data-sources.md#screen-loading)，合成验收入口 `/pages/loading-structure-demo` 和 `/pages/metric-card-loading`。无需新增页面字段或升级 Schema。 级联表格在正确行集和顺序确定后，可通过独立展示通道渐进补列；失败列保留 `--`，正式查询及完整导出仍检查完整结果，见[级联表格渐进补列](docs/page-metadata/data-sources.md#progressive-table-columns)。
 
 6.78 支持期间比较按当前页业务键补查：复用 `pagedJoin.pagination.mode:query`，当期选页后补查上期/去年同期，组合源同层 `compute` 仅允许逐行 delta/ratio，投影字段可声明缺记录补零。主查询决定行域与总数，完整导出逐页补查；计算列不提供全局排序筛选。见[按页期间比较](docs/page-metadata/queries-and-bindings.md#period-comparison-query-page)，合成验收 `/pages/period-comparison-query-page`。
 

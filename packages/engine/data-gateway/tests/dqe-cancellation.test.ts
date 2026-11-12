@@ -137,7 +137,7 @@ describe('DQE 数据网关的取消信号(issue #53)', () => {
     });
   });
 
-  it('同批次取消一个查询:共享请求不中止,另一个正常返回,迟到结果不写入已取消查询', async () => {
+  it('取消一个独立查询:仅中止自身请求,另一个正常返回,迟到结果不写入已取消查询', async () => {
     const { fetchImpl, requests } = hangingUpstream();
     const diagnostics = createInMemoryDqeDiagnostics();
     const gateway = createDqeGateway({ fetchImpl, diagnostics });
@@ -148,16 +148,16 @@ describe('DQE 数据网关的取消信号(issue #53)', () => {
     );
     const surviving = gateway.fetchData(numberQuery('数量'));
     await flush();
-    expect(requests).toHaveLength(1);
-    expect(requests[0]!.dslList).toHaveLength(2);
+    expect(requests).toHaveLength(2);
+    expect(requests[0]!.dslList).toHaveLength(1);
 
     controller.abort();
     expect(await cancelled).toMatchObject({ code: 'DQE_CANCELLED' });
-    // 同批次仍有未取消的查询:共享的底层请求不得中止。
-    expect(requests[0]!.signal?.aborted).toBe(false);
+    expect(requests[0]!.signal?.aborted).toBe(true);
+    expect(requests[1]!.signal?.aborted).toBe(false);
 
-    // 上游返回整批结果:存活查询正常结算,已取消查询不接收迟到成功结果。
-    requests[0]!.respond([successItem('金额', 1), successItem('数量', 7)]);
+    requests[0]!.respond([successItem('金额', 1)]);
+    requests[1]!.respond([successItem('数量', 7)]);
     await expect(surviving).resolves.toEqual({
       rows: [{ value: 7 }],
       totalCount: 1
@@ -173,10 +173,10 @@ describe('DQE 数据网关的取消信号(issue #53)', () => {
     // 已取消查询没有第二条(成功)诊断:一次执行恰好一条记录。
     expect(successes).toHaveLength(1);
     expect(successes[0]).toMatchObject({ rowCount: 1, totalCount: 1 });
-    expect(records[0]!.batchId).toBe(records[1]!.batchId);
+    expect(records[0]!.batchId).not.toBe(records[1]!.batchId);
   });
 
-  it('同批次全部取消:共享的底层请求被中止', async () => {
+  it('两个查询全部取消:各自的底层请求均被中止', async () => {
     const { fetchImpl, requests } = hangingUpstream();
     const gateway = createDqeGateway({ fetchImpl });
     const first = new AbortController();
@@ -187,12 +187,14 @@ describe('DQE 数据网关的取消信号(issue #53)', () => {
       captured(gateway.fetchData(numberQuery('数量'), undefined, second.signal))
     ];
     await flush();
-    expect(requests).toHaveLength(1);
+    expect(requests).toHaveLength(2);
 
     first.abort();
-    expect(requests[0]!.signal?.aborted).toBe(false);
+    expect(requests[0]!.signal?.aborted).toBe(true);
+    expect(requests[1]!.signal?.aborted).toBe(false);
     second.abort();
     expect(requests[0]!.signal?.aborted).toBe(true);
+    expect(requests[1]!.signal?.aborted).toBe(true);
     for (const failure of await Promise.all(failures)) {
       expect(failure).toMatchObject({ code: 'DQE_CANCELLED' });
     }

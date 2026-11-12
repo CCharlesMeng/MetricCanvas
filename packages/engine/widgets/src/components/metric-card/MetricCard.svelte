@@ -6,7 +6,6 @@
   import { DEFAULT_NULL_TEXT, hasDisplayValue, finiteNumber, isSignedNumberFormat, valuePolarity } from '../../shared/value-format';
   import { fieldUnitText, formatChangeValue, formatFieldValue, isPercentFormat } from '../../shared/field-presentation';
   import { changeValueColor, valueColorStyle } from '../../shared/value-color';
-  import LoadingSpinner from '../../shared/LoadingSpinner.svelte';
   import ProgressRing from './ProgressRing.svelte';
 
   interface Props {
@@ -49,7 +48,7 @@
 
 {#snippet metricValue(row: MetricCardProps['rows'][number])}
   {#if row.context}<span class="row-context">{row.context}</span>{/if}
-  <span class="row-value">{#if loading}<LoadingSpinner />{:else}{fieldText(row.valueField, row.unit)}{/if}</span>
+  <span class="row-value">{#if loading}{DEFAULT_NULL_TEXT}{:else}{fieldText(row.valueField, row.unit)}{/if}</span>
   {@const unit = hasDisplayValue(fieldValue(row.valueField, data)) ? fieldUnitText(row.unit, resolveField(row.valueField, data).format) : undefined}
   {#if !loading && unit}<span class="unit">{unit}</span>{/if}
 {/snippet}
@@ -98,7 +97,7 @@
                       aria-hidden="true"
                     >{direction === 'positive' ? '↑' : '↓'}</span>
                   {/if}
-                  {#if loading}<LoadingSpinner />{:else}<span>{changeText(change.field, change.tone)}{#if hasDisplayValue(raw) && fieldUnitText(change.unit, format)}<span class="change-unit">{change.unit}</span>{/if}</span>{/if}
+                  {#if loading}{DEFAULT_NULL_TEXT}{:else}<span>{changeText(change.field, change.tone)}{#if hasDisplayValue(raw) && fieldUnitText(change.unit, format)}<span class="change-unit">{change.unit}</span>{/if}</span>{/if}
                 </span>
               </span>
             {/each}
@@ -117,12 +116,12 @@
     {:else}
       <div class="metric-values placeholder-values" aria-label={`${title ?? '指标'}数据待补充`}>
         <div class="metric-row">
-          <span class="row-label">年累计</span><span class="row-value">{#if loading}<LoadingSpinner />{:else}{DEFAULT_NULL_TEXT}{/if}</span>
-          <span class="change"><span class="change-label">同比</span>{#if loading}<LoadingSpinner />{:else}{DEFAULT_NULL_TEXT}{/if}</span>
+          <span class="row-label">年累计</span><span class="row-value">{#if loading}{DEFAULT_NULL_TEXT}{:else}{DEFAULT_NULL_TEXT}{/if}</span>
+          <span class="change"><span class="change-label">同比</span>{#if loading}{DEFAULT_NULL_TEXT}{:else}{DEFAULT_NULL_TEXT}{/if}</span>
         </div>
         <div class="metric-row">
-          <span class="row-label">本月</span><span class="row-value">{#if loading}<LoadingSpinner />{:else}{DEFAULT_NULL_TEXT}{/if}</span>
-          <span class="change"><span class="change-label">环比</span>{#if loading}<LoadingSpinner />{:else}{DEFAULT_NULL_TEXT}{/if}</span>
+          <span class="row-label">本月</span><span class="row-value">{#if loading}{DEFAULT_NULL_TEXT}{:else}{DEFAULT_NULL_TEXT}{/if}</span>
+          <span class="change"><span class="change-label">环比</span>{#if loading}{DEFAULT_NULL_TEXT}{:else}{DEFAULT_NULL_TEXT}{/if}</span>
         </div>
       </div>
     {/if}

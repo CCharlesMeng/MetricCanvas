@@ -9,7 +9,7 @@
       "module": "table",
       "reference": "references/page-metadata/components/table.md",
       "blocks": [
-        "# 明细表 table\n\ncolumns/children 定义字段列与递归列组；交互、查询与呈现约束见下列专题。\n\n<a id=\"local-default-sort\"></a>",
+        "# 明细表 table\n\n首次加载保留表头和工具栏，表体仅显示静态“正在加载…”，不显示加载动画；刷新、查询翻页和排序期间保留上一份完整展示，当前结果就绪后替换。旧行暂时不可交互，不进入新查询或导出；完整边界见[加载时保留组件结构](../data-sources.md#screen-loading)。 级联查询按[渐进补列](../data-sources.md#progressive-table-columns)先显示已确定行集的就绪列，未完成和失败列显示 `--`；行集与顺序有待确认时继续保留旧展示。\n\ncolumns/children 定义字段列与递归列组；交互、查询与呈现约束见下列专题。\n\n<a id=\"local-default-sort\"></a>",
         "## 列头候选搜索（6.112）\n\nselect 列通过 `filterable.showSearch` 显式控制候选搜索框：true 显示，false 隐藏。6.112 及以后页面省略时默认隐藏。该开关与 showSelectAll 独立，只改变候选面板，不改变表格工具栏搜索或已提交的表头筛选。\n\n```json\n{\"field\":\"status\",\"title\":\"状态\",\"filterable\":{\"mode\":\"select\",\"showSelectAll\":true,\"showSearch\":false}}\n```\n\n静态 enumValues 搜索按显示标签本地匹配，不发起候选请求；动态候选沿既有独立候选搜索和分页读取，范围、权限、完整性及读取预算保持。搜索关键字不更改已选条件；清空关键字恢复完整候选。搜索期间隐藏全选入口，清空搜索后全选仍作用于原列完整候选，而不是关键词子集。该字段不用于日期或数值范围。\n\n兼容读取 6.111 及以前页面时，动态候选仍显示原有搜索框，静态枚举仍不增加搜索框。显式升级旧页面到新版本时，升级器为原动态 select 列写入 showSearch:true，保留可见表现；静态枚举保持省略。普通规范化在仍有隐式动态搜索时保留不高于6.111的兼容版本，不能仅改版本号采用新默认值。旧版本不得显式使用 true 或 false；升级不修改原文件。分组列、Tab 和详情视图使用同一规则。\n\n可观察入口 `/pages/table-header-filter-search` 使用内联合成数据展示静态/动态候选的 true、false 和省略三种声明；旧页兼容入口 `/pages/table-column-candidates`。`/pages/paged-join-on-demand` 的项目名称显式开启搜索，项目状态省略搜索开关而仅显示全选及候选。"
       ],
       "rules": [

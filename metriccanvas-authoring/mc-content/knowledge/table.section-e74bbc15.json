@@ -9,7 +9,7 @@
       "module": "table",
       "reference": "references/page-metadata/components/table.md",
       "blocks": [
-        "# 明细表 table\n\ncolumns/children 定义字段列与递归列组；交互、查询与呈现约束见下列专题。\n\n<a id=\"local-default-sort\"></a>",
+        "# 明细表 table\n\n首次加载保留表头和工具栏，表体仅显示静态“正在加载…”，不显示加载动画；刷新、查询翻页和排序期间保留上一份完整展示，当前结果就绪后替换。旧行暂时不可交互，不进入新查询或导出；完整边界见[加载时保留组件结构](../data-sources.md#screen-loading)。 级联查询按[渐进补列](../data-sources.md#progressive-table-columns)先显示已确定行集的就绪列，未完成和失败列显示 `--`；行集与顺序有待确认时继续保留旧展示。\n\ncolumns/children 定义字段列与递归列组；交互、查询与呈现约束见下列专题。\n\n<a id=\"local-default-sort\"></a>",
         "## 表格工具栏与搜索（6.21）\n\n`props.toolbar.search`、`export` 各自可省略，省略整个工具栏保持旧页行为：\n\n```json\n{\"toolbar\":{\"search\":{\"fields\":[\"customerName\",\"projectName\"],\"placeholder\":\"搜索客户或项目\"}}}\n```\n\n`fields` 只引用 `main` 中1—64个不重复的文本标量字段；任一字段包含即匹配，不区分大小写，`%`、`_` 是普通字符。补充槽见 `table.slot-search` 专题。Enter或搜索按钮提交，重置页码并保留排序、页面及列头筛选；关键词按实例隔离，草稿不参与导出，清空恢复原范围。\n\n无可展示明细行时统一显示“暂无数据”，包括零匹配、筛选空结果、查询失败及各表格变体；加载时显示“正在加载…”。保留表头、搜索框与关键词。置顶汇总不计明细行数，只有汇总时同时显示汇总和空提示。错误分类保留在控制台与 `data-error` 事件，不改为成功，也不放宽导出完整性。入口 `/pages/region-auth-norms-detail`、`/pages/table-pinned-summary`。\n\n内联及显式完整查询先搜索再排序、本地分页；其他普通查询将搜索下推，须由该表独占页面数据源。包含搜索要求网关配置已核验的 `encodeSearch`，缺失时报 `DQE_CONFIG_ERROR`，不筛当前页或自动拉全表替代。组合查询沿 `pagedJoin` 规则执行。"
       ],
       "rules": [

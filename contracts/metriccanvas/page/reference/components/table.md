@@ -1,5 +1,7 @@
 # 明细表 table
 
+首次加载保留表头和工具栏，表体仅显示静态“正在加载…”，不显示加载动画；刷新、查询翻页和排序期间保留上一份完整展示，当前结果就绪后替换。旧行暂时不可交互，不进入新查询或导出；完整边界见[加载时保留组件结构](../data-sources.md#screen-loading)。 级联查询按[渐进补列](../data-sources.md#progressive-table-columns)先显示已确定行集的就绪列，未完成和失败列显示 `--`；行集与顺序有待确认时继续保留旧展示。
+
 columns/children 定义字段列与递归列组；交互、查询与呈现约束见下列专题。
 
 <a id="local-default-sort"></a>

@@ -17,18 +17,22 @@
   let input = $state(untrack(() => initialInput));
   // Injected application session identity must survive Svelte's per-root deep proxies.
   let summaryConfig = $state.raw(untrack(() => initialInput.aiSummary));
+  let gateway = $state.raw(untrack(() => initialInput.dataGateway));
+  let facts = $state.raw(untrack(() => initialInput.displayInputs));
 
   export function update(next: RuntimeInput) {
     summaryConfig = next.aiSummary;
+    gateway = next.dataGateway;
+    facts = next.displayInputs;
     input = next;
   }
 </script>
 
 <RuntimeView
-  displayInputs={input.displayInputs}
+  displayInputs={facts}
   document={input.document}
   execution={input.execution}
-  dataGateway={input.dataGateway}
+  dataGateway={gateway}
   aiSummary={summaryConfig}
   initialSearch={input.initialSearch}
   navigation={input.navigation}

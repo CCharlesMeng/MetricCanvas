@@ -20,7 +20,9 @@ function simulatedReceipt(item: DemoItem) {
   const limit = item.order.limit ?? rows.length;
   const fields = [...item.output_dims, ...item.output_metrics];
   return { code: 'SUCCESS', total_count: rows.length,
-    data: rows.slice(offset, offset + limit).map(row => Object.fromEntries(fields.map(field => [field, row[field]]))) };
+    data: rows.slice(offset, offset + limit).map(row => Object.fromEntries(fields.map(field => [field,
+      typeof row[field] === 'number' && item.output_metrics.includes(field)
+        ? Number(row[field]) * Number(item.filter.dims.find(dimension => dimension.dim_name === 'loading_demo_round')?.dim_value_list[0] ?? 1) : row[field]]))) };
 }
 
 test('native components stay mounted through initial loading, filtering, pagination and tab activation', async ({ page }) => {
@@ -61,7 +63,9 @@ test('native components stay mounted through initial loading, filtering, paginat
 
   hold();
   await table.getByRole('button', { name: '下一页', exact: true }).click();
-  await expect(table.getByText('正在加载…', { exact: true })).toBeVisible();
+  await expect(table).toHaveAttribute('aria-busy', 'true');
+  await expect(table).toContainText('合成类别1');
+  await expect(table.locator('.loading-spinner')).toHaveCount(0);
   expect(await pagerNode!.evaluate(node => node.isConnected)).toBe(true);
   expect(await headingNode!.evaluate(node => node.isConnected)).toBe(true);
   release();
@@ -69,12 +73,15 @@ test('native components stay mounted through initial loading, filtering, paginat
 
   hold();
   await page.getByRole('group', { name: '测试轮次', exact: true }).getByRole('button', { name: '第2轮', exact: true }).click();
-  await expect(table.getByText('正在加载…', { exact: true })).toBeVisible();
-  await expect(metric).not.toContainText('10');
+  await expect(table).toHaveAttribute('aria-busy', 'true');
+  await expect(table).toContainText('合成类别3');
+  await expect(metric.locator('.row-value').first()).toHaveText('10');
+  await expect(metric.locator('.loading-spinner')).toHaveCount(0);
   expect(await chartNode!.evaluate(node => node.isConnected)).toBe(true);
   expect(await headingNode!.evaluate(node => node.isConnected)).toBe(true);
   release();
   await expect(table).toContainText('合成类别1');
+  await expect(metric.locator('.row-value').first()).toHaveText('20');
 
   hold();
   await table.getByRole('button', { name: '展开子表格', exact: true }).first().click();
@@ -133,17 +140,16 @@ test('all component families share a replayable loading review without replacing
       ? dashboard.locator('[data-component$="/gallery-composite"] .widget-content').nth(component.id.endsWith('metric') ? 0 : 1)
       : dashboard.locator(`[data-component$="/${component.id}"]`);
     if (component.type === 'metricCard') {
-      const rows = [...component.props.rows, ...(component.props.secondaryRows ?? [])];
-      const valueCount = rows.reduce((count, row) => count + 1 + (row.changes?.length ?? 0), 0) + (component.props.progress ? 1 : 0);
-      await expect(cell.locator('.metric-card .loading-spinner')).toHaveCount(valueCount);
+      await expect(cell.locator('.loading-spinner')).toHaveCount(0);
       await expect(cell.locator('.loading-indicator')).toHaveCount(0);
-      await expect(cell.locator('.row-value')).not.toContainText('—');
+      await expect(cell.locator('.row-value').first()).toHaveText('--');
     } else {
-      await expect(cell.locator('.loading-spinner')).toHaveCount(1);
+      await expect(cell.locator('.loading-spinner')).toHaveCount(component.type === 'table' ? 0 : 1);
     }
     cells.push(await cell.elementHandle());
   }
-  await expect(dashboard.locator('.loading-spinner')).toHaveCount(19);
+  // The active orders tab also owns one chart outside the gallery source.
+  await expect(dashboard.locator('.loading-spinner')).toHaveCount(components.filter(component => component.type !== 'metricCard' && component.type !== 'table').length + 1);
   await expect(report.locator('.ai-summary .loading-spinner')).toHaveCount(1);
   await expect(page.locator('.skeleton')).toHaveCount(0);
   await page.screenshot({ path: '/tmp/mc-loading-gallery/loading-wide.png', fullPage: true });
@@ -157,7 +163,7 @@ test('all component families share a replayable loading review without replacing
   await page.screenshot({ path: '/tmp/mc-loading-gallery/ready-wide.png', fullPage: true });
   hold();
   await page.getByRole('button', { name: '重新播放全部加载', exact: true }).click();
-  await expect(dashboard.locator('.loading-spinner')).toHaveCount(19);
+  await expect(dashboard.locator('.loading-spinner')).toHaveCount(components.filter(component => component.type !== 'metricCard' && component.type !== 'table').length + 1);
   await expect(report.locator('.ai-summary .loading-spinner')).toHaveCount(1);
   release();
   await expect(page.locator('.loading-spinner')).toHaveCount(0);
@@ -168,6 +174,26 @@ test('all component families share a replayable loading review without replacing
 });
 
 const metricLoadingFixture = JSON.parse(readFileSync(new URL('../../../pages/capabilities/layout/metric-card-loading.json', import.meta.url), 'utf8'));
+
+test('independent components render before a slower query returns', async ({ page }) => {
+  let release: () => void = () => {};
+  const slow = new Promise<void>(resolve => { release = resolve; });
+  await page.route('**/dsl/execute', async route => {
+    const request = route.request().postDataJSON();
+    expect(request.dsl_list).toHaveLength(1);
+    if (request.dsl_list[0].output_dims.includes('preview_category')) await slow;
+    await route.fulfill({ json: { retCode: 'CBC.0000', results: request.dsl_list.map(simulatedReceipt) } });
+  });
+  await page.goto(`/pages/${fixture.id}`);
+  const orders = page.locator('[data-tab-panel="orders"]');
+  await expect(orders.locator('.metric-card .row-value').first()).toHaveText('10');
+  await expect(orders.locator('.table-widget')).toContainText('合成类别1');
+  const slowCard = page.locator('[data-component$="/gallery-metric"]');
+  await expect(slowCard.locator('.row-value').first()).toHaveText('--');
+  await expect(slowCard.locator('.widget-content')).toHaveAttribute('aria-busy', 'true');
+  release();
+  await expect(slowCard.locator('.row-value').first()).not.toHaveText('--');
+});
 
 for (const outcome of ['ready', 'empty', 'error'] as const) {
   test(`metric values load in place across every variant, then settle to ${outcome}`, async ({ page }) => {
@@ -185,10 +211,10 @@ for (const outcome of ['ready', 'empty', 'error'] as const) {
     const cards = page.locator('.metric-card');
     await expect(cards).toHaveCount(8);
     for (const card of await cards.all()) {
-      await expect(card.locator('.row-value .loading-spinner')).toHaveCount(2);
-      await expect(card.locator('.change-value .loading-spinner')).toHaveCount(2);
-      await expect(card.locator('.progress-ring .number .loading-spinner')).toHaveCount(1);
-      await expect(card.locator('.row-value')).toHaveText(['', '']);
+      await expect(card.locator('.loading-spinner')).toHaveCount(0);
+      await expect(card.locator('.progress-ring .number')).toHaveText('--');
+      await expect(card.locator('.row-value')).toHaveText(['--', '--']);
+      await expect(card.locator('.change-value')).toHaveText(['--', '--']);
       await expect(card.locator('.trend-arrow, .unit, .change-unit')).toHaveCount(0);
     }
     await expect(page.locator('.loading-indicator')).toHaveCount(0);

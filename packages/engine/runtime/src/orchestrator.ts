@@ -4,7 +4,7 @@ import {reconcileTableSources} from './table/presentation-session';
 import {requiresQueryContext,hasPeriodQueryDefault} from '@metriccanvas/page/internal';
 import {fieldSelectionIds,flattenPageComponents,sourceFilterIds} from '@metriccanvas/page/internal';
 import { createSourceProgram, composeEffectiveQuery, intersectQueryFilters, activeSourceIds, visibleSourceIds, compileSources, defaultSourceView, computedSnapshots, automaticQueryPageSize, initialTableViews, remoteHeaderDefaultSources } from '@metriccanvas/data-execution/runtime';
-import type { QueryHeaderFilters } from '@metriccanvas/data-execution/runtime';
+import type { QueryHeaderFilters, ScreenProgress } from '@metriccanvas/data-execution/runtime';
 import { affectedSourceIds, conditionSourceIds, queryResultDependencies, type Page, type DataSnapshot, type EffectiveQuery, type QueryDataSource, type TabSelections, type TableQueryView } from '@metriccanvas/page/internal';
 import { executionSourceKey } from './execution';
 import { filterBlockedIds, initialFilterValues, type FilterState, type FilterValues } from './filter-state';
@@ -16,6 +16,8 @@ export type PageDataSnapshots = ReadonlyMap<string, DataSnapshot>;
 export interface Subscribable<T> { subscribe(run: (value: T) => void): () => void; }
 export type { QueryHeaderFilters } from '@metriccanvas/data-execution/runtime';
 export interface PageSnapshotStream extends Subscribable<PageDataSnapshots> {
+  captureProgress?(): ReadonlyMap<string, ScreenProgress>;
+  getScreenProgress?(sourceId: string): ScreenProgress | undefined;
   syncPresentation?(): void;
   setActiveTabs(selections: TabSelections): void;
   captureRawSnapshots(): ReadonlyMap<string, DataSnapshot>;
@@ -43,6 +45,13 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
   let active: ReturnType<typeof start> | undefined;
   function notify(run: (value: PageDataSnapshots) => void, value: PageDataSnapshots) { try { run(value); } catch (cause) { console.error('数据快照订阅方回调抛出异常（已隔离）：', cause); } }
   function start() {
+    const progress = new Map<string, ScreenProgress>();
+    let progressTimer: ReturnType<typeof setTimeout> | undefined;
+    function cancelProgressPublish() { clearTimeout(progressTimer); progressTimer = undefined; }
+    function publishProgress() {
+      if (progressTimer !== undefined) return;
+      progressTimer = setTimeout(() => { progressTimer = undefined; if (!disposed) publish(); }, 16);
+    }
     const program = createSourceProgram(page, { gateway, diagnostics,...timeContext });
     const tables = new Map<string, TableSession>();
     let values: FilterValues = filters ? new Map() : defaults;
@@ -115,6 +124,7 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
       ranges: new Map([...values].flatMap(([id, v]) => v.type === 'timeRange' ? [[id, { from: v.from, to: v.to }] as const] : [])) });
     let snapshots = computedSnapshots(new Map([...compiled.sources].filter(([id]) => ids.has(id))), raw, context(), {allowZeroTotal: true});
     function publish() {
+      cancelProgressPublish();
       snapshots = computedSnapshots(new Map([...compiled.sources].filter(([id]) => ids.has(id))), raw, context(), {allowZeroTotal: true});
       for (const run of subscribers) notify(run, snapshots);
     }
@@ -130,7 +140,7 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
       }
       const capturedTokens = new Map(tokens), generations = new Map([...tables].map(([id, session]) => [id, session.generation]));
       const seeds = new Map(raw);
-      for (const id of targets) { seeds.delete(id); if (!firstRead) raw.set(id, { status: 'loading' }); }
+      for (const id of targets) { progress.delete(id); seeds.delete(id); if (!firstRead) raw.set(id, { status: 'loading' }); }
       if (!firstRead) publish();
       fetchTargets();
       function fetchTargets(): void {
@@ -152,7 +162,13 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
           requests.set(root, controller);
           void (async () => {
             try {
-              for await (const update of program.read({ roots: [root], conditions: values, views: views(), seeds, currentYear: year, signal: controller.signal })) {
+              for await (const update of program.read({ roots: [root], conditions: values, views: views(), seeds, currentYear: year, signal: controller.signal,
+                onProgress(sourceId, value) {
+                  if (disposed || controller.signal.aborted || sourceId !== root || tokens.get(root) !== capturedTokens.get(root)) return;
+                  if (value.viewCorrection) tables.get(root)?.correct(value.viewCorrection, generations.get(root)!);
+                  progress.set(root, value); publishProgress();
+                }
+              })) {
                 if (disposed || tokens.get(root) !== capturedTokens.get(root) || update.sourceId !== root)
                   continue;
                 if (update.viewCorrection) {
@@ -160,6 +176,7 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
                     compiled.limits.set(root, update.viewCorrection.pageSize);
                   tables.get(root)?.correct(update.viewCorrection, generations.get(root)!);
                 }
+                if (update.snapshot.status === 'ready' || update.snapshot.status === 'empty') progress.delete(root);
                 raw = new Map(raw).set(root, update.raw);
                 publish();
               }
@@ -220,14 +237,16 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
       activate() { refetch(new Set([...demand()].filter(id => raw.get(id)?.status === 'loading')), true); },
       refresh: (id: string) => refetch(new Set([id])),
       program, tables, views, year, current: () => snapshots,
-      raw: () => new Map(raw),
+      raw: () => new Map(raw), progress: () => new Map(progress), screen: (id: string) => progress.get(id),
       queries: () => program.captureQueries(values, views(), raw),
       mutable(id: string) { return tables.has(id) && (compiled.limits.has(id) || compiled.automatic.has(id) || ![...ids].some(key => queryResultDependencies(page.dataSources[key]).includes(id))); },
       pageSize(id: string) { return compiled.limits.has(id) ? tables.get(id)?.snapshot().pageSize : undefined; },
-      dispose() { disposed = true; unsubscribe?.(); for (const table of tables.values()) table.dispose(); for (const controller of requests.values()) controller.abort(); program.dispose(); }
+      dispose() { disposed = true; cancelProgressPublish(); unsubscribe?.(); for (const table of tables.values()) table.dispose(); for (const controller of requests.values()) controller.abort(); program.dispose(); }
     };
   }
   return {
+    captureProgress: () => active?.progress() ?? new Map(),
+    getScreenProgress: (id: string) => active?.screen(id),
     syncPresentation() { active?.syncPresentation(); },
     setActiveTabs(next) { selections = next; active?.activate(); },
     subscribe(run) { subscribers.add(run); active ??= start(); notify(run, active.current()); return () => { subscribers.delete(run); if (!subscribers.size) { active?.dispose(); active = undefined; } }; },

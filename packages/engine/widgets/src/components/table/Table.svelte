@@ -16,7 +16,6 @@
   let dateMaximum = $state(currentTimeValue('date'));
   let dateError = $state('');
   import { Empty } from '@metriccanvas/ui';
-  import LoadingSpinner from '../../shared/LoadingSpinner.svelte';
   import TableHeading from './header/TableHeading.svelte';
   import TableToolbar from './TableToolbar.svelte';
   import TableControlIcon from './TableControlIcon.svelte';
@@ -413,7 +412,7 @@
   <TableHeading title={props.title} subtitle={props.subtitle} showTools={interactive && !staticExport && !!props.toolbar && leaves.length>0}>
     {#snippet tools()}
       {#if interactive && !staticExport && props.toolbar}
-        <TableToolbar toolbar={props.toolbar} searchEnabled={toolbarEnabled?.search??true} canExport={(toolbarEnabled?.export??true) && data.main.sourceStatus !== 'loading'} option={searchOption} onoption={onsearchoption} draft={searchDraft} busy={exporting} error={exportError}
+        <TableToolbar toolbar={props.toolbar} searchEnabled={toolbarEnabled?.search??true} canExport={(toolbarEnabled?.export??true) && data.main.sourceStatus !== 'loading' && !data.main.progress} option={searchOption} onoption={onsearchoption} draft={searchDraft} busy={exporting} error={exportError}
           ondraft={onsearchdraft} {onsearch} {onexport} oncancel={oncancelexport} />
       {/if}
     {/snippet}
@@ -576,7 +575,7 @@
           </tr>
         {/each}
       </thead>
-      <tbody>
+      <tbody inert={!!data.main.progress}>
         {#each rows as row, i (expandable && validExpansionKeys.has(expansion?.key(row.main) ?? '') ? expansion!.key(row.main)! : i)}
           <tr class:subtotal-row={rowTiers[i] === 'subtotal'} class:total-row={row.kind !== 'pinnedTop' && rowTiers[i] === 'total'} data-pinned-top={row.kind === 'pinnedTop' ? '' : undefined}>
             {#if expandable}
@@ -743,9 +742,9 @@
           <tr>
             <td class="empty-row" colspan={Math.max(leaves.length + leadingColumnCount, 1)}>
               {#if props.variant === 'reportCompact'}
-                <span class="empty-message">{#if loading}<LoadingSpinner />{/if}{loading ? '正在加载…' : '暂无数据'}</span>
+                <span class="empty-message">{loading ? '正在加载…' : '暂无数据'}</span>
               {:else}
-                <div class="empty-state">{#if loading}<LoadingSpinner />{/if}{loading ? '正在加载…' : '暂无数据'}</div>
+                <div class="empty-state">{loading ? '正在加载…' : '暂无数据'}</div>
               {/if}
             </td>
           </tr>

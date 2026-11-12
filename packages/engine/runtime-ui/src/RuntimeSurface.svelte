@@ -137,6 +137,10 @@
   import { applySearchFilters } from './filters/inline-search';
   import { hostRenderSnapshot, displayDataSnapshot } from './widget-host-state';
   import RuntimeSection from './RuntimeSection.svelte';
+  import { createRetainedScreenData, RETAINED_SCREEN_DATA } from './retained-screen-data';
+  import { usableTableProgress } from './table/screen-progress';
+  const retainedScreenData = createRetainedScreenData();
+  setContext(RETAINED_SCREEN_DATA, retainedScreenData);
   import type { RuntimeSurfaceProps } from './composition-types';
   import {
     configurationError,
@@ -294,18 +298,18 @@
     if(pageState.phase==='ready'){const page=pageState.page;untrack(()=>{stream?.syncPresentation?.();syncTableState(page);});}
   });
   let refreshPeriodFacts:((snapshot:DisplaySnapshot|undefined)=>void)|undefined;
-  function clearDisplaySnapshot(){displaySnapshot=undefined;untrack(()=>refreshPeriodFacts?.(undefined));}
+  function clearDisplaySnapshot(){retainedScreenData.clear();displaySnapshot=undefined;untrack(()=>refreshPeriodFacts?.(undefined));}
   let permissionRevision:string|undefined;
   let permissionInvalidated=false;
   $effect(()=>{
     const source=displayInputs;
-    if(!source){clearDisplaySnapshot();return;}
+    if(!source){if(permissionRevision!==undefined)clearDisplaySnapshot();return;}
     let stopped=false;
     const update=(snapshot:DisplaySnapshot)=>{
       if(stopped||permissionInvalidated)return;
       if(!snapshot||typeof snapshot.permissionRevision!=='string'||!snapshot.permissionRevision){clearDisplaySnapshot();return;}
       if(permissionRevision!==undefined&&permissionRevision!==snapshot.permissionRevision){
-        stopped=true;permissionInvalidated=true;dispose();snapshots=new Map();displaySnapshot=undefined;
+        stopped=true;permissionInvalidated=true;retainedScreenData.clear();dispose();snapshots=new Map();displaySnapshot=undefined;
         const error={code:'DISPLAY_PERMISSION_CHANGED' as const,message:'权限会话已变化，请以当前身份重新初始化页面'};
         pageState={phase:'configuration-error',error};onevent?.({type:'configuration-error',...error});return;
       }
@@ -527,6 +531,7 @@
     catch { return; }
     if (session !== mySession) return;
 
+    retainedScreenData.select(loaded, gatewayOverride, revisionId);
     declarationPage=loaded;
     const capabilities = derivePageCapabilities(loaded);
     const textBindings = collectFilterTextValueReferences(resolveParamTextValues(raw, { values: params.values }));
@@ -1152,7 +1157,8 @@
       const source = loaded.dataSources[sourceId];
       if (!source || !snapshot) continue;
       const fields = resolveDataSourceFields(source);
-      const renderable = displayDataSnapshot(snapshot);
+      const progress = component.type === 'table' && slot === 'main' ? usableTableProgress(component, stream?.getScreenProgress?.(sourceId), tableController?.render(component)) : undefined;
+      const renderable = progress?.snapshot ?? displayDataSnapshot(snapshot);
       let visible =
         component.type === 'table' && slot === 'main'
           ? tableSnapshot(component, renderable)
@@ -1177,7 +1183,7 @@
           };
         }
       }
-      data[slot] = { snapshot: visible, fields, sourceStatus: snapshot.status, diagnostics: { componentId: component.id, sourceId, snapshot } };
+      data[slot] = { snapshot: visible, fields, sourceStatus: snapshot.status, ...(progress ? {progress:{pendingFields:progress.pendingFields}} : {}), diagnostics: { componentId: component.id, sourceId, snapshot } };
     }
     return data;
   }

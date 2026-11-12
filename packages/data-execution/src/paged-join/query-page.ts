@@ -1,3 +1,5 @@
+import { createJoinProgress } from './progress';
+import type { ScreenProgressSink } from '../screen-progress';
 import { isPagedJoinQuery, hasQueryFieldMapping, restoreCellFallbacks, dqeDefaultSort, pagedJoinHasComparison, type EffectiveQuery, type DataSnapshot, type DataWarning, type TableQueryView, type Row } from '@metriccanvas/page/internal';
 import type { QueryRunner } from '../query-runner';
 import type { PagedJoinPlan } from './plan';
@@ -58,7 +60,7 @@ async function selectPage(plan:PagedJoinPlan,runner:QueryRunner,scope:string,sig
   return {rows,total,pageIndex};
 }
 
-async function fillMember(plan:PagedJoinPlan,id:string,keys:(string|number)[],warnings:DataWarning[],runner:QueryRunner,scope:string,signal?:AbortSignal){
+async function fillMember(plan:PagedJoinPlan,id:string,keys:(string|number)[],warnings:DataWarning[],runner:QueryRunner,scope:string,signal:AbortSignal|undefined, accept:(rows:Map<string|number,Row>,keys:readonly (string|number)[])=>void){
   const pagination=plan.source.source.pagination;
   if(!('batchSize' in pagination))throw rowFailure('查询分页缺少补列批次');
   const index=new Map<string|number,Row>();
@@ -73,6 +75,7 @@ async function fillMember(plan:PagedJoinPlan,id:string,keys:(string|number)[],wa
       if(index.has(key))throw rowFailure('补列成员返回重复关联键');
       index.set(key,row);
     }
+    accept(index,allowed);
   }
   return index;
 }
@@ -86,13 +89,20 @@ function selectedKeys(plan:PagedJoinPlan,rows:Row[]):(string|number)[]{
 }
 
 /** Never reads the next business page or the complete record population. */
-export async function executeQueryPagedJoin(plan:PagedJoinPlan,runner:QueryRunner,scope:string,signal?:AbortSignal):Promise<{snapshot:DataSnapshot;viewCorrection?:TableQueryView}>{
+export async function executeQueryPagedJoin(plan:PagedJoinPlan,runner:QueryRunner,scope:string,signal?:AbortSignal,progress?:ScreenProgressSink):Promise<{snapshot:DataSnapshot;viewCorrection?:TableQueryView}>{
   signal?.throwIfAborted();
   if(!isPagedJoinQuery(plan.source.source)||!plan.selection)throw rowFailure('查询分页计划无效');
   const selected=await selectPage(plan,runner,scope,signal),keys=selectedKeys(plan,selected.rows);
-  const members=new Map<string,Map<string|number,Row>>(),warnings:DataWarning[]=[];
-  if(!plan.source.source.records)members.set(plan.selection,memberRows(plan,plan.selection,rawSnapshot(selected.rows,selected.rows.length)));
-  for(const id of plan.members.keys())if(id!==plan.selection)members.set(id,await fillMember(plan,id,keys,warnings,runner,scope,signal));
+  const warnings:DataWarning[]=[];
+  const rowKeys=selected.rows.map(row=>row[plan.source.source.members[plan.selection!].key.field] as string|number);
+  const state=createJoinProgress(plan,{...selected,keys:rowKeys},progress && (update=>{signal?.throwIfAborted();enforcePageBudget(plan,update.snapshot.rows);progress(update);}));
+  state.accept(plan.selection,new Map(selected.rows.map((row,index)=>[rowKeys[index],row])),keys);
+  await Promise.all([...plan.members.keys()].filter(id=>id!==plan.selection).map(async id=>{
+    try { await fillMember(plan,id,keys,warnings,runner,scope,signal,(rows,done)=>state.accept(id,rows,done)); }
+    catch(cause){signal?.throwIfAborted();state.fail(id,cause);}
+  }));
+  state.finish();
+  const members=state.members;
   signal?.throwIfAborted();
   const rows=plan.source.source.records?projectRecordRows(plan,selected.rows,members):projectRows(plan,keys,members);
   enforcePageBudget(plan,rows);

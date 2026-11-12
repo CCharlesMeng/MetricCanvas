@@ -1,3 +1,5 @@
+import type { ScreenProgress } from '../screen-progress';
+import { ordinaryScreenProgress } from './screen-progress';
 import {finalizationName} from '@metriccanvas/page/internal';
 import { sourceCandidatesGateway } from '../source-candidates';
 import { applyTableSlotSearch, mainTableSearch } from './slot-search';
@@ -43,6 +45,7 @@ import { automaticQueryPageSize } from './table-pagination';
 import { describeExportSource } from './export-diagnostics';
 
 export interface SourceRead {
+  onProgress?: (sourceId: string, progress: ScreenProgress) => void;
   /** Speculative reads share caches but yield execution priority to interactive reads. */
   background?: boolean;
   strictComplete?: boolean;
@@ -289,7 +292,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
           initials.set(id, { capturedAt: new Date().toISOString(), rows: snapshot.status === 'ready' ? snapshot.rows : [], ...(snapshot.status === 'ready' ? snapshotCellFallbacks(snapshot.rows) : {}), totalCount: snapshot.totalCount!, view });
         }
         function readJoined(plan: ReturnType<typeof compilePagedJoin>) {
-          return readRecoverableJoin(plan, execution, scope, request.signal, request.purpose === 'complete', request.allowPartial);
+          return readRecoverableJoin(plan, execution, scope, request.signal, request.purpose === 'complete', request.allowPartial, request.purpose !== 'complete' && request.onProgress ? update => request.onProgress!(plan.sourceId, update) : undefined);
         }
         function reportSourceState(id: string, snapshots: ReadonlyMap<string, DataSnapshot>): void {
           reportError(id, raw.get(id)!);
@@ -398,6 +401,14 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
         function sourceProjection(id: string, snapshots: ReadonlyMap<string, DataSnapshot>): DataSnapshot {
           return [...executionSourceIds(page, [id])].every(dependency => raw.has(dependency)) ? snapshots.get(id) ?? raw.get(id)! : { status: 'loading' };
         }
+        function publishOrdinaryProgress(snapshots: ReadonlyMap<string, DataSnapshot>): void {
+          if (request.purpose === 'complete' || !request.onProgress) return;
+          for (const id of request.roots) {
+            if (snapshots.get(id)?.status === 'ready' || snapshots.get(id)?.status === 'empty') continue;
+            const progress = ordinaryScreenProgress(sources.get(id), raw.get(id), snapshots);
+            if (progress) request.onProgress(id, progress);
+          }
+        }
         function run(id: string): Promise<void> {
           let task = tasks.get(id);
           if (!task) { task = execute(id).catch(cause => {
@@ -416,6 +427,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
           // Sources outside this read cannot create spurious missing-compute errors.
           for (const key of all.keys()) if (!ids.has(key) && !raw.has(key)) all.delete(key);
           const snapshots = computedSnapshots(all, raw, context, {allowZeroTotal: request.purpose !== 'complete'});
+          publishOrdinaryProgress(snapshots);
           reportSourceState(id, snapshots);
           yield { ...candidateMarker(id), sourceId: id, snapshot: sourceProjection(id, snapshots), raw: raw.get(id)!, initial: initials.get(id), viewCorrection: corrections.get(id), query: queries.get(id) };
         }

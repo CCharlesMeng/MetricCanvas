@@ -1,3 +1,4 @@
+import type { ScreenProgressSink } from '../screen-progress';
 import { copyFieldFallback, projectSnapshotRows, validUnionKeyPart, type Row } from '@metriccanvas/page/internal';
 import type { QueryRunner } from '../query-runner';
 import type { PagedJoinPlan } from '../paged-join/plan';
@@ -10,8 +11,8 @@ import { ordinalRows } from '../paged-join/rows';
 import { EXPORT_PREPARATION_TIMEOUT_MS } from '../source-program/range-policy';
 import { recoveryContext, recoveryRows, recoveryView, warn, withTableRecovery, type RecoveryContext } from './read';
 
-export function readRecoverableJoin(plan: PagedJoinPlan, runner: QueryRunner, scope: string, signal?: AbortSignal, complete = false, allowPartial = false) {
-  if(plan.strategy==='queryPage')return complete?exportPagedJoin(plan,runner,scope,signal):executePagedJoin(plan,runner,scope,signal);
+export function readRecoverableJoin(plan: PagedJoinPlan, runner: QueryRunner, scope: string, signal?: AbortSignal, complete = false, allowPartial = false, progress?: ScreenProgressSink) {
+  if(plan.strategy==='queryPage' || progress && plan.selection)return complete?exportPagedJoin(plan,runner,scope,signal):executePagedJoin(plan,runner,scope,signal,false,progress);
   return withTableRecovery(
     () => complete ? exportPagedJoin(plan, runner, scope, signal, allowPartial) : executePagedJoin(plan, runner, scope, signal),
     () => recoverJoin(plan, runner, scope, signal, complete), signal);
