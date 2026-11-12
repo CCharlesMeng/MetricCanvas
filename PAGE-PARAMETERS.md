@@ -6,6 +6,10 @@
 
 本文是页面参数的使用专题，承接[页面元数据总规范](PAGE-METADATA.md)。当前作者协议为 **6.41**；版本与可读范围以总规范及生成契约为准。本文先说明当前分层参数、打开与保存、顶部时间筛选和共享窗口规则，再说明程序化提取，最后集中保留旧数组参数的兼容用法。字段表由Schema生成，见[参数参考](contracts/metriccanvas/page/reference/params-and-text-values.md)。
 
+## URL 缺参仍展示页面
+
+必需页面参数缺失时，统一运行时保留页面结构、筛选与表头，相关数据区域为空；无关内容正常展示。缺值文字显示“—”，不作为查询值。相关查询、候选、翻页及导出共用空数据投影，不复用旧结果、不扩大为不限条件查询；补齐参数重新加载后恢复。required 与现有 JSON 声明保持不变，服务端执行入口仍要求输入完整。见[缺参呈现](docs/page-metadata/params-and-text-values.md#url-缺参的页面呈现)，合成入口 `/pages/missing-url-inputs`。
+
 ## Embed 自动读取 URL
 
 Embed 的 `mount` 和完整 `update` 在省略 `initialSearch` 时自动读取当前 window 的 URL：合并 `location.search` 与 `#/...?...` / `#!/...?...` 路由查询串，同名键由 hash 路由整组覆盖，重复值保留；普通锚点不作为参数。显式 `initialSearch`（包括空串）优先且不再合并 URL，空串用于隔离宿主 URL。只在挂载/更新时读取，不监听地址变化、不读取父窗口。初始化通过后自动清理未声明的 URL 参数；地址回写与 Angular 适配规则见[URL 参数清理](docs/page-metadata/actions-and-navigation.md#url-参数清理与地址同步)。参数解析、必需/单值校验与执行回执输入的权威性沿现行规则；直接使用 RuntimeView 时仍由集成应用传入 initialSearch。合成入口 `/pages/embed-url-params?account-name=合成账号甲` 及 embed 的 `examples/url-params.html`，不访问真实账号或 DQE。

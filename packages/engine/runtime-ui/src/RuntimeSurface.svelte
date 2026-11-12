@@ -31,6 +31,7 @@
   import { tick, untrack, setContext, onDestroy } from 'svelte';
   const rowScopeInstanceId = $props.id();
   import { initialSectionGroup, selectedSectionGroup, sectionGroupFor, visibleSections } from './section-navigation';
+  import { initializeRenderablePage } from './page-inputs';
   import {
     parsePage,
     canonicalizeJson,
@@ -56,7 +57,6 @@
     type FieldReference,
     type FilterDeclaration,
     type OpenDetailAction,
-    type PageParamDeclaration,
     type Row,
     type TableColumn,
     type TableComponent,
@@ -74,7 +74,6 @@
     initialFilterValues,
     orchestrate,
     resolvePageParams,
-    initializePageParams,
     type DimensionValuesSnapshots,
     type FilterState,
     type FilterValue,
@@ -158,8 +157,6 @@
     | { phase: 'version-error'; error: Extract<RuntimeViewEvent, { type: 'version-error' }> }
     | { phase: 'configuration-error'; error: RuntimeConfigurationError }
     | {phase:'input-invalid';message:string}
-    /** 必需页面参数缺失:页面输入不完整,与查询错误分类区分开(ADR-0047)。 */
-    | { phase: 'params-incomplete'; missing: PageParamDeclaration[] }
     | { phase: 'ready'; page: Page; capabilities: PageCapabilities };
 
   // inline 页面不访问数据网关;候选值能力缺席即不可用,不需要抛错桩。
@@ -475,19 +472,10 @@
     initialTabs = initialTabsFromSearch(declared.page, search);
     const params = bootstrap ? {values:bootstrap.params,missing:[]} : resolvePageParams(search, paramDeclarations,{strict:declared.page.strictURLInputs===true});
     pageParams = params.values;
-    if (params.missing.length > 0) {
-      pageState = {
-        phase: 'params-incomplete',
-        missing: paramDeclarations.filter((declaration) =>
-          params.missing.includes(declaration.id)
-        )
-      };
-      return;
-    }
     const parsed =
       paramDeclarations.length === 0
         ? declared
-        : parsePage(raw, { textValues: { values: params.values, format: (value, format) => Array.isArray(value) ? value.join('、') : typeof value === 'object' ? formatPeriod(value) : formatValue(value, format) } });
+        : parsePage(raw, { textValues: { values: params.values, missingParams: new Set(params.missing), format: (value, format) => Array.isArray(value) ? value.join('、') : typeof value === 'object' ? formatPeriod(value) : formatValue(value, format) } });
     if (!parsed.ok) {
       pageState = { phase: 'invalid', errors: visibleValidationErrors(parsed.errors) };
       emit?.({ type: 'invalid', errors: parsed.errors });
@@ -496,7 +484,7 @@
 
     let loaded: typeof parsed.page;
     try {
-      loaded = initializePageParams(parsed.page, params.values);
+      loaded = initializeRenderablePage(parsed.page, params.values, params.missing);
       selectedGroup = initialSectionGroup(loaded, params.values);
     } catch {
       pageState = {phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/params',message:'页面参数无法生成合法查询条件或内容组，请检查输入值与窗口范围'}]};
@@ -534,7 +522,7 @@
     retainedScreenData.select(loaded, gatewayOverride, revisionId);
     declarationPage=loaded;
     const capabilities = derivePageCapabilities(loaded);
-    const textBindings = collectFilterTextValueReferences(resolveParamTextValues(raw, { values: params.values }));
+    const textBindings = collectFilterTextValueReferences(resolveParamTextValues(raw, { values: params.values, missingParams: new Set(params.missing) }));
     declarations = loaded.filters ?? [];
 
     if(loaded.strictURLInputs===true){const privateIds=new Set((loaded.detailViews??[]).flatMap(view=>view.filters??[])),query=new URLSearchParams(search);const privateInput=declarations.some(f=>privateIds.has(f.id)&&Object.values(filterURLKeys(f,usesIocRegion(loaded))).some(key=>query.has(key)));const message=privateInput?'详情私有筛选不能由页面URL写入':filterInputIssue(search,declarations,candidateClock,usesIocRegion(loaded));if(message){pageState={phase:'input-invalid',message};emit?.({type:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters',message}]});return;}}
@@ -1382,19 +1370,6 @@
       <h1>统一运行时接入配置不完整</h1>
       <p><code class="badge">{pageState.error.code}</code></p>
       <p>{pageState.error.message}</p>
-    </div>
-  {:else if pageState.phase === 'params-incomplete'}
-    <div class="error-page">
-      <h1>页面输入不完整或无效</h1>
-      <p class="muted">以下页面参数缺少有效取值，请检查链接中的参数及日期格式。</p>
-      <ul class="errors">
-        {#each pageState.missing as declaration (declaration.id)}
-          <li>
-            <code class="path">{declaration.id}</code>
-            <span>{declaration.label ?? '缺少取值'}</span>
-          </li>
-        {/each}
-      </ul>
     </div>
   {:else if pageState.phase === 'input-invalid'}
     <div class="error-page"><h1>页面输入不完整或无效</h1><p>{pageState.message}</p><p>请检查链接中的筛选值、日期粒度及必需输入。</p></div>

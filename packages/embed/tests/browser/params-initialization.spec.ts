@@ -46,15 +46,17 @@ for (const mode of ['classic','esm']) {
     expect(await page.evaluate(()=>window.queryEvents.filter(e=>e.type==='filter-change').length)).toBe(2);
   });
 }
-test('维度必需参数缺值阻止查数；默认、单值与可选缺值可呈现', async ({page}) => {
+test('维度必需参数缺值保留空表和无关查询；补齐后恢复', async ({page}) => {
   const raw = template(); delete raw.params[0].default;
   await page.goto('/examples/inline.html');
   await page.evaluate(raw=>{
     window.runtime.destroy(); window.queryCalls=[];
     window.runtime = MetricCanvas.mount('#dashboard',{document:raw,dataGateway:{async fetchData(q){window.queryCalls.push(q);return {rows:[],totalCount:0};}}});
   },raw);
-  await expect(page.getByText('regions',{exact:false})).toBeVisible();
-  expect(await page.evaluate(()=>window.queryCalls.length)).toBe(0);
+  await expect(page.getByRole('heading',{name:'Regional sales',exact:true})).toBeVisible();
+  await expect(page.locator('[data-component="details/shared-table"]')).toContainText('暂无数据');
+  await expect(page.locator('.error-page')).toHaveCount(0);
+  await expect.poll(()=>page.evaluate(()=>window.queryCalls.length)).toBe(1);
   await page.evaluate(raw=>window.runtime.update({document:raw,initialSearch:'regions=EU',dataGateway:{async fetchData(q){window.queryCalls.push(q);return {rows:[{region:'EU',gmv:1}],totalCount:1};}}}),raw);
   // The candidate-gated sales table now keeps its native loading frame; check the parameter-only consumer explicitly.
   await expect(page.locator('[data-component="details/shared-table"]').getByText('EU',{exact:true})).toBeVisible();

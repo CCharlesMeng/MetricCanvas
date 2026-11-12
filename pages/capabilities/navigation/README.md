@@ -137,3 +137,9 @@ Embed 原生 HTML 示例不提供返回适配器，用于验证运行时默认�
 参考对象：首分区首个 `iocHeader` 的 `props.back`，保留现有标题、参数与筛选声明。
 
 移植边界：用 `true` 启用；自定义集成返回通过 `navigation.back`，不需要 `returnContext.entryId`，旧 `returnContext.back` 不再作为页头动作。浏览器自身返回不保证恢复分页、排序、Tab 和滚动。真实门户的路由、导航守卫及权限另外验收。
+
+## URL 缺参空态
+
+入口 `/pages/missing-url-inputs`，[完整页面](missing-url-inputs.json)。新建页面显式使用 Dashboard；无需 URL 参数即可观察页头、统计期间、空表、缺值标题和无关静态内容。带 `?entity=合成对象` 后恢复相关查询，页头期间可切换年、季、月。使用 `pnpm dev:playground` 启动，真实结果需要 DQE 数据网关；页面内旧 initial 仅用于验证缺参时不复用，不代表真实业务数据。
+
+清除 entity 或传空值后，不出现整页参数错误，不查询相关数据、不显示旧数据；月季年切换和候选、导出继续使用空结果。补齐 entity 并重新加载后，查询必须携带对象条件。浏览器合成响应仅验证渲染与请求映射，真实 DQE 的字段、口径与权限另验。

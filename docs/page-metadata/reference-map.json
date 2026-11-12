@@ -90,7 +90,8 @@
         "grouped-scalar-params-page",
         "report-filter-text-page",
         "text-composition-page",
-        "record-join-query-params"
+        "record-join-query-params",
+        "missing-url-inputs"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -3288,6 +3289,7 @@
       "IOC 页头进入分区（6.81）"
     ],
     "params-and-text-values.md": [
+      "URL 缺参的页面呈现",
       "Embed 的 URL 输入",
       "查阅方式",
       "确定性时间参数",

@@ -484,7 +484,7 @@
     },
     {
       "file": "packages/page/src/text-value.ts",
-      "sha256": "fec33b5c3d62d4ae4f146c9fcbe90582b6efbe2a32c185b4a3aaec92cf5d797b"
+      "sha256": "480641194ec3815ea69ade28475351a79eacbfc9fe368204d76a80f68242f699"
     },
     {
       "file": "packages/page/src/time-extension-validation.ts",
@@ -646,7 +646,8 @@
         "grouped-scalar-params-page",
         "report-filter-text-page",
         "text-composition-page",
-        "record-join-query-params"
+        "record-join-query-params",
+        "missing-url-inputs"
       ],
       "sources": [
         "packages/page/src/validate.ts",

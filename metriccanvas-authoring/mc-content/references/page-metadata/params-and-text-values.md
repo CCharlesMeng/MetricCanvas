@@ -2,11 +2,21 @@
 
 当前创作使用分层参数：params.query 定义查询输入，params.display 定义呈现输入；无值模板与填值实例共用页面协议。作者版本与能力下限见[页面、版本与布局](page.md)，本模块维护参数和文本取值的字段语义；按参数类型、查询绑定和文本取值的生成结构表配置，完整示例见本节。
 
-旧数组参数：页面参数是一次初始化的不可变取值；筛选器是页内可变状态。标量参数保留string/number/boolean；6.2的dimension单值使用非空string，multiple:true使用非空、无重复string[]。URL多值用重复键，不拆逗号。标量/维度参数的非法URL输入回退唯一default；必需参数缺值会阻止呈现和查数。
+旧数组参数：页面参数是一次初始化的不可变取值；筛选器是页内可变状态。标量参数保留string/number/boolean；6.2的dimension单值使用非空string，multiple:true使用非空、无重复string[]。URL多值用重复键，不拆逗号。标量/维度参数的非法URL输入回退唯一default；必需参数缺值不阻止页面呈现；仅依赖这些输入的查询及其组合、计算结果呈现空态，不发送请求。
 
 文本取值引用为{param:id}，由声明取值并按可选format格式化；必需文本不能引用可能缺失的参数。initialParam只把实际参数用于筛选初值，不能与filter.default双默认；6.11起timePoint筛选器与层级维度筛选器同样可用，前者引用单点times参数，后者的初值落在defaultLevel那一层；paramBindings显式指定查询目标，后续筛选清空不会复活原值。受筛选控制的目标不同时写静态参数条件。
 
 执行回执的appliedInputs/filterValues是初始化权威；浏览器不再次用URL或模板默认覆盖。服务权限优先级不由Schema证明。
+
+<a id="url-缺参的页面呈现"></a>
+
+## URL 缺参的页面呈现
+
+统一运行时在页面文档合法时始终呈现页头、筛选、表头与静态内容。URL 缺少必需页面参数或参数显式无效时，依赖这些输入的页面数据源及其组合、结果绑定和计算消费者使用本次实例的空数据投影；不发送相关请求，不复用旧 initial，不把缺参解释为不限条件。无关数据源继续正常工作，翻页、排序、候选读取和完整导出共用该投影。重新加载并补齐合法输入后从原始声明恢复查询。无需新增页面字段或修改 required。
+
+缺失的必需参数在动态文字中显示“—”，parts 的固定文字保留。原本可选且未传的参数仍按原规则移除整个文本属性，不改变其查询不限语义。占位文字只用于呈现，不写入查询、页面参数值或保存的页面文档。服务端 resolvePageParams 与执行准备入口继续拒绝必需输入不全的执行；可呈现不等于可执行。strictURLInputs 仍拒绝显式无效输入的取数和默认值回退，目标导航输入校验不改变。
+
+合成入口 `/pages/missing-url-inputs`：无 entity 时相关表格为空且静态内容可见；带 `?entity=合成对象` 后按查询声明读取。该场景与业务页 `/pages/rep-business-result-account-detail` 覆盖缺参及补参；合成请求和浏览器空态不证明真实 DQE 已接通。
 
 ## Embed 的 URL 输入
 
@@ -1407,6 +1417,7 @@ Schema位置：`#/definitions/textValue/anyOf/3`。目标：[#/definitions/textV
 - [report-filter-text-page](examples/report-filter-text-page.json)：完整合法页面；查询仅为静态契约证据。
 - [text-composition-page](examples/text-composition-page.json)：完整合法页面；查询仅为静态契约证据。
 - [record-join-query-params](examples/record-join-query-params.json)：完整合法页面；查询仅为静态契约证据。
+- [missing-url-inputs](examples/missing-url-inputs.json)：完整合法页面；查询仅为静态契约证据。
 
 ## 联合分支见证（生成）
 

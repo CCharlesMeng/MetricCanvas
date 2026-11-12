@@ -77,7 +77,8 @@
         "grouped-scalar-params-page",
         "report-filter-text-page",
         "text-composition-page",
-        "record-join-query-params"
+        "record-join-query-params",
+        "missing-url-inputs"
       ],
       "rules": [
         "page-param-id-unique",
@@ -22937,5 +22938,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "51dac39d99672adb0660f62e0a35800858009c1fda6c0ffb441a81b6f1986800"
+  "semanticSourceDigest": "879721e4c97f66f372282a27a50fc568dcd26cd006579c33d7c6b31422b5179f"
 }

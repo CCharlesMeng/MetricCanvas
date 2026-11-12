@@ -32,6 +32,8 @@ export interface TextValueResolution {
   /** 已应用筛选值；缺席只用于解析占位，运行时按原引用持续投影。 */
   filterValues?: ReadonlyMap<string, PageParamValue>;
   format?: TextValueFormatter;
+  /** 仅呈现投影使用：输入不可用时显示占位，不把占位值带入查询。 */
+  missingParams?: ReadonlySet<string>;
 }
 
 /** 属性视为未声明的内部标记。 */
@@ -74,17 +76,14 @@ function resolveTexts(document: unknown, resolution: TextValueResolution, preser
     if (typeof value !== 'object' || value === null) return value;
     if (isTextValueReference(value)) {
       const resolvedValue = resolution.values.get(value.param);
-      return resolvedValue === undefined ? ABSENT : format(resolvedValue, value.format);
+      if (resolvedValue !== undefined) return format(resolvedValue, value.format);
+      return resolution.missingParams?.has(value.param) ? '—' : ABSENT;
     }
     if (isFilterTextValueReference(value)) {
       return preserveFilters ? value : resolveFilterTextValue(value, resolution);
     }
     if (isTextValueComposition(value)) {
-      const parts = value.parts.map(visit);
-      // 缺失参数使整个文本属性缺席，避免留下误导性的半句标题。
-      if (parts.includes(ABSENT)) return ABSENT;
-      if (preserveFilters && parts.some(isFilterTextValueReference)) return { parts };
-      return parts.join('');
+      return composition(value.parts);
     }
     const next: Record<string, unknown> = {};
     for (const [key, child] of Object.entries(value)) {
@@ -92,6 +91,14 @@ function resolveTexts(document: unknown, resolution: TextValueResolution, preser
       if (item !== ABSENT) next[key] = item;
     }
     return next;
+  }
+
+  function composition(input: readonly unknown[]): unknown | typeof ABSENT {
+    const parts = input.map(visit);
+    // 可选参数继续使整个属性缺席；缺失必需输入只在呈现投影中使用占位。
+    if (parts.includes(ABSENT)) return ABSENT;
+    if (preserveFilters && parts.some(isFilterTextValueReference)) return { parts };
+    return parts.join('');
   }
 }
 

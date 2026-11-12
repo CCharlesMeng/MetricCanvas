@@ -1,0 +1,885 @@
+{
+  "schemaVersion": "6.113",
+  "id": "rep-business-result-account-detail",
+  "meta": {
+    "title": "账号明细",
+    "description": "代表处账号明细看板，按客户分类和统计期间筛选，展示账号维度的净付费金额、净付费同比、商务券金额及净商务折扣(原价)及其同比环比。"
+  },
+  "layout": "dashboard",
+  "params": {
+    "query": {
+      "dimensions": [
+        {
+          "id": "rep-office",
+          "dim_name": "代表处"
+        },
+        {
+          "id": "customer-name",
+          "dim_name": "客户名称"
+        }
+      ]
+    }
+  },
+  "filters": [
+    {
+      "id": "customer-category",
+      "type": "dimension",
+      "dimension": "customerCategory",
+      "label": "客户分类",
+      "display": "select",
+      "options": [
+        {
+          "label": "卓越NA",
+          "value": "卓越NA"
+        },
+        {
+          "label": "战略NA",
+          "value": "战略NA"
+        },
+        {
+          "label": "核心NA",
+          "value": "核心NA"
+        }
+      ]
+    },
+    {
+      "id": "period",
+      "type": "timeRange",
+      "display": "period",
+      "precision": "month",
+      "label": "统计期间",
+      "required": true,
+      "default": {
+        "mode": "month"
+      },
+      "periodModes": [
+        "year",
+        "quarter",
+        "month"
+      ]
+    }
+  ],
+  "dataSources": {
+    "account-payment": {
+      "fields": {
+        "account-id": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": false,
+          "queryField": "华为云账号ID",
+          "label": "华为云账号ID"
+        },
+        "account-name": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": false,
+          "queryField": "华为云账号",
+          "label": "账号"
+        },
+        "rep-office": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": false,
+          "queryField": "代表处",
+          "label": "代表处"
+        },
+        "net-payment": {
+          "type": "number",
+          "role": "measure",
+          "nullable": false,
+          "queryField": "净付费金额",
+          "label": "净付费金额",
+          "defaultFormat": "cny-adaptive"
+        },
+        "net-payment-yoy": {
+          "type": "number",
+          "role": "measure",
+          "nullable": false,
+          "queryField": "净付费金额年同比",
+          "label": "净付费同比",
+          "defaultFormat": "percent-1"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "华为云账号ID",
+                  "华为云账号",
+                  "代表处"
+                ],
+                "output_metrics": [
+                  "净付费金额",
+                  "净付费金额年同比"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": false
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "period": {
+              "target": "time"
+            },
+            "customer-category": {
+              "target": "dimension",
+              "queryField": "customerCategory"
+            }
+          },
+          "paramBindings": {
+            "rep-office": {
+              "target": "dimension",
+              "queryField": "代表处"
+            },
+            "customer-name": {
+              "target": "dimension",
+              "queryField": "客户名称"
+            }
+          }
+        }
+      }
+    },
+    "account-payment-qoq": {
+      "fields": {
+        "account-id": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": false,
+          "queryField": "华为云账号ID",
+          "label": "华为云账号ID"
+        },
+        "net-payment-qoq": {
+          "type": "number",
+          "role": "measure",
+          "nullable": false,
+          "queryField": "净付费金额季环比",
+          "label": "净付费季环比",
+          "defaultFormat": "percent-1"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "华为云账号ID"
+                ],
+                "output_metrics": [
+                  "净付费金额季环比"
+                ],
+                "filter": {
+                  "time": {
+                    "is_aggregate": false
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "period": {
+              "target": "time",
+              "periodPolicy": {
+                "kind": "fixed",
+                "period": "quarter"
+              }
+            },
+            "customer-category": {
+              "target": "dimension",
+              "queryField": "customerCategory"
+            }
+          },
+          "paramBindings": {
+            "rep-office": {
+              "target": "dimension",
+              "queryField": "代表处"
+            },
+            "customer-name": {
+              "target": "dimension",
+              "queryField": "客户名称"
+            }
+          }
+        }
+      }
+    },
+    "account-payment-mom": {
+      "fields": {
+        "account-id": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": false,
+          "queryField": "华为云账号ID",
+          "label": "华为云账号ID"
+        },
+        "net-payment-mom": {
+          "type": "number",
+          "role": "measure",
+          "nullable": false,
+          "queryField": "净付费金额月环比",
+          "label": "净付费月环比",
+          "defaultFormat": "percent-1"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "华为云账号ID"
+                ],
+                "output_metrics": [
+                  "净付费金额月环比"
+                ],
+                "filter": {
+                  "time": {
+                    "is_aggregate": false
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "period": {
+              "target": "time",
+              "periodPolicy": {
+                "kind": "fixed",
+                "period": "month"
+              }
+            },
+            "customer-category": {
+              "target": "dimension",
+              "queryField": "customerCategory"
+            }
+          },
+          "paramBindings": {
+            "rep-office": {
+              "target": "dimension",
+              "queryField": "代表处"
+            },
+            "customer-name": {
+              "target": "dimension",
+              "queryField": "客户名称"
+            }
+          }
+        }
+      }
+    },
+    "account-coupon": {
+      "fields": {
+        "account-id": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": false,
+          "queryField": "用户id",
+          "label": "华为云账号ID"
+        },
+        "coupon-amount": {
+          "type": "number",
+          "role": "measure",
+          "nullable": false,
+          "queryField": "商务类代金券金额",
+          "label": "商务券金额",
+          "defaultFormat": "cny-adaptive"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "用户id"
+                ],
+                "output_metrics": [
+                  "商务类代金券金额"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": false
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "period": {
+              "target": "time"
+            },
+            "customer-category": {
+              "target": "dimension",
+              "queryField": "customerCategory"
+            }
+          },
+          "paramBindings": {
+            "rep-office": {
+              "target": "dimension",
+              "queryField": "代表处"
+            },
+            "customer-name": {
+              "target": "dimension",
+              "queryField": "客户名称"
+            }
+          }
+        }
+      }
+    },
+    "account-discount": {
+      "fields": {
+        "account-id": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": false,
+          "queryField": "华为云账号ID",
+          "label": "华为云账号ID"
+        },
+        "net-discount": {
+          "type": "number",
+          "role": "measure",
+          "nullable": false,
+          "queryField": "净商务折扣（原价）",
+          "label": "净商务折扣(原价)",
+          "defaultFormat": "percent-1"
+        },
+        "net-discount-yoy": {
+          "type": "number",
+          "role": "measure",
+          "nullable": false,
+          "queryField": "净商务折扣（原价）年变化",
+          "label": "净商务折扣(原价)同比",
+          "defaultFormat": "percent-1"
+        },
+        "net-discount-mom": {
+          "type": "number",
+          "role": "measure",
+          "nullable": false,
+          "queryField": "净商务折扣（原价）月变化",
+          "label": "净商务折扣(原价)环比",
+          "defaultFormat": "percent-1"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "华为云账号ID"
+                ],
+                "output_metrics": [
+                  "净商务折扣（原价）",
+                  "净商务折扣（原价）年变化",
+                  "净商务折扣（原价）月变化"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": false
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "period": {
+              "target": "time"
+            },
+            "customer-category": {
+              "target": "dimension",
+              "queryField": "customerCategory"
+            }
+          },
+          "paramBindings": {
+            "rep-office": {
+              "target": "dimension",
+              "queryField": "代表处"
+            },
+            "customer-name": {
+              "target": "dimension",
+              "queryField": "客户名称"
+            }
+          }
+        }
+      }
+    },
+    "account-detail": {
+      "fields": {
+        "row-number": {
+          "type": "number",
+          "role": "measure",
+          "nullable": false,
+          "label": "序号",
+          "defaultFormat": "number"
+        },
+        "account-id": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": false,
+          "label": "华为云账号ID"
+        },
+        "account-name": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": false,
+          "label": "账号"
+        },
+        "rep-office": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": false,
+          "label": "代表处"
+        },
+        "net-payment": {
+          "type": "number",
+          "role": "measure",
+          "nullable": false,
+          "label": "净付费金额",
+          "defaultFormat": "cny-adaptive"
+        },
+        "net-payment-yoy": {
+          "type": "number",
+          "role": "measure",
+          "nullable": false,
+          "label": "净付费同比",
+          "defaultFormat": "percent-1"
+        },
+        "net-payment-qoq": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true,
+          "label": "净付费季环比",
+          "defaultFormat": "percent-1"
+        },
+        "net-payment-mom": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true,
+          "label": "净付费月环比",
+          "defaultFormat": "percent-1"
+        },
+        "coupon-amount": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true,
+          "label": "商务券金额",
+          "defaultFormat": "cny-adaptive"
+        },
+        "net-discount": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true,
+          "label": "净商务折扣(原价)",
+          "defaultFormat": "percent-1"
+        },
+        "net-discount-yoy": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true,
+          "label": "净商务折扣(原价)同比",
+          "defaultFormat": "percent-1"
+        },
+        "net-discount-mom": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true,
+          "label": "净商务折扣(原价)环比",
+          "defaultFormat": "percent-1"
+        }
+      },
+      "source": {
+        "type": "pagedJoin",
+        "rowKey": "account-id",
+        "domainMember": "payment",
+        "members": {
+          "payment": {
+            "source": "account-payment",
+            "key": {
+              "field": "account-id",
+              "queryField": "华为云账号ID"
+            },
+            "canSelectPage": false
+          },
+          "coupon": {
+            "source": "account-coupon",
+            "key": {
+              "field": "account-id",
+              "queryField": "用户id"
+            },
+            "canSelectPage": false
+          },
+          "discount": {
+            "source": "account-discount",
+            "key": {
+              "field": "account-id",
+              "queryField": "华为云账号ID"
+            },
+            "canSelectPage": false
+          },
+          "payment-qoq": {
+            "source": "account-payment-qoq",
+            "key": {
+              "field": "account-id",
+              "queryField": "华为云账号ID"
+            },
+            "canSelectPage": false
+          },
+          "payment-mom": {
+            "source": "account-payment-mom",
+            "key": {
+              "field": "account-id",
+              "queryField": "华为云账号ID"
+            },
+            "canSelectPage": false
+          }
+        },
+        "projection": {
+          "account-id": {
+            "member": "payment",
+            "field": "account-id"
+          },
+          "account-name": {
+            "member": "payment",
+            "field": "account-name"
+          },
+          "rep-office": {
+            "member": "payment",
+            "field": "rep-office"
+          },
+          "net-payment": {
+            "member": "payment",
+            "field": "net-payment"
+          },
+          "net-payment-yoy": {
+            "member": "payment",
+            "field": "net-payment-yoy"
+          },
+          "net-payment-qoq": {
+            "member": "payment-qoq",
+            "field": "net-payment-qoq"
+          },
+          "net-payment-mom": {
+            "member": "payment-mom",
+            "field": "net-payment-mom"
+          },
+          "coupon-amount": {
+            "member": "coupon",
+            "field": "coupon-amount"
+          },
+          "net-discount": {
+            "member": "discount",
+            "field": "net-discount"
+          },
+          "net-discount-yoy": {
+            "member": "discount",
+            "field": "net-discount-yoy"
+          },
+          "net-discount-mom": {
+            "member": "discount",
+            "field": "net-discount-mom"
+          }
+        },
+        "ordering": {
+          "default": [
+            {
+              "field": "net-payment",
+              "direction": "desc"
+            }
+          ],
+          "sortableFields": [
+            "net-payment",
+            "net-payment-yoy",
+            "net-payment-qoq",
+            "net-payment-mom",
+            "coupon-amount",
+            "net-discount",
+            "net-discount-yoy",
+            "net-discount-mom"
+          ],
+          "nulls": "last"
+        },
+        "pagination": {
+          "pageSize": 10
+        },
+        "fallback": {
+          "maxRows": 1000
+        },
+        "onMissing": "null",
+        "ordinalField": "row-number"
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "page-header-section",
+      "container": "plain",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "账号明细"
+            },
+            "filterIds": [
+              "period",
+              "customer-category"
+            ],
+            "presentation": {
+              "layout": "inline",
+              "density": "normal",
+              "collapse": "overflow"
+            },
+            "back": "auto"
+          }
+        }
+      ]
+    },
+    {
+      "id": "note-section",
+      "container": "plain",
+      "components": [
+        {
+          "id": "data-note",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "variant": "plain",
+            "body": "注：不含混合云（HCS）的数据"
+          }
+        }
+      ]
+    },
+    {
+      "id": "detail-section",
+      "container": "card",
+      "components": [
+        {
+          "id": "account-detail-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "account-detail"
+          },
+          "props": {
+            "title": {
+              "parts": [
+                {
+                  "param": "customer-name"
+                },
+                "-账号明细"
+              ]
+            },
+            "columns": [
+              {
+                "field": "row-number",
+                "title": "序号",
+                "width": 50,
+                "align": "left"
+              },
+              {
+                "field": "account-name",
+                "title": "账号",
+                "link": true,
+                "navigate": {
+                  "href": "/manage-contract-business/rep-business-result-cloud-service-detail",
+                  "query": {
+                    "account-name": {
+                      "source": "row",
+                      "field": "account-name"
+                    },
+                    "rep-office": {
+                      "source": "row",
+                      "field": "rep-office"
+                    },
+                    "period": {
+                      "source": "filter",
+                      "id": "period"
+                    }
+                  }
+                }
+              },
+              {
+                "field": "rep-office",
+                "title": "代表处"
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "net-payment",
+                  "format": "cny-adaptive"
+                },
+                "title": "净付费金额",
+                "sortable": true,
+                "align": "right"
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "net-payment-yoy",
+                  "format": "percent-1"
+                },
+                "title": "净付费同比",
+                "sortable": true,
+                "align": "right",
+                "colorRule": {
+                  "mode": "sign",
+                  "positive": "green",
+                  "negative": "green"
+                },
+                "visibleWhen": {
+                  "filter": "period",
+                  "part": "mode",
+                  "op": "eq",
+                  "value": "year"
+                }
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "net-payment-qoq",
+                  "format": "percent-1"
+                },
+                "title": "净付费季环比",
+                "sortable": true,
+                "align": "right",
+                "colorRule": {
+                  "mode": "sign",
+                  "positive": "green",
+                  "negative": "green"
+                },
+                "visibleWhen": {
+                  "filter": "period",
+                  "part": "mode",
+                  "op": "eq",
+                  "value": "quarter"
+                }
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "net-payment-mom",
+                  "format": "percent-1"
+                },
+                "title": "净付费月环比",
+                "sortable": true,
+                "align": "right",
+                "colorRule": {
+                  "mode": "sign",
+                  "positive": "green",
+                  "negative": "green"
+                },
+                "visibleWhen": {
+                  "filter": "period",
+                  "part": "mode",
+                  "op": "eq",
+                  "value": "month"
+                }
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "coupon-amount",
+                  "format": "cny-adaptive"
+                },
+                "title": "商务券金额",
+                "sortable": true,
+                "align": "right"
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "net-discount",
+                  "format": "percent-1"
+                },
+                "title": "净商务折扣(原价)",
+                "sortable": true,
+                "align": "right"
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "net-discount-yoy",
+                  "format": "percent-1"
+                },
+                "title": "净商务折扣(原价)同比",
+                "sortable": true,
+                "align": "right"
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "net-discount-mom",
+                  "format": "percent-1"
+                },
+                "title": "净商务折扣(原价)环比",
+                "sortable": true,
+                "align": "right"
+              }
+            ],
+            "toolbar": {
+              "search": {
+                "fields": [
+                  "account-name"
+                ],
+                "placeholder": "输入账号搜索"
+              },
+              "export": {
+                "format": "xlsx"
+              }
+            },
+            "pagination": {
+              "mode": "query"
+            },
+            "rowKey": "account-id",
+            "fit": "container"
+          }
+        }
+      ]
+    }
+  ],
+  "strictURLInputs": true
+}

@@ -5,7 +5,7 @@ export type PageParamValues = ReadonlyMap<string, PageParamValue>;
 
 export interface PageParamState {
   values: PageParamValues;
-  /** 声明为必需、URL 未提供且无默认值的参数 id;页面因此无法呈现。 */
+  /** 未获得合法取值的参数 id；呈现层据此阻止相关取数并保留页面结构。 */
   missing: string[];
 }
 

@@ -1,0 +1,227 @@
+{
+  "schemaVersion": "6.113",
+  "id": "missing-url-inputs",
+  "layout": "dashboard",
+  "meta": {
+    "title": "URL 缺参空态",
+    "description": "合成查询场景：URL 缺参仍展示页面，相关数据为空，静态内容保留；不代表真实 DQE。"
+  },
+  "strictURLInputs": true,
+  "params": {
+    "query": {
+      "dimensions": [
+        {
+          "id": "entity",
+          "dim_name": "对象"
+        }
+      ]
+    }
+  },
+  "filters": [
+    {
+      "id": "period",
+      "type": "timeRange",
+      "display": "period",
+      "precision": "month",
+      "label": "统计期间",
+      "required": true,
+      "default": {
+        "mode": "month"
+      },
+      "periodModes": [
+        "year",
+        "quarter",
+        "month"
+      ]
+    }
+  ],
+  "dataSources": {
+    "detail": {
+      "fields": {
+        "name": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": false,
+          "queryField": "对象名称"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "nullable": false,
+          "queryField": "金额",
+          "defaultFormat": "number"
+        }
+      },
+      "source": {
+        "type": "query",
+        "initial": {
+          "capturedAt": "2026-11-12T00:00:00Z",
+          "rows": [
+            {
+              "对象名称": "不得复用的旧数据",
+              "金额": 999
+            }
+          ],
+          "totalCount": 1
+        },
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "对象名称"
+                ],
+                "output_metrics": [
+                  "金额"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": false
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {
+                  "limit": 10,
+                  "offset": 0
+                }
+              }
+            ]
+          },
+          "paramBindings": {
+            "entity": {
+              "target": "dimension",
+              "queryField": "对象"
+            }
+          },
+          "filterBindings": {
+            "period": {
+              "target": "time"
+            }
+          }
+        }
+      }
+    },
+    "static": {
+      "fields": {
+        "name": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "name": "静态内容仍可见",
+            "amount": 123
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "URL 缺参空态"
+            },
+            "filterIds": [
+              "period"
+            ]
+          }
+        },
+        {
+          "id": "note",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "合成预览：移除 entity 后相关表格为空，页头、筛选与静态内容始终保留。"
+          }
+        },
+        {
+          "id": "detail-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "detail"
+          },
+          "props": {
+            "title": {
+              "parts": [
+                {
+                  "param": "entity"
+                },
+                "：相关明细"
+              ]
+            },
+            "columns": [
+              {
+                "field": "name",
+                "title": "对象名称",
+                "filterable": {
+                  "mode": "select"
+                }
+              },
+              {
+                "field": "amount",
+                "title": "金额",
+                "sortable": true
+              }
+            ],
+            "toolbar": {
+              "export": {
+                "format": "xlsx"
+              }
+            },
+            "pagination": {
+              "mode": "query"
+            },
+            "rowKey": "name"
+          }
+        },
+        {
+          "id": "static-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "static"
+          },
+          "props": {
+            "title": "无关内容",
+            "columns": [
+              {
+                "field": "name",
+                "title": "内容"
+              },
+              {
+                "field": "amount",
+                "title": "数值"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

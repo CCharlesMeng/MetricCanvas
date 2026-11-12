@@ -14,4 +14,12 @@ test('quarter does not truncate to detail month and empty row cannot fall back t
 test('missing target capability stays non-navigable',async({page})=>{
  await page.goto('/pages/ioc-header-navigation-source-demo');await page.getByRole('link',{name:'目标能力缺失示例',exact:false}).press('Enter');await expect(page.locator('[data-navigation-error]')).toContainText('目标输入契约');expect(page.url()).toContain('navigation-source-demo');
 });
-for(const search of ['project-name=X&origin=直接&month=2026-09','project-id=P&project-name=X&origin=直接&month=bad','project-id=P&project-name=X&origin=直接&month=2026-09&currency=BAD'])test(`destination invalid input stops query ${search}`,async({page})=>{let calls=0;page.on('request',r=>{if(r.url().includes(endpoint))calls++;});await page.goto('/pages/ioc-header-navigation-detail-demo?'+search);await expect(page.getByText(/页面输入不完整或无效|页面元数据校验失败|页面校验失败|页面文档校验失败|页面文档无效|页面文档未通过校验/)).toBeVisible();expect(calls).toBe(0);});
+for(const search of ['project-id=P&project-name=X&origin=直接&month=bad','project-id=P&project-name=X&origin=直接&month=2026-09&currency=BAD'])test(`destination invalid input stops query ${search}`,async({page})=>{let calls=0;page.on('request',r=>{if(r.url().includes(endpoint))calls++;});await page.goto('/pages/ioc-header-navigation-detail-demo?'+search);await expect(page.getByText(/页面输入不完整或无效|页面元数据校验失败|页面校验失败|页面文档校验失败|页面文档无效|页面文档未通过校验/)).toBeVisible();expect(calls).toBe(0);});
+
+test('missing destination parameter keeps the page and empty table without querying',async({page})=>{
+ let calls=0;page.on('request',request=>{if(request.url().includes(endpoint))calls++;});
+ await page.goto('/pages/ioc-header-navigation-detail-demo?project-name=X&origin=直接&month=2026-09');
+ await expect(page.locator('[data-component="detail/bound-table"]')).toContainText('暂无数据');
+ await expect(page.locator('.error-page')).toHaveCount(0);
+ expect(calls).toBe(0);
+});

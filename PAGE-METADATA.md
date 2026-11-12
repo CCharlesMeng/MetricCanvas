@@ -1,5 +1,7 @@
 # MetricCanvas 页面元数据规范
 
+URL 缺少必需页面参数时保留页面结构，相关数据源及其依赖显示空态，不发送查询或复用旧数据；缺值文字显示“—”，无关内容正常工作。翻页、候选与导出共用空数据投影，补齐参数重新加载后恢复；无新增字段或 Schema 版本。见[缺参呈现](docs/page-metadata/params-and-text-values.md#url-缺参的页面呈现)，入口 `/pages/missing-url-inputs`。
+
 所有表头 select 筛选候选统一将显示名为 `--` 的选项放在列表最后，覆盖静态枚举、动态候选、搜索及失配已选项保留；其他选项保持原顺序，无新增 Schema 字段。见[列筛选候选值](docs/page-metadata/components/table.md#列筛选候选值)，合成入口 `/pages/table-header-placeholder-last`。
 
 IOC Header 期间控件分别保留最近已应用的季度与月份；选择年份后切回季／月，沿用当前年份和各自的选项，避免互相覆盖为 Q1 或 1 月。记忆限本次控件挂载，不新增页面字段或 URL 状态。见[期间选择](docs/page-metadata/filters.md#dashboard-期间选择627)，合成入口 `/pages/ioc-header-flow-sticky`。
