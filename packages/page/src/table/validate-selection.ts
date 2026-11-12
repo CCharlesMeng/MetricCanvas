@@ -6,6 +6,8 @@ import { sourceFilterIds } from '../data-source-references';
 import { queryLeaves } from '../query-selection';
 import { queryResultDependencies } from '../query-dependencies';
 import { columnMainFields } from './columns';
+import { usesIocRegion } from '../header-binding';
+import { standardIocRegionFilter } from '../ioc-header-controls';
 const issue = (path:string,message:string):TypedError => ({type:'SCHEMA_ERROR',path,message});
 
 function rawString(page:Page,sourceId:string,field:string):boolean {
@@ -53,14 +55,20 @@ export function hierarchySelectionErrors(page:Page,table:TableComponent,path:str
   errors.push(...lookupInputs(page,table,path+'/selection/parentLookup',owners,inputs));
   return errors;
 }
-function validHierarchyLevels(filter:NonNullable<Page['filters']>[number]|undefined,parent:string,child:string):boolean{
+function standardRegionHierarchy(page:Page,filter:NonNullable<Page['filters']>[number]):boolean {
+  if(filter.type!=='dimension'||filter.id!=='region'||!usesIocRegion(page))return false;
+  const levels=filter.hierarchy??[],standard=standardIocRegionFilter().hierarchy!;
+  return levels.length===standard.length&&standard.every((level,index)=>level.id===levels[index]!.id&&level.dimension===levels[index]!.dimension);
+}
+function validHierarchyLevels(page:Page,filter:NonNullable<Page['filters']>[number]|undefined,parent:string,child:string):boolean{
   if(!filter||filter.type!=='dimension')return false;
-  return filter.selection?.mode==='single'&&filter.treeSelection==='level'&&filter.hierarchy?.length===2&&filter.hierarchy[0]!.id===parent&&filter.hierarchy[1]!.id===child;
+  const levels=standardRegionHierarchy(page,filter)?filter.hierarchy!.slice(1):filter.hierarchy;
+  return filter.selection?.mode==='single'&&filter.treeSelection==='level'&&levels?.length===2&&levels[0]!.id===parent&&levels[1]!.id===child;
 }
 function selectionDeclarationErrors(page:Page,table:TableComponent,path:string):TypedError[]{
   const expansion=table.props.rowExpansion!,s=expansion.selection!,errors:TypedError[]=[];
   const f=page.filters?.find(f=>f.id===s.filter);
-  if(!validHierarchyLevels(f,s.parentLevel,s.childLevel))errors.push(issue(path+'/selection/filter','层级联动要求显式单选的两层结构树及合法父子层级'));
+  if(!validHierarchyLevels(page,f,s.parentLevel,s.childLevel))errors.push(issue(path+'/selection/filter','层级联动要求显式单选的两层结构树，或 IOC 标准三层 Region 的地区部与代表处'));
   if(expansion.data.type!=='query')errors.push(issue(path+'/selection','层级联动仅用于 query 子表格'));
   if(!completeQuery(page,table.data.main)||table.props.pagination?.mode==='query'||!rawString(page,table.data.main,s.parentField))errors.push(issue(path+'/selection/parentField','父表要求完整普通查询、本地视图与原始 string 父级维度'));
   const forbidden=[s.filter,...s.parentLookup.filters,...(expansion.data.type==='query'?expansion.data.filters:[])];

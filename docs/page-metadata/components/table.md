@@ -467,7 +467,7 @@ Table 通过单个 `data.main` 消费分页合并源 `pagedUnion`；列继续绑
 
 | 声明 | 基数、引用与省略语义 |
 |---|---|
-| `rowExpansion.selection` | 可选单对象；省略沿用旧生命周期，不执行定位。仅支持 query 子表及显式 single 的两层结构树。 |
+| `rowExpansion.selection` | 可选单对象；省略沿用旧生命周期，不执行定位。仅支持 query 子表及显式 single 的两层结构树；IOC 标准三层 Region 也可引用其中的 region-dept / office，geo 的“全球”表示不限区域。普通组织树仍限两层。 |
 | `filter`、`parentLevel`、`childLevel` | 引用层级筛选器及其两个不同层级 id；不修改 URL 或筛选值形状。 |
 | `parentField` | 完整父查询的原始 string 维度字段，严格匹配业务稳定值；不是 rowKey 的别名。 |
 | `parentLookup:{source,field,filters,bindings}` | 专属 complete 普通查询；无窗口/compute/结果绑定。field 为原始 string 父级维度；至少一个私有输入完整读取当前筛选 values，不能读 row。只在选中子级时查询，去重结果必须恰好一个父值。 |
@@ -477,6 +477,8 @@ Table 通过单个 `data.main` 消费分页合并源 `pagedUnion`；列继续绑
 完整父查询独立返回父级整体指标，不能绑定层级筛选或私有输入，不能用 TopN/远程窗口冒充完整结果；父表使用本地分页或完整视图。父行投影先于搜索、表头条件、排序及分页，与 rowVisibleWhen 取交集，不改变共享 raw、计算或结果绑定。父表匹配重复、行键缺失/重复、非法候选、定位等待/无结果/歧义/失败均不会退回全部。归属成功但父结果无匹配时显示空表，不生成零值父行。
 
 IOC Header 认领的 Region 选择规范值 `全球` 时，层级选择复用既有“不限区域”规则：保留全部合法父行，不执行父级定位；展开各父行时仍绑定该父行并删除私有子级选择条件。界面、URL 和选择身份保留“全球”，不通过清空筛选实现。屏幕与完整父子 Excel 使用相同解析；候选门禁、共同条件和权限仍生效。普通组织树及其他业务值继续严格匹配，不能因未匹配而回退全部。无需新增页面字段。合成入口 `/pages/table-hierarchy-selection` 覆盖地区部／代表处切回全球及完整 Excel。
+
+使用内置 `regionFilter` 时无需手写 `filters.region` 或 `hierarchy`。标准 geo / region-dept / office 组织树与父子联动兼容，父子层级仍声明 `parentLevel:"region-dept"`、`childLevel:"office"`；仅为 IOC 标准三层树保留这一例外，不接受额外层级、其他维度路由或反向父子关系。无 URL、显式默认值或恢复状态时默认选择合法候选“全球”。合成入口 `/pages/table-hierarchy-standard-region` 覆盖初始化、地区部与代表处定位、清空及刷新恢复。
 
 父表普通显示沿用[零总数兼容](../data-sources.md)：对象查询 `total_count: 0` 且已有父行时，层级控制器保留返回行和原始总数0，允许本地分页、地区部选择及行展开，不把它认定为已验证完整结果。展开子查询同样适用零总数展示兼容；查询分页仍沿用原协议，不据此推断下一页。仍检查父行键缺失/重复与父级匹配唯一性；非零总数矛盾、父级定位完整读取、跨源完整输入和完整父子导出的限制保持。验收入口 `/pages/query-zero-total-hierarchy` 使用合成HTTP响应。
 

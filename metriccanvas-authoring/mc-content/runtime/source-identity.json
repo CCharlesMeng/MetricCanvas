@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "0b92de7bd807dc8f338e152a11fc66ba64b49e80651afdbf1c241c039645e4c3",
+  "sha256": "607471842876be140d2f9dd8993ff1dae719f1525d0bd444756b32c315d7b82f",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -104,7 +104,7 @@
     },
     {
       "file": "docs/page-metadata/components/table.md",
-      "sha256": "7885182ff46b49a021a71043c9d2fd24cfbf78a7e5bd0c726327fdb4a82fa930"
+      "sha256": "46cf8703db7fb6a43ce584fbc06c26e726adec06f7f0f832bc1d37fe10151018"
     },
     {
       "file": "docs/page-metadata/components/text.md",
@@ -2100,7 +2100,7 @@
     },
     {
       "file": "packages/page/src/table/validate-selection.ts",
-      "sha256": "b0e6c65daea5b5a2242b27b031348755dcd3cb10d0a177079680a2672dadcf29"
+      "sha256": "3dc5ed2d28ed2c4b7c48dcc81d49cbac1d1344d082b2989ea30ccd08149bcb78"
     },
     {
       "file": "packages/page/src/table/validation.ts",
@@ -2200,7 +2200,7 @@
     },
     {
       "file": "pages/business/dashboard/ioc/approval/authorization-norms.json",
-      "sha256": "34e5b681cffee18e72671858147d1f65f88e1c7e8faf97b76a13ea1a5bfeeb62"
+      "sha256": "df0d6db31b1f637a2e8bbc25cc12b793e04ba6f9e457f3d39fcb7a78b07cad86"
     },
     {
       "file": "pages/business/dashboard/ioc/approval/region-auth-norms-detail.json",
@@ -2952,7 +2952,7 @@
     },
     {
       "file": "pages/capabilities/table/README.md",
-      "sha256": "86a5a38d3b0ea6f1cc20e8b8ccaff5ad91cc06c9ffe8dc2ba6f37bf4b7d6eab2"
+      "sha256": "8b2c8079d25df52d415d0f27d2e1be70b50b93b3813ce4df69fdc1275a0d0a34"
     },
     {
       "file": "pages/capabilities/table/decision-opinion-details.json",
@@ -3105,6 +3105,10 @@
     {
       "file": "pages/capabilities/table/table-hierarchy-selection.json",
       "sha256": "5d620fc30bb11ff2dcc9b62ddc2b9d869e92f7b72fb47beddb7a735a9cf58006"
+    },
+    {
+      "file": "pages/capabilities/table/table-hierarchy-standard-region.json",
+      "sha256": "405ac5e499ad7473c5556ca92e6046ef681377489c946a490962530ed1432b34"
     },
     {
       "file": "pages/capabilities/table/table-long-text.json",

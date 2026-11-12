@@ -24,33 +24,6 @@
       ]
     },
     {
-      "id": "region",
-      "type": "dimension",
-      "dimension": "geo-pc-code",
-      "label": "区域",
-      "emptyLabel": "区域",
-      "selection": {
-        "mode": "single"
-      },
-      "hierarchy": [
-        {
-          "id": "region-dept",
-          "dimension": "region-dept-code",
-          "label": "地区部"
-        },
-        {
-          "id": "office",
-          "dimension": "rep-office-code",
-          "label": "代表处"
-        }
-      ],
-      "defaultLevel": "region-dept",
-      "default": [],
-      "display": "tree",
-      "treeSelection": "level",
-      "searchable": true
-    },
-    {
       "id": "detail-region",
       "type": "dimension",
       "dimension": "region-dept-code",
@@ -242,12 +215,7 @@
     },
     "office-region-lookup": {
       "fields": {
-        "located-region-dept": {
-          "type": "string",
-          "role": "dimension",
-          "label": "地区部",
-          "queryField": "地区部"
-        }
+        "located-region-dept": { "type": "string", "role": "dimension", "label": "地区部", "queryField": "地区部" }
       },
       "source": {
         "type": "query",
@@ -309,9 +277,16 @@
             "identity": {
               "title": "授权规范"
             },
-            "filterIds": [
-              "mtime",
-              "region"
+            "components": [
+              {
+                "id": "authorization-period-control",
+                "type": "filterControl",
+                "props": { "filterId": "mtime" }
+              },
+              {
+                "id": "authorization-region-control",
+                "type": "regionFilter"
+              }
             ],
             "presentation": {
               "layout": "inline",

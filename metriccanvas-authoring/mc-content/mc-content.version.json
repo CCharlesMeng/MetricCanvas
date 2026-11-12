@@ -1,7 +1,7 @@
 {
   "interfaceVersion": "1.0",
-  "contentVersion": "1-25d94a454df6710c",
-  "contentSha256": "25d94a454df6710c7d4ae00493c91a986ebe7c303e23ac8cf362e9fdcab4a40f",
+  "contentVersion": "1-04bb7cc9faa1fc5a",
+  "contentSha256": "04bb7cc9faa1fc5af734c06bd2cb5d2d96c899f301c63dd77a1b67151076998d",
   "files": [
     {
       "file": "authoring-contracts/authored/adapter-interface.md",
@@ -2661,7 +2661,7 @@
     },
     {
       "file": "knowledge/table.hierarchy-selection.json",
-      "sha256": "47e8929b2198f3c2fcd3f428d0a11872f42cd97031ab212beb9f120e35a028f5"
+      "sha256": "4089fb2a7421478a3e7e43434f48878a5283c6249ac712c7be9c845a3335832e"
     },
     {
       "file": "knowledge/table.overview.json",
@@ -2809,7 +2809,7 @@
     },
     {
       "file": "knowledge/table.section-d4954fde.json",
-      "sha256": "8273ba5e1335c8307970313188c98046b5d48e7b0472d5689c81560adf916ca1"
+      "sha256": "ed611a40785aa2701867fb0ef0a1f5f580dbcc5098071ed3d69605e7fbaea6f9"
     },
     {
       "file": "knowledge/table.section-de760210.json",
@@ -2961,7 +2961,7 @@
     },
     {
       "file": "product-contracts/manifest.json",
-      "sha256": "d6d7c19d307639996a6e2d65d2cfba9a7f6e41bc63f863d74c4bc7f708a2f03e"
+      "sha256": "e7692318feca45b770f97d04c8a4d303a0a98c7c17fe7e2a20314dab1203b1be"
     },
     {
       "file": "product-contracts/page/component-catalog.json",
@@ -6221,7 +6221,7 @@
     },
     {
       "file": "references/authoring-knowledge/model.json",
-      "sha256": "210498fc466134521d203cbbff4e17ec8be6e03d2856f550fb2cb8ef9812a3a9"
+      "sha256": "701e5230b1beecee7f669212dc00f61057b87522282341b944ba41f066f777f8"
     },
     {
       "file": "references/example-guides/ioc-auto-back-detail/browser-back.md",
@@ -6337,7 +6337,7 @@
     },
     {
       "file": "references/page-metadata/components/table.md",
-      "sha256": "a690b40bdb6b32d872dbd24405af986afa7b3e009870be48c626c8905534f239"
+      "sha256": "3153ec9fd4fe9aa49af941a00f779d01c22bce3ab0b18b11d074fdcd349f1cc9"
     },
     {
       "file": "references/page-metadata/components/text.md",
@@ -9529,7 +9529,7 @@
     },
     {
       "file": "references/page-metadata/index.json",
-      "sha256": "48fec0e9c52199ce04e6b0f3a23fc2d7baa97d7fad9f400d76404aafc4420523"
+      "sha256": "35bb6d74ff87f64f601c593244576e66b9cb8cc125d4a984a2cc434f11792237"
     },
     {
       "file": "references/page-metadata/page.md",
@@ -9569,7 +9569,7 @@
     },
     {
       "file": "runtime/contract-alignment.json",
-      "sha256": "86bd83c7007af22cda47a3cbcd0ff0a33ed9e529defae3acadca3cb7c7e4dd4d"
+      "sha256": "6eded72489d5c29eaaa4be6a9bc44efaff38568257c80c9ad461d04769a321d7"
     },
     {
       "file": "runtime/coverage.json",
@@ -9617,7 +9617,7 @@
     },
     {
       "file": "runtime/source-identity.json",
-      "sha256": "e52c76def20abd95cd17670045166ea565dd7ec212abef2aa3f1c8127cf7b697"
+      "sha256": "739eec60944dc22e3b96d5dc1ce93a40e59524d105ef76c4bc9f61bf6fb51cca"
     },
     {
       "file": "runtime/tool-behavior.md",
@@ -9637,7 +9637,7 @@
     },
     {
       "file": "scripts/inspect-page.mjs",
-      "sha256": "7383d6857e18f0ecad6ab5e723e44f6bb086075752faccf69d088bbd389edcd0"
+      "sha256": "460f39a6e014d35bb6e8a578ca5dc2894d283a788b0f350a48c4cf3f678f8d1e"
     },
     {
       "file": "scripts/inspect-page.mjs.LICENSES.md",
@@ -9681,7 +9681,7 @@
     },
     {
       "file": "scripts/upgrade-page.mjs",
-      "sha256": "cb47abf18467470a43b70eca83b3ff3afae560bf0ce47a270f933e6419092239"
+      "sha256": "306b80a402075f608714f0e2fe527d1b206cded1e98d718d4d123fe83502901c"
     },
     {
       "file": "scripts/upgrade-page.mjs.LICENSES.md",
@@ -9727,7 +9727,7 @@
   "alignedWith": {
     "productContractVersion": "1.0.0-rc.4",
     "productManifest": "contract-snapshot/manifest.json",
-    "productManifestSha256": "d6d7c19d307639996a6e2d65d2cfba9a7f6e41bc63f863d74c4bc7f708a2f03e",
+    "productManifestSha256": "e7692318feca45b770f97d04c8a4d303a0a98c7c17fe7e2a20314dab1203b1be",
     "authoringContractVersion": "0.3.1",
     "authoringManifest": "contracts/manifest.json",
     "authoringManifestSha256": "b42a7c92e4d3921f26099427a82e77eb726feefbe71bccb6dacad13e8bcfa60b",

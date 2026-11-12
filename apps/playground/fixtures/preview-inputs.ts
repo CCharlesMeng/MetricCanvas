@@ -31,6 +31,7 @@ const exactInputs = new Map([
   ['partner-health-union-null-probe', 'organization-union'],
   ['table-data-recovery', 'table-recovery'],
   ['table-hierarchy-selection', 'hierarchy'],
+  ['table-hierarchy-standard-region', 'hierarchy'],
   ['record-join-demo', 'record-join'],
   ['record-join-no-row-limit', 'record-join'],
   ['record-join-batch-timeout', 'record-join'],
