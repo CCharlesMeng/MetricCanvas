@@ -198,7 +198,6 @@
                   "dims": [],
                   "metrics": [],
                   "time": {
-                    "period": "month",
                     "is_aggregate": false
                   }
                 },
@@ -213,7 +212,11 @@
           },
           "filterBindings": {
             "period": {
-              "target": "time"
+              "target": "time",
+              "periodPolicy": {
+                "kind": "fixed",
+                "period": "month"
+              }
             },
             "customer-category": {
               "target": "dimension",
@@ -423,9 +426,7 @@
           },
           "filterBindings": {
             "period": {
-              "target": "time",
-              "queryField": "账期",
-              "valueFormat": "datetime"
+              "target": "time"
             },
             "customer-category": {
               "target": "dimension",
@@ -624,9 +625,7 @@
           },
           "filterBindings": {
             "period": {
-              "target": "time",
-              "queryField": "账期",
-              "valueFormat": "datetime"
+              "target": "time"
             },
             "customer-category": {
               "target": "dimension",
@@ -774,9 +773,7 @@
               "queryField": "客户类型"
             },
             "period": {
-              "target": "time",
-              "queryField": "账期",
-              "valueFormat": "datetime"
+              "target": "time"
             }
           },
           "paramBindings": {
