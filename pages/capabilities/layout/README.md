@@ -35,6 +35,8 @@
 3. 通过 `mc-content/scripts/mc_content.py schema --input <旧文件>` 检查兼容性；upgrade 不带输出目录只检查，带全新目录才输出 original、page 和 migration.json，原文件不变。
 4. 内容包更新后运行 `pnpm authoring:contracts` 和 `pnpm mc:content:fixtures`；`pnpm mc:content:fixtures --check` 校验页面与实际诊断一致，不能手改静态表格伪造通过。
 
+“装配失败定位”来自真实本地装配的合成反例：查询投影缺少 region，结果字段仍声明 region。应显示 failed；正文按层级展示输入块 `/sections/0/blocks/0` 和候选页面 `/dataSources/sample/fields/region/queryField` 的校验位置，以便宽窄屏换行阅读。表格和真实回执保留原始 JSON Pointer；完整消息保存在测试消费的 `tools/fixtures/mc-content-layout/diagnostics.json` 的 composeFailure 中。修复只补齐真实缺失的投影关系，不能删字段或改业务口径。候选页面路径不作为最终 partial 页面的位置。本场景仅运行确定性工具，不执行 DQE、保存或预览交接。
+
 本页证明本地诊断和已有运行时呈现；不证明 Relay 执行注册、完整产物通道、真实查询、保存或发布。布局编译只检查结构与声明，视觉质量仍需实际预览。
 
 Report 专属布局验收：[经营报告](mc-layout-business-report.json)与[用量报告](mc-layout-usage-report.json)，入口分别为 `/pages/mc-layout-business-report`、`/pages/mc-layout-usage-report`。两页由编译计划经现有 compose 函数在内存装配，再通过 MC 产物检查生成；无保存调用，使用两条月份合成记录。检查总量 50、折线 20→30、明细两行和章节排布。此处为验收 Report 模板而显式采用 report；诊断页采用 dashboard。

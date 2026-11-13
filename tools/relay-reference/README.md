@@ -6,6 +6,8 @@
 
 本目录实现 [四项交付 Spec](../../docs/plan/2026-11-02-product-relay-evolution/relay-reference-spec.md) 的发行检查、MC 构建侧四项导出和稳定产品进程入口。真实 MCP、身份、DQE、状态/CAS、保存、采用和回退程序由 Relay 维护。
 
+`page.compose` / `page.compose.v2` 使用显式产品资源时，在一次装配调用内复用隔离的 Node 校验进程。逐组件试装和最终整页校验仍逐次执行，公开请求、回执及局部成功规则保持；每次验证继续核对程序字节，超时、异常和调用结束均回收进程。不跨调用共享进程、页面、时间上下文或内容版本。内部流式传输不属于公开 Interface，Relay 继续只调用原有产品入口；旧 MCP 包装是否已经消费该路径须在实际部署核对。
+
 当前发行版本以`release-config.json`为准，Interface2.0.0；默认页面版本从当前产品真源导出，正式工具名称为`mc-tools/`和`mc-tools.md`。共享references安装根允许Relay自有文件，产品CLI只遍历四项；seal/verify/compare的候选根仍须严格四项。旧单数发行可由构建检查器只读验证，1→2的入口/公开路径变化明确返回needs_migration。
 
 0.3.6 承接兼容的表格呈现修复与同源参考更新，保持 Interface2.0.0 和 Schema6.85。分发内容变化使用新补丁发行号，不覆盖冻结的0.3.5；正式消费者及其采用记录、历史样本均保持原字节。

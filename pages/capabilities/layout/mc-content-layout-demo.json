@@ -1,6 +1,6 @@
 {
   "id": "mc-content-layout-demo",
-  "schemaVersion": "6.116",
+  "schemaVersion": "6.117",
   "layout": "dashboard",
   "meta": {
     "title": "MC 内容包：布局与版本检查",
@@ -44,6 +44,11 @@
             "detail": "CONTENT_RESOURCE_MISMATCH / line-endings"
           },
           {
+            "case": "装配失败定位",
+            "result": "failed",
+            "detail": "STRUCTURE_COMPONENT_INVALID input:/sections/0/blocks/0；QUERY_MAPPING_ERROR document:/dataSources/sample/fields/region/queryField"
+          },
+          {
             "case": "同源知识有界读取",
             "result": "ok",
             "detail": "table.width 保留语义与父约束；未展开引用可继续定位"
@@ -56,7 +61,7 @@
           {
             "case": "来源覆盖对账",
             "result": "ok",
-            "detail": "306 主题 / 9 工具 / 20 组件；独立分母检查"
+            "detail": "307 主题 / 9 工具 / 20 组件；独立分母检查"
           },
           {
             "case": "正常编译",
@@ -154,6 +159,16 @@
           },
           "props": {
             "body": "旧文件流程：整包校验 → 检查可读范围与能力下限 → 显式升级到新目录 → 核对原件与迁移报告 → Skill 决定采用。此页面不执行保存、发布或真实查询。"
+          }
+        },
+        {
+          "id": "compose-failure-detail",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "装配失败定位（合成）：路径按层级显示。STRUCTURE_COMPONENT_INVALID input: → sections → 0 → blocks → 0；QUERY_MAPPING_ERROR document: → dataSources → sample → fields → region → queryField"
           }
         }
       ]

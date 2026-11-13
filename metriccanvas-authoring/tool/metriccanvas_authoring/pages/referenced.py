@@ -8,6 +8,7 @@ from jsonschema import Draft202012Validator
 from metriccanvas_authoring.bundle_info import load_bundle_info
 from metriccanvas_authoring.pages.composition.page_structure import SECTION, ID, NAME, TEXT, DATA_BLOCK, obj, block_component, StructureError
 from metriccanvas_authoring.pages.validation.page_validation import validate_page_document
+from metriccanvas_authoring.pages.validation.node_validator import compose_validation_session
 from metriccanvas_authoring.pages.editing.page_editing import EDIT_SCHEMA, apply_page_operation
 from metriccanvas_authoring.pages.editing.section_editing import SECTION_OPERATIONS, SECTION_TYPES, edit_section
 from metriccanvas_authoring.pages.editing.operation_batch import operation_batch
@@ -48,15 +49,28 @@ def pack_default_widths(components, blocks):
 
 
 
+class _ComponentValidationError(StructureError):
+    def __init__(self, issues):
+        super().__init__('STRUCTURE_COMPONENT_INVALID')
+        self.validation_issues = tuple(issues)
+
+
+def _validation_diagnostics(issues, block_id=None):
+    return [{'code': issue.type, 'path': issue.path, 'message': issue.message, 'pathScope': 'document',
+             **({'blockId': block_id} if block_id is not None else {})} for issue in issues]
+
+
 def failed_block_outcome(block_id, error, section_index, block_index):
     path = error.path if error.path.startswith('/sections/') else f'/sections/{section_index}/blocks/{block_index}' + error.path
+    issues = [{**error.issue(), 'path': path, 'pathScope': 'input', 'blockId': block_id}]
+    issues.extend(_validation_diagnostics(getattr(error, 'validation_issues', ()), block_id))
     return {'id': block_id, 'status': 'failed', 'component': {'id': 'structure-missing-' + block_id, 'type': 'text'},
-            'issues': [{**error.issue(), 'path': path, 'pathScope': 'input', 'blockId': block_id}], 'adjustments': []}
+            'issues': issues, 'adjustments': []}
 
 
-def _failed_compose(code, path='', operations=None):
+def _failed_compose(code, path='', operations=None, validation_issues=()):
     return {'status': 'failed', 'document': None, 'operations': operations or [],
-            'issues': [{'code': code, 'path': path}]}
+            'issues': [{'code': code, 'path': path}, *_validation_diagnostics(validation_issues)]}
 
 
 def _structure_ids_valid(sections):
@@ -75,8 +89,9 @@ def _trial_component(document, target, component, sources, combinations, validat
         if root in combinations:
             trial['dataSources'].update(referenced_definitions(sources, root))
     trial['sections'].append({**target, 'components': target['components'] + [component]})
-    if validate_page_document(trial, **validation):
-        raise StructureError('STRUCTURE_COMPONENT_INVALID')
+    issues = validate_page_document(trial, **validation)
+    if issues:
+        raise _ComponentValidationError(issues)
 
 
 def _compose_block(document, target, section, block, sources, combinations, records, validation, multislot):
@@ -123,6 +138,13 @@ def _compose_section(document, section, si, sources, combinations, records, vali
 def compose_candidate(page_id, schema_version, request, records, *, page_schema=None, node_resources=None,
                       compose_schema=None):
     """Explicit result evidence to candidate page; no Prepared object or execution."""
+    with compose_validation_session(node_resources) as resources:
+        return _compose_candidate(page_id, schema_version, request, records, page_schema=page_schema,
+                                  node_resources=resources, compose_schema=compose_schema)
+
+
+def _compose_candidate(page_id, schema_version, request, records, *, page_schema=None, node_resources=None,
+                       compose_schema=None):
     validation = _validation_options(page_schema, node_resources)
     compose_schema = compose_schema or COMPOSE_SCHEMA
     request, adjustments = normalize_compose(request, compose_schema)
@@ -148,8 +170,11 @@ def compose_candidate(page_id, schema_version, request, records, *, page_schema=
             return _failed_compose('COMPOSE_DATE_FILTER_INVALID', '/dateFilters', outcomes)
         document = candidate
     add_query_table_pagination(document)
-    if not any(o['status'] == 'applied' for o in outcomes) or validate_page_document(document, **validation):
+    if not any(o['status'] == 'applied' for o in outcomes):
         return _failed_compose('COMPOSE_RESULT_INVALID', operations=outcomes)
+    issues = validate_page_document(document, **validation)
+    if issues:
+        return _failed_compose('COMPOSE_RESULT_INVALID', operations=outcomes, validation_issues=issues)
     return {'status': 'partial' if any(o['status'] == 'failed' for o in outcomes) else 'changed',
             'document': document, 'operations': outcomes, 'issues': [], 'adjustments': adjustments, 'scopeAnnotations': {}}
 

@@ -98,6 +98,29 @@ def report_example(scene):
     return result['document'], {'compile': compiled, 'assembly': result['operations'], 'inspection': inspection}
 
 
+def compose_failure_example():
+    sys.path.insert(0, str(ROOT / 'metriccanvas-authoring/tool'))
+    from metriccanvas_authoring.bundle_info import load_bundle_info
+    from metriccanvas_authoring.pages.referenced import compose_candidate
+    rows = [{'region': '合成区域', 'amount': 2}]
+    source = {'fields': {'region': {'queryField': 'region', 'type': 'string', 'role': 'dimension'},
+                         'amount': {'queryField': 'amount', 'type': 'number', 'role': 'measure'}},
+              'source': {'type': 'query', 'query': {'language': 'dqe',
+                  'body': {'dsl_list': [{'output_dims': [], 'output_metrics': ['amount']}]}},
+                  'initial': {'capturedAt': '2026-01-01T00:00:00Z', 'rows': rows, 'totalCount': 1}}}
+    request = {'title': '合成装配诊断', 'layout': 'dashboard', 'sources': {'sample': 'synthetic-result'},
+        'sections': [{'id': 'main', 'pattern': 'custom', 'blocks': [{'id': 'detail', 'type': 'data',
+            'component': 'table', 'title': '合成明细', 'source': 'sample', 'fields': ['region', 'amount'],
+            'purpose': 'reconciliation'}]}]}
+    result = compose_candidate('synthetic-failure', load_bundle_info()['pageSchemaVersion'], request,
+                               {'sample': {'source': source, 'rows': rows, 'totalCount': 1}})
+    assert result['status'] == 'failed' and result['document'] is None, result
+    issues = result['operations'][0]['issues']
+    assert any(issue.get('pathScope') == 'document' for issue in issues), result
+    detail = '；'.join(f"{issue['code']} {issue['pathScope']}:{issue['path']}" for issue in issues)
+    return {'case': '装配失败定位', 'result': result['status'], 'detail': detail}, result
+
+
 def results():
     matrix = json.loads((CONTENT / 'eval/fixtures/example-matrix.json').read_text())
     normal = matrix['checks'][0]['input']
@@ -124,7 +147,8 @@ def results():
     assert planned_result['status'] == 'invalid'
     assert old_result['status'] == 'upgrade_required'
     assert not future_result['upgrade']['possible']
-    rows = distribution_rows() + [
+    failure_row, failure_result = compose_failure_example()
+    rows = distribution_rows() + [failure_row,
         {'case': '同源知识有界读取', 'result': 'ok', 'detail': 'table.width 保留语义与父约束；未展开引用可继续定位'},
         {'case': '完整工具参数', 'result': 'ok', 'detail': 'query_data 外层与 request 来自实际 FastMCP 注册'},
         {'case': '来源覆盖对账', 'result': 'ok', 'detail': f"{coverage['counts']['topics']} 主题 / {coverage['counts']['tools']} 工具 / {coverage['counts']['components']} 组件；独立分母检查"},
@@ -137,11 +161,12 @@ def results():
     return rows, {'compile': compiled, 'required': required_result, 'planned': planned_result,
         'oldSchema': old_result, 'futureSchema': future_result, 'evaluation': report,
         'knowledge': {'key': knowledge['key'], 'requiredBytes': knowledge['requiredBytes'], 'truncated': knowledge['truncated']},
-        'coverageCounts': coverage['counts']}
+        'coverageCounts': coverage['counts'], 'composeFailure': failure_result}
 
 
 def demo(rows):
     _, manifest = verify_package()
+    failure_detail = next(row['detail'] for row in rows if row['case'] == '装配失败定位')
     return {'id': 'mc-content-layout-demo', 'schemaVersion': manifest['alignedWith']['pageSchemaVersion'], 'layout': 'dashboard',
         'meta': {'title': 'MC 内容包：布局与版本检查', 'description': '由真实本地诊断生成的合成验收页；不代表真实部署。'},
         'dataSources': {'diagnostics': {'fields': {key: {'type': 'string', 'role': 'dimension', 'label': label}
@@ -153,7 +178,9 @@ def demo(rows):
                 'layout': {'span': 12}, 'data': {'main': 'diagnostics'}, 'props': {'title': '检查结果与证据范围',
                     'columns': [{'field': 'case', 'title': '检查项', 'sortable': True}, {'field': 'result', 'title': '结果'}, {'field': 'detail', 'title': '说明'}]}}]},
             {'id': 'usage', 'components': [{'id': 'upgrade-flow', 'type': 'text', 'layout': {'span': 12},
-                'props': {'body': '旧文件流程：整包校验 → 检查可读范围与能力下限 → 显式升级到新目录 → 核对原件与迁移报告 → Skill 决定采用。此页面不执行保存、发布或真实查询。'}}]}]}
+                'props': {'body': '旧文件流程：整包校验 → 检查可读范围与能力下限 → 显式升级到新目录 → 核对原件与迁移报告 → Skill 决定采用。此页面不执行保存、发布或真实查询。'}},
+                {'id': 'compose-failure-detail', 'type': 'text', 'layout': {'span': 12},
+                 'props': {'body': '装配失败定位（合成）：路径按层级显示。' + failure_detail.replace('/', ' → ')}}]}]}
 
 
 def main():

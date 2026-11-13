@@ -10,6 +10,13 @@ test('MC diagnostics render in the product engine with sorting and narrow scroll
   await expect(page.getByText('安装文件完整性', {exact: true})).toBeVisible();
   await expect(page.getByText('运行依赖预检', {exact: true})).toBeVisible();
   await expect(page.getByText('换行转换拒绝', {exact: true})).toBeVisible();
+  const composition = page.getByRole('row').filter({hasText: '装配失败定位'});
+  await expect(composition).toContainText('failed');
+  await expect(composition).toContainText('input:/sections/0/blocks/0');
+  await expect(composition).toContainText('document:/dataSources/sample/fields/region');
+  const detail = page.getByRole('paragraph').filter({hasText: '装配失败定位（合成）：'});
+  await expect(detail).toBeVisible();
+  await expect(detail).toContainText('QUERY_MAPPING_ERROR document: → dataSources → sample → fields → region → queryField');
   const table = page.locator('table').first();
   await expect(table).toContainText('not_run');
   await expect(table).toContainText('CONTENT_RESOURCE_MISMATCH / line-endings');
@@ -19,6 +26,8 @@ test('MC diagnostics render in the product engine with sorting and narrow scroll
   for (const width of [1440, 390]) {
     await page.setViewportSize({width, height: 1000});
     await expect(table).toBeVisible();
+    await expect(detail).toBeVisible();
+    expect(await detail.evaluate(element => element.scrollWidth <= element.clientWidth)).toBe(true);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await page.screenshot({path: info.outputPath(`mc-content-${width}.png`), fullPage: true});
   }
