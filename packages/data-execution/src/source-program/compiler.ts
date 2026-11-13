@@ -3,6 +3,8 @@ import { automaticQueryTableSources } from './table-pagination';
 import type { Component, ConditionContext } from '@metriccanvas/page/internal';
 import { tableColumnPresentation } from '../table-presentation';
 import { chartPresentation } from '../chart-presentation';
+import { presentationQuerySources } from '../query-projection';
+import type { TableQueryView } from '@metriccanvas/page/internal';
 
 function componentSources(page: Page, component: Component, context?: ConditionContext): string[] {
   let projected = component;
@@ -22,25 +24,25 @@ export function compileSources(page: Page) {
   }
   return { sources, limits, automatic: automaticQueryTableSources(page) };
 }
-export function executionSourceIds(page: Page, roots: Iterable<string>): Set<string> {
+export function executionSourceIds(page: Page, roots: Iterable<string>, sources?: ReadonlyMap<string, DataSource>): Set<string> {
   const ids = new Set(roots);
-  for (const id of ids) resultSourceIds(page.dataSources[id]).forEach(dependency => ids.add(dependency));
+  for (const id of ids) resultSourceIds(sources ? sources.get(id) : page.dataSources[id]).forEach(dependency => ids.add(dependency));
   return ids;
 }
-export function visibleSourceIds(page: Page, context?: ConditionContext): Set<string> {
+export function visibleSourceIds(page: Page, context?: ConditionContext, views?: ReadonlyMap<string, TableQueryView>): Set<string> {
   const ids = new Set<string>();
   for (const component of flattenPageComponents({ sections: page.sections, detailViews: page.detailViews?.filter(v => v.mode === 'snapshot') })) {
     componentSources(page, component, context).forEach(id => ids.add(id));
     if (component.type === 'aiSummary') Object.values(aiSummaryRelatedData(page, component.props, {}, component.id)).forEach(value => ids.add(value.source));
   }
-  return executionSourceIds(page, ids);
+  return executionSourceIds(page, ids, context && presentationQuerySources(page, context, { views }));
 }
 
-export function activeSourceIds(page: Page, selections: TabSelections = {}, context?: ConditionContext): Set<string> {
+export function activeSourceIds(page: Page, selections: TabSelections = {}, context?: ConditionContext, views?: ReadonlyMap<string, TableQueryView>): Set<string> {
   const ids = new Set<string>();
   for (const component of activePageComponents(page, selections)) {
     componentSources(page, component, context).forEach(id => ids.add(id));
     if (component.type === 'aiSummary') Object.values(aiSummaryRelatedData(page, component.props, selections, component.id)).forEach(value => ids.add(value.source));
   }
-  return executionSourceIds(page, ids);
+  return executionSourceIds(page, ids, context && presentationQuerySources(page, context, { selections, views }));
 }

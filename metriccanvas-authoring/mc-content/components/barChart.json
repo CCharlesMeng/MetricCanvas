@@ -347,6 +347,93 @@
         }
       ],
       "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/conditional-compute-demand.json",
+      "requiredVersion": "6.89",
+      "capabilities": [
+        {
+          "id": "chart-series-visibility",
+          "minor": 89,
+          "description": "图表系列按展示条件同步显隐折线、柱、图例与空闲数值轴"
+        },
+        {
+          "id": "quarter-query-period",
+          "minor": 86,
+          "description": "季度查询使用 quarter 与 YYYY-Qn 编码"
+        },
+        {
+          "id": "compute-scalar-join",
+          "minor": 83,
+          "description": "独立单行度量无键关联到全部主行"
+        },
+        {
+          "id": "ioc-header-component",
+          "minor": 81,
+          "description": "IOC 页头作为首分区首组件"
+        },
+        {
+          "id": "period-query-policy",
+          "minor": 67,
+          "description": "查询独立期间策略与期间模式展示条件"
+        },
+        {
+          "id": "conditional-table-columns",
+          "minor": 62,
+          "description": "表格字段列及分组列条件显隐"
+        },
+        {
+          "id": "period-filter-modes",
+          "minor": 41,
+          "description": "自然期间筛选可选模式与单年份选择"
+        },
+        {
+          "id": "business-filter-selection",
+          "minor": 37,
+          "description": "页级单多选、封闭枚举及显式结构树"
+        },
+        {
+          "id": "period-filter",
+          "minor": 27,
+          "description": "Dashboard 年季月与近一年期间筛选"
+        },
+        {
+          "id": "table-toolbar",
+          "minor": 21,
+          "description": "表格独立搜索与完整 Excel 导出工具区"
+        },
+        {
+          "id": "report-header-date-filters",
+          "minor": 13,
+          "description": "报告页头日期筛选、月份范围、时间范围参数初值及时间点窗口"
+        },
+        {
+          "id": "mixed-chart-series",
+          "minor": 12,
+          "description": "柱线混合系列与显式坐标轴"
+        },
+        {
+          "id": "cross-source-computation",
+          "minor": 12,
+          "description": "跨源关联、字段合计和复合增长率具名算子"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "data-source-computation",
+          "minor": 0,
+          "description": "页面数据源的受控计算阶段与具名算子(ADR-0046)"
+        },
+        {
+          "id": "conditional-presentation",
+          "minor": 35,
+          "description": "统一条件显隐、按钮与正文片段"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
     }
   ],
   "note": "Renderable, assembled and data_editable are independent. Product capability floors are checked by inspect_schema."

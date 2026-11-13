@@ -1,5 +1,11 @@
 # 数据计算场景
 
+## 条件显隐与关联依赖
+
+入口 `/pages/conditional-compute-demand`，显式 Dashboard，使用 IOC 页头和页面中真实的图表／表格声明。无必填 URL 参数；在仓库根执行 `pnpm --filter playground exec playwright test tests/conditional-compute-demand.browser.ts --workers=1`，浏览器在 DQE HTTP 边界注入合成响应。手动访问需配置能返回 `name`、`amount`、`baseline`、`change-month/quarter/year` 的合成数据网关，不代表真实业务数据。
+
+切换月／季／年，观察图表始终保留当前值与全局均值，仅显示本模式的变化系列；共享表格的变化列同步切换。Network 中每个活动消费者组只出现对应的 `change-*` 查询，另外两个变化源不查询且不报错。点击表格“导出”，Excel 只包含当前模式的变化列与相同合成值。需要移植时保留 `trend.compute` 的关联关系、期间能力和列／系列条件；将合成查询、字段及筛选绑定替换为可信业务定义，不复制合成值。共享消费者、后续计算、真实错误、查询视图和迟到响应的边界由 `conditional-compute-demand.test.ts` 补充验收。
+
 ## 条件显隐与按需取数
 
 入口 `/pages/conditional-query-demand`，显式 Dashboard，表格和柱线组合图复用现有布尔及维度筛选。页面声明合成查询；自动浏览器验收拦截 DQE HTTP 并返回合成数据，执行 `pnpm --filter playground exec playwright test tests/conditional-query-demand.browser.ts` 即可启动页面试验场并观察。手动浏览需向已配置的数据网关提供同名合成字段，不代表真实业务查询。

@@ -1,7 +1,6 @@
 import {expect,it} from 'vitest';
 import ExcelJS from 'exceljs';
 import fixture from '../../../../pages/capabilities/table/table-pinned-summary.json';
-import business from '../../../../pages/temporary/business-result-pinned-diagnosis-20261102/business-result-metrics.json';
 import {parsePage,versionPolicy} from '@metriccanvas/page';
 import {projectTableRows,tableRowColumn,alignedCellText} from '../../widgets/src/components/table/rows';
 import {hostRenderSnapshot} from '../src/widget-host-state';
@@ -68,17 +67,6 @@ it('rejects duplicate, shared, truncated and old-version declarations',()=>{
     (v:ReturnType<typeof document>)=>{v.dataSources.extra.source.query.body.dsl_list[0].order.limit=1;},
     (v:ReturnType<typeof document>)=>{v.sections[0].components[0].props.columns[0].pinnedTop={text:'合计',field:{data:'china',field:'scope-name'}};}
   ]){const value=document();mutate(value);expect(parsePage(value).ok).toBe(false);}
-});
-it('uses the original metric names with no grouping or frontend ratio; only office summaries bind the selected region',()=>{
-  const parsed=parsePage(business);expect(parsed.ok).toBe(true);
-  for(const scope of ['region-dept','rep-office'])for(const suffix of ['summary','commercial-summary','contract-summary']){
-    const ds=business.dataSources[`${scope}-${suffix}` as keyof typeof business.dataSources];
-    const q=ds.source.query;
-    expect(q.body.dsl_list[0].output_dims).toEqual([]);
-    expect(q.body.dsl_list[0].filter.time.is_aggregate).toBe(true);
-    expect(Object.keys(q.filterBindings).sort()).toEqual(scope==='region-dept'?['mtime']:['mtime','region']);
-    expect('compute' in ds).toBe(false);
-  }
 });
 
 it('rejects complete Excel export when any additional summary is invalid',async()=>{

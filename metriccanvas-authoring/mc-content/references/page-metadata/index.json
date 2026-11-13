@@ -256,7 +256,8 @@
         "period-comparison-demo",
         "period-comparison-query-page",
         "missing-organization-key",
-        "chart-global-benchmark"
+        "chart-global-benchmark",
+        "conditional-compute-demand"
       ],
       "rules": [
         "compute-operator-inputs",
@@ -631,7 +632,8 @@
         "dual-axis-alignment",
         "chart-series-visibility",
         "chart-table-unit",
-        "sdt-period-aggregation"
+        "sdt-period-aggregation",
+        "conditional-compute-demand"
       ],
       "rules": [
         "bar-forecast-boundary",
@@ -738,7 +740,8 @@
         "table-header-select-all-query",
         "table-default-sort",
         "rep-business-result",
-        "table-header-filter-search"
+        "table-header-filter-search",
+        "conditional-compute-demand"
       ],
       "rules": [
         "table-trend-arrows",
@@ -22968,5 +22971,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "54fd5c3592c7e26f79fb0e1011a25b1bd16465a806ba66c20050d25a41cb90f4"
+  "semanticSourceDigest": "a370f028b9d17418964f432851982f3da9c8eda4eba429bd60f9e82fb1afee93"
 }

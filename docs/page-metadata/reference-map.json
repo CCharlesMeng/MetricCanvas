@@ -308,7 +308,8 @@
         "period-comparison-demo",
         "period-comparison-query-page",
         "missing-organization-key",
-        "chart-global-benchmark"
+        "chart-global-benchmark",
+        "conditional-compute-demand"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -772,7 +773,8 @@
         "dual-axis-alignment",
         "chart-series-visibility",
         "chart-table-unit",
-        "sdt-period-aggregation"
+        "sdt-period-aggregation",
+        "conditional-compute-demand"
       ],
       "sources": [
         "packages/page/src/schema/components/charts.ts",
@@ -899,7 +901,8 @@
         "table-header-select-all-query",
         "table-default-sort",
         "rep-business-result",
-        "table-header-filter-search"
+        "table-header-filter-search",
+        "conditional-compute-demand"
       ],
       "sources": [
         "packages/page/src/schema/components/table.ts",
@@ -3343,6 +3346,7 @@
       "维度绑定包含与排除（6.114）"
     ],
     "compute.md": [
+      "条件显隐与按需关联计算",
       "独立单行指标关联（6.83）",
       "组织键并集（6.74）",
       "空组织键兼容",

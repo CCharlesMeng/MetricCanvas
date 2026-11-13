@@ -9,7 +9,7 @@
       "module": "compute",
       "reference": "references/page-metadata/compute.md",
       "blocks": [
-        "# 具名算子\n\ncompute按声明顺序处理归一化行集。ratio逐行相除，零/缺分母按null或zero处理，缺分子取空；scale缺省原比率，100将其变成百分刻度。delta做减法，任一输入空则空。\n\ngroupSubtotal在每组明细后插小计；grandTotal只累计明细、不重复累计小计；两者只使用collapsible:true度量。rowKind字段是可空string维度，subtotal/total标记汇总行。pivot按有序类别列表匹配首个类别，把行转列。\n\n所有产出字段必须就地声明，不能伪装成原始输入或queryField。这是封闭算子系统，显示格式、任意公式及通用脚本均不是算子。\n\n<a id=\"独立单行指标关联683\"></a>",
+        "# 具名算子\n\ncompute按声明顺序处理归一化行集。ratio逐行相除，零/缺分母按null或zero处理，缺分子取空；scale缺省原比率，100将其变成百分刻度。delta做减法，任一输入空则空。\n\ngroupSubtotal在每组明细后插小计；grandTotal只累计明细、不重复累计小计；两者只使用collapsible:true度量。rowKind字段是可空string维度，subtotal/total标记汇总行。pivot按有序类别列表匹配首个类别，把行转列。\n\n所有产出字段必须就地声明，不能伪装成原始输入或queryField。这是封闭算子系统，显示格式、任意公式及通用脚本均不是算子。\n\n<a id=\"conditional-compute-demand\"></a>",
         "## 比较期缺记录策略（6.77）\n\n查询分页下的比较参见下节“查询分页组合结果逐行计算（6.78）”；本节的 unionKeys 路径仍按完整集合执行。\n\n`joinAggregate.values[]` 可逐度量声明 `onMissing: \"null\" | \"zero\"`，省略为 `null`。它只处理成功查询中没有匹配记录的情况，覆盖该度量的默认缺行输出；已返回的 null 单元格、异常值和失败查询绝不被替换成零。算子顶层 `onMissing: \"null\"` 保持兼容。\n\n```json\n{\"op\":\"joinAggregate\",\"source\":\"previous\",\"keys\":[{\"local\":\"customer\",\"foreign\":\"customer\"}],\"values\":[{\"field\":\"sales\",\"output\":\"previous-sales\",\"aggregate\":\"unique\",\"onMissing\":\"zero\"},{\"field\":\"rate\",\"output\":\"previous-rate\",\"aggregate\":\"unique\"}],\"onMissing\":\"null\"}\n```\n\n先用 `unionKeys` 对本期/上期/去年同期的完整行集取键并集，再关联各期值。增长率为 delta(本期,基期) 后 ratio(差额,基期,scale=100,onZeroDenominator=null)，基期为零包括0/0均产出null；该相对变化声明的负基期同样产出null；普通ratio保留负分母相除。百分点差值只用delta，数值使用0–100刻度，用 `points-1-signed` 显示。表格绑定计算结果，允许全表排序和筛选；空值始终排在有效值之后。见 `/pages/period-comparison-demo` 和查询模块的“自动同比环比查询”。\n\n<a id=\"paged-join-row-compute\"></a>"
       ],
       "rules": [
@@ -86,7 +86,8 @@
         "references/page-metadata/examples/period-comparison-demo.json",
         "references/page-metadata/examples/period-comparison-query-page.json",
         "references/page-metadata/examples/missing-organization-key.json",
-        "references/page-metadata/examples/chart-global-benchmark.json"
+        "references/page-metadata/examples/chart-global-benchmark.json",
+        "references/page-metadata/examples/conditional-compute-demand.json"
       ]
     }
   ],

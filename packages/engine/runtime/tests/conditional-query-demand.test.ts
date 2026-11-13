@@ -68,6 +68,8 @@ it('unions shared consumers and keeps business ordering and calculation dependen
   trend.source.query.body!.dsl_list[0].order = { order_by_field: 'rate', type: 'desc' };
   expect(presentationQuerySources(page,input).get('trend')).toEqual(trend);
   page.dataSources.records.compute = [{ op: 'joinAggregate', source: 'details', keys: [{local:'name',foreign:'name'}], values: [{field:'score',output:'computed',aggregate:'unique'}], onMissing: 'null' }];
+  expect(activeSourceIds(page,{},input).has('details')).toBe(false);
+  page.dataSources.records.compute.push({op:'sumFields',fields:['computed'],output:'derived',onMissing:'null'});
   expect(activeSourceIds(page,{},input).has('details')).toBe(true);
 });
 

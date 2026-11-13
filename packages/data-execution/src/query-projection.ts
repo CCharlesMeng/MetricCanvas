@@ -1,17 +1,16 @@
-import { aiSummaryRelatedData, definitionSourceIds, flattenPageComponents, hasColumnConditions, hasPeriodComparison, hasQueryFieldMapping, resultSourceIds, type Component, type ConditionContext, type DataSource, type DqeQueryDefinition, type EffectiveQuery, type Page, type QueryDataSource } from '@metriccanvas/page/internal';
+import { aiSummaryRelatedData, activePageComponents, flattenPageComponents, hasColumnConditions, hasPeriodComparison, hasQueryFieldMapping, type Component, type ConditionContext, type DataSource, type DqeQueryDefinition, type EffectiveQuery, type Page, type QueryDataSource, type TabSelections, type TableQueryView } from '@metriccanvas/page/internal';
 import { chartPresentation } from './chart-presentation';
 import { tableColumnPresentation } from './table-presentation';
+import { projectComputeDemand, referencedStrings as strings } from './compute-demand';
 
 function conditionalProjection(page: Page, component: Component, context: ConditionContext): Component | undefined {
-  if (component.type === 'table' && hasColumnConditions(component.props.columns)) return tableColumnPresentation(page, component, context).component;
-  if ((component.type === 'barChart' || component.type === 'lineChart') && component.props.series.some(series => series.visibleWhen)) return chartPresentation(page, component, context);
+  if (component.type === 'table') return tableColumnPresentation(page, component, context).component;
+  if (component.type === 'barChart' || component.type === 'lineChart') return chartPresentation(page, component, context);
 }
 
-function strings(value: unknown, found = new Set<string>()): Set<string> {
-  if (typeof value === 'string') found.add(value);
-  else if (Array.isArray(value)) value.forEach(item => strings(item, found));
-  else if (value && typeof value === 'object') Object.values(value).forEach(item => strings(item, found));
-  return found;
+function hasConditionalFields(component: Component): boolean {
+  if (component.type === 'table') return hasColumnConditions(component.props.columns);
+  return (component.type === 'barChart' || component.type === 'lineChart') && component.props.series.some(series => series.visibleWhen !== undefined);
 }
 
 function protectedQueryNames(source: QueryDataSource, required: ReadonlySet<string>, business: unknown): Set<string> {
@@ -51,13 +50,16 @@ function projectQuery(source: DataSource, required: ReadonlySet<string>): DataSo
 }
 
 /** Union all consumers before narrowing a shared query; explicit execution dependencies stay full. */
-export function presentationQuerySources(page: Page, context: ConditionContext): Map<string, DataSource> {
+export interface QueryDemandOptions { selections?: TabSelections; views?: ReadonlyMap<string, TableQueryView>; roots?: readonly string[]; presentation?: Pick<Page, 'sections' | 'detailViews'> }
+export function presentationQuerySources(page: Page, context: ConditionContext, options: QueryDemandOptions = {}): Map<string, DataSource> {
   const full = new Set<string>();
   const required = new Map<string, Set<string>>();
-  for (const source of Object.values(page.dataSources)) [...resultSourceIds(source), ...definitionSourceIds(source)].forEach(id => full.add(id));
-  const components = flattenPageComponents({ sections: page.sections, detailViews: page.detailViews?.filter(view => view.mode === 'snapshot') });
+  const metrics = new Set<string>();
+  const consumerPage = options.presentation ? { ...page, ...options.presentation } : page;
+  const components = options.selections ? activePageComponents(consumerPage, options.selections) : flattenPageComponents({ sections: consumerPage.sections, detailViews: consumerPage.detailViews?.filter(view => view.mode === 'snapshot') });
   for (const component of components) {
     const projected = conditionalProjection(page, component, context);
+    if (hasConditionalFields(component)) Object.values(projected?.data ?? {}).forEach(id => metrics.add(id));
     if (!projected) Object.values(component.data ?? {}).forEach(id => full.add(id));
     else for (const id of Object.values(projected.data ?? {})) {
       const fields = required.get(id) ?? new Set<string>();
@@ -66,12 +68,19 @@ export function presentationQuerySources(page: Page, context: ConditionContext):
     }
     if (component.type === 'aiSummary') Object.values(aiSummaryRelatedData(page, component.props, {}, component.id)).forEach(value => full.add(value.source));
   }
-  return new Map(Object.entries(page.dataSources).map(([id, source]) => [id, full.has(id) || !required.has(id) ? source : projectQuery(source, required.get(id)!)]));
+  const sources = new Map(Object.entries(page.dataSources));
+  let projected = projectComputeDemand(sources, required, full, options.views);
+  const explicit = (options.roots ?? []).filter(root => !projected.required.has(root));
+  if (explicit.length) {
+    explicit.forEach(root => full.add(root));
+    projected = projectComputeDemand(sources, required, full, options.views);
+  }
+  return new Map([...projected.sources].map(([id, source]) => [id, projected.full.has(id) || !metrics.has(id) ? source : projectQuery(source, projected.required.get(id)!)]));
 }
 
 /** Frozen exports keep captured predicates/windows and apply the same metric projection. */
 export function projectCapturedQuery(query: EffectiveQuery | undefined, source: QueryDataSource): EffectiveQuery | undefined {
-  if (!query || Object.keys(query.fieldMappings).length === Object.keys(source.fields).length) return query;
+  if (!query || Object.keys(query.fieldMappings).length === Object.keys(source.fields).length && Object.keys(source.fields).every(id => id in query.fieldMappings)) return query;
   const metrics = source.source.query.body?.dsl_list[0]?.output_metrics;
   if (!Array.isArray(metrics)) return query;
   const allowed = new Set(metrics.filter(metric => typeof metric === 'string'));

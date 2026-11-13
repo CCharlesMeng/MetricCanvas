@@ -40,13 +40,16 @@ import { resolveQueryResultInputs } from '../query-result-inputs';
 import { rawSnapshot } from '../snapshots';
 import { queryRowsFromPageRows } from '../query-rows';
 import { computedSnapshots } from '../compute/snapshots';
-import { compileSources, executionSourceIds } from './compiler';
+import { compileSources, executionSourceIds, activeSourceIds, visibleSourceIds } from './compiler';
 import { reportInitialSnapshotWarnings, reportInitialWarnings, reusableInitialSnapshot, checkOrdinaryRange, isBusinessSelection, correctedPageIndex, fetchComplete, SourceRangeError, EXPORT_PREPARATION_TIMEOUT_MS } from './range-policy';
 import { automaticQueryPageSize } from './table-pagination';
 import { describeExportSource } from './export-diagnostics';
 import { presentationQuerySources, projectCapturedQuery } from '../query-projection';
 
 export interface SourceRead {
+  /** Frozen consumer scope; a shared program may serve a single-table export. */
+  presentation?: Pick<Page, 'sections' | 'detailViews'>;
+  selections?: import('@metriccanvas/page/internal').TabSelections;
   onProgress?: (sourceId: string, progress: ScreenProgress) => void;
   /** Speculative reads share caches but yield execution priority to interactive reads. */
   background?: boolean;
@@ -132,6 +135,31 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
     if (filter && finalizationName(filter)) return true;
     return filter?.type === 'timeRange' && filter.display === 'period' && !!filter.default && typeof filter.default === 'object' && 'mode' in filter.default && (filter.default.mode === 'last12Months' || !('value' in filter.default) || !filter.default.value);
   }
+  function initialSourceSnapshot(id: string, source: DataSource, view: TableQueryView, conditions: FilterValues): DataSnapshot {
+    try {
+      const trusted = candidates.trusted(id, conditions);
+      const terminal = trusted ? initialIntersection(source, conditions) : undefined;
+      if (terminal) return terminal;
+      const initial = trusted && defaultConditions(id, conditions) ? reusableInitialSnapshot(source, view, compiled.limits.has(id)) : source.source.type === 'inline' ? rawSnapshot(source.source.rows) : undefined;
+      reportInitialSnapshotWarnings(source, initial, { ...config.diagnostics, pageId: page.id, dataSourceIds: [id] });
+      return initial ? checkOrdinaryRange(source, initial, undefined, { ...config.diagnostics, pageId: page.id, dataSourceIds: [id] }) : { status: 'loading' };
+    } catch (cause) { return {status:'error',error:preservedQueryError(cause)}; }
+  }
+  function initialIntersection(source: DataSource, conditions: FilterValues): DataSnapshot | undefined {
+    if (source.source.type !== 'query' || requiresQueryContext(source.source.query, page.filters)) return;
+    const query = composeEffectiveQuery({ displayInputs: config.displayInputs?.(), filterRevision: config.filterRevision?.(), now: config.now ?? config.clock?.() ?? new Date(), page, filters:page.filters, dataSource: source as QueryDataSource }, conditions, 0, [], {});
+    if (!intersectQueryFilters(query)) return {status:'empty',totalCount:0};
+  }
+  function captureSourceQuery(id: string, source: QueryDataSource, capture: { conditions: FilterValues; views: ReadonlyMap<string, TableQueryView>; raw: ReadonlyMap<string, DataSnapshot>; sources: ReadonlyMap<string, DataSource>; limits: ReadonlyMap<string, number>; now: Date }): EffectiveQuery | undefined {
+    try {
+      const {conditions, views, raw, sources, limits, now} = capture;
+      const view = views.get(id) ?? defaultSourceView(page, id);
+      const query = composeEffectiveQuery({ displayInputs: config.displayInputs?.(), filterRevision: config.filterRevision?.(), now, page, filters:page.filters, dataSource: source, ...(limits.has(id) ? { pagination: { limit: view.pageSize } } : {}) }, conditions, cascaded.has(id) ? view.pageIndex : 0, view.sort, tableHeaders(view.predicates), mainTableSearch(view.search));
+      const inputs = resolveQueryResultInputs(source, raw, sources, limits);
+      if (inputs.status === 'ready') bindQueryResultValues(query, inputs.values);
+      return structuredClone(query);
+    } catch { return undefined; } // read owns rejected-source diagnostics; an invalid query cannot be captured.
+  }
   const program = {
     prepareView(id:string,conditions:FilterValues,view:TableQueryView,field?:string,previous?:TableQueryView):TableQueryView {
       const source=page.dataSources[id];
@@ -141,28 +169,27 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
       return compilePagedJoin(page,id,conditions,reconcilePagedJoinView(source as PagedJoinDataSource,view,field,previous),config.now??config.clock?.(),{displayInputs:config.displayInputs?.(),filterRevision:config.filterRevision?.()}).view;
     },
     readColumnCandidates(request: ColumnCandidatesRead) { return createColumnCandidatesReader(page, runner, value => program.read(value), compiled.limits, { ...config, slotSearch })(request); },
-    initialSnapshots(request: Pick<SourceRead, 'roots' | 'conditions' | 'views'>): Map<string, DataSnapshot> {
+    initialSnapshots(request: Pick<SourceRead, 'roots' | 'conditions' | 'views' | 'selections'>): Map<string, DataSnapshot> {
       const snapshots = new Map<string, DataSnapshot>();
-      for (const id of executionSourceIds(page, request.roots)) {
-        const source = compiled.sources.get(id); if (!source) continue;
+      const sources = presentationQuerySources(page, {declarations:page.filters??[],filters:request.conditions,displaySnapshot:config.displayInputs?.(),filterRevision:config.filterRevision?.()}, request);
+      for (const id of executionSourceIds(page, request.roots, sources)) {
+        const source = sources.get(id); if (!source) continue;
         const view = request.views?.get(id) ?? defaultSourceView(page, id, compiled.limits.get(id));
-        const contradictory = candidates.trusted(id, request.conditions) && source.source.type === 'query' && !requiresQueryContext(source.source.query, page.filters) && !intersectQueryFilters(composeEffectiveQuery({ displayInputs: config.displayInputs?.(), filterRevision: config.filterRevision?.(), now: config.now ?? config.clock?.() ?? new Date(), page:page,filters:page.filters, dataSource: source as QueryDataSource }, request.conditions, 0, [], {}));
-        const initial = contradictory ? { status: 'empty' as const, totalCount: 0 } : candidates.trusted(id, request.conditions) && defaultConditions(id, request.conditions) ? reusableInitialSnapshot(source, view, compiled.limits.has(id)) : source.source.type === 'inline' ? rawSnapshot(source.source.rows) : undefined;
-        reportInitialSnapshotWarnings(source, initial, { ...config.diagnostics, pageId: page.id, dataSourceIds: [id] });
-        snapshots.set(id, initial ? checkOrdinaryRange(source, initial, undefined, { ...config.diagnostics, pageId: page.id, dataSourceIds: [id] }) : { status: 'loading' });
+        snapshots.set(id, initialSourceSnapshot(id, source, view, request.conditions));
       } return snapshots;
     },
-    captureQueries(conditions: FilterValues, views: ReadonlyMap<string, TableQueryView>, raw: ReadonlyMap<string, DataSnapshot>): ReadonlyMap<string, EffectiveQuery> {
+    captureQueries(conditions: FilterValues, views: ReadonlyMap<string, TableQueryView>, raw: ReadonlyMap<string, DataSnapshot>, selections?: import('@metriccanvas/page/internal').TabSelections): ReadonlyMap<string, EffectiveQuery> {
       const queries = new Map<string, EffectiveQuery>(), now = config.now ?? config.clock?.() ?? new Date();
       const limits = new Map(compiled.limits);
+      const context = {declarations:page.filters??[],filters:conditions,displaySnapshot:config.displayInputs?.(),filterRevision:config.filterRevision?.()};
+      const sources = presentationQuerySources(page, context, { views, selections });
+      const roots = selections ? activeSourceIds(page,selections,context,views) : visibleSourceIds(page,context,views);
       for (const [id, view] of views) if (compiled.limits.has(id)) limits.set(id, view.pageSize);
-      for (const [id, source] of compiled.sources) {
+      for (const id of roots) {
+        const source = sources.get(id)!;
         if (source.source.type !== 'query') continue;
-        const view = views.get(id) ?? defaultSourceView(page, id);
-        const query = composeEffectiveQuery({ displayInputs: config.displayInputs?.(), filterRevision: config.filterRevision?.(), now, page:page,filters:page.filters, dataSource: source as QueryDataSource, ...(limits.has(id) ? { pagination: { limit: view.pageSize } } : {}) }, conditions, cascaded.has(id) ? view.pageIndex : 0, view.sort, tableHeaders(view.predicates), mainTableSearch(view.search));
-        const inputs = resolveQueryResultInputs(source, raw, compiled.sources, limits);
-        if (inputs.status === 'ready') bindQueryResultValues(query, inputs.values);
-        queries.set(id, structuredClone(query));
+        const query = captureSourceQuery(id, source as QueryDataSource, {conditions, views, raw, sources, limits, now});
+        if (query) queries.set(id, query);
       }
       return queries;
     },
@@ -176,8 +203,8 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
       const candidates = createCandidateValidator(page, config.gateway, { displayInputs: () => frozenInputs, filterRevision: () => frozenRevision ?? 0, now: request.now });
       const scope = sourceReadScope(request.freshness, frozenInputs);
       try {
-        const ids = executionSourceIds(page, request.roots);
-        const sources = presentationQuerySources(page, {declarations:page.filters??[],filters:request.conditions,displaySnapshot:frozenInputs,filterRevision:frozenRevision});
+        const sources = presentationQuerySources(page, {declarations:page.filters??[],filters:request.conditions,displaySnapshot:frozenInputs,filterRevision:frozenRevision}, request);
+        const ids = executionSourceIds(page, request.roots, sources);
         const raw = new Map(request.seeds);
         removeUntrustedSeeds();
         const views = new Map(request.views);
@@ -337,7 +364,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
         }
         function reportSourceState(id: string, snapshots: ReadonlyMap<string, DataSnapshot>): void {
           reportError(id, raw.get(id)!);
-          if ([...executionSourceIds(page, [id])].every(dependency => raw.has(dependency))) reportError(id, snapshots.get(id) ?? raw.get(id)!);
+          if ([...executionSourceIds(page, [id], sources)].every(dependency => raw.has(dependency))) reportError(id, snapshots.get(id) ?? raw.get(id)!);
         }
         function requiredSource(id: string): DataSource {
           const source = sources.get(id);
@@ -441,7 +468,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
           if (autoSize !== undefined) { compiled.limits.set(id, autoSize); corrections.set(id, { ...view, pageSize: autoSize }); }
         }
         function sourceProjection(id: string, snapshots: ReadonlyMap<string, DataSnapshot>): DataSnapshot {
-          return [...executionSourceIds(page, [id])].every(dependency => raw.has(dependency)) ? snapshots.get(id) ?? raw.get(id)! : { status: 'loading' };
+          return [...executionSourceIds(page, [id], sources)].every(dependency => raw.has(dependency)) ? snapshots.get(id) ?? raw.get(id)! : { status: 'loading' };
         }
         function publishOrdinaryProgress(snapshots: ReadonlyMap<string, DataSnapshot>): void {
           if (request.purpose === 'complete' || !request.onProgress) return;

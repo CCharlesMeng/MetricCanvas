@@ -868,6 +868,11 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/conditional-compute-demand.json",
+      "target": "product-contracts/page/conformance/valid/conditional-compute-demand.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/valid/dimension-binding-operator.json",
       "target": "product-contracts/page/conformance/valid/dimension-binding-operator.json",
       "scope": "exact product contract"
@@ -7488,6 +7493,11 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/examples/conditional-compute-demand.json",
+      "target": "references/page-metadata/examples/conditional-compute-demand.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/compute.md",
       "target": "references/page-metadata/compute.md",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -8439,10 +8449,10 @@
     }
   ],
   "counts": {
-    "product": 1655,
+    "product": 1657,
     "authoring": 32,
     "modules": 36,
-    "topics": 308,
+    "topics": 309,
     "nodes": 2690,
     "tools": 9,
     "components": 20

@@ -9,7 +9,7 @@
       "module": "compute",
       "reference": "references/page-metadata/compute.md",
       "blocks": [
-        "# 具名算子\n\ncompute按声明顺序处理归一化行集。ratio逐行相除，零/缺分母按null或zero处理，缺分子取空；scale缺省原比率，100将其变成百分刻度。delta做减法，任一输入空则空。\n\ngroupSubtotal在每组明细后插小计；grandTotal只累计明细、不重复累计小计；两者只使用collapsible:true度量。rowKind字段是可空string维度，subtotal/total标记汇总行。pivot按有序类别列表匹配首个类别，把行转列。\n\n所有产出字段必须就地声明，不能伪装成原始输入或queryField。这是封闭算子系统，显示格式、任意公式及通用脚本均不是算子。\n\n<a id=\"独立单行指标关联683\"></a>",
+        "# 具名算子\n\ncompute按声明顺序处理归一化行集。ratio逐行相除，零/缺分母按null或zero处理，缺分子取空；scale缺省原比率，100将其变成百分刻度。delta做减法，任一输入空则空。\n\ngroupSubtotal在每组明细后插小计；grandTotal只累计明细、不重复累计小计；两者只使用collapsible:true度量。rowKind字段是可空string维度，subtotal/total标记汇总行。pivot按有序类别列表匹配首个类别，把行转列。\n\n所有产出字段必须就地声明，不能伪装成原始输入或queryField。这是封闭算子系统，显示格式、任意公式及通用脚本均不是算子。\n\n<a id=\"conditional-compute-demand\"></a>",
         "## 独立单行指标关联（6.83）\n\n`joinAggregate.keys: []` 显式把完整依赖源的单行度量用于全部现有主行。只允许 `aggregate: \"unique\"`：整体均值、目标值等指标由查询提供，不在前端求和或平均。主行身份、顺序与 totalCount 保持，空主行集不制造类别。\n\n```json\n{\"op\":\"joinAggregate\",\"source\":\"global-average\",\"keys\":[],\"values\":[{\"field\":\"average\",\"output\":\"average\",\"aggregate\":\"unique\"}],\"onMissing\":\"null\"}\n```\n\n依赖只能返回零行或一行；多行（即使值相同）失败。空行集按既有逐度量 onMissing 规则取空，已返回 null 保持空，真实零值保留；失败、截断及 totalCount 与返回行数不一致不能作为单值使用，显示兼容的零总数也不适用于无键关联依赖。字段类型、单位、币种、依赖环和完整结果约束沿用键关联。6.82及以下不得使用空键关联，省略 keys 仍非法，既有非空键语义保持。\n\n均值查询的范围由自身 filterBindings 明确决定。全局均值不绑定区域筛选；期间和站点可与代表处查询绑定同一筛选。依赖更新沿统一 SourceProgram 批次隔离、取消、完整读取和导出路径，不向页面行写固定常量、不添加假关联键。\n\n完整合成场景 `/pages/chart-global-benchmark` 展示代表处实际值柱、同高全局均值柱及同环比折线；切地区部保留全局均值，切月份或站点同步更新。错误、空值、零值及重复行步骤见图表示例目录 README。"
       ],
       "rules": [
@@ -86,7 +86,8 @@
         "references/page-metadata/examples/period-comparison-demo.json",
         "references/page-metadata/examples/period-comparison-query-page.json",
         "references/page-metadata/examples/missing-organization-key.json",
-        "references/page-metadata/examples/chart-global-benchmark.json"
+        "references/page-metadata/examples/chart-global-benchmark.json",
+        "references/page-metadata/examples/conditional-compute-demand.json"
       ]
     }
   ],

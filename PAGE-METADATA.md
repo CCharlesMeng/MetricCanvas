@@ -2,6 +2,8 @@
 
 6.118：记录组合源可声明 `pagination:{mode:"auto",pageSize:10}`。引擎在主查询可独立决定当前页时按需查询并渐进补列，否则完整关联，保留全部来源条件；旧模式不变。复用 records 的批次、字节和单批超时配置，无新增字段。见[自动分页](docs/page-metadata/data-sources.md#paged-join-auto-pagination)，业务验收 `/pages/rep-business-result`。
 
+条件显隐现按实际消费字段裁剪 `joinAggregate` 依赖：隐藏列／系列的关联输出没有其他消费者、计算或查询视图使用时，本轮不执行该关联及其独占查询，不参与主源状态传播；仍被消费的依赖保持严格失败。屏幕、单次执行与冻结导出共用规则，页面声明不变，无新增字段或版本。见[按需关联计算](docs/page-metadata/compute.md#conditional-compute-demand)，合成入口 `/pages/conditional-compute-demand`。
+
 6.117：`pagedJoin.records.timeoutMs` 上限放宽至180000毫秒；超过120000的声明须使用6.117及以后版本，旧版本和已有较短超时保持原限制。无新增字段，仍按每批独立计时。见[记录关联](docs/page-metadata/data-sources.md#审批记录与当前信息补列666)，业务场景 `/pages/rep-business-result`。
 
 DQE 网关的单次查询、批量查询 HTTP 请求及维度候选值请求默认超时统一为180秒；显式接入配置及页面已有读取预算仍独立生效。见[数据源与查询超时](docs/page-metadata/data-sources.md)，合成入口 `/pages/dqe-request-timeout`。

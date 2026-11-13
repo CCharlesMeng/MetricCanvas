@@ -9,7 +9,7 @@
       "module": "compute",
       "reference": "references/page-metadata/compute.md",
       "blocks": [
-        "# 具名算子\n\ncompute按声明顺序处理归一化行集。ratio逐行相除，零/缺分母按null或zero处理，缺分子取空；scale缺省原比率，100将其变成百分刻度。delta做减法，任一输入空则空。\n\ngroupSubtotal在每组明细后插小计；grandTotal只累计明细、不重复累计小计；两者只使用collapsible:true度量。rowKind字段是可空string维度，subtotal/total标记汇总行。pivot按有序类别列表匹配首个类别，把行转列。\n\n所有产出字段必须就地声明，不能伪装成原始输入或queryField。这是封闭算子系统，显示格式、任意公式及通用脚本均不是算子。\n\n<a id=\"独立单行指标关联683\"></a>",
+        "# 具名算子\n\ncompute按声明顺序处理归一化行集。ratio逐行相除，零/缺分母按null或zero处理，缺分子取空；scale缺省原比率，100将其变成百分刻度。delta做减法，任一输入空则空。\n\ngroupSubtotal在每组明细后插小计；grandTotal只累计明细、不重复累计小计；两者只使用collapsible:true度量。rowKind字段是可空string维度，subtotal/total标记汇总行。pivot按有序类别列表匹配首个类别，把行转列。\n\n所有产出字段必须就地声明，不能伪装成原始输入或queryField。这是封闭算子系统，显示格式、任意公式及通用脚本均不是算子。\n\n<a id=\"conditional-compute-demand\"></a>",
         "## 查询分页组合结果逐行计算（6.78）\n\n显式 `pagedJoin.source.pagination.mode:query`、无 records 的组合数据源，可在与 fields/source 同层声明 compute；仅允许 delta、ratio。算子按声明顺序消费已投影字段及前序计算产出，output 就地声明为允许空的数值度量且不得声明 queryField；不能覆盖投影、行键、序号和前序产出。零分母、负基期、刻度和百分点继续使用原算子规则，不新增表达式或公式语言。\n\n```json\n{\"compute\":[{\"op\":\"delta\",\"minuend\":\"current-sales\",\"subtrahend\":\"previous-sales\",\"output\":\"previous-sales-delta\"},{\"op\":\"ratio\",\"numerator\":\"previous-sales-delta\",\"denominator\":\"previous-sales\",\"output\":\"previous-growth\",\"scale\":100,\"onZeroDenominator\":\"null\"}]}\n```\n\n组合先完成当前页的选页、按键补列和投影，再由共享计算阶段执行一次逐行计算，保留主查询 totalCount、行序和当前页长度；完整导出逐页读取相同范围并执行同一计算。计算字段不能用于后端全局排序、表头筛选、候选或搜索，不能把本页计算结果作为完整跨源输入。unionKeys、joinAggregate、timeFill、小计、总计等算子在该位置拒绝，原有完整跨源计算契约保持。\n\n缺记录策略声明在 `source.projection` 的具体字段：`{\"member\":\"previous\",\"field\":\"sales\",\"onMissing\":\"zero\"}`；省略或null取空，仅数值度量允许zero。仅成功查询没有该键记录时补零；存在记录中的null/降级标量不补零，查询失败、截断或重复键整轮失败。比较组合的initial不在缺少可信事实证明时复用或采集。完整声明、合成操作和边界见 `/pages/period-comparison-query-page`。"
       ],
       "rules": [
@@ -86,7 +86,8 @@
         "references/page-metadata/examples/period-comparison-demo.json",
         "references/page-metadata/examples/period-comparison-query-page.json",
         "references/page-metadata/examples/missing-organization-key.json",
-        "references/page-metadata/examples/chart-global-benchmark.json"
+        "references/page-metadata/examples/chart-global-benchmark.json",
+        "references/page-metadata/examples/conditional-compute-demand.json"
       ]
     }
   ],

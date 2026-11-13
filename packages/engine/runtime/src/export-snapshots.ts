@@ -11,7 +11,7 @@ export async function prepareExportSnapshots(page: Page, gateway: DataGateway, q
   const program = sharedProgram ?? createSourceProgram(page, { gateway, diagnostics: diagnosticBase });
   const result = new Map<string, DataSnapshot>();
   try {
-    for await (const update of program.read({ roots: [...visibleSourceIds(page, {declarations:page.filters??[],filters,displaySnapshot:options.displayInputs,filterRevision:options.filterRevision})], conditions: filters, queries, views, purpose: 'complete', freshness: exportFreshness(sharedProgram, views), signal, currentYear, completeSources, allowPartial: options.allowPartial,displayInputs:options.displayInputs,filterRevision:options.filterRevision,now:options.now })) result.set(update.sourceId, update.snapshot);
+    for await (const update of program.read({ roots: [...visibleSourceIds(page, {declarations:page.filters??[],filters,displaySnapshot:options.displayInputs,filterRevision:options.filterRevision},views)], presentation: {sections:page.sections,detailViews:page.detailViews}, conditions: filters, queries, views, purpose: 'complete', freshness: exportFreshness(sharedProgram, views), signal, currentYear, completeSources, allowPartial: options.allowPartial,displayInputs:options.displayInputs,filterRevision:options.filterRevision,now:options.now })) result.set(update.sourceId, update.snapshot);
     if (!options.allowPartial) for (const value of result.values()) if (value.status === 'error' || value.status === 'loading') throw new ExportViewError('EXPORT_INCOMPLETE_DATA', '导出查询或数据计算未完成');
     return result;
   } catch (cause) {

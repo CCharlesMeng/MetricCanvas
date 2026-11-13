@@ -6,6 +6,20 @@ groupSubtotal在每组明细后插小计；grandTotal只累计明细、不重复
 
 所有产出字段必须就地声明，不能伪装成原始输入或queryField。这是封闭算子系统，显示格式、任意公式及通用脚本均不是算子。
 
+<a id="conditional-compute-demand"></a>
+
+## 条件显隐与按需关联计算
+
+表格列和柱图／折线图系列的 `visibleWhen` 共同决定本轮需要的字段。引擎先合并执行范围内所有消费者的需求，再反向追踪 `joinAggregate` 的输出、关联键与上游字段。仅当某个关联值没有任何消费者时才裁剪该值；关联的所有值均无消费者时，不执行该关联及其独占依赖。页面保存的查询、完整结果字段契约、具名算子和筛选声明保持不变，不新增 `allowPartial` 或其他配置，也不要求升级旧页面版本。
+
+查询业务条件、查询结果绑定、排序、筛选、动作、快照详情及其他计算使用的字段必须保留。非 `joinAggregate` 算子先保守保留其执行与输入，不能因隐藏度量改变 `unionKeys` 等算子决定的业务行域。无法确定字段消费范围的组件保留完整来源；共享消费者仍需要某个隐藏字段时，该关联继续执行。`keys:[]` 的全局均值等可见基线照常取数。
+
+`periodPolicy.kind:"selection"` 继续严格拒绝不支持的期间。以月、季、年分别提供变化值的三个关联为例，月份只展示月变化且无其他消费者时，季、年关联不进入本轮依赖图，因此不发请求，也不影响主源；若另一个消费者仍需要季变化，则其期间拒绝仍传播为主源错误。网络、权限、结果契约、完整性及真实计算失败均保持诊断；`DQE_QUERY_REJECTED` 不作为空结果处理。
+
+活动 Tab、当前查询视图和已应用条件共同确定屏幕需求；切换后取消失去全部消费者的请求，迟到响应不能覆盖当前结果。单次页面执行采用默认活动 Tab；完整报告导出沿用其既有全部 Tab 范围，单表 Excel 仅消费该表的冻结声明。屏幕、查询捕获、初始快照、计算及导出使用同一投影规则，不能持久化裁剪后的不完整 initial；初始查询预检拒绝产生数据源错误态，不直接中断页面初始化。
+
+合成验收入口 `/pages/conditional-compute-demand`：IOC 页头切换月／季／年后，柱线图和共享表格保留当前值、全局均值及对应变化字段，每组只请求一个变化源；Excel 冻结当前期间并保留相同字段。共享需求、后续计算、查询视图、取消及错误传播由运行时回归补充。数据由浏览器测试注入，不代表真实 DQE 验真。
+
 <a id="独立单行指标关联683"></a>
 
 ## 独立单行指标关联（6.83）
@@ -1278,6 +1292,7 @@ Schema位置：`#/definitions/computeOperator/oneOf/10/properties/keys/items`。
 - [period-comparison-query-page](examples/period-comparison-query-page.json)：完整合法页面；查询仅为静态契约证据。
 - [missing-organization-key](examples/missing-organization-key.json)：完整合法页面；查询仅为静态契约证据。
 - [chart-global-benchmark](examples/chart-global-benchmark.json)：完整合法页面；查询仅为静态契约证据。
+- [conditional-compute-demand](examples/conditional-compute-demand.json)：完整合法页面；查询仅为静态契约证据。
 
 ## 联合分支见证（生成）
 

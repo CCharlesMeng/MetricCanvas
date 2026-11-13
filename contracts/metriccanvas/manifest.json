@@ -2276,6 +2276,10 @@
       "sha256": "0920aa51c65a7eb29a8bb0db835e6c7d1f6ed08c5bcd09919806250e4a5a7d9b"
     },
     {
+      "file": "page/conformance/valid/conditional-compute-demand.json",
+      "sha256": "b9b6bb51551c9cfd3e6690803195ebb4e1192496c41a2b4bc6047d5f061ac69a"
+    },
+    {
       "file": "page/conformance/valid/conditional-query-demand.json",
       "sha256": "7b0c2010804590b7e24a3b64922de749339b5f0690d7fc3a33e0dc9898eab2c7"
     },
@@ -3289,7 +3293,7 @@
     },
     {
       "file": "page/reference/components/barChart.md",
-      "sha256": "014b79b0f3ec53808562b0fd8d4ce9ee499dcb0c239332b1f33385842279957d"
+      "sha256": "f988d8607b2bfd960481915e15f00fc235877aa1953584e4220d42f3ad20640e"
     },
     {
       "file": "page/reference/components/button.md",
@@ -3361,7 +3365,7 @@
     },
     {
       "file": "page/reference/components/table.md",
-      "sha256": "76cd1fb220ddff1252e1d83947d5c54d389421c8ba9221a0c086c08b980eac21"
+      "sha256": "6833db615e5d03052a1b9ded72542a95301955a9efbb68d8e902e541f45bab8c"
     },
     {
       "file": "page/reference/components/text.md",
@@ -3369,7 +3373,7 @@
     },
     {
       "file": "page/reference/compute.md",
-      "sha256": "f907ab9dc1f04792c443f4960bdea4fcbc2a3ffba62d5eb78f1ab098ce714954"
+      "sha256": "0d24d461624ac940c6e80849cbf1bc4ac1c1deb245fe3f4cb6f14fa7ff7b0500"
     },
     {
       "file": "page/reference/conditions.md",
@@ -5828,6 +5832,10 @@
       "sha256": "0920aa51c65a7eb29a8bb0db835e6c7d1f6ed08c5bcd09919806250e4a5a7d9b"
     },
     {
+      "file": "page/reference/examples/conditional-compute-demand.json",
+      "sha256": "b9b6bb51551c9cfd3e6690803195ebb4e1192496c41a2b4bc6047d5f061ac69a"
+    },
+    {
       "file": "page/reference/examples/cross-source-page.json",
       "sha256": "f58194aff9610d9776eba95a9f5b9b35bc70f93139d9446e85da35faa8393266"
     },
@@ -6573,7 +6581,7 @@
     },
     {
       "file": "page/reference/index.json",
-      "sha256": "813d49f53a69159c3773d7da8f1ce95b561c236ff3813d46aa5b186ff2ad298f"
+      "sha256": "0f8dbd130607d859b31a06b69c8a1a45b4697d1060d5d6cd07676fd3eb6ba080"
     },
     {
       "file": "page/reference/page.md",

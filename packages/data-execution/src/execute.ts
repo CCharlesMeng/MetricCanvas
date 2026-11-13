@@ -23,7 +23,7 @@ export function createPageDataExecutor(config: { gateway: RuntimeDataGateway;dis
     const {initialization,filtered}=prepareTableExecution(page,output,{declarations:page.filters??[],filters:conditions,displaySnapshot:displayInputs,filterRevision});
     const program = createSourceProgram(page, {...config,now,displayInputs:()=>displayInputs,filterRevision:()=>filterRevision??0});
     try {
-      for await (const update of program.read({ roots: initialQuerySourceIds(page,{declarations:page.filters??[],filters:conditions,displaySnapshot:displayInputs,filterRevision}), conditions, views:initialization.views, freshness: 'refresh' })) {
+      for await (const update of program.read({ roots: initialQuerySourceIds(page,{declarations:page.filters??[],filters:conditions,displaySnapshot:displayInputs,filterRevision}), conditions, views:initialization.views, selections: {}, freshness: 'refresh' })) {
         const source = output.dataSources[update.sourceId].source;
         if(update.candidateRejected&&source.type!=='inline')delete source.initial;
         if (!capturableInitial(update,filtered,source.type)) continue;

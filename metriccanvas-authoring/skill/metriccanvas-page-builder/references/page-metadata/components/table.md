@@ -120,6 +120,8 @@ select 叶子列声明 `filterable: {"mode":"select","initialParam":"is-valid","
 
 隐藏列清除其用户排序、表头条件、草稿与候选交互；重新显示不恢复这些操作。其他列的状态与查询定义中的业务条件、默认排序保留。单纯列显隐不重置分页；有效操作或搜索范围变化时回第一页。列显隐参与按需取数：仅被隐藏列使用且没有其他消费者或执行依赖的数据槽停止取数；零业务列时该表不再持有查询需求。共享数据源先合并所有消费者及依赖，再决定是否查询。隐藏不代替数据权限。
 
+`joinAggregate` 还会按实际消费字段裁剪无使用者的关联值和独占依赖，具体边界见[按需关联计算](../compute.md#conditional-compute-demand)。仍被可见系列、共享消费者、排序或后续计算使用的依赖保持严格失败；期间不匹配不作为空结果处理。合成场景 `/pages/conditional-compute-demand`。
+
 无需新增字段。页面中保存的查询定义与结果字段契约保持完整；统一运行时可从普通单项 DQE 查询的 `output_metrics` 裁剪无使用者的独立字符串指标，并同步本次请求的字段映射。类别/分组维度、主行集、关联、计算、业务筛选、默认排序、置顶行、动作及其他组件需要的数据保留；不裁剪 `output_dims`，避免改变聚合粒度。含计算、组合查询成员、查询模式、期间策略或复杂指标表达的查询保守保留其完整输出。没有显隐条件的表格沿用原行为。
 
 需求消失时取消无使用者的在途请求并隔离迟到响应；恢复显示时按当前已应用筛选恢复读取，不把隐藏前的快照当作当前结果。屏幕、单次页面执行及冻结导出共用依赖规则。可观察场景 `/pages/conditional-query-demand`：隐藏明细后停止评分补充查询、移除图表达成率指标，切换范围后重新显示使用新范围。
@@ -4243,6 +4245,7 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/actions
 - [table-default-sort](../examples/table-default-sort.json)：完整合法页面；查询仅为静态契约证据。
 - [rep-business-result](../examples/rep-business-result.json)：完整合法页面；查询仅为静态契约证据。
 - [table-header-filter-search](../examples/table-header-filter-search.json)：完整合法页面；查询仅为静态契约证据。
+- [conditional-compute-demand](../examples/conditional-compute-demand.json)：完整合法页面；查询仅为静态契约证据。
 
 局部片段提取自[完整页面](../examples/component-table.json)的`#/sections/0/components/0`；此片段依赖完整页面的数据源/字段，不能单独作为页面校验。
 

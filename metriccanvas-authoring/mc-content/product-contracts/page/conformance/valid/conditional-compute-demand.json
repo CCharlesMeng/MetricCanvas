@@ -1,0 +1,555 @@
+{
+  "schemaVersion": "6.117",
+  "id": "conditional-compute-demand",
+  "layout": "dashboard",
+  "meta": {
+    "title": "条件显隐与计算依赖（合成数据）",
+    "description": "月／季／年仅执行被消费的变化关联，隐藏依赖不影响主图；可见依赖失败仍明确报错。浏览器测试提供合成DQE响应。"
+  },
+  "filters": [
+    {
+      "id": "period",
+      "type": "timeRange",
+      "display": "period",
+      "precision": "month",
+      "label": "统计期间",
+      "periodModes": [
+        "year",
+        "quarter",
+        "month"
+      ],
+      "default": {
+        "mode": "month",
+        "value": "2026-09"
+      }
+    },
+    {
+      "id": "scope",
+      "type": "dimension",
+      "dimension": "scope",
+      "label": "合成范围",
+      "options": [
+        {
+          "value": "A",
+          "label": "合成范围A"
+        },
+        {
+          "value": "B",
+          "label": "合成范围B"
+        }
+      ],
+      "default": [
+        "A"
+      ],
+      "selection": {
+        "mode": "single",
+        "required": true
+      }
+    }
+  ],
+  "dataSources": {
+    "trend": {
+      "fields": {
+        "name": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "name"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "amount",
+          "unit": "合成单位"
+        },
+        "average": {
+          "type": "number",
+          "role": "measure",
+          "unit": "合成单位"
+        },
+        "change-month": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true,
+          "unit": "合成单位"
+        },
+        "change-quarter": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true,
+          "unit": "合成单位"
+        },
+        "change-year": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true,
+          "unit": "合成单位"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "name"
+                ],
+                "output_metrics": [
+                  "amount"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": [],
+                  "time": {}
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "period": {
+              "target": "time"
+            },
+            "scope": {
+              "target": "dimension",
+              "queryField": "scope"
+            }
+          }
+        }
+      },
+      "compute": [
+        {
+          "op": "joinAggregate",
+          "source": "baseline",
+          "keys": [],
+          "values": [
+            {
+              "field": "value",
+              "output": "average",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "joinAggregate",
+          "source": "change-month",
+          "keys": [
+            {
+              "local": "name",
+              "foreign": "name"
+            }
+          ],
+          "values": [
+            {
+              "field": "value",
+              "output": "change-month",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "joinAggregate",
+          "source": "change-quarter",
+          "keys": [
+            {
+              "local": "name",
+              "foreign": "name"
+            }
+          ],
+          "values": [
+            {
+              "field": "value",
+              "output": "change-quarter",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "joinAggregate",
+          "source": "change-year",
+          "keys": [
+            {
+              "local": "name",
+              "foreign": "name"
+            }
+          ],
+          "values": [
+            {
+              "field": "value",
+              "output": "change-year",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        }
+      ]
+    },
+    "baseline": {
+      "fields": {
+        "value": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "baseline",
+          "unit": "合成单位"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [],
+                "output_metrics": [
+                  "baseline"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": [],
+                  "time": {}
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "period": {
+              "target": "time"
+            },
+            "scope": {
+              "target": "dimension",
+              "queryField": "scope"
+            }
+          }
+        }
+      }
+    },
+    "change-month": {
+      "fields": {
+        "name": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "name"
+        },
+        "value": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "change-month",
+          "unit": "合成单位"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "name"
+                ],
+                "output_metrics": [
+                  "change-month"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": [],
+                  "time": {}
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "period": {
+              "target": "time",
+              "periodPolicy": {
+                "kind": "selection",
+                "supportedPeriods": [
+                  "month"
+                ]
+              }
+            },
+            "scope": {
+              "target": "dimension",
+              "queryField": "scope"
+            }
+          }
+        }
+      }
+    },
+    "change-quarter": {
+      "fields": {
+        "name": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "name"
+        },
+        "value": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "change-quarter",
+          "unit": "合成单位"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "name"
+                ],
+                "output_metrics": [
+                  "change-quarter"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": [],
+                  "time": {}
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "period": {
+              "target": "time",
+              "periodPolicy": {
+                "kind": "selection",
+                "supportedPeriods": [
+                  "quarter"
+                ]
+              }
+            },
+            "scope": {
+              "target": "dimension",
+              "queryField": "scope"
+            }
+          }
+        }
+      }
+    },
+    "change-year": {
+      "fields": {
+        "name": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "name"
+        },
+        "value": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "change-year",
+          "unit": "合成单位"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "name"
+                ],
+                "output_metrics": [
+                  "change-year"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": [],
+                  "time": {}
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "period": {
+              "target": "time",
+              "periodPolicy": {
+                "kind": "selection",
+                "supportedPeriods": [
+                  "year"
+                ]
+              }
+            },
+            "scope": {
+              "target": "dimension",
+              "queryField": "scope"
+            }
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "header",
+      "components": [
+        {
+          "id": "header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "条件显隐与计算依赖（合成数据）"
+            },
+            "filterIds": [
+              "period",
+              "scope"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "content",
+      "components": [
+        {
+          "id": "trend-chart",
+          "type": "barChart",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "trend"
+          },
+          "props": {
+            "title": "期间变化与全局均值",
+            "categoryField": "name",
+            "series": [
+              {
+                "field": "amount",
+                "label": "当前值",
+                "kind": "bar",
+                "axis": "primary"
+              },
+              {
+                "field": "average",
+                "label": "全局均值",
+                "kind": "line",
+                "axis": "primary"
+              },
+              {
+                "field": "change-month",
+                "label": "月变化",
+                "kind": "line",
+                "visibleWhen": {
+                  "filter": "period",
+                  "part": "mode",
+                  "op": "eq",
+                  "value": "month"
+                },
+                "axis": "primary"
+              },
+              {
+                "field": "change-quarter",
+                "label": "季变化",
+                "kind": "line",
+                "visibleWhen": {
+                  "filter": "period",
+                  "part": "mode",
+                  "op": "eq",
+                  "value": "quarter"
+                },
+                "axis": "primary"
+              },
+              {
+                "field": "change-year",
+                "label": "年变化",
+                "kind": "line",
+                "visibleWhen": {
+                  "filter": "period",
+                  "part": "mode",
+                  "op": "eq",
+                  "value": "year"
+                },
+                "axis": "primary"
+              }
+            ]
+          }
+        },
+        {
+          "id": "trend-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "trend"
+          },
+          "props": {
+            "title": "共享计算结果",
+            "columns": [
+              {
+                "field": "name",
+                "kind": "field",
+                "title": "组织"
+              },
+              {
+                "field": "amount",
+                "kind": "field",
+                "title": "当前值"
+              },
+              {
+                "field": "change-month",
+                "visibleWhen": {
+                  "filter": "period",
+                  "part": "mode",
+                  "op": "eq",
+                  "value": "month"
+                },
+                "kind": "field",
+                "title": "月变化"
+              },
+              {
+                "field": "change-quarter",
+                "visibleWhen": {
+                  "filter": "period",
+                  "part": "mode",
+                  "op": "eq",
+                  "value": "quarter"
+                },
+                "kind": "field",
+                "title": "季变化"
+              },
+              {
+                "field": "change-year",
+                "visibleWhen": {
+                  "filter": "period",
+                  "part": "mode",
+                  "op": "eq",
+                  "value": "year"
+                },
+                "kind": "field",
+                "title": "年变化"
+              }
+            ],
+            "toolbar": {
+              "export": {
+                "format": "xlsx"
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
