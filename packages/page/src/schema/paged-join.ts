@@ -12,7 +12,8 @@ export const pagedJoinSourceZ = z.object({
   ordering: z.object({ default: z.array(tableSortZ).min(1), sortableFields: z.array(fieldNameZ).min(1), nulls: z.literal('last') }).strict(),
   pagination: z.union([
     z.object({ pageSize: z.int().min(1).max(1000) }).strict(),
-    z.object({ mode: z.literal('query'), pageSize: z.int().min(1).max(1000), batchSize: z.int().min(1).max(1000) }).strict()
+    z.object({ mode: z.literal('query'), pageSize: z.int().min(1).max(1000), batchSize: z.int().min(1).max(1000) }).strict(),
+    z.object({ mode: z.literal('auto'), pageSize: z.int().min(1).max(1000) }).strict()
   ]),
   fallback: z.object({ maxRows: z.int().min(1).max(1000) }).strict().optional(),
   onMissing: z.literal('null'), ordinalField: fieldNameZ.optional(),

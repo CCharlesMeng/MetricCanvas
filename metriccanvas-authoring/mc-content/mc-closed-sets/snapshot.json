@@ -998,6 +998,25 @@
                     "batchSize"
                   ],
                   "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "mode": {
+                      "type": "string",
+                      "const": "auto"
+                    },
+                    "pageSize": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 1000
+                    }
+                  },
+                  "required": [
+                    "mode",
+                    "pageSize"
+                  ],
+                  "additionalProperties": false
                 }
               ]
             },

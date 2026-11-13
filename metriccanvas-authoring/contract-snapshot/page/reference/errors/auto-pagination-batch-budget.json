@@ -1,0 +1,23 @@
+{
+  "case": "auto-pagination-batch-budget",
+  "invariant": "paged-join-auto-pagination",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "历史记录模式必须声明读取批次",
+      "paths": [
+        "/dataSources/rejection-overview/source/records/batchSize"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "rejection-overview": {
+        "source": {
+          "records": {}
+        }
+      }
+    }
+  },
+  "fullInput": "page/conformance/invalid/auto-pagination-batch-budget.json"
+}

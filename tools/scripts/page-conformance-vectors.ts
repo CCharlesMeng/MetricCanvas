@@ -57,6 +57,11 @@ function longString(length: number): string {
 }
 
 export const invariants: InvariantDefinition[] = [
+  {id:'paged-join-auto-pagination',description:'6.118 records 自动选择主查询分页或完整关联，旧模式不变',valid:['record-join-auto-page'],cases:[
+    {case:'auto-pagination-version',base:'record-join-auto-page',expect:/由 6.118 引入/,mutate:d=>{d.schemaVersion='6.117';}},
+    {case:'auto-pagination-needs-records',base:'record-join-auto-page',expect:/自动分页目前只支持/,mutate:d=>{delete d.dataSources['rejection-overview'].source.records;}},
+    {case:'auto-pagination-batch-budget',base:'record-join-auto-page',expect:/历史记录模式必须声明读取批次/,mutate:d=>{delete d.dataSources['rejection-overview'].source.records.batchSize;}}
+  ]},
   {id:'dimension-binding-operator',description:'6.114 普通和层级维度绑定支持 = 与 !=，默认保持历史行为',valid:['dimension-binding-operator'],cases:[
     {case:'dimension-operator-version',base:'dimension-binding-operator',expect:/由 6.114 引入/,mutate:d=>{d.schemaVersion='6.113';}},
     {case:'dimension-operator-unknown',base:'dimension-binding-operator',expect:/must/,mutate:d=>{d.dataSources.excluded.source.query.filterBindings.area.operator='<>';}}

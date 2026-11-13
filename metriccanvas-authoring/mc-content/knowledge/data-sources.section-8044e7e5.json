@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.117",
+  "schemaVersion": "6.118",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "data-sources.section-8044e7e5"
@@ -13,6 +13,18 @@
         "## 查阅方式\n\n字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](README.md)。"
       ],
       "rules": [
+        {
+          "id": "paged-join-auto-pagination",
+          "description": "6.118 records 自动选择主查询分页或完整关联，旧模式不变",
+          "valid": [
+            "record-join-auto-page"
+          ],
+          "invalid": [
+            "auto-pagination-version",
+            "auto-pagination-needs-records",
+            "auto-pagination-batch-budget"
+          ]
+        },
         {
           "id": "paged-union-composite-key",
           "description": "6.72来源内有序非空组合行键，旧单字段声明保持",
@@ -173,7 +185,8 @@
         "references/page-metadata/examples/paged-join-query-page.json",
         "references/page-metadata/examples/record-join-query-page.json",
         "references/page-metadata/examples/period-comparison-query-page.json",
-        "references/page-metadata/examples/record-join-timeout-180-page.json"
+        "references/page-metadata/examples/record-join-timeout-180-page.json",
+        "references/page-metadata/examples/record-join-auto-page.json"
       ]
     }
   ],

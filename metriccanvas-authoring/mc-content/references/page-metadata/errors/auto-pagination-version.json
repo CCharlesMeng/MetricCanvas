@@ -1,0 +1,25 @@
+{
+  "case": "auto-pagination-version",
+  "invariant": "paged-join-auto-pagination",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "记录组合源自动选择主查询分页或完整关联，保留全部来源条件 由 6.118 引入，文档声明的是 6.117",
+      "paths": [
+        "/dataSources/rejection-overview/source/pagination/mode"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "rejection-overview": {
+        "source": {
+          "pagination": {
+            "mode": "auto"
+          }
+        }
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

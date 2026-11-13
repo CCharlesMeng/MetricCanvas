@@ -28,7 +28,11 @@ export function createJoinProgress(plan: PagedJoinPlan, selected: SelectedRows, 
   function publish() {
     if (!notify) return;
     const pending = new Set<string>();
-    const rows = selected.rows.map((input, index) => project(input, selected.keys[index], pending));
+    const rows = selected.rows.map((input, index) => {
+      const row=project(input, selected.keys[index], pending);
+      if(plan.source.source.records&&!plan.source.source.projection[plan.source.source.rowKey])row[plan.source.source.rowKey]=String(selected.pageIndex*plan.view.pageSize+index).padStart(12,'0');
+      return row;
+    });
     const correction = selected.pageIndex === plan.view.pageIndex ? undefined : { ...plan.view, pageIndex: selected.pageIndex };
     notify(progressSnapshot(ordinalRows(plan, rows, selected.pageIndex * plan.view.pageSize), selected.total, pending, correction));
   }

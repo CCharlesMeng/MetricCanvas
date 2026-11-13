@@ -116,7 +116,7 @@ Dashboard 正文通过独立 [filterGroup](filterGroup.md) 组件声明筛选按
 `stacked: true` 配合 `showStackTotalLabels: true` 在每个类别显示当前系列的数值合计，包含负数扣分。标签锚定可见堆叠的外端，与柱体保持 8 CSS px 间距；正负混合时置于正值柱顶，显示值仍为含扣分的净合计；全负数置于负值外端，横向条形相应置于右侧或左侧。无需声明额外的“总分”系列；未开启时不显示合计。`/pages/partner-health-interactions` 使用前端计算的合成得分，四类得分含负数风险扣分；业务 `/pages/partner-health` 的地区部和代表处图表均开启此配置。
 
 
-页面协议 6.117。结构真源为本册[schema.json](../schema.json)，SHA256 `34a7d4eda47fe2d3e92139fa3ac19205eff9449610e48df4a48286fa6381d607`。字段表自动生成；可选不等于有默认值。
+页面协议 6.118。结构真源为本册[schema.json](../schema.json)，SHA256 `b9952649ffe80e8ac2ed2def73899d205a166207969e34a3ff1efc9301f280bb`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

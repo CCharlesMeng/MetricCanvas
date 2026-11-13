@@ -121,7 +121,7 @@
 
   const loading = $derived(data.main.sourceStatus === 'loading');
   let previousPagination = $state.raw<TablePaginationState>();
-  const pagination = $derived(loading
+  const pagination = $derived(loading && !data.main.progress
     ? previousPagination ?? currentPagination ?? { pageSize: props.pagination?.mode === 'local' ? props.pagination.pageSize : 20, totalCount: 0 }
     : currentPagination);
   $effect(() => { if (!loading) previousPagination = currentPagination; });
@@ -765,7 +765,7 @@
 
   {#if props.pagination && props.pagination.mode !== 'none' && interactive && pagination}
     <div class="pager" inert={loading}>
-      <span class="total">总条数： <span>{loading ? DEFAULT_NULL_TEXT : pagination.totalCount}</span></span>
+      <span class="total">总条数： <span>{loading && !data.main.progress ? DEFAULT_NULL_TEXT : pagination.totalCount}</span></span>
         <div class="pager-actions">
           <details class="page-size-select" use:tableFilterPopover>
             <summary aria-label={`每页 ${pagination.pageSize} 条`}>

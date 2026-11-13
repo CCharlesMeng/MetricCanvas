@@ -1,10 +1,11 @@
 import { dqeDefaultSort, isObjectDqeItem, isPagedJoinQuery, pagedJoinViewOwner, reconcilePagedJoinView, pagedJoinUnavailable, selectQuerySource, hasQueryFieldMapping, type Page, type PagedJoinDataSource, type QueryDataSource, type TableQueryView } from '@metriccanvas/page/internal';
 import type { FilterValues } from '../filter-values';
 import { composeEffectiveQuery, type QueryBinding } from '../effective-query';
+import {autoPageEligible} from './auto-plan';
 
 type ComparisonContext=Pick<QueryBinding,'displayInputs'|'filterRevision'>;
 export type PagedJoinPlan = { page: Page; sourceId: string; source: PagedJoinDataSource; conditions: FilterValues;now?:Date; context?:ComparisonContext;
-  view: TableQueryView; strategy:'queryPage'|'selectPageThenFill'|'completeJoin'|'recordJoin'; reason:'single-owner'|'multiple-owners'|'capability-or-field-contract'|'search'|'predicate-target-conflict'|'records'; selection?: string; members: Map<string, QueryDataSource> };
+  view: TableQueryView; strategy:'autoPage'|'queryPage'|'selectPageThenFill'|'completeJoin'|'recordJoin'; reason:'single-owner'|'multiple-owners'|'capability-or-field-contract'|'search'|'predicate-target-conflict'|'records'; selection?: string; members: Map<string, QueryDataSource> };
 /** Dynamic execution order stays private; resultBindings are never rewritten. */
 export function compilePagedJoin(page: Page, sourceId: string, conditions: FilterValues, input: TableQueryView,now?:Date,context?:ComparisonContext): PagedJoinPlan {
   const source = page.dataSources[sourceId] as PagedJoinDataSource;
@@ -17,9 +18,15 @@ export function compilePagedJoin(page: Page, sourceId: string, conditions: Filte
   if (view.search?.fields.some(field => !source.source.projection[field] || source.fields[field]?.type !== 'string')) throw Object.assign(new Error('组合搜索字段必须为已投影文本'), { code: 'DQE_QUERY_REJECTED' });
   const members = new Map(Object.entries(source.source.members).map(([id, member]) => [id, selectQuerySource(page.dataSources[member.source] as QueryDataSource,conditions)]));
   if(isPagedJoinQuery(source.source))return queryPagePlan({now,context,page,sourceId,source,conditions,view,members,strategy:'queryPage',reason:'single-owner'});
-  if(source.source.records)return {now,page,sourceId,source,conditions,view,members,strategy:'recordJoin',reason:'records'};
+  if(source.source.records)return recordPlan({now,context,page,sourceId,source,conditions,view,members,strategy:'recordJoin',reason:'records'});
   const {selection,reason}=selectPageMember(page,source,members,conditions,view,now);
   return {now,page,sourceId,source,conditions,view,selection,members,strategy:selection?'selectPageThenFill':'completeJoin',reason};
+}
+
+function recordPlan(plan:PagedJoinPlan):PagedJoinPlan{
+  const pagination=plan.source.source.pagination;
+  if('mode' in pagination&&pagination.mode==='auto'&&autoPageEligible(plan))return {...plan,selection:plan.source.source.domainMember,strategy:'autoPage',reason:'single-owner'};
+  return plan;
 }
 
 function queryPagePlan(plan:PagedJoinPlan):PagedJoinPlan{

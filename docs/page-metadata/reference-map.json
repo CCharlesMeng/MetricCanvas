@@ -150,7 +150,8 @@
         "paged-join-query-page",
         "record-join-query-page",
         "period-comparison-query-page",
-        "record-join-timeout-180-page"
+        "record-join-timeout-180-page",
+        "record-join-auto-page"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -167,7 +168,8 @@
         "pagination-initial-rows",
         "paged-join",
         "paged-union",
-        "paged-union-composite-key"
+        "paged-union-composite-key",
+        "paged-join-auto-pagination"
       ]
     },
     "fields.md": {
@@ -1698,7 +1700,7 @@
     "#/definitions/pagedJoinSource/properties/domainMember": "完整结果定义业务行域的成员 ID。",
     "#/definitions/pagedJoinSource/properties/members": "复用页内普通查询定义的成员映射；定义引用不构成固定级联。",
     "#/definitions/pagedJoinSource/properties/members/additionalProperties/properties/key": "成员结果业务键和显式编码输入目标。",
-    "#/definitions/pagedJoinSource/properties/members/additionalProperties/properties/canSelectPage": "经数据侧验真：覆盖相同行域、一键一行，且支持排序、总数和稳定键排序；不能从样本推断。",
+    "#/definitions/pagedJoinSource/properties/members/additionalProperties/properties/canSelectPage": "经数据侧验真可兑现准确总数、排序和稳定分页。普通模式一键一行；records 模式保留同关联键的多条基准记录。auto 只由基准成员选页。",
     "#/definitions/pagedJoinSource/properties/projection": "最终字段到成员原始字段的显式一对一投影；序号除外。",
     "#/definitions/pagedJoinSource/properties/projection/additionalProperties/properties/member": "投影所属成员 ID。",
     "#/definitions/pagedJoinSource/properties/ordering": "全局排序声明与交互可排序字段集合。",
@@ -1877,7 +1879,7 @@
     "#/definitions/pagedJoinSource/properties/records": "显式启用逐条保留审批记录的多对一补列；行键独立于关联键。",
     "#/definitions/pagedJoinSource/properties/records/properties/batchSize": "每次单表分页及关联键集合的批次大小，1至1000。",
     "#/definitions/pagedJoinSource/properties/records/properties/maxRows": "可选；6.69起省略表示不限制行数。显式值1至100000，限制本地时间筛选前的主表读取量；字节与超时保持。",
-    "#/definitions/pagedJoinSource/properties/records/properties/maxBytes": "原始成员行与最终投影的累计UTF-8字节预算，超限整轮失败。",
+    "#/definitions/pagedJoinSource/properties/records/properties/maxBytes": "原始成员行与最终投影的累计UTF-8字节预算；auto 快路径约束当前页实际读取，完整路径约束完整读取。",
     "#/definitions/pagedJoinSource/properties/records/properties/timeoutMs": "主表/补列表每次分页请求的超时预算（含排队）；每批重置，不限整轮耗时。超时整轮失败且不缓存部分结果。",
     "#/definitions/pagedJoinSource/properties/records/properties/timeFilters": "本地时间筛选映射，键引用日/月timeRange；字段必须投影自主表，补列成员须声明不适用。",
     "#/definitions/tableComponent/properties/props/properties/toolbar/properties/export/properties/rowExpansion": "6.70：显式开启完整父子同工作表缩进 Excel；未声明保留旧导出限制。",
@@ -1935,7 +1937,8 @@
     "finalizationName": "按名称查询默认日期；失败用当前日期，用户可改。",
     "#/definitions/tableComponent/properties/props/properties/defaultSort": "6.108：完整本地结果按最终静态 main 列字段声明初始排序；先计算、再排序和分页，不覆盖后续会话选择。",
     "#/definitions/tableComponent/properties/props/properties/defaultSort/items/properties/direction": "默认排序方向：asc 升序，desc 降序；null 均排末尾。",
-    "#/definitions/tableColumn/properties/filterable/anyOf/0/properties/showSearch": "6.112：true 显示候选搜索，false 或省略隐藏；静态枚举与动态候选均支持。旧版本动态搜索保留，显式升级写入 true。"
+    "#/definitions/tableColumn/properties/filterable/anyOf/0/properties/showSearch": "6.112：true 显示候选搜索，false 或省略隐藏；静态枚举与动态候选均支持。旧版本动态搜索保留，显式升级写入 true。",
+    "#/definitions/pagedJoinSource/properties/pagination": "仅 pageSize 保持历史路径；query 显式查询分页并沿用最后操作成员；6.118 auto 在 records 下自动选择基准查询分页或保留条件的完整关联。"
   },
   "enumNotes": {
     "100": "ratio输出乘100，匹配百分比原值展示。",
@@ -2340,7 +2343,8 @@
     "!=": "维度绑定排除全部所选值，单选不等、多选集合排除。",
     "#/properties/schemaVersion=\"6.115\"": "IOC 页头标题支持普通 URL 导航及显式页面参数、筛选传参。",
     "6.116": "对象字段绑定省略data时固定引用main数据槽，组件数据源绑定和FieldReference约束保持。",
-    "#/properties/schemaVersion=\"6.117\"": "记录关联单批超时允许超过120秒，最多180秒，旧版本保持120秒上限。"
+    "#/properties/schemaVersion=\"6.117\"": "记录关联单批超时允许超过120秒，最多180秒，旧版本保持120秒上限。",
+    "#/properties/schemaVersion=\"6.118\"": "记录组合源 auto 自动选择主查询分页或保留全部条件的完整关联；旧页面执行语义不变。"
   },
   "branchExceptions": {
     "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/titleNavigate/properties/query/additionalProperties/oneOf/0": {
@@ -3309,6 +3313,7 @@
       "当前序号与固定业务排名",
       "分页合并源 pagedUnion（6.61）",
       "分页合并成员行键策略（6.73）",
+      "记录组合源自动分页（6.118）",
       "审批记录与当前信息补列（6.66）",
       "组合表格异常兼容"
     ],
@@ -3562,6 +3567,11 @@
       "owners": [
         "tableColumn",
         "tableComponent"
+      ]
+    },
+    "paged-join-auto-pagination": {
+      "owners": [
+        "pagedJoinSource"
       ]
     }
   },

@@ -9,7 +9,7 @@ export function recordReadOrder(plan:PagedJoinPlan,id:string,query:EffectiveQuer
   if(query.sort?.length || dqeDefaultSort(query.body.dsl_list[0]).length)return query;
   return {...query,sort:[{queryField:plan.source.source.members[id].key.queryField,direction:'asc'}]};
 }
-export function projectRecordRows(plan:PagedJoinPlan,domain:Row[],members:Map<string,Map<Key,Row>>):Row[]{
+export function projectRecordRows(plan:PagedJoinPlan,domain:Row[],members:Map<string,Map<Key,Row>>,offset=0):Row[]{
   const source=plan.source.source,seen=new Set<unknown>();
   const rows=domain.map((input,index)=>{
     const key=memberKey(plan,source.domainMember,input,index),row:Row={};
@@ -18,7 +18,7 @@ export function projectRecordRows(plan:PagedJoinPlan,domain:Row[],members:Map<st
       row[field]=raw?.[projection.field]??null;
       copyFieldFallback(raw,projection.field,row,field);
     }
-    if(!source.projection[source.rowKey])row[source.rowKey]=String(index).padStart(12,'0');
+    if(!source.projection[source.rowKey])row[source.rowKey]=String(offset+index).padStart(12,'0');
     if(source.ordinalField)row[source.ordinalField]=0;
     const identity=row[source.rowKey];
     if(identity==null||seen.has(identity))throw rowFailure('审批记录行标识重复或缺失');

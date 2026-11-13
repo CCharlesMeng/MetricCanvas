@@ -66,6 +66,8 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
       return source.source.type==='pagedJoin'&&isPagedJoinQuery(source.source)?pagedJoinPausedFields(source as PagedJoinDataSource,view(table)):[];
     }
     function preloadFields(table:TableComponent){
+      const source=page.dataSources[table.data.main]?.source;
+      if(source?.type==='pagedJoin'&&'mode' in source.pagination&&source.pagination.mode==='auto')return [];
       const paused=new Set(pausedFields(table));
       return tableColumnLeaves(columns(table).component.props.columns).filter(column=>column.filterable?.mode==='select'&&!column.enumValues).flatMap(column=>{const field=mainColumnField(column.field);return field===undefined?[]:[field];}).filter(field=>!paused.has(field));
     }

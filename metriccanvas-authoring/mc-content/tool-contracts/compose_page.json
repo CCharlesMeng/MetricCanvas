@@ -1004,6 +1004,25 @@
                         "batchSize"
                       ],
                       "type": "object"
+                    },
+                    {
+                      "additionalProperties": false,
+                      "properties": {
+                        "mode": {
+                          "const": "auto",
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "maximum": 1000,
+                          "minimum": 1,
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "mode",
+                        "pageSize"
+                      ],
+                      "type": "object"
                     }
                   ]
                 },
@@ -2421,6 +2440,25 @@
                     "mode",
                     "pageSize",
                     "batchSize"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "mode": {
+                      "const": "auto",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "maximum": 1000,
+                      "minimum": 1,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "mode",
+                    "pageSize"
                   ],
                   "type": "object"
                 }

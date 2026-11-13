@@ -59,7 +59,7 @@ async function collectRecords(plan:PagedJoinPlan,runner:QueryRunner,scope:string
   chargeRows(budget,projected,false);
   return projected;
 }
-async function supplementRows(plan:PagedJoinPlan,id:string,keys:(string|number)[],runner:QueryRunner,scope:string,budget:RecordBudget):Promise<Map<string|number,Row>>{
+export async function supplementRows(plan:PagedJoinPlan,id:string,keys:(string|number)[],runner:QueryRunner,scope:string,budget:RecordBudget,accept?:(rows:Map<string|number,Row>,keys:readonly (string|number)[])=>void):Promise<Map<string|number,Row>>{
   const index=new Map<string|number,Row>(),size=(plan.source.source.records!.batchSize ?? 10);
   for(let offset=0;offset<keys.length;offset+=size){
     const query=memberQuery(plan,id),member=plan.source.source.members[id];
@@ -72,6 +72,7 @@ async function supplementRows(plan:PagedJoinPlan,id:string,keys:(string|number)[
       if(index.has(key))throw memberFailure(plan,id,rowFailure(`补充查询第 ${rowIndex+1} 行的关联编号重复，无法确定该使用哪条记录。请检查是否每个编号只返回一条记录。`));
       index.set(key,row);
     }
+    accept?.(index,allowed);
   }
   return index;
 }

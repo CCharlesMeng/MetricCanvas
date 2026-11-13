@@ -1,8 +1,13 @@
 {
   "major": 6,
-  "minor": 117,
-  "current": "6.117",
+  "minor": 118,
+  "current": "6.118",
   "capabilities": {
+    "paged-join-auto-pagination": {
+      "minor": 118,
+      "description": "记录组合源自动选择主查询分页或完整关联，保留全部来源条件",
+      "legacyReadable": false
+    },
     "paged-join-record-timeout-180": {
       "minor": 117,
       "description": "记录关联单批超时允许超过120秒，最多180秒",
@@ -1047,6 +1052,7 @@
     "6.114",
     "6.115",
     "6.116",
-    "6.117"
+    "6.117",
+    "6.118"
   ]
 }

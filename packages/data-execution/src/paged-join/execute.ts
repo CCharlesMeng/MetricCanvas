@@ -11,10 +11,12 @@ import { memberQuery, restrictKeys } from './member-query';
 import { memberRows, projectRows, ordinalRows, rowFailure } from './rows';
 import type { PagedJoinPlan } from './plan';
 import { executeQueryPagedJoin } from './query-page';
+import {executeAutoPage} from './auto-page';
 
 export async function executePagedJoin(plan: PagedJoinPlan, runner: QueryRunner, scope: string, signal?: AbortSignal, complete = false, progress?: ScreenProgressSink): Promise<{ snapshot: DataSnapshot; viewCorrection?: TableQueryView }> {
   signal?.throwIfAborted();
   if(plan.strategy==='queryPage')return executeQueryPagedJoin(plan,runner,scope,signal,progress);
+  if(plan.strategy==='autoPage'&&!complete)return executeAutoPage(plan,runner,scope,signal,progress);
   if(plan.source.source.records)return recordJoinReader(runner).read(plan,scope,signal,complete);
   const run = (id: string, query = memberQuery(plan, id)) => runMemberQuery(plan,id,query,runner,scope,signal);
   if (!plan.selection) return executeCompleteJoin(plan,run,signal,complete);

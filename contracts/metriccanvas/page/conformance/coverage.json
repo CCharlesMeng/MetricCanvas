@@ -1,6 +1,18 @@
 {
   "invariants": [
     {
+      "id": "paged-join-auto-pagination",
+      "description": "6.118 records 自动选择主查询分页或完整关联，旧模式不变",
+      "valid": [
+        "record-join-auto-page"
+      ],
+      "invalid": [
+        "auto-pagination-version",
+        "auto-pagination-needs-records",
+        "auto-pagination-batch-budget"
+      ]
+    },
+    {
       "id": "dimension-binding-operator",
       "description": "6.114 普通和层级维度绑定支持 = 与 !=，默认保持历史行为",
       "valid": [

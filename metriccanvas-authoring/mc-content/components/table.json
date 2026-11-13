@@ -25,7 +25,7 @@
   "knowledge": "table.overview",
   "reference": "references/page-metadata/components/table.md",
   "versionPolicy": "protocol/version-policy",
-  "currentWriter": "6.117",
+  "currentWriter": "6.118",
   "exampleVersionRequirements": [
     {
       "file": "references/page-metadata/examples/table-trend-arrows.json",
@@ -1306,8 +1306,13 @@
     },
     {
       "file": "references/page-metadata/examples/rep-business-result.json",
-      "requiredVersion": "6.117",
+      "requiredVersion": "6.118",
       "capabilities": [
+        {
+          "id": "paged-join-auto-pagination",
+          "minor": 118,
+          "description": "记录组合源自动选择主查询分页或完整关联，保留全部来源条件"
+        },
         {
           "id": "paged-join-record-timeout-180",
           "minor": 117,

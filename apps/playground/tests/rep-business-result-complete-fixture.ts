@@ -10,7 +10,7 @@ export interface QueryItem {
   filter?: { fields?: Rule[]; dims?: Dimension[] };
   order?: { offset?: number; limit?: number; order_by_field?: string; type?: string };
 }
-interface Options { count?: number; missingBasic?: boolean; state?: 'empty' | 'error'; holdFirstRisk?: boolean }
+interface Options { count?: number; missingBasic?: boolean; state?: 'empty' | 'error'; holdFirstRisk?: boolean; holdBusinessSupplements?:boolean }
 const riskObject = 'Contract-Contract_Risk_Clause_Metric_Detail';
 const basicObject = 'Contract/Customer Contract Basic Information';
 const businessObject = 'Business/Basic Business Information';
@@ -45,10 +45,10 @@ function risk(row: Row, index: number): Row {
     执行主体: 'ALL', 条款基线: '合成基线', 原始条款: '合成原文', 建议: '合成意见', 评审结论: 'DECISION_FINISHED'
   };
 }
-function populations(count: number, missingBasic: boolean) {
-  const businesses = Array.from({ length: count }, (_, index) => business(index, count));
-  const contracts = Array.from({ length: count }, (_, index) => contract(index, count));
-  const businessDomain = [...businesses, { ...businesses[0], 站点: '合成站点乙' }];
+function populations(count: number, missingBasic: boolean, tab:'business'|'contract') {
+  const businesses = tab==='business'?Array.from({ length: count }, (_, index) => business(index, count)):[];
+  const contracts = tab==='contract'?Array.from({ length: count }, (_, index) => contract(index, count)):[];
+  const businessDomain = businesses.length?[...businesses, { ...businesses[0], 站点: '合成站点乙' }]:[];
   const contractDomain = contracts.flatMap((row, index) => [risk(row, index), { ...risk(row, index), 风险等级: 'LOW_RISK' }]);
   const contractBasic = contracts.filter((_, index) => !(missingBasic && index === count - 1));
   return {
@@ -84,12 +84,17 @@ function execute(item: QueryItem, data: Populations, empty: boolean) {
 }
 export async function openResult(page: Page, tab: 'business' | 'contract', options: Options = {}) {
   const count = options.count ?? 1205;
-  const data = populations(count, options.missingBasic ?? false), requests: QueryItem[] = [];
+  const data = populations(count, options.missingBasic ?? false,tab), requests: QueryItem[] = [];
+  const heldBusiness:(()=>Promise<void>)[]=[];
   let releaseHeld: (() => Promise<void>) | undefined;
   await page.route('**/rest/cdi/cdinl2databuilderservice/v1/dsl/execute', async route => {
     const items: QueryItem[] = route.request().postDataJSON().dsl_list;
     requests.push(...items);
     if (options.state === 'error') { await route.fulfill({ status: 503, body: 'Synthetic unavailable' }); return; }
+    if(options.holdBusinessSupplements&&items.some(item=>item.object_type===businessObject||item.object_type===approvalObject)){
+      heldBusiness.push(()=>route.fulfill({json:{retCode:'CBC.0000',results:items.map(item=>execute(item,data,false))}}));
+      return;
+    }
     if (options.holdFirstRisk && !releaseHeld && items.some(item => item.object_type === riskObject)) {
       releaseHeld = () => route.fulfill({ json: { retCode: 'CBC.0000', results: items.map(item => execute(item, data, false)) } });
       return;
@@ -100,7 +105,7 @@ export async function openResult(page: Page, tab: 'business' | 'contract', optio
   await page.getByRole('tab', { name: tab === 'business' ? '框架执行率明细' : '合同风险率明细', exact: true }).click();
   const panel = page.getByRole('tabpanel');
   const table = tab === 'business' ? panel.locator('[data-table-title="客户商务信息"]') : panel;
-  return { table, panel, requests, count, releaseHeld: async () => { expect(releaseHeld).toBeDefined(); await releaseHeld!(); } };
+  return { table, panel, requests, count, heldBusiness, releaseHeld: async () => { expect(releaseHeld).toBeDefined(); await releaseHeld!(); } };
 }
 export async function resultSearch(table: Locator, value: string) {
   await table.getByRole('searchbox').fill(value);

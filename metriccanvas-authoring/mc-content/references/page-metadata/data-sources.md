@@ -196,6 +196,22 @@ UUID 随已取回的行保存在缓冲区、检查点和 initial 中，复用时
 
 完整示例 `paged-union-generated-key`；合成浏览器入口 `/pages/multi-source-generated-key`，`?rowFailure=missing-composite-key` 仍显示含 null 代表处的行，`?rowFailure=duplicate-composite` 保留重复业务组合，`?rowFailure=order` 整理后显示 warning。旧组合示例在前两项故障下跳过坏行并告警。此验收不代表真实 DQE/Relay 已保证数据正确性。
 
+<a id="paged-join-auto-pagination"></a>
+
+## 记录组合源自动分页（6.118）
+
+声明 `pagination:{mode:"auto",pageSize:10}`，保留 `records:{batchSize:500,maxBytes:67108864,timeoutMs:180000}` 和 `fallback:{maxRows:1000}`。仅基准查询成员以 `canSelectPage:true` 声明确认查询分页、准确总数和稳定返回顺序的能力；补列成员不接管选页。auto 目前仅支持 records 记录模式；没有声明 auto 的旧页面继续旧路径，不自动迁移。`mode:"query"` 的最后操作成员语义保持。
+
+执行器检查当前完整视图：排序、全部表头条件和搜索是否都能由 domainMember 的原始映射字段兑现。当前只在单列非空排序、可下推的非 isNull 表头条件、无搜索或单字段 equals 搜索时使用快路径；records.maxRows 或非空 timeFilters 仍要求完整读取。多列、可空排序、包含搜索、补列字段操作及跨来源条件保守走完整关联；不以清除其他来源条件来换取分页。全局业务筛选、参数和权限继续按每个成员原查询定义消费，notApplicableFilters 不变。
+
+快路径先按当前页 offset 与 pageSize 查询基准源，校验准确 totalCount、完整窗口、字段与关联键，再发出本轮展示回执。保留主查询每条记录，按本页去重关联键并行补查各补列成员；单成员内部仍按 records.batchSize 顺序读完当前键范围。补列通过校验后原位补齐，不排序当前页冒充全局排序，不后台扫描其他业务页。未完成列显示加载中，真实无匹配显示 null，补列错误不伪装成功。关联键可重复；未投影 rowKey 时继续生成快照内字符串标识，以页 offset 加行位置区分，不用于跨刷新业务定位。
+
+快路径 totalCount 来自基准查询，只有在基准源能决定全部行条件时才可信；补列不能改变行数或总数。源查询错误、取消、超时或不完整窗口不触发完整扫描。调用方取消后忽略迟到补列；刷新按原执行器规则清理缓存。完整路径沿用原有完整关联和异常兼容，搜索、筛选按 AND 保留；切换排序不会清除其他成员条件。表头候选仍基于完整匹配范围，按需在打开候选时读取，不能只从当前页提取候选。
+
+快路径 maxBytes 计入本页实际读取的原始成员行和最终投影；完整路径仍计入完整读取。timeoutMs 仍为每次请求独立预算。导出总是按完整范围执行原有记录关联，保留全部条件与重复关联键，并沿用单表10000行上限；浏览过第一页不代表取得了完整可导出快照。
+
+合成浏览器入口 `/pages/rep-business-result`：100000个商务编码加一条同编码不同站点记录，共100001行。冻结两个补列 HTTP 请求时，前10行及准确总数已可见；主查询仅一次 offset=0/limit=10，两个补列并发，未启动后续完整扫描。合同表直接查询末页；补列日期排序与跨成员筛选仍覆盖完整关联结果。测试直接消费业务页，不代表真实 DQE 的延迟、跨请求快照或排序稳定性已验真。
+
 ## 审批记录与当前信息补列（6.66）
 
 `pagedJoin.source.records` 显式启用记录模式，保留主表每条原始记录，成员 `key` 仅为关联键。旧页面不声明 `records`，继续使用原有一键一行、选页补列及最大1000行完整关联规则。
@@ -254,7 +270,7 @@ Excel 允许缺项，数据工作表导出整理后的全部匹配行，而非�
 合成入口 `/pages/table-data-recovery` 同时展示缺字段、对象值、不规则行、重复来源 key 与重复补充记录；`?recoveryState=ready` 演示数据准备好后恢复无告警。页面位于 `pages/capabilities/table/table-data-recovery.json`，模拟数据与故障注入在 `apps/playground/fixtures/table-recovery.ts`；无需 DQE Sim。真实 DQE/Relay 行为须另验。
 
 
-页面协议 6.117。结构真源为本册[schema.json](schema.json)，SHA256 `34a7d4eda47fe2d3e92139fa3ac19205eff9449610e48df4a48286fa6381d607`。字段表自动生成；可选不等于有默认值。
+页面协议 6.118。结构真源为本册[schema.json](schema.json)，SHA256 `b9952649ffe80e8ac2ed2def73899d205a166207969e34a3ff1efc9301f280bb`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -762,7 +778,7 @@ Schema位置：`#/definitions/pagedJoinSource/properties/members/additionalPrope
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "boolean" | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 经数据侧验真：覆盖相同行域、一键一行，且支持排序、总数和稳定键排序；不能从样本推断。 |
+| "boolean" | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 经数据侧验真可兑现准确总数、排序和稳定分页。普通模式一键一行；records 模式保留同关联键的多条基准记录。auto 只由基准成员选页。 |
 
 <a id="schema-232f646566696e6974696f6e732f70616765644a6f696e536f757263652f70726f706572746965732f6d656d626572732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f6e6f744170706c696361626c6546696c74657273"></a>
 
@@ -956,7 +972,7 @@ Schema位置：`#/definitions/pagedJoinSource/properties/pagination`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| anyOf联合 | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 分页来源与大小配置；query与local条件不同。 |
+| anyOf联合 | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 仅 pageSize 保持历史路径；query 显式查询分页并沿用最后操作成员；6.118 auto 在 records 下自动选择基准查询分页或保留条件的完整关联。 |
 
 <a id="schema-232f646566696e6974696f6e732f70616765644a6f696e536f757263652f70726f706572746965732f706167696e6174696f6e2f616e794f662f30"></a>
 
@@ -1021,6 +1037,40 @@ Schema位置：`#/definitions/pagedJoinSource/properties/pagination/anyOf/1/prop
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "integer" | 本分支必填 | minimum=1; maximum=1000 | Schema未设默认；装配/运行时默认见语义说明 | 按需补列的编码分组和单次响应窗口上限，1至1000；默认创作显式写10，不扫描完整业务行域。 |
+
+<a id="schema-232f646566696e6974696f6e732f70616765644a6f696e536f757263652f70726f706572746965732f706167696e6174696f6e2f616e794f662f32"></a>
+
+### `@pagedJoinSource.pagination · anyOf[2]`
+
+Schema位置：`#/definitions/pagedJoinSource/properties/pagination/anyOf/2`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["mode","pageSize"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f70616765644a6f696e536f757263652f70726f706572746965732f706167696e6174696f6e2f616e794f662f322f70726f706572746965732f6d6f6465"></a>
+
+### `@pagedJoinSource.pagination · anyOf[2].mode`
+
+Schema位置：`#/definitions/pagedJoinSource/properties/pagination/anyOf/2/properties/mode`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="auto" | Schema未设默认；装配/运行时默认见语义说明 | 分页或其它受控结构的模式判别。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "auto" | 由当前组件既有自动规则选择。 |
+
+<a id="schema-232f646566696e6974696f6e732f70616765644a6f696e536f757263652f70726f706572746965732f706167696e6174696f6e2f616e794f662f322f70726f706572746965732f7061676553697a65"></a>
+
+### `@pagedJoinSource.pagination · anyOf[2].pageSize`
+
+Schema位置：`#/definitions/pagedJoinSource/properties/pagination/anyOf/2/properties/pageSize`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "integer" | 本分支必填 | minimum=1; maximum=1000 | Schema未设默认；装配/运行时默认见语义说明 | 分页每页条数。 |
 
 <a id="schema-232f646566696e6974696f6e732f70616765644a6f696e536f757263652f70726f706572746965732f66616c6c6261636b"></a>
 
@@ -1104,7 +1154,7 @@ Schema位置：`#/definitions/pagedJoinSource/properties/records/properties/maxB
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "integer" | 本分支必填 | minimum=1024; maximum=134217728 | Schema未设默认；装配/运行时默认见语义说明 | 原始成员行与最终投影的累计UTF-8字节预算，超限整轮失败。 |
+| "integer" | 本分支必填 | minimum=1024; maximum=134217728 | Schema未设默认；装配/运行时默认见语义说明 | 原始成员行与最终投影的累计UTF-8字节预算；auto 快路径约束当前页实际读取，完整路径约束完整读取。 |
 
 <a id="schema-232f646566696e6974696f6e732f70616765644a6f696e536f757263652f70726f706572746965732f7265636f7264732f70726f706572746965732f74696d656f75744d73"></a>
 
@@ -2887,6 +2937,7 @@ Schema位置：`#/definitions/pagedUnionSource/properties/initial/properties/vie
 - `paged-join`：6.22 组合表全局视图与普通查询定义引用；记录模式成员独立消费查询参数。反例：[paged-join-non-record-member-parameter](errors/paged-join-non-record-member-parameter.json)、[record-join-unknown-member-parameter](errors/record-join-unknown-member-parameter.json)、[table-number-range-before-6.22](errors/table-number-range-before-6.22.json)、[paged-join-initial-predicate-null](errors/paged-join-initial-predicate-null.json)、[paged-join-initial-predicate-in](errors/paged-join-initial-predicate-in.json)、[paged-join-initial-predicate-numeric](errors/paged-join-initial-predicate-numeric.json)、[paged-join-initial-predicate-date](errors/paged-join-initial-predicate-date.json)、[paged-join-before-6.22](errors/paged-join-before-6.22.json)、[paged-join-unknown-member](errors/paged-join-unknown-member.json)、[paged-join-invalid-key](errors/paged-join-invalid-key.json)、[paged-join-invalid-projection](errors/paged-join-invalid-projection.json)、[paged-join-member-topn](errors/paged-join-member-topn.json)、[paged-join-shared-root](errors/paged-join-shared-root.json)、[paged-join-invalid-initial](errors/paged-join-invalid-initial.json)、[table-number-range-non-numeric](errors/table-number-range-non-numeric.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `paged-union`：多来源逐行合并、显式字段投影与全局视图。反例：[union-uuid-old](errors/union-uuid-old.json)、[union-uuid-conflict](errors/union-uuid-conflict.json)、[union-initial-predicate-null](errors/union-initial-predicate-null.json)、[union-initial-predicate-date](errors/union-initial-predicate-date.json)、[union-initial-predicate-numeric](errors/union-initial-predicate-numeric.json)、[union-initial-predicate-in](errors/union-initial-predicate-in.json)、[union-before-6.61](errors/union-before-6.61.json)、[union-missing-source](errors/union-missing-source.json)、[union-missing-mapping](errors/union-missing-mapping.json)、[union-incompatible-unit](errors/union-incompatible-unit.json)、[union-null-required](errors/union-null-required.json)、[union-source-window](errors/union-source-window.json)、[union-invalid-key](errors/union-invalid-key.json)、[union-source-navigation-field](errors/union-source-navigation-field.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `paged-union-composite-key`：6.72来源内有序非空组合行键，旧单字段声明保持。反例：[union-composite-before-version](errors/union-composite-before-version.json)、[union-composite-repeated-field](errors/union-composite-repeated-field.json)、[union-composite-nullable-field](errors/union-composite-nullable-field.json)、[union-composite-unknown-field](errors/union-composite-unknown-field.json)、[union-composite-measure-field](errors/union-composite-measure-field.json)、[union-composite-empty-fields](errors/union-composite-empty-fields.json)、[union-composite-scalar-conflict](errors/union-composite-scalar-conflict.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `paged-join-auto-pagination`：6.118 records 自动选择主查询分页或完整关联，旧模式不变。反例：[auto-pagination-version](errors/auto-pagination-version.json)、[auto-pagination-needs-records](errors/auto-pagination-needs-records.json)、[auto-pagination-batch-budget](errors/auto-pagination-batch-budget.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 
@@ -2906,6 +2957,7 @@ Schema位置：`#/definitions/pagedUnionSource/properties/initial/properties/vie
 - [record-join-query-page](examples/record-join-query-page.json)：完整合法页面；查询仅为静态契约证据。
 - [period-comparison-query-page](examples/period-comparison-query-page.json)：完整合法页面；查询仅为静态契约证据。
 - [record-join-timeout-180-page](examples/record-join-timeout-180-page.json)：完整合法页面；查询仅为静态契约证据。
+- [record-join-auto-page](examples/record-join-auto-page.json)：完整合法页面；查询仅为静态契约证据。
 
 ## 联合分支见证（生成）
 
@@ -2916,6 +2968,7 @@ Schema位置：`#/definitions/pagedUnionSource/properties/initial/properties/vie
 - `#/definitions/dataSource/anyOf/2`：[合法完整页面](examples/record-join-query-params.json)，JSON Pointer `#/dataSources/joined`。
 - `#/definitions/pagedJoinSource/properties/pagination/anyOf/0`：[合法完整页面](examples/record-join-query-params.json)，JSON Pointer `#/dataSources/joined/source/pagination`。
 - `#/definitions/pagedJoinSource/properties/pagination/anyOf/1`：[合法完整页面](examples/paged-join-query-page.json)，JSON Pointer `#/dataSources/projects/source/pagination`。
+- `#/definitions/pagedJoinSource/properties/pagination/anyOf/2`：[合法完整页面](examples/record-join-auto-page.json)，JSON Pointer `#/dataSources/rejection-overview/source/pagination`。
 - `#/definitions/pagedJoinSource/properties/initial/properties/view/properties/predicates/items/anyOf/0`：[语义拒绝反例](errors/paged-join-initial-predicate-in.json)：视图类型复用已提交条件，但文档 initial 仅允许默认无条件视图。（规则 `paged-join`）。此项不计入合法示例覆盖。
 - `#/definitions/pagedJoinSource/properties/initial/properties/view/properties/predicates/items/anyOf/0/properties/values/items/anyOf/0`：[语义拒绝反例](errors/paged-join-initial-predicate-in.json)：视图类型复用已提交条件，但文档 initial 仅允许默认无条件视图。（规则 `paged-join`）。此项不计入合法示例覆盖。
 - `#/definitions/pagedJoinSource/properties/initial/properties/view/properties/predicates/items/anyOf/0/properties/values/items/anyOf/1`：[语义拒绝反例](errors/paged-join-initial-predicate-in.json)：视图类型复用已提交条件，但文档 initial 仅允许默认无条件视图。（规则 `paged-join`）。此项不计入合法示例覆盖。

@@ -1236,7 +1236,7 @@
   ): TablePaginationState | undefined {
     const pagination = resolvedTablePagination(component, snapshotsBySlot.get('main'));
     if (!pagination || pagination.mode === 'none') return undefined;
-    const snapshot = snapshotsBySlot.get('main');
+    const snapshot = usableTableProgress(component,stream?.getScreenProgress?.(component.data.main),tableController?.render(component))?.snapshot ?? snapshotsBySlot.get('main');
     if (!snapshot || (snapshot.status !== 'ready' && snapshot.status !== 'empty')) {
       return undefined;
     }

@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.117",
-  "schemaSha256": "34a7d4eda47fe2d3e92139fa3ac19205eff9449610e48df4a48286fa6381d607",
+  "schemaVersion": "6.118",
+  "schemaSha256": "b9952649ffe80e8ac2ed2def73899d205a166207969e34a3ff1efc9301f280bb",
   "semanticSources": [
     {
       "file": "metriccanvas-authoring/core/page/analysis-report.ts",
@@ -552,7 +552,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "7109a363be150fb804222cb461e4e4f0d724940f61d93b22be8cbb25d89279fc"
+      "sha256": "56b8648e80c82bff3d07e70e1c3253ea9d85209659d0c0f3c04224ca242e633a"
     }
   ],
   "modules": {
@@ -706,7 +706,8 @@
         "paged-join-query-page",
         "record-join-query-page",
         "period-comparison-query-page",
-        "record-join-timeout-180-page"
+        "record-join-timeout-180-page",
+        "record-join-auto-page"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -723,7 +724,8 @@
         "pagination-initial-rows",
         "paged-join",
         "paged-union",
-        "paged-union-composite-key"
+        "paged-union-composite-key",
+        "paged-join-auto-pagination"
       ]
     },
     "fields.md": {
@@ -2186,7 +2188,8 @@
         "6.114",
         "6.115",
         "6.116",
-        "6.117"
+        "6.117",
+        "6.118"
       ]
     },
     {
@@ -8161,6 +8164,25 @@
     {
       "pointer": "#/definitions/pagedJoinSource/properties/pagination/anyOf/1/properties/batchSize",
       "path": "@pagedJoinSource.pagination · anyOf[1].batchSize",
+      "required": "本分支必填",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedJoinSource/properties/pagination/anyOf/2",
+      "path": "@pagedJoinSource.pagination · anyOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "data-sources.md"
+    },
+    {
+      "pointer": "#/definitions/pagedJoinSource/properties/pagination/anyOf/2/properties/mode",
+      "path": "@pagedJoinSource.pagination · anyOf[2].mode",
+      "required": "本分支必填",
+      "module": "data-sources.md",
+      "const": "auto"
+    },
+    {
+      "pointer": "#/definitions/pagedJoinSource/properties/pagination/anyOf/2/properties/pageSize",
+      "path": "@pagedJoinSource.pagination · anyOf[2].pageSize",
       "required": "本分支必填",
       "module": "data-sources.md"
     },
@@ -22215,6 +22237,12 @@
       "module": "data-sources.md",
       "file": "examples/paged-join-query-page.json",
       "pointer": "#/dataSources/projects/source/pagination"
+    },
+    {
+      "schemaPointer": "#/definitions/pagedJoinSource/properties/pagination/anyOf/2",
+      "module": "data-sources.md",
+      "file": "examples/record-join-auto-page.json",
+      "pointer": "#/dataSources/rejection-overview/source/pagination"
     },
     {
       "schemaPointer": "#/definitions/cellFallbacks/additionalProperties/additionalProperties/properties/raw/anyOf/0",

@@ -1,0 +1,49 @@
+{
+  "case": "auto-pagination-needs-records",
+  "invariant": "paged-join-auto-pagination",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "自动分页目前只支持保留主表记录的组合源",
+      "paths": [
+        "/dataSources/rejection-overview/source/records"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "不适用筛选须来自记录模式的其他成员，且不能同时消费",
+      "paths": [
+        "/dataSources/rejection-overview/source/members/basic/notApplicableFilters"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "行键投影必须来自业务行域成员键",
+      "paths": [
+        "/dataSources/rejection-overview/source/projection/record-id"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "rejection-overview": {
+        "source": {
+          "members": {
+            "basic": {
+              "notApplicableFilters": [
+                "mtime"
+              ]
+            }
+          },
+          "projection": {
+            "record-id": {
+              "member": "rejection",
+              "field": "record-id"
+            }
+          }
+        }
+      }
+    }
+  },
+  "fullInput": "page/conformance/invalid/auto-pagination-needs-records.json"
+}

@@ -12,6 +12,43 @@ async function downloadedWorkbook(page: Page, action: () => Promise<void>) {
   return workbook.worksheets[0];
 }
 
+test('100001 business records: first paint waits only for 10 main rows, both supplements run in parallel and no full scan starts',async({page},info)=>{
+  test.setTimeout(60000);
+  const {table,requests,heldBusiness}=await openResult(page,'business',{count:100000,holdBusinessSupplements:true});
+  await expect(table).toContainText('总条数： 100001');
+  await expect(table.locator('tbody tr')).toHaveCount(10);
+  await expect(table.getByRole('cell',{name:'B00001',exact:true})).toHaveCount(2);
+  await expect.poll(()=>heldBusiness.length).toBe(2);
+  const main=recordRequests(requests,'business');
+  expect(main).toHaveLength(1);expect(main[0].order).toMatchObject({offset:0,limit:10});
+  await expect(table).toHaveAttribute('aria-busy','true');
+  await page.screenshot({path:info.outputPath('100k-main-ready-supplements-pending.png'),fullPage:true});
+  await Promise.all(heldBusiness.map(release=>release()));
+  await expect(table).toHaveAttribute('aria-busy','false');
+  expect(recordRequests(requests,'business')).toHaveLength(1);
+});
+
+test('default risk query reads only one window and fetches the requested last page directly',async({page})=>{
+  const {table,requests}=await openResult(page,'contract');
+  await expect(table).toContainText('总条数： 2410');
+  await expect(table.locator('.table-widget')).toHaveAttribute('aria-busy','false');
+  expect(recordRequests(requests,'contract').map(item=>item.order)).toEqual([expect.objectContaining({offset:0,limit:10})]);
+  await table.getByRole('button',{name:'241',exact:true}).click();
+  await expect(table.getByRole('cell',{name:'C01205',exact:true})).toHaveCount(2);
+  expect(recordRequests(requests,'contract').map(item=>item.order?.offset)).toEqual([0,2400]);
+});
+
+test('a main-query risk filter stays on demand and returns the filtered total',async({page})=>{
+  const {table,requests}=await openResult(page,'contract');
+  await expect(table).toContainText('总条数： 2410');
+  await expect(table.locator('.table-widget')).toHaveAttribute('aria-busy','false');
+  await selectResult(table,'riskLevel','高风险');
+  await expect(table).toContainText('总条数： 1205');
+  const main=recordRequests(requests,'contract');
+  expect(main.every(item=>item.order?.limit===10)).toBe(true);
+  expect(main.at(-1)?.filter?.fields).toContainEqual(expect.objectContaining({field_name:'风险等级',value_list:['HIGH_RISK']}));
+});
+
 test('1205 business keys: all three members sort globally, filters survive switching members and both site records remain', async ({ page }) => {
   const { table, requests } = await openResult(page, 'business');
   await expect(table).toContainText('总条数： 1206');
@@ -30,7 +67,8 @@ test('1205 business keys: all three members sort globally, filters survive switc
   await expect(table.getByRole('cell', { name: 'B01205', exact: true })).toBeVisible();
   const main = recordRequests(requests, 'business');
   expect(main.map(item => item.order?.offset)).toEqual(expect.arrayContaining([0, 500, 1000]));
-  expect(main.every(item => item.order?.limit === 500)).toBe(true);
+  expect(main.some(item => item.order?.limit === 10)).toBe(true);
+  expect(main.every(item => [10,500].includes(item.order?.limit??0))).toBe(true);
   expect(await table.getByRole('cell', { name: 'B01206', exact: true }).count()).toBe(0);
 });
 
@@ -65,7 +103,8 @@ test('2410 risk records: reads every batch, sorts supplemental dates and filters
   await expect(table.getByRole('cell', { name: 'C01205', exact: true })).toHaveCount(1);
   const main = recordRequests(requests, 'contract');
   expect(main.map(item => item.order?.offset)).toEqual(expect.arrayContaining([0, 500, 1000, 1500, 2000]));
-  expect(main.every(item => item.order?.limit === 500)).toBe(true);
+  expect(main.some(item => item.order?.limit === 10)).toBe(true);
+  expect(main.every(item => [10,500].includes(item.order?.limit??0))).toBe(true);
   const keyCounts = requests.flatMap(item => (item.filter?.fields ?? []).filter(rule => rule.field_name === '合同ID').map(rule => rule.value_list.length));
   expect(keyCounts).toContain(500); expect(keyCounts).toContain(205);
   expect(Math.max(...keyCounts)).toBe(500);
@@ -131,7 +170,7 @@ test('the business page accepts a risk query response after 150 seconds within i
   page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
   const { table, requests, releaseHeld } = await openResult(page, 'contract', { count: 1, holdFirstRisk: true });
   await expect.poll(() => recordRequests(requests, 'contract').length).toBe(1);
-  await page.clock.pauseAt(await page.evaluate(() => Date.now()));
+  await page.clock.pauseAt(await page.evaluate(() => Date.now()+1000));
   await page.clock.fastForward(150000);
   await expect(table.locator('.table-widget')).toHaveAttribute('aria-busy', 'true');
   expect(errors).toEqual([]);

@@ -25,7 +25,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 117;
+const CURRENT_MINOR = 118;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -69,6 +69,13 @@ function bindingOperatorUsed(query:Record<string,unknown>|undefined):boolean {
 }
 
 export const pageCapabilities = {
+  'paged-join-auto-pagination': {
+    minor:118, legacyReadable:false, description:'记录组合源自动选择主查询分页或完整关联，保留全部来源条件',
+    usedAt:document=>dataSourcePaths(document,data=>{
+      const source=record(data.source);
+      return source?.type==='pagedJoin'&&record(source.pagination)?.mode==='auto';
+    }).map(path=>`${path}/source/pagination/mode`)
+  },
   'paged-join-record-timeout-180': {
     minor:117, legacyReadable:false, description:'记录关联单批超时允许超过120秒，最多180秒',
     usedAt:document=>dataSourcePaths(document,data=>{

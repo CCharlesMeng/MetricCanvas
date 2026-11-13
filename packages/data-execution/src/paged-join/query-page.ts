@@ -44,7 +44,7 @@ function selectionQuery(plan:PagedJoinPlan,pageIndex:number){
   return query;
 }
 
-async function selectPage(plan:PagedJoinPlan,runner:QueryRunner,scope:string,signal?:AbortSignal){
+export async function selectPage(plan:PagedJoinPlan,runner:QueryRunner,scope:string,signal?:AbortSignal){
   const run=(index:number)=>runPageQuery(plan,plan.selection!,selectionQuery(plan,index),runner,scope,signal);
   let pageIndex=plan.view.pageIndex,snapshot=await run(pageIndex);
   readyRows(snapshot);
@@ -80,7 +80,7 @@ async function fillMember(plan:PagedJoinPlan,id:string,keys:(string|number)[],wa
   return index;
 }
 
-function selectedKeys(plan:PagedJoinPlan,rows:Row[]):(string|number)[]{
+export function selectedKeys(plan:PagedJoinPlan,rows:Row[]):(string|number)[]{
   const member=plan.source.source.members[plan.selection!],field=plan.members.get(plan.selection!)!.fields[member.key.field];
   if(!hasQueryFieldMapping(field))throw rowFailure('关联字段缺少查询映射');
   const keys=rows.map(row=>row[member.key.field]);

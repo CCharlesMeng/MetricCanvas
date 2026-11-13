@@ -29,8 +29,9 @@
   });
   const pagination = $derived.by(() => {
     void localRevision; readRevision();
-    const raw = snapshot?.status === 'ready' ? snapshot.rows : [];
-    return remote ? { pageSize: instance.stream?.getQueryPageSize(table.data.main) ?? 20, totalCount: snapshot && 'totalCount' in snapshot ? snapshot.totalCount ?? 0 : 0 }
+    const current=progress?.snapshot??snapshot;
+    const raw = current?.status === 'ready' ? current.rows : [];
+    return remote ? { pageSize: instance.stream?.getQueryPageSize(table.data.main) ?? 20, totalCount: current && 'totalCount' in current ? current.totalCount ?? 0 : 0 }
       : { pageSize: controller.view(table).pageSize, totalCount: controller.present(table, raw, true).totalCount };
   });
   const binding = $derived.by(() => { void localRevision; readRevision(); return controller.binding(table, { filterOptions: {}, paginationConfig: table.props.pagination, pagination, oncellselect() {} }); });
