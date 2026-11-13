@@ -1,9 +1,11 @@
+import { absoluteDisplayText } from '../../../../widgets/src/shared/absolute-display-limit';
+import { tableValueColor } from '../../../../widgets/src/shared/value-color';
 import { appendDisplayUnit } from '../../../../widgets/src/shared/display-unit';
 import type { FieldDefinition, FieldValue, TableColumn, TimeValueFormat, ValueFormat } from '@metriccanvas/page/internal';
 import type { Cell, CellObject } from 'write-excel-file/universal';
 import type { NamedDataSlots } from '../../../../widgets/src/shared/component-data';
 import { resolveField } from '../../../../widgets/src/shared/component-data';
-import { alignedFallback, alignedFieldValue, alignedCellArrow, tableRowColumn, type AlignedTableRow } from '../../../../widgets/src/components/table/rows';
+import { alignedFallback, alignedFieldValue, alignedCellText, alignedCellArrow, tableRowColumn, type AlignedTableRow } from '../../../../widgets/src/components/table/rows';
 import { compatibleTableFormat, formatTableCell } from '../../../../widgets/src/components/table/cell-presentation';
 import { tableEnumLabel } from '../../../../widgets/src/components/table/enum-values';
 import { resolvedUnit } from '../../../../widgets/src/shared/field-presentation';
@@ -52,6 +54,7 @@ export function tableWorkbookCell(bodyColumn: TableColumn, row: AlignedTableRow,
   if (!hasDisplayValue(value)) return resolved.missingText === undefined ? missingText : formatValue(value, resolved.format, resolved.missingText);
   const label = tableEnumLabel(value, column.enumValues);
   if (label !== undefined) return { value: label, type: String };
+  if (typeof value === 'number' && absoluteDisplayText(value, column.absoluteDisplayLimit) !== undefined) return limitedNumberCell(column, row, data, value);
   if (typeof resolved.format === 'object') return timeCell(value, resolved.format, alignedCellArrow(column, data, row), column.arrowRule?.position === 'after');
   if (resolved.format && !compatibleTableFormat(value, resolved.format)) {
     return { value: formatTableCell(value, resolved.format), type: String };
@@ -73,4 +76,13 @@ function arrowNumberFormat(format: string, arrow: string, after: boolean, native
 function timeCell(value: FieldValue, format: TimeValueFormat, arrow: string, after: boolean): CellObject {
   const text = formatTableCell(value, format);
   return { value: !arrow ? text : after ? `${text} ${arrow}` : `${arrow} ${text}`, type: String };
+}
+
+/** Like adaptive formats, freeze the displayed text in a number format and retain the raw value. */
+function limitedNumberCell(column: TableColumn, row: AlignedTableRow, data: NamedDataSlots, value: number): CellObject {
+  const text = alignedCellText(column.field, data, row, column.enumValues, column.unit, column.absoluteDisplayLimit);
+  const arrow = alignedCellArrow(column, data, row);
+  const display = !arrow ? text : column.arrowRule?.position === 'after' ? `${text} ${arrow}` : `${arrow} ${text}`;
+  const color = tableValueColor(value, column);
+  return { value, type: Number, format: `"${display.replaceAll('"', '""')}"`, textColor: color === 'green' ? '#52C41A' : color === 'red' ? '#F5222D' : undefined };
 }

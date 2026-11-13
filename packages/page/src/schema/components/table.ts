@@ -65,6 +65,7 @@ export interface TableColumn {
   visual?: 'plain' | 'rateBar' | 'signed';
   colorRule?: ColorRule;
   arrowRule?: ArrowRule;
+  absoluteDisplayLimit?: number;
 }
 
 export interface TableColumnGroup {
@@ -119,6 +120,7 @@ const tableColumnZ: z.ZodType<TableColumn> = z
     align: z.enum(['left', 'right']).optional(),
     emphasis: z.literal('strong').optional(),
     visual: z.enum(['plain', 'rateBar', 'signed']).optional(),
+    absoluteDisplayLimit: z.number().positive().max(Number.MAX_VALUE).optional().meta({ description: '原始绝对值严格超过此正数时，主数值显示 > 阈值；颜色和箭头独立' }),
     colorRule: colorRuleZ.optional(),
     arrowRule: arrowRuleZ.optional().meta({ description: '主数值的显式箭头规则，与颜色独立；省略不显示箭头' })
   })

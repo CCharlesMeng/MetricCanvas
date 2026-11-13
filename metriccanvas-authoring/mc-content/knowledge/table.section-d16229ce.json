@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.118",
+  "schemaVersion": "6.119",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "table.section-d16229ce"
@@ -10,9 +10,22 @@
       "reference": "references/page-metadata/components/table.md",
       "blocks": [
         "# 明细表 table\n\n首次加载保留表头和工具栏，表体仅显示静态“正在加载…”，不显示加载动画；刷新、查询翻页和排序期间保留上一份完整展示，当前结果就绪后替换。旧行暂时不可交互，不进入新查询或导出；完整边界见[加载时保留组件结构](../data-sources.md#screen-loading)。 级联查询按[渐进补列](../data-sources.md#progressive-table-columns)先显示已确定行集的就绪列，未完成和失败列显示 `--`；行集与顺序有待确认时继续保留旧展示。\n\ncolumns/children 定义字段列与递归列组；交互、查询与呈现约束见下列专题。\n\n\n<a id=\"local-default-sort\"></a>",
-        "## 列级上下箭头（6.99）\n\n表格字段列用 `arrowRule` 声明箭头规则，与同级 `colorRule` 独立。只允许绑定 `number` / `money`，支持列组、置顶汇总及展开子表；次字段和徽标不继承规则。省略不显示箭头，旧页面保持原样。\n\n```json\n{\"type\":\"table\",\"id\":\"changes\",\"layout\":{\"span\":12},\"data\":{\"main\":\"sample\"},\"props\":{\"columns\":[{\"title\":\"时长变化\",\"field\":{\"data\":\"main\",\"field\":\"durationChange\",\"format\":\"number-1-signed\"},\"unit\":\"天\",\"arrowRule\":{\"mode\":\"sign\",\"positive\":\"down\",\"negative\":\"up\"},\"colorRule\":{\"mode\":\"sign\",\"positive\":\"red\",\"negative\":\"green\"}}]}}\n```\n\nsample 需要含数值字段 durationChange。这个例子正值显示红色 `↓ +2.5 天`，负值显示绿色 `↑ -1.2 天`。箭头不由正负号或颜色固定决定，必须使用作者声明的映射。\n\n| 规则 | 声明 | 行为 |\n| --- | --- | --- |\n| 按正负映射 | `{\"mode\":\"sign\",\"positive\":\"down\",\"negative\":\"up\"}` | 正值 ↓、负值 ↑；可反向或两侧使用相同箭头 |\n| 单侧显示 | `{\"mode\":\"sign\",\"positive\":\"none\",\"negative\":\"down\"}` | 正值无箭头，负值 ↓ |\n| 固定箭头 | `{\"mode\":\"fixed\",\"arrow\":\"up\"}` | 所有有效数字（含零和负值）显示 ↑ |\n| 显式隐藏 | `{\"mode\":\"fixed\",\"arrow\":\"none\"}` | 不显示箭头 |\n\n`arrowRule.position` 可选 `before` / `after`，省略默认 `before`，两种 mode 均适用。默认显示 `↓ +2.5 天`；声明 `\"position\":\"after\"` 显示 `+2.5 天 ↓`。位置只影响箭头与主数值（含单位）的顺序，不改变映射和颜色，隐藏箭头时不保留多余间隔。置顶汇总、列组及子表复用列规则。\n\n箭头值仅接受 `up` / `down` / `none`。sign 模式必须同时声明 positive 和 negative；fixed 模式必须声明 arrow；不允许混用两种模式的属性或传布尔值。表格列不接受 `showTrendArrows` 布尔开关；指标卡的同名开关保持原协议。\n\nsign 模式的零、负零及缺失不显示箭头；fixed 模式与固定颜色一致，包含有效零，但缺失始终无箭头。按正负选择分支时复用现有格式精度：普通带符号数值、`points-1-signed`、`yoy-p-signed` 按舍入结果判断，例如 `number-1-signed` 的 ±0.04 落入零分支，±0.05 分别落入正负分支；其他格式（含 `percent-2-signed`）沿原值正负判断。fixed 不按舍入后的正负切换。枚举标签、非数字和异常回退原文不加箭头。\n\n`colorRule` 或旧 `visual:\"signed\"` 继续决定文字和箭头颜色，固定颜色不改变箭头规则；`colorRule` 与旧染色声明仍互斥。不增加符号，不比较其他字段或阈值，不改查询、计算和排序。PNG/PDF 与屏幕共用呈现；Excel 使用相同规则在数字格式中按 position 前置或后置箭头，保留原数值类型。\n\n完整 inline 合成场景 `/pages/table-trend-arrows` 覆盖正向、反向、单侧、固定与隐藏规则，包含单位、颜色、零/缺失、舍入边界、紧凑表格和进度条。无需 URL 参数或 DQE，不代表真实 DQE/Relay 验收。"
+        "## 列级上下箭头（6.99）\n\n表格字段列用 `arrowRule` 声明箭头规则，与同级 `colorRule` 独立。只允许绑定 `number` / `money`，支持列组、置顶汇总及展开子表；次字段和徽标不继承规则。省略不显示箭头，旧页面保持原样。\n\n```json\n{\"type\":\"table\",\"id\":\"changes\",\"layout\":{\"span\":12},\"data\":{\"main\":\"sample\"},\"props\":{\"columns\":[{\"title\":\"时长变化\",\"field\":{\"data\":\"main\",\"field\":\"durationChange\",\"format\":\"number-1-signed\"},\"unit\":\"天\",\"arrowRule\":{\"mode\":\"sign\",\"positive\":\"down\",\"negative\":\"up\"},\"colorRule\":{\"mode\":\"sign\",\"positive\":\"red\",\"negative\":\"green\"}}]}}\n```\n\nsample 需要含数值字段 durationChange。这个例子正值显示红色 `↓ +2.5 天`，负值显示绿色 `↑ -1.2 天`。箭头不由正负号或颜色固定决定，必须使用作者声明的映射。\n\n| 规则 | 声明 | 行为 |\n| --- | --- | --- |\n| 按正负映射 | `{\"mode\":\"sign\",\"positive\":\"down\",\"negative\":\"up\"}` | 正值 ↓、负值 ↑；可反向或两侧使用相同箭头 |\n| 单侧显示 | `{\"mode\":\"sign\",\"positive\":\"none\",\"negative\":\"down\"}` | 正值无箭头，负值 ↓ |\n| 固定箭头 | `{\"mode\":\"fixed\",\"arrow\":\"up\"}` | 所有有效数字（含零和负值）显示 ↑ |\n| 显式隐藏 | `{\"mode\":\"fixed\",\"arrow\":\"none\"}` | 不显示箭头 |\n\n屏幕箭头使用随文字颜色变化的矢量图形，与主数值在同一行垂直居中，不依赖字体中箭头字形的基线；导出文字仍使用 ↑ / ↓。\n\n`arrowRule.position` 可选 `before` / `after`，省略默认 `before`，两种 mode 均适用。默认显示 `↓ +2.5 天`；声明 `\"position\":\"after\"` 显示 `+2.5 天 ↓`。位置只影响箭头与主数值（含单位）的顺序，不改变映射和颜色，隐藏箭头时不保留多余间隔。置顶汇总、列组及子表复用列规则。\n\n箭头值仅接受 `up` / `down` / `none`。sign 模式必须同时声明 positive 和 negative；fixed 模式必须声明 arrow；不允许混用两种模式的属性或传布尔值。表格列不接受 `showTrendArrows` 布尔开关；指标卡的同名开关保持原协议。\n\nsign 模式的零、负零及缺失不显示箭头；fixed 模式与固定颜色一致，包含有效零，但缺失始终无箭头。按正负选择分支时复用现有格式精度：普通带符号数值、`points-1-signed`、`yoy-p-signed` 按舍入结果判断，例如 `number-1-signed` 的 ±0.04 落入零分支，±0.05 分别落入正负分支；其他格式（含 `percent-2-signed`）沿原值正负判断。fixed 不按舍入后的正负切换。枚举标签、非数字和异常回退原文不加箭头。\n\n`colorRule` 或旧 `visual:\"signed\"` 继续决定文字和箭头颜色，固定颜色不改变箭头规则；`colorRule` 与旧染色声明仍互斥。不增加符号，不比较其他字段或阈值，不改查询、计算和排序。PNG/PDF 与屏幕共用呈现；Excel 使用相同规则在数字格式中按 position 前置或后置箭头，保留原数值类型。\n\n完整 inline 合成场景 `/pages/table-trend-arrows` 覆盖正向、反向、单侧、固定与隐藏规则，包含单位、颜色、零/缺失、舍入边界、紧凑表格和进度条。无需 URL 参数或 DQE，不代表真实 DQE/Relay 验收。"
       ],
       "rules": [
+        {
+          "id": "table-absolute-display-limit",
+          "description": "表格原始绝对值展示阈值及版本类型边界",
+          "valid": [
+            "table-absolute-display-limit"
+          ],
+          "invalid": [
+            "table-limit-old",
+            "table-limit-zero",
+            "table-limit-type",
+            "table-limit-text"
+          ]
+        },
         {
           "id": "table-trend-arrows",
           "description": "表格箭头",
@@ -317,6 +330,7 @@
         }
       ],
       "examples": [
+        "references/page-metadata/examples/table-absolute-display-limit.json",
         "references/page-metadata/examples/table-trend-arrows.json",
         "references/page-metadata/examples/query-dashboard.json",
         "references/page-metadata/examples/reference-branches-page.json",

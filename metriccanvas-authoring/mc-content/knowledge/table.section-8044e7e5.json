@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.118",
+  "schemaVersion": "6.119",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "table.section-8044e7e5"
@@ -13,6 +13,19 @@
         "## 查阅方式\n\n字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](../README.md)。"
       ],
       "rules": [
+        {
+          "id": "table-absolute-display-limit",
+          "description": "表格原始绝对值展示阈值及版本类型边界",
+          "valid": [
+            "table-absolute-display-limit"
+          ],
+          "invalid": [
+            "table-limit-old",
+            "table-limit-zero",
+            "table-limit-type",
+            "table-limit-text"
+          ]
+        },
         {
           "id": "table-trend-arrows",
           "description": "表格箭头",
@@ -317,6 +330,7 @@
         }
       ],
       "examples": [
+        "references/page-metadata/examples/table-absolute-display-limit.json",
         "references/page-metadata/examples/table-trend-arrows.json",
         "references/page-metadata/examples/query-dashboard.json",
         "references/page-metadata/examples/reference-branches-page.json",

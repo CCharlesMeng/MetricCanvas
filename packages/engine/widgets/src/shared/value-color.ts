@@ -1,3 +1,4 @@
+import { absoluteDisplayText } from './absolute-display-limit';
 import type { ColorRule, FieldValue, MetricCardChange, TableColumn, ValueFormat } from '@metriccanvas/page/internal';
 import { finiteNumber, isSignedNumberFormat, valuePolarity } from './value-format';
 
@@ -19,8 +20,9 @@ export function valueColor(value: FieldValue | undefined, rule: ColorRule, forma
 
 /** Explicit rules win only on validated inputs; old pages keep their documented color behavior. */
 export function tableValueColor(value: FieldValue | undefined, column: TableColumn, format?: ValueFormat): ValueColor {
-  if (column.colorRule) return valueColor(value, column.colorRule, format);
-  return column.visual === 'signed' ? legacyColor(value, format) : undefined;
+  const polarityFormat = absoluteDisplayText(value, column.absoluteDisplayLimit) === undefined ? format : undefined;
+  if (column.colorRule) return valueColor(value, column.colorRule, polarityFormat);
+  return column.visual === 'signed' ? legacyColor(value, polarityFormat) : undefined;
 }
 
 export function changeValueColor(value: FieldValue | undefined, change: MetricCardChange, format?: ValueFormat): ValueColor {

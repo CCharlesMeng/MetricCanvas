@@ -1,0 +1,511 @@
+{
+  "schemaVersion": "6.119",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "table.trendArrows",
+    "table.absoluteDisplayLimit"
+  ],
+  "semantics": [
+    {
+      "module": "table",
+      "reference": "references/page-metadata/components/table.md",
+      "blocks": [
+        "# 明细表 table\n\n首次加载保留表头和工具栏，表体仅显示静态“正在加载…”，不显示加载动画；刷新、查询翻页和排序期间保留上一份完整展示，当前结果就绪后替换。旧行暂时不可交互，不进入新查询或导出；完整边界见[加载时保留组件结构](../data-sources.md#screen-loading)。 级联查询按[渐进补列](../data-sources.md#progressive-table-columns)先显示已确定行集的就绪列，未完成和失败列显示 `--`；行集与顺序有待确认时继续保留旧展示。\n\ncolumns/children 定义字段列与递归列组；交互、查询与呈现约束见下列专题。\n\n\n<a id=\"local-default-sort\"></a>",
+        "## 列级上下箭头（6.99）\n\n表格字段列用 `arrowRule` 声明箭头规则，与同级 `colorRule` 独立。只允许绑定 `number` / `money`，支持列组、置顶汇总及展开子表；次字段和徽标不继承规则。省略不显示箭头，旧页面保持原样。\n\n```json\n{\"type\":\"table\",\"id\":\"changes\",\"layout\":{\"span\":12},\"data\":{\"main\":\"sample\"},\"props\":{\"columns\":[{\"title\":\"时长变化\",\"field\":{\"data\":\"main\",\"field\":\"durationChange\",\"format\":\"number-1-signed\"},\"unit\":\"天\",\"arrowRule\":{\"mode\":\"sign\",\"positive\":\"down\",\"negative\":\"up\"},\"colorRule\":{\"mode\":\"sign\",\"positive\":\"red\",\"negative\":\"green\"}}]}}\n```\n\nsample 需要含数值字段 durationChange。这个例子正值显示红色 `↓ +2.5 天`，负值显示绿色 `↑ -1.2 天`。箭头不由正负号或颜色固定决定，必须使用作者声明的映射。\n\n| 规则 | 声明 | 行为 |\n| --- | --- | --- |\n| 按正负映射 | `{\"mode\":\"sign\",\"positive\":\"down\",\"negative\":\"up\"}` | 正值 ↓、负值 ↑；可反向或两侧使用相同箭头 |\n| 单侧显示 | `{\"mode\":\"sign\",\"positive\":\"none\",\"negative\":\"down\"}` | 正值无箭头，负值 ↓ |\n| 固定箭头 | `{\"mode\":\"fixed\",\"arrow\":\"up\"}` | 所有有效数字（含零和负值）显示 ↑ |\n| 显式隐藏 | `{\"mode\":\"fixed\",\"arrow\":\"none\"}` | 不显示箭头 |\n\n屏幕箭头使用随文字颜色变化的矢量图形，与主数值在同一行垂直居中，不依赖字体中箭头字形的基线；导出文字仍使用 ↑ / ↓。\n\n`arrowRule.position` 可选 `before` / `after`，省略默认 `before`，两种 mode 均适用。默认显示 `↓ +2.5 天`；声明 `\"position\":\"after\"` 显示 `+2.5 天 ↓`。位置只影响箭头与主数值（含单位）的顺序，不改变映射和颜色，隐藏箭头时不保留多余间隔。置顶汇总、列组及子表复用列规则。\n\n箭头值仅接受 `up` / `down` / `none`。sign 模式必须同时声明 positive 和 negative；fixed 模式必须声明 arrow；不允许混用两种模式的属性或传布尔值。表格列不接受 `showTrendArrows` 布尔开关；指标卡的同名开关保持原协议。\n\nsign 模式的零、负零及缺失不显示箭头；fixed 模式与固定颜色一致，包含有效零，但缺失始终无箭头。按正负选择分支时复用现有格式精度：普通带符号数值、`points-1-signed`、`yoy-p-signed` 按舍入结果判断，例如 `number-1-signed` 的 ±0.04 落入零分支，±0.05 分别落入正负分支；其他格式（含 `percent-2-signed`）沿原值正负判断。fixed 不按舍入后的正负切换。枚举标签、非数字和异常回退原文不加箭头。\n\n`colorRule` 或旧 `visual:\"signed\"` 继续决定文字和箭头颜色，固定颜色不改变箭头规则；`colorRule` 与旧染色声明仍互斥。不增加符号，不比较其他字段或阈值，不改查询、计算和排序。PNG/PDF 与屏幕共用呈现；Excel 使用相同规则在数字格式中按 position 前置或后置箭头，保留原数值类型。\n\n完整 inline 合成场景 `/pages/table-trend-arrows` 覆盖正向、反向、单侧、固定与隐藏规则，包含单位、颜色、零/缺失、舍入边界、紧凑表格和进度条。无需 URL 参数或 DQE，不代表真实 DQE/Relay 验收。",
+        "## 列级绝对值展示阈值（6.119）\n\n字段列可声明可选 `absoluteDisplayLimit`，只支持 `number` / `money` 字段，值必须为有限正数。引擎在舍入和缩放前，按原始值的绝对值严格大于阈值判断；超过时把主数值替换为 `> 阈值`，两侧都不带正负号或中文。不超过时保留原格式，省略配置沿用旧行为。\n\n```json\n{\"field\":\"change\",\"absoluteDisplayLimit\":500,\"colorRule\":{\"mode\":\"sign\",\"positive\":\"green\",\"negative\":\"red\"},\"arrowRule\":{\"mode\":\"sign\",\"positive\":\"up\",\"negative\":\"down\"}}\n```\n\n这个列声明将 `650` 显示为绿色 `↑ > 500`，`-650` 显示为红色 `↓ > 500`；`500`、`-500` 不触发替换。`500.0001` 触发，`499.9999` 不触发，即使普通格式将两者都舍入为500。阈值不缩放、不继承格式预设中的百分号或货币后缀；显式列 `unit` 仍按原规则追加，例如 `> 500 天`。阈值按数据基本单位填写，不能用显示缩放后的数值代替。\n\n颜色、箭头及箭头位置继续由独立的 `colorRule` / `arrowRule` 决定；配置阈值本身不自动添加颜色或箭头。超限值按原始正负决定 sign 分支，避免小阈值被格式舍入成零后丢失方向。未超限值仍遵守原有舍入判断。枚举标签优先；缺失值、异常回退原文保持原行为。规则适用于列组、置顶汇总和展开子表的主字段，不继承至次字段和徽标。\n\n只改变单元格呈现，不改写查询、数据快照、计算、排序、筛选或导航原值。PNG/PDF 共用屏幕呈现。Excel 超限格保留原始数字及数值类型，以冻结数字格式呈现相同的阈值文字、箭头位置和红绿颜色；导出后编辑该格数值不会重新计算冻结展示。未超限格沿用现有数字格式。\n\n完整 inline 合成场景 `/pages/table-absolute-display-limit` 覆盖正负超限、严格边界、舍入边界、零/缺失、列组、紧凑表格、原值排序与 Excel。无需参数或 DQE，不代表真实 DQE/Relay 验收。\n\n<a id=\"table-trend-arrows\"></a>"
+      ],
+      "rules": [
+        {
+          "id": "table-absolute-display-limit",
+          "description": "表格原始绝对值展示阈值及版本类型边界",
+          "valid": [
+            "table-absolute-display-limit"
+          ],
+          "invalid": [
+            "table-limit-old",
+            "table-limit-zero",
+            "table-limit-type",
+            "table-limit-text"
+          ]
+        },
+        {
+          "id": "table-trend-arrows",
+          "description": "表格箭头",
+          "valid": [
+            "table-trend-arrows"
+          ],
+          "invalid": [
+            "table-arrow-old",
+            "table-arrow-text",
+            "table-arrow-type",
+            "table-arrow-position"
+          ]
+        },
+        {
+          "id": "table-header-filter-defaults",
+          "description": "select 原始值默认筛选、字段类型与版本下限",
+          "valid": [
+            "table-header-filter-defaults",
+            "table-header-filter-defaults-query"
+          ],
+          "invalid": [
+            "table-header-defaults-old-version",
+            "table-header-defaults-duplicate",
+            "table-header-defaults-wrong-type",
+            "table-header-defaults-unknown-enum",
+            "table-header-defaults-remote-sharing"
+          ]
+        },
+        {
+          "id": "table-column-enums",
+          "description": "前端列枚举值唯一及版本下限",
+          "valid": [
+            "table-column-enums"
+          ],
+          "invalid": [
+            "table-enums-old-version",
+            "table-enums-duplicate-value"
+          ]
+        },
+        {
+          "id": "table-column-visibility",
+          "description": "列显隐条件与版本下限",
+          "valid": [
+            "table-column-visibility"
+          ],
+          "invalid": [
+            "table-column-old-version",
+            "table-column-row-context"
+          ]
+        },
+        {
+          "id": "table-column-search-fields",
+          "description": "列搜索须关联主、次或徽标字段",
+          "valid": [
+            "table-column-visibility"
+          ],
+          "invalid": [
+            "table-column-unowned-search"
+          ]
+        },
+        {
+          "id": "table-pinned-top",
+          "description": "独立完整查询置顶，明确字段及行域归属",
+          "valid": [
+            "table-pinned-summary-page"
+          ],
+          "invalid": [
+            "pinned-top-version",
+            "pinned-top-main",
+            "pinned-top-window",
+            "pinned-top-unknown-field",
+            "pinned-top-incomplete"
+          ]
+        },
+        {
+          "id": "table-hierarchy-selection",
+          "description": "6.70显式归属定位、父行投影、私有选择及完整父子导出",
+          "valid": [
+            "table-hierarchy-selection",
+            "table-hierarchy-lookup-param"
+          ],
+          "invalid": [
+            "hierarchy-old-version",
+            "hierarchy-parent-window",
+            "hierarchy-without-selection",
+            "hierarchy-export-fields"
+          ]
+        },
+        {
+          "id": "table-row-expansion",
+          "description": "6.44单层子表格的作用域、只读及查询分页约束",
+          "valid": [
+            "table-row-expansion-inline",
+            "table-row-expansion-query"
+          ],
+          "invalid": [
+            "row-expansion-before-6.44",
+            "row-expansion-missing-parent-key",
+            "row-expansion-query-local-page",
+            "row-expansion-unbound-parent"
+          ]
+        },
+        {
+          "id": "paged-union",
+          "description": "多来源逐行合并、显式字段投影与全局视图",
+          "valid": [
+            "paged-union-page",
+            "paged-union-branches",
+            "paged-union-generated-key"
+          ],
+          "invalid": [
+            "union-uuid-old",
+            "union-uuid-conflict",
+            "union-initial-predicate-null",
+            "union-initial-predicate-date",
+            "union-initial-predicate-numeric",
+            "union-initial-predicate-in",
+            "union-before-6.61",
+            "union-missing-source",
+            "union-missing-mapping",
+            "union-incompatible-unit",
+            "union-null-required",
+            "union-source-window",
+            "union-invalid-key",
+            "union-source-navigation-field"
+          ]
+        },
+        {
+          "id": "paged-join",
+          "description": "6.22 组合表全局视图与普通查询定义引用；记录模式成员独立消费查询参数",
+          "valid": [
+            "paged-join-page",
+            "table-number-range-page",
+            "record-join-query-params"
+          ],
+          "invalid": [
+            "paged-join-non-record-member-parameter",
+            "record-join-unknown-member-parameter",
+            "table-number-range-before-6.22",
+            "paged-join-initial-predicate-null",
+            "paged-join-initial-predicate-in",
+            "paged-join-initial-predicate-numeric",
+            "paged-join-initial-predicate-date",
+            "paged-join-before-6.22",
+            "paged-join-unknown-member",
+            "paged-join-invalid-key",
+            "paged-join-invalid-projection",
+            "paged-join-member-topn",
+            "paged-join-shared-root",
+            "paged-join-invalid-initial",
+            "table-number-range-non-numeric"
+          ]
+        },
+        {
+          "id": "table-toolbar-search",
+          "description": "表格工具区由6.21引入，搜索显式引用文本标量字段",
+          "valid": [
+            "table-toolbar-page"
+          ],
+          "invalid": [
+            "table-toolbar-before-6.21",
+            "table-search-nontext-field",
+            "table-search-duplicate-field"
+          ]
+        },
+        {
+          "id": "table-search-options",
+          "description": "6.42 静态搜索选项唯一、默认项有效且每项引用文本字段",
+          "valid": [
+            "table-search-options-page"
+          ],
+          "invalid": [
+            "table-search-options-before-6.42",
+            "table-search-options-duplicate",
+            "table-search-options-default-missing",
+            "table-search-options-nontext",
+            "table-search-options-unmapped"
+          ]
+        },
+        {
+          "id": "table-row-key",
+          "description": "多数据槽表格必须声明各槽都有且类型一致的 dimension rowKey",
+          "valid": [
+            "forecast-page"
+          ],
+          "invalid": [
+            "table-multi-slot-without-row-key",
+            "table-row-key-missing-in-slot",
+            "table-row-key-not-dimension",
+            "table-row-key-type-inconsistent"
+          ]
+        },
+        {
+          "id": "table-row-kind-field",
+          "description": "表格行类别字段必须存在且由该数据源的折叠算子写入",
+          "valid": [
+            "compute-page"
+          ],
+          "invalid": [
+            "table-row-kind-field-unknown",
+            "table-row-kind-field-not-written"
+          ]
+        },
+        {
+          "id": "table-merge-by-column",
+          "description": "mergeBy 必须是表格已声明的列字段",
+          "valid": [
+            "compute-page"
+          ],
+          "invalid": [
+            "table-merge-by-not-column"
+          ]
+        },
+        {
+          "id": "table-selection-writes",
+          "description": "单元格选择只能写入已声明的 dimension 筛选器",
+          "valid": [
+            "filters-page"
+          ],
+          "invalid": [
+            "table-selection-writes-unknown-filter",
+            "table-selection-writes-non-dimension"
+          ]
+        },
+        {
+          "id": "table-column-binding-unique",
+          "description": "表格列字段绑定不重复",
+          "valid": [
+            "query-dashboard",
+            "filters-page",
+            "compute-page",
+            "forecast-page"
+          ],
+          "invalid": [
+            "table-duplicate-column-binding"
+          ]
+        },
+        {
+          "id": "table-filterable-dimension",
+          "description": "表头筛选只能声明在 dimension 列上",
+          "valid": [
+            "filters-page"
+          ],
+          "invalid": [
+            "table-filterable-on-measure"
+          ]
+        },
+        {
+          "id": "pagination-local-inline",
+          "description": "pagination.mode='local' 只允许绑定 inline 或显式 complete 且无分页窗口的数据源",
+          "valid": [
+            "composite-page"
+          ],
+          "invalid": [
+            "pagination-local-on-query"
+          ]
+        },
+        {
+          "id": "pagination-query-source",
+          "description": "pagination.mode='query' 只允许绑定 query 数据源",
+          "valid": [
+            "query-dashboard",
+            "filters-page"
+          ],
+          "invalid": [
+            "pagination-query-on-inline"
+          ]
+        },
+        {
+          "id": "pagination-query-order",
+          "description": "查询分页要求 DQE order.offset 为 0 且 limit 为正整数",
+          "valid": [
+            "query-dashboard",
+            "filters-page"
+          ],
+          "invalid": [
+            "pagination-offset-not-zero",
+            "pagination-limit-not-positive"
+          ]
+        },
+        {
+          "id": "pagination-initial-rows",
+          "description": "查询分页的内嵌初始行必须声明 totalCount 且是完整第一页",
+          "valid": [
+            "filters-page"
+          ],
+          "invalid": [
+            "pagination-initial-without-total-count",
+            "pagination-initial-not-full-page"
+          ]
+        },
+        {
+          "id": "pagination-exclusive-source",
+          "description": "查询分页表格必须独占页面数据源",
+          "valid": [
+            "query-dashboard",
+            "filters-page"
+          ],
+          "invalid": [
+            "pagination-shared-source"
+          ]
+        }
+      ],
+      "examples": [
+        "references/page-metadata/examples/table-absolute-display-limit.json",
+        "references/page-metadata/examples/table-trend-arrows.json",
+        "references/page-metadata/examples/query-dashboard.json",
+        "references/page-metadata/examples/reference-branches-page.json",
+        "references/page-metadata/examples/reference-export-column-actions.json",
+        "references/page-metadata/examples/table-toolbar-page.json",
+        "references/page-metadata/examples/table-number-range-page.json",
+        "references/page-metadata/examples/paged-join-fixed-rank-page.json",
+        "references/page-metadata/examples/table-search-options-page.json",
+        "references/page-metadata/examples/table-row-expansion-inline.json",
+        "references/page-metadata/examples/table-row-expansion-query.json",
+        "references/page-metadata/examples/table-row-expansion-inputs.json",
+        "references/page-metadata/examples/table-row-expansion-none.json",
+        "references/page-metadata/examples/table-row-number-page.json",
+        "references/page-metadata/examples/table-scalar-fallback-page.json",
+        "references/page-metadata/examples/table-pinned-summary-page.json",
+        "references/page-metadata/examples/paged-union-page.json",
+        "references/page-metadata/examples/paged-union-branches.json",
+        "references/page-metadata/examples/table-column-visibility.json",
+        "references/page-metadata/examples/table-hierarchy-selection.json",
+        "references/page-metadata/examples/table-child-keyless.json",
+        "references/page-metadata/examples/table-hierarchy-lookup-param.json",
+        "references/page-metadata/examples/paged-join-query-page.json",
+        "references/page-metadata/examples/record-join-query-page.json",
+        "references/page-metadata/examples/table-column-enums.json",
+        "references/page-metadata/examples/period-comparison-query-page.json",
+        "references/page-metadata/examples/table-multiple-pinned-page.json",
+        "references/page-metadata/examples/table-header-filter-defaults.json",
+        "references/page-metadata/examples/table-header-filter-defaults-query.json",
+        "references/page-metadata/examples/table-header-select-all.json",
+        "references/page-metadata/examples/table-header-select-all-query.json",
+        "references/page-metadata/examples/table-default-sort.json",
+        "references/page-metadata/examples/rep-business-result.json",
+        "references/page-metadata/examples/table-header-filter-search.json",
+        "references/page-metadata/examples/conditional-compute-demand.json"
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "pointer": "#",
+      "path": "$",
+      "module": "page",
+      "required": "页面根",
+      "enums": {},
+      "facts": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "id",
+          "dataSources",
+          "sections"
+        ],
+        "title": "页面",
+        "$id": "https://metriccanvas/page/v6.119",
+        "properties": {
+          "schemaVersion": "#/properties/schemaVersion",
+          "id": "#/properties/id",
+          "meta": "#/properties/meta",
+          "layout": "#/properties/layout",
+          "layoutForm": "#/properties/layoutForm",
+          "dashboardToolbar": "#/properties/dashboardToolbar",
+          "iocHeader": "#/properties/iocHeader",
+          "strictURLInputs": "#/properties/strictURLInputs",
+          "params": "#/properties/params",
+          "dataSources": "#/properties/dataSources",
+          "filters": "#/properties/filters",
+          "detailViews": "#/properties/detailViews",
+          "sectionGroups": "#/properties/sectionGroups",
+          "defaultSectionGroup": "#/properties/defaultSectionGroup",
+          "sectionGroupParam": "#/properties/sectionGroupParam",
+          "sectionAnchors": "#/properties/sectionAnchors",
+          "sections": "#/properties/sections"
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "pointer": "#/definitions/tableColumn",
+      "path": "@tableColumn",
+      "module": "table",
+      "required": "类型/分支",
+      "enums": {},
+      "facts": {
+        "type": "object",
+        "required": [
+          "field"
+        ],
+        "properties": {
+          "pinnedTop": "#/definitions/tableColumn/properties/pinnedTop",
+          "visibleWhen": "#/definitions/tableColumn/properties/visibleWhen",
+          "kind": "#/definitions/tableColumn/properties/kind",
+          "enumValues": "#/definitions/tableColumn/properties/enumValues",
+          "field": "#/definitions/tableColumn/properties/field",
+          "unit": "#/definitions/tableColumn/properties/unit",
+          "secondaryField": "#/definitions/tableColumn/properties/secondaryField",
+          "badgeField": "#/definitions/tableColumn/properties/badgeField",
+          "dangerValues": "#/definitions/tableColumn/properties/dangerValues",
+          "selection": "#/definitions/tableColumn/properties/selection",
+          "title": "#/definitions/tableColumn/properties/title",
+          "width": "#/definitions/tableColumn/properties/width",
+          "fixed": "#/definitions/tableColumn/properties/fixed",
+          "sortable": "#/definitions/tableColumn/properties/sortable",
+          "filterable": "#/definitions/tableColumn/properties/filterable",
+          "link": "#/definitions/tableColumn/properties/link",
+          "openDetail": "#/definitions/tableColumn/properties/openDetail",
+          "navigate": "#/definitions/tableColumn/properties/navigate",
+          "navigateBySource": "#/definitions/tableColumn/properties/navigateBySource",
+          "align": "#/definitions/tableColumn/properties/align",
+          "emphasis": "#/definitions/tableColumn/properties/emphasis",
+          "visual": "#/definitions/tableColumn/properties/visual",
+          "absoluteDisplayLimit": "#/definitions/tableColumn/properties/absoluteDisplayLimit",
+          "colorRule": "#/definitions/tableColumn/properties/colorRule",
+          "arrowRule": "#/definitions/tableColumn/properties/arrowRule"
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/unit",
+      "path": "@tableColumn.unit",
+      "module": "table",
+      "required": "本分支可选",
+      "note": "主数值展示单位",
+      "enums": {},
+      "facts": {
+        "description": "主数值展示单位",
+        "allOf": [
+          "#/definitions/tableColumn/properties/unit/allOf/0"
+        ]
+      }
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/absoluteDisplayLimit",
+      "path": "@tableColumn.absoluteDisplayLimit",
+      "module": "table",
+      "required": "本分支可选",
+      "note": "原始绝对值严格超过此正数时，主数值显示 > 阈值；颜色和箭头独立",
+      "enums": {},
+      "facts": {
+        "description": "原始绝对值严格超过此正数时，主数值显示 > 阈值；颜色和箭头独立",
+        "type": "number",
+        "exclusiveMinimum": 0,
+        "maximum": 1.7976931348623157e+308
+      }
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/colorRule",
+      "path": "@tableColumn.colorRule",
+      "module": "table",
+      "required": "本分支可选",
+      "note": "数字展示位置的显式颜色规则，只支持number/money；与旧染色声明互斥。",
+      "enums": {},
+      "facts": {
+        "allOf": [
+          "#/definitions/tableColumn/properties/colorRule/allOf/0"
+        ]
+      }
+    },
+    {
+      "pointer": "#/definitions/tableColumn/properties/arrowRule",
+      "path": "@tableColumn.arrowRule",
+      "module": "table",
+      "required": "本分支可选",
+      "note": "主数值的显式箭头规则，与颜色独立；省略不显示箭头",
+      "enums": {},
+      "facts": {
+        "description": "主数值的显式箭头规则，与颜色独立；省略不显示箭头",
+        "allOf": [
+          "#/definitions/tableColumn/properties/arrowRule/allOf/0"
+        ]
+      }
+    }
+  ],
+  "unresolvedRefs": []
+}

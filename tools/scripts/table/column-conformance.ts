@@ -1,6 +1,11 @@
 import type { InvariantDefinition } from '../page-conformance-vectors';
 /** Contract vectors exercise the same complete page used in Playground. */
-export const columnInvariants: InvariantDefinition[] = [{id:'table-filter-search',description:'候选搜索显式开关与历史版本边界',valid:['table-header-filter-search'],cases:[
+export const columnInvariants: InvariantDefinition[] = [{id:'table-absolute-display-limit',description:'表格原始绝对值展示阈值及版本类型边界',valid:['table-absolute-display-limit'],cases:[
+    {case:'table-limit-old',base:'table-absolute-display-limit',expect:/由 6.119 引入/,mutate:d=>{d.schemaVersion='6.118';}},
+    {case:'table-limit-zero',base:'table-absolute-display-limit',expect:/must be > 0/,mutate:d=>{d.sections[0].components[0].props.columns[2].children[0].absoluteDisplayLimit=0;}},
+    {case:'table-limit-type',base:'table-absolute-display-limit',expect:/number/,mutate:d=>{d.sections[0].components[0].props.columns[2].children[0].absoluteDisplayLimit='500';}},
+    {case:'table-limit-text',base:'table-absolute-display-limit',expect:/只支持 number 或 money/,mutate:d=>{d.sections[0].components[0].props.columns[0].absoluteDisplayLimit=500;}}
+  ]},{id:'table-filter-search',description:'候选搜索显式开关与历史版本边界',valid:['table-header-filter-search'],cases:[
     {case:'table-filter-search-old-version',base:'table-header-filter-search',expect:/由 6.112 引入/,mutate:d=>{d.schemaVersion='6.109';}},
     {case:'table-filter-search-old-false',base:'table-header-filter-search',expect:/由 6.112 引入/,mutate:d=>{d.schemaVersion='6.109';d.sections[0].components=d.sections[0].components.slice(1,2);}},
     {case:'table-filter-search-wrong-type',base:'table-header-filter-search',expect:/boolean/,mutate:d=>{d.sections[0].components[0].props.columns[1].filterable.showSearch='yes';}},

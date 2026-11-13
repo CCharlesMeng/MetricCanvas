@@ -375,6 +375,19 @@ describe('独立本地创作 Skill', () => {
     expect(snapshot([target, path.join(isolated, 'missing-parent', 'attempt')]).status).toBe(1);
   });
 
+  it('仓外安装支持绝对值阈值示例，并拒绝非正数配置', async () => {
+    const page = JSON.parse(await readFile('pages/capabilities/table/table-absolute-display-limit.json', 'utf8'));
+    const target = path.join(isolated, `${page.id}.json`);
+    await writeFile(target, JSON.stringify(page));
+    const valid = run([target]);
+    expect(valid.status, valid.stderr).toBe(0);
+    page.sections[0].components[0].props.columns[2].children[0].absoluteDisplayLimit = 0;
+    await writeFile(target, JSON.stringify(page));
+    const invalid = run([target]);
+    expect(invalid.status).toBe(1);
+    expect(invalid.stdout).toContain('/sections/0/components/0/props/columns/2/children/0/absoluteDisplayLimit');
+  });
+
   it('独立打包校验器与当前产品对所有契约向量给出相同结果', async () => {
     const vectors: Array<{name:string;fileName:string;document:unknown;expected:unknown}> = [];
     const folders = ['contracts/metriccanvas/page/conformance/valid', 'contracts/metriccanvas/page/conformance/invalid'];

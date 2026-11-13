@@ -120,11 +120,11 @@ describe('README example guides', () => {
   });
 
   it('消费真实时间格式与枚举维护样板，保留操作、依赖与未验边界', () => {
-    const ids = ['table-time-format', 'table-column-enums', 'table-header-placeholder-last'];
+    const ids = ['table-time-format', 'table-column-enums', 'table-header-placeholder-last', 'table-absolute-display-limit'];
     const readme = 'pages/capabilities/table/README.md';
     const pages = new Map(ids.map(id => [`examples/${id}.json`, readFileSync(`pages/capabilities/table/${id}.json`, 'utf8')]));
     const index = buildExampleGuides(new Map([[readme, readFileSync(readme, 'utf8')]]), pages);
-    expect([...index.byPageId.keys()]).toEqual(['table-column-enums', 'table-time-format', 'table-header-placeholder-last']);
+    expect([...index.byPageId.keys()]).toEqual(['table-column-enums', 'table-time-format', 'table-header-placeholder-last', 'table-absolute-display-limit']);
     const time = index.byPageId.get('table-time-format')![0]!;
     const enums = index.byPageId.get('table-column-enums')![0]!;
     expect(time.components).toEqual(['times']);
@@ -137,5 +137,8 @@ describe('README example guides', () => {
     const placeholder = index.byPageId.get('table-header-placeholder-last')![0]!;
     expect(placeholder.components).toEqual(['static-true', 'dynamic-true']);
     expect(placeholder.fields.expectations.summary).toContain('`--` 均在最后');
+    const limit = index.byPageId.get('table-absolute-display-limit')![0]!;
+    expect(limit.components).toEqual(['limit-table', 'compact-limit-table']);
+    expect(limit.fields.expectations.summary).toContain('650 显示绿色 `↑ >500`');
   });
 });

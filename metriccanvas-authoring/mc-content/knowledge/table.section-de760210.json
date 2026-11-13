@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.118",
+  "schemaVersion": "6.119",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "table.section-de760210"
@@ -13,6 +13,19 @@
         "## 前端列枚举（6.80）\n\n字段列可声明 `enumValues:[{\"value\":\"0\",\"label\":\"项目商务框架\"},{\"value\":\"1\",\"label\":\"项目非框架\"}]`。它是创作期已确认的有限字典，不从当前页推断全集。数组1—1000项，value为字符串或数值，同类型原始值不得重复；数字0与字符串\"0\"分别匹配，label为非空纯文本。\n\n仅主字段的单元格及 Excel/PDF/PNG 展示使用枚举名称，不改写数据快照、查询、排序、行键、导航和筛选编码。次字段、徽标独立展示。缺失继续遵循 missingText，未知值及失配原文证据保留原文，不替换成任一已知枚举。Excel 的已知枚举导出文字标签，其余值保持原导出行为。\n\n同时声明 `filterable:{mode:\"select\"}` 时，表头直接按字典顺序显示完整静态选项，提交原始 value；不预热、查询或搜索动态候选。此字典不证明记录存在或用户具有数据权限，也不改变后端筛选能力。省略 enumValues 的列沿用动态候选。组合源的跨成员筛选限制仍生效。\n\n可观察入口 `/pages/table-column-enums`：合成编码0、1、未知9、空值分别显示两种中文标签、9、—；选择项目商务框架仅保留 B-1，导出使用中文标签。业务页 `/pages/business-decision-all-details` 使用同一映射，DQE Sim 继续返回原始编码。"
       ],
       "rules": [
+        {
+          "id": "table-absolute-display-limit",
+          "description": "表格原始绝对值展示阈值及版本类型边界",
+          "valid": [
+            "table-absolute-display-limit"
+          ],
+          "invalid": [
+            "table-limit-old",
+            "table-limit-zero",
+            "table-limit-type",
+            "table-limit-text"
+          ]
+        },
         {
           "id": "table-trend-arrows",
           "description": "表格箭头",
@@ -317,6 +330,7 @@
         }
       ],
       "examples": [
+        "references/page-metadata/examples/table-absolute-display-limit.json",
         "references/page-metadata/examples/table-trend-arrows.json",
         "references/page-metadata/examples/query-dashboard.json",
         "references/page-metadata/examples/reference-branches-page.json",

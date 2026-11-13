@@ -95,7 +95,7 @@ Angular 等路由框架应覆盖 `replaceSearch`，经自身 Router 更新 query
 6.106 起，列动作和组件动作的 `openDetail.title` 可声明固定标题或 `{parts:[固定文字,{field:当前行字段,format:可选格式},…]}`。快照与查询详情共用同一取值规则；旧 `titleField` 继续读取，与 `title` 互斥。完整声明、空值与版本边界见[详情组合标题](components/table.md#detail-composed-title)，合成场景 `/pages/partner-health-interactions` 包含组合标题的表格入口与固定标题的图表入口。
 
 
-页面协议 6.118。结构真源为本册[schema.json](schema.json)，SHA256 `b9952649ffe80e8ac2ed2def73899d205a166207969e34a3ff1efc9301f280bb`。字段表自动生成；可选不等于有默认值。
+页面协议 6.119。结构真源为本册[schema.json](schema.json)，SHA256 `2f51e336d88b44d7b755c701af9563b5c3f7e1d0acfbb1fd3d81efed3ae89b60`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

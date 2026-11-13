@@ -869,6 +869,7 @@
         "明细表 table"
       ],
       "examples": [
+        "table-absolute-display-limit",
         "table-trend-arrows",
         "query-dashboard",
         "reference-branches-page",
@@ -922,9 +923,13 @@
         "packages/data-execution/src/source-program/column-candidates.ts",
         "packages/engine/runtime/src/table/reconcile-view.ts",
         "packages/engine/runtime/src/table/session.ts",
-        "packages/page/src/table/candidate-search.ts"
+        "packages/page/src/table/candidate-search.ts",
+        "packages/engine/widgets/src/shared/absolute-display-limit.ts",
+        "packages/engine/widgets/src/components/table/rows.ts",
+        "packages/engine/runtime-ui/src/table/export/workbook-cell.ts"
       ],
       "rules": [
+        "table-absolute-display-limit",
         "table-trend-arrows",
         "table-row-key",
         "table-row-kind-field",
@@ -2347,7 +2352,8 @@
     "#/properties/schemaVersion=\"6.115\"": "IOC 页头标题支持普通 URL 导航及显式页面参数、筛选传参。",
     "6.116": "对象字段绑定省略data时固定引用main数据槽，组件数据源绑定和FieldReference约束保持。",
     "#/properties/schemaVersion=\"6.117\"": "记录关联单批超时允许超过120秒，最多180秒，旧版本保持120秒上限。",
-    "#/properties/schemaVersion=\"6.118\"": "记录组合源 auto 自动选择主查询分页或保留全部条件的完整关联；旧页面执行语义不变。"
+    "#/properties/schemaVersion=\"6.118\"": "记录组合源 auto 自动选择主查询分页或保留全部条件的完整关联；旧页面执行语义不变。",
+    "#/properties/schemaVersion=\"6.119\"": "表格数值列支持按原始绝对值展示阈值，复用颜色和箭头，保留原值。"
   },
   "branchExceptions": {
     "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/titleNavigate/properties/query/additionalProperties/oneOf/0": {
@@ -3285,6 +3291,19 @@
         "列头候选搜索（6.112）"
       ],
       "dependencies": []
+    },
+    "table.absoluteDisplayLimit": {
+      "module": "table",
+      "title": "表格绝对值展示阈值",
+      "roots": [
+        "#/definitions/tableColumn/properties/absoluteDisplayLimit"
+      ],
+      "headings": [
+        "列级绝对值展示阈值（6.119）"
+      ],
+      "dependencies": [
+        "table.trendArrows"
+      ]
     }
   },
   "authoringSemanticHeadings": {
@@ -3491,6 +3510,7 @@
       "组合源数据异常提示与导出",
       "期间比较的查询分页（6.78）",
       "自定义展示单位",
+      "列级绝对值展示阈值（6.119）",
       "列级上下箭头（6.99）",
       "时间列转换（6.102）",
       "详情组合标题（6.106）"

@@ -49,7 +49,7 @@ Dashboard 的 plain/card 内容分区可以在顶层相邻指标卡的 `layout.b
 数值与单位遵循[统一语义格式](../field-bindings-and-formats.md#numeric-value-display)：组件显式格式优先，自动金额和数量不再重复追加旧的元/万等单位标签。比率变化项使用正负号，即使 `showTrendArrows: true` 也不显示箭头；绝对变化项保留既有箭头行为。进度环图形可裁到0–100%，文字仍按真实比率格式化，不把超过100%的真实值改成100%。缺失比率默认显示 `--%`，自定义缺失文字按原声明。合成场景 `/pages/semantic-numeric-display`。
 
 
-页面协议 6.118。结构真源为本册[schema.json](../schema.json)，SHA256 `b9952649ffe80e8ac2ed2def73899d205a166207969e34a3ff1efc9301f280bb`。字段表自动生成；可选不等于有默认值。
+页面协议 6.119。结构真源为本册[schema.json](../schema.json)，SHA256 `2f51e336d88b44d7b755c701af9563b5c3f7e1d0acfbb1fd3d81efed3ae89b60`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

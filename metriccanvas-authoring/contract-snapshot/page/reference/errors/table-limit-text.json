@@ -1,0 +1,31 @@
+{
+  "case": "table-limit-text",
+  "invariant": "table-absolute-display-limit",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "absoluteDisplayLimit 只支持 number 或 money 字段",
+      "paths": [
+        "/sections/0/components/0/props/columns/0/absoluteDisplayLimit"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "columns": [
+                {
+                  "absoluteDisplayLimit": 500
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/table-limit-text.json"
+}

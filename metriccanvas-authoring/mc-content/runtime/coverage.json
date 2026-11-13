@@ -848,6 +848,11 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/table-absolute-display-limit.json",
+      "target": "product-contracts/page/conformance/valid/table-absolute-display-limit.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/valid/missing-url-inputs.json",
       "target": "product-contracts/page/conformance/valid/missing-url-inputs.json",
       "scope": "exact product contract"
@@ -1680,6 +1685,26 @@
     {
       "source": "product:page/conformance/invalid/pie-table-native-legend.json",
       "target": "product-contracts/page/conformance/invalid/pie-table-native-legend.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/table-limit-old.json",
+      "target": "product-contracts/page/conformance/invalid/table-limit-old.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/table-limit-zero.json",
+      "target": "product-contracts/page/conformance/invalid/table-limit-zero.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/table-limit-type.json",
+      "target": "product-contracts/page/conformance/invalid/table-limit-type.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/table-limit-text.json",
+      "target": "product-contracts/page/conformance/invalid/table-limit-text.json",
       "scope": "exact product contract"
     },
     {
@@ -4670,6 +4695,26 @@
     {
       "source": "product:page/reference/errors/pie-table-native-legend.json",
       "target": "references/page-metadata/errors/pie-table-native-legend.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/table-limit-old.json",
+      "target": "references/page-metadata/errors/table-limit-old.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/table-limit-zero.json",
+      "target": "references/page-metadata/errors/table-limit-zero.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/table-limit-type.json",
+      "target": "references/page-metadata/errors/table-limit-type.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/table-limit-text.json",
+      "target": "references/page-metadata/errors/table-limit-text.json",
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
@@ -7853,6 +7898,11 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/examples/table-absolute-display-limit.json",
+      "target": "references/page-metadata/examples/table-absolute-display-limit.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/examples/table-trend-arrows.json",
       "target": "references/page-metadata/examples/table-trend-arrows.json",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -8449,11 +8499,11 @@
     }
   ],
   "counts": {
-    "product": 1657,
+    "product": 1667,
     "authoring": 32,
     "modules": 36,
-    "topics": 309,
-    "nodes": 2690,
+    "topics": 311,
+    "nodes": 2691,
     "tools": 9,
     "components": 20
   },

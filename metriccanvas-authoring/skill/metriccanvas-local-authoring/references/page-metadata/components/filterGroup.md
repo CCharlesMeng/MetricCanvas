@@ -68,7 +68,7 @@ Dashboard 正文中的独立固定单选筛选组件，也可放入组合卡。�
 `/pages/chart-include-exclude` 将同一代表处字段的“包含范围”和“排除范围”两个多选下拉放在图表右上角。各自使用数据源候选和独立筛选器 id，通过 `filterBindings` 的 `=` 与 `!=` 共同约束同一次查询；图表和明细共享该查询结果。集合合成及清空规则见[维度绑定包含与排除](../queries-and-bindings.md#dimension-binding-operator)。
 
 
-页面协议 6.118。结构真源为本册[schema.json](../schema.json)，SHA256 `b9952649ffe80e8ac2ed2def73899d205a166207969e34a3ff1efc9301f280bb`。字段表自动生成；可选不等于有默认值。
+页面协议 6.119。结构真源为本册[schema.json](../schema.json)，SHA256 `2f51e336d88b44d7b755c701af9563b5c3f7e1d0acfbb1fd3d81efed3ae89b60`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

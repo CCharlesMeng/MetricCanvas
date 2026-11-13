@@ -1,7 +1,7 @@
 {
   "major": 6,
-  "minor": 118,
-  "current": "6.118",
+  "minor": 119,
+  "current": "6.119",
   "capabilities": {
     "paged-join-auto-pagination": {
       "minor": 118,
@@ -71,6 +71,11 @@
     "query-binding-when": {
       "minor": 100,
       "description": "维度查询绑定通过筛选条件暂停谓词，保留原筛选状态",
+      "legacyReadable": false
+    },
+    "table-absolute-display-limit": {
+      "minor": 119,
+      "description": "表格列按原始绝对值阈值替换主数值展示",
       "legacyReadable": false
     },
     "table-trend-arrows": {
@@ -1053,6 +1058,7 @@
     "6.115",
     "6.116",
     "6.117",
-    "6.118"
+    "6.118",
+    "6.119"
   ]
 }

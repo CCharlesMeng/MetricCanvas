@@ -1,3 +1,4 @@
+import { absoluteDisplayText } from '../../shared/absolute-display-limit';
 import { appendDisplayUnit } from '../../shared/display-unit';
 import { tablePinnedSlots, tableLeafColumns, restoreCellFallbacks, rowCellFallback, pinnedSnapshotError, type TableProps, type TableColumn, type FieldBinding, type FieldValue, type Row } from '@metriccanvas/page/internal';
 import type { NamedDataSlots } from '../../shared/component-data';
@@ -112,7 +113,7 @@ export function alignedFallback(binding: FieldBinding, data: NamedDataSlots, row
   const resolved = resolveField(binding, data);
   return rowCellFallback(row.bySlot[resolved.data], resolved.field);
 }
-export function alignedCellText(binding: FieldBinding, data: NamedDataSlots, row: AlignedTableRow, enumValues?:TableColumn['enumValues'], unit?: string): string {
+export function alignedCellText(binding: FieldBinding, data: NamedDataSlots, row: AlignedTableRow, enumValues?:TableColumn['enumValues'], unit?: string, absoluteDisplayLimit?: number): string {
   const resolved = resolveField(binding, data);
   if (row.kind === 'pinnedTop' && resolved.data === '__unbound') return '';
   const fallback = alignedFallback(binding, data, row);
@@ -121,6 +122,8 @@ export function alignedCellText(binding: FieldBinding, data: NamedDataSlots, row
   if (value == null && (data[resolved.data]?.sourceStatus === 'loading' || data[resolved.data]?.sourceStatus === 'error' || data[resolved.data]?.progress?.pendingFields.includes(resolved.field))) return '--';
   const enumLabel = tableEnumLabel(value, enumValues);
   if (enumLabel !== undefined) return enumLabel;
+  const limited = absoluteDisplayText(value, absoluteDisplayLimit);
+  if (limited !== undefined) return appendDisplayUnit(limited, value, unit);
   const text = formatTableCell(value, resolved.format, resolved.missingText,
     resolved.definition && 'unit' in resolved.definition ? resolved.definition.unit : undefined);
   return appendDisplayUnit(text, value, unit, resolved.format);
@@ -134,7 +137,7 @@ export function alignedCellArrow(column: TableColumn, data: NamedDataSlots, row:
   if (tableEnumLabel(value, column.enumValues) !== undefined) return '';
   if (resolved.format && value !== undefined && value !== null && !compatibleTableFormat(value, resolved.format)) return '';
   if (finiteNumber(value) === undefined) return '';
-  const direction = valuePolarity(value, resolved.format);
+  const direction = valuePolarity(value, absoluteDisplayText(value, column.absoluteDisplayLimit) === undefined ? resolved.format : undefined);
   const arrow = column.arrowRule.mode === 'fixed' ? column.arrowRule.arrow
     : direction === 'neutral' ? 'none' : column.arrowRule[direction];
   return { up: '↑', down: '↓', none: '' }[arrow];

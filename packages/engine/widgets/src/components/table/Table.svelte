@@ -606,10 +606,17 @@
                 {@const color = tableValueColor(rawValue, column, resolved.format)}
                 {@const trendArrow = alignedCellArrow(column, data, row)}
                 {#snippet arrowGlyph()}
-                  <span class="cell-trend-arrow" aria-label={trendArrow === '↑' ? '上箭头' : '下箭头'}>{trendArrow}</span>
+                  <span class="cell-trend-arrow" role="img" aria-label={trendArrow === '↑' ? '上箭头' : '下箭头'}>
+                    <span class="cell-trend-arrow-text">{trendArrow}</span>
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M8 14V2M3 7l5-5 5 5" transform={trendArrow === '↓' ? 'rotate(180 8 8)' : undefined} />
+                    </svg>
+                  </span>
                 {/snippet}
                 {#snippet primaryValue()}
-                  {#if trendArrow && column.arrowRule?.position !== 'after'}{@render arrowGlyph()}{' '}{/if}{alignedCellText(column.field, data, row, column.enumValues, column.unit)}{#if trendArrow && column.arrowRule?.position === 'after'}{' '}{@render arrowGlyph()}{/if}
+                  <span class="cell-trend-value" class:with-trend-arrow={!!trendArrow}>
+                    {#if trendArrow && column.arrowRule?.position !== 'after'}{@render arrowGlyph()}{' '}{/if}<span class="cell-trend-text">{alignedCellText(column.field, data, row, column.enumValues, column.unit, column.absoluteDisplayLimit)}</span>{#if trendArrow && column.arrowRule?.position === 'after'}{' '}{@render arrowGlyph()}{/if}
+                  </span>
                 {/snippet}
                 {@const semanticPresentation = semanticHtmlFieldPresentation(
                   resolved,
@@ -723,7 +730,7 @@
                         <span class="cell-primary-value">
                           {#if typeof rawValue === 'string' && resolved.definition?.type === 'string'}
                             <OverflowCellText
-                              text={alignedCellText(column.field, data, row, column.enumValues, column.unit)}
+                              text={alignedCellText(column.field, data, row, column.enumValues, column.unit, column.absoluteDisplayLimit)}
                               enabled={interactive && !staticExport}
                             />
                           {:else}
@@ -1073,6 +1080,34 @@
   }
   td.linkable {
     cursor: pointer;
+  }
+  .cell-trend-value.with-trend-arrow {
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle;
+    gap: 0.25em;
+    line-height: 1;
+  }
+  .selectable-cell .cell-trend-value.with-trend-arrow,
+  .link-cell .cell-trend-value.with-trend-arrow {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .cell-trend-arrow {
+    position: relative;
+    display: inline-flex;
+    flex: none;
+    width: 1em;
+    height: 1em;
+  }
+  .cell-trend-arrow svg { display: block; width: 100%; height: 100%; }
+  .cell-trend-arrow-text {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
   .cell-stack {
     display: inline-flex;

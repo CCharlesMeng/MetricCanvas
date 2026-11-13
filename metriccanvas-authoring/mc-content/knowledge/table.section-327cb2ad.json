@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.118",
+  "schemaVersion": "6.119",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "table.section-327cb2ad"
@@ -13,6 +13,19 @@
         "## 详情组合标题（6.106）\n\n列 `openDetail` 与组件 `actions[].openDetail` 共用 `title`，支持固定字符串或有序片段：\n\n```json\n{\n  \"surface\": \"modal\",\n  \"title\": { \"parts\": [\n    { \"field\": \"region\" }, \" · 伙伴声音闭环率 · 当前值 \",\n    { \"field\": \"perception-feedback\", \"format\": \"number-1\" }, \" · 明细\"\n  ] },\n  \"view\": \"details\"\n}\n```\n\n`parts` 为 1–64 个固定字符串或当前行字段引用，按声明顺序直接拼接，分隔符由作者明确填写。`field` 为入口组件 `main` 数据槽中的页面字段 id，可选 `format` 沿用封闭格式预设；不读取其他数据槽或页面数据源。不执行表达式、HTML 或脚本；缺失值显示 `--`，零值和布尔值保留。该标题针对点击行求值，排序或翻页后仍使用实际点击行；快照与查询详情均适用。\n\n旧 `titleField` 继续兼容；`title` 与 `titleField` 同时声明时报错。两者均省略时沿用组件标题或“详情”。新 `title` 需 6.106，旧版本不能使用新声明。\n\n完整合成场景 `/pages/partner-health-interactions` 从业务页复用得分列和弹窗标题声明，以 `sumFields` 在前端计算总分；本地排序先处理完整计算结果，再分页，点击排序不发起 DQE 查询。业务入口 `/pages/partner-health` 的地区部和代表处表格沿用该本地路径；真实业务数据须由 DQE 提供。"
       ],
       "rules": [
+        {
+          "id": "table-absolute-display-limit",
+          "description": "表格原始绝对值展示阈值及版本类型边界",
+          "valid": [
+            "table-absolute-display-limit"
+          ],
+          "invalid": [
+            "table-limit-old",
+            "table-limit-zero",
+            "table-limit-type",
+            "table-limit-text"
+          ]
+        },
         {
           "id": "table-trend-arrows",
           "description": "表格箭头",
@@ -317,6 +330,7 @@
         }
       ],
       "examples": [
+        "references/page-metadata/examples/table-absolute-display-limit.json",
         "references/page-metadata/examples/table-trend-arrows.json",
         "references/page-metadata/examples/query-dashboard.json",
         "references/page-metadata/examples/reference-branches-page.json",

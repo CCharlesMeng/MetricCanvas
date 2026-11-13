@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.118",
+  "schemaVersion": "6.119",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "table.section-60cced4d"
@@ -13,6 +13,19 @@
         "## 十二行可视高度\n\n所有表格（含普通、`forecastMatrix`、`embedded`、`reportCompact`、Tab、详情及行内子表）默认最多显示十二行数据的高度，不足十二行时按实际内容收缩；更多数据在表格内部纵向滚动，表头保持可见，分页条留在滚动区外。多级表头与独立置顶汇总行单独计高，不占十二行数据名额；按实际渲染行高计算，长文本换行和窗口宽度变化后重新测量。展开子表在父表的可视区域内滚动，不继续撑高父表。\n\n无需新增页面字段或修改既有 JSON。分页大小和查询窗口保持原语义：每页可返回二十或五十条，十二行只限制可视高度，不截断数据、不额外请求或改变总数。搜索、筛选和翻页后的新行集重新计算高度。PDF/PNG 静态导出展开全部应导出行，Excel 的数据范围保持原有契约。\n\n入口 `/pages/table-twelve-row-viewport` 使用内联合成数据，覆盖四种外观、三层表头、长内容、二十条分页和十条短表。启动、操作及可观察结果见 pages/capabilities/table/README.md；不涉及真实 DQE/Relay。"
       ],
       "rules": [
+        {
+          "id": "table-absolute-display-limit",
+          "description": "表格原始绝对值展示阈值及版本类型边界",
+          "valid": [
+            "table-absolute-display-limit"
+          ],
+          "invalid": [
+            "table-limit-old",
+            "table-limit-zero",
+            "table-limit-type",
+            "table-limit-text"
+          ]
+        },
         {
           "id": "table-trend-arrows",
           "description": "表格箭头",
@@ -317,6 +330,7 @@
         }
       ],
       "examples": [
+        "references/page-metadata/examples/table-absolute-display-limit.json",
         "references/page-metadata/examples/table-trend-arrows.json",
         "references/page-metadata/examples/query-dashboard.json",
         "references/page-metadata/examples/reference-branches-page.json",

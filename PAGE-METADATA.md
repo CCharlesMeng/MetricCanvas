@@ -1,5 +1,7 @@
 # MetricCanvas 页面元数据规范
 
+6.119：表格字段列新增可选 `absoluteDisplayLimit`，按原始绝对值严格超限将主数值显示为 `> 阈值`；颜色、箭头及位置复用既有规则。原值、计算与排序保留，省略不影响旧页面。字段净增1，阈值判断及呈现由引擎承担。见[列级绝对值展示阈值](docs/page-metadata/components/table.md#table-absolute-display-limit)，合成入口 `/pages/table-absolute-display-limit`。
+
 6.118：记录组合源可声明 `pagination:{mode:"auto",pageSize:10}`。引擎在主查询可独立决定当前页时按需查询并渐进补列，否则完整关联，保留全部来源条件；旧模式不变。复用 records 的批次、字节和单批超时配置，无新增字段。见[自动分页](docs/page-metadata/data-sources.md#paged-join-auto-pagination)，业务验收 `/pages/rep-business-result`。
 
 条件显隐现按实际消费字段裁剪 `joinAggregate` 依赖：隐藏列／系列的关联输出没有其他消费者、计算或查询视图使用时，本轮不执行该关联及其独占查询，不参与主源状态传播；仍被消费的依赖保持严格失败。屏幕、单次执行与冻结导出共用规则，页面声明不变，无新增字段或版本。见[按需关联计算](docs/page-metadata/compute.md#conditional-compute-demand)，合成入口 `/pages/conditional-compute-demand`。

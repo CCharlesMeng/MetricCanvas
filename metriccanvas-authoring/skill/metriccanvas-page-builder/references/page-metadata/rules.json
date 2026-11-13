@@ -196,6 +196,19 @@
       ]
     },
     {
+      "id": "table-absolute-display-limit",
+      "description": "表格原始绝对值展示阈值及版本类型边界",
+      "valid": [
+        "table-absolute-display-limit"
+      ],
+      "invalid": [
+        "table-limit-old",
+        "table-limit-zero",
+        "table-limit-type",
+        "table-limit-text"
+      ]
+    },
+    {
       "id": "table-filter-search",
       "description": "候选搜索显式开关与历史版本边界",
       "valid": [

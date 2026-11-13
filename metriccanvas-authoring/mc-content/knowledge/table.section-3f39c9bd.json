@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.118",
+  "schemaVersion": "6.119",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "table.section-3f39c9bd"
@@ -13,6 +13,19 @@
         "## 完整本地结果的默认排序（6.108）\n\n`props.defaultSort: [{\"field\":\"total-score\",\"direction\":\"desc\"}]` 声明表格实例的初始排序。规则使用最终页面字段，支持计算字段与多字段优先级；字段须属于已声明的静态 main 列，字段不可重复，数组不能为空。方向为 `asc` / `desc`。无需为了默认排序额外声明 `sortable`；只在需要用户点击列头排序时启用该列入口。\n\n引擎在完整结果计算完成后排序，再做本地分页；null 沿现有规则排末尾，同值保留输入顺序。声明适用于 inline 和明确 `resultScope:\"complete\"`、无查询窗口的普通 query；查询分页及 pagedJoin/pagedUnion 不接受本字段，沿用查询或组合源的默认排序。\n\n默认值只初始化表格会话，同源表格各自独立；用户排序、清空、翻页、普通业务筛选及显式恢复的视图不会重复初始化。列头沿现有无排序→升序→降序→清空循环，清空后使用输入顺序。导出冻结当前已提交排序。省略字段保留既有行为。\n\n完整合成场景 `/pages/table-default-sort` 的 `descending` / `ascending` 两张表共享计算源 `scores`，分别默认降序和升序、每页 10 行；用于验证计算后排序、连续分页与实例隔离，不连接真实服务。业务页 `/pages/partner-health` 的两张健康度表默认总分降序。"
       ],
       "rules": [
+        {
+          "id": "table-absolute-display-limit",
+          "description": "表格原始绝对值展示阈值及版本类型边界",
+          "valid": [
+            "table-absolute-display-limit"
+          ],
+          "invalid": [
+            "table-limit-old",
+            "table-limit-zero",
+            "table-limit-type",
+            "table-limit-text"
+          ]
+        },
         {
           "id": "table-trend-arrows",
           "description": "表格箭头",
@@ -317,6 +330,7 @@
         }
       ],
       "examples": [
+        "references/page-metadata/examples/table-absolute-display-limit.json",
         "references/page-metadata/examples/table-trend-arrows.json",
         "references/page-metadata/examples/query-dashboard.json",
         "references/page-metadata/examples/reference-branches-page.json",

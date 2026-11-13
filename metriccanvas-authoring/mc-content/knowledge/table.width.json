@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.118",
+  "schemaVersion": "6.119",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "table.width"
@@ -13,6 +13,19 @@
         "## 单元格溢出省略与悬浮提示\n\n交互表格的普通 `string` 字段主值按实际列宽单行展示，超出宽度时以 `…` 省略。鼠标悬停在被截断的文本上，tooltip 展示完整原文；没有发生溢出时不弹提示。取消固定字符数阈值，不提供“更多”或点击展开。键盘聚焦文本同样显示提示，Esc、移出或表格滚动关闭；鼠标可以移入提示查看、选择或滚动长文本。\n\n提示使用白底深色文字，在单元格右侧垂直居中显示；靠近窗口边缘时向内收齐到视口右边界，不翻转到单元格左侧。保留原文换行，按纯文本展示，不执行 HTML；进入浏览器顶层避免表格滚动容器裁剪，宽高限制在视口内，长内容可在提示中滚动。文本变化或组件销毁时关闭旧提示。\n\n该行为由引擎统一处理，不按字段名称识别审批意见，也不增加页面声明。普通、`embedded`、`forecastMatrix`、`reportCompact`、详情与行内子表采用相同规则。已有选择、导航和详情入口保留原有点击行为，受控语义 HTML、数值、次字段与徽标不参与本次省略。\n\n省略只改变屏幕呈现，不截断页面数据源或查询结果，排序、筛选、搜索和 Excel 继续消费完整值。PDF/PNG 等静态导出直接展示全文且没有 tooltip。\n\n可观察入口：`/pages/table-long-text`，使用内联合成审批意见，覆盖四种外观、短文本、空值、不同长度、组合 Emoji 和多行原文。操作及启动方式见 `pages/capabilities/table/README.md`，不代表真实 DQE/Relay 验收。"
       ],
       "rules": [
+        {
+          "id": "table-absolute-display-limit",
+          "description": "表格原始绝对值展示阈值及版本类型边界",
+          "valid": [
+            "table-absolute-display-limit"
+          ],
+          "invalid": [
+            "table-limit-old",
+            "table-limit-zero",
+            "table-limit-type",
+            "table-limit-text"
+          ]
+        },
         {
           "id": "table-trend-arrows",
           "description": "表格箭头",
@@ -317,6 +330,7 @@
         }
       ],
       "examples": [
+        "references/page-metadata/examples/table-absolute-display-limit.json",
         "references/page-metadata/examples/table-trend-arrows.json",
         "references/page-metadata/examples/query-dashboard.json",
         "references/page-metadata/examples/reference-branches-page.json",
@@ -371,7 +385,7 @@
           "sections"
         ],
         "title": "页面",
-        "$id": "https://metriccanvas/page/v6.118",
+        "$id": "https://metriccanvas/page/v6.119",
         "properties": {
           "schemaVersion": "#/properties/schemaVersion",
           "id": "#/properties/id",
@@ -428,6 +442,7 @@
           "align": "#/definitions/tableColumn/properties/align",
           "emphasis": "#/definitions/tableColumn/properties/emphasis",
           "visual": "#/definitions/tableColumn/properties/visual",
+          "absoluteDisplayLimit": "#/definitions/tableColumn/properties/absoluteDisplayLimit",
           "colorRule": "#/definitions/tableColumn/properties/colorRule",
           "arrowRule": "#/definitions/tableColumn/properties/arrowRule"
         },

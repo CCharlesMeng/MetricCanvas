@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.118",
-  "schemaSha256": "b9952649ffe80e8ac2ed2def73899d205a166207969e34a3ff1efc9301f280bb",
+  "schemaVersion": "6.119",
+  "schemaSha256": "2f51e336d88b44d7b755c701af9563b5c3f7e1d0acfbb1fd3d81efed3ae89b60",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -708,6 +708,7 @@
         "明细表 table"
       ],
       "examples": [
+        "table-absolute-display-limit",
         "table-trend-arrows",
         "query-dashboard",
         "reference-branches-page",
@@ -744,6 +745,7 @@
         "conditional-compute-demand"
       ],
       "rules": [
+        "table-absolute-display-limit",
         "table-trend-arrows",
         "table-row-key",
         "table-row-kind-field",
@@ -1355,7 +1357,8 @@
         "6.115",
         "6.116",
         "6.117",
-        "6.118"
+        "6.118",
+        "6.119"
       ]
     },
     {
@@ -15264,6 +15267,12 @@
       ]
     },
     {
+      "pointer": "#/definitions/tableColumn/properties/absoluteDisplayLimit",
+      "path": "@tableColumn.absoluteDisplayLimit",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
       "pointer": "#/definitions/tableColumn/properties/colorRule",
       "path": "@tableColumn.colorRule",
       "required": "本分支可选",
@@ -22259,8 +22268,8 @@
     {
       "schemaPointer": "#/definitions/arrowRule/oneOf/1",
       "module": "components/table.md",
-      "file": "examples/table-trend-arrows.json",
-      "pointer": "#/sections/0/components/0/props/columns/1/children/0/arrowRule"
+      "file": "examples/table-absolute-display-limit.json",
+      "pointer": "#/sections/0/components/0/props/columns/2/children/0/arrowRule"
     },
     {
       "schemaPointer": "#/definitions/tableColumnNode/anyOf/1",
@@ -22971,5 +22980,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "a370f028b9d17418964f432851982f3da9c8eda4eba429bd60f9e82fb1afee93"
+  "semanticSourceDigest": "f147280d0c0f7388370c125749ae3448ab6dfb88ddde92f62771f9d124766bbe"
 }

@@ -25,7 +25,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 118;
+const CURRENT_MINOR = 119;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -105,6 +105,7 @@ export const pageCapabilities = {
   'bar-series-average': {minor:103,legacyReadable:false,description:'柱状图字段系列前端求均值，并在每个原类别显示均值柱',usedAt:barSeriesAveragePaths},
   'object-period-binding': {minor:101,legacyReadable:false,description:'对象查询默认按周期类型和账期消费期间，保留显式字段自定义',usedAt:document=>dataSourcePaths(document,data=>usesObjectPeriodBinding(record(data.source)?.query)).map(path=>path+'/source/query')},
   'query-binding-when': {minor:100,legacyReadable:false,description:'维度查询绑定通过筛选条件暂停谓词，保留原筛选状态',usedAt:document=>dataSourcePaths(document,data=>bindingWhenUsed(record(record(data.source)?.query))).map(path=>path+'/source/query')},
+  'table-absolute-display-limit': { minor:119, legacyReadable:false, description:'表格列按原始绝对值阈值替换主数值展示', usedAt:document=>columnPropertyPaths(document, 'absoluteDisplayLimit') },
   'table-trend-arrows': { minor:99, legacyReadable:false, description:'表格列独立声明固定或正负映射箭头规则', usedAt:document=>columnPropertyPaths(document, 'arrowRule') },
 
   'time-value-format': {minor:102,legacyReadable:false,description:'时间格式串按固定UTC+8统一展示与导出',usedAt:timeFormatPaths},

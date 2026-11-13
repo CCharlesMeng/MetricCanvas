@@ -511,6 +511,24 @@ Excel 使用“父子表格”一张数据工作表，按页面的一层父子�
 
 6.94 起字段列可声明 `unit`，例如 `{"field":"duration","unit":"天"}`。声明、单位与缩放组合、缺失及导出规则见[展示单位](../field-bindings-and-formats.md#display-unit)。场景 `/pages/chart-table-unit`。
 
+<a id="table-absolute-display-limit"></a>
+
+## 列级绝对值展示阈值（6.119）
+
+字段列可声明可选 `absoluteDisplayLimit`，只支持 `number` / `money` 字段，值必须为有限正数。引擎在舍入和缩放前，按原始值的绝对值严格大于阈值判断；超过时把主数值替换为 `> 阈值`，两侧都不带正负号或中文。不超过时保留原格式，省略配置沿用旧行为。
+
+```json
+{"field":"change","absoluteDisplayLimit":500,"colorRule":{"mode":"sign","positive":"green","negative":"red"},"arrowRule":{"mode":"sign","positive":"up","negative":"down"}}
+```
+
+这个列声明将 `650` 显示为绿色 `↑ > 500`，`-650` 显示为红色 `↓ > 500`；`500`、`-500` 不触发替换。`500.0001` 触发，`499.9999` 不触发，即使普通格式将两者都舍入为500。阈值不缩放、不继承格式预设中的百分号或货币后缀；显式列 `unit` 仍按原规则追加，例如 `> 500 天`。阈值按数据基本单位填写，不能用显示缩放后的数值代替。
+
+颜色、箭头及箭头位置继续由独立的 `colorRule` / `arrowRule` 决定；配置阈值本身不自动添加颜色或箭头。超限值按原始正负决定 sign 分支，避免小阈值被格式舍入成零后丢失方向。未超限值仍遵守原有舍入判断。枚举标签优先；缺失值、异常回退原文保持原行为。规则适用于列组、置顶汇总和展开子表的主字段，不继承至次字段和徽标。
+
+只改变单元格呈现，不改写查询、数据快照、计算、排序、筛选或导航原值。PNG/PDF 共用屏幕呈现。Excel 超限格保留原始数字及数值类型，以冻结数字格式呈现相同的阈值文字、箭头位置和红绿颜色；导出后编辑该格数值不会重新计算冻结展示。未超限格沿用现有数字格式。
+
+完整 inline 合成场景 `/pages/table-absolute-display-limit` 覆盖正负超限、严格边界、舍入边界、零/缺失、列组、紧凑表格、原值排序与 Excel。无需参数或 DQE，不代表真实 DQE/Relay 验收。
+
 <a id="table-trend-arrows"></a>
 
 ## 列级上下箭头（6.99）
@@ -529,6 +547,8 @@ sample 需要含数值字段 durationChange。这个例子正值显示红色 `�
 | 单侧显示 | `{"mode":"sign","positive":"none","negative":"down"}` | 正值无箭头，负值 ↓ |
 | 固定箭头 | `{"mode":"fixed","arrow":"up"}` | 所有有效数字（含零和负值）显示 ↑ |
 | 显式隐藏 | `{"mode":"fixed","arrow":"none"}` | 不显示箭头 |
+
+屏幕箭头使用随文字颜色变化的矢量图形，与主数值在同一行垂直居中，不依赖字体中箭头字形的基线；导出文字仍使用 ↑ / ↓。
 
 `arrowRule.position` 可选 `before` / `after`，省略默认 `before`，两种 mode 均适用。默认显示 `↓ +2.5 天`；声明 `"position":"after"` 显示 `+2.5 天 ↓`。位置只影响箭头与主数值（含单位）的顺序，不改变映射和颜色，隐藏箭头时不保留多余间隔。置顶汇总、列组及子表复用列规则。
 
@@ -568,7 +588,7 @@ sign 模式的零、负零及缺失不显示箭头；fixed 模式与固定颜色
 完整合成场景 `/pages/partner-health-interactions` 从业务页复用得分列和弹窗标题声明，以 `sumFields` 在前端计算总分；本地排序先处理完整计算结果，再分页，点击排序不发起 DQE 查询。业务入口 `/pages/partner-health` 的地区部和代表处表格沿用该本地路径；真实业务数据须由 DQE 提供。
 
 
-页面协议 6.118。结构真源为本册[schema.json](../schema.json)，SHA256 `b9952649ffe80e8ac2ed2def73899d205a166207969e34a3ff1efc9301f280bb`。字段表自动生成；可选不等于有默认值。
+页面协议 6.119。结构真源为本册[schema.json](../schema.json)，SHA256 `2f51e336d88b44d7b755c701af9563b5c3f7e1d0acfbb1fd3d81efed3ae89b60`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -2934,6 +2954,16 @@ Schema位置：`#/definitions/tableColumn/properties/visual`。
 | "rateBar" | 在单元格内用比例条呈现。 |
 | "signed" | 显示正负语义的数值呈现。 |
 
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f6162736f6c757465446973706c61794c696d6974"></a>
+
+### `@tableColumn.absoluteDisplayLimit`
+
+Schema位置：`#/definitions/tableColumn/properties/absoluteDisplayLimit`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "number" | 本分支可选 | exclusiveMinimum=0; maximum=1.7976931348623157e+308 | Schema未设默认；装配/运行时默认见语义说明 | 原始绝对值严格超过此正数时，主数值显示 > 阈值；颜色和箭头独立 |
+
 <a id="schema-232f646566696e6974696f6e732f7461626c65436f6c756d6e2f70726f706572746965732f636f6c6f7252756c65"></a>
 
 ### `@tableColumn.colorRule`
@@ -4182,6 +4212,7 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/actions
 
 ## 语义规则与反例（生成）
 
+- `table-absolute-display-limit`：表格原始绝对值展示阈值及版本类型边界。反例：[table-limit-old](../errors/table-limit-old.json)、[table-limit-zero](../errors/table-limit-zero.json)、[table-limit-type](../errors/table-limit-type.json)、[table-limit-text](../errors/table-limit-text.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `table-trend-arrows`：表格箭头。反例：[table-arrow-old](../errors/table-arrow-old.json)、[table-arrow-text](../errors/table-arrow-text.json)、[table-arrow-type](../errors/table-arrow-type.json)、[table-arrow-position](../errors/table-arrow-position.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `table-row-key`：多数据槽表格必须声明各槽都有且类型一致的 dimension rowKey。反例：[table-multi-slot-without-row-key](../errors/table-multi-slot-without-row-key.json)、[table-row-key-missing-in-slot](../errors/table-row-key-missing-in-slot.json)、[table-row-key-not-dimension](../errors/table-row-key-not-dimension.json)、[table-row-key-type-inconsistent](../errors/table-row-key-type-inconsistent.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `table-row-kind-field`：表格行类别字段必须存在且由该数据源的折叠算子写入。反例：[table-row-kind-field-unknown](../errors/table-row-kind-field-unknown.json)、[table-row-kind-field-not-written](../errors/table-row-kind-field-not-written.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
@@ -4212,6 +4243,7 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/actions
 - [reportCompact](../examples/component-table-reportCompact.json)：独立完整页面，保留必要语义依赖。
 - [embedded](../examples/component-table-embedded.json)：独立完整页面，保留必要语义依赖。
 - [forecastMatrix](../examples/component-table-forecastMatrix.json)：独立完整页面，保留必要语义依赖。
+- [table-absolute-display-limit](../examples/table-absolute-display-limit.json)：完整合法页面；查询仅为静态契约证据。
 - [table-trend-arrows](../examples/table-trend-arrows.json)：完整合法页面；查询仅为静态契约证据。
 - [query-dashboard](../examples/query-dashboard.json)：完整合法页面；查询仅为静态契约证据。
 - [reference-branches-page](../examples/reference-branches-page.json)：完整合法页面；查询仅为静态契约证据。
@@ -4299,7 +4331,7 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/actions
 - `#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/query/additionalProperties/oneOf/1`：[合法完整页面](../examples/paged-union-branches.json)，JSON Pointer `#/sections/0/components/0/props/columns/0/navigateBySource/cases/contract/query/route-label`。
 - `#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/query/additionalProperties/oneOf/2`：[合法完整页面](../examples/paged-union-branches.json)，JSON Pointer `#/sections/0/components/0/props/columns/0/navigateBySource/cases/contract/query/from`。
 - `#/definitions/arrowRule/oneOf/0`：[合法完整页面](../examples/table-trend-arrows.json)，JSON Pointer `#/sections/0/components/0/props/columns/2/arrowRule`。
-- `#/definitions/arrowRule/oneOf/1`：[合法完整页面](../examples/table-trend-arrows.json)，JSON Pointer `#/sections/0/components/0/props/columns/1/children/0/arrowRule`。
+- `#/definitions/arrowRule/oneOf/1`：[合法完整页面](../examples/table-absolute-display-limit.json)，JSON Pointer `#/sections/0/components/0/props/columns/2/children/0/arrowRule`。
 - `#/definitions/tableColumnNode/anyOf/1`：[合法完整页面](../examples/reference-branches-page.json)，JSON Pointer `#/sections/0/components/5/props/columns/0`。
 - `#/definitions/tableComponent/properties/props/properties/pagination/oneOf/0`：[合法完整页面](../examples/reference-branches-page.json)，JSON Pointer `#/sections/0/components/5/props/pagination`。
 - `#/definitions/tableComponent/properties/props/properties/pagination/oneOf/1`：[合法完整页面](../examples/reference-branches-page.json)，JSON Pointer `#/sections/0/components/6/props/pagination`。

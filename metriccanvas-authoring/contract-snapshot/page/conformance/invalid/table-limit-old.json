@@ -1,0 +1,213 @@
+{
+  "case": "table-limit-old",
+  "invariant": "table-absolute-display-limit",
+  "input": {
+    "schemaVersion": "6.118",
+    "id": "table-absolute-display-limit",
+    "layout": "dashboard",
+    "meta": {
+      "title": "表格绝对值阈值 · inline 合成数据"
+    },
+    "dataSources": {
+      "sample": {
+        "fields": {
+          "label": {
+            "type": "string",
+            "role": "dimension",
+            "label": "情况"
+          },
+          "raw": {
+            "type": "number",
+            "role": "measure",
+            "nullable": true
+          },
+          "change": {
+            "type": "number",
+            "role": "measure",
+            "nullable": true
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "label": "正值超限",
+              "raw": 650,
+              "change": 650
+            },
+            {
+              "label": "负值超限",
+              "raw": -650,
+              "change": -650
+            },
+            {
+              "label": "正边界",
+              "raw": 500,
+              "change": 500
+            },
+            {
+              "label": "负边界",
+              "raw": -500,
+              "change": -500
+            },
+            {
+              "label": "略超正边界",
+              "raw": 500.0001,
+              "change": 500.0001
+            },
+            {
+              "label": "略超负边界",
+              "raw": -500.0001,
+              "change": -500.0001
+            },
+            {
+              "label": "略低正边界",
+              "raw": 499.9999,
+              "change": 499.9999
+            },
+            {
+              "label": "略低负边界",
+              "raw": -499.9999,
+              "change": -499.9999
+            },
+            {
+              "label": "零",
+              "raw": 0,
+              "change": 0
+            },
+            {
+              "label": "缺失",
+              "raw": null,
+              "change": null
+            }
+          ]
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "main",
+        "components": [
+          {
+            "id": "limit-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "sample"
+            },
+            "props": {
+              "title": "超过500时仅显示阈值，原值用于排序",
+              "toolbar": {
+                "export": {
+                  "filename": "绝对值阈值",
+                  "format": "xlsx"
+                }
+              },
+              "columns": [
+                {
+                  "title": "情况",
+                  "field": "label",
+                  "width": 96
+                },
+                {
+                  "title": "原始值",
+                  "field": "raw",
+                  "sortable": true,
+                  "width": 140
+                },
+                {
+                  "kind": "group",
+                  "id": "limits",
+                  "title": "绝对值阈值500",
+                  "children": [
+                    {
+                      "title": "阈值与方向",
+                      "field": {
+                        "data": "main",
+                        "field": "change",
+                        "format": "number-1-signed"
+                      },
+                      "absoluteDisplayLimit": 500,
+                      "colorRule": {
+                        "mode": "sign",
+                        "positive": "green",
+                        "negative": "red"
+                      },
+                      "arrowRule": {
+                        "mode": "sign",
+                        "positive": "up",
+                        "negative": "down"
+                      },
+                      "sortable": true,
+                      "width": 140
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "variants",
+        "components": [
+          {
+            "id": "compact-limit-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "sample"
+            },
+            "props": {
+              "title": "紧凑表格",
+              "variant": "reportCompact",
+              "columns": [
+                {
+                  "field": "label",
+                  "width": 96
+                },
+                {
+                  "title": "阈值与方向",
+                  "field": {
+                    "data": "main",
+                    "field": "change",
+                    "format": "number-1-signed"
+                  },
+                  "absoluteDisplayLimit": 500,
+                  "colorRule": {
+                    "mode": "sign",
+                    "positive": "green",
+                    "negative": "red"
+                  },
+                  "arrowRule": {
+                    "mode": "sign",
+                    "positive": "up",
+                    "negative": "down"
+                  },
+                  "sortable": true,
+                  "width": 140
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns/2/children/0/absoluteDisplayLimit",
+      "message": "表格列按原始绝对值阈值替换主数值展示 由 6.119 引入，文档声明的是 6.118"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/1/components/0/props/columns/1/absoluteDisplayLimit",
+      "message": "表格列按原始绝对值阈值替换主数值展示 由 6.119 引入，文档声明的是 6.118"
+    }
+  ]
+}

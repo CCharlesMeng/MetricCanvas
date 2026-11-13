@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "3b0ad50e2c6caad864769ba868af61e6a9a86e77de122a46a8d4b18e4735c564",
+  "sha256": "26b9676de273a043e76254eea711dade49d6d7a65cffeb9201b373c3ee8bbfc5",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -104,7 +104,7 @@
     },
     {
       "file": "docs/page-metadata/components/table.md",
-      "sha256": "7a642ce132b4dfc90e76a300220cc24d8e43c2e30d1a68ffd9ca5cacbee37788"
+      "sha256": "475ea240b50805b6655a26260eabc3ef116973e0d3fc95ce236c35b9c44127cd"
     },
     {
       "file": "docs/page-metadata/components/text.md",
@@ -160,7 +160,7 @@
     },
     {
       "file": "docs/page-metadata/reference-map.json",
-      "sha256": "a8183c034b5e7bb03d92cf7c1421da3d6681e12741e6bd68519a91e089618b66"
+      "sha256": "89576065a494a672623f790174b097e2f1a22d74105d36eedb4da79c17afca61"
     },
     {
       "file": "docs/page-metadata/sections-and-layout.md",
@@ -1956,7 +1956,7 @@
     },
     {
       "file": "packages/page/src/schema/components/table.ts",
-      "sha256": "ec254484ea9197bdf198447f8f62c908b5c370fa54f262c4fc2569d0288ddda4"
+      "sha256": "7192fb54d32ca2af388af69a13fc746a946b393cc04aec830f2ec0b362e984b9"
     },
     {
       "file": "packages/page/src/schema/components/text.ts",
@@ -2188,11 +2188,11 @@
     },
     {
       "file": "packages/page/src/validate.ts",
-      "sha256": "f6a1a50071813143b1235c7073f1c8651ce8af648f150569b02281064464cff7"
+      "sha256": "79534c8080f5499c543bbd0fc0bc8907415b9635800ceb57ac508b230d038e54"
     },
     {
       "file": "packages/page/src/version.ts",
-      "sha256": "f5d1050c297f7527484763c4e46e202f22ed95a364cabd2e49eb886b2598f68f"
+      "sha256": "633c16cdf6e3e49b4d3f8c057ae9879c934037bf39f03cff85946a7d98be55e2"
     },
     {
       "file": "pages/README.md",
@@ -2804,15 +2804,15 @@
     },
     {
       "file": "pages/capabilities/layout/mc-content-layout-demo.json",
-      "sha256": "f6980c5374222aebeaccb277fd2e14d3a5b5c882c8c6cd8f8982a9f0816586fe"
+      "sha256": "0f3fb62be4d0484938e3860d07003d4bbffc744835061512ae8ca46d2960f948"
     },
     {
       "file": "pages/capabilities/layout/mc-layout-business-report.json",
-      "sha256": "deac8108ece85db05032520fcb31da2a7e28a7162cb6f4f3d29c63e4e61cd4eb"
+      "sha256": "662d1835758cf9753ec1ac823b456d0a3af02e3917c081199089fce998654c8e"
     },
     {
       "file": "pages/capabilities/layout/mc-layout-usage-report.json",
-      "sha256": "deed08ec0a18b9ca3c84a57dff6f69ea2d6d4878d02a004ac9419112bcc0247f"
+      "sha256": "e8ef15f06bceca12ad44580df707a8b07d2365b7c4820fac3aca58a3170c04c0"
     },
     {
       "file": "pages/capabilities/layout/metric-card-equation.json",
@@ -2832,7 +2832,7 @@
     },
     {
       "file": "pages/capabilities/layout/schema-upgrade-demo.json",
-      "sha256": "c19f37e1bdc11538b70cfece52891482ef6c2f9afe286314123cd2add0e09eb8"
+      "sha256": "b68a5ac5c5f04f0f4d72d0752f4b7ba9a96390b414e61d17521a259a2feca710"
     },
     {
       "file": "pages/capabilities/layout/tab-mixed-content-report.json",
@@ -2976,7 +2976,7 @@
     },
     {
       "file": "pages/capabilities/table/README.md",
-      "sha256": "8b2c8079d25df52d415d0f27d2e1be70b50b93b3813ce4df69fdc1275a0d0a34"
+      "sha256": "c8dd61d0907e1a0e93ff57ca6b2b0a6f2641628aa7eb849b35f20f8842641a71"
     },
     {
       "file": "pages/capabilities/table/decision-opinion-details.json",
@@ -3053,6 +3053,10 @@
     {
       "file": "pages/capabilities/table/sales-detail.json",
       "sha256": "29a8ab4fd2f6058ca38858380c7e8fd56e6770381cc9a70317ba4c45b0fd7390"
+    },
+    {
+      "file": "pages/capabilities/table/table-absolute-display-limit.json",
+      "sha256": "140f8480f968324f892e850819a2746de6c917681d515788b951f3c829523b9f"
     },
     {
       "file": "pages/capabilities/table/table-cell-selection.json",
@@ -3812,7 +3816,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-sources.ts",
-      "sha256": "70a414e2a589923e048ed989d24a84b73d8adf9d1f118e632a9f1f56f08cc51c"
+      "sha256": "ab3ffac250ca135a606fb49d1c6bc6d5e79557938780db8e0ea79d3841d655e5"
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",

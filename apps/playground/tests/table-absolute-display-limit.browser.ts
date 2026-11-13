@@ -1,0 +1,48 @@
+import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
+import { expect, test } from '@playwright/test';
+const require = createRequire(import.meta.url);
+const ExcelJS = createRequire(require.resolve('@metriccanvas/engine/ui'))('exceljs');
+const fixture = JSON.parse(readFileSync(new URL('../../../pages/capabilities/table/table-absolute-display-limit.json', import.meta.url), 'utf8'));
+test('absolute display limits use raw values and share arrows, colors, compact tables and Excel', async ({ page }, info) => {
+  const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
+  await page.setViewportSize({ width: 1440, height: 1100 });
+  await page.goto(`/pages/${fixture.id}`);
+  const table = page.locator('[data-component="main/limit-table"]');
+  const cells = table.locator('tbody td[data-column-field="change"]');
+  await expect(cells).toHaveText(['↑ > 500', '↓ > 500', '↑ +500', '↓ -500', '↑ > 500', '↓ > 500', '↑ +500', '↓ -500', '0', '--']);
+  await expect(cells.nth(0)).toHaveCSS('color', 'rgb(82, 196, 26)');
+  await expect(cells.nth(1)).toHaveCSS('color', 'rgb(245, 34, 45)');
+  await expect(cells.nth(0).getByLabel('上箭头')).toHaveText('↑');
+  await expect(cells.nth(1).getByLabel('下箭头')).toHaveText('↓');
+  const alignment = await page.locator('.cell-trend-value.with-trend-arrow').evaluateAll(groups => groups.map(group => {
+    const arrow = group.querySelector('.cell-trend-arrow')!.getBoundingClientRect();
+    const text = group.querySelector('.cell-trend-text')!.getBoundingClientRect();
+    return Math.abs(arrow.y + arrow.height / 2 - text.y - text.height / 2);
+  }));
+  expect(alignment.length).toBeGreaterThan(0);
+  expect(Math.max(...alignment)).toBeLessThan(0.5);
+  await expect(table.getByRole('button', { name: '后置箭头', exact: true })).toHaveCount(0);
+  await expect(page.locator('[data-component="variants/compact-limit-table"] tbody td[data-column-field="change"]').first()).toHaveText('↑ > 500');
+  const download = page.waitForEvent('download'); await table.getByRole('button', { name: '导出', exact: true }).click();
+  const workbook = new ExcelJS.Workbook(); await workbook.xlsx.readFile((await (await download).path())!);
+  const sheet = workbook.worksheets[0];
+  expect(sheet.getCell('C3').value).toBe(650);
+  expect(sheet.getCell('C3').numFmt).toBe('"↑ > 500"');
+  expect(sheet.getCell('C3').font.color.argb).toBe('FF52C41A');
+  expect(sheet.getCell('C4').value).toBe(-650);
+  expect(sheet.getCell('C4').numFmt).toBe('"↓ > 500"');
+  expect(sheet.getCell('C4').font.color.argb).toBe('FFF5222D');
+  expect(sheet.getCell('C5').value).toBe(500); expect(sheet.getCell('C5').numFmt).not.toContain('> 500');
+  await table.getByRole('button', { name: '阈值与方向', exact: true }).click();
+  const labels = table.locator('tbody td[data-column-field="label"]');
+  // Raw ordering distinguishes values with identical threshold text.
+  await expect(labels).toHaveText(['负值超限', '略超负边界', '负边界', '略低负边界', '零', '略低正边界', '正边界', '略超正边界', '正值超限', '缺失']);
+  await page.screenshot({ path: info.outputPath('absolute-limit-wide.png'), fullPage: true });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await cells.nth(1).scrollIntoViewIfNeeded();
+  await expect(cells.nth(1)).toHaveText('↓ > 500');
+  await expect(cells.nth(1).getByLabel('下箭头')).toBeVisible();
+  await page.screenshot({ path: info.outputPath('absolute-limit-narrow.png'), fullPage: true });
+  expect(errors).toEqual([]);
+});

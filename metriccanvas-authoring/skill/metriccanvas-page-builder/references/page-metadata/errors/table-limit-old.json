@@ -1,0 +1,52 @@
+{
+  "case": "table-limit-old",
+  "invariant": "table-absolute-display-limit",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "表格列按原始绝对值阈值替换主数值展示 由 6.119 引入，文档声明的是 6.118",
+      "paths": [
+        "/sections/0/components/0/props/columns/2/children/0/absoluteDisplayLimit",
+        "/sections/1/components/0/props/columns/1/absoluteDisplayLimit"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "columns": [
+                "…",
+                "…",
+                {
+                  "children": [
+                    {
+                      "absoluteDisplayLimit": 500
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "components": [
+          {
+            "props": {
+              "columns": [
+                "…",
+                {
+                  "absoluteDisplayLimit": 500
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/table-limit-old.json"
+}

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.118",
+  "schemaVersion": "6.119",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "table.pinnedTop"
@@ -13,6 +13,19 @@
         "## 独立查询置顶行（6.60）\n\nprops.pinnedTop 指定独立命名槽；列 pinnedTop 的 field/secondaryField/badgeField 用 FieldBinding 绑定该槽。data 是槽名而非数据源 id，完整声明见下方示例入口。\n\n置顶槽须为普通 query，声明 source.resultScope:\"complete\"，完整返回零或一行；禁止 limit/offset 和依赖本表明细。置顶列仅绑定该槽，类型、角色、币种、单位须与明细一致。其余槽沿用 rowKey 对齐；置顶槽及单 main 表不新增行键要求，普通字段不得反向对齐置顶槽。\n\n每页表头后仅显示一次汇总，不吸顶、不占明细页大小或 totalCount，序号/展开格留空。格式优先级：置顶绑定显式 format > 明细最终 format > 置顶字段 defaultFormat。未绑定格留空，次字段/徽标不继承明细。沿用列宽、对齐、固定列及样式，不继承选择、导航、详情、展开或 mergeBy。\n\n汇总只消费其查询显式绑定的共同条件，不隐式接收地区、表内搜索、列头条件或分页。例中时间/产品绑定两源，地区仅绑定明细。两源均受用户权限约束，省略筛选不得扩大权限。值/标签由指标表区域查询返回，不从明细补算。\n\n汇总加载不阻塞明细；零行不生成汇总；失败、总数不符或多行保留明细并诊断，不复用旧值。共同条件变化使旧汇总失效，迟到响应不回写。明细零行时可仅显示成功汇总，明细 totalCount 仍为零。\n\nExcel 在表头后写一次无序号汇总，再写全部匹配明细。汇总零行可导出，失败或行数非法则整表导出失败；总数据行限10000、准备限5分钟。PDF/PNG 同一投影，展开表格中的成功汇总只出现一次，保留报告部分失败策略。不扩展行内子表声明，已有详情限制保持。\n\n`/pages/table-pinned-summary` 使用两个独立 DQE Sim 查询，覆盖地区、共同时间/产品、零行、多行和失败；不证明真实 DQE 权限或汇总口径。"
       ],
       "rules": [
+        {
+          "id": "table-absolute-display-limit",
+          "description": "表格原始绝对值展示阈值及版本类型边界",
+          "valid": [
+            "table-absolute-display-limit"
+          ],
+          "invalid": [
+            "table-limit-old",
+            "table-limit-zero",
+            "table-limit-type",
+            "table-limit-text"
+          ]
+        },
         {
           "id": "table-trend-arrows",
           "description": "表格箭头",
@@ -317,6 +330,7 @@
         }
       ],
       "examples": [
+        "references/page-metadata/examples/table-absolute-display-limit.json",
         "references/page-metadata/examples/table-trend-arrows.json",
         "references/page-metadata/examples/query-dashboard.json",
         "references/page-metadata/examples/reference-branches-page.json",
@@ -371,7 +385,7 @@
           "sections"
         ],
         "title": "页面",
-        "$id": "https://metriccanvas/page/v6.118",
+        "$id": "https://metriccanvas/page/v6.119",
         "properties": {
           "schemaVersion": "#/properties/schemaVersion",
           "id": "#/properties/id",
@@ -508,6 +522,7 @@
           "align": "#/definitions/tableColumn/properties/align",
           "emphasis": "#/definitions/tableColumn/properties/emphasis",
           "visual": "#/definitions/tableColumn/properties/visual",
+          "absoluteDisplayLimit": "#/definitions/tableColumn/properties/absoluteDisplayLimit",
           "colorRule": "#/definitions/tableColumn/properties/colorRule",
           "arrowRule": "#/definitions/tableColumn/properties/arrowRule"
         },

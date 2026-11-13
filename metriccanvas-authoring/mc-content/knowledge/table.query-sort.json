@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.118",
+  "schemaVersion": "6.119",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "table.query-sort"
@@ -13,6 +13,19 @@
         "## 查询默认排序的首屏方向\n\n查询分页使用服务总条数；排序和表头筛选遵守查询分页限制。\n\n普通 query 数据源在 `source.query.body.dsl_list[0].order` 声明 `order_by_field` 和 `type: \"asc\" | \"desc\"` 时，表格首次显示对应列的排序方向。运行时将查询字段名通过 `queryField` 映射为页面字段 id；模式查询先选择当前已应用分支及其字段映射。未知、歧义或非法排序不生成虚假的列头方向，查询错误仍由原执行入口报告。\n\n该回显只影响初始表头呈现，不把服务端默认排序写成用户排序，不改变初始快照复用、查询、分页或取数次数。用户点击排序或清除后，以该表实例已提交的操作为准；普通数据刷新不补回初始方向，完整视图重置重新回显声明。pagedJoin/pagedUnion 继续使用既有 ordering.default。\n\n可观察入口 `/pages/query-sort-baseline` 使用合成初始快照：表格首次显示决策时长降序，两个柱线混合图分别保持时长 6/3/1、人数 8/4/2 的行序，并显示固定 2 天、5 人基线。它验证配置与呈现，不证明真实 DQE 服务排序。"
       ],
       "rules": [
+        {
+          "id": "table-absolute-display-limit",
+          "description": "表格原始绝对值展示阈值及版本类型边界",
+          "valid": [
+            "table-absolute-display-limit"
+          ],
+          "invalid": [
+            "table-limit-old",
+            "table-limit-zero",
+            "table-limit-type",
+            "table-limit-text"
+          ]
+        },
         {
           "id": "table-trend-arrows",
           "description": "表格箭头",
@@ -317,6 +330,7 @@
         }
       ],
       "examples": [
+        "references/page-metadata/examples/table-absolute-display-limit.json",
         "references/page-metadata/examples/table-trend-arrows.json",
         "references/page-metadata/examples/query-dashboard.json",
         "references/page-metadata/examples/reference-branches-page.json",
