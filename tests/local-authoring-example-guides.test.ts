@@ -139,6 +139,6 @@ describe('README example guides', () => {
     expect(placeholder.fields.expectations.summary).toContain('`--` 均在最后');
     const limit = index.byPageId.get('table-absolute-display-limit')![0]!;
     expect(limit.components).toEqual(['limit-table', 'compact-limit-table']);
-    expect(limit.fields.expectations.summary).toContain('650 显示绿色 `↑ >500`');
+    expect(limit.fields.expectations.summary).toContain('650 显示绿色 `↑ > 500`');
   });
 });
