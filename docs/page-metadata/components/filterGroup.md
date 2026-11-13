@@ -64,3 +64,5 @@ Dashboard 正文中的独立固定单选筛选组件，也可放入组合卡。�
 平面/树形、单多选、必选、初值、搜索与候选字段映射由筛选声明拥有，组件不复制配置。父节点按自身值独立选择。候选加载、失败重试、空结果、只读与 URL 继续沿用统一筛选机制；导出呈现冻结的选中显示名。候选来源、完整读取、去重与异常边界见[页面数据源候选](../filters.md#source-candidates)。既有固定 `options` 保持原行为，不能与筛选声明的 `candidates` 混用。
 
 完整页面 `/pages/filter-source-candidates` 将内联组织树和查询渠道下拉放入右侧工具栏；二者只通过 `filterBindings` 影响图表。页面使用本地合成 Adapter，无需 DQE Sim；不代表生产查询或权限服务已接通。
+
+`/pages/chart-include-exclude` 将同一代表处字段的“包含范围”和“排除范围”两个多选下拉放在图表右上角。各自使用数据源候选和独立筛选器 id，通过 `filterBindings` 的 `=` 与 `!=` 共同约束同一次查询；图表和明细共享该查询结果。集合合成及清空规则见[维度绑定包含与排除](../queries-and-bindings.md#dimension-binding-operator)。

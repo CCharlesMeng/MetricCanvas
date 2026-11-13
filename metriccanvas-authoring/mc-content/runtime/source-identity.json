@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "f67726a6b5ddf22148c4788667c41ff5e524d613b6bbd9e479477f6f97d9a8bd",
+  "sha256": "3b0ad50e2c6caad864769ba868af61e6a9a86e77de122a46a8d4b18e4735c564",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -56,7 +56,7 @@
     },
     {
       "file": "docs/page-metadata/components/filterGroup.md",
-      "sha256": "30ab3d9642f195ee7cd6f44785fd701e60d553edd7f73be74f5070a3de2d4b7a"
+      "sha256": "8d9d97cce97bb95b9e1399d036a94a01604ed7038d7a4a11de076dced12a68f3"
     },
     {
       "file": "docs/page-metadata/components/gauge.md",
@@ -156,7 +156,7 @@
     },
     {
       "file": "docs/page-metadata/queries-and-bindings.md",
-      "sha256": "a4e6e3159b7e86cb6352c7a7d79c70bbcae6b8276392c570caeada2e6328c2eb"
+      "sha256": "e9e7f15a8ba98dafed8d43ecda195f0d48298fc5d0d860eedb0e80deb1cbcfd8"
     },
     {
       "file": "docs/page-metadata/reference-map.json",
@@ -2500,7 +2500,11 @@
     },
     {
       "file": "pages/capabilities/filters/README.md",
-      "sha256": "14dd2dbad4d39c2ff63b24a6224ac57c4b43c0903763cdfa63b39a6603fc4f2a"
+      "sha256": "21cc1dbf84502b53e553f8205baa0ab81ab4e10ad7cd643b441c9551d4596959"
+    },
+    {
+      "file": "pages/capabilities/filters/chart-include-exclude.json",
+      "sha256": "1e0fa894ec36e67c735cfbbebb910e611a937b4bd6edd2a3ae8ecb92e802ad76"
     },
     {
       "file": "pages/capabilities/filters/dashboard-period-filter.json",

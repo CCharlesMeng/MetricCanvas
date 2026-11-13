@@ -1,0 +1,226 @@
+{
+  "schemaVersion": "6.118",
+  "id": "chart-include-exclude",
+  "layout": "dashboard",
+  "meta": {
+    "title": "图表包含与排除范围",
+    "description": "合成演示：右上角两个多选下拉共同约束同一次对象查询。包含全部代表处、排除北京时显示天津与广州。"
+  },
+  "filters": [
+    {
+      "id": "include-office",
+      "type": "dimension",
+      "dimension": "demo_office",
+      "label": "包含范围",
+      "emptyLabel": "全部代表处",
+      "selection": {
+        "mode": "multiple",
+        "allBehavior": "values"
+      },
+      "default": [
+        "北京",
+        "天津",
+        "广州"
+      ],
+      "candidates": {
+        "dataSource": "office-options",
+        "valueField": "office",
+        "labelField": "office"
+      }
+    },
+    {
+      "id": "exclude-office",
+      "type": "dimension",
+      "dimension": "demo_office",
+      "label": "排除范围",
+      "emptyLabel": "不排除",
+      "selection": {
+        "mode": "multiple",
+        "allBehavior": "values"
+      },
+      "default": [
+        "北京"
+      ],
+      "candidates": {
+        "dataSource": "office-options",
+        "valueField": "office",
+        "labelField": "office"
+      }
+    }
+  ],
+  "dataSources": {
+    "office-options": {
+      "fields": {
+        "office": {
+          "type": "string",
+          "role": "dimension"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "office": "北京"
+          },
+          {
+            "office": "天津"
+          },
+          {
+            "office": "广州"
+          }
+        ]
+      }
+    },
+    "office-data": {
+      "fields": {
+        "area": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "区域"
+        },
+        "office": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "代表处"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "金额"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "query_type": "object",
+                "object_type": "OperatorDemo",
+                "output_fields": [
+                  "区域",
+                  "代表处",
+                  "金额"
+                ],
+                "filter": {
+                  "fields": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "include-office": {
+              "target": "dimension",
+              "queryField": "代表处",
+              "operator": "="
+            },
+            "exclude-office": {
+              "target": "dimension",
+              "queryField": "代表处",
+              "operator": "!="
+            }
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "results",
+      "components": [
+        {
+          "id": "office-card",
+          "type": "compositeCard",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "代表处筛选：先包含，再排除（合成演示）",
+            "variant": "metricGrid",
+            "filterLayout": "toolbar",
+            "components": [
+              {
+                "id": "include-office-picker",
+                "type": "filterGroup",
+                "layout": {
+                  "span": 6
+                },
+                "props": {
+                  "filterId": "include-office",
+                  "display": "select",
+                  "align": "right"
+                }
+              },
+              {
+                "id": "exclude-office-picker",
+                "type": "filterGroup",
+                "layout": {
+                  "span": 6
+                },
+                "props": {
+                  "filterId": "exclude-office",
+                  "display": "select",
+                  "align": "right"
+                }
+              },
+              {
+                "id": "office-chart",
+                "type": "barChart",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "office-data"
+                },
+                "props": {
+                  "title": "代表处金额",
+                  "categoryField": "office",
+                  "series": [
+                    {
+                      "field": "amount",
+                      "label": "金额"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "office-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "office-data"
+          },
+          "props": {
+            "title": "同一次查询的明细",
+            "columns": [
+              {
+                "field": "area",
+                "title": "区域"
+              },
+              {
+                "field": "office",
+                "title": "代表处"
+              },
+              {
+                "field": "amount",
+                "title": "金额"
+              }
+            ],
+            "pagination": {
+              "mode": "local",
+              "pageSize": 10
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

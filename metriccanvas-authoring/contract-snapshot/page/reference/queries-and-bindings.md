@@ -414,6 +414,8 @@ SourceProgram、Node执行入口、分页/组合查询、导出统一选择合�
 
 完整示例 `/pages/dimension-binding-operator` 对照省略、显式等值、对象排除及指标层级排除。该页使用本地合成 Adapter 核对实际编码和结果，不证明真实 DQE 的排除、空值、授权及准确总数；接入时需按真实服务验证。字段净增一个可选 operator；不新增筛选器状态或表达式。
 
+同一次查询可绑定两个独立筛选器到同一字段，例如 `include-office` 使用 `operator:"="`、`exclude-office` 使用 `operator:"!="`，两项按 AND 生效。引擎将包含集合减去排除集合后编码为一个包含条件；包含范围清空时只保留排除条件，排除范围清空时只保留包含条件，两项均清空则不生成该字段条件。包含集合被全部排除时直接产生空结果，不发出无条件请求。图表右上角双多选下拉示例 `/pages/chart-include-exclude` 复用 `filterGroup`、数据源候选与组合卡工具栏；图表与明细共用同一个查询页面数据源，无需新增 Schema 或引擎分支。示例使用合成数据，不代表真实 DQE 验收。
+
 
 页面协议 6.118。结构真源为本册[schema.json](schema.json)，SHA256 `b9952649ffe80e8ac2ed2def73899d205a166207969e34a3ff1efc9301f280bb`。字段表自动生成；可选不等于有默认值。
 
