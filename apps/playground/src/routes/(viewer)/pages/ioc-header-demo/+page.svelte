@@ -31,7 +31,7 @@
 </script>
 
 <svelte:head><title>IOC Header · 经营概览</title></svelte:head>
-{#await document}<p role="status">加载页面…</p>{:then document}
+{#await document}<div aria-busy="true"><span class="skeleton" aria-hidden="true" style="display:block;width:68%;height:12px;border-radius:4px;background:#e4e4e7"></span></div>{:then document}
   {#if !framed}<PageDocument {pageId} {document} />{/if}
   <RuntimeSurface {document} {dataGateway} {navigation} {initialSearch}>
     {#snippet sectionsContent(sections, componentContent)}

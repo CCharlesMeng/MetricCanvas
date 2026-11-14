@@ -38,12 +38,12 @@ test('first expansion renders a child response received after the loading view h
   const parent = page.locator('article[data-component-type="table"]').first();
   await parent.getByRole('button', { name: '展开子表格', exact: true }).first().click();
   const child = parent.getByRole('region', { name: '子表格', exact: true });
-  await expect(child.getByText('正在加载…', { exact: true })).toBeVisible();
+  await expect(child.locator('.skeleton-row')).toHaveCount(10);
   await page.evaluate(() => (window as unknown as { releaseChildQueries(): void }).releaseChildQueries());
   await expect(child.getByRole('cell', { name: 'C01-001', exact: true })).toBeVisible();
   await expect(child.getByRole('cell', { name: 'C01-001', exact: true })).toBeInViewport();
   await child.getByRole('button', { name: '下一页', exact: true }).click();
-  await expect(child.getByRole('cell', { name: 'C01-001', exact: true })).toBeVisible();
+  await expect(child.locator('.skeleton-row')).toHaveCount(10);
   await expect(child.locator('.table-widget')).toHaveAttribute('aria-busy', 'true');
   await expect(child.locator('.loading-spinner')).toHaveCount(0);
   await page.evaluate(() => (window as unknown as { releaseChildQueries(): void }).releaseChildQueries());
@@ -57,7 +57,7 @@ test('expanded children add height to the twelve-parent-row viewport and keep th
   const parent = page.locator('article[data-component-type="table"]').first();
   await parent.getByRole('button', { name: '展开子表格', exact: true }).first().click();
   const child = parent.getByRole('region', { name: '子表格', exact: true });
-  await expect(child.getByText('正在加载…', { exact: true })).toBeVisible();
+  await expect(child.locator('.skeleton-row')).toHaveCount(10);
   await page.evaluate(() => (window as unknown as { releaseChildQueries(): void }).releaseChildQueries());
   await expect(child.getByRole('cell', { name: 'C01-001', exact: true })).toBeInViewport();
   await expect.poll(() => parent.locator('.table-widget').first().evaluate(widget => {

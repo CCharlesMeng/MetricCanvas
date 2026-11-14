@@ -220,7 +220,7 @@
   {/if}
 
   {#if pageState.phase === 'loading'}
-    <p class="muted">加载页面…</p>
+    <div aria-busy="true" style="padding:24px"><span class="skeleton" aria-hidden="true" style="display:block;width:68%;height:12px;border-radius:4px;background:#e4e4e7"></span></div>
   {:else if pageState.phase === 'missing'}
     <div class="error-page">
       <h1>页面加载失败</h1>
@@ -267,9 +267,6 @@
     max-width: none;
     padding: 0;
     margin: 0;
-  }
-  .muted {
-    color: #71717a;
   }
   .error-page h1 {
     font-size: 20px;

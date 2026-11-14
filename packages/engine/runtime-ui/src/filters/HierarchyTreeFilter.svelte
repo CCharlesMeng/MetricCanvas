@@ -22,7 +22,7 @@
 </script>
 
 <div class="dropdown" data-candidates-status={snapshot.status}>
-  <Selection {label} {options} value={controlValues} multiple={false} tree {treeSelection}
+  <Selection loading={snapshot.status === 'idle' || snapshot.status === 'loading'} {label} {options} value={controlValues} multiple={false} tree {treeSelection}
     {searchable} {required} clearable={!required} placeholder={emptyLabel}
     statusText={hierarchyTreeStatus(snapshot)} statusError={snapshot.status === 'error'} {onretry} onchange={commit}/>
 </div>

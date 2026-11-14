@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.81",
+  "schemaVersion": "6.119",
   "id": "loading-structure-demo",
   "layout": "dashboard",
   "meta": {
@@ -856,7 +856,8 @@
                         },
                         {
                           "field": "value",
-                          "title": "订单量"
+                          "title": "订单量",
+                          "sortable": true
                         }
                       ],
                       "pagination": {

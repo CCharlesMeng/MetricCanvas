@@ -27,6 +27,7 @@
 
 {#if props.title}<h3>{props.title}</h3>{/if}
 <EChart
+    loading={data.main.sourceStatus === 'loading'}
   {source}
   cartesian
   expandForLabels={props.showValueLabels === true || props.categoryLabels?.mode === 'all'}

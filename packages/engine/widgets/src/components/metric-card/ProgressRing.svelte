@@ -23,7 +23,7 @@
   const option = $derived(progressRingOption(normalized ?? 0, visibleTrackPercent));
 </script>
 
-<div class="progress-ring" aria-label={loading ? `${label} 正在加载` : `${label} ${display}`}>
+<div class="progress-ring" aria-busy={loading} aria-label={loading ? label : `${label} ${display}`}>
   <div class="chart" aria-hidden="true">
     <EChart {option} updateMode="merge" />
   </div>

@@ -34,7 +34,7 @@ report定宽居中，dashboard占满宿主宽度。页面页头统一由 IocHead
 
 ## IOC 公共页头（6.36）
 
-页头不在筛选组件外插入额外状态说明。`note`、兼容的 `dashboardToolbar.note`、宿主只读原因、自动生成的“筛选只读”和“等待筛选确认或可信候选”仅输出为 `console.warn`，不占据页面或静态导出的空间；不新增页面开关。控件内部的候选加载/失败、期间状态、禁用和重试照常保留。用户显式声明的 `identity.description`、标题、标签和事实信息仍按声明呈现。旧声明继续可读，合成场景 `/pages/ioc-header-detail-demo` 覆盖 note 与只读原因；候选失败与重试见 `/pages/ioc-header-overview-demo`。
+页头不在筛选组件外插入额外状态说明。`note`、兼容的 `dashboardToolbar.note`、宿主只读原因、自动生成的“筛选只读”和“等待筛选确认或可信候选”仅输出为 `console.warn`，不占据页面或静态导出的空间；不新增页面开关。控件内部的候选等待使用静态骨架，失败、期间状态、禁用和重试照常保留。用户显式声明的 `identity.description`、标题、标签和事实信息仍按声明呈现。旧声明继续可读，合成场景 `/pages/ioc-header-detail-demo` 覆盖 note 与只读原因；候选失败与重试见 `/pages/ioc-header-overview-demo`。
 
 6.81起使用首分区首组件 `type:"iocHeader"`，业务属性写入 `props`，用于 IOC 身份与页级筛选归属。旧根级 `iocHeader` 仍兼容读取，属性含义相同。普通/密集看板和详情报表共用同一个呈现 Module；meta.title仍是目录标题。6.41 新页面声明 iocHeader 时无需同时写 dashboardToolbar；显式声明 visible/compact 与 iocHeader 仍为冲突。旧版本的显式 hidden 继续读取，没有 IOC 声明的旧页面通过同一呈现 Module 保持原布局。正文独立章节页头可保留，首个业务reportHeader或projectDetail不能重复承担页面身份。
 

@@ -2,6 +2,7 @@
 <script lang="ts">
   import { getContext, onMount, untrack } from 'svelte';
   import { EXPORT_SCALE_CONTEXT, STATIC_EXPORT_CONTEXT } from './export-context';
+  import { loadingChartSource } from './chart-loading';
   import * as echarts from './echarts-runtime';
   import type { EChartsOption, XAXisComponentOption } from 'echarts';
   import { cartesianFrame } from './chart-presentation';
@@ -12,6 +13,7 @@
    * 图表组件只负责把数据快照翻译成 option(纯渲染),不直接接触 echarts 实例。
    */
   interface Props {
+    loading?: boolean;
     option?: EChartsOption;
     source?: ChartSource;
     cartesian?: boolean;
@@ -32,6 +34,7 @@
   }
 
   let {
+    loading = false,
     option,
     source,
     cartesian = false,
@@ -149,7 +152,8 @@
     };
   });
   $effect(() => {
-    const input = source ?? { base: option };
+    const declared = source ?? { base: option };
+    const input = loading && !staticExport ? loadingChartSource(declared) : declared;
     if (!mounted) return;
     untrack(() => {
       current = input;
@@ -166,13 +170,32 @@
 
 </script>
 
-<div bind:this={container} class="echart" style:min-height={minHeight ? `${minHeight}px` : undefined} data-export-chart={staticExport ? "" : undefined}></div>
+<div class="echart-frame" style:min-height={minHeight ? `${minHeight}px` : undefined} class:loading={loading && !staticExport} aria-busy={loading && !staticExport} inert={loading && !staticExport}>
+  <div bind:this={container} class="echart" data-export-chart={staticExport ? "" : undefined}></div>
+</div>
 
 <style>
+  .echart-frame {
+    position: relative;
+    display: flex;
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+    width: 100%;
+  }
+  .loading .echart {
+    filter: grayscale(1);
+    opacity: 0.4;
+    pointer-events: none;
+  }
   .echart {
     flex: 1;
     min-width: 0;
     min-height: 0;
     width: 100%;
+    transition: filter 160ms ease, opacity 160ms ease;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .echart { transition: none; }
   }
 </style>

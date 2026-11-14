@@ -1,5 +1,6 @@
 <svelte:options css="injected" />
 <script lang="ts">
+  import LoadingPlaceholder from '../../shared/LoadingPlaceholder.svelte';
   import { detailsPopover } from "../../shared/details-popover";
   import type {UiOption} from '../../types';
   let {label,value,options,disabled=false,loading=false,error,searchable=false,required=false,onchange}: {
@@ -14,7 +15,7 @@
 <details use:detailsPopover class="multi" inert={disabled||undefined}><summary aria-label={label} aria-disabled={disabled||loading}>{summary}<span aria-hidden="true">▾</span></summary>
   <div popover="auto" class="options" role="group" aria-label={label}>
     {#if searchable}<input type="search" aria-label={`搜索${label}候选`} placeholder="筛选当前候选" bind:value={keyword} disabled={disabled||loading}/>{/if}
-    {#if loading}<span role="status">加载中…</span>{/if}
+    {#if loading}<LoadingPlaceholder />{/if}
     {#if error}<span role="alert">{error}</span>{/if}
     {#each filtered as option(option.value)}<label><input type="checkbox" checked={value.includes(option.value)} disabled={disabled||loading||option.disabled} onchange={()=>toggle(option)}/>{option.label}</label>{/each}
     {#if !required}<button type="button" disabled={disabled||loading} onclick={()=>onchange([])}>清除筛选</button><button type="button" disabled={disabled||loading} onclick={()=>onchange(options.filter(o=>!o.disabled).map(o=>o.value))}>全选</button>{/if}

@@ -64,6 +64,7 @@
     {props.series.map((series) => series.label).filter(Boolean).join(' ')} {categories.join(' ')}
   </span>
   <EChart
+    loading={data.main.sourceStatus === 'loading'}
     {source}
     cartesian
     expandForLabels={props.showValueLabels === true || props.categoryLabels?.mode === 'all'}

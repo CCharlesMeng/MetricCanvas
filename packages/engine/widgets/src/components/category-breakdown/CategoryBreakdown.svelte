@@ -1,5 +1,9 @@
 <svelte:options css="injected" />
 <script lang="ts">
+  import { getContext } from 'svelte';
+  import { STATIC_EXPORT_CONTEXT } from '../../shared/export-context';
+  const staticExport = Boolean(getContext(STATIC_EXPORT_CONTEXT));
+  import Skeleton from '../../shared/Skeleton.svelte';
   import type { CategoryBreakdownProps } from '@metriccanvas/page/internal';
   import type { MainDataSlots } from '../../shared/component-data';
   import { CATEGORICAL_PALETTE_PROPERTY, readColorList, type ColorList } from '../../shared/chart-palette';
@@ -23,6 +27,7 @@
   }
 
   let { data, props, paletteOverride, swatchDomain, columnPresentation }: Props = $props();
+  const loading = $derived(!staticExport && data.main.sourceStatus === 'loading');
 
   /* 类别配色从自身容器的计算样式读(与饼图同一个装置,见 shared/chart-palette.ts)。
      报表形态不定义这个属性,读到空串即色板缺席,色点因此不着色。 */
@@ -54,6 +59,11 @@
       </tr>
     </thead>
     <tbody>
+      {#if loading}
+        {#each Array(3) as _}
+          <tr aria-hidden="true"><th class="category"><Skeleton width="68%" /></th>{#each view.columns as _}<td class="measure"><Skeleton width="48px" /></td>{/each}</tr>
+        {/each}
+      {:else}
       {#each view.rows as row, index (`${row.category}:${index}`)}
         <tr>
           <th scope="row" class="category">
@@ -72,6 +82,7 @@
           {/each}
         </tr>
       {/each}
+      {/if}
     </tbody>
   </table>
 </div>

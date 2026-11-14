@@ -1,5 +1,6 @@
 <svelte:options css="injected" />
 <script lang="ts">
+  import Skeleton from '../../shared/Skeleton.svelte';
   import { formatFieldValue, formatChangeValue } from '../../shared/field-presentation';
   import { getContext } from 'svelte';
   import { STATIC_EXPORT_CONTEXT } from '../../shared/export-context';
@@ -17,6 +18,7 @@
   }
 
   let { data, props, onrowclick }: Props = $props();
+  const loading = $derived(!staticExport && data.main.sourceStatus === 'loading');
 
   const name = $derived(resolveField(props.nameField, data));
   const value = $derived(resolveField(props.valueField, data));
@@ -28,6 +30,11 @@
 {#if props.title}<h3>{props.title}</h3>{/if}
 <ol class:static-export={staticExport}
   class="ranking-card">
+  {#if loading}
+    {#each Array(3) as _}
+      <li class="ranking-item" aria-hidden="true"><span class="rank"><Skeleton width="18px" /></span><span class="name"><Skeleton /></span><span class="ranking-value"><Skeleton width="48px" /></span></li>
+    {/each}
+  {:else}
   {#each data.main.snapshot.rows as row, index (index)}
     {@const changePolarity = valuePolarity(change ? row[change.field] : undefined)}
     <li class="ranking-item">
@@ -60,6 +67,7 @@
   {:else}
     <li class="empty">暂无数据</li>
   {/each}
+  {/if}
 </ol>
 
 <style>

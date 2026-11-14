@@ -1,5 +1,6 @@
 <svelte:options css="injected" />
 <script lang="ts">
+  import Skeleton from '../../shared/Skeleton.svelte';
   import { hasDisplayValue } from '../../shared/value-format';
   import { formatFieldValue, fieldUnitText } from '../../shared/field-presentation';
   import { getContext } from 'svelte';
@@ -31,6 +32,7 @@
   }
 
   let { data, props }: Props = $props();
+  const loading = $derived(!staticExport && data.main.sourceStatus === 'loading');
 
   const columns = $derived(props.columns ?? 3);
 </script>
@@ -54,12 +56,13 @@
           <span>{item.label}</span>
         </dt>
         <dd>
-          {#if semantic}
+          {#if loading}<Skeleton width="64px" />
+          {:else if semantic}
             <SemanticHtml source={semantic.source} format={semantic.format} inline />
           {:else}
             {formatFieldValue(value, resolved, item.unit)}
           {/if}
-          {#if hasDisplayValue(value) && fieldUnitText(item.unit, resolved.format)}<span class="unit">{item.unit}</span>{/if}
+          {#if !loading && hasDisplayValue(value) && fieldUnitText(item.unit, resolved.format)}<span class="unit">{item.unit}</span>{/if}
         </dd>
       </div>
     {/each}

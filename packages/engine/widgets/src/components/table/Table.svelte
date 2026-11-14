@@ -4,6 +4,8 @@
 </script>
 
 <script lang="ts">
+  import TextSkeleton from '../../shared/TextSkeleton.svelte';
+  import Skeleton from '../../shared/Skeleton.svelte';
   import ColumnCandidateOptions from './ColumnCandidateOptions.svelte';
   import SelectAllOptions from './SelectAllOptions.svelte';
   import { placeholderOptionsLast } from './candidate-order';
@@ -37,7 +39,7 @@
   } from '../../shared/component-data';
   import SemanticHtml from '../../shared/SemanticHtml.svelte';
   import OverflowCellText from './OverflowCellText.svelte';
-  import { projectTableRows, tableRowColumn, alignedCellText, alignedCellArrow, alignedFieldValue } from './rows';
+  import { projectTableRows, tableRowColumn, alignedCellText, alignedCellArrow, alignedFieldValue, alignedCellLoading } from './rows';
   import { mergeSpans, tableRowTier } from './presentation';
   import { buildTableColumnLayout, shouldWrapTableHeaders } from './columns';
   import type {
@@ -120,6 +122,7 @@
   }: Props = $props();
 
   const loading = $derived(data.main.sourceStatus === 'loading');
+  const bodyLoading = $derived(loading && !data.main.progress && !staticExport);
   let previousPagination = $state.raw<TablePaginationState>();
   const pagination = $derived(loading && !data.main.progress
     ? previousPagination ?? currentPagination ?? { pageSize: props.pagination?.mode === 'local' ? props.pagination.pageSize : 20, totalCount: 0 }
@@ -536,7 +539,7 @@
                                 <span>{option}</span>
                               </label>
                             {:else}
-                              <span class="hint">{filterOptionsStatus[columnField(column)]==='denied'?'无权访问候选项':filterOptionsStatus[columnField(column)]==='unconfigured'?'候选能力未配置':filterOptionsStatus[columnField(column)]==='unavailable'?'候选值能力不可用':filterOptionsStatus[columnField(column)]==='error'?'候选项加载失败':['ready','empty'].includes(filterOptionsStatus[columnField(column)])?'没有候选项':'候选项加载中…'}</span>
+                              {#if !filterOptionsStatus[columnField(column)] || ['idle','loading'].includes(filterOptionsStatus[columnField(column)])}<TextSkeleton />{:else}<span class="hint">{filterOptionsStatus[columnField(column)]==='denied'?'无权访问候选项':filterOptionsStatus[columnField(column)]==='unconfigured'?'候选能力未配置':filterOptionsStatus[columnField(column)]==='unavailable'?'候选值能力不可用':filterOptionsStatus[columnField(column)]==='error'?'候选项加载失败':'没有候选项'}</span>{/if}
                             {/each}
                             </div>
                             {/if}
@@ -581,7 +584,18 @@
           </tr>
         {/each}
       </thead>
-      <tbody inert={!!data.main.progress}>
+      <tbody inert={loading || !!data.main.progress}>
+        {#if bodyLoading}
+          {#each Array(10) as _}
+            <tr class="skeleton-row" aria-hidden="true">
+              {#if expandable}<td class="expand-column fixed" style="left:0"><Skeleton /></td>{/if}
+              {#if props.rowNumber}<td class:fixed={props.rowNumber.fixed === 'left'} style={rowNumberStyle}><Skeleton /></td>{/if}
+              {#each leaves as column}
+                <td class:fixed={!!column.fixed} style={cellStyle(column)}><Skeleton width="72%" /></td>
+              {/each}
+            </tr>
+          {/each}
+        {:else}
         {#each rows as row, i (expandable && validExpansionKeys.has(expansion?.key(row.main) ?? '') ? expansion!.key(row.main)! : i)}
           <tr class:subtotal-row={rowTiers[i] === 'subtotal'} class:total-row={row.kind !== 'pinnedTop' && rowTiers[i] === 'total'} data-pinned-top={row.kind === 'pinnedTop' ? '' : undefined}>
             {#if expandable}
@@ -654,7 +668,9 @@
                   style={cellStyle(bodyColumn)}
                   style:color={column.colorRule ? valueColorStyle(color) : undefined}
                 >
-                  {#if selectable}
+                  {#if !staticExport && alignedCellLoading(column.field, data, row)}
+                    <Skeleton width="72%" />
+                  {:else if selectable}
                     <button
                       type="button"
                       class="selectable-cell"
@@ -755,12 +771,13 @@
           <tr>
             <td class="empty-row" colspan={Math.max(leaves.length + leadingColumnCount, 1)}>
               {#if props.variant === 'reportCompact'}
-                <span class="empty-message">{loading ? '正在加载…' : '暂无数据'}</span>
+                <span class="empty-message">暂无数据</span>
               {:else}
-                <div class="empty-state">{loading ? '正在加载…' : '暂无数据'}</div>
+                <div class="empty-state">暂无数据</div>
               {/if}
             </td>
           </tr>
+        {/if}
         {/if}
       </tbody>
     </table>

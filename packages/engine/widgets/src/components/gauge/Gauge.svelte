@@ -1,5 +1,7 @@
 <svelte:options css="injected" />
 <script lang="ts">
+  import { getContext } from 'svelte';
+  import { STATIC_EXPORT_CONTEXT } from '../../shared/export-context';
   import { resolveComponentValue } from '../../shared/component-value';
   import type { GaugeProps } from '@metriccanvas/page/internal';
   import type { NamedDataSlots } from '../../shared/component-data';
@@ -20,6 +22,8 @@
 
   let { data, props, onclick }: Props = $props();
 
+  const staticExport = getContext<boolean>(STATIC_EXPORT_CONTEXT) ?? false;
+  const loading = $derived(!staticExport && Object.values(data).some(slot => slot?.sourceStatus === 'loading'));
   const resolved = $derived(resolveComponentValue(props, data, props.emptyBehavior));
   const raw = $derived(resolved.read());
   const numeric = $derived(finiteNumber(raw));
@@ -33,6 +37,7 @@
 
 <div class:mini={props.variant === 'mini'} class="gauge">
   {#if props.title}<h3>{props.title}</h3>{/if}
+  <div class="gauge-plot" class:loading aria-busy={loading} inert={loading}>
   {#if onclick}
     <button type="button" class="dial" {onclick}>
       <svg viewBox="-48 -48 96 96" aria-hidden="true">
@@ -56,10 +61,14 @@
       </div>
     </div>
   {/if}
+  </div>
   {#if props.label}<p>{props.label}</p>{/if}
 </div>
 
 <style>
+  .gauge-plot { position: relative; }
+  .loading .dial { filter: grayscale(1); opacity: 0.4; pointer-events: none; }
+
   /* 表面经 --mc-gauge-* 可被页面布局形态覆写:报表形态里仪表借用所在
      组件单元格的外观(缺省无表面),看板形态需要它自己就是一张白卡。 */
   .gauge {

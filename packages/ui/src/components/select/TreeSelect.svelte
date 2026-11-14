@@ -1,5 +1,6 @@
 <svelte:options css="injected" />
 <script lang="ts">
+  import LoadingPlaceholder from '../../shared/LoadingPlaceholder.svelte';
   import { detailsPopover } from "../../shared/details-popover";
   import type {UiTreeNode} from '../../types';
   let {label,value,options,disabled=false,loading=false,error,required=false,onchange}: {label:string;value:string[];options:readonly UiTreeNode[];disabled?:boolean;loading?:boolean;error?:string;required?:boolean;onchange:(value:string[])=>void}=$props();
@@ -8,7 +9,7 @@
   function toggle(node:UiTreeNode){if(disabled||loading||node.disabled||node.value===undefined||(required&&value.length===1&&selected.has(node.value)))return;onchange(selected.has(node.value)?value.filter(v=>v!==node.value):[...value,node.value]);}
 </script>
 <details use:detailsPopover class="tree-select" inert={disabled||undefined}><summary aria-label={label} aria-disabled={disabled||loading}>{value.length?`已选 ${value.length} 项`:'全部'}<span aria-hidden="true">▾</span></summary><div popover="auto" class="nodes" role="tree" aria-label={label}>
-  {#if loading}<span role="status">加载中…</span>{/if}{#if error}<span role="alert">{error}</span>{/if}
+  {#if loading}<LoadingPlaceholder />{/if}{#if error}<span role="alert">{error}</span>{/if}
   {#each options as node(node.key)}{@render row(node,0)}{/each}
   {#if !required}<button type="button" disabled={disabled||loading} onclick={()=>onchange([])}>清除筛选</button>{/if}
 </div></details>

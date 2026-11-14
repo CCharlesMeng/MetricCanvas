@@ -4,6 +4,7 @@
 </script>
 <svelte:options css="injected" />
 <script lang="ts">
+  import TextSkeleton from '../../widgets/src/shared/TextSkeleton.svelte';
   import {createAuthRequiredGateway, notifyAuthRequired, type AuthRequiredEvent} from './auth-required';
   import {invalidateAiSummaryPage} from './ai-summary/runtime/session';
   import {resolveFinalizationDates} from '@metriccanvas/data-execution/runtime';
@@ -1392,7 +1393,7 @@
 <div class="runtime-view" data-runtime-navigation={navigation?.navigate ? true : undefined} bind:this={surfaceRoot}>
   {#if navigationMessage}<p role="alert" data-navigation-error>{navigationMessage}</p>{/if}
   {#if pageState.phase === 'loading'}
-    <p class="muted">加载页面…</p>
+    <div aria-busy="true" style="max-width:720px;padding:24px"><TextSkeleton /></div>
   {:else if pageState.phase === 'auth-required'}
     <!-- The application owns login; terminated page data must no longer be shown. -->
   {:else if pageState.phase === 'version-error'}

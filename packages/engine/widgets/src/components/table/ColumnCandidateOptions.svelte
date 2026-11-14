@@ -1,4 +1,5 @@
 <script lang="ts">
+  import TextSkeleton from '../../shared/TextSkeleton.svelte';
   import SelectAllOptions from './SelectAllOptions.svelte';
   import { placeholderOptionsLast } from './candidate-order';
   import type { TableColumnCandidates } from './view-state';
@@ -46,7 +47,7 @@
   </div>
   {/key}
   {#if snapshot?.status === 'loading'}
-    <span role="status">候选项加载中…</span>
+    <TextSkeleton />
   {:else if snapshot?.status === 'unavailable'}
     <span role="status">候选值能力不可用</span>
   {:else if snapshot?.status === 'error'}
@@ -59,7 +60,7 @@
   {:else if snapshot?.status === 'empty'}
     <span role="status">没有候选项</span>
   {:else if !snapshot}
-    <span role="status">打开筛选后加载候选项</span>
+    <TextSkeleton />
   {/if}
 </div>
 <style>

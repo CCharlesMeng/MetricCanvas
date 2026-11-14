@@ -7,7 +7,7 @@ test('selected columns appear first; a failed supplement keeps them and prevents
   await expect(table.getByRole('cell',{name:'测试项目1',exact:true})).toBeVisible();
   await expect(table).toHaveAttribute('aria-busy','true');
   await expect(table.locator('tbody')).toHaveAttribute('inert','');
-  await expect(table.locator('tbody tr').first()).toContainText('--');
+  await expect(table.locator('tbody tr').first().locator('.skeleton')).not.toHaveCount(0);
   await expect(table.locator('.loading-spinner')).toHaveCount(0);
   await expect(table.getByRole('button',{name:'导出',exact:true})).toBeDisabled();
   await page.getByRole('button',{name:'返回下一批补列',exact:true}).click();
@@ -18,8 +18,8 @@ test('selected columns appear first; a failed supplement keeps them and prevents
 
   await page.getByRole('checkbox',{name:'暂停选页请求'}).check();
   await table.getByRole('button',{name:'下一页',exact:true}).click();
-  await expect(table.getByRole('cell',{name:'测试项目1',exact:true})).toBeVisible();
-  await expect(table.getByRole('cell',{name:'进行中',exact:true}).first()).toBeVisible();
+  await expect(table.locator('.skeleton-row')).toHaveCount(10);
+  await expect(table.getByRole('cell',{name:'测试项目1',exact:true})).toHaveCount(0);
   await page.getByRole('button',{name:'返回选页结果',exact:true}).click();
   await expect(table.getByRole('cell',{name:'测试项目11',exact:true})).toBeVisible();
   await expect(table.getByRole('cell',{name:'进行中',exact:true})).toHaveCount(0);
@@ -39,8 +39,8 @@ test('a supplement that owns sorting selects the page before any rows are displa
   await expect(table).toHaveAttribute('aria-busy','false');
   await table.getByRole('columnheader',{name:'合同金额',exact:false}).getByRole('button',{name:'合同金额',exact:true}).click();
   await expect(table).toHaveAttribute('aria-busy','true');
-  // The earlier complete view is retained until the sorting member returns its correct keys.
-  await expect(table.getByRole('cell',{name:'测试项目1',exact:true})).toBeVisible();
+  // Pending selection uses the same ten-row body skeleton as initial loading.
+  await expect(table.locator('.skeleton-row')).toHaveCount(10);
   await page.getByRole('button',{name:'返回下一批补列',exact:true}).click();
   await expect(table).toHaveAttribute('aria-busy','false');
   await expect(table.locator('tbody tr')).toHaveCount(10);

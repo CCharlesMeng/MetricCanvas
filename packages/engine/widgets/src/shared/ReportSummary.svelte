@@ -1,15 +1,17 @@
 <svelte:options css="injected" />
 <script lang="ts">
   import type { Snippet } from 'svelte';
+  import TextSkeleton from './TextSkeleton.svelte';
   import SemanticHtml from './SemanticHtml.svelte';
   import sectionTitleLeftUrl from '../assets/section-title-left.svg?inline';
   import sectionTitleRightUrl from '../assets/section-title-right.svg?inline';
 
-  let { title = '报告摘要', body, format = 'text', actions }: {
+  let { title = '报告摘要', body, format = 'text', actions, loading = false }: {
     title?: string;
     body: string;
     format?: 'text' | 'semanticHtml';
     actions?: Snippet;
+    loading?: boolean;
   } = $props();
 </script>
 
@@ -20,7 +22,8 @@
     <img src={sectionTitleRightUrl} alt="" data-decorative-icon="section-title-right" />
   </div>
   <div class="report-summary-frame">
-    {#if format === 'semanticHtml'}
+    {#if loading}<div class="report-summary-content"><TextSkeleton lines={4} /></div>
+    {:else if format === 'semanticHtml'}
       <div class="report-summary-content">
         <SemanticHtml source={body} />
       </div>

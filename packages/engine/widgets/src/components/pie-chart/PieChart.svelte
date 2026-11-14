@@ -33,9 +33,10 @@
 
 <div class:compact-ring={props.variant === 'compactRing'} class:has-table-legend={!!legend} class="pie-chart">
   {#if props.title}<h3>{props.title}</h3>{/if}
-  <div class="pie-layout" class:legend-left={props.legend?.position === 'left'}>
+  <div class="pie-layout" class:loading={data.main.sourceStatus === 'loading'} class:legend-left={props.legend?.position === 'left'}>
   <div class="pie-plot">
   <EChart
+    loading={data.main.sourceStatus === 'loading'}
     {source}
     bind:container={chartContainer}
     onitemclick={onsliceclick
@@ -52,6 +53,7 @@
 </div>
 
 <style>
+  .loading .pie-legend { filter: grayscale(1); opacity: 0.4; pointer-events: none; }
   .pie-chart {
     display: flex;
     width: 100%;

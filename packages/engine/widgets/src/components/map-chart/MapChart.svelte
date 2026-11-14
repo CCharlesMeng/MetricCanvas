@@ -209,10 +209,11 @@
          这里要有一个定位参照物;它接手 EChart 原来占的那一格弹性空间,
          `.echart` 仍是 `flex: 1`,几何与加壳之前一致。 -->
     <div
-      class="map-frame"
+      class="map-frame" class:loading-map={data.main.sourceStatus === 'loading'}
       data-projection-square={projection ? String(projection.width === projection.height) : undefined}
     >
       <EChart
+        loading={data.main.sourceStatus === 'loading'}
         option={mapOption(
           data,
           chartProps,
@@ -283,7 +284,7 @@
       {/if}
     </div>
   {:else}
-    <div class="loading">底图加载中…</div>
+    <div class="loading" aria-busy="true"></div>
   {/if}
 </div>
 
@@ -300,12 +301,15 @@
     line-height: var(--mc-card-title-line-height, inherit);
   }
   .loading {
+    position: relative;
     flex: 1;
+    min-height: 160px;
     display: flex;
     align-items: center;
     color: #a1a1aa;
     font-size: 13px;
   }
+  .loading-map .map-legend, .loading-map .regional-annotations { filter: grayscale(1); opacity: 0.4; pointer-events: none; }
   .map-frame {
     position: relative;
     display: flex;

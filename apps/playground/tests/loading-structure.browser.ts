@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { sortDqeRows } from '../../../tools/dqe-sim/src/sort';
 import { readFileSync } from 'node:fs';
 
 const fixture = JSON.parse(readFileSync(new URL('../../../pages/capabilities/layout/loading-structure-demo.json', import.meta.url), 'utf8'));
@@ -19,6 +20,7 @@ function simulatedReceipt(item: DemoItem) {
   const offset = item.order.offset ?? 0;
   const limit = item.order.limit ?? rows.length;
   const fields = [...item.output_dims, ...item.output_metrics];
+  rows = sortDqeRows(rows, item.order, fields)!;
   return { code: 'SUCCESS', total_count: rows.length,
     data: rows.slice(offset, offset + limit).map(row => Object.fromEntries(fields.map(field => [field,
       typeof row[field] === 'number' && item.output_metrics.includes(field)
@@ -43,28 +45,39 @@ test('native components stay mounted through initial loading, filtering, paginat
   const metric = orders.locator('.metric-card');
   const chart = orders.locator('.bar-chart');
   const table = orders.locator('.table-widget');
-  await expect(orders.locator('.skeleton')).toHaveCount(0);
+  await expect(table.locator('.skeleton-row')).toHaveCount(10);
+  await expect(chart.locator('.echart-frame.loading')).toBeVisible();
   await expect(orders.locator('[aria-busy="true"]')).not.toHaveCount(0);
   await expect(metric).toBeVisible();
   await expect(chart).toBeVisible();
   await expect(table.getByRole('columnheader', { name: '类别', exact: true })).toBeVisible();
-  await expect(table.getByText('正在加载…', { exact: true })).toBeVisible();
+  await expect(table.getByText('正在加载…', { exact: true })).toHaveCount(0);
   const metricNode = await metric.elementHandle();
   const chartNode = await chart.elementHandle();
+  const canvasNode = await chart.locator('canvas').elementHandle();
+  await expect(chart.locator('.echart')).toHaveCSS('filter', 'grayscale(1)');
+  await expect(page.locator('.chart-skeleton')).toHaveCount(0);
   const headingNode = await table.locator('thead').elementHandle();
   const pagerNode = await table.locator('.pager').elementHandle();
   await page.screenshot({ path: '/tmp/mc-loading-structure/initial.png', fullPage: true });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.screenshot({ path: '/tmp/mc-loading-structure/initial-narrow.png', fullPage: true });
+  await page.setViewportSize({ width: 1440, height: 1000 });
   release();
   await expect(table).toContainText('合成类别1');
   await expect(orders.locator('[aria-busy="true"]')).toHaveCount(0);
   expect(await metricNode!.evaluate(node => node.isConnected)).toBe(true);
   expect(await chartNode!.evaluate(node => node.isConnected)).toBe(true);
+  expect(await canvasNode!.evaluate(node => node.isConnected)).toBe(true);
+  await expect(chart.locator('.echart')).toHaveCSS('filter', 'none');
   expect(await headingNode!.evaluate(node => node.isConnected)).toBe(true);
 
   hold();
   await table.getByRole('button', { name: '下一页', exact: true }).click();
   await expect(table).toHaveAttribute('aria-busy', 'true');
-  await expect(table).toContainText('合成类别1');
+  await expect(table.locator('.skeleton-row')).toHaveCount(10);
+  await expect(table.locator('tbody')).not.toContainText('合成类别1');
   await expect(table.locator('.loading-spinner')).toHaveCount(0);
   expect(await pagerNode!.evaluate(node => node.isConnected)).toBe(true);
   expect(await headingNode!.evaluate(node => node.isConnected)).toBe(true);
@@ -74,7 +87,8 @@ test('native components stay mounted through initial loading, filtering, paginat
   hold();
   await page.getByRole('group', { name: '测试轮次', exact: true }).getByRole('button', { name: '第2轮', exact: true }).click();
   await expect(table).toHaveAttribute('aria-busy', 'true');
-  await expect(table).toContainText('合成类别3');
+  await expect(table.locator('.skeleton-row')).toHaveCount(10);
+  await expect(chart.locator('.echart-frame.loading')).toBeVisible();
   await expect(metric.locator('.row-value').first()).toHaveText('10');
   await expect(metric.locator('.loading-spinner')).toHaveCount(0);
   expect(await chartNode!.evaluate(node => node.isConnected)).toBe(true);
@@ -87,7 +101,7 @@ test('native components stay mounted through initial loading, filtering, paginat
   await table.getByRole('button', { name: '展开子表格', exact: true }).first().click();
   const nested = table.locator('.table-widget');
   await expect(nested.getByRole('columnheader', { name: '子项类别', exact: true })).toBeVisible();
-  await expect(nested.getByText('正在加载…', { exact: true })).toBeVisible();
+  await expect(nested.locator('.skeleton-row')).toHaveCount(10);
   const nestedHeading = await nested.locator('thead').elementHandle();
   release();
   await expect(nested).toContainText('合成类别1');
@@ -96,11 +110,12 @@ test('native components stay mounted through initial loading, filtering, paginat
   hold();
   await page.getByRole('tab', { name: '收入', exact: true }).click();
   const revenue = page.locator('[data-tab-panel="revenue"]');
-  await expect(revenue.locator('.echart')).toBeVisible();
+  await expect(revenue.locator('.echart-frame')).toBeVisible();
   await expect(revenue.getByRole('columnheader', { name: '类别', exact: true })).toBeVisible();
   const regularHeading = await revenue.locator('thead').elementHandle();
   await expect(revenue.locator('[aria-busy="true"]')).not.toHaveCount(0);
-  await expect(revenue.locator('.skeleton')).toHaveCount(0);
+  await expect(revenue.locator('.echart-frame.loading')).toBeVisible();
+  await expect(revenue.locator('.skeleton-row')).toHaveCount(10);
   const lineNode = await revenue.locator('.echart').elementHandle();
   release();
   await expect(revenue.locator('[aria-busy="true"]')).toHaveCount(0);
@@ -117,6 +132,7 @@ test('native components stay mounted through initial loading, filtering, paginat
 
 test('all component families share a replayable loading review without replacing their cells', async ({ page }) => {
   const { flattenPageComponents } = await import('../../../packages/page/src/component-walk');
+  const chartTypes = new Set(['barChart', 'lineChart', 'pieChart', 'mapChart', 'gauge']);
   const components = flattenPageComponents<import('@metriccanvas/page/internal').Component>(fixture)
     .filter(component => 'data' in component && component.data?.main === 'gallery');
   const errors: string[] = [];
@@ -143,15 +159,22 @@ test('all component families share a replayable loading review without replacing
       await expect(cell.locator('.loading-spinner')).toHaveCount(0);
       await expect(cell.locator('.loading-indicator')).toHaveCount(0);
       await expect(cell.locator('.row-value').first()).toHaveText('--');
+    } else if (chartTypes.has(component.type)) {
+      await expect(cell.locator('.echart-frame.loading, .gauge-plot.loading')).toBeVisible();
+      await expect(cell.locator('.loading-spinner')).toHaveCount(0);
     } else {
-      await expect(cell.locator('.loading-spinner')).toHaveCount(component.type === 'table' ? 0 : 1);
+      await expect(cell.locator('.loading-spinner')).toHaveCount(0);
+      await expect(cell.locator('.skeleton').first()).toBeVisible();
     }
     cells.push(await cell.elementHandle());
   }
-  // The active orders tab also owns one chart outside the gallery source.
-  await expect(dashboard.locator('.loading-spinner')).toHaveCount(components.filter(component => component.type !== 'metricCard' && component.type !== 'table').length + 1);
-  await expect(report.locator('.ai-summary .loading-spinner')).toHaveCount(1);
-  await expect(page.locator('.skeleton')).toHaveCount(0);
+  // Every family, including AI summary and its replay, uses a static loading presentation.
+  await expect(dashboard.locator('.loading-spinner')).toHaveCount(0);
+  await expect(report.locator('.ai-summary .loading-spinner')).toHaveCount(0);
+  await expect(report.locator('.ai-summary .text-skeleton')).toBeVisible();
+  await expect(page.locator('.loading-spinner, .loading-indicator')).toHaveCount(0);
+  await expect(page.getByText(/正在加载|加载中…|加载页面…/)).toHaveCount(0);
+  await expect(dashboard.locator('.skeleton-row')).not.toHaveCount(0);
   await page.screenshot({ path: '/tmp/mc-loading-gallery/loading-wide.png', fullPage: true });
   release();
   await expect(dashboard.locator('[aria-busy="true"]')).toHaveCount(0);
@@ -163,8 +186,9 @@ test('all component families share a replayable loading review without replacing
   await page.screenshot({ path: '/tmp/mc-loading-gallery/ready-wide.png', fullPage: true });
   hold();
   await page.getByRole('button', { name: '重新播放全部加载', exact: true }).click();
-  await expect(dashboard.locator('.loading-spinner')).toHaveCount(components.filter(component => component.type !== 'metricCard' && component.type !== 'table').length + 1);
-  await expect(report.locator('.ai-summary .loading-spinner')).toHaveCount(1);
+  await expect(dashboard.locator('.loading-spinner')).toHaveCount(0);
+  await expect(report.locator('.ai-summary .loading-spinner')).toHaveCount(0);
+  await expect(report.locator('.ai-summary .text-skeleton')).toBeVisible();
   release();
   await expect(page.locator('.loading-spinner')).toHaveCount(0);
   await page.setViewportSize({ width: 390, height: 844 });
@@ -234,5 +258,61 @@ for (const outcome of ['ready', 'empty', 'error'] as const) {
         await expect(card.locator('.trend-arrow, .unit, .change-unit')).toHaveCount(0);
       }
     }
+  });
+}
+
+
+test('query sorting replaces only the table body with ten skeleton rows', async ({ page }) => {
+  let pending = Promise.resolve();
+  let release: () => void = () => {};
+  await page.route('**/dsl/execute', async route => {
+    const request = route.request().postDataJSON();
+    await pending;
+    await route.fulfill({ json: { retCode: 'CBC.0000', results: request.dsl_list.map(simulatedReceipt) } });
+  });
+  await page.goto(`/pages/${fixture.id}`);
+  const table = page.locator('[data-tab-panel="orders"] .table-widget');
+  await expect(table).toContainText('合成类别1');
+  const heading = await table.locator('thead').elementHandle();
+  const pager = await table.locator('.pager').elementHandle();
+  const sort = table.getByRole('columnheader', { name: /订单量/ }).locator('.sort-toggle');
+  pending = new Promise<void>(resolve => { release = resolve; });
+  await sort.click();
+  await expect(table.locator('.skeleton-row')).toHaveCount(10);
+  await expect(table.locator('tbody')).not.toContainText('合成类别1');
+  await expect(table.locator('.loading-spinner')).toHaveCount(0);
+  expect(await heading!.evaluate(node => node.isConnected)).toBe(true);
+  expect(await pager!.evaluate(node => node.isConnected)).toBe(true);
+  release();
+  await expect(table.locator('.skeleton-row')).toHaveCount(0);
+  await expect(table).toContainText('合成类别1');
+  pending = new Promise<void>(resolve => { release = resolve; });
+  await sort.click();
+  await expect(table.locator('.skeleton-row')).toHaveCount(10);
+  release();
+  await expect(table).toContainText('合成类别4');
+  await expect(table.locator('.skeleton-row')).toHaveCount(0);
+});
+
+
+for (const outcome of ['empty', 'error'] as const) {
+  test(`chart and table skeletons end when the query settles to ${outcome}`, async ({ page }) => {
+    let release: () => void = () => {};
+    const pending = new Promise<void>(resolve => { release = resolve; });
+    await page.route('**/dsl/execute', async route => {
+      await pending;
+      const request = route.request().postDataJSON();
+      await route.fulfill(outcome === 'error' ? { status: 500, body: 'Synthetic failure' }
+        : { json: { retCode: 'CBC.0000', results: request.dsl_list.map(() => ({ code: 'SUCCESS', data: [], total_count: 0 })) } });
+    });
+    await page.goto(`/pages/${fixture.id}`);
+    const orders = page.locator('[data-tab-panel="orders"]');
+    await expect(orders.locator('.skeleton-row')).toHaveCount(10);
+    await expect(orders.locator('.echart-frame.loading')).toBeVisible();
+    release();
+    await expect(orders.locator('[aria-busy="true"]')).toHaveCount(0);
+    await expect(orders.locator('.skeleton, .echart-frame.loading')).toHaveCount(0);
+    await expect(orders.locator('.table-widget')).toContainText('暂无数据');
+    await expect(orders.getByText('正在加载…', { exact: true })).toHaveCount(0);
   });
 }

@@ -4,6 +4,7 @@
 </script>
 
 <script lang="ts">
+  import TextSkeleton from '../../shared/TextSkeleton.svelte';
   import type { TextBlockLink } from './links';
   import type { TextProps } from '@metriccanvas/page/internal';
   import SemanticHtml from '../../shared/SemanticHtml.svelte';
@@ -20,9 +21,10 @@
     props: Omit<TextProps, 'links'>;
     /** 页面声明的链接经统一运行时解析为 href 后传入。 */
     links?: TextBlockLink[];
+    loading?: boolean;
   }
 
-  let { props, links = [] }: Props = $props();
+  let { props, links = [], loading = false }: Props = $props();
 </script>
 
 <div
@@ -43,7 +45,8 @@
       <img class="inline-icon" src={aiSummaryIconUrl} alt="" aria-hidden="true" />
       <div class="inline-content">
         <strong class="inline-label">{props.title ?? 'AI 总结'}：</strong>
-        {#if props.body && props.bodyFormat === 'semanticHtml'}
+        {#if loading}<div class="body"><TextSkeleton /></div>
+        {:else if props.body && props.bodyFormat === 'semanticHtml'}
           <div class="body semantic-body">
             <SemanticHtml source={props.body} inline toneWeight="regular" />
           </div>

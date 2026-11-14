@@ -314,15 +314,20 @@ for (const container of ['plain', 'card'] as const) test(`${container}: loading/
     }, { serializedDocument, mode });
     for (const title of ['趋势标题', '排行标题', '明细标题']) await expect(page.getByText(title, { exact: true })).toBeVisible();
     if (mode === 'loading') {
-      await expect(page.locator('.skeleton')).toHaveCount(0);
-      await expect(page.locator('.loading-spinner')).toHaveCount(2);
+      await expect(page.locator('.skeleton-row')).toHaveCount(10);
+      await expect(page.locator('.echart-frame.loading')).toHaveCount(1);
+      await expect(page.locator('.echart')).toHaveCSS('filter', 'grayscale(1)');
+      await expect(page.locator('.chart-skeleton')).toHaveCount(0);
+      await expect(page.locator('.loading-spinner')).toHaveCount(0);
+      await expect(page.locator('.ranking-card .skeleton').first()).toBeVisible();
       await expect(page.locator('.table-widget .loading-spinner')).toHaveCount(0);
       await expect(page.getByRole('columnheader', { name: '配置列头', exact: true })).toBeVisible();
       await expect(page.locator('.ranking-card')).toBeVisible();
-      await expect(page.locator('.echart')).toBeVisible();
+      await expect(page.locator('.echart-frame')).toBeVisible();
     } else if (mode === 'error') {
       await expect(page.getByRole('alert')).toHaveCount(0);
-      await expect(page.locator('table tbody')).toHaveText('');
+      await expect(page.locator('.skeleton-row')).toHaveCount(0);
+      await expect(page.locator('table tbody')).toContainText('暂无数据');
       await expect(page.getByText('DQE_TRANSPORT_ERROR')).toHaveCount(0);
     } else {
       await expect(page.getByText('配置列头', { exact: true })).toBeVisible();

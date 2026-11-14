@@ -113,6 +113,16 @@ export function alignedFallback(binding: FieldBinding, data: NamedDataSlots, row
   const resolved = resolveField(binding, data);
   return rowCellFallback(row.bySlot[resolved.data], resolved.field);
 }
+/** A pending field is distinct from an absent business value. */
+export function alignedCellLoading(binding: FieldBinding, data: NamedDataSlots, row: AlignedTableRow): boolean {
+  const resolved = resolveField(binding, data);
+  const slot = data[resolved.data];
+  if (!slot || alignedFieldValue(binding, data, row) != null) return false;
+  if (slot.sourceStatus === 'error') return false;
+  if (slot.progress) return slot.progress.pendingFields.includes(resolved.field);
+  return slot.sourceStatus === 'loading';
+}
+
 export function alignedCellText(binding: FieldBinding, data: NamedDataSlots, row: AlignedTableRow, enumValues?:TableColumn['enumValues'], unit?: string, absoluteDisplayLimit?: number): string {
   const resolved = resolveField(binding, data);
   if (row.kind === 'pinnedTop' && resolved.data === '__unbound') return '';

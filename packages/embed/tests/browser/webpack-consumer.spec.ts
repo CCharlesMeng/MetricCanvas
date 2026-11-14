@@ -184,12 +184,12 @@ test('Webpack 5 pure_getters compression preserves async child updates without f
     const toggle = parent.getByRole('button', { name: /^(展开|收起)子表格$/ }).first();
     const child = parent.getByRole('region', { name: '子表格', exact: true });
     await toggle.click();
-    await expect(child.getByText('正在加载…', { exact: true })).toBeVisible();
+    await expect(child.locator('.skeleton-row')).toHaveCount(10);
     await page.evaluate(() => window.webpackChildProbe.release());
     await expect(child.getByRole('cell', { name: 'C01-001', exact: true })).toBeVisible();
-    await expect(child.getByText('正在加载…', { exact: true })).toHaveCount(0);
+    await expect(child.locator('.skeleton-row')).toHaveCount(0);
     await child.getByRole('button', { name: '下一页', exact: true }).click();
-    await expect(child.getByRole('cell', { name: 'C01-001', exact: true })).toBeVisible();
+    await expect(child.locator('.skeleton-row')).toHaveCount(10);
     await expect(child.locator('.table-widget')).toHaveAttribute('aria-busy', 'true');
     await page.evaluate(() => window.webpackChildProbe.release());
     await expect(child.getByRole('cell', { name: 'C01-011', exact: true })).toBeVisible();
@@ -211,7 +211,7 @@ test('Webpack 5 pure_getters compression preserves async child updates without f
     await page.evaluate(() => window.webpackChildProbe.release());
     await expect(child).toHaveCount(0);
     await toggle.click();
-    await expect(child.getByText('正在加载…', { exact: true })).toBeVisible();
+    await expect(child.locator('.skeleton-row')).toHaveCount(10);
     await page.evaluate(() => window.webpackChildProbe.release());
     await expect(child.getByRole('cell', { name: 'C01-001', exact: true })).toBeVisible();
     expect(await page.evaluate(() => window.webpackChildProbe.calls)).toBe(6);

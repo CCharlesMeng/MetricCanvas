@@ -9,7 +9,7 @@
       "module": "table",
       "reference": "references/page-metadata/components/table.md",
       "blocks": [
-        "# 明细表 table\n\n首次加载保留表头和工具栏，表体仅显示静态“正在加载…”，不显示加载动画；刷新、查询翻页和排序期间保留上一份完整展示，当前结果就绪后替换。旧行暂时不可交互，不进入新查询或导出；完整边界见[加载时保留组件结构](../data-sources.md#screen-loading)。 级联查询按[渐进补列](../data-sources.md#progressive-table-columns)先显示已确定行集的就绪列，未完成和失败列显示 `--`；行集与顺序有待确认时继续保留旧展示。\n\ncolumns/children 定义字段列与递归列组；交互、查询与呈现约束见下列专题。\n\n\n<a id=\"local-default-sort\"></a>",
+        "# 明细表 table\n\n首次加载、筛选重查、查询翻页和排序期间保留表头、工具栏及分页区域，表体统一显示10行静态骨架，不显示加载提示文字或转圈；当前结果就绪后替换。本地即时操作不增加加载等待，展开子表格遵循同一规则。完整边界见[加载时保留组件结构](../data-sources.md#screen-loading)。级联查询按[渐进补列](../data-sources.md#progressive-table-columns)先显示已确定行集的就绪列，未完成单元格显示骨架，失败或确认缺失的值沿用既有缺失展示；行集与顺序有待确认时继续显示表体骨架。\n\ncolumns/children 定义字段列与递归列组；交互、查询与呈现约束见下列专题。\n\n\n<a id=\"local-default-sort\"></a>",
         "## 查询默认排序的首屏方向\n\n查询分页使用服务总条数；排序和表头筛选遵守查询分页限制。\n\n普通 query 数据源在 `source.query.body.dsl_list[0].order` 声明 `order_by_field` 和 `type: \"asc\" | \"desc\"` 时，表格首次显示对应列的排序方向。运行时将查询字段名通过 `queryField` 映射为页面字段 id；模式查询先选择当前已应用分支及其字段映射。未知、歧义或非法排序不生成虚假的列头方向，查询错误仍由原执行入口报告。\n\n该回显只影响初始表头呈现，不把服务端默认排序写成用户排序，不改变初始快照复用、查询、分页或取数次数。用户点击排序或清除后，以该表实例已提交的操作为准；普通数据刷新不补回初始方向，完整视图重置重新回显声明。pagedJoin/pagedUnion 继续使用既有 ordering.default。\n\n可观察入口 `/pages/query-sort-baseline` 使用合成初始快照：表格首次显示决策时长降序，两个柱线混合图分别保持时长 6/3/1、人数 8/4/2 的行序，并显示固定 2 天、5 人基线。它验证配置与呈现，不证明真实 DQE 服务排序。"
       ],
       "rules": [

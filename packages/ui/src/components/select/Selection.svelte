@@ -1,5 +1,6 @@
 <svelte:options css="injected" />
 <script lang="ts">
+  import LoadingPlaceholder from '../../shared/LoadingPlaceholder.svelte';
   import { tick } from 'svelte';
   import Theme from '../../shared/Theme.svelte';
   import { observePopover, popoverPosition } from '../../shared/popover';
@@ -8,9 +9,9 @@
   import { selectionNodes, flattenNodes, filterNodes, selectionState, toggleSelection, type SelectionNode, type TreeSelection } from './selection';
 
   let {options, value = [], label, multiple = true, tree = false, searchable = true,
-    treeSelection = 'independent', clearable = false, disabled = false, placeholder = '请选择', statusText, statusError = false, required = false, onretry, onchange}:
+    treeSelection = 'independent', clearable = false, disabled = false, loading = false, placeholder = '请选择', statusText, statusError = false, required = false, onretry, onchange}:
     {options: UiTreeOption[]; value?: string[]; label: string; multiple?: boolean; tree?: boolean;
-     searchable?: boolean; treeSelection?: TreeSelection; disabled?: boolean; placeholder?: string;
+     loading?: boolean; searchable?: boolean; treeSelection?: TreeSelection; disabled?: boolean; placeholder?: string;
      statusText?: string; statusError?: boolean; clearable?: boolean; required?: boolean; onretry?:()=>void; onchange?: (value: string[]) => void} = $props();
 
   let trigger: HTMLButtonElement;
@@ -136,14 +137,15 @@
       </div>
     {/if}
   </div>
-  <div bind:this={popup} popover="auto" class="mc-ui-select-dropdown selection-popup" role="dialog" aria-label={`${label}候选`} tabindex="-1"
+  <div bind:this={popup} aria-busy={loading} popover="auto" class="mc-ui-select-dropdown selection-popup" role="dialog" aria-label={`${label}候选`} tabindex="-1"
     style:left="{left}px" style:top="{top}px" style:min-width="{Math.max(width, searchable || tree || multiple ? 240 : 0)}px"
     ontoggle={() => {open = popup.matches(':popover-open');}} onkeydown={popupKeys}>
     {#if searchable}<div class="mc-ui-input mc-ui-input-underline mc-ui-select-dropdown__search">
       <span class="mc-ui-input__prefix"><Icon name="search"/></span>
       <input bind:this={searchInput} class="mc-ui-input__inner" type="text" aria-label={`搜索${label}`} placeholder="输入关键字搜索" bind:value={keyword}/>
     </div>{/if}
-    {#if statusText}<p class="selection-status" role={statusError ? 'alert' : 'status'}>{statusText}</p>{#if statusError && onretry}<button type="button" class="mc-ui-option mc-ui-select-dropdown__item choice" onclick={onretry}>重试</button>{/if}
+    {#if loading}<LoadingPlaceholder />
+    {:else if statusText}<p class="selection-status" role={statusError ? 'alert' : 'status'}>{statusText}</p>{#if statusError && onretry}<button type="button" class="mc-ui-option mc-ui-select-dropdown__item choice" onclick={onretry}>重试</button>{/if}
     {:else if !visible.length}<p class="selection-status" role="status">{searchActive ? '无匹配候选项' : '无候选项'}</p>
     {:else if tree}
       <div class="mc-ui-tree mc-ui-tree--show-line selection-tree" role="tree" aria-label={`${label}选项`} aria-multiselectable={multiple}>

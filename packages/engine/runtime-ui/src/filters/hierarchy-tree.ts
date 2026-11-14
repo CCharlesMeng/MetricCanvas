@@ -90,6 +90,6 @@ export function hierarchyTreeSelection(snapshot: DimensionValuesSnapshot, keys: 
 export function hierarchyTreeStatus(snapshot: DimensionValuesSnapshot): string | undefined {
   if (snapshot.status === 'ready') return;
   if (snapshot.status === 'error') return `候选项加载失败(${snapshot.error.code})`;
-  const labels = { idle: '候选项加载中…', loading: '候选项加载中…', empty: '无候选项', unavailable: '候选项不可用', denied: '无权访问候选项', unconfigured: '候选能力未配置' };
+  const labels = { idle: undefined, loading: undefined, empty: '无候选项', unavailable: '候选项不可用', denied: '无权访问候选项', unconfigured: '候选能力未配置' };
   return labels[snapshot.status];
 }

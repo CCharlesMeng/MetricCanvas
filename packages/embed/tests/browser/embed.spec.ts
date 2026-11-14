@@ -2257,8 +2257,8 @@ test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态',
     });
   }, flowReportDocument);
   const yoyDropTable = host.locator('[data-component="customer-analysis/yoy-drop-table"]');
-  await expect(yoyDropTable.locator('.skeleton')).toHaveCount(0);
-  await expect(yoyDropTable.locator('.loading-spinner')).toBeVisible();
+  await expect(yoyDropTable.locator('.skeleton-row')).toHaveCount(10);
+  await expect(yoyDropTable.locator('.loading-spinner')).toHaveCount(0);
   await expect(yoyDropTable.locator('thead')).toBeVisible();
 
   await page.evaluate((sourceDocument: FlowReportDocument) => {

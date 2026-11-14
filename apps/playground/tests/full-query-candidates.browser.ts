@@ -35,7 +35,8 @@ test('opening another column preempts a hung preload and leaves the rendered tab
   await expect.poll(async () => (await requests()).filter(event => event.kind === 'candidate' && event.phase === 'start').length).toBe(1);
   const offices = table.locator('th[data-column-field="office"]');
   await offices.locator('summary').click();
-  await expect(offices.getByText('候选项加载中…')).toBeVisible();
+  await expect(offices.locator('.text-skeleton')).toBeVisible();
+  await expect(offices.getByText('候选项加载中…')).toHaveCount(0);
   await expect.poll(async () => (await requests()).some(event => event.kind === 'candidate' && event.phase === 'abort')).toBe(true);
   await expect.poll(async () => (await requests()).filter(event => event.kind === 'candidate' && event.phase === 'start').length).toBe(2);
   await expect(table.locator('tbody tr')).toHaveCount(20);

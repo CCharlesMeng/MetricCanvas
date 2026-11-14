@@ -249,7 +249,7 @@
 {:else if component.type === 'table' && table?.expansion && !exportMode}
   <ExpandableTable {component} data={tableData} binding={table} {snapshot} />
 {:else}
-  <WidgetHost {snapshot} retained={screen.retained} showLoadingIndicator={component.type !== 'table' && component.type !== 'metricCard'} notices={component.type === 'table' && snapshot.status === 'error' ? [] : componentDataNotices(component, snapshot, pageSnapshots, table)}>
+  <WidgetHost {snapshot} retained={screen.retained} notices={component.type === 'table' && snapshot.status === 'error' ? [] : componentDataNotices(component, snapshot, pageSnapshots, table)}>
     {#snippet ready(_readySnapshot)}
       {#if component.type === 'metricCard'}
         <MetricCard loading={snapshot.status === 'loading' && !screen.retained} data={metricData} props={component.props} onlink={onmetriclink} linkHref={metricHref} />

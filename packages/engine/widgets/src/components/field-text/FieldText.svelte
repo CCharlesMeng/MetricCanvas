@@ -1,5 +1,9 @@
 <svelte:options css="injected" />
 <script lang="ts">
+  import { getContext } from 'svelte';
+  import { STATIC_EXPORT_CONTEXT } from '../../shared/export-context';
+  const staticExport = Boolean(getContext(STATIC_EXPORT_CONTEXT));
+  import TextSkeleton from '../../shared/TextSkeleton.svelte';
   import { formatFieldValue, fieldUnitText } from '../../shared/field-presentation';
   import type { FieldTextProps } from '@metriccanvas/page/internal';
   import type { MainDataSlots } from '../../shared/component-data';
@@ -17,6 +21,7 @@
   }
 
   let { data, props }: Props = $props();
+  const loading = $derived(!staticExport && data.main.sourceStatus === 'loading');
 
   const resolved = $derived(resolveField(props.field, data));
   const value = $derived(fieldValue(props.field, data));
@@ -43,7 +48,8 @@
   class:narrative-progress={props.variant === 'narrativeProgress'}
 >
   {#if props.title}<h3>{props.title}</h3>{/if}
-  {#if semantic}
+  {#if loading}<p><TextSkeleton /></p>
+  {:else if semantic}
     <SemanticHtml source={semantic.source} format={semantic.format} />
   {:else}
     <p>{formatFieldValue(value, resolved)}</p>

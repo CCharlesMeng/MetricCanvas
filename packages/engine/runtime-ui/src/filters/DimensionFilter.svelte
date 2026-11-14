@@ -1,5 +1,6 @@
 <svelte:options css="injected" />
 <script lang="ts">
+  import TextSkeleton from '../../../widgets/src/shared/TextSkeleton.svelte';
   import { Selection, type UiTreeOption, type TreeSelection } from '@metriccanvas/ui';
   import {structuralTree} from './structural-tree';
   import type {DimensionSelectionExtension} from '@metriccanvas/page/internal';
@@ -9,6 +10,7 @@
     {label?: string; emptyLabel?: string; candidates: DimensionValuesSnapshot; value: string[];
      display?: 'select'|'tabs'|'tree'|'search'; selection?: DimensionSelectionExtension['selection']; searchable?: boolean;
      treeSelection?: TreeSelection; explicitParents?:boolean; structural?:boolean; treeLevel?:string; onretry?:()=>void; disabled?: boolean; onchange: (values:string[]) => void} = $props();
+  const loading = $derived(candidates.status === 'idle' || candidates.status === 'loading');
   const options = $derived(candidates.status === 'ready' ? candidates.candidates : []);
   function toUi(node: FilterTreeNode): UiTreeOption {
     return {value: node.value ?? `structure:${node.path}`, label: node.label, disabled:node.disabled, selectable: node.value !== null, children: node.children.length ? node.children.map(toUi) : undefined};
@@ -21,7 +23,7 @@
     catch {return {options:[], error:true};}
   });
   const statusText = $derived(treeResult.error ? '候选层级无效' :
-    candidates.status === 'idle' || candidates.status === 'loading' ? '候选项加载中…' :
+    candidates.status === 'idle' || candidates.status === 'loading' ? undefined :
     candidates.status === 'empty' ? '无候选项' : candidates.status === 'unavailable' ? '候选项不可用' :
     candidates.status === 'denied' ? '无权访问候选项' : candidates.status === 'unconfigured' ? '候选能力未配置' : candidates.status === 'error' ? `候选项加载失败(${candidates.error.code})` : undefined);
 </script>
@@ -32,10 +34,10 @@
       {#if !selection?.required}<button type="button" role="tab" class="tab" class:active={!value.length} aria-selected={!value.length} {disabled} onclick={() => commit([])}>{emptyLabel}</button>{/if}
       {#each options as option (option.value)}<button type="button" role="tab" class="tab" class:active={value.includes(option.value)} aria-selected={value.includes(option.value)} disabled={disabled||option.disabled} onclick={() => commit([option.value])}>{option.label}</button>{/each}
     </div>
-    {#if statusText}<span role={candidates.status === 'error' ? 'alert' : 'status'} data-candidates-status={candidates.status}>{statusText}</span>{/if}
+    {#if loading}<TextSkeleton lines={1} />{:else if statusText}<span role={candidates.status === 'error' ? 'alert' : 'status'} data-candidates-status={candidates.status}>{statusText}</span>{/if}
   {:else}
     <div class="dropdown" data-candidates-status={candidates.status}>
-      <Selection label={label ?? '维度筛选'} options={treeResult.options} {value} {onretry} tree={display === 'tree'} multiple={selection?.mode !== 'single'} {searchable} treeSelection={structural?'independent':treeSelection} {disabled} required={selection?.required} clearable={!selection?.required} placeholder={emptyLabel} {statusText} statusError={treeResult.error || candidates.status === 'error'} onchange={commit}/>
+      <Selection {loading} label={label ?? '维度筛选'} options={treeResult.options} {value} {onretry} tree={display === 'tree'} multiple={selection?.mode !== 'single'} {searchable} treeSelection={structural?'independent':treeSelection} {disabled} required={selection?.required} clearable={!selection?.required} placeholder={emptyLabel} {statusText} statusError={treeResult.error || candidates.status === 'error'} onchange={commit}/>
     </div>
   {/if}
 </div>

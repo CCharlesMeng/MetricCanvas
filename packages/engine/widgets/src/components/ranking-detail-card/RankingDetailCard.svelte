@@ -1,5 +1,10 @@
 <svelte:options css="injected" />
 <script lang="ts">
+  import { getContext } from 'svelte';
+  import { STATIC_EXPORT_CONTEXT } from '../../shared/export-context';
+  const staticExport = Boolean(getContext(STATIC_EXPORT_CONTEXT));
+  import Skeleton from '../../shared/Skeleton.svelte';
+  import TextSkeleton from '../../shared/TextSkeleton.svelte';
   import type { RankingDetailCardProps } from '@metriccanvas/page/internal';
   import type { MainDataSlots } from '../../shared/component-data';
   import SemanticHtml from '../../shared/SemanticHtml.svelte';
@@ -17,6 +22,7 @@
   }
 
   let { data, props }: Props = $props();
+  const loading = $derived(!staticExport && data.main.sourceStatus === 'loading');
   const rows = $derived(buildRankingDetailRows(data, props));
 
   let root = $state<HTMLElement | null>(null);
@@ -80,6 +86,11 @@
   {/if}
   <div class="ranking-content">
     <ol>
+      {#if loading}
+        {#each Array(3) as _}
+          <li class="ranking-detail-row" aria-hidden="true"><span class="rank"><Skeleton width="18px" /></span><div class="detail"><TextSkeleton lines={2} /></div></li>
+        {/each}
+      {:else}
       {#each rows as row, rowIndex (row.rank)}
         <li bind:this={rowElements[rowIndex]} class="ranking-detail-row">
         <span class:top-three={row.rank <= 3} class="rank" aria-label={`第 ${row.rank} 名`}>
@@ -134,6 +145,7 @@
       {:else}
         <li class="empty">暂无数据</li>
       {/each}
+      {/if}
     </ol>
   </div>
 </section>
