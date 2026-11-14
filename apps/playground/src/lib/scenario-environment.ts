@@ -1,5 +1,5 @@
 import {createKeylessChildPreview} from '../../fixtures/child-keyless';
-import {createIndependentRequestsPreview} from '../../fixtures/dqe-independent-requests';
+import {createIndependentRequestsPreview} from '../../fixtures/independent-query-preview';
 import {createFinalizationPreview} from '../../fixtures/finalization';
 import {createObjectPeriodPreview} from '../../fixtures/object-period-query';
 import {createIocHeaderControlsPreview} from '../../fixtures/ioc-header-controls';
