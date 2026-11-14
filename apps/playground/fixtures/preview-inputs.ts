@@ -3,6 +3,7 @@ const unionPages = new Set(['multi-source-table', 'multi-source-composite-key', 
 const businessPages = new Set(Object.keys(import.meta.glob('../../../pages/capabilities/ioc-header/business/*.json')).map(path => path.split('/').pop()!.slice(0, -5)));
 const exactInputs = new Map([
   ['dqe-independent-requests','independent-requests'],
+  ['ioc-async-preparation','async-preparation'],
   ['finalization-default-time','finalization'], ['finalization-default-time-detail','finalization'],
   ['report-monthly-complete','report-monthly'],
   ['table-child-keyless','child-keyless'],

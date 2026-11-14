@@ -381,7 +381,8 @@
         "filter-source-candidates",
         "finalization-default-time",
         "finalization-default-time-detail",
-        "finalization-date-defaults"
+        "finalization-date-defaults",
+        "ioc-async-preparation"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -402,7 +403,10 @@
         "packages/page/src/filter-url.ts",
         "packages/page/src/source-candidates.ts",
         "packages/page/src/finalization-default.ts",
-        "packages/data-execution/src/finalization.ts"
+        "packages/data-execution/src/finalization.ts",
+        "packages/page/src/native-ioc.ts",
+        "packages/data-execution/src/native-ioc-preparation.ts",
+        "packages/data-execution/src/finalization-preparation.ts"
       ],
       "rules": [
         "filter-id-unique",
@@ -2354,7 +2358,8 @@
     "6.116": "对象字段绑定省略data时固定引用main数据槽，组件数据源绑定和FieldReference约束保持。",
     "#/properties/schemaVersion=\"6.117\"": "记录关联单批超时允许超过120秒，最多180秒，旧版本保持120秒上限。",
     "#/properties/schemaVersion=\"6.118\"": "记录组合源 auto 自动选择主查询分页或保留全部条件的完整关联；旧页面执行语义不变。",
-    "#/properties/schemaVersion=\"6.119\"": "表格数值列支持按原始绝对值展示阈值，复用颜色和箭头，保留原值。"
+    "#/properties/schemaVersion=\"6.119\"": "表格数值列支持按原始绝对值展示阈值，复用颜色和箭头，保留原值。",
+    "#/properties/schemaVersion=\"6.120\"": "标准 IOC 重点绑定通过已有候选端口异步准备，页面结构先呈现；真实定稿结果会话级单处缓存4小时，无跨页在途请求复用；旧页面保留原执行语义。"
   },
   "branchExceptions": {
     "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/titleNavigate/properties/query/additionalProperties/oneOf/0": {
@@ -3392,6 +3397,7 @@
       "6.39 复杂时间与候选",
       "下拉搜索与普通树（6.43）",
       "IOC 业务批量场景与必选多选（6.46）",
+      "异步条件准备（6.120）",
       "布尔筛选覆盖（6.84）",
       "布尔候选依赖与条件启用（6.75）",
       "期间筛选驱动同比环比（6.77）",

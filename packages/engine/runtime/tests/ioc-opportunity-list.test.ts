@@ -1,4 +1,3 @@
-import { versionPolicy } from '@metriccanvas/page';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
@@ -48,7 +47,7 @@ describe('ioc-opportunity-list 骨架', () => {
 
   it('页面通过解析，筛选状态可往返', () => {
     const page = loadPage();
-    expect(page.schemaVersion).toBe(versionPolicy.current);
+    expect(page.schemaVersion).toBe('6.111');
     expect(page.filters).toHaveLength(10);
     const table = page.sections
       .flatMap((section) => section.components)

@@ -7,7 +7,9 @@
   import TextSkeleton from '../../widgets/src/shared/TextSkeleton.svelte';
   import {createAuthRequiredGateway, notifyAuthRequired, type AuthRequiredEvent} from './auth-required';
   import {invalidateAiSummaryPage} from './ai-summary/runtime/session';
-  import {resolveFinalizationDates} from '@metriccanvas/data-execution/runtime';
+  import {createFinalizationPreparation,inheritFinalizationCache} from '@metriccanvas/data-execution/runtime';
+  import {preparationBlocksPage,preparationBlocksFilter,discardPreparingData} from './preparation-blocked';
+  import {nativeSourceFilterIds,nativeIocRuntimePage} from '@metriccanvas/page/internal';
   import { hierarchyLevelOf } from '@metriccanvas/page/internal';
   import { projectSnapshotRows, snapshotCellFallbacks, tablePinnedSlots, restoreCellFallbacks, pinnedSnapshotError } from '@metriccanvas/page/internal';
   import { AI_SUMMARY_RUNTIME_CONTEXT, type AiSummaryRuntimeReader } from './ai-summary';
@@ -18,10 +20,9 @@
   import { PRESENTATION_CONTEXT } from './presentation-context';
   import { chartOptionPaths, isChartOptionError } from '@metriccanvas/page/internal';
   import { CHART_OPTION_PATHS } from '../../widgets/src/shared/chart-option-extension';
-  import {sourceFilterIds} from '@metriccanvas/page/internal';
   import {sourceCandidatesGateway,createCandidateGatewaySession} from '@metriccanvas/data-execution/runtime';
   let candidateSession:ReturnType<typeof createCandidateGatewaySession>|undefined;
-  import {filterInputIssue} from '../../runtime/src/navigation-inputs';
+  import {initialFilterInputIssue} from './initial-filter-input';
   import { filterCandidatesRequest } from '../../runtime/src/filter-candidates';
   import { candidateScopeKey } from '../../runtime/src/dimension-values';
   import { createIocRegionDefault } from './ioc-region-default';
@@ -288,6 +289,7 @@
   let snapshots = $state<PageDataSnapshots>(new Map());
   let blockedFilters = $state<string[]>([]);
   let confirmationFilters = $state<string[]>([]);
+  let preparingFilters = $state<string[]>([]);
   let filterValues = $state<FilterValues>(new Map());
   let pageParams = $state<PageParamValues>(new Map());
   let displaySnapshot=$state.raw<DisplaySnapshot|undefined>();
@@ -396,7 +398,7 @@
 
   let declarations = $state<FilterDeclaration[]>([]);
   let candidateClock=$state.raw(new Date());
-  const timeContext=$derived({snapshot:displaySnapshot,revision:filterRevision});
+  const timeContext=$derived({snapshot:displaySnapshot,revision:filterRevision,pending:preparingFilters});
   const candidateTimeContext=()=>({displayInputs:displaySnapshot,filterRevision,now:candidateClock});
   const filterCandidateContext=()=>({...candidateTimeContext(),page:pageState.phase==='ready'?pageState.page:undefined});
   let filterState: FilterState | null = null;
@@ -514,7 +516,7 @@
 
     let loaded: typeof parsed.page;
     try {
-      loaded = initializeRenderablePage(parsed.page, params.values, params.missing);
+      loaded = nativeIocRuntimePage(initializeRenderablePage(parsed.page, params.values, params.missing));
       selectedGroup = initialSectionGroup(loaded, params.values);
     } catch {
       pageState = {phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/params',message:'页面参数无法生成合法查询条件或内容组，请检查输入值与窗口范围'}]};
@@ -542,15 +544,12 @@
     const authGateway=createAuthRequiredGateway(gatewayOverride??inlineGateway,receiveAuthRequired);
     disposers.push(()=>authGateway.dispose());
     const nextCandidateSession=createCandidateGatewaySession(sourceCandidatesGateway(loaded,authGateway.gateway,{displayInputs:()=>displaySnapshot,filterRevision:()=>filterRevision,clock:()=>candidateClock}));
+    inheritFinalizationCache(nextCandidateSession.gateway,authGateway.gateway);
     candidateSession=nextCandidateSession;activeGateway=nextCandidateSession.gateway;
     disposers.push(()=>{nextCandidateSession.dispose();if(candidateSession===nextCandidateSession)candidateSession=undefined;});
 
     const finalizationController = new AbortController();
     disposers.push(() => finalizationController.abort());
-    let finalizationDates: ReadonlyMap<string,string>;
-    try { finalizationDates = await resolveFinalizationDates(loaded, activeGateway, candidateClock, finalizationController.signal); }
-    catch { return; }
-    if (session !== mySession) return;
 
     retainedScreenData.select(loaded, gatewayOverride, revisionId);
     declarationPage=loaded;
@@ -558,12 +557,17 @@
     const textBindings = collectFilterTextValueReferences(resolveParamTextValues(raw, { values: params.values, missingParams: new Set(params.missing) }));
     declarations = loaded.filters ?? [];
 
-    if(loaded.strictURLInputs===true){const privateIds=new Set((loaded.detailViews??[]).flatMap(view=>view.filters??[])),query=new URLSearchParams(search);const privateInput=declarations.some(f=>privateIds.has(f.id)&&Object.values(filterURLKeys(f,usesIocRegion(loaded))).some(key=>query.has(key)));const message=privateInput?'详情私有筛选不能由页面URL写入':filterInputIssue(search,declarations,candidateClock,usesIocRegion(loaded));if(message){pageState={phase:'input-invalid',message};emit?.({type:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters',message}]});return;}}
+    const message=initialFilterInputIssue(loaded,search,candidateClock);
+    if(message){pageState={phase:'input-invalid',message};emit?.({type:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters',message}]});return;}
     // 旧数组参数的显式 value 固定本次输入；分组参数仍允许 URL 参数与独立筛选初始化。
     let fromURL:Map<string,FilterValue>;
     try{fromURL = new Map(capabilities.filters && !paramDeclarations.some(p => !p.path && p.value !== undefined)
       ? parseFilterSearch(search,declarations,candidateClock,usesIocRegion(loaded))
       : new Map());}catch{pageState={phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters',message:'时间模式URL必须为合法完整mode/from/to'}]};emit?.({type:'invalid',errors:pageState.errors});return;}
+    const preparation=createFinalizationPreparation(loaded,activeGateway,bootstrap?.filters??fromURL,candidateClock,finalizationController.signal,displaySnapshot);
+    let finalizationDates:ReadonlyMap<string,string>;
+    try{finalizationDates=await preparation.initialDates();}catch{return;}
+    if(session!==mySession)return;
     const localOptions = filterGroupOptions(loaded);
     const localIssue = localFilterInitializationIssue(localOptions, fromURL, bootstrap, loaded.strictURLInputs === true);
     if (localIssue) {
@@ -572,7 +576,7 @@
       return;
     }
     let fromDeclarations:Map<string,FilterValue>;
-    try{fromDeclarations=initialFilterValues((loaded.filters??[]).filter(f=>!fromURL.has(f.id)),candidateClock,displaySnapshot,0,finalizationDates);}catch{pageState={phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters',message:'时间默认值或可信初始期间不符合声明精度和边界'}]};emit?.({type:'invalid',errors:pageState.errors});return;}
+    try{fromDeclarations=initialFilterValues((loaded.filters??[]).filter(f=>!fromURL.has(f.id)&&!preparation.pending.has(f.id)),candidateClock,displaySnapshot,0,finalizationDates);}catch{pageState={phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters',message:'时间默认值或可信初始期间不符合声明精度和边界'}]};emit?.({type:'invalid',errors:pageState.errors});return;}
     let state:ReturnType<typeof createFilterState>;
     try {
       state = createFilterState(bootstrap ? bootstrap.filters : new Map([...fromDeclarations, ...fromURL]), declarations, localOptions, { iocRegion:usesIocRegion(loaded), candidates:true, displayInputs:()=>displaySnapshot,readOnly: () => filterEditing?.readOnly === true || pageFiltersReadOnly(loaded) });
@@ -580,6 +584,7 @@
       pageState={phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters',message:'筛选初始化值不符合声明或日期边界'}]};
       emit?.({type:'invalid',errors:pageState.errors});return;
     }
+    for(const id of preparation.pending)state.preparing(id,true);
     filterState = state;
     const regionDefault = createIocRegionDefault(loaded, search, new Map([...fromDeclarations, ...fromURL]), !!bootstrap);
 
@@ -608,16 +613,14 @@
         const previous = filterValues;
         regionDefault.cancel(primed, changedFilters(previous, values).has('region'));
         filterValues = values;filterRevision=state.revision;candidateClock=state.clock();
-        blockedFilters = [...state.blocked()];confirmationFilters=[...state.confirmation()];
-        if (blockedFilters.length) {
-          for (const component of flattenPageComponents(loaded)) if (component.type==='table' && sourceBlocked(loaded,component.data.main)) exportController.cancel(component.id);
-          if (Object.keys(loaded.dataSources).some(id=>sourceBlocked(loaded,id))) exportController.cancel(pageExportTask);
-        }
+        blockedFilters = [...state.blocked()];confirmationFilters=[...state.confirmation()];preparingFilters=[...state.preparation()];
+        discardPreparingData(loaded,preparingFilters,values,stream?.getSourceProgram(),retainedScreenData);
+        cancelBlockedExports(loaded);
         if (candidatesLoader && changedFilters(previous,values).size) {
           for (const declaration of declarations) if (declaration.type === 'dimension' && !localOptions.has(declaration.id) && !declaration.options) loadDimensionCandidates(candidatesLoader,declaration,values);
           receiveCandidates(dimensionCandidates);
         }
-        const presentation = periodFactPage(filterTextPage(loaded, textBindings, values),displaySnapshot,state.revision);
+        const presentation = periodFactPage(filterTextPage(loaded, textBindings, values,state.preparation()),displaySnapshot,state.revision);
         declarations = presentation.filters ?? [];
         pageState = { phase: 'ready', page: presentation, capabilities };
         if (primed && capabilities.filters && changedFilters(previous,values).size > 0) {
@@ -637,7 +640,7 @@
     search = initializeURLSearch(loaded, search, navigationAdapter);
     tableController=createTableController(loaded,()=>stream,()=>syncTableState(loaded),()=>filterValues,candidateTimeContext,()=>({gateway:activeGateway,filters:filterValues,params:pageParams,blocked:blockedFilters,displaySnapshot,filterRevision}));
     syncTableState(loaded);
-    pageState = { phase: 'ready', page: periodFactPage(filterTextPage(loaded, textBindings, filterValues),displaySnapshot,state.revision), capabilities };
+    pageState = { phase: 'ready', page: periodFactPage(filterTextPage(loaded, textBindings, filterValues,state.preparation()),displaySnapshot,state.revision), capabilities };
 
     const pageStream = orchestrate(
       loaded,
@@ -659,7 +662,16 @@
         }
       })
     );
-    emit?.({ type: 'ready', pageId: loaded.id });
+    void preparation.resolve().then(dates=>{
+      if(session!==mySession||finalizationController.signal.aborted)return;
+      finalizationDates=dates;
+      state.completePreparation(preparation.values(dates));
+      emit?.({type:'ready',pageId:loaded.id});
+    }).catch(()=>{
+      if(session!==mySession||finalizationController.signal.aborted)return;
+      const errors:TypedError[]=[{type:'SCHEMA_ERROR',path:'/filters',message:'定稿日期无法生成合法的时间默认值'}];
+      pageState={phase:'invalid',errors};emit?.({type:'invalid',errors});
+    });
     const pendingInitial=new Set(declarations.filter(f=>(f.type==='timePoint'||f.type==='timeRange')&&f.availability?.initial&&!filterValues.has(f.id)&&!fromURL.has(f.id)).map(f=>f.id));
     let periodKey=canonicalizeJson([displaySnapshot?.periods??{},displaySnapshot?.timeZone??null]);
     refreshPeriodFacts=next=>{
@@ -738,10 +750,15 @@
     tableViews=captured.views;appliedTableHeaderFilters=captured.headers;tablePageSizes=captured.pageSizes;
     tableRevision+=1;
   }
+  function cancelBlockedExports(page:Page):void {
+    if(!blockedFilters.length)return;
+    for(const component of flattenPageComponents(page))if(component.type==='table'&&sourceBlocked(page,component.data.main))exportController.cancel(component.id);
+    if(Object.keys(page.dataSources).some(id=>sourceBlocked(page,id)))exportController.cancel(pageExportTask);
+  }
   function sourceBlocked(page: Page, sourceId: string): boolean {
+    if(stream?.getSourceProgram()?.preparing(sourceId,filterValues))return true;
     return [...conditionSourceIds(page,sourceId)].some(id => {
-      const source=page.dataSources[id];
-      return sourceFilterIds(source).some(id=>blockedFilters.includes(id));
+      return nativeSourceFilterIds(page,id).some(id=>blockedFilters.includes(id));
     });
   }
   async function exportTable(component: TableComponent) {
@@ -881,7 +898,7 @@
     values: FilterValues,
     force=false
   ) {
-    if(declaration.options)return;
+    if(declaration.options||preparationBlocksFilter(declaration,declarations,preparingFilters))return;
     const context=cascadeContext(declaration,declarations,values,filterCandidateContext());
     const levels=declaration.hierarchy?.map(level=>level.id)??[undefined];
     for(const level of levels){
@@ -1069,6 +1086,7 @@
       openDetail = { ...openDetail, view };
       try {
         const input = detailViewInput(page, action, row, filterValues, pageParams);
+        if(preparationBlocksPage(input.page,preparingFilters))throw new Error('详情依赖的统计期间尚未就绪');
         openDetail = { ...openDetail, view:view?{...view,components:input.page.sections[0]!.components}:undefined, page: input.page };
         detailFilters=input.filters;
         if (view?.mode === 'query') {

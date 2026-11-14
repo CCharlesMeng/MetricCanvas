@@ -7,8 +7,8 @@ import type { FilterValues } from '../../runtime/src';
 import { DEFAULT_NULL_TEXT, formatValue } from '../../widgets/src/shared/value-format';
 
 /** 同一文本投影供页面呈现与导出捕获使用，读取已应用状态而非输入草稿。 */
-export function filterTextPage(page: Page, usages: readonly FilterTextValueUsage[], values: FilterValues): Page {
-  return projectFieldSelections(applyFilterTextValues(page, usages, reference => filterText(reference, values,page.filters)),values,true);
+export function filterTextPage(page: Page, usages: readonly FilterTextValueUsage[], values: FilterValues, pending:ReadonlySet<string>=new Set()): Page {
+  return projectFieldSelections(applyFilterTextValues(page, usages, reference => pending.has(reference.filter)?DEFAULT_NULL_TEXT:filterText(reference, values,page.filters)),values,true);
 }
 
 export function filterText(reference: FilterTextValueReference, values: FilterValues,declarations:Page['filters']=[]): string {

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import {createAsyncPreparationPreview} from '../../../../../fixtures/async-preparation';
   import {createKeylessChildPreview} from '../../../../../fixtures/child-keyless';
   import {createIndependentRequestsPreview} from '../../../../../fixtures/independent-query-preview';
   import {createFinalizationPreview} from '../../../../../fixtures/finalization';
@@ -122,6 +123,7 @@
   });
 
   function periodQueryGateway(input: ReturnType<typeof pageExternalInputs>, state: string): DataGateway | undefined {
+    if(input==='async-preparation')return createAsyncPreparationPreview(state).dataGateway;
     if(input==='finalization')return createFinalizationPreview(state).dataGateway;
     if(input==='dimension-operator')return createDimensionOperatorPreview(state).dataGateway;
     if(input==='customer-series')return createCustomerSeriesPreview(state).dataGateway;

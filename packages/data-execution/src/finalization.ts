@@ -1,8 +1,9 @@
 import {
-  finalizationDate, finalizationName, localCalendarDate,
+  finalizationDate, finalizationName, localCalendarDate, supportsNativePreparation,
   type DqeRequestBody, type Page
 } from '@metriccanvas/page/internal';
 import type { RuntimeDataGateway } from './ports';
+import {cachedFinalizations,type FinalizationLookup} from './finalization-cache';
 
 /** Fixed, trusted query configuration supplied with the gateway. No page inputs or credentials. */
 export interface FinalizationSourceDefinition {
@@ -12,9 +13,9 @@ export interface FinalizationSourceDefinition {
   timeoutMs?: number;
 }
 
-/** One call per page instance, shared by every filter and never cached across pages. */
+/** Each page owns its lookup; 6.120 pages reuse only completed, session-scoped results. */
 export async function resolveFinalizationDates(
-  page: Pick<Page, 'id' | 'filters'>,
+  page: Pick<Page, 'id' | 'filters'> & Partial<Pick<Page,'schemaVersion'>>,
   gateway: RuntimeDataGateway,
   now: Date,
   signal?: AbortSignal
@@ -24,7 +25,10 @@ export async function resolveFinalizationDates(
   const fallback = new Map([...names].map(name => [name, localCalendarDate(now)]));
   if (!names.size) return fallback;
   try {
-    const dates = await queryFinalizations(gateway, page.id, signal);
+    const load=()=>queryFinalizations(gateway,page.id,signal);
+    const dates = page.schemaVersion&&supportsNativePreparation({schemaVersion:page.schemaVersion})
+      ? await cachedFinalizations(gateway,names,load,signal)
+      : (await load()).dates;
     signal?.throwIfAborted();
     for (const name of names) {
       const date = dates.get(name);
@@ -72,15 +76,17 @@ function finalizationTimeout(value: number | undefined): number {
   return typeof value === 'number' && Number.isFinite(value) && value > 0 ? Math.min(value, 2147483647) : 5000;
 }
 
-function indexFinalizations(rows: readonly Record<string, unknown>[]): Map<string, string> {
+function indexFinalizations(rows: readonly Record<string, unknown>[]): FinalizationLookup {
   if (rows.length >= 10000) throw new Error('定稿结果超过完整读取上限');
   const dates = new Map<string, string>(), invalid = new Set<string>();
+  let complete=true;
   for (const row of rows) {
-    if (typeof row.name !== 'string') continue;
+    if (typeof row.name !== 'string') {complete=false;continue;}
     const name = row.name.trim(), date = finalizationDate(row.date);
+    if (!name)complete=false;
     if (!date || dates.has(name) && dates.get(name) !== date) invalid.add(name);
     else dates.set(name, date);
   }
   for (const name of invalid) dates.delete(name);
-  return dates;
+  return {dates,cacheable:complete&&invalid.size===0&&dates.size>0};
 }

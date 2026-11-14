@@ -1,5 +1,6 @@
 import {isObjectDqeItem,setObjectFieldValues,dqeRecord} from './dqe-object';
-import {requiredMinorVersion,versionPolicy} from './version';
+import {requiredMinorVersion} from './version';
+import {compatibleWriteVersion} from './write-version';
 import type {DqeQueryDefinition,JsonObject} from './query';
 import {ordinaryQuery} from './time-mode';
 import { pageParamDeclarations, type GroupedPageParams } from './page-param';
@@ -16,7 +17,7 @@ export function migrateParamBindings(input:unknown):{ok:true;document:PageDocume
   const normalized=normalizePageDocument(input);
   if(!normalized.ok)return {ok:false,issues:normalized.errors.map(e=>({code:'INVALID_PAGE',path:e.path,message:e.message}))};
   const document=normalized.document;
-  document.schemaVersion=requiredMinorVersion(document)>11?versionPolicy.current:'6.11';
+  document.schemaVersion=requiredMinorVersion(document)>11?compatibleWriteVersion(document):'6.11';
   if (!document.params || !Array.isArray(document.params)) return {ok:true,document,issues:[]};
   const grouped:GroupedPageParams={query:{}};
   const reject=(id:string,message:string)=>({ok:false as const,issues:[{code:'INVALID_PAGE' as const,path:'/params',param:id,message}]});

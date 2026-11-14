@@ -35,6 +35,9 @@ interface CoordinatedFilterState extends FilterState, FilterCoordinator {
   /** A legality gate, independent of visibility. The owning runtime feeds candidate receipts. */
   blocked(): ReadonlySet<string>;
   refreshContext():void;
+  preparing(filterId:string,pending:boolean):void;
+  preparation():ReadonlySet<string>;
+  completePreparation(values:FilterValues):void;
   confirmation():ReadonlySet<string>;
   readonly revision:number;
   clock():Date;
@@ -86,6 +89,7 @@ export function createFilterState(initial?: FilterValues, declarations: readonly
   const baseline = new Map(current);
   let revision = 0, operationClock = editing.now?.() ?? new Date();
   const receipts = new Map<string, { status: string; values?: readonly string[] }>();
+  const preparation=new Set<string>();
   // Cleared descendants require an explicit choice/clear, never an automatic broadened query.
   const confirmation = new Set<string>();
   const intersections = new Set<string>();
@@ -101,7 +105,7 @@ export function createFilterState(initial?: FilterValues, declarations: readonly
     }
   }
   function blocked(): Set<string> {
-    const result = new Set(confirmation);
+    const result = new Set([...confirmation,...preparation]);
     for (const declaration of declarations)
       if (timeAvailabilityIssue(declaration, current.get(declaration.id), editing.displayInputs?.(), revision) || ((declaration.type === 'timeRange' || declaration.type === 'timePoint') && declaration.required && !current.has(declaration.id)))
         result.add(declaration.id);
@@ -174,6 +178,8 @@ export function createFilterState(initial?: FilterValues, declarations: readonly
         if (before?.type === 'dimension' && after?.type === 'dimension' && (before.dimension !== after.dimension || before.level !== after.level))
           receipts.delete(id);
       }
+      for (const [id] of changes)
+        if (!trusted && preparation.delete(id)) gatesChanged = true;
       for (const [id] of changes)
         if (intersections.delete(id))
           gatesChanged = true;
@@ -282,6 +288,21 @@ export function createFilterState(initial?: FilterValues, declarations: readonly
     confirmation:()=>new Set(confirmation),
     get revision() { return revision; }, clock: () => new Date(operationClock),
     refreshContext() { operationClock = editing.now?.() ?? new Date(); replace(new Map(current)); },
+    preparation:()=>new Set(preparation),
+    completePreparation(values) {
+      if(!preparation.size)return;
+      const next=new Map(current);
+      for(const [id,value]of values){
+        if(!preparation.delete(id))continue;
+        if(!current.has(id)){next.set(id,value);baseline.set(id,value);}
+      }
+      revision++;replace(next);
+    },
+    preparing(id,pending) {
+      const changed=pending?!preparation.has(id):preparation.has(id);
+      if(pending)preparation.add(id);else preparation.delete(id);
+      if(changed)replace(new Map(current));
+    },
     candidate(filterId, status, values) {
       const previous = [...blocked()].sort().join('\0');
       receipts.set(filterId, { status, values });

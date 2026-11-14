@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { PAGE_SCHEMA_MAJOR, pageCapabilities, requiredMinorVersion, supportedVersions, versionErrors, versionPolicy } from '../src/version';
 // 固定能力引入版本表，避免用高分支三元表达式维护同一份期望。
 const introducedAt: Record<string, number> = {
+  'native-ioc-filter-preparation':120,
   'table-absolute-display-limit':119,
   'paged-join-auto-pagination':118,
   'paged-join-record-timeout-180':117,

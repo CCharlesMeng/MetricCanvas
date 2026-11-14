@@ -1,6 +1,6 @@
 import { presentationTarget,type PresentationTarget } from './presentation-edit';
 import { parsePage } from './validate';
-import { versionPolicy } from './version';
+import {compatibleWriteVersion} from './write-version';
 import type { Condition } from './schema/condition';
 import type { TypedError } from './errors';
 export type PresentationOperation=
@@ -27,7 +27,7 @@ export function applyPresentationOperation(document:unknown,operation:Presentati
   if(node?.type!=='text')return invalid('条件片段要求文本组件');
   delete node.props.body;delete node.props.bodyFormat;node.props.parts=operation.parts;
  }else return invalid('不支持的条件编辑操作');
- next.schemaVersion=versionPolicy.current;
+ next.schemaVersion=compatibleWriteVersion(next as {schemaVersion:string});
  const parsed=parsePage(next);
  return parsed.ok?{ok:true,document:next,errors:[]}:{ok:false,errors:parsed.errors};
 }

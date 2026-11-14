@@ -28,6 +28,7 @@ export function createRetainedScreenData() {
   function clear() { pages.clear(); current = new Map(); }
   return {
     clear,
+    forget(componentId:string){current.delete(componentId);},
     select(page: Page, gateway: object | undefined, revision: string | undefined) {
       if (gateway !== owner) { clear(); owner = gateway; }
       const key = canonicalizeJson([page, revision ?? null]);

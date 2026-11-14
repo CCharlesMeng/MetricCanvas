@@ -14,7 +14,7 @@ describe('6.1 layout 兼容公开边界', () => {
         const result = normalizePageDocument(input);
         expect(result.ok).toBe(true);
         if (!result.ok) throw new Error(JSON.stringify(result.errors));
-        expect(result.document).toEqual({ ...legacyBase(), schemaVersion: schemaVersion === '6.11' ? (form==='dashboard'?'6.80':versionPolicy.current) : schemaVersion, layout: form });
+        expect(result.document).toEqual({ ...legacyBase(), schemaVersion: schemaVersion === '6.11' ? (form==='dashboard'?'6.80':'6.119') : schemaVersion, layout: form });
         expect(parsePage(input)).toEqual(parsePage(result.document));
         expect(normalizePageDocument(result.document)).toEqual(result);
         expect(canonicalizeJson(input)).toBe(before);
@@ -23,7 +23,7 @@ describe('6.1 layout 兼容公开边界', () => {
     }
     it(`${schemaVersion} 缺省布局规范化为 report`, () => {
       const result = normalizePageDocument({ ...legacyBase(), schemaVersion });
-      expect(result).toMatchObject({ ok: true, document: { schemaVersion: schemaVersion === '6.11' ? versionPolicy.current : schemaVersion, layout: 'report' } });
+      expect(result).toMatchObject({ ok: true, document: { schemaVersion: schemaVersion === '6.11' ? '6.119' : schemaVersion, layout: 'report' } });
     });
   }
   it.each(['report', 'dashboard'])('6.1 layout %s 原生可读', (layout) => {
@@ -50,7 +50,7 @@ describe('6.1 layout 兼容公开边界', () => {
     const result = normalizePageDocument({ ...legacyContent, schemaVersion });
     expect(result).toMatchObject({
       ok: true,
-      document: { ...legacyContent, schemaVersion: versionPolicy.current, layout: 'report' }
+      document: { ...legacyContent, schemaVersion: '6.119', layout: 'report' }
     });
   });
   it('5.4 的完整站内导航规范化为 6.x 普通 URL 导航，且不改写输入', () => {
@@ -76,7 +76,7 @@ describe('6.1 layout 兼容公开边界', () => {
     expect(result).toMatchObject({
       ok: true,
       document: {
-        schemaVersion: versionPolicy.current, layout: 'report',
+        schemaVersion: '6.119', layout: 'report',
         sections: [{ components: [{ props: { actions: [{ navigate: {
           href: '/pages/detail', query: {
             region: { source: 'filter', id: 'region' },

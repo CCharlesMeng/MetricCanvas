@@ -1,4 +1,5 @@
 /** Lockstep engine integration; one-shot callers use the root entry. */
+export {inheritFinalizationCache,invalidateFinalizationCache} from './finalization-cache';
 export { composeEffectiveQuery, executeQuery } from './effective-query';
 export type { QueryHeaderFilters } from './effective-query';
 export { resolveQueryResultInputs } from './query-result-inputs';
@@ -37,6 +38,7 @@ export { createCandidateValidator } from './candidate-validation';
 export { sourceCandidatesGateway, projectSourceCandidates } from './source-candidates';
 
 export {resolveFinalizationDates,type FinalizationSourceDefinition} from './finalization';
+export {createFinalizationPreparation} from './finalization-preparation';
 
 export type { ScreenProgress } from './screen-progress';
 export { observeQueryHttpError } from './query-http-error';

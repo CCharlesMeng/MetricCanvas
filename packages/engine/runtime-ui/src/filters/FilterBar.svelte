@@ -3,6 +3,7 @@
   import type { PeriodRange } from '@metriccanvas/page/internal';
 </script>
 <script lang="ts">
+  import Skeleton from '../../../widgets/src/shared/Skeleton.svelte';
   import {finalizationName} from '@metriccanvas/page/internal';
   import {getContext} from 'svelte';
   import {SOURCE_FILTER_CONTEXT,type SourceFilterReader} from '../dashboard/source-filter-context';
@@ -142,6 +143,9 @@
   {#each visible as declaration (declaration.id)}
     {@const limits=timeControlLimits(declaration,timeContext)}
     <div data-filter-control data-filter-id={declaration.id} class="filter-control" role="group" aria-label={declaration.label} aria-describedby={typeof declaration.hint==='string'?`${hintPrefix}-${declaration.id}`:undefined}>
+    {#if timeContext.pending?.includes(declaration.id)}
+      <span data-filter-pending role="status" aria-label="正在确定统计期间" style="display:inline-block;width:96px"><Skeleton width="100%" /></span>
+    {/if}
     {#if declaration.type === 'timeRange' && declaration.display === 'modes'}
       <ModeTimeRangeFilter {declaration} value={timeRangeValue(declaration.id)} readOnly={readOnly||!!limits.reason} max={limits.max} blockedRanges={limits.blockedRanges} snapshot={timeContext.snapshot} revision={timeContext.revision} onchange={next=>ontimerange(declaration.id,next)}/>
     {:else if declaration.type === 'timeRange' && declaration.display === 'period'}

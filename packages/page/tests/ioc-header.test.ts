@@ -9,7 +9,7 @@ import { documentUsesRuntimeBackToolbar } from '../src/page';
 const load=(name:string)=>JSON.parse(readFileSync(pageFilesById(fileURLToPath(new URL('../../../pages', import.meta.url))).get(`ioc-header-${name}-demo`)!,'utf8'));
 describe('IOC root header contract from acceptance pages',()=>{
   for(const name of ['overview','dense-filter','detail','month-set'])it(`consumes ${name} and preserves the declaration on normalize`,()=>{
-    const doc=load(name);expect(parsePage(doc)).toMatchObject({ok:true});expect(normalizePageDocument(doc)).toMatchObject({ok:true,document:{...doc,schemaVersion:versionPolicy.current}});
+    const doc=load(name);expect(parsePage(doc)).toMatchObject({ok:true});expect(normalizePageDocument(doc)).toMatchObject({ok:true,document:{...doc,schemaVersion:'6.119'}});
   });
   it('gates the new root capability and every header text path',()=>{
     const doc=load('overview');expect(requiredMinorVersion(doc)).toBe(37);doc.schemaVersion='6.31';expect(capabilityFloorErrors(doc)).not.toEqual([]);

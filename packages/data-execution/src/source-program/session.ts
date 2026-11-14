@@ -79,6 +79,8 @@ export function defaultSourceView(page: Page, id: string, pageSize?: number): Ta
 }
 /** All execution policies are owned here; adapters own publication and lifecycle. */
 export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGateway; diagnostics?: QueryDiagnosticContext; displayInputs?: () => DisplayInputsSnapshot | undefined; filterRevision?: () => number; now?: Date; clock?: () => Date }) {
+  const native=createNativeIocPreparation(page,config.gateway);
+  page=native.page;
   config = {...config,gateway:sourceCandidatesGateway(page,config.gateway,config)};
   const compiled = compileSources(page);
   for (const id of compiled.automatic) { const source = compiled.sources.get(id)!; if (source.source.type === 'query') { const size = automaticQueryPageSize(source as QueryDataSource, reusableInitialSnapshot(source)); if (size) compiled.limits.set(id, size); } }
@@ -107,6 +109,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
   }
   let batch = 0, contextScope = 'session';
   function overridesSource(id:string,values:FilterValues):boolean {
+    if(native.active(id,values))return true;
     const overridden=overriddenFilterIds(page.filters??[],values);
     // Authorized membership may change independently of the page's declared defaults.
     for(const key of IOC_KEY_OFFICE_FILTER_IDS){
@@ -136,6 +139,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
     return filter?.type === 'timeRange' && filter.display === 'period' && !!filter.default && typeof filter.default === 'object' && 'mode' in filter.default && (filter.default.mode === 'last12Months' || !('value' in filter.default) || !filter.default.value);
   }
   function initialSourceSnapshot(id: string, source: DataSource, view: TableQueryView, conditions: FilterValues): DataSnapshot {
+    if(native.waiting(id,conditions))return {status:'loading'};
     try {
       const trusted = candidates.trusted(id, conditions);
       const terminal = trusted ? initialIntersection(source, conditions) : undefined;
@@ -168,7 +172,14 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
       if(source?.source.type!=='pagedJoin'||!isPagedJoinQuery(source.source))return view;
       return compilePagedJoin(page,id,conditions,reconcilePagedJoinView(source as PagedJoinDataSource,view,field,previous),config.now??config.clock?.(),{displayInputs:config.displayInputs?.(),filterRevision:config.filterRevision?.()}).view;
     },
-    readColumnCandidates(request: ColumnCandidatesRead) { return createColumnCandidatesReader(page, runner, value => program.read(value), compiled.limits, { ...config, slotSearch })(request); },
+    async readColumnCandidates(request: ColumnCandidatesRead) {
+      const preparation=native.ensure(request.sourceId,request.conditions,request.signal??new AbortController().signal);
+      if(preparation)await preparation;
+      return createColumnCandidatesReader(page, runner, value => program.read(value), compiled.limits, { ...config, slotSearch })(request);
+    },
+    preparing(sourceId:string,conditions:FilterValues){return native.waiting(sourceId,conditions);},
+    prepareInputs(sourceId:string,conditions:FilterValues){return native.ensure(sourceId,conditions,new AbortController().signal)??Promise.resolve();},
+    retryPreparation(sourceId:string,conditions:FilterValues){native.retry(sourceId,conditions);},
     initialSnapshots(request: Pick<SourceRead, 'roots' | 'conditions' | 'views' | 'selections'>): Map<string, DataSnapshot> {
       const snapshots = new Map<string, DataSnapshot>();
       const sources = presentationQuerySources(page, {declarations:page.filters??[],filters:request.conditions,displaySnapshot:config.displayInputs?.(),filterRevision:config.filterRevision?.()}, request);
@@ -186,6 +197,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
       const roots = selections ? activeSourceIds(page,selections,context,views) : visibleSourceIds(page,context,views);
       for (const [id, view] of views) if (compiled.limits.has(id)) limits.set(id, view.pageSize);
       for (const id of roots) {
+        if(native.waiting(id,conditions))continue;
         const source = sources.get(id)!;
         if (source.source.type !== 'query') continue;
         const query = captureSourceQuery(id, source as QueryDataSource, {conditions, views, raw, sources, limits, now});
@@ -242,7 +254,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
         async function execute(id: string): Promise<void> {
           request.signal?.throwIfAborted();
           let source = requiredSource(id);
-          try { if (candidates.requires(id)) await candidates.verify(id, request.conditions, request.signal); }
+          try { const preparation=native.ensure(id,request.conditions,request.signal); if(preparation)await preparation; if (candidates.requires(id)) await candidates.verify(id, request.conditions, request.signal); }
           catch (cause) { rejectCandidate(id, cause); return; }
           source = appliedSource(id,source);
           if (raw.has(id)) return;
@@ -435,7 +447,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
         const requiresCompleteRead = (preserveWindow: boolean, source: DataSource, query: EffectiveQuery) => (request.purpose === 'complete' && !preserveWindow) || objectCompleteSource(source,query);
         function preparedQuery(id: string, source: QueryDataSource, view: TableQueryView, values: EffectiveQuery['filterValues']): EffectiveQuery | Promise<EffectiveQuery> {
           const search = mainTableSearch(view.search);
-          const captured = projectCapturedQuery(request.queries?.get(id), source);
+          const captured = projectCapturedQuery(native.captured(id,request.conditions,request.queries?.get(id)), source);
           if (captured && requiresQueryContext(source.source.query, page.filters)) { const expected = composeEffectiveQuery({ displayInputs: frozenInputs, filterRevision: frozenRevision, now: request.now, page:page,filters:page.filters, dataSource: source as QueryDataSource }, request.conditions, view.pageIndex, view.sort, tableHeaders(view.predicates), search); if (canonicalizeJson(captured.body) !== canonicalizeJson(expected.body)) throw Object.assign(new Error('捕获查询与已应用查询模式不匹配'), { code: 'DQE_QUERY_REJECTED' }); }
           const fresh = () => composeEffectiveQuery({ displayInputs: frozenInputs, filterRevision: frozenRevision, now: request.now, page:page,filters:page.filters, dataSource: source as QueryDataSource, ...(limits.has(id) ? { pagination: { limit: view.pageSize } } : {}) }, request.conditions, view.pageIndex, view.sort, tableHeaders(view.predicates), search);
           const protectedConditions = requiresQueryContext(source.source.query, page.filters)||overridesSource(id,request.conditions);
@@ -508,7 +520,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
         }
       } finally { controller.abort(); if (request.freshness === 'refresh' || scope !== contextScope) runner.forgetScope(scope); }
     },
-    dispose() { union.clear(); slotSearch.clear(); clearRecordJoinCache(runner); runner.dispose(); }
+    dispose() { native.dispose(); union.clear(); slotSearch.clear(); clearRecordJoinCache(runner); runner.dispose(); }
   };
   return program;
 }
@@ -523,3 +535,4 @@ function captureConsistentInitial(count: number, total: number | undefined, wind
   if (strict && total === 0 && count > 0) return false;
   return !windowed || (total !== undefined && count === Math.min(pageSize, total));
 }
+import {createNativeIocPreparation} from '../native-ioc-preparation';

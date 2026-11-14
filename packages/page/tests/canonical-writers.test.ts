@@ -4,6 +4,7 @@ import { basename, join } from 'node:path';
 import { expect, it } from 'vitest';
 import { normalizePageDocument, versionPolicy, supportedVersions } from '../src/index';
 import { hasLegacyTableCandidateSearch } from '../src/table/candidate-search';
+import {supportsNativePreparation,NATIVE_IOC_SCHEMA_MINOR} from '../src/native-ioc';
 
 it('当前页面与样例使用受支持版本/layout，旧兼容夹具明确隔离', () => {
   for (const directory of ['pages', 'packages/page/fixtures/contract-valid']) {
@@ -22,7 +23,8 @@ it('当前页面与样例使用受支持版本/layout，旧兼容夹具明确隔
           if (basename(name) === 'report-export-scale-fallback.json') expect(normalizePageDocument(normalized.document)).toEqual(normalized);
           else {
             const legacyDefault=raw.layout==='dashboard'&&!raw.iocHeader&&raw.dashboardToolbar===undefined&&Number(raw.schemaVersion.split('.')[1])<81;
-            const outputVersion=['6.5','6.13','6.14'].includes(raw.schemaVersion)?raw.schemaVersion:legacyDefault?'6.80':hasLegacyTableCandidateSearch(raw)?'6.111':versionPolicy.current;
+            const current= supportsNativePreparation(raw)?versionPolicy.current:`6.${NATIVE_IOC_SCHEMA_MINOR-1}`;
+            const outputVersion=['6.5','6.13','6.14'].includes(raw.schemaVersion)?raw.schemaVersion:legacyDefault?'6.80':hasLegacyTableCandidateSearch(raw)?'6.111':current;
             expect(normalized.document, name).toEqual({...raw,schemaVersion:outputVersion});
           }
         }

@@ -2,7 +2,7 @@ import {isUnrestrictedIocRegion,queryFilterIds} from '@metriccanvas/page/interna
 import {comparisonFilterIds} from '@metriccanvas/page/internal';
 import {reconcileTableSources} from './table/presentation-session';
 import {requiresQueryContext,hasPeriodQueryDefault} from '@metriccanvas/page/internal';
-import {fieldSelectionIds,flattenPageComponents,sourceFilterIds} from '@metriccanvas/page/internal';
+import {fieldSelectionIds,flattenPageComponents} from '@metriccanvas/page/internal';
 import { createSourceProgram, composeEffectiveQuery, intersectQueryFilters, activeSourceIds, visibleSourceIds, compileSources, defaultSourceView, computedSnapshots, automaticQueryPageSize, initialTableViews, remoteHeaderDefaultSources } from '@metriccanvas/data-execution/runtime';
 import type { QueryHeaderFilters, ScreenProgress } from '@metriccanvas/data-execution/runtime';
 import { affectedSourceIds, conditionSourceIds, queryResultDependencies, type Page, type DataSnapshot, type EffectiveQuery, type QueryDataSource, type TabSelections, type TableQueryView } from '@metriccanvas/page/internal';
@@ -62,8 +62,7 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
     const unsafeReceipts = affectedSourceIds(page.dataSources,remoteHeaderDefaultSources(page));
     let blocked = new Set(filterBlockedIds(filters));
     const gated = (id: string) => initialization.pending.has(id) || [...conditionSourceIds(page,id)].some(key => {
-      const source = page.dataSources[key];
-      return sourceFilterIds(source).some(filterId => blocked.has(filterId));
+      return nativeSourceFilterIds(page,key).some(filterId => blocked.has(filterId));
     });
     let disposed = false, raw = new Map<string, DataSnapshot>();
     const year = new Date().getFullYear();
@@ -131,7 +130,7 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
         raw.set(id, initial ?? { status: 'loading' });
         correctInitialTablePageSize(id,source,initial,compiled,tables);
         function acceptExecutionReceipt(): void {
-        if (!protectedSource && !unsafeReceipts.has(id) && receipt && same(values, execution!.filters) && execution!.sourceKeys.get(id) === executionSourceKey(source)) {
+        if (!protectedSource && !program.preparing(id,values) && !unsafeReceipts.has(id) && receipt && same(values, execution!.filters) && execution!.sourceKeys.get(id) === executionSourceKey(source)) {
           initial = receipt;
           matched.add(id);
         }
@@ -186,6 +185,7 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
       function fetchTargets(): void {
         for (const root of targets) {
           requests.get(root)?.abort();
+          void program.prepareInputs(root,values).catch(()=>{/* The source read publishes preparation failures. */});
           if (gated(root)) {
             raw.set(root, { status: 'loading' });
             publish();
@@ -257,8 +257,7 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
       blocked = nextBlocked;
       values = next;
       let targets = new Set([...ids].filter(id => [...conditionSourceIds(page, id)].some(key => {
-        const source = page.dataSources[key];
-        return sourceFilterIds(source).some(id => changed.has(id));
+        return nativeSourceFilterIds(page,key).some(id => changed.has(id));
       })));
       for(const component of flattenPageComponents(page))if(component.type==='table'&&fieldSelectionIds(component.props).some(id=>changed.has(id))){tables.get(component.data.main)?.resetPresentation();targets.add(component.data.main);}
       const resetTargets = affectedSourceIds(page.dataSources,targets,false);
@@ -277,7 +276,7 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
     return {
       syncPresentation() { const changed=new Set([...reconcileColumns(),...reconcileDemand()]);if(changed.size)refetch(changed);else publish(); },
       activate() { refetch(new Set([...demand()].filter(id => raw.get(id)?.status === 'loading')), true); },
-      refresh: (id: string) => refetch(new Set([id])),
+      refresh: (id: string) => {program.retryPreparation(id,values);refetch(new Set([id]));},
       program, tables, views, year, current: () => snapshots,
       raw: () => new Map(raw), progress: () => new Map(progress), screen: (id: string) => progress.get(id),
       queries: () => program.captureQueries(values, views(), raw, selections),
@@ -330,3 +329,4 @@ function initializePendingTableDefaults(page: Page, sessions: ReadonlyMap<string
   }
   return changed;
 }
+import {nativeSourceFilterIds} from '@metriccanvas/page/internal';

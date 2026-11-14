@@ -2,7 +2,7 @@ import type { TemporalEvaluation } from './temporal-evaluation';
 import { ordinaryQuery } from './time-mode';
 import { isPeriodSelection } from './period-filter';
 import { flattenPageComponents } from './component-walk';
-import { versionPolicy } from './version';
+import {compatibleWriteVersion} from './write-version';
 import { bindingQueryFields, type DqeQueryDefinition } from './query';
 import { canonicalizeJson } from './canonical-json';
 import { record, pointer } from './inline-query-params';
@@ -46,7 +46,7 @@ function selectionError(extraction: PageParamExtraction, selectedIds: readonly s
 }
 
 function initializeDocument(document: PageDocument, selected: ParameterCandidate[]): Failure | undefined {
-  document.schemaVersion = selected.some(c => c.declaration.type === 'timeRange') ? versionPolicy.current : selected.length && Number(document.schemaVersion.split('.')[1]) < 11 ? '6.11' : document.schemaVersion;
+  document.schemaVersion = selected.some(c => c.declaration.type === 'timeRange') ? compatibleWriteVersion(document) : selected.length && Number(document.schemaVersion.split('.')[1]) < 11 ? '6.11' : document.schemaVersion;
   if (Array.isArray(document.params) && document.params.length) return fail('已有旧参数须先显式迁移，不能在提取时丢弃');
   if (selected.length && (!document.params || Array.isArray(document.params))) document.params = { query: {} };
 }

@@ -3,6 +3,13 @@ import type { TypedError } from './errors';
 import type { PageLayoutForm } from './page';
 import { versionPolicy } from './version';
 import { hasLegacyTableCandidateSearch } from './table/candidate-search';
+import {supportsNativePreparation,NATIVE_IOC_SCHEMA_MINOR} from './native-preparation-capability';
+
+function canonicalTargetMinor(schemaVersion:string):number {
+  if(schemaVersion==='6.5')return 5;
+  if(['6.13','6.14'].includes(schemaVersion))return Number(schemaVersion.split('.')[1]);
+  return supportsNativePreparation({schemaVersion})?versionPolicy.minor:Math.min(versionPolicy.minor,NATIVE_IOC_SCHEMA_MINOR-1);
+}
 
 /** 6.1 增量兼容规则；两字段即使同值也不建立双真源。 */
 export function layoutCompatibilityErrors(document: unknown): TypedError[] {
@@ -20,8 +27,7 @@ export function canonicalLayoutDocument<T extends {
 }>(document: T): Omit<T, 'layoutForm'> & { layout: PageLayoutForm } {
   const { layoutForm, ...rest } = document;
   // 6.13/6.14 的页头日期文字语义必须保留；不能升级版本后静默取消旧联动。
-  const canonicalMinor = document.schemaVersion === '6.5' ? 5 :
-    ['6.13', '6.14'].includes(document.schemaVersion) ? Number(document.schemaVersion.split('.')[1]) : versionPolicy.minor;
+  const canonicalMinor = canonicalTargetMinor(document.schemaVersion);
   const legacyDefault=(document.layout??layoutForm)==='dashboard' && !('dashboardToolbar' in document) && !documentIocHeader(document) && hasLegacyDefaultHeader(document);
   const candidateMinor=hasLegacyTableCandidateSearch(document)?Math.min(canonicalMinor,111):canonicalMinor;
   const outputMinor=legacyDefault?Math.min(candidateMinor,80):candidateMinor;

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.119",
+  "schemaVersion": "6.120",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "authoring.evaluation"
@@ -336,7 +336,8 @@
         "references/page-metadata/examples/filter-source-candidates.json",
         "references/page-metadata/examples/finalization-default-time.json",
         "references/page-metadata/examples/finalization-default-time-detail.json",
-        "references/page-metadata/examples/finalization-date-defaults.json"
+        "references/page-metadata/examples/finalization-date-defaults.json",
+        "references/page-metadata/examples/ioc-async-preparation.json"
       ]
     }
   ],

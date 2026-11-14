@@ -1,8 +1,13 @@
 {
   "major": 6,
-  "minor": 119,
-  "current": "6.119",
+  "minor": 120,
+  "current": "6.120",
   "capabilities": {
+    "native-ioc-filter-preparation": {
+      "minor": 120,
+      "description": "IOC 重点名单原生异步解析与定稿默认值非阻塞初始化",
+      "legacyReadable": false
+    },
     "paged-join-auto-pagination": {
       "minor": 118,
       "description": "记录组合源自动选择主查询分页或完整关联，保留全部来源条件",
@@ -1059,6 +1064,7 @@
     "6.116",
     "6.117",
     "6.118",
-    "6.119"
+    "6.119",
+    "6.120"
   ]
 }

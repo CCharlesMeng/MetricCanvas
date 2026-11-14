@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.119",
-  "schemaSha256": "2f51e336d88b44d7b755c701af9563b5c3f7e1d0acfbb1fd3d81efed3ae89b60",
+  "schemaVersion": "6.120",
+  "schemaSha256": "d09653e9ae42443ff450486875e54f39f2d6cd33ed6179e470426735d4fe6845",
   "semanticSources": [
     {
       "file": "metriccanvas-authoring/core/page/analysis-report.ts",
@@ -35,8 +35,16 @@
       "sha256": "d200f5d0dbe6768020db555e687217b9ffa01d296fceffec0b7496e8db37073d"
     },
     {
+      "file": "packages/data-execution/src/finalization-preparation.ts",
+      "sha256": "bfec4d62d304b0514d1cb0a4b0be6e486423c7320b1dac3613004524b2be7dd2"
+    },
+    {
       "file": "packages/data-execution/src/finalization.ts",
-      "sha256": "8bd803618b0fc203b9defcd5cb417af932e3838773099e9b006774e78f27ec9f"
+      "sha256": "6e0dfe74c1d9d5b113976d23c99dad41028dc14b6268d169eba4c68fd29c9f4a"
+    },
+    {
+      "file": "packages/data-execution/src/native-ioc-preparation.ts",
+      "sha256": "73ba589a11b17da03aa38a19a8d06982c842e6ef7152363c806be4578ed727a6"
     },
     {
       "file": "packages/data-execution/src/operation-map-region.ts",
@@ -48,7 +56,7 @@
     },
     {
       "file": "packages/data-execution/src/source-program/session.ts",
-      "sha256": "6fa5549bfd59067f7115b480667848ebbafcd6c95c0a03391f3d8bd449cec6c8"
+      "sha256": "8769c32fccad343d4656629e2897e523641091daf720388c3668a8196b78fbae"
     },
     {
       "file": "packages/data-execution/src/source-program/slot-search-batches.ts",
@@ -281,6 +289,10 @@
     {
       "file": "packages/page/src/metric-before.ts",
       "sha256": "2559b3b6cb07deb89cd1385b91d981dd775b6ce9b95a3232c4c5b1eb44df7b31"
+    },
+    {
+      "file": "packages/page/src/native-ioc.ts",
+      "sha256": "0bfcee8c895aa329f5eeee8ef39854eb4f392984e68bda316253d8b2b3f6b9a5"
     },
     {
       "file": "packages/page/src/navigate.ts",
@@ -548,7 +560,7 @@
     },
     {
       "file": "packages/page/src/validate.ts",
-      "sha256": "79534c8080f5499c543bbd0fc0bc8907415b9635800ceb57ac508b230d038e54"
+      "sha256": "0ea442379c63fe337ffa2683eceffb3b5587779a946db350b0a07db42103901f"
     },
     {
       "file": "packages/page/tests/ai-summary-regions.test.ts",
@@ -945,7 +957,8 @@
         "filter-source-candidates",
         "finalization-default-time",
         "finalization-default-time-detail",
-        "finalization-date-defaults"
+        "finalization-date-defaults",
+        "ioc-async-preparation"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -966,7 +979,10 @@
         "packages/page/src/filter-url.ts",
         "packages/page/src/source-candidates.ts",
         "packages/page/src/finalization-default.ts",
-        "packages/data-execution/src/finalization.ts"
+        "packages/data-execution/src/finalization.ts",
+        "packages/page/src/native-ioc.ts",
+        "packages/data-execution/src/native-ioc-preparation.ts",
+        "packages/data-execution/src/finalization-preparation.ts"
       ],
       "rules": [
         "filter-id-unique",
@@ -2207,7 +2223,8 @@
         "6.116",
         "6.117",
         "6.118",
-        "6.119"
+        "6.119",
+        "6.120"
       ]
     },
     {

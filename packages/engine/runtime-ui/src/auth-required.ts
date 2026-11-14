@@ -1,5 +1,5 @@
 import type { RuntimeDataGateway } from '../../runtime/src';
-import {observeQueryHttpError} from '@metriccanvas/data-execution/runtime';
+import {observeQueryHttpError,inheritFinalizationCache,invalidateFinalizationCache} from '@metriccanvas/data-execution/runtime';
 
 export interface AuthRequiredEvent {
   type: 'auth-required';
@@ -43,7 +43,7 @@ export function createAuthRequiredGateway(base: RuntimeDataGateway, observe: (ev
   const lifetime = new AbortController();
   function receiveStatus(value: unknown) {
     const status=requiredStatus(value);
-    if(status!==undefined)observe({type:'auth-required',status});
+    if(status!==undefined){invalidateFinalizationCache(base);observe({type:'auth-required',status});}
   }
   async function execute<T>(operation: (signal: AbortSignal) => Promise<T>, signal?: AbortSignal): Promise<T> {
     const combined = AbortSignal.any(signal ? [signal, lifetime.signal] : [lifetime.signal]);
@@ -68,6 +68,7 @@ export function createAuthRequiredGateway(base: RuntimeDataGateway, observe: (ev
     ...(filters ? { fetchFilterCandidates: ((request, options) => execute(next => filters.call(base, request, { signal: next }), options.signal)) as NonNullable<RuntimeDataGateway['fetchFilterCandidates']> } : {}),
     ...(columns ? { fetchColumnCandidates: ((request, context, signal) => execute(next => columns.call(base, request, context, next), signal)) as NonNullable<RuntimeDataGateway['fetchColumnCandidates']> } : {})
   };
+  inheritFinalizationCache(gateway,base);
   return { gateway, dispose() { lifetime.abort(); } };
 }
 

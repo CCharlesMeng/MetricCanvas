@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.119",
-  "schemaSha256": "2f51e336d88b44d7b755c701af9563b5c3f7e1d0acfbb1fd3d81efed3ae89b60",
+  "schemaVersion": "6.120",
+  "schemaSha256": "d09653e9ae42443ff450486875e54f39f2d6cd33ed6179e470426735d4fe6845",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -323,7 +323,8 @@
         "filter-source-candidates",
         "finalization-default-time",
         "finalization-default-time-detail",
-        "finalization-date-defaults"
+        "finalization-date-defaults",
+        "ioc-async-preparation"
       ],
       "rules": [
         "filter-id-unique",
@@ -1359,7 +1360,8 @@
         "6.116",
         "6.117",
         "6.118",
-        "6.119"
+        "6.119",
+        "6.120"
       ]
     },
     {
@@ -22981,5 +22983,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "550bf8ba41083f2eecef8ef051812eae631b7595a3a7d96a1deb10886511f532"
+  "semanticSourceDigest": "e64ba7b5bcb40b7d6276ee8c5e7cf30798a2f69f6725e717c4a3e65c39562684"
 }

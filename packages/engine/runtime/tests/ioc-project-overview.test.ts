@@ -1,4 +1,3 @@
-import { versionPolicy } from '@metriccanvas/page';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it, vi } from 'vitest';
@@ -36,7 +35,7 @@ function instantiate(page: Page): Page {
 describe('ioc-project-overview 骨架', () => {
   it('统一页头按当前能力下限声明，保留唯一指标值入口', () => {
     const page = loadPage();
-    expect(page.schemaVersion).toBe(versionPolicy.current);
+    expect(page.schemaVersion).toBe('6.119');
     expect(requiredMinorVersion(document)).toBe(41);
   });
 

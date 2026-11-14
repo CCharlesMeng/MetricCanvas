@@ -74,6 +74,7 @@ function tablePreview(kind:string|undefined,state:string){
 }
 
 function periodQueryPreview(kind:string|undefined,state:string){
+  if(kind==='async-preparation')return createAsyncPreparationPreview(state);
   if(kind==='customer-series')return createCustomerSeriesPreview(state);
   if (kind === 'finalization') return createFinalizationPreview(state);
   if(kind==='object-period')return createObjectPeriodPreview(state);
@@ -81,3 +82,4 @@ function periodQueryPreview(kind:string|undefined,state:string){
   if(kind==='period-aggregation')return createPeriodAggregationPreview(state);
   return undefined;
 }
+import {createAsyncPreparationPreview} from '../../fixtures/async-preparation';

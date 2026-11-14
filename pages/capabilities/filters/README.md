@@ -356,3 +356,14 @@
 4. 各表 XLSX 导出使用本表完整筛选结果。`?state=error` 通过 `metriccanvas:dimension-operator-runtime` 上抛实际运行时 data-error（表格沿用空占位），`?state=empty` 显示空结果且不产生 data-error；非法 operator 如 `<>` 或版本低于6.114的显式 operator 由校验拒绝。
 
 自动验收：`pnpm --filter playground exec playwright test tests/dimension-binding-operator.browser.ts`。浏览器读取此 JSON 验证交互、层级切换和异常；执行层回归补充表头交集、关联键、缓存、完整读取与候选。合成 Adapter 调用实际 DQE 编码后筛选三条合成记录，不证明真实 DQE、Relay、空值或生产授权。
+## 异步条件准备
+
+入口 `/pages/ioc-async-preparation`；启动 `pnpm dev:playground`，无需 DQE 服务。页面显式使用 Schema 6.120 与 dashboard 布局；旧示例版本和接入方式不变。
+
+用途：将名单与定稿日期准备移出全页呈现等待，同时观察首个业务查询的条件完整性。参考对象为首组件 `ioc-header`、`office-table` 的 Region/期间绑定，以及不依赖这两项的 `unrelated-table`。不增加页面字段；移植时须升级匹配引擎、确认真实名单 Adapter 和 finalizationSource，合成名称及数据不可当成生产查询配置。
+
+默认名单和定稿各延迟1秒。页面先呈现页头、表头、统计期间准备文字及“无关数据已就绪”；条件齐备后只显示上海和深圳，期间为2026-04，业务查询同时携带重点名单和期间。`?key-national-only=false&mtime=month:2026-04` 立即显示四个代表处，不等待两项默认值。`?state=empty` 重点结果为空且不发主查询；`?state=error` 显示名单错误且不宽查；`?state=date-error` 沿现有规则回退当前日期。
+
+加载中可主动选择时间或取消重点勾选；迟到默认值不能覆盖用户输入。已有宽范围结果在首次勾选等待名单时撤下，表头候选与导出不能使用准备未完成的范围。数据、权限与延迟均为合成场景；真实集成另验。
+
+异步条件准备示例使用标准 `key-national-only`。定稿成功结果在同一网关会话中缓存4小时；未命中时各页面独立请求，不合并在途请求。浏览器产物验收连续挂载两个页面，检查仅发生一次定稿取数；单测使用时钟覆盖到期刷新及并行未命中两次独立请求。

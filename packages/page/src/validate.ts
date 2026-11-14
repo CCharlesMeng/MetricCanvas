@@ -1,3 +1,4 @@
+import {nativeIocRuntimePage} from './native-ioc';
 import { tableDefaultSortErrors } from './table/default-sort';
 import {expandIocHeaderRegion,canonicalIocHeaderControls,iocHeaderControlErrors} from './ioc-header-normalization';
 import type { TemporalEvaluation } from './temporal-evaluation';
@@ -190,7 +191,7 @@ export function parsePage(
     };
   }
 
-  const page = canonicalLayoutDocument(materialized.document as Page);
+  const page = nativeIocRuntimePage(canonicalLayoutDocument(materialized.document as Page));
   if (page.params) page.params = JSON.parse(JSON.stringify(declarations)) as PageParamDeclaration[];
   const selectionErrors=[...timeExtensionErrors(page),...querySelectionErrors(page),...fieldSelectionErrors(page),...periodAggregationErrors(page),...queryBindingWhenErrors(page)];
   if(selectionErrors.length)return {ok:false,errors:selectionErrors};

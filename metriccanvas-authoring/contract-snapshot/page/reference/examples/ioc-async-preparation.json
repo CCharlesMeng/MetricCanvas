@@ -1,0 +1,280 @@
+{
+  "schemaVersion": "6.120",
+  "id": "ioc-async-preparation",
+  "layout": "dashboard",
+  "meta": {
+    "title": "异步条件准备 合成演示"
+  },
+  "filters": [
+    {
+      "id": "region",
+      "type": "dimension",
+      "dimension": "demo_geo",
+      "label": "Region",
+      "selection": {
+        "mode": "single"
+      },
+      "display": "tree",
+      "treeSelection": "level",
+      "hierarchy": [
+        {
+          "id": "geo",
+          "dimension": "demo_geo",
+          "label": "全球"
+        },
+        {
+          "id": "region-dept",
+          "dimension": "demo_region",
+          "label": "地区部"
+        },
+        {
+          "id": "office",
+          "dimension": "demo_office",
+          "label": "代表处"
+        }
+      ],
+      "defaultLevel": "region-dept"
+    },
+    {
+      "id": "key-national-only",
+      "type": "boolean",
+      "label": "仅看重点国代",
+      "default": true
+    },
+    {
+      "id": "mtime",
+      "type": "timeRange",
+      "display": "period",
+      "precision": "month",
+      "label": "统计期间",
+      "required": true,
+      "default": {
+        "mode": "month",
+        "finalizationName": "合成经营数据"
+      },
+      "periodModes": [
+        "year",
+        "quarter",
+        "month",
+        "last12Months"
+      ]
+    },
+    {
+      "id": "customer-category",
+      "type": "dimension",
+      "dimension": "customer-level",
+      "label": "客户类型",
+      "selection": {
+        "mode": "multiple"
+      },
+      "options": [
+        {
+          "value": "战略",
+          "label": "战略"
+        },
+        {
+          "value": "卓越",
+          "label": "卓越"
+        }
+      ]
+    }
+  ],
+  "dataSources": {
+    "offices": {
+      "fields": {
+        "office": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "代表处"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "金额"
+        },
+        "customer": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "客户级别"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "代表处",
+                  "客户级别"
+                ],
+                "output_metrics": [
+                  "金额"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": [],
+                  "time": {
+                    "period": "day",
+                    "is_aggregate": false
+                  }
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "geo": "全球编码",
+                "region-dept": "地区部",
+                "office": "代表处"
+              }
+            },
+            "customer-category": {
+              "target": "dimension",
+              "queryField": "客户级别"
+            },
+            "mtime": {
+              "target": "time"
+            }
+          }
+        }
+      }
+    },
+    "unrelated": {
+      "fields": {
+        "office": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "代表处"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "金额"
+        },
+        "customer": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "客户级别"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "代表处",
+                  "客户级别"
+                ],
+                "output_metrics": [
+                  "金额"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {}
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "results",
+      "components": [
+        {
+          "id": "ioc-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "异步条件准备"
+            },
+            "filterIds": [
+              "key-national-only",
+              "mtime",
+              "region",
+              "customer-category"
+            ]
+          }
+        },
+        {
+          "id": "office-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "offices"
+          },
+          "props": {
+            "rowKey": "office",
+            "columns": [
+              {
+                "title": "代表处",
+                "field": {
+                  "data": "main",
+                  "field": "office"
+                }
+              },
+              {
+                "title": "金额",
+                "field": {
+                  "data": "main",
+                  "field": "amount"
+                }
+              },
+              {
+                "title": "客户级别",
+                "field": {
+                  "data": "main",
+                  "field": "customer"
+                }
+              }
+            ],
+            "toolbar": {
+              "export": {
+                "format": "xlsx"
+              }
+            }
+          }
+        },
+        {
+          "id": "unrelated-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "unrelated"
+          },
+          "props": {
+            "title": "无关查询对照",
+            "rowKey": "office",
+            "columns": [
+              {
+                "field": "office"
+              },
+              {
+                "field": "amount"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

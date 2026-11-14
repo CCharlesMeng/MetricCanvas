@@ -1,3 +1,4 @@
+import {nativeSourceFilterIds} from '@metriccanvas/page/internal';
 import { expansionRowKey, sourceFilterIds, isUnrestrictedIocRegion, type Page, type TableComponent, type Row, type DisplaySnapshot, type DataSnapshot } from '@metriccanvas/page/internal';
 import { createSourceProgram, createCandidateValidator } from '@metriccanvas/data-execution/runtime';
 import type { DataGateway } from '../ports';
@@ -97,7 +98,7 @@ export function createHierarchySelectionSession(page:Page,table:TableComponent,g
     snapshot:()=>current,
     sync(context:HierarchyContext){
       const s=table.props.rowExpansion!.selection!,choice=hierarchyChoice(table,context.filters,page);
-      const dependencies=new Set([s.filter,...sourceFilterIds(page.dataSources[s.parentLookup.source])]);
+      const dependencies=new Set([s.filter,...nativeSourceFilterIds(page,s.parentLookup.source)]);
       for(const b of Object.values(s.parentLookup.bindings))if(b.source==='filter')dependencies.add(b.id);
       const next=JSON.stringify([choice.identity,[...context.filters].filter(([id])=>dependencies.has(id)),[...context.params]]);
       const gated=Boolean(context.blocked?.includes(s.filter)),publicationKey=JSON.stringify([next,gated]);

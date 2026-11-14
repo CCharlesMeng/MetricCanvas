@@ -15,7 +15,7 @@ describe('pagedUnion result field contract', () => {
   it('preserves the union capability floor during explicit parameter migration', () => {
     const result = migrateParamBindings(fixture);
     expect(result.ok).toBe(true);
-    if (result.ok) { expect(result.document.schemaVersion).toBe(versionPolicy.current); expect(parsePage(result.document).ok).toBe(true); }
+    if (result.ok) { expect(result.document.schemaVersion).toBe('6.119'); expect(parsePage(result.document).ok).toBe(true); }
   });
   it('resolves navigation by row source and leaves unmatched sources as plain text', () => {
     const parsed = parsePage(fixture); if (!parsed.ok) throw Error('fixture');

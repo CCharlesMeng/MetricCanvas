@@ -116,3 +116,4 @@ export { tableHeaderParamReferences, tableHeaderInputErrors } from './table/head
 export {iocHeaderFilterIds,standardIocRegionFilter} from './ioc-header-controls';
 
 export * from './finalization-default';
+export {supportsNativePreparation,nativeIocFilters,nativeIocBindingTargets,nativeSourceFilterIds,nativeIocRuntimePage,NATIVE_IOC_SCHEMA_MINOR} from './native-ioc';
