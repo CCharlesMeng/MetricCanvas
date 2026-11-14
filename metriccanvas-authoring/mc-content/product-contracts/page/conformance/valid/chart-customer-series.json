@@ -1,0 +1,301 @@
+{
+  "schemaVersion": "6.119",
+  "id": "chart-customer-series",
+  "layout": "dashboard",
+  "meta": {
+    "title": "华为 NA 与商业客户 · 合成演示",
+    "description": "四个大区、每组两根柱子；页头客户分类下推查询，华为 NA 按卓越、核心、战略三类合计。"
+  },
+  "filters": [
+    {
+      "id": "customer-category",
+      "type": "dimension",
+      "dimension": "customer-level",
+      "label": "客户分类",
+      "emptyLabel": "全部客户分类",
+      "selection": {
+        "mode": "multiple",
+        "allBehavior": "values"
+      },
+      "default": [],
+      "options": [
+        {
+          "value": "卓越",
+          "label": "卓越"
+        },
+        {
+          "value": "核心",
+          "label": "核心"
+        },
+        {
+          "value": "战略",
+          "label": "战略"
+        },
+        {
+          "value": "商业客户",
+          "label": "商业客户"
+        }
+      ]
+    }
+  ],
+  "dataSources": {
+    "customer-sales": {
+      "fields": {
+        "region": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "大区"
+        },
+        "category": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "客户级别"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "合成签约金额",
+          "unit": "万元",
+          "defaultFormat": "number-0"
+        },
+        "excellent": {
+          "type": "number",
+          "role": "measure",
+          "label": "卓越",
+          "unit": "万元",
+          "nullable": true,
+          "defaultFormat": "number-0"
+        },
+        "core": {
+          "type": "number",
+          "role": "measure",
+          "label": "核心",
+          "unit": "万元",
+          "nullable": true,
+          "defaultFormat": "number-0"
+        },
+        "strategic": {
+          "type": "number",
+          "role": "measure",
+          "label": "战略",
+          "unit": "万元",
+          "nullable": true,
+          "defaultFormat": "number-0"
+        },
+        "commercial": {
+          "type": "number",
+          "role": "measure",
+          "label": "商业客户",
+          "unit": "万元",
+          "nullable": true,
+          "defaultFormat": "number-0"
+        },
+        "huawei-na": {
+          "type": "number",
+          "role": "measure",
+          "label": "华为 NA",
+          "unit": "万元",
+          "nullable": true,
+          "defaultFormat": "number-0"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "大区",
+                  "客户级别"
+                ],
+                "output_metrics": [
+                  "合成签约金额"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "customer-category": {
+              "target": "dimension",
+              "queryField": "客户级别"
+            }
+          }
+        }
+      },
+      "compute": [
+        {
+          "op": "pivot",
+          "categoryField": "category",
+          "valueField": "amount",
+          "keyFields": [
+            "region"
+          ],
+          "columns": [
+            {
+              "output": "excellent",
+              "categories": [
+                "卓越"
+              ]
+            },
+            {
+              "output": "core",
+              "categories": [
+                "核心"
+              ]
+            },
+            {
+              "output": "strategic",
+              "categories": [
+                "战略"
+              ]
+            },
+            {
+              "output": "commercial",
+              "categories": [
+                "商业客户"
+              ]
+            }
+          ]
+        },
+        {
+          "op": "sumFields",
+          "fields": [
+            "excellent",
+            "core",
+            "strategic"
+          ],
+          "output": "huawei-na",
+          "onMissing": "ignore"
+        }
+      ]
+    }
+  },
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "华为 NA 与商业客户",
+              "description": {
+                "text": "合成数据 · 华为 NA＝卓越＋核心＋战略；页头选择与各系列口径取交集。",
+                "presentation": "inline"
+              }
+            },
+            "presentation": {
+              "layout": "inline",
+              "density": "normal",
+              "collapse": "none"
+            },
+            "components": [
+              {
+                "id": "customer-control",
+                "type": "filterControl",
+                "props": {
+                  "filterId": "customer-category"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "sales-chart",
+          "type": "barChart",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "customer-sales"
+          },
+          "props": {
+            "title": "四个大区的签约金额（合成数据）",
+            "categoryField": "region",
+            "showValueLabels": true,
+            "series": [
+              {
+                "field": "huawei-na",
+                "label": "华为 NA"
+              },
+              {
+                "field": "commercial",
+                "label": "商业客户"
+              }
+            ]
+          }
+        },
+        {
+          "id": "sales-detail",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "customer-sales"
+          },
+          "props": {
+            "title": "柱值与客户分类拆解（万元）",
+            "columns": [
+              {
+                "field": "region",
+                "title": "大区",
+                "width": 120
+              },
+              {
+                "field": "huawei-na",
+                "title": "华为 NA",
+                "width": 120
+              },
+              {
+                "field": "commercial",
+                "title": "商业客户",
+                "width": 120
+              },
+              {
+                "field": "excellent",
+                "title": "卓越",
+                "width": 120
+              },
+              {
+                "field": "core",
+                "title": "核心",
+                "width": 120
+              },
+              {
+                "field": "strategic",
+                "title": "战略",
+                "width": 120
+              }
+            ],
+            "pagination": {
+              "mode": "none"
+            }
+          }
+        },
+        {
+          "id": "explanation",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "口径说明：华为 NA 仅合计当前查询返回的卓越、核心、战略；商业客户仅取商业客户。没有匹配分类时显示 --，西部战略的真实 0 保持为 0。示例使用可加总的合成金额，不代表真实 DQE 服务已验证。"
+          }
+        }
+      ]
+    }
+  ]
+}

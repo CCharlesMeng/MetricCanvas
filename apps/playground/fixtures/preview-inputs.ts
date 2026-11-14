@@ -9,6 +9,7 @@ const exactInputs = new Map([
   ['filter-binding-when','binding-when'],
   ['dimension-binding-operator','dimension-operator'],
   ['chart-include-exclude','dimension-operator'],
+  ['chart-customer-series','customer-series'],
   ['sdt-period-aggregation','period-aggregation'],
   ['table-header-select-all-query','full-query-candidates'],
   ['ioc-header-controls','header-controls'],

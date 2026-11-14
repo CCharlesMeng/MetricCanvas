@@ -1128,6 +1128,11 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/chart-customer-series.json",
+      "target": "product-contracts/page/conformance/valid/chart-customer-series.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/valid/ioc-component-availability-page.json",
       "target": "product-contracts/page/conformance/valid/ioc-component-availability-page.json",
       "scope": "exact product contract"
@@ -7873,6 +7878,11 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/examples/chart-customer-series.json",
+      "target": "references/page-metadata/examples/chart-customer-series.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/components/barChart.md",
       "target": "references/page-metadata/components/barChart.md",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -8499,10 +8509,10 @@
     }
   ],
   "counts": {
-    "product": 1667,
+    "product": 1669,
     "authoring": 32,
     "modules": 36,
-    "topics": 312,
+    "topics": 313,
     "nodes": 2691,
     "tools": 9,
     "components": 20

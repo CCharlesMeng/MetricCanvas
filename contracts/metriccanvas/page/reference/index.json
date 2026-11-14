@@ -1338,6 +1338,7 @@
         "chart-series-visibility",
         "chart-table-unit",
         "sdt-period-aggregation",
+        "chart-customer-series",
         "conditional-compute-demand"
       ],
       "sources": [
@@ -23780,7 +23781,7 @@
     {
       "schemaPointer": "#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/0",
       "module": "components/iocHeader.md",
-      "file": "examples/ioc-header-controls.json",
+      "file": "examples/chart-customer-series.json",
       "pointer": "#/sections/0/components/0/props/components/0"
     },
     {

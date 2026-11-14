@@ -1,5 +1,19 @@
 # pages/capabilities/chart
 
+## 客户分类组合系列与页头联动
+
+<!-- example-guide: task=customer-category-series; page=chart-customer-series; components=header,sales-chart,sales-detail; verified=structure,browser -->
+
+复用用途：四个横轴类别、每组华为 NA 与商业客户两根柱子；页头多选客户分类后，各系列只统计自身口径与用户选择的交集。适用于同单位、可加总指标；比率、均值、去重数需要独立核对统计口径。
+
+参考对象：`/pages/chart-customer-series` 的 `header` 认领 `customer-category`；`customer-sales` 的查询绑定 `客户级别`，输出 `大区 × 客户级别` 分组金额；`pivot` 分别取四种客户分类，`sumFields` 仅合计卓越、核心、战略。`sales-chart` 和 `sales-detail` 共用此源。`pivot` 的类别候选列表为择一，不是多类别合计。
+
+移植边界：将大区、客户级别、合成签约金额及业务分类值替换为真实查询契约；保留查询筛选、转列、求和与字段绑定的完整关系。页头筛选不覆盖系列成员定义；不要将同字段静态条件与动态绑定叠写后假定自动求交集。`sumFields.onMissing:"ignore"` 保留全部缺项为 null，部分缺项不阻断其余项，真实 0 不变。
+
+可观察预期与环境：运行 `pnpm --filter playground dev --host 127.0.0.1 --port 5183`，打开 `/pages/chart-customer-series`。无需真实 DQE、鉴权或 Sim；页面与合成 Adapter 共用正式查询、计算和渲染路径。按华东、华南、华北、西部顺序，默认华为 NA 为 `[200,160,120,70]`、商业客户为 `[80,120,100,60]`；选择战略后华为 NA 为 `[40,30,20,0]`，商业客户全部 `--`；再选商业客户恢复商业柱值，华为 NA 仍为战略值；只选商业客户时华为 NA 全部 `--`；清空恢复默认。支持 URL `?customer-category=战略`，`?state=empty` 展示空结果，`?state=error` 注入查询失败。浏览器验证实际 ECharts 四个类别与两个系列、页头交互、编码请求、零与缺失及窄屏；合成执行回归覆盖卓越＋核心及失败，不代表真实服务、导出或线上部署已验收。
+
+## 其他图表示例
+
 页面由 JSON 自动发现。本文件仅记录使用说明，不参与渲染或注册。
 
 固定基线与查询排序的共同场景为 `/pages/query-sort-baseline`；启动、操作、合成数据性质及证据边界见[表格场景说明](../table/README.md#查询默认方向与固定基线)。

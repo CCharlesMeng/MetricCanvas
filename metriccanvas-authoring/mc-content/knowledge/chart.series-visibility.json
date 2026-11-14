@@ -26,7 +26,7 @@
       "module": "barChart",
       "reference": "references/page-metadata/components/barChart.md",
       "blocks": [
-        "# 柱状图 barChart\n\n比较离散类别之间的大小或展示分类分布。适用于区域/渠道/产品对比、分类分布、多指标类别比较。数据形状：一个 dimension 类别字段 + 一个或多个 metric 字段。\n\n<a id=\"bar-series-average\"></a>",
+        "# 柱状图 barChart\n\n比较离散类别之间的大小或展示分类分布。适用于区域/渠道/产品对比、分类分布、多指标类别比较。数据形状：一个 dimension 类别字段 + 一个或多个 metric 字段。",
         "## 系列条件显隐（6.89）\n\n`props.series[].visibleWhen` 使用[展示条件](../conditions.md)，支持字段系列和常量系列；柱线组合中的柱和折线均适用。省略时始终具有展示资格。系列没有行上下文，不能引用 `row`；筛选器必须已声明且类型与操作匹配。单系列条件本身可作为筛选消费方，内联页面也能观察显隐效果。\n\n```json\n{\n  \"id\": \"trend\",\n  \"type\": \"barChart\",\n  \"layout\": { \"span\": 12 },\n  \"data\": { \"main\": \"trend\" },\n  \"props\": {\n    \"categoryField\": \"month\",\n    \"dualAxis\": true,\n    \"series\": [\n      { \"field\": \"sales\", \"label\": \"销售额\", \"kind\": \"bar\", \"axis\": \"primary\" },\n      {\n        \"field\": \"rate\", \"label\": \"达成率\", \"kind\": \"line\", \"axis\": \"secondary\",\n        \"visibleWhen\": { \"filter\": \"scope\", \"part\": \"values\", \"op\": \"containsAny\", \"values\": [\"office\"] }\n      }\n    ]\n  }\n}\n```\n\n示例需声明 `scope` 维度筛选器和 `trend` 数据源（`month` 为维度，`sales/rate` 为度量）；完整合法页面见 `/pages/chart-series-visibility`。\n\n条件读取当前已应用的筛选状态和已有外部事实，错误、缺失和等待均不展示。条件不满足时系列、图例、悬浮提示和常驻标签同步消失，用户点击图例不能恢复被条件排除的系列；再次满足时自动恢复。原声明序、配色槽位、堆叠次序和高级 `echartsOption.series[]` 补丁对应关系保留。堆叠合计按当前可见系列重新计算。\n\n没有可见系列使用的数值轴隐藏轴名、刻度和网格线；仍保留内部轴索引，避免其他系列绑定错轴。仅副轴仍在使用时独立绘制刻度和网格线。全部系列被隐藏时保留图表标题、容器及类别轴，不把展示投影当作源数据为空。\n\n系列显隐与表格列显隐共用[按需取数规则](table.md#table-column-visibility)，不新增 Schema 字段。先合并共享消费者与执行依赖；普通单项 DQE 查询可从 `output_metrics` 移除无使用者的独立字符串指标，并同步本次请求字段映射。类别与分组维度始终保留，全部系列隐藏时仍可查询类别行集；可见常量系列继续沿类别行集重复取值。计算、关联、业务筛选、默认排序及其他组件依赖的指标保留，复杂查询保守保留完整输出。页面保存的查询定义、完整结果字段契约及筛选状态不变。重新显示按当前已应用筛选恢复读取，迟到旧响应不能覆盖新结果。PDF/PNG 使用导出捕获的条件与同一依赖规则；显示资格不能替代服务端授权。查询请求的合成验收入口 `/pages/conditional-query-demand`。\n\n`joinAggregate` 还会按实际消费字段裁剪无使用者的关联值和独占依赖，具体边界见[按需关联计算](../compute.md#conditional-compute-demand)。仍被可见系列、共享消费者、排序或后续计算使用的依赖保持严格失败；期间不匹配不作为空结果处理。合成场景 `/pages/conditional-compute-demand`。\n\n新条件仅可在 Schema 6.89 及以后声明，旧系列省略该字段时沿用原行为。本能力没有新增显示模式、轴显隐开关或脚本入口。"
       ],
       "rules": [
@@ -79,6 +79,7 @@
         "references/page-metadata/examples/chart-series-visibility.json",
         "references/page-metadata/examples/chart-table-unit.json",
         "references/page-metadata/examples/sdt-period-aggregation.json",
+        "references/page-metadata/examples/chart-customer-series.json",
         "references/page-metadata/examples/conditional-compute-demand.json"
       ]
     }

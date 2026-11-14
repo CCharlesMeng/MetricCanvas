@@ -7,6 +7,7 @@ import {createPeriodAggregationPreview} from '../../fixtures/period-aggregation'
 import {createSourceCandidatesPreview} from '../../fixtures/source-candidates';
 import {createRegionURLGateway} from '../../fixtures/region-url';
 import {createGlobalBenchmarkPreview} from '../../fixtures/global-benchmark';
+import {createCustomerSeriesPreview} from '../../fixtures/customer-series';
 import {createRowCachePreview} from '../../fixtures/row-expansion-cache';
 import {createPeriodComparisonPreview} from '../../fixtures/period-comparison';
 import {createQueryComparisonPreview} from '../../fixtures/query-comparison-gateway';
@@ -71,6 +72,7 @@ function tablePreview(kind:string|undefined,state:string){
 }
 
 function periodQueryPreview(kind:string|undefined,state:string){
+  if(kind==='customer-series')return createCustomerSeriesPreview(state);
   if (kind === 'finalization') return createFinalizationPreview(state);
   if(kind==='object-period')return createObjectPeriodPreview(state);
   if(kind==='binding-when')return createFilterBindingWhenPreview(state);

@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "5ec263f45060a75fe8c3c96ce2e71e3d1efafedc68e511571e4d994e00fceb54",
+  "sha256": "595acc6440a79e3757075c32b803f80a92c3e62b582d74c5dc6ac21caf3a246b",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -36,7 +36,7 @@
     },
     {
       "file": "docs/page-metadata/components/barChart.md",
-      "sha256": "5e0a5060c8048be2c5c5c5b3747f59a287c32649254ca34adcdf66bc2c87b0dc"
+      "sha256": "73a8fe8d2173cd72e09e1df383c490b1efa1781d6d83c764fbc798fdb1106695"
     },
     {
       "file": "docs/page-metadata/components/button.md",
@@ -160,7 +160,7 @@
     },
     {
       "file": "docs/page-metadata/reference-map.json",
-      "sha256": "c989cc8a5fc5b9da4bf57c23dbe21592cf05b84357640159b4bbe35ca659db1d"
+      "sha256": "adf06913afb61e49125300c50fa10f2f1ec451d66e71651d9fadb753de3117d2"
     },
     {
       "file": "docs/page-metadata/sections-and-layout.md",
@@ -2356,7 +2356,7 @@
     },
     {
       "file": "pages/capabilities/chart/README.md",
-      "sha256": "9e7f75a23c9f9994ca0db8d25d98085fd8b326dbc6588d2ea8b76267099b9142"
+      "sha256": "28f43ab68495cd67a8a2dfc4627aa96710d563a5f6a1e8a1f20e4fb7feb7e984"
     },
     {
       "file": "pages/capabilities/chart/bar-width-defaults.json",
@@ -2369,6 +2369,10 @@
     {
       "file": "pages/capabilities/chart/chart-constant-values-page.json",
       "sha256": "0ea9c9d921cadb40f59632c14e624ca64641dbb4504bf8407134f62dc33057db"
+    },
+    {
+      "file": "pages/capabilities/chart/chart-customer-series.json",
+      "sha256": "f6378bfc4f9a656329dbf5aa475687ac13907e80943d0a52eff17d466c532e59"
     },
     {
       "file": "pages/capabilities/chart/chart-echarts-option-page.json",
@@ -2804,7 +2808,7 @@
     },
     {
       "file": "pages/capabilities/layout/mc-content-layout-demo.json",
-      "sha256": "0f3fb62be4d0484938e3860d07003d4bbffc744835061512ae8ca46d2960f948"
+      "sha256": "4d0fa9de158d362b752a86d926f7c1e3d51e7c067ae20046f1855e632541ea11"
     },
     {
       "file": "pages/capabilities/layout/mc-layout-business-report.json",
@@ -3816,7 +3820,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-sources.ts",
-      "sha256": "ab3ffac250ca135a606fb49d1c6bc6d5e79557938780db8e0ea79d3841d655e5"
+      "sha256": "8a63bd55c31c20281f5fb7ffb0dc7332fb2377cb81cbb92ccf2136b56331811f"
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",

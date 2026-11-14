@@ -473,7 +473,7 @@
       "alignedWith": {
         "productContractVersion": "1.0.0-rc.4",
         "productManifest": "contract-snapshot/manifest.json",
-        "productManifestSha256": "0e87925a8a46b731a38b18432ab7362d52552f326a355afa85238ae674e6a14d",
+        "productManifestSha256": "3355fd9be38b2e7cf6db36096dd8780ea2318155dcd58f79f372fbaebd33bc44",
         "authoringContractVersion": "0.3.1",
         "authoringManifest": "contracts/manifest.json",
         "authoringManifestSha256": "c3058dad2c97caefc047cc555ee1da31b5736791a40027c2349a1c2af2ec4d79",
@@ -573,10 +573,10 @@
     "truncated": false
   },
   "coverageCounts": {
-    "product": 1667,
+    "product": 1669,
     "authoring": 32,
     "modules": 36,
-    "topics": 311,
+    "topics": 313,
     "nodes": 2691,
     "tools": 9,
     "components": 20

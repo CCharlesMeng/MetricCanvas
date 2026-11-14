@@ -774,6 +774,7 @@
         "chart-series-visibility",
         "chart-table-unit",
         "sdt-period-aggregation",
+        "chart-customer-series",
         "conditional-compute-demand"
       ],
       "sources": [
@@ -3452,6 +3453,7 @@
       "查阅方式"
     ],
     "components/barChart.md": [
+      "分类组合系列与页头筛选",
       "前端均值柱系列（6.103）",
       "默认柱宽",
       "双轴刻度与网格线",

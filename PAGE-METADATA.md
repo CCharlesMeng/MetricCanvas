@@ -488,6 +488,8 @@ DQE 数据网关单次 HTTP 请求默认超时为180秒，可信接入配置可�
 
 柱状图 `barChart` → [模块参考](contracts/metriccanvas/page/reference/components/barChart.md)。
 
+分类组合系列可复用查询筛选、`pivot` 与 `sumFields`：页头客户分类先下推查询，再将分类行转列，合计卓越、核心、战略为“华为 NA”，与“商业客户”并排展示。无新增 Schema，完整合成入口 `/pages/chart-customer-series`，声明与限制见[分类组合系列](docs/page-metadata/components/barChart.md#分类组合系列与页头筛选)。
+
 <a id="折线图-linechart"></a>
 
 折线图 `lineChart` → [模块参考](contracts/metriccanvas/page/reference/components/lineChart.md)。

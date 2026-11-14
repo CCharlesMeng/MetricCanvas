@@ -40,6 +40,7 @@
   import {iocSelectionGateway} from '../../../../../fixtures/selection-gateway';
   import {pageExternalInputs,rejectionPreviewRowCount,rejectionPreviewDelay} from '../../../../../fixtures/preview-inputs';
   import {createDimensionOperatorPreview} from '../../../../../fixtures/dimension-binding-operator';
+  import {createCustomerSeriesPreview} from '../../../../../fixtures/customer-series';
   import {createFilterBindingWhenPreview} from '../../../../../fixtures/filter-binding-when';
   import {browser} from '$app/environment';
   const framed = browser && window.self !== window.top;
@@ -122,6 +123,7 @@
   function periodQueryGateway(input: ReturnType<typeof pageExternalInputs>, state: string): DataGateway | undefined {
     if(input==='finalization')return createFinalizationPreview(state).dataGateway;
     if(input==='dimension-operator')return createDimensionOperatorPreview(state).dataGateway;
+    if(input==='customer-series')return createCustomerSeriesPreview(state).dataGateway;
     if(input==='binding-when')return createFilterBindingWhenPreview(state).dataGateway;
     if(input==='period-aggregation')return createPeriodAggregationPreview(state).dataGateway;
   }
@@ -172,6 +174,7 @@
 
   function recordSharedFilters(event:RuntimeViewEvent) {
     if(pageExternalInputs(page.params.pageId)==='dimension-operator')window.dispatchEvent(new CustomEvent('metriccanvas:dimension-operator-runtime',{detail:event}));
+    if(pageExternalInputs(page.params.pageId)==='customer-series')window.dispatchEvent(new CustomEvent('metriccanvas:customer-series-runtime',{detail:event}));
     if(event.type!=='filter-change'||pageState.phase!=='ready'||!['key-office','key-office-priority'].includes(pageExternalInputs(page.params.pageId)??''))return;
     sharedKeyOfficeFilters.recordSearch(projectNavigationInputs(pageState.document),event.search,sharedBindings);
   }

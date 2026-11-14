@@ -918,5 +918,5 @@ Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/pre
 - `#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/facts/items/properties/value/anyOf/1`：[合法完整页面](../examples/ioc-component-availability-page.json)，JSON Pointer `#/sections/0/components/0/props/identity/facts/1/value`。
 - `#/definitions/iocHeaderComponent/properties/props/properties/back/anyOf/0`：[合法完整页面](../examples/ioc-header-title-link-target.json)，JSON Pointer `#/sections/0/components/0/props/back`。
 - `#/definitions/iocHeaderComponent/properties/props/properties/back/anyOf/1`：[合法完整页面](../examples/ioc-auto-back-page.json)，JSON Pointer `#/sections/0/components/0/props/back`。
-- `#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/0`：[合法完整页面](../examples/ioc-header-controls.json)，JSON Pointer `#/sections/0/components/0/props/components/0`。
+- `#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/0`：[合法完整页面](../examples/chart-customer-series.json)，JSON Pointer `#/sections/0/components/0/props/components/0`。
 - `#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1`：[合法完整页面](../examples/ioc-header-controls.json)，JSON Pointer `#/sections/0/components/0/props/components/1`。

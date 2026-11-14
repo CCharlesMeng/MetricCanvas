@@ -2,6 +2,14 @@
 
 比较离散类别之间的大小或展示分类分布。适用于区域/渠道/产品对比、分类分布、多指标类别比较。数据形状：一个 dimension 类别字段 + 一个或多个 metric 字段。
 
+## 分类组合系列与页头筛选
+
+`/pages/chart-customer-series` 使用现有声明展示四个大区、每组“华为 NA”和“商业客户”两根柱子。查询通过 `filterBindings` 消费 IOC 页头客户分类，按大区与客户级别返回可加总金额；在同一页面数据源中先 `pivot` 为卓越、核心、战略、商业客户四列，再用 `sumFields` 合计前三列为华为 NA。柱图 `data.main` 引用该结果，两个 `series[].field` 分别读取合计与商业客户字段，明细表复用同一结果。
+
+选择战略时华为 NA 只包含战略，商业客户无匹配值；选择战略与商业客户时两根柱子各保留自己的分类。`sumFields.onMissing:"ignore"` 忽略部分缺项、全部缺项保留 null，真实 0 保留；空结果不制造四组行，失败不转为零。不要将 `pivot.columns[].categories` 的多个候选误作求和，该列表只取首个匹配类别；也不要依赖同字段静态查询条件与页头绑定自动取交集。比率、均值及去重数不直接套用金额加总口径。
+
+该场景仅复用既有协议与计算阶段，不新增 Schema 或系列级查询配置。合成 Adapter 核对实际编码条件后返回分组数据；不代表真实 DQE 服务已验真。操作与预期见页面目录 README。
+
 <a id="bar-series-average"></a>
 
 ## 前端均值柱系列（6.103）
@@ -870,6 +878,7 @@ Schema位置：`#/definitions/barChartComponent/properties/props/properties/acti
 - [chart-series-visibility](../examples/chart-series-visibility.json)：完整合法页面；查询仅为静态契约证据。
 - [chart-table-unit](../examples/chart-table-unit.json)：完整合法页面；查询仅为静态契约证据。
 - [sdt-period-aggregation](../examples/sdt-period-aggregation.json)：完整合法页面；查询仅为静态契约证据。
+- [chart-customer-series](../examples/chart-customer-series.json)：完整合法页面；查询仅为静态契约证据。
 - [conditional-compute-demand](../examples/conditional-compute-demand.json)：完整合法页面；查询仅为静态契约证据。
 
 局部片段提取自[完整页面](../examples/component-barChart.json)的`#/sections/0/components/0`；此片段依赖完整页面的数据源/字段，不能单独作为页面校验。
