@@ -2,6 +2,18 @@ import { expect,it } from 'vitest';
 import { createQueryRunner } from '../src/query-runner';
 import type { EffectiveQuery } from '@metriccanvas/page/internal';
 const query=(id=1):EffectiveQuery=>({language:'dqe',body:{dsl_list:[{id}]},fieldMappings:{},filterValues:[]});
+it('dispatches all fifteen independent foreground reads without waiting for a slot by default',async()=>{
+ const calls:Array<{resolve:(result:{rows:[];totalCount:0})=>void}>=[];
+ const runner=createQueryRunner({gateway:{fetchData(){return new Promise(resolve=>calls.push({resolve}));}}});
+ try {
+  const work=Array.from({length:15},(_,id)=>runner.run(query(id),{},'session'));
+  expect(calls).toHaveLength(15);
+  calls[14].resolve({rows:[],totalCount:0});
+  expect(await work[14]).toMatchObject({status:'empty'});
+  for(const call of calls)call.resolve({rows:[],totalCount:0});
+  await Promise.all(work);
+ } finally {runner.dispose();}
+});
 it('shares identical requests; cancellation detaches one consumer and aborts only the last',async()=>{
  const calls:Array<{signal?:AbortSignal;resolve:(result:{rows:[];totalCount:0})=>void}>=[];
  const runner=createQueryRunner({gateway:{fetchData(_q,_d,signal){return new Promise(resolve=>calls.push({signal,resolve}));}}});

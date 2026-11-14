@@ -1,4 +1,5 @@
 import {createKeylessChildPreview} from '../../fixtures/child-keyless';
+import {createIndependentRequestsPreview} from '../../fixtures/dqe-independent-requests';
 import {createFinalizationPreview} from '../../fixtures/finalization';
 import {createObjectPeriodPreview} from '../../fixtures/object-period-query';
 import {createIocHeaderControlsPreview} from '../../fixtures/ioc-header-controls';
@@ -53,6 +54,7 @@ export function scenarioEnvironment(exampleId: string, state = 'ready') {
 }
 
 function tablePreview(kind:string|undefined,state:string){
+  if(kind==='independent-requests')return createIndependentRequestsPreview();
   if(kind==='child-keyless')return createKeylessChildPreview();
   const period=periodQueryPreview(kind,state);
   if(period)return period;

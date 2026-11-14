@@ -8,6 +8,30 @@ const query = (id: string): EffectiveQuery => ({
 });
 const turn = () => new Promise(resolve => setTimeout(resolve, 0));
 
+it('submits fifteen single-query HTTP requests before any response completes by default', async () => {
+  const pending: { field: string; resolve(response: Response): void }[] = [];
+  const controller = new AbortController();
+  const gateway = createDqeGateway({ fetchImpl: async (_url, init) => {
+    const body = JSON.parse(String(init?.body));
+    expect(body.dsl_list).toHaveLength(1);
+    return new Promise<Response>(resolve => pending.push({ field: body.dsl_list[0].output_dims[0], resolve }));
+  } });
+  const work = Array.from({ length: 15 }, (_, id) => gateway.fetchData(query(`query-${id}`), undefined, controller.signal));
+  try {
+    await turn();
+    expect(pending).toHaveLength(15);
+    const settle = (call: typeof pending[number]) => call.resolve(Response.json({ retCode: 'CBC.0000', results: [{ code: 'SUCCESS', data: [{ [call.field]: 'ready' }], total_count: 1 }] }));
+    settle(pending[14]);
+    await expect(work[14]).resolves.toMatchObject({ rows: [{ value: 'ready' }] });
+    pending.forEach(settle);
+    await Promise.all(work);
+  } finally {
+    controller.abort();
+    pending.forEach(call => call.resolve(Response.json({})));
+    await Promise.allSettled(work);
+  }
+});
+
 it('releases a fast query while an independent slow query is still pending', async () => {
   const pending: { fields: string[]; resolve(response: Response): void }[] = [];
   const gateway = createDqeGateway({ fetchImpl: async (_url, init) => {

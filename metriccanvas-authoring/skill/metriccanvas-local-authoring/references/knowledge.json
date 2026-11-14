@@ -11,7 +11,7 @@
     },
     {
       "file": "references/authoring-knowledge/model.json",
-      "sha256": "06cdd916fbc95ddd5854374e9288a292bcccfff247186831342a8c3018bc2a7a"
+      "sha256": "82193a08ae00e9beebd4bf59f59133597df9b4635b5e786555d4a8afeef1a023"
     },
     {
       "file": "references/example-guides/chart-customer-series/customer-category-series.md",
@@ -20,6 +20,10 @@
     {
       "file": "references/example-guides/chart-include-exclude/include-exclude.md",
       "sha256": "5392b76379923e9c68a7b625c949ae94024d0583aadcccfaa2b6f5c98d925849"
+    },
+    {
+      "file": "references/example-guides/dqe-independent-requests/independent-requests.md",
+      "sha256": "1034de55f7e35e51c257d3a658949044f26f09e180aafa52e2bd1f6a51285ce4"
     },
     {
       "file": "references/example-guides/ioc-auto-back-detail/browser-back.md",
@@ -159,7 +163,7 @@
     },
     {
       "file": "references/page-metadata/data-sources.md",
-      "sha256": "cdd138d5f44827b439b7825eddabe41e200fe5bb3685ea63b4ad7ef4b1fc1470"
+      "sha256": "cac64d51139d50f2a94dd99c34d55153c04fb6a14be894f8582cfa64adae218c"
     },
     {
       "file": "references/page-metadata/errors/actual-after-captured-month.json",
@@ -2680,6 +2684,10 @@
     {
       "file": "references/page-metadata/examples/dimension-selection-page.json",
       "sha256": "1f5f3de02b8b499acb5f2b046511435af5ff8f3f1023ef3d2ed687f7efd2bd8f"
+    },
+    {
+      "file": "references/page-metadata/examples/dqe-independent-requests.json",
+      "sha256": "66cc6a6cb957c5f92ff876bdcf20e54ba2ab0e605f76dafdb964c1d54b0daac7"
     },
     {
       "file": "references/page-metadata/examples/dual-axis-alignment.json",

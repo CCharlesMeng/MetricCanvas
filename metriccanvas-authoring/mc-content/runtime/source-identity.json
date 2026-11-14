@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "1d52adc8c720a687d7648606cc8a20886fb63852c5be92026f9a9cbe2a303b92",
+  "sha256": "5516e4426a369648091caa1f1535fbd70d9a8319fb36f5126ca7dd6557f12038",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -120,7 +120,7 @@
     },
     {
       "file": "docs/page-metadata/data-sources.md",
-      "sha256": "b9526a04131ca16519e853762eb37862b58102125551f7917835bde1f433bbf7"
+      "sha256": "cae6e6d7dd69b0f89f42126b4933504e1f1f08ea40174459bc98ed6315336b75"
     },
     {
       "file": "docs/page-metadata/examples/README.md",
@@ -2928,7 +2928,7 @@
     },
     {
       "file": "pages/capabilities/query/README.md",
-      "sha256": "014bcbb4e6f9e9b8eada1a525d713238789595aa863b660953c3cd8d58ca5520"
+      "sha256": "f9476efd1306cdc4122a74e5998093a684bc37638f4e0fc7c3e91431429b161d"
     },
     {
       "file": "pages/capabilities/query/authoring-contract-reliability.json",
@@ -2937,6 +2937,10 @@
     {
       "file": "pages/capabilities/query/data-source-diagnostics.json",
       "sha256": "b0ce0dc713d2e072bf4b886425a6ce755a3354d4fc6502fcd38d1f6e7709e1ef"
+    },
+    {
+      "file": "pages/capabilities/query/dqe-independent-requests.json",
+      "sha256": "66cc6a6cb957c5f92ff876bdcf20e54ba2ab0e605f76dafdb964c1d54b0daac7"
     },
     {
       "file": "pages/capabilities/query/dqe-object-query-demo.json",

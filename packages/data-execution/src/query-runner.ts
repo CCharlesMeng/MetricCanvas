@@ -9,8 +9,8 @@ type Request = { key: string; query: EffectiveQuery; candidates?: ColumnCandidat
   controller: AbortController; consumers: Set<Consumer>; background: boolean };
 const cancelled = (): DataSnapshot => ({ status: 'error', error: { code: 'DQE_CANCELLED', message: '查询已取消' } });
 
-/** Request resources only. Data and candidate operations share concurrency and consumer cancellation. */
-export function createQueryRunner({ gateway, maxConcurrent = 5 }: { gateway: DataGateway; maxConcurrent?: number }) {
+/** Ready foreground reads dispatch immediately by default; explicit limits and idle preloads remain supported. */
+export function createQueryRunner({ gateway, maxConcurrent = Infinity }: { gateway: DataGateway; maxConcurrent?: number }) {
   const pending = new Map<string, Request>(), cache = new Map<string, Result>(), queue: Request[] = [];
   const running = new Set<Request>();
   let disposed = false;

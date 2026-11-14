@@ -1,5 +1,6 @@
 <script lang="ts">
   import {createKeylessChildPreview} from '../../../../../fixtures/child-keyless';
+  import {createIndependentRequestsPreview} from '../../../../../fixtures/dqe-independent-requests';
   import {createFinalizationPreview} from '../../../../../fixtures/finalization';
   import {createMonthlyReportPreview} from '../../../../../fixtures/report-monthly';
   import {createPeriodAggregationPreview} from '../../../../../fixtures/period-aggregation';
@@ -134,6 +135,7 @@
   }
 
   function queryTableGateway(input: ReturnType<typeof pageExternalInputs>): DataGateway | undefined {
+    if(input==='independent-requests')return createIndependentRequestsPreview().dataGateway;
     if(input==='child-keyless')return createKeylessChildPreview().dataGateway;
     const state = page.url.searchParams.get('state') ?? 'ready';
     if(input==='report-monthly')return createMonthlyReportPreview();

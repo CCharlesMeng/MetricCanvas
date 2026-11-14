@@ -34,6 +34,6 @@ metadata是完整页面文档，params已填写本次值。输出只有完整页
 
 端点、身份和命令属于可信接入配置，不来自模型或metadata。需要代理、证书或动态凭据时，程序化使用`executePageDataProgram(metadata, config)`，从`@metriccanvas/data-execution/node`导入并注入fetchImpl。
 
-`./runtime` 供锁步版本引擎接入 SourceProgram.read 与纯 TableView/compute。普通、固定级联、组合、Node 和完整导出共享规则；QueryRunner 内部拥有共享请求、缓存、总并发 5 和独立消费者取消。引擎拥有页面订阅和最终公开快照，TableSession 唯一持有已提交视图。`./dqe`提供原数据网关导出，`@metriccanvas/engine/dqe`兼容再导出同一实现。
+`./runtime` 供锁步版本引擎接入 SourceProgram.read 与纯 TableView/compute。普通、固定级联、组合、Node 和完整导出共享规则；QueryRunner 内部拥有共享请求、缓存、默认不设前台查询并发上限（显式限额仍生效，后台预加载空闲串行） 和独立消费者取消。引擎拥有页面订阅和最终公开快照，TableSession 唯一持有已提交视图。`./dqe`提供原数据网关导出，`@metriccanvas/engine/dqe`兼容再导出同一实现。
 
 完整关联最多 1000 行；完整导出新鲜读取最多 10000 行/60 秒，保留业务 TopN 与固定窗口。新协议为 6.22；真实行域覆盖、粒度、DQE 排序、计数与编码补列需单列验收，Sim 不作真实能力承诺。

@@ -118,7 +118,7 @@ export interface DqeGatewayConfig {
   fetchImpl?: typeof fetch;
   /** 单次 HTTP 请求超时，默认 180000ms；显式配置优先。 */
   timeoutMs?: number;
-  /** Maximum concurrent HTTP requests (default 5); each request contains one query. */
+  /** Optional HTTP concurrency limit; omitted means no application cap. Each request contains one query. */
   maxConcurrentBatches?: number;
   credentials?: RequestCredentials;
   diagnostics?: DqeDiagnostics;
@@ -180,7 +180,7 @@ export function createDqeGateway(
     headers = {},
     fetchImpl = fetch,
     timeoutMs = 180_000,
-    maxConcurrentBatches = 5,
+    maxConcurrentBatches = Infinity,
     credentials = 'same-origin',
     diagnostics,
     devDetail

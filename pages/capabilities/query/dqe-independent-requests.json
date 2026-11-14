@@ -1,0 +1,754 @@
+{
+  "schemaVersion": "6.118",
+  "id": "dqe-independent-requests",
+  "layout": "dashboard",
+  "meta": {
+    "title": "DQE 独立请求调度（合成）",
+    "description": "15 条独立查询：前 5 条模拟耗时 5 秒，后 10 条模拟耗时 100 毫秒；不调用真实 DQE。"
+  },
+  "dataSources": {
+    "query-01": {
+      "fields": {
+        "value": {
+          "queryField": "合成数值01",
+          "type": "number",
+          "role": "measure",
+          "nullable": false
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [],
+                "output_metrics": [
+                  "合成数值01"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      }
+    },
+    "query-02": {
+      "fields": {
+        "value": {
+          "queryField": "合成数值02",
+          "type": "number",
+          "role": "measure",
+          "nullable": false
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [],
+                "output_metrics": [
+                  "合成数值02"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      }
+    },
+    "query-03": {
+      "fields": {
+        "value": {
+          "queryField": "合成数值03",
+          "type": "number",
+          "role": "measure",
+          "nullable": false
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [],
+                "output_metrics": [
+                  "合成数值03"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      }
+    },
+    "query-04": {
+      "fields": {
+        "value": {
+          "queryField": "合成数值04",
+          "type": "number",
+          "role": "measure",
+          "nullable": false
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [],
+                "output_metrics": [
+                  "合成数值04"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      }
+    },
+    "query-05": {
+      "fields": {
+        "value": {
+          "queryField": "合成数值05",
+          "type": "number",
+          "role": "measure",
+          "nullable": false
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [],
+                "output_metrics": [
+                  "合成数值05"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      }
+    },
+    "query-06": {
+      "fields": {
+        "value": {
+          "queryField": "合成数值06",
+          "type": "number",
+          "role": "measure",
+          "nullable": false
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [],
+                "output_metrics": [
+                  "合成数值06"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      }
+    },
+    "query-07": {
+      "fields": {
+        "value": {
+          "queryField": "合成数值07",
+          "type": "number",
+          "role": "measure",
+          "nullable": false
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [],
+                "output_metrics": [
+                  "合成数值07"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      }
+    },
+    "query-08": {
+      "fields": {
+        "value": {
+          "queryField": "合成数值08",
+          "type": "number",
+          "role": "measure",
+          "nullable": false
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [],
+                "output_metrics": [
+                  "合成数值08"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      }
+    },
+    "query-09": {
+      "fields": {
+        "value": {
+          "queryField": "合成数值09",
+          "type": "number",
+          "role": "measure",
+          "nullable": false
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [],
+                "output_metrics": [
+                  "合成数值09"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      }
+    },
+    "query-10": {
+      "fields": {
+        "value": {
+          "queryField": "合成数值10",
+          "type": "number",
+          "role": "measure",
+          "nullable": false
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [],
+                "output_metrics": [
+                  "合成数值10"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      }
+    },
+    "query-11": {
+      "fields": {
+        "value": {
+          "queryField": "合成数值11",
+          "type": "number",
+          "role": "measure",
+          "nullable": false
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [],
+                "output_metrics": [
+                  "合成数值11"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      }
+    },
+    "query-12": {
+      "fields": {
+        "value": {
+          "queryField": "合成数值12",
+          "type": "number",
+          "role": "measure",
+          "nullable": false
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [],
+                "output_metrics": [
+                  "合成数值12"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      }
+    },
+    "query-13": {
+      "fields": {
+        "value": {
+          "queryField": "合成数值13",
+          "type": "number",
+          "role": "measure",
+          "nullable": false
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [],
+                "output_metrics": [
+                  "合成数值13"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      }
+    },
+    "query-14": {
+      "fields": {
+        "value": {
+          "queryField": "合成数值14",
+          "type": "number",
+          "role": "measure",
+          "nullable": false
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [],
+                "output_metrics": [
+                  "合成数值14"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      }
+    },
+    "query-15": {
+      "fields": {
+        "value": {
+          "queryField": "合成数值15",
+          "type": "number",
+          "role": "measure",
+          "nullable": false
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [],
+                "output_metrics": [
+                  "合成数值15"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "requests",
+      "title": "快查询独立返回",
+      "components": [
+        {
+          "id": "card-01",
+          "type": "metricCard",
+          "layout": {
+            "span": 2
+          },
+          "data": {
+            "main": "query-01"
+          },
+          "props": {
+            "rows": [
+              {
+                "label": "独立查询 01",
+                "valueField": "value"
+              }
+            ]
+          }
+        },
+        {
+          "id": "card-02",
+          "type": "metricCard",
+          "layout": {
+            "span": 2
+          },
+          "data": {
+            "main": "query-02"
+          },
+          "props": {
+            "rows": [
+              {
+                "label": "独立查询 02",
+                "valueField": "value"
+              }
+            ]
+          }
+        },
+        {
+          "id": "card-03",
+          "type": "metricCard",
+          "layout": {
+            "span": 2
+          },
+          "data": {
+            "main": "query-03"
+          },
+          "props": {
+            "rows": [
+              {
+                "label": "独立查询 03",
+                "valueField": "value"
+              }
+            ]
+          }
+        },
+        {
+          "id": "card-04",
+          "type": "metricCard",
+          "layout": {
+            "span": 2
+          },
+          "data": {
+            "main": "query-04"
+          },
+          "props": {
+            "rows": [
+              {
+                "label": "独立查询 04",
+                "valueField": "value"
+              }
+            ]
+          }
+        },
+        {
+          "id": "card-05",
+          "type": "metricCard",
+          "layout": {
+            "span": 2
+          },
+          "data": {
+            "main": "query-05"
+          },
+          "props": {
+            "rows": [
+              {
+                "label": "独立查询 05",
+                "valueField": "value"
+              }
+            ]
+          }
+        },
+        {
+          "id": "card-06",
+          "type": "metricCard",
+          "layout": {
+            "span": 2
+          },
+          "data": {
+            "main": "query-06"
+          },
+          "props": {
+            "rows": [
+              {
+                "label": "独立查询 06",
+                "valueField": "value"
+              }
+            ]
+          }
+        },
+        {
+          "id": "card-07",
+          "type": "metricCard",
+          "layout": {
+            "span": 2
+          },
+          "data": {
+            "main": "query-07"
+          },
+          "props": {
+            "rows": [
+              {
+                "label": "独立查询 07",
+                "valueField": "value"
+              }
+            ]
+          }
+        },
+        {
+          "id": "card-08",
+          "type": "metricCard",
+          "layout": {
+            "span": 2
+          },
+          "data": {
+            "main": "query-08"
+          },
+          "props": {
+            "rows": [
+              {
+                "label": "独立查询 08",
+                "valueField": "value"
+              }
+            ]
+          }
+        },
+        {
+          "id": "card-09",
+          "type": "metricCard",
+          "layout": {
+            "span": 2
+          },
+          "data": {
+            "main": "query-09"
+          },
+          "props": {
+            "rows": [
+              {
+                "label": "独立查询 09",
+                "valueField": "value"
+              }
+            ]
+          }
+        },
+        {
+          "id": "card-10",
+          "type": "metricCard",
+          "layout": {
+            "span": 2
+          },
+          "data": {
+            "main": "query-10"
+          },
+          "props": {
+            "rows": [
+              {
+                "label": "独立查询 10",
+                "valueField": "value"
+              }
+            ]
+          }
+        },
+        {
+          "id": "card-11",
+          "type": "metricCard",
+          "layout": {
+            "span": 2
+          },
+          "data": {
+            "main": "query-11"
+          },
+          "props": {
+            "rows": [
+              {
+                "label": "独立查询 11",
+                "valueField": "value"
+              }
+            ]
+          }
+        },
+        {
+          "id": "card-12",
+          "type": "metricCard",
+          "layout": {
+            "span": 2
+          },
+          "data": {
+            "main": "query-12"
+          },
+          "props": {
+            "rows": [
+              {
+                "label": "独立查询 12",
+                "valueField": "value"
+              }
+            ]
+          }
+        },
+        {
+          "id": "card-13",
+          "type": "metricCard",
+          "layout": {
+            "span": 2
+          },
+          "data": {
+            "main": "query-13"
+          },
+          "props": {
+            "rows": [
+              {
+                "label": "独立查询 13",
+                "valueField": "value"
+              }
+            ]
+          }
+        },
+        {
+          "id": "card-14",
+          "type": "metricCard",
+          "layout": {
+            "span": 2
+          },
+          "data": {
+            "main": "query-14"
+          },
+          "props": {
+            "rows": [
+              {
+                "label": "独立查询 14",
+                "valueField": "value"
+              }
+            ]
+          }
+        },
+        {
+          "id": "card-15",
+          "type": "metricCard",
+          "layout": {
+            "span": 2
+          },
+          "data": {
+            "main": "query-15"
+          },
+          "props": {
+            "rows": [
+              {
+                "label": "独立查询 15",
+                "valueField": "value"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
