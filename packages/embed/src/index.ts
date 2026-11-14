@@ -31,7 +31,7 @@ export type {
   DimensionValuesGateway,
   RuntimeDataGateway
 } from '@metriccanvas/engine';
-export type { AiSummaryConfig, NavigationInputContract, RuntimeNavigation, RuntimeNavigationTarget } from '@metriccanvas/engine/ui';
+export type { AuthRequiredEvent, AiSummaryConfig, NavigationInputContract, RuntimeNavigation, RuntimeNavigationTarget } from '@metriccanvas/engine/ui';
 
 interface EmbedRootExports {
   update(input: RuntimeInput): void;
@@ -56,6 +56,16 @@ export function mount(
   }
 
   let onEvent = options.onEvent;
+  let navigationInput = options.navigation;
+  let navigation = browserNavigation(navigationInput, window);
+  // Replacing only the auth handler must not recreate the navigation dependency.
+  function readInput(input: RuntimeInput): RuntimeInput {
+    if (input.navigation !== navigationInput) {
+      navigationInput = input.navigation;
+      navigation = browserNavigation(navigationInput, window);
+    }
+    return runtimeInput(input, navigation);
+  }
   const host = document.createElement('div');
   host.dataset.metriccanvasRuntime = '';
   host.style.display = 'block';
@@ -69,7 +79,7 @@ export function mount(
     root = mountSvelte(EmbedRoot, {
       target: shadow,
       props: {
-        initialInput: runtimeInput(options),
+        initialInput: readInput(options),
         onEvent: (event: RuntimeEvent) => onEvent?.(event)
       }
     }) as EmbedRootExports;
@@ -84,7 +94,7 @@ export function mount(
       if (destroyed) {
         throw mountError('MetricCanvas 实例已销毁，不能再次更新。');
       }
-      root.update(runtimeInput(input));
+      root.update(readInput(input));
     },
     destroy() {
       if (destroyed) return;
@@ -104,13 +114,14 @@ export function mount(
   return handle;
 }
 
-function runtimeInput(input: RuntimeInput): RuntimeInput {
+function runtimeInput(input: RuntimeInput, navigation: RuntimeInput['navigation']): RuntimeInput {
   return {
     document: input.document,
+    onAuthRequired: input.onAuthRequired,
     ...(input.displayInputs!==undefined?{displayInputs:input.displayInputs}:{}),
     ...(input.execution !== undefined ? {execution:input.execution} : {}),
     ...(input.filterEditing !== undefined ? { filterEditing: input.filterEditing } : {}),
-    navigation: browserNavigation(input.navigation, window),
+    navigation,
     ...(input.dataGateway !== undefined
       ? { dataGateway: input.dataGateway }
       : {}),

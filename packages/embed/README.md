@@ -174,18 +174,16 @@ Embed 在 Shadow DOM 中渲染页面，以隔离集成应用样式。
 
 ## 事件
 
-`RuntimeEvent` 是 `@metriccanvas/engine/ui` 的 `RuntimeViewEvent` 的别名，事件形状以该类型定义为唯一真源。当前事件类型：`ready`、`invalid`、`version-error`、`configuration-error`、`data-error`、`filter-change`、`tab-change`、`navigate`。
+`RuntimeEvent` 是 `@metriccanvas/engine/ui` 的 `RuntimeViewEvent` 的别名，事件形状以该类型定义为唯一真源。事件包括 `ready`、`invalid`、`version-error`、`configuration-error`、`data-error`、`auth-required`、`filter-change`、`tab-change`、`navigate`。
 
 ```js
 const runtime = MetricCanvas.mount('#dashboard', {
   document: pageDocument,
   dataGateway,
+  onAuthRequired: ({ status }) => hostAuth.goToLogin(),
   onEvent(event) {
     if (event.type === 'navigate') {
       hostObserveNavigation(event.href, event.sourcePageId, event.sourceSearch);
-    }
-    if (event.type === 'data-error' && event.code === 'DQE_AUTH_REQUIRED') {
-      hostAuth.promptLogin();
     }
   }
 });
@@ -194,6 +192,8 @@ const runtime = MetricCanvas.mount('#dashboard', {
 Embed 通过事件通知筛选变化和导航。链接默认跳转；若要接管，使用 `navigation.navigate` 返回 `true`（见[集成应用契约](../../docs/host-contract.md)），不要在观察事件中重复跳转。筛选变化不会自动写入地址栏，集成应用可选择同步。查询串使用普通值，由接收页声明解释；没有私有类型前缀。
 
 `data-error` 事件在页面数据源进入错误态(或错误内容变化)时上抛一次，携带页面数据源 id、稳定查询错误分类(`DataErrorEvent['code']`，未携带分类的异常为 `UNKNOWN`)与脱值消息。集成应用按 `code` 决定重试、引导重新登录或展示失败，不要解析 `message` 字符串。
+
+`onAuthRequired` 是可选运行输入，适用于 DQE HTTP 401、403、419。传入后 MC 先终止当前页面请求、丢弃迟到结果并清理自身页面缓存，再通知 `auth-required {status}` 并调用一次方法；不等待登录、不重试、不更改凭据。未传方法时只通知，保留原有错误态。网关配置和页面 JSON 不变；其他错误不触发此处理。`update` 省略方法即移除，替换方法本身不重启查询；已失效实例须 `destroy` 后重新挂载。应用自行负责登录地址、凭据及自身缓存。具体范围见[集成应用契约](../../docs/host-contract.md#dqe-401--403--419-登录处理)。
 
 `version-error` 表示页面声明的 `schemaVersion` 超出引擎支持区间，渲染与查询均停止。事件给出 `requiredSchemaVersion`（页面需要的协议版本）、`currentSchemaVersion`（引擎支持的最新协议版本）、`supportedSchemaVersions`（支持列表）与可读 `message`。这些字段指页面协议版本，与 npm 包 SemVer 无关。集成应用应提供支持该协议版本的引擎；不要自动改写页面版本。缺失或格式非法的 `schemaVersion` 仍通过 `invalid` 返回文档错误。更新为受支持的合法文档后，同一实例可恢复渲染。
 

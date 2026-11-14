@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { createAiSummaryTaskSession } from '../src/ai-summary/runtime/session';
+import { aiSummaryTaskSession, createAiSummaryTaskSession, invalidateAiSummaryPage } from '../src/ai-summary/runtime/session';
 import { summaryContent } from '../src/ai-summary/view/content';
 import type { AiSummaryGenerationInput } from '../src/ai-summary/runtime/input';
 import type { AiSummarySnapshot } from '../src/ai-summary';
@@ -16,6 +16,47 @@ function deferred() {
 afterEach(() => vi.useRealTimers());
 
 describe('Report summary application tasks', () => {
+  it('a discarded generation that never finishes does not occupy the next login session', async () => {
+    vi.useFakeTimers();
+    const generate = vi.fn().mockImplementationOnce(() => new Promise(() => {})).mockResolvedValue('重新登录后的结果');
+    const config = { generate, concurrency: 1, throttleMs: 0 };
+    const session = aiSummaryTaskSession(config);
+    session.watch(input('same-key'), () => {});
+    await vi.advanceTimersByTimeAsync(0);
+    invalidateAiSummaryPage(config, 'report');
+    let shown: AiSummarySnapshot = { status: 'loading' };
+    session.watch(input('same-key'), next => { shown = next; });
+    await vi.advanceTimersByTimeAsync(0);
+    expect(shown).toMatchObject({ text: '重新登录后的结果' });
+    expect(generate).toHaveBeenCalledTimes(2);
+    session.dispose();
+  });
+  it('authentication invalidation removes cross-mount cache and rejects late writes for this page only', async () => {
+    vi.useFakeTimers();
+    const late = deferred();
+    const generate = vi.fn().mockResolvedValueOnce('旧正文').mockImplementationOnce(() => late.promise).mockResolvedValue('新正文');
+    const config = { generate, throttleMs: 0 };
+    const session = aiSummaryTaskSession(config);
+    const stop = session.watch(input('cached'), () => {});
+    await vi.advanceTimersByTimeAsync(0); stop();
+    session.watch(input('late'), () => {});
+    await vi.advanceTimersByTimeAsync(0);
+    invalidateAiSummaryPage(config, 'report');
+    late.resolve('失效前迟到正文');
+    await vi.advanceTimersByTimeAsync(0);
+    let shown: AiSummarySnapshot = { status: 'loading' };
+    aiSummaryTaskSession(config).watch(input('cached'), next => { shown = next; });
+    await vi.advanceTimersByTimeAsync(0);
+    expect(shown).toMatchObject({ text: '新正文' });
+    session.watch(input('late'), next => { shown = next; });
+    await vi.advanceTimersByTimeAsync(0);
+    expect(shown).toMatchObject({ text: '新正文' });
+    expect(generate).toHaveBeenCalledTimes(4);
+    invalidateAiSummaryPage(config, 'another-page');
+    session.watch(input('cached'), () => {});
+    expect(generate).toHaveBeenCalledTimes(4);
+    session.dispose();
+  });
   it('keeps switched-away work, isolates late results and reuses it after remount', async () => {
     vi.useFakeTimers();
     const old = deferred(), current = deferred();

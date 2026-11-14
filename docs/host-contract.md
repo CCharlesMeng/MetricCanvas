@@ -17,6 +17,28 @@ MetricCanvas 统一运行时（渲染引擎）不拥有应用路由器、返回�
 - [ADR-0069](adr/0069-local-boundary-substitutes-and-host-owned-credentials.md) 明确所有数据请求的请求头与相关 Cookie 均由集成应用决定，覆盖集成应用向 DQE、页面资产和公共 Chat 发出的请求。本仓不新增开发身份适配器或用户切换器，不自行补默认用户或覆盖集成应用提供的凭据；Cookie 由浏览器按集成应用选择的请求策略处理。该边界不免除服务端必填字段与权限校验，具体接口与 CORS 接线由 #101/#105/#106 对账。
 - `update(input)` 是完整运行输入替换，`document` 必填，省略的可选输入不会沿用旧值。文档、网关或初始查询串变化按既有语义初始化，不保证保留筛选与分页；同容器同时只允许一个实例，重复 `mount` 更新完整运行输入并返回原句柄，本次 `onEvent` 替换旧回调（省略则清除），普通 `update` 保留回调。同一容器须有一个生命周期所有者，任一共享句柄调用 `destroy` 都会销毁该实例。`destroy` 可重复调用，销毁后不能继续 `update`，容器可以重新挂载新实例。组件卸载仍须显式 `destroy`。
 
+## DQE 401 / 403 / 419 登录处理
+
+JS `mount` / `update` 与 Svelte `RuntimeView` 接受可选 `onAuthRequired(event)`。集成应用只增加这个方法，既有 `createDqeGateway`、请求头和拦截器无需调整：
+
+```ts
+mount(target, {
+  document,
+  dataGateway,
+  onAuthRequired: ({ status }) => app.goToLogin()
+});
+```
+
+DQE HTTP 401、403、419 触发同一页面实例的失效处理：MC 先关闭请求入口、取消在途任务、丢弃迟到结果和清理自身页面缓存，再发送 `onEvent({type:'auth-required',status})` 并调用一次处理方法。其中 403 仍保留无权限的错误含义；本次集成策略选择退出页面，不将它归为会话过期。
+
+未提供方法时只通知，继续既有查询错误处理，不终止页面；仅监听 onEvent 不启用整页失效。其他 HTTP 错误、网络失败、超时和取消不触发该方法。MC 不等待方法返回、不重试、不实现登录或默认跳转；方法与监听器抛错不会恢复页面或导致重复调用。
+
+`update` 省略方法即移除，替换方法本身不重启查询。已经失效的实例不能经 update 恢复；登录后销毁并重新挂载，Svelte 创建新的 RuntimeView 实例，重新执行查询。MC 清理页面查询、候选、子表、详情、导出、呈现及本页 AI 总结缓存；集成应用自行拥有的缓存、凭据和浏览器存储由其处理方法管理，MC 不清空 localStorage 或 Cookie。
+
+内置 DQE Adapter 在释放并发名额之前报告 HTTP 状态，阻止排队请求继续发送；页面内部包装为自定义网关的结构化 `detail.status` 提供兼容观察，并丢弃不响应取消的迟到结果。自定义网关未暴露结构化 HTTP 状态或隐藏在内部的队列/缓存，不能由 MC 推断或清理。集成应用使用内置 createDqeGateway 时无需增加接线。
+
+可观察本地仿真入口 `/auth-required-review`，使用既有 `dqe-request-timeout` 页面声明，不新增页面 Schema。升级需复制完整运行时分发目录及 chunks，真实登录跳转和登录后返回由目标集成应用联调验收。
+
 ## 平台的运行配置注入
 
 这一段与上面不同层：上面是渲染引擎对集成应用的要求，这一段是**平台**（第一方集成应用）对装载它的集成门户的要求。平台以纯前端静态产物部署，没有服务端可以藏凭据或代理请求，因此端点与凭据只能由门户在运行时给（[ADR-0073](adr/0073-static-platform-direct-access-with-injected-runtime-config.md)）。

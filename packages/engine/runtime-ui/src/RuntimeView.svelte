@@ -3,10 +3,10 @@
   import type { RuntimeViewProps } from './types';
 
   let {
-    document, displayInputs, dataGateway, aiSummary, initialSearch, navigation, onevent, pageRevisionId, execution, filterEditing
+    document, displayInputs, dataGateway, aiSummary, initialSearch, navigation, onevent, onAuthRequired, pageRevisionId, execution, filterEditing
   }: RuntimeViewProps = $props();
 </script>
 
 <RuntimeSurface
-  {document} {displayInputs} {dataGateway} {aiSummary} {initialSearch} {navigation} {onevent} {pageRevisionId} {execution} {filterEditing}
+  {document} {displayInputs} {dataGateway} {aiSummary} {initialSearch} {navigation} {onevent} {onAuthRequired} {pageRevisionId} {execution} {filterEditing}
 />

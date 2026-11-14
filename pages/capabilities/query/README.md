@@ -2,6 +2,12 @@
 
 页面由 JSON 自动发现。本文件仅记录使用说明，不参与渲染或注册。
 
+## DQE 401 / 403 / 419 页面失效与登录接入
+
+入口 `/auth-required-review`，复用本目录 [dqe-request-timeout.json](dqe-request-timeout.json) 的完整 Dashboard 页面；无需参数或真实 DQE。启动 `pnpm dev:playground`，先看到合成审批行，再点击发送 401、403 或 419：处理次数增加一次，页面内容消失；继续发送不再取数。点击“模拟登录后重新进入”后出现新请求的合成行。取消勾选“传入 onAuthRequired”则保留原有错误处理；500 不调用登录处理。
+
+该入口只仿真 HTTP 和记录回调，不跳转实际登录页。验证运行时接缝、缓存与重挂载，不代表真实登录或业务数据验收；新建集成应用只需在 mount 或 RuntimeView 输入增加 onAuthRequired，不修改页面 JSON、网关配置或拦截器。
+
 ## DQE 请求默认180秒超时
 
 入口 `/pages/dqe-request-timeout`；[页面 JSON](dqe-request-timeout.json)。无需 URL 参数。启动 `pnpm dev:dqe` 可查看 DQE Sim 审批合成数据；该页面没有内嵌初始行，打开即走普通 DQE 网关。

@@ -4,6 +4,7 @@ export {
   isDataGateway
 } from './types';
 export type {
+  AuthRequiredEvent,
   AiSummaryConfig,
   RuntimeConfigurationError,
   RuntimeConfigurationErrorCode,

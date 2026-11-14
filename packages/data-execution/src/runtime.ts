@@ -39,3 +39,4 @@ export { sourceCandidatesGateway, projectSourceCandidates } from './source-candi
 export {resolveFinalizationDates,type FinalizationSourceDefinition} from './finalization';
 
 export type { ScreenProgress } from './screen-progress';
+export { observeQueryHttpError } from './query-http-error';

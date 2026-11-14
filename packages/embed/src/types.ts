@@ -2,6 +2,7 @@ import type { RuntimeDataGateway } from '@metriccanvas/engine';
 import type { AiSummaryConfig, RuntimeViewEvent, RuntimeNavigation } from '@metriccanvas/engine/ui';
 
 export interface RuntimeInput {
+  onAuthRequired?: (event: import('@metriccanvas/engine/ui').AuthRequiredEvent) => void;
   displayInputs?: import('@metriccanvas/engine').DisplayInputs;
   document: unknown;
   execution?: import('@metriccanvas/engine').ExecutionBootstrap;

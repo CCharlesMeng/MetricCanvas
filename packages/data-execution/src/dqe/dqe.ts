@@ -1,4 +1,5 @@
 import {intersectQueryFilters} from '../intersect-filters';
+import {reportQueryHttpError} from '../query-http-error';
 import {dimensionFilterCandidates} from './filter-candidates';
 import { encodeObjectQuery, type ObjectSortEncoder } from './object-query';
 import { fullQueryColumnCandidates } from './full-query-candidates';
@@ -126,6 +127,7 @@ export interface DqeGatewayConfig {
 }
 
 interface PendingQuery {
+  signal?: AbortSignal;
   executionId: string;
   startedAt: string;
   startedMs: number;
@@ -319,6 +321,7 @@ export function createDqeGateway(
       });
       requestId = response.headers.get('x-request-id') ?? undefined;
       if (!response.ok) {
+        for (const call of calls) reportQueryHttpError(call.signal, response.status);
         throw httpStatusError(response.status);
       }
       const results = envelopeResults(await response.json(), calls.length);
@@ -375,6 +378,10 @@ export function createDqeGateway(
       throw new DqeGatewayError('DQE_CANCELLED', '候选值请求已被取消');
     }
     await acquireBatch();
+    if (signal?.aborted) {
+      releaseBatch();
+      throw cancelledError();
+    }
     const controller = new AbortController();
     let timedOut = false;
     const timer = setTimeout(() => {
@@ -395,6 +402,7 @@ export function createDqeGateway(
         signal: controller.signal
       });
       if (!response.ok) {
+        reportQueryHttpError(signal, response.status);
         throw httpStatusError(response.status);
       }
       const [result] = envelopeResults(await response.json(), 1);
@@ -475,6 +483,7 @@ export function createDqeGateway(
       devDetail?.record(execution.executionId, item);
       return new Promise<DataGatewayResult>((resolve, reject) => {
         const call: PendingQuery = {
+          signal,
           ...execution,
           query,
           item,

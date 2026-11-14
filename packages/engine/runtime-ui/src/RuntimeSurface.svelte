@@ -4,6 +4,8 @@
 </script>
 <svelte:options css="injected" />
 <script lang="ts">
+  import {createAuthRequiredGateway, notifyAuthRequired, type AuthRequiredEvent} from './auth-required';
+  import {invalidateAiSummaryPage} from './ai-summary/runtime/session';
   import {resolveFinalizationDates} from '@metriccanvas/data-execution/runtime';
   import { hierarchyLevelOf } from '@metriccanvas/page/internal';
   import { projectSnapshotRows, snapshotCellFallbacks, tablePinnedSlots, restoreCellFallbacks, pinnedSnapshotError } from '@metriccanvas/page/internal';
@@ -152,6 +154,7 @@
   type PageCapabilities = ReturnType<typeof derivePageCapabilities>;
   type ComponentSnapshots = ReadonlyMap<string, DataSnapshot>;
   type PageState =
+    | { phase: 'auth-required' }
     | { phase: 'loading' }
     | { phase: 'invalid'; errors: TypedError[] }
     | { phase: 'version-error'; error: Extract<RuntimeViewEvent, { type: 'version-error' }> }
@@ -176,6 +179,7 @@
     navigation,
     filterEditing,
     onevent,
+    onAuthRequired,
     pageRevisionId,
     execution
   }: RuntimeSurfaceProps = $props();
@@ -298,12 +302,37 @@
   function clearDisplaySnapshot(){retainedScreenData.clear();displaySnapshot=undefined;untrack(()=>refreshPeriodFacts?.(undefined));}
   let permissionRevision:string|undefined;
   let permissionInvalidated=false;
+  let authInvalidated=false;
+  let authNotified=false;
+  let authPageId='';
+  function runtimeInvalidated(){return permissionInvalidated||authInvalidated;}
+  function receiveAuthRequired(event:AuthRequiredEvent){
+    if(authInvalidated)return;
+    const callback=untrack(()=>onAuthRequired);
+    if(callback){
+      authInvalidated=true;
+      dispose();
+      clearAuthData();
+      pageState={phase:'auth-required'};
+    }
+    if(!authNotified){authNotified=true;notifyAuthRequired(untrack(()=>onevent),event);}
+    if(callback)notifyAuthRequired(callback,event);
+  }
+  function clearAuthData(){
+    invalidateAiSummaryPage(untrack(()=>aiSummary),authPageId);
+    retainedScreenData.clear();summaryCapture.clear();
+    snapshots=new Map();dimensionCandidates=new Map();filterValues=new Map();pageParams=new Map();
+    tableViews={};appliedTableHeaderFilters={};tablePageSizes={};
+    displaySnapshot=undefined;declarationPage=undefined;declarations=[];
+    blockedFilters=[];confirmationFilters=[];tabSelections={};initialTabs=new Map();
+    targetInputs=new Map();activeGateway=inlineGateway;
+  }
   $effect(()=>{
     const source=displayInputs;
     if(!source){if(permissionRevision!==undefined)clearDisplaySnapshot();return;}
     let stopped=false;
     const update=(snapshot:DisplaySnapshot)=>{
-      if(stopped||permissionInvalidated)return;
+      if(stopped||runtimeInvalidated())return;
       if(!snapshot||typeof snapshot.permissionRevision!=='string'||!snapshot.permissionRevision){clearDisplaySnapshot();return;}
       if(permissionRevision!==undefined&&permissionRevision!==snapshot.permissionRevision){
         stopped=true;permissionInvalidated=true;retainedScreenData.clear();dispose();snapshots=new Map();displaySnapshot=undefined;
@@ -429,7 +458,7 @@
     revisionId: string | undefined,
     bootstrap: import('../../runtime/src').ExecutionBootstrap | undefined
   ) {
-    if(permissionInvalidated)return;
+    if(runtimeInvalidated())return;
     exportController.reset(); tableController?.dispose(); tableController=undefined;
     const mySession = ++session;
     filterRevision=0;
@@ -445,7 +474,7 @@
 
     // 保持异步初始化接缝，避免外层 effect 把初始化中的状态读取纳入依赖。
     await Promise.resolve();
-    if (session !== mySession || permissionInvalidated) return;
+    if (session !== mySession || runtimeInvalidated()) return;
     candidateClock=new Date();
 
     if (bootstrap && canonicalizeJson(raw) !== canonicalizeJson(bootstrap.document)) {
@@ -508,7 +537,10 @@
       return;
     }
 
-    const nextCandidateSession=createCandidateGatewaySession(sourceCandidatesGateway(loaded,gatewayOverride??inlineGateway,{displayInputs:()=>displaySnapshot,filterRevision:()=>filterRevision,clock:()=>candidateClock}));
+    authPageId=loaded.id;
+    const authGateway=createAuthRequiredGateway(gatewayOverride??inlineGateway,receiveAuthRequired);
+    disposers.push(()=>authGateway.dispose());
+    const nextCandidateSession=createCandidateGatewaySession(sourceCandidatesGateway(loaded,authGateway.gateway,{displayInputs:()=>displaySnapshot,filterRevision:()=>filterRevision,clock:()=>candidateClock}));
     candidateSession=nextCandidateSession;activeGateway=nextCandidateSession.gateway;
     disposers.push(()=>{nextCandidateSession.dispose();if(candidateSession===nextCandidateSession)candidateSession=undefined;});
 
@@ -617,6 +649,7 @@
     const emittedDataErrors = new Map<string, string>();
     disposers.push(
       pageStream.subscribe((next) => {
+        if(session!==mySession)return;
         snapshots = next;
         syncTableState(loaded);
         // 结构化查询错误上抛为嵌入事件,宿主按分类决定重试或重登(issue #51)。
@@ -1360,6 +1393,8 @@
   {#if navigationMessage}<p role="alert" data-navigation-error>{navigationMessage}</p>{/if}
   {#if pageState.phase === 'loading'}
     <p class="muted">加载页面…</p>
+  {:else if pageState.phase === 'auth-required'}
+    <!-- The application owns login; terminated page data must no longer be shown. -->
   {:else if pageState.phase === 'version-error'}
     <div class="error-page">
       <h1>引擎不支持页面协议版本</h1>

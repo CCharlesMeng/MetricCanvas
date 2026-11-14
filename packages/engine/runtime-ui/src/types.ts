@@ -1,6 +1,8 @@
 import type { TypedError } from '@metriccanvas/page';
 import type { RuntimeDataGateway } from '../../runtime/src';
 import type { DataErrorEvent } from './data-error-events';
+import type { AuthRequiredEvent } from './auth-required';
+export type { AuthRequiredEvent } from './auth-required';
 export type { AiSummaryConfig, AiSummaryContextInfo, AiSummaryGenerate, AiSummaryDataSource } from './ai-summary';
 export type { DataErrorEvent } from './data-error-events';
 
@@ -49,6 +51,7 @@ export interface RuntimeConfigurationError {
 }
 
 export type RuntimeViewEvent =
+  | AuthRequiredEvent
   | {type:'navigation-error';href:string;code:'NAVIGATION_INPUT_INVALID'|'NAVIGATION_INPUT_UNAVAILABLE';message:string}
   | { type: 'ready'; pageId: string }
   | { type: 'invalid'; errors: TypedError[] }
@@ -103,6 +106,8 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 /** 正式渲染输入；创作行为不属于该 Interface。 */
 export interface RuntimeViewProps {
+  /** Opt in to terminating this page on DQE HTTP 401/403/419, then hand login to the application. */
+  onAuthRequired?: (event: AuthRequiredEvent) => void;
   displayInputs?: import('../../runtime/src/display-inputs').DisplayInputs;
   document: unknown;
 
