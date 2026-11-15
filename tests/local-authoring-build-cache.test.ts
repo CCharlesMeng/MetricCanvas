@@ -33,6 +33,19 @@ function delta(before: ReturnType<typeof getLocalBuildCacheStats>) {
 }
 
 describe.sequential('local deterministic bundle cache', () => {
+  it('canonicalizes shared pnpm dependency paths containing dot segments before recording them',async()=>{
+    const installed=await fixture('dot-installed'),root=await fixture('dot-consumer');
+    await mkdir(path.join(installed,'node_modules/.bin'),{recursive:true});
+    await mkdir(path.join(installed,'node_modules/.pnpm/node_modules'),{recursive:true});
+    await symlink(path.join(installed,'node_modules'),path.join(root,'node_modules'));
+    const cacheDir=path.join(temporary,'dot-cache');
+    const build=async()=>({outputs:new Map([['result','same']]),files:[path.join(root,'package.json')],
+      directories:[`${installed}/node_modules/.bin/../.pnpm/node_modules`]});
+    await withLocalBuildCache(root,'dot-path',{cacheDir},build);
+    const before=getLocalBuildCacheStats();
+    await withLocalBuildCache(root,'dot-path',{cacheDir},build);
+    expect(delta(before).hits).toBe(1);
+  });
   it('reuses identical graphs across directories and matches uncached output byte for byte', async () => {
     const first = await fixture('cross-first');
     const second = await fixture('cross-second');

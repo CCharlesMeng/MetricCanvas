@@ -4,7 +4,6 @@
 </script>
 <svelte:options css="injected" />
 <script lang="ts">
-  import TextSkeleton from '../../widgets/src/shared/TextSkeleton.svelte';
   import {createAuthRequiredGateway, notifyAuthRequired, type AuthRequiredEvent} from './auth-required';
   import {invalidateAiSummaryPage} from './ai-summary/runtime/session';
   import {createFinalizationPreparation,inheritFinalizationCache} from '@metriccanvas/data-execution/runtime';
@@ -269,6 +268,7 @@
   }
   let declarationPage:Page|undefined;
   let pageState = $state<PageState>({ phase: 'loading' });
+  let initializing=$state(true);
   setContext(CHART_OPTION_PATHS, () => pageState.phase === 'ready' ? chartOptionPaths(pageState.page) : new Map<string, string>());
   function visibleValidationErrors(errors: TypedError[]): TypedError[] {
     for (const error of errors) if (isChartOptionError(error)) console.error('[MetricCanvas][CHART_OPTION_INVALID]', error);
@@ -398,14 +398,14 @@
 
   let declarations = $state<FilterDeclaration[]>([]);
   let candidateClock=$state.raw(new Date());
-  const timeContext=$derived({snapshot:displaySnapshot,revision:filterRevision,pending:preparingFilters});
+  const timeContext=$derived({snapshot:displaySnapshot,revision:filterRevision,pending:preparingFilters,initializing});
   const candidateTimeContext=()=>({displayInputs:displaySnapshot,filterRevision,now:candidateClock});
   const filterCandidateContext=()=>({...candidateTimeContext(),page:pageState.phase==='ready'?pageState.page:undefined});
   let filterState: FilterState | null = null;
   let candidatesLoader: ReturnType<typeof createDimensionValuesLoader> | null = null;
   let stream: PageSnapshotStream | null = null;
   const summaryRuntime: AiSummaryRuntimeReader = () => {
-    if (pageState.phase !== 'ready') return undefined;
+    if (pageState.phase !== 'ready'||initializing) return undefined;
     return { page: { ...pageState.page, sections: presentation?.sections ?? pageState.page.sections },
       pageRevision: pageRevisionId, documentKey: canonicalizeJson(document),
       filters: filterValues, queries: stream?.captureQueries() ?? new Map(), tabs: tabSelections };
@@ -452,6 +452,12 @@
     return value?.type === 'dimension' && value.values.length === 1 && options.includes(value.values[0]!);
   }
 
+  function failTimeInitialization(mySession:number, signal:AbortSignal, emit:((event:RuntimeViewEvent)=>void)|undefined) {
+    if(session!==mySession||signal.aborted)return;
+    pageState={phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters',message:'时间默认值或可信初始期间不符合声明精度和边界'}]};
+    emit?.({type:'invalid',errors:pageState.errors});
+  }
+
   async function run(
     raw: unknown,
     gatewayOverride: RuntimeDataGateway | undefined,
@@ -465,6 +471,7 @@
     exportController.reset(); tableController?.dispose(); tableController=undefined;
     const mySession = ++session;
     filterRevision=0;
+    initializing=true;
     pageState = { phase: 'loading' };navigationMessage='';
     snapshots = new Map();
     filterValues = new Map();
@@ -564,10 +571,8 @@
     try{fromURL = new Map(capabilities.filters && !paramDeclarations.some(p => !p.path && p.value !== undefined)
       ? parseFilterSearch(search,declarations,candidateClock,usesIocRegion(loaded))
       : new Map());}catch{pageState={phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters',message:'时间模式URL必须为合法完整mode/from/to'}]};emit?.({type:'invalid',errors:pageState.errors});return;}
-    const preparation=createFinalizationPreparation(loaded,activeGateway,bootstrap?.filters??fromURL,candidateClock,finalizationController.signal,displaySnapshot);
-    let finalizationDates:ReadonlyMap<string,string>;
-    try{finalizationDates=await preparation.initialDates();}catch{return;}
-    if(session!==mySession)return;
+    const explicit=bootstrap?.filters??fromURL;
+    const preparation=createFinalizationPreparation(loaded,activeGateway,explicit,candidateClock,finalizationController.signal,displaySnapshot);
     const localOptions = filterGroupOptions(loaded);
     const localIssue = localFilterInitializationIssue(localOptions, fromURL, bootstrap, loaded.strictURLInputs === true);
     if (localIssue) {
@@ -576,7 +581,14 @@
       return;
     }
     let fromDeclarations:Map<string,FilterValue>;
-    try{fromDeclarations=initialFilterValues((loaded.filters??[]).filter(f=>!fromURL.has(f.id)&&!preparation.pending.has(f.id)),candidateClock,displaySnapshot,0,finalizationDates);}catch{pageState={phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters',message:'时间默认值或可信初始期间不符合声明精度和边界'}]};emit?.({type:'invalid',errors:pageState.errors});return;}
+    try{fromDeclarations=initialFilterValues((loaded.filters??[]).filter(f=>!fromURL.has(f.id)&&!preparation.unresolved.has(f.id)),candidateClock,displaySnapshot,0);}catch{failTimeInitialization(mySession,finalizationController.signal,emit);return;}
+    filterValues=new Map([...fromDeclarations,...explicit]);
+    preparingFilters=[...preparation.unresolved];
+    tableController=createTableController(loaded,()=>stream,()=>syncTableState(loaded),()=>filterValues,candidateTimeContext,()=>({gateway:activeGateway,filters:filterValues,params:pageParams,blocked:initializing?declarations.map(filter=>filter.id):blockedFilters,displaySnapshot,filterRevision}));
+    pageState={phase:'ready',page:periodFactPage(filterTextPage(loaded,textBindings,filterValues,preparation.unresolved),displaySnapshot,0),capabilities};
+    let finalizationDates:ReadonlyMap<string,string>;
+    try{finalizationDates=await preparation.initialDates();fromDeclarations=new Map([...fromDeclarations,...preparation.initialValues(finalizationDates)]);}catch{failTimeInitialization(mySession,finalizationController.signal,emit);return;}
+    if(session!==mySession)return;
     let state:ReturnType<typeof createFilterState>;
     try {
       state = createFilterState(bootstrap ? bootstrap.filters : new Map([...fromDeclarations, ...fromURL]), declarations, localOptions, { iocRegion:usesIocRegion(loaded), candidates:true, displayInputs:()=>displaySnapshot,readOnly: () => filterEditing?.readOnly === true || pageFiltersReadOnly(loaded) });
@@ -586,6 +598,7 @@
     }
     for(const id of preparation.pending)state.preparing(id,true);
     filterState = state;
+    initializing=false;
     const regionDefault = createIocRegionDefault(loaded, search, new Map([...fromDeclarations, ...fromURL]), !!bootstrap);
 
     function receiveCandidates(next:DimensionValuesSnapshots) {
@@ -638,7 +651,6 @@
     );
 
     search = initializeURLSearch(loaded, search, navigationAdapter);
-    tableController=createTableController(loaded,()=>stream,()=>syncTableState(loaded),()=>filterValues,candidateTimeContext,()=>({gateway:activeGateway,filters:filterValues,params:pageParams,blocked:blockedFilters,displaySnapshot,filterRevision}));
     syncTableState(loaded);
     pageState = { phase: 'ready', page: periodFactPage(filterTextPage(loaded, textBindings, filterValues,state.preparation()),displaySnapshot,state.revision), capabilities };
 
@@ -762,6 +774,7 @@
     });
   }
   async function exportTable(component: TableComponent) {
+    if(initializing)return;
     if(pageState.phase!=='ready'||!stream||!component.props.toolbar?.export||!actionAllowed(component,component.props.toolbar.export))return;
     tableController?.syncColumns(component);
     const projected=tableController?.project(component)??component;
@@ -921,7 +934,7 @@
   }
 
   function actionAllowed(component:Component,action:import('@metriccanvas/page/internal').PolicyNode,row?:Row):boolean {
-    return presentation?.gate(action,row,presentation.component(component.id)).enabled===true;
+    return !initializing&&presentation?.gate(action,row,presentation.component(component.id)).enabled===true;
   }
   function componentHref(component: Component, row: Row): string | undefined {
     if (!componentCapability(component)?.actions || !('actions' in component.props)) return undefined;
@@ -1408,10 +1421,10 @@
   }
 </script>
 
-<div class="runtime-view" data-runtime-navigation={navigation?.navigate ? true : undefined} bind:this={surfaceRoot}>
+<div class="runtime-view" data-initializing={initializing&&pageState.phase==='ready'?'':undefined} data-runtime-navigation={navigation?.navigate ? true : undefined} bind:this={surfaceRoot}>
   {#if navigationMessage}<p role="alert" data-navigation-error>{navigationMessage}</p>{/if}
   {#if pageState.phase === 'loading'}
-    <div aria-busy="true" style="max-width:720px;padding:24px"><TextSkeleton /></div>
+    <!-- Local validation finishes before the first real page structure is mounted. -->
   {:else if pageState.phase === 'auth-required'}
     <!-- The application owns login; terminated page data must no longer be shown. -->
   {:else if pageState.phase === 'version-error'}
@@ -1858,8 +1871,8 @@
     margin-top: var(--mc-page-sections-margin-top, 0);
   }
   /* 首页头分区独立呈现，跨容器延续分区间距；隐藏或空内容不占间距。 */
-  .page-sections[data-leading-header-section]:has(> :global(.page-section:not([hidden])))
-    + .page-sections:has(> :global(.page-section:not([hidden]))) {
+  .page-sections[data-leading-header-section]:has(> :global([data-section-id]:not([hidden])))
+    + .page-sections:has(> :global([data-section-id]:not([hidden]))) {
     margin-top: 16px;
   }
   .page-content.layout-dashboard > .page-sections {

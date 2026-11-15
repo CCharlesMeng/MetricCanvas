@@ -451,6 +451,7 @@
             {#each headerRow as cell (cell.key)}
               {#if cell.kind === 'group'}
                 <th
+                  scope="colgroup"
                   class="group-header"
                   colspan={cell.colspan}
                   rowspan={cell.rowspan}
@@ -461,6 +462,7 @@
               {:else}
                 {@const column = cell.column}
                 <th
+                  scope="col"
                   class:align-right={column.align === 'right'}
                   class:fixed={!!column.fixed}
                   data-column-field={columnField(column)}
@@ -586,15 +588,7 @@
       </thead>
       <tbody inert={loading || !!data.main.progress}>
         {#if bodyLoading}
-          {#each Array(10) as _}
-            <tr class="skeleton-row" aria-hidden="true">
-              {#if expandable}<td class="expand-column fixed" style="left:0"><Skeleton /></td>{/if}
-              {#if props.rowNumber}<td class:fixed={props.rowNumber.fixed === 'left'} style={rowNumberStyle}><Skeleton /></td>{/if}
-              {#each leaves as column}
-                <td class:fixed={!!column.fixed} style={cellStyle(column)}><Skeleton width="72%" /></td>
-              {/each}
-            </tr>
-          {/each}
+          <!-- Preserve the real table header and viewport; do not fabricate rows. -->
         {:else}
         {#each rows as row, i (expandable && validExpansionKeys.has(expansion?.key(row.main) ?? '') ? expansion!.key(row.main)! : i)}
           <tr class:subtotal-row={rowTiers[i] === 'subtotal'} class:total-row={row.kind !== 'pinnedTop' && rowTiers[i] === 'total'} data-pinned-top={row.kind === 'pinnedTop' ? '' : undefined}>

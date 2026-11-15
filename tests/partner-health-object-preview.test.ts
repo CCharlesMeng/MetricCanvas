@@ -48,11 +48,15 @@ describe('伙伴健康度粘贴页面的预览查询', () => {
   });
 
   it('columns为null不影响映射，数值漏返置空，维度漏返仍失败', async () => {
-    const gateway=createDqeGateway({fetchImpl:async ()=>Response.json({retCode:'CBC.0000',results:[
+    const results=[
       {code:'SUCCESS',columns:null,data:[{'地区部':'华东地区部','客户对伙伴的评价得分':27}],total_count:1},
       {code:'SUCCESS',columns:null,data:[{'地区部':'华东地区部','错误别名':27}],total_count:1},
       {code:'SUCCESS',columns:null,data:[{'客户对伙伴的评价得分':27}],total_count:1}
-    ]})});
+    ];
+    const gateway=createDqeGateway({fetchImpl:async (_input,init)=>{
+      expect(JSON.parse(String(init?.body)).dsl_list).toHaveLength(1);
+      return Response.json({retCode:'CBC.0000',results:[results.shift()]});
+    }});
     const query:EffectiveQuery={language:'dqe',body:{dsl_list:[{query_type:'object',object_type:'Partner Health/Custormer Partner Evaluation Score',output_fields:['地区部','客户对伙伴的评价得分']}]},
       fieldMappings:{region:{queryField:'地区部',type:'string',role:'dimension'},score:{queryField:'客户对伙伴的评价得分',type:'number',role:'measure'}},filterValues:[]};
     const first=gateway.fetchData({...query,body:{dsl_list:[{...query.body.dsl_list[0]}]},filterValues:[]});

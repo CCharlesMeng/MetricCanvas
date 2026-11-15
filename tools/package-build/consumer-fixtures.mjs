@@ -18,6 +18,7 @@ export const consumerFixturePaths = [
   "tools/dqe-sim/fixtures/ioc-name-filters.mjs",
   "tools/dqe-sim/fixtures/ioc-page-datasets.json",
   "tools/dqe-sim/fixtures/chart-local-filter.json",
+  "tools/dqe-sim/fixtures/loading-structure-gallery.json",
   "tools/dqe-sim/fixtures/ioc-header-query.mjs",
   "packages/embed/tests/fixtures",
   "packages/engine/widgets/tests/responsive-fixtures.ts",

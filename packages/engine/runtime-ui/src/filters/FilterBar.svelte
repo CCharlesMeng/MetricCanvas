@@ -3,7 +3,6 @@
   import type { PeriodRange } from '@metriccanvas/page/internal';
 </script>
 <script lang="ts">
-  import Skeleton from '../../../widgets/src/shared/Skeleton.svelte';
   import {finalizationName} from '@metriccanvas/page/internal';
   import {getContext} from 'svelte';
   import {SOURCE_FILTER_CONTEXT,type SourceFilterReader} from '../dashboard/source-filter-context';
@@ -107,6 +106,11 @@
     return value?.type === 'timePoint' ? value.value : null;
   }
 
+  function initialPeriodMode(filter:Extract<FilterDeclaration,{type:'timeRange'}>) {
+    const mode=filter.default&&typeof filter.default==='object'&&'mode' in filter.default?filter.default.mode:undefined;
+    return mode==='year'||mode==='quarter'||mode==='month'||mode==='last12Months'?mode:undefined;
+  }
+
   function booleanValue(filterId: string): boolean {
     const value = values.get(filterId);
     return value?.type === 'boolean' && value.value;
@@ -139,17 +143,14 @@
   }
 </script>
 
-<div use:closeInactiveMenus class:read-only={readOnly} class="filter-bar">
+<div use:closeInactiveMenus inert={timeContext.initializing} class:read-only={readOnly} class="filter-bar">
   {#each visible as declaration (declaration.id)}
     {@const limits=timeControlLimits(declaration,timeContext)}
-    <div data-filter-control data-filter-id={declaration.id} class="filter-control" role="group" aria-label={declaration.label} aria-describedby={typeof declaration.hint==='string'?`${hintPrefix}-${declaration.id}`:undefined}>
-    {#if timeContext.pending?.includes(declaration.id)}
-      <span data-filter-pending role="status" aria-label="正在确定统计期间" style="display:inline-block;width:96px"><Skeleton width="100%" /></span>
-    {/if}
+    <div data-filter-control data-filter-id={declaration.id} data-filter-pending={timeContext.pending?.includes(declaration.id)?'':undefined} aria-busy={timeContext.pending?.includes(declaration.id)||undefined} class="filter-control" role="group" aria-label={declaration.label} aria-describedby={typeof declaration.hint==='string'?`${hintPrefix}-${declaration.id}`:undefined}>
     {#if declaration.type === 'timeRange' && declaration.display === 'modes'}
       <ModeTimeRangeFilter {declaration} value={timeRangeValue(declaration.id)} readOnly={readOnly||!!limits.reason} max={limits.max} blockedRanges={limits.blockedRanges} snapshot={timeContext.snapshot} revision={timeContext.revision} onchange={next=>ontimerange(declaration.id,next)}/>
     {:else if declaration.type === 'timeRange' && declaration.display === 'period'}
-      <PeriodFilter anchorLast12={!!finalizationName(declaration)} periodModes={declaration.periodModes} min={declaration.min} max={limits.max} blockedRanges={limits.blockedRanges} label={declaration.label} precision={declaration.precision === 'month' ? 'month' : 'date'} value={timeRangeValue(declaration.id) as PeriodRange | null} readOnly={readOnly||!!limits.reason} onchange={next=>ontimerange(declaration.id,next)}/>
+      <PeriodFilter initialMode={initialPeriodMode(declaration)} anchorLast12={!!finalizationName(declaration)} periodModes={declaration.periodModes} min={declaration.min} max={limits.max} blockedRanges={limits.blockedRanges} label={declaration.label} precision={declaration.precision === 'month' ? 'month' : 'date'} value={timeRangeValue(declaration.id) as PeriodRange | null} readOnly={readOnly||!!limits.reason} onchange={next=>ontimerange(declaration.id,next)}/>
     {:else if readOnly && declaration.type === 'boolean'}
       <label class="readonly-boolean">
         <input type="checkbox" checked={booleanValue(declaration.id)} disabled />

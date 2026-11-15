@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "f5929b986279bf4e1ccbb2545daaca3d9f8b1b11795b147ebef0cde6903e1b50",
+  "sha256": "c0878726e14235883828a0300db45b084015b5f8aa62d8a98bdaa6bc1744c588",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -120,7 +120,7 @@
     },
     {
       "file": "docs/page-metadata/data-sources.md",
-      "sha256": "cae6e6d7dd69b0f89f42126b4933504e1f1f08ea40174459bc98ed6315336b75"
+      "sha256": "114b83175cac1f5fb49d72cc6d42518ec06d57da49c382a25e2f0f6da206e8e5"
     },
     {
       "file": "docs/page-metadata/examples/README.md",
@@ -296,7 +296,7 @@
     },
     {
       "file": "metriccanvas-authoring/contracts/authored/source-format.conformance.json",
-      "sha256": "4dfc52ab7abe44525513cfed548537eee78940cd08de6aa0e27fef055c80cb52"
+      "sha256": "1020f8a5999e5c1e8431bbd1044eeaa1c94b17db10452ab87b33ad47366d025d"
     },
     {
       "file": "metriccanvas-authoring/core/page/analysis-report.ts",
@@ -2516,7 +2516,7 @@
     },
     {
       "file": "pages/capabilities/filters/README.md",
-      "sha256": "7a647dd57945b1bc9bdd8b9c1e6c6d5dc75416e085cfd7acdf4666d254e553dc"
+      "sha256": "d4b0037a63d7abcef3cd29ec7f3beb1ab5a51be47e0171824d3aa99ecf48fb1e"
     },
     {
       "file": "pages/capabilities/filters/chart-include-exclude.json",
@@ -2788,7 +2788,7 @@
     },
     {
       "file": "pages/capabilities/layout/README.md",
-      "sha256": "7f70c2c65c9bd5c14d3c8e0a8b14ac2e6e054470b664775b5a3996da42b37861"
+      "sha256": "e3bc443ee389dca699615b07aaa2074cd73bc6ca34460e8ddd89b2ab3ed2c304"
     },
     {
       "file": "pages/capabilities/layout/dashboard-title-styles.json",
@@ -3676,7 +3676,7 @@
     },
     {
       "file": "tools/scripts/local-authoring-build-cache.ts",
-      "sha256": "6cd3d3f997703debe39079a64432bf62818beb0326f18644be39e365b54f94a4"
+      "sha256": "e10c51f1cea66f22a08191c2a5ff1e6bf082e505c4dce366ef7057e1a00df8d3"
     },
     {
       "file": "tools/scripts/local-authoring-contract-query.ts",

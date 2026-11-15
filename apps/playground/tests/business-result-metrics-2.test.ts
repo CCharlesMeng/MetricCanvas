@@ -30,13 +30,13 @@ it('shows global totals, a department-scoped office total, and no total for an i
     expect(tables).toHaveLength(scene.tables);
     expect(tables.filter(table=>table.props.pinnedTop)).toHaveLength(scene.pinned);
     for(const table of tables){
-      expect(tableLeafColumns(table.props.columns).find(column=>column.field==='net-discount-yoy')?.pinnedTop).toBeUndefined();
+      expect(tableLeafColumns(table.props.columns).find(column=>column.field==='net-discount-yoy')?.pinnedTop).toEqual(table.props.pinnedTop?{field:{data:'yoy',field:'net-discount-yoy'}}:undefined);
       for(const [slot,id] of Object.entries(table.data)){
         if(slot==='main')continue;
         const source=page.dataSources[id] as QueryDataSource;
         const item=effectiveDqeItem(composeEffectiveQuery({dataSource:source,filters:page.filters,now},filters,0,[],{}));
         expect(source.source.resultScope).toBe('complete');
-        expect(item.output_dims).toEqual([]);
+        expect(item.output_dims).toEqual(scene.level==='region-dept'?['地区部']:[]);
         expect(item.order).toEqual({});
         expect(item.filter).toMatchObject({time:{is_aggregate:true,start:'2026-11',end:'2026-11'}});
         const filter=item.filter as {dims:Array<{dim_name:string;dim_value_list:string[]}>};
@@ -46,11 +46,11 @@ it('shows global totals, a department-scoped office total, and no total for an i
   }
 });
 it('queries three aligned raw periods with the same site and region, never backend comparison metrics',()=>{
-  const expected=[['current','2026-11-01','2026-11-04'],['previous','2026-10-01','2026-10-04'],['year-ago','2025-11-01','2025-11-04']];
+  const expected=[['current','2026-11','2026-11'],['previous','2026-10','2026-10'],['year-ago','2025-11','2025-11']];
   for(const [suffix,start,end] of expected){
     const source=page.dataSources['net-discount-trend-'+suffix] as QueryDataSource;
     const item=effectiveDqeItem(composeEffectiveQuery({dataSource:source,filters:page.filters,displayInputs:inputs,now},conditions('region-dept',['R1']),0,[],{}));
-    expect(item.filter).toMatchObject({time:{period:'day',is_aggregate:true,start,end},dims:expect.arrayContaining([{dim_name:'国内或海外',dim_value_list:['海外']},{dim_name:'region_dept_code',dim_value_list:['R1']}])});
+    expect(item.filter).toMatchObject({time:{period:'month',is_aggregate:true,start,end},dims:expect.arrayContaining([{dim_name:'国内或海外',dim_value_list:['海外']},{dim_name:'region_dept_code',dim_value_list:['R1']}])});
     expect(item.output_metrics).toEqual(suffix==='current'?['净商务折扣','净商务折扣均值']:['净商务折扣']);
     expect(item.order).toEqual({});
   }

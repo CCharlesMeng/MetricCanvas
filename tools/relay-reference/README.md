@@ -1,6 +1,6 @@
 # Relay 四项导出与发行检查
 
-0.4.0 的正式消费基线更新为Schema6.89，Interface保持2.0.0。新46条消费保留6.85的41条原请求，审查15条版本/Schema摘要差异，另加当前报告换源与系列条件正反例；旧快照和实际current迁移门禁保持。详见[Schema6.89消费基线审查](fixtures/schema689-adoption-review.md)。
+当前发行配置为0.5.1，正式消费基线为0.5.0/Schema6.120，Interface保持2.0.0。沿用已确认的6.120协议，不增加字段；保留所有历史冻结消费者及实际current迁移检查。
 
 历史消费者以 `fixtures/consumer-*.json.gz` 无损保存，逻辑 JSON 路径保持原样，由 `frozen_consumer.py` 解压读取；所有固定 SHA256 仍校验解压后的原始字节。存储压缩不重录请求、期望或发行基线，也不改变迁移判定。
 
@@ -70,3 +70,13 @@ ZIP 和 `.tar.gz` 固定顺序、时间、权限与压缩头；相同候选和�
 CI 的 `relay-release` 从源码生成、跑分发和核心测试、打包并上传，再下载验证；`relay-distribution` 在 Ubuntu/Windows 的 Python 3.12、Node 22 上仅安装 `runtime-requirements.txt` 六项依赖，验证同一下载归档。两者显式运行 `test_adoption.py`，用真实候选复制并封装一个6.82默认值的已验证current测试目录，实际CLI必须exit2；这是兼容门禁夹具，不冒充历史产品实现。历史失败不得删除、变绿或脱离真实候选，回执往返测试覆盖这些反例。本地可设置 `METRICCANVAS_RELAY_CANDIDATE=/absolute/candidate` 执行同一测试，未提供候选时仅跳过该实际current测试。配置接线和本地执行证据不代表原生 CI 已通过。归档验证、解压和回放均不激活或切换 Relay。
 
 `test_release.py` 的 19 项是结构夹具测试，不能证明产品能力。`test_distribution.py` 则从实际真源构建候选，在仓外以无关 cwd、清空解析回退及 `-I -B` 运行真实产品操作，另以 `-S` 和仅声明依赖复测；覆盖冻结消费者、正负输入、缺依赖/文件、内部迁移、两次兼容更新、跳跃和显式恢复旧四项。这些是产品层回放，不能替代实际 Relay 的原子切换、状态、保存和进程恢复验收。时间上下文及实际页面/浏览器/local 完成度以本批证据和主控台账为准。
+
+## 当前消费基线与升级边界
+
+`release-config.json`绑定`schema6120-tools-first-adoption-v1.json`及其摘要。正式50条包含6.89的全部46条原请求（请求顺序与内容不变）、6.120合法页、超出引擎版本的6.121拒绝页，以及当前分析报告的换源成功/缺字段拒绝各一条。6.119页面继续合法，不因这次呈现改造自动采用6.120查询语义。
+
+旧`consumer-0.4.0-schema689.json`原字节SHA256仍为`723ef7e19637eb9d535c218e29d98904e9be42c9dccbe62632e67de67d1944f5`，以原有无损压缩方式保存。新消费同样通过真实候选CLI采集，比较完整状态、数据、有序诊断与退出码；原有稳定内容投影保持。18条输出差异由`schema6120-previous-consumer-review-v1.json`固定：版本和可读范围更新；规范化/创作路径写出6.119以保护旧页面语义；旧分析报告按实际Schema摘要拒绝过期，新增新鲜报告证明换源能力仍可用。非法99.0升级请求继续拒绝，诊断中的目标版本更新为6.120。
+
+契约比较保留七项迁移理由，包括默认Schema变化，以及page.analyze/compose/compose.v2/edit/edit.v2/rebind内嵌契约变化。旧0.1.0历史消费仍有八条输出差异与六项迁移理由，保持needs_migration并由采用记录精确绑定。0.5.0是审查候选来源，0.5.1是后续可交付候选；仍逐次校验实际releaseId与归档摘要，不复用旧版本号覆盖不同内容。
+
+正式消费者必须全通过，历史报告必须精确匹配审查；提供actual current时仍先执行独立兼容检查。这里不修改replay/compare/adoption算法，也不代表真实Relay采用、激活或生产服务验收。

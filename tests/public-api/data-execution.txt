@@ -24,6 +24,7 @@ withOperationMapRegion
 
 ## ./runtime
 BooleanFilterValue
+CartesianChartProps
 ColumnCandidatesRead
 ComputationContext
 ComputationError
@@ -35,6 +36,7 @@ FilterValues
 FinalizationSourceDefinition
 NumberRangeFilterValue
 QueryHeaderFilters
+ScreenProgress
 SearchFilterValue
 SourceProgram
 SourceRangeError
@@ -50,27 +52,40 @@ automaticQueryTableSources
 candidateContextKey
 candidateKey
 candidateView
+chartAxisFormats
+chartDeclaration
+chartPresentation
+chartRoleIndex
+chartSeriesAxis
+chartSeriesIndex
 compileSources
 composeEffectiveQuery
 computedSnapshots
 createCandidateGatewaySession
 createCandidateValidator
+createFinalizationPreparation
 createSourceProgram
 defaultSourceView
 defaultTableView
 evaluateTableView
 executeQuery
 executionSourceIds
+explicitChartAxes
 filterCandidatesRequest
 filterTableRows
 filterTableRowsByHeaders
+inheritFinalizationCache
 initialFilterValues
 initialTableViews
 initializePageParams
 intersectQueryFilters
+invalidateFinalizationCache
 joinAggregate
 localColumnCandidates
+observeQueryHttpError
+presentationQuerySources
 preservedQueryError
+projectChartSeries
 projectSourceCandidates
 rawSnapshot
 remoteHeaderDefaultSources

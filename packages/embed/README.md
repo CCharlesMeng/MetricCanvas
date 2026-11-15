@@ -347,3 +347,9 @@ const runtime = mount(container, { document, navigation });
 宿主订阅应按页面身份（例如 pageId / revisionId）变化装载文档；仅 query 变化不重新 mount/update，否则会重建页面会话和发起重复查询。清理及页内筛选使用同一接缝。Router 仍会产生导航事件，其守卫、resolver 与 Operation Map 的实际组件生命周期需要宿主环境确认。
 
 合成演示：`/pages/url-input-cleanup?account=合成账号&active=true&view=detail&unused=删除`。本仓浏览器覆盖默认 ES/global 与自定义回调；不以合成回调测试替代真实 Operation Map 接入验收。
+
+### JSON 后先呈现真实结构
+
+`mount` 在本地页面校验通过后直接呈现页面声明的真实页头、内容分区、控件与表头。定稿默认值、候选和查询结果原位填充，不切换到独立整页骨架；不构造固定行数或虚构图表值。此呈现改造不新增 Schema 字段，也不改变旧版本的查询与默认值语义。`ready` 含义不变，不应作为显示容器的前提。
+
+集成应用收到 JSON 后即调用 `mount` 并显示容器；数据网关在调用前提供方法，方法返回的 Promise 可以继续等待会话名单或截止日期。6.120页面移除前置 `prepareIocHeaderFilters` 等待及整页加载遮罩；旧版本仍保留现有名单桥接。名单正在加载时应保持 Promise 未完成，不返回 `unconfigured`、空名单或伪装成功；真实未配置、失败与成功空结果沿现有端口区分。保留原查询映射、鉴权、AbortSignal和日期格式转换；无需在结果回来后重新 mount/update 页面。跨页定稿成功缓存由引擎会话负责，集成应用复用会话级dataGateway，身份或权限改变时重建。

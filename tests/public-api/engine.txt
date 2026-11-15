@@ -122,6 +122,7 @@ AiSummaryConfig
 AiSummaryContextInfo
 AiSummaryDataSource
 AiSummaryGenerate
+AuthRequiredEvent
 BrowserDrillReturn
 DataPeriodFact
 DisplayInputsSnapshot
@@ -147,6 +148,7 @@ AiSummaryConfig
 AiSummaryContextInfo
 AiSummaryDataSource
 AiSummaryGenerate
+AuthRequiredEvent
 DataErrorEvent
 NavigationInputContract
 RuntimeConfigurationError

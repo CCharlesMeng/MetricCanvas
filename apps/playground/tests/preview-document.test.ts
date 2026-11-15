@@ -100,6 +100,6 @@ it.each(['5.0', '5.1', '5.2', '5.3', '5.4'])('%s 页面可由页面试验场预�
   );
   expect(result).toMatchObject({
     status: 'valid',
-    document: { ...content, schemaVersion: versionPolicy.current, layout: 'report' }
+    document: { ...content, schemaVersion: '6.119', layout: 'report' }
   });
 });

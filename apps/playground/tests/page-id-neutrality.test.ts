@@ -51,7 +51,20 @@ function pageIdCheckSource(file: string, source: string): string {
   return characters.join('');
 }
 
+function literalPageIds(source:string):Set<string> {
+  const scanner=ts.createScanner(ts.ScriptTarget.Latest,true,ts.LanguageVariant.Standard,source);
+  const values=new Set<string>();
+  for(let token=scanner.scan();token!==ts.SyntaxKind.EndOfFileToken;token=scanner.scan())
+    if(token===ts.SyntaxKind.StringLiteral||token===ts.SyntaxKind.NoSubstitutionTemplateLiteral)values.add(scanner.getTokenValue());
+  return values;
+}
+
 describe('页面 id 中立性', () => {
+  it('检查完整页面 id 字面量，不误报导入路径与注释',()=>{
+    const values=literalPageIds("import './ioc-header-controls'; // ioc-header-controls\nif(page.id==='ioc-header-controls'){}");
+    expect(values.has('ioc-header-controls')).toBe(true);
+    expect(literalPageIds("import './ioc-header-controls'; // ioc-header-controls").has('ioc-header-controls')).toBe(false);
+  });
   it.each(['', ' satisfies Record<string, unknown>'])('仅忽略能力登记键，保留真实分支检查（%s）', annotation => {
     const declaration = `export const pageCapabilities = {'example-page': {minor:89}}${annotation};`;
     expect(pageIdCheckSource(versionRegistry, declaration)).not.toContain('example-page');
@@ -66,7 +79,8 @@ describe('页面 id 中立性', () => {
       .map((page) => page.id);
     const violations = productSourceRoots.flatMap(productSourceFiles).flatMap((file) => {
       const source = pageIdCheckSource(file, readFileSync(file, 'utf8'));
-      return pageIds.filter((id) => source.includes(id)).map((id) => ({ file, id }));
+      const values=literalPageIds(source);
+      return pageIds.filter((id) => values.has(id)).map((id) => ({ file, id }));
     });
 
     expect(violations).toEqual([]);

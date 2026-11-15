@@ -39,6 +39,7 @@ export function getLocalBuildCacheStats() { return {...cacheStats}; }
 
 /** Logical locations allow identical source/dependency bytes in another checkout. */
 function location(root: string, file: string): string {
+  file = path.resolve(file);
   const relative = path.relative(root, file);
   if (relative === 'node_modules' || relative.startsWith('node_modules/')) return `dependency/${slash(relative)}`;
   if (!relative.startsWith('..') && !path.isAbsolute(relative)) return `source/${slash(relative)}`;

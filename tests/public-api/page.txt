@@ -124,6 +124,7 @@ GroupedPageParams
 GroupedQueryDataSource
 GroupedQueryFields
 HeaderBinding
+IOC_KEY_OFFICE_FILTER_IDS
 InlineDataSource
 InlineSource
 IocHeaderComponent
@@ -154,6 +155,7 @@ MetricCardRow
 MetricDataBinding
 ModeRange
 MoneyFieldDefinition
+NATIVE_IOC_SCHEMA_MINOR
 NavigateAction
 NavigationBinding
 NavigationTarget
@@ -245,6 +247,7 @@ ResolvePageParamsResult
 ResolvedField
 ResolvedFieldDefinition
 ResolvedPeriodQuery
+ResolvedStaticFieldBinding
 Row
 RowCellFallbacks
 RowContractIssue
@@ -389,6 +392,7 @@ fieldName
 fieldSelectionErrors
 fieldSelectionIds
 fieldSelectionVariants
+fieldSlot
 fileNameErrors
 filterDependencies
 filterGroupOptions
@@ -456,6 +460,7 @@ isUnrestrictedIocRegion
 isValueFormatPreset
 isoWeekLabel
 isoWeekRange
+legacyTableCandidateSearch
 localCalendarDate
 mainColumnField
 mapIocHeader
@@ -466,6 +471,10 @@ materializePageParams
 modeRangeIssue
 moneyFormatCurrency
 moneyFormatMatchesCurrency
+nativeIocBindingTargets
+nativeIocFilters
+nativeIocRuntimePage
+nativeSourceFilterIds
 navigationErrors
 normalizeDisplayQueryRows
 normalizePageDocument
@@ -487,7 +496,9 @@ pageSchema
 pagedJoinCandidateView
 pagedJoinHasComparison
 pagedJoinMemberView
+pagedJoinPausedFields
 pagedJoinProjectionFields
+pagedJoinSearchOwner
 pagedJoinUnavailable
 pagedJoinViewOwner
 parsePage
@@ -560,6 +571,7 @@ stableRowQuery
 standardIocRegionFilter
 staticFieldBinding
 supportedVersions
+supportsNativePreparation
 tabChildren
 tabSearch
 tableAlignedSlots

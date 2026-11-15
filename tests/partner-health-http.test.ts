@@ -68,7 +68,7 @@ it('未知查询不会由 HTTP Mock 冒充成功', async () => {
   expect(await response.json()).toMatchObject({results: [{code: 'DQE_SIM_UNSUPPORTED_QUERY'}]});
 });
 
-it('三种粒度统一合批、查询不重复，顶部对象只投影得分和国内或海外', async () => {
+it('三种粒度按独立请求执行、查询不重复，顶部对象只投影得分和国内或海外', async () => {
   const batches: JsonObject[][] = [];
   const gateway = httpGateway({endpoint: `${endpoint}?fixture=partner-health`, fetchImpl: async (input, init) => {
     batches.push(JSON.parse(String(init?.body)).dsl_list);
@@ -80,7 +80,8 @@ it('三种粒度统一合批、查询不重复，顶部对象只投影得分和�
     const items = batches.flat();
     expect(items).toHaveLength(33);
     expect(new Set(items.map(item => JSON.stringify(item))).size).toBe(33);
-    expect(batches.length).toBeLessThan(33);
+    expect(batches).toHaveLength(33);
+    expect(batches.every(batch=>batch.length===1)).toBe(true);
     const overview = items.filter(isOverviewItem);
     expect(overview).toHaveLength(11);
     expect(JSON.stringify(overview)).not.toContain('data_site_type');

@@ -88,7 +88,7 @@ for (const width of [1440, 390]) {
     await expect(detail.locator('.row-value')).toHaveCSS('font-size', '14px');
     await expect(detail.locator('.row-value')).toHaveCSS('line-height', '17px');
     await expect(detail.locator('.row-value')).toHaveCSS('color', 'rgba(0, 0, 0, 0.8)');
-    await expect(detail.locator('.row-value')).toHaveCSS('text-decoration-line', 'underline');
+    await expect(detail.locator('.row-value')).toHaveCSS('text-decoration-line', 'none');
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   });
 }
@@ -254,7 +254,7 @@ test('linked, selected, rate-bar and plain columns all retain configured seconda
   }
 });
 
-test('embedded and forecast cells wrap long configured values instead of clipping them', async ({ page }) => {
+test('embedded and forecast cells expose complete long values through their tooltip', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 900 });
   await page.goto('/examples/inline.html');
   for (const variant of ['embedded', 'forecastMatrix'] as const) {
@@ -264,8 +264,10 @@ test('embedded and forecast cells wrap long configured values instead of clippin
     const document = scalarPage([table]);
     Object.assign(document.dataSources.values!.source, { rows: [{ name: 'LongConfiguredContent'.repeat(10), amount: 65 }] });
     await show(page, document);
-    expect(await inaccessibleText(page), variant).toEqual([]);
-    expect(await page.locator('.cell-primary-value').first().evaluate(element => element.scrollWidth <= element.clientWidth + 1)).toBe(true);
+    const text=page.locator('.cell-text').first();
+    await expect(text).toHaveCSS('text-overflow','ellipsis');
+    await text.focus();
+    await expect(page.getByRole('tooltip')).toHaveText('LongConfiguredContent'.repeat(10));
   }
 });
 
@@ -314,7 +316,7 @@ for (const container of ['plain', 'card'] as const) test(`${container}: loading/
     }, { serializedDocument, mode });
     for (const title of ['趋势标题', '排行标题', '明细标题']) await expect(page.getByText(title, { exact: true })).toBeVisible();
     if (mode === 'loading') {
-      await expect(page.locator('.skeleton-row')).toHaveCount(10);
+      await expect(page.locator('.skeleton-row')).toHaveCount(0);
       await expect(page.locator('.echart-frame.loading')).toHaveCount(1);
       await expect(page.locator('.echart')).toHaveCSS('filter', 'grayscale(1)');
       await expect(page.locator('.chart-skeleton')).toHaveCount(0);

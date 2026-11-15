@@ -1,6 +1,6 @@
 {
   "format": "metriccanvas-relay-release-config/2",
-  "releaseVersion": "0.4.0",
+  "releaseVersion": "0.5.1",
   "interfaceVersion": "2.0.0",
   "output": "dist/relay-reference",
   "pythonOperations": [
@@ -21,12 +21,12 @@
   ],
   "consumers": [
     {
-      "path": "tools/relay-reference/fixtures/consumer-0.4.0-schema689.json",
-      "sha256": "723ef7e19637eb9d535c218e29d98904e9be42c9dccbe62632e67de67d1944f5"
+      "path": "tools/relay-reference/fixtures/consumer-0.5.0-schema6120.json",
+      "sha256": "f18d6d20c5fc34613c5361bd95fe0e33ecfc39a35737a4f1f9213b0ffdaae5a9"
     }
   ],
   "adoption": {
-    "path": "tools/relay-reference/fixtures/schema689-tools-first-adoption-v1.json",
-    "sha256": "2b02e92e3772b77bc806c3ae952d30822c0f8877b8461ed31cfdda1d12201b25"
+    "path": "tools/relay-reference/fixtures/schema6120-tools-first-adoption-v1.json",
+    "sha256": "dd41b9eb88d7a0a22c195886ae23d751a877a230224acee675e9ba6e7be68312"
   }
 }

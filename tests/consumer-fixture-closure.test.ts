@@ -1,6 +1,6 @@
 import {spawn} from 'node:child_process';
 import {createServer} from 'node:net';
-import {mkdtemp,mkdir,rm} from 'node:fs/promises';
+import {mkdtemp,mkdir,rm,readFile} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join,resolve} from 'node:path';
 import {expect,it} from 'vitest';
@@ -12,6 +12,9 @@ it('the actual isolated content service starts and serves IOC time candidates wi
  let processUnderTest:ReturnType<typeof spawn>|undefined;
  try{
   copyConsumerFixtures(resolve(import.meta.dirname,'..'),consumer);
+  // Browser collection reads this dataset before the content server starts.
+  const rows=JSON.parse(await readFile(join(consumer,'tools/dqe-sim/fixtures/loading-structure-gallery.json'),'utf8'));
+  expect(rows.length).toBeGreaterThan(0);
   const reservation=createServer();await new Promise<void>(resolve=>reservation.listen(0,'127.0.0.1',resolve));
   const address=reservation.address();if(!address||typeof address==='string')throw Error('expected TCP port');
   await new Promise<void>((resolve,reject)=>reservation.close(error=>error?reject(error):resolve()));

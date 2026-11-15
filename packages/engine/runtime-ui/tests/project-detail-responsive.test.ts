@@ -41,6 +41,7 @@ describe('运行时组件布局盒响应式契约', () => {
     }
     expect(runtimeSectionSource).toContain('@container mc-runtime (max-width: 1050px)');
     expect(runtimeSectionSource).toContain('@container mc-runtime (max-width: 760px)');
-    expect(pageHeaderSource).toContain('@container mc-runtime (max-width: 1050px)');
+    expect(pageHeaderSource).toContain('flex-wrap:wrap');
+    expect(pageHeaderSource).toContain('new ResizeObserver(measure)');
   });
 });

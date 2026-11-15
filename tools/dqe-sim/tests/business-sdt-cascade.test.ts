@@ -55,11 +55,12 @@ it.each([fixture,october])('real local HTTP: $month uses its own identifiers in 
   try {
     await expect.poll(()=>snapshots.get('project-efficiency-bottom5')?.status).toBe('ready');
     await expect.poll(()=>snapshots.get('project-efficiency-top5')?.status).toBe('ready');
-    expect(exchanges).toHaveLength(2);
-    const first=exchanges[0].request.dsl_list;
+    expect(exchanges).toHaveLength(4);
+    expect(exchanges.every(exchange=>exchange.request.dsl_list.length===1)).toBe(true);
+    const first=exchanges.slice(0,2).flatMap(exchange=>exchange.request.dsl_list);
     expect(first).toHaveLength(2);
     expect(first.every(item=>(item.output_dims as string[]).includes('客户名称'))).toBe(true);
-    const second=exchanges[1].request.dsl_list;
+    const second=exchanges.slice(2).flatMap(exchange=>exchange.request.dsl_list);
     expect(second).toHaveLength(2);
     expect(second.every(item=>(item.output_dims as string[]).includes('阶段名称'))).toBe(true);
     for (const rank of ['bottom5','top5']) {

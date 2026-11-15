@@ -28,7 +28,7 @@ describe('object field bindings default to main', () => {
     expect(defaultMainBindingPaths(input)).toHaveLength(5);
     expect(defaultMainBindingPaths(page)).toEqual([]);
     const normalized = normalizePageDocument(input);
-    expect(normalized.ok && normalized.document).toEqual(input);
+    expect(normalized.ok && normalized.document).toEqual({...input,schemaVersion:'6.119'});
     expect(input.sections[0].components[0].props.columns[1].field).toEqual({ field: 'change', format: 'number-2-signed' });
   });
 

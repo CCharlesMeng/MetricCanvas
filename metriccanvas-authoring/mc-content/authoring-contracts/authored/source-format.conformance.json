@@ -6,7 +6,7 @@
     {"name":"fraction-needs-conversion", "scale":"fraction", "format":"percent-2", "accepted":false},
     {"name":"percentage-point", "scale":"percent", "format":"number-2", "accepted":true, "value":2.5, "expected":"2.5"},
     {"name":"zero-percent", "scale":"percent", "format":"percent-1", "accepted":true, "value":0, "expected":"0%"},
-    {"name":"null-percent", "scale":"percent", "format":"percent-1", "accepted":true, "value":null, "expected":"--%"},
+    {"name":"null-percent", "scale":"percent", "format":"percent-1", "accepted":true, "value":null, "expected":"--"},
     {"name":"negative-percent", "scale":"percent", "format":"percent-2", "accepted":true, "value":-2.525, "expected":"-2.53%"},
     {"name":"currency-base-to-wan", "scale":"currency-base", "format":"compact-wan-1", "accepted":true, "value":12345, "expected":"1.2万"},
     {"name":"wan-double-scaling", "scale":"currency-wan", "format":"compact-wan-1", "accepted":false},

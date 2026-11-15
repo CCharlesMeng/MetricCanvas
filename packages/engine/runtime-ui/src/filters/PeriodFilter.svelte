@@ -4,12 +4,12 @@
   import { untrack } from 'svelte';
   import { DatePicker } from '@metriccanvas/ui';
   import { timeAvailabilityIssue,resolvePeriodSelection, periodRangeLabel, type PeriodMode, type PeriodRange, type AppliedPeriodSelection } from '@metriccanvas/page/internal';
-  let {label,precision='date',value,readOnly=false,anchorLast12=false,periodModes,min,max,blockedRanges=[],onchange}:{label?:string;precision?:'month'|'date';value:PeriodRange|null;readOnly?:boolean;anchorLast12?:boolean;periodModes?:PeriodMode[];min?:string;max?:string;blockedRanges?:readonly {from:string;to:string}[];onchange:(value:PeriodRange)=>void}=$props();
+  let {label,precision='date',value,readOnly=false,anchorLast12=false,initialMode,periodModes,min,max,blockedRanges=[],onchange}:{label?:string;precision?:'month'|'date';value:PeriodRange|null;readOnly?:boolean;anchorLast12?:boolean;initialMode?:PeriodMode;periodModes?:PeriodMode[];min?:string;max?:string;blockedRanges?:readonly {from:string;to:string}[];onchange:(value:PeriodRange)=>void}=$props();
   let error=$state('');
   function commit(range:PeriodRange){error=timeAvailabilityIssue({id:'period',type:'timeRange',min,max,blockedRanges:[...blockedRanges]},{type:'timeRange',...range})??'';if(!error)onchange(range);}
   const allModes=[{id:'year',label:'年'},{id:'quarter',label:'季'},{id:'month',label:'月'},{id:'last12Months',label:'近一年'}] as const;
   const modes=$derived(periodModes ? periodModes.map(id=>allModes.find(item=>item.id===id)!) : allModes);
-  const mode=$derived(value?.selection?.mode ?? periodModes?.[0] ?? 'month');
+  const mode=$derived(value?.selection?.mode ?? initialMode ?? periodModes?.[0] ?? 'month');
   let anchor=$state(untrack(()=>anchorOf(value?.selection)));
   // Keep each mode's last applied choice; the shared anchor only supplies the year
   // and the initial value for a mode that has not been visited yet.
@@ -48,7 +48,7 @@
     commit(resolvePeriodSelection(selection,new Date(),precision));
   }
   const selected=$derived(value?.selection?.mode==='last12Months'?undefined:value?.selection.value);
-  const text=$derived(mode==='last12Months'?value?periodRangeLabel(value):DEFAULT_NULL_TEXT:selected?.replace('-Q',' 年 Q')+(mode==='year'?' 年':''));
+  const text=$derived(mode==='last12Months'?value?periodRangeLabel(value):DEFAULT_NULL_TEXT:selected?selected.replace('-Q',' 年 Q')+(mode==='year'?' 年':''):DEFAULT_NULL_TEXT);
 </script>
 <div class="period-filter" data-period-filter>
   {#if label}<span class="label">{label}</span>{/if}

@@ -40,8 +40,8 @@ class AdoptionTests(unittest.TestCase):
         return aggregate(self.policy, self.config, reports, historical)
 
     def test_pins_baselines_and_preserves_behavior_during_public_path_migration(self):
-        self.assertEqual(self.policy["primary"][0]["manifest"]["defaultPageSchema"], "6.89")
-        self.assertEqual(len(self.policy["primary"][0]["vectors"]), 46)
+        self.assertEqual(self.policy["primary"][0]["manifest"]["defaultPageSchema"], "6.120")
+        self.assertEqual(len(self.policy["primary"][0]["vectors"]), 50)
         self.assertEqual(len(self.policy["historical"][0]["vectors"]), 23)
         expected = self.policy["expectedHistory"]
         self.assertEqual(expected["status"], "needs_migration")
@@ -98,7 +98,7 @@ class AdoptionTests(unittest.TestCase):
         previous_path = folder / "consumer-0.3.5-schema685.json"
         self.assertEqual(digest(snapshot_bytes(previous_path)),
                          "a49bd16f44ca8ff322d63c3f2f864e2fc201a0aba49667ed3b7a3980d5aace76")
-        previous, primary = snapshot_json(previous_path), self.policy["primary"][0]
+        previous, primary = snapshot_json(previous_path), snapshot_json(folder / "consumer-0.4.0-schema689.json")
         self.assertEqual([v["request"] for v in primary["vectors"][:41]],
                          [v["request"] for v in previous["vectors"]])
         review = read_json(folder / "schema689-previous-consumer-review-v1.json")
@@ -107,6 +107,18 @@ class AdoptionTests(unittest.TestCase):
         self.assertEqual([(v["expected"]["status"], v["expected"]["exitCode"]) for v in primary["vectors"][-5:]],
                          [("ok", 0), ("error", 2), ("ok", 0), ("error", 2), ("error", 2)])
         self.assertIn("6.89", primary["vectors"][-2]["expected"]["diagnostics"][0]["message"])
+
+    def test_schema6120_keeps_all_689_requests_and_accepts_only_supported_native_version(self):
+        folder = Path(__file__).with_name("fixtures")
+        previous = snapshot_json(folder / "consumer-0.4.0-schema689.json")
+        primary = self.policy["primary"][0]
+        self.assertEqual([v["request"] for v in primary["vectors"][:46]],
+                         [v["request"] for v in previous["vectors"]])
+        validate_review(read_json(folder / "schema6120-previous-consumer-review-v1.json"), previous, primary)
+        self.assertEqual([(v["expected"]["status"], v["expected"]["exitCode"]) for v in primary["vectors"][-4:]],
+                         [("ok", 0), ("error", 2), ("ok", 0), ("error", 2)])
+        self.assertEqual(primary["vectors"][-4]["expected"]["data"]["schemaVersion"], "6.120")
+        self.assertEqual(primary["vectors"][-9]["expected"]["diagnostics"][0]["code"], "ANALYSIS_BASELINE_STALE")
 
     def test_initial_gate_keeps_historical_migration_visible(self):
         report = self.gate()
