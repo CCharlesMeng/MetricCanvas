@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "c0878726e14235883828a0300db45b084015b5f8aa62d8a98bdaa6bc1744c588",
+  "sha256": "5ed0a08ce2afca23995acc9b7f166ea021e34eef84b61ce28d5a47ba4b227cba",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -120,7 +120,7 @@
     },
     {
       "file": "docs/page-metadata/data-sources.md",
-      "sha256": "114b83175cac1f5fb49d72cc6d42518ec06d57da49c382a25e2f0f6da206e8e5"
+      "sha256": "0edf899dc57adf43a9c01e6adea55fd763fc3b5e3072f46bf5df726ffd02d82c"
     },
     {
       "file": "docs/page-metadata/examples/README.md",
@@ -2516,7 +2516,7 @@
     },
     {
       "file": "pages/capabilities/filters/README.md",
-      "sha256": "d4b0037a63d7abcef3cd29ec7f3beb1ab5a51be47e0171824d3aa99ecf48fb1e"
+      "sha256": "d7f9b0eab866701e83927c298c6bbc921c1468bf99eb4e4d014d931b7b1e87d5"
     },
     {
       "file": "pages/capabilities/filters/chart-include-exclude.json",
@@ -2788,7 +2788,7 @@
     },
     {
       "file": "pages/capabilities/layout/README.md",
-      "sha256": "e3bc443ee389dca699615b07aaa2074cd73bc6ca34460e8ddd89b2ab3ed2c304"
+      "sha256": "7f70c2c65c9bd5c14d3c8e0a8b14ac2e6e054470b664775b5a3996da42b37861"
     },
     {
       "file": "pages/capabilities/layout/dashboard-title-styles.json",

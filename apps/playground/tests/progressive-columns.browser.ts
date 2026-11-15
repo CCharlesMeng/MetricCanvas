@@ -18,7 +18,7 @@ test('selected columns appear first; a failed supplement keeps them and prevents
 
   await page.getByRole('checkbox',{name:'暂停选页请求'}).check();
   await table.getByRole('button',{name:'下一页',exact:true}).click();
-  await expect(table.locator('.skeleton-row')).toHaveCount(0);
+  await expect(table.locator('.skeleton-row')).toHaveCount(10);
   await expect(table.getByRole('cell',{name:'测试项目1',exact:true})).toHaveCount(0);
   await page.getByRole('button',{name:'返回选页结果',exact:true}).click();
   await expect(table.getByRole('cell',{name:'测试项目11',exact:true})).toBeVisible();
@@ -39,8 +39,8 @@ test('a supplement that owns sorting selects the page before any rows are displa
   await expect(table).toHaveAttribute('aria-busy','false');
   await table.getByRole('columnheader',{name:'合同金额',exact:false}).getByRole('button',{name:'合同金额',exact:true}).click();
   await expect(table).toHaveAttribute('aria-busy','true');
-  // Pending selection preserves the real header without fabricating a row set.
-  await expect(table.locator('.skeleton-row')).toHaveCount(0);
+  // Pending selection uses the same ten-row body skeleton as initial loading.
+  await expect(table.locator('.skeleton-row')).toHaveCount(10);
   await page.getByRole('button',{name:'返回下一批补列',exact:true}).click();
   await expect(table).toHaveAttribute('aria-busy','false');
   await expect(table.locator('tbody tr')).toHaveCount(10);

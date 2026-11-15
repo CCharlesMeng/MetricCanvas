@@ -72,7 +72,7 @@ test('published engine keeps older prepared pages on their original initializati
   await expect.poll(()=>page.evaluate(()=>window.asyncProbe.dates)).toBe(1);
   await expect(page.getByRole('table')).toHaveCount(2);
   await expect(page.getByRole('heading',{name:'异步条件准备',exact:true})).toBeVisible();
-  await expect(page.locator('.skeleton-row')).toHaveCount(0);
+  await expect(page.getByRole('table').first().locator('.skeleton-row')).toHaveCount(10);
   const header=await page.locator('[data-ioc-header]').elementHandle();
   const table=await page.getByRole('table').first().elementHandle();
   expect(await page.evaluate(()=>window.asyncProbe.queries)).toEqual([]);
@@ -82,4 +82,5 @@ test('published engine keeps older prepared pages on their original initializati
   expect(await page.evaluate(()=>window.asyncProbe.membership)).toBe(0);
   expect(await header!.evaluate(element=>element.isConnected)).toBe(true);
   expect(await table!.evaluate(element=>element.isConnected)).toBe(true);
+  await expect(page.getByRole('table').first().locator('.skeleton-row')).toHaveCount(0);
 });

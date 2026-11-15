@@ -9,7 +9,7 @@ function barValues(option: EChartsOption) {
   return bar.data;
 }
 
-it('keeps the real chart axes and series configuration without inventing result values', () => {
+it('paints configured native shapes without changing the input option or its data', () => {
   const option: EChartsOption = { xAxis: { type: 'category', data: [] }, yAxis: { type: 'value', min: 0, max: 100 },
     series: [{ type: 'bar', stack: 'total', data: [] }, { type: 'line', smooth: true, data: [] }] };
   const original = structuredClone(option);
@@ -18,18 +18,19 @@ it('keeps the real chart axes and series configuration without inventing result 
     expect.objectContaining({ type: 'bar', stack: 'total', data: expect.any(Array), silent: true }),
     expect.objectContaining({ type: 'line', smooth: true, data: expect.any(Array), label: { show: false } })
   ]);
-  expect(barValues(result)).toHaveLength(0);
-  expect(result.xAxis).toEqual(original.xAxis);
+  expect(barValues(result)).toHaveLength(6);
+  expect(barValues(result)?.every(value => typeof value === 'number' && value > 0 && value < 100)).toBe(true);
+  expect(result.xAxis).toEqual([expect.objectContaining({ type: 'category', data: ['', '', '', '', '', ''] })]);
   expect(result.tooltip).toEqual({ show: false });
   expect(option).toEqual(original);
 });
 
-it('preserves horizontal axes and pie radius and clears old values on refresh', () => {
+it('preserves horizontal axes and pie radius and reuses previous geometry on refresh', () => {
   const previous: EChartsOption = { xAxis: { type: 'value', max: 1 }, yAxis: { type: 'category', inverse: true, data: ['A', 'B'] },
     series: [{ type: 'bar', data: [0.2, 0.7] }] };
-  expect(loadingChartOption(previous).series).toEqual([expect.objectContaining({ data: [] })]);
+  expect(loadingChartOption(previous).series).toEqual([expect.objectContaining({ data: [0.2, 0.7] })]);
   const ring = loadingChartOption({ series: [{ type: 'pie', radius: ['58%', '82%'], data: [] }] });
-  expect(ring.series).toEqual([expect.objectContaining({ type: 'pie', radius: ['58%', '82%'], data: [] })]);
+  expect(ring.series).toEqual([expect.objectContaining({ type: 'pie', radius: ['58%', '82%'], data: [{ value: 1, name: '' }] })]);
   expect(loadingChartOption(previous).yAxis).toEqual(previous.yAxis);
 });
 
@@ -41,6 +42,6 @@ it('keeps fractional axis ranges, custom series and map geometry in the screen p
     expect.objectContaining({ type: 'bar', data: expect.any(Array) }),
     expect.objectContaining({ type: 'map', map: 'china', data: [] })
   ]);
-  expect(barValues(result.base!)).toEqual([]);
+  expect(barValues(result.base!)?.every(value => typeof value === 'number' && value > 0 && value < 0.01)).toBe(true);
   expect(result.extended?.series).toEqual([expect.objectContaining({ type: 'line', smooth: true })]);
 });

@@ -45,7 +45,7 @@ test('native components stay mounted through initial loading, filtering, paginat
   const metric = orders.locator('.metric-card');
   const chart = orders.locator('.bar-chart');
   const table = orders.locator('.table-widget');
-  await expect(table.locator('.skeleton-row')).toHaveCount(0);
+  await expect(table.locator('.skeleton-row')).toHaveCount(10);
   await expect(chart.locator('.echart-frame.loading')).toBeVisible();
   await expect(orders.locator('[aria-busy="true"]')).not.toHaveCount(0);
   await expect(metric).toBeVisible();
@@ -76,7 +76,7 @@ test('native components stay mounted through initial loading, filtering, paginat
   hold();
   await table.getByRole('button', { name: '下一页', exact: true }).click();
   await expect(table).toHaveAttribute('aria-busy', 'true');
-  await expect(table.locator('.skeleton-row')).toHaveCount(0);
+  await expect(table.locator('.skeleton-row')).toHaveCount(10);
   await expect(table.locator('tbody')).not.toContainText('合成类别1');
   await expect(table.locator('.loading-spinner')).toHaveCount(0);
   expect(await pagerNode!.evaluate(node => node.isConnected)).toBe(true);
@@ -87,7 +87,7 @@ test('native components stay mounted through initial loading, filtering, paginat
   hold();
   await page.getByRole('group', { name: '测试轮次', exact: true }).getByRole('button', { name: '第2轮', exact: true }).click();
   await expect(table).toHaveAttribute('aria-busy', 'true');
-  await expect(table.locator('.skeleton-row')).toHaveCount(0);
+  await expect(table.locator('.skeleton-row')).toHaveCount(10);
   await expect(chart.locator('.echart-frame.loading')).toBeVisible();
   await expect(metric.locator('.row-value').first()).toHaveText('10');
   await expect(metric.locator('.loading-spinner')).toHaveCount(0);
@@ -101,7 +101,7 @@ test('native components stay mounted through initial loading, filtering, paginat
   await table.getByRole('button', { name: '展开子表格', exact: true }).first().click();
   const nested = table.locator('.table-widget');
   await expect(nested.getByRole('columnheader', { name: '子项类别', exact: true })).toBeVisible();
-  await expect(nested.locator('.skeleton-row')).toHaveCount(0);
+  await expect(nested.locator('.skeleton-row')).toHaveCount(10);
   const nestedHeading = await nested.locator('thead').elementHandle();
   release();
   await expect(nested).toContainText('合成类别1');
@@ -115,7 +115,7 @@ test('native components stay mounted through initial loading, filtering, paginat
   const regularHeading = await revenue.locator('thead').elementHandle();
   await expect(revenue.locator('[aria-busy="true"]')).not.toHaveCount(0);
   await expect(revenue.locator('.echart-frame.loading')).toBeVisible();
-  await expect(revenue.locator('.skeleton-row')).toHaveCount(0);
+  await expect(revenue.locator('.skeleton-row')).toHaveCount(10);
   const lineNode = await revenue.locator('.echart').elementHandle();
   release();
   await expect(revenue.locator('[aria-busy="true"]')).toHaveCount(0);
@@ -162,9 +162,6 @@ test('all component families share a replayable loading review without replacing
     } else if (chartTypes.has(component.type)) {
       await expect(cell.locator('.echart-frame.loading, .gauge-plot.loading')).toBeVisible();
       await expect(cell.locator('.loading-spinner')).toHaveCount(0);
-    } else if(component.type==='table') {
-      await expect(cell.locator('thead')).toBeVisible();
-      await expect(cell.locator('tbody tr')).toHaveCount(0);
     } else {
       await expect(cell.locator('.loading-spinner')).toHaveCount(0);
       await expect(cell.locator('.skeleton').first()).toBeVisible();
@@ -177,7 +174,7 @@ test('all component families share a replayable loading review without replacing
   await expect(report.locator('.ai-summary .text-skeleton')).toBeVisible();
   await expect(page.locator('.loading-spinner, .loading-indicator')).toHaveCount(0);
   await expect(page.getByText(/正在加载|加载中…|加载页面…/)).toHaveCount(0);
-  await expect(dashboard.locator('.skeleton-row')).toHaveCount(0);
+  await expect(dashboard.locator('.skeleton-row')).not.toHaveCount(0);
   await page.screenshot({ path: '/tmp/mc-loading-gallery/loading-wide.png', fullPage: true });
   release();
   await expect(dashboard.locator('[aria-busy="true"]')).toHaveCount(0);
@@ -265,7 +262,7 @@ for (const outcome of ['ready', 'empty', 'error'] as const) {
 }
 
 
-test('query sorting keeps the real table structure without fabricated rows', async ({ page }) => {
+test('query sorting replaces only the table body with ten skeleton rows', async ({ page }) => {
   let pending = Promise.resolve();
   let release: () => void = () => {};
   await page.route('**/dsl/execute', async route => {
@@ -281,7 +278,7 @@ test('query sorting keeps the real table structure without fabricated rows', asy
   const sort = table.getByRole('columnheader', { name: /订单量/ }).locator('.sort-toggle');
   pending = new Promise<void>(resolve => { release = resolve; });
   await sort.click();
-  await expect(table.locator('.skeleton-row')).toHaveCount(0);
+  await expect(table.locator('.skeleton-row')).toHaveCount(10);
   await expect(table.locator('tbody')).not.toContainText('合成类别1');
   await expect(table.locator('.loading-spinner')).toHaveCount(0);
   expect(await heading!.evaluate(node => node.isConnected)).toBe(true);
@@ -291,7 +288,7 @@ test('query sorting keeps the real table structure without fabricated rows', asy
   await expect(table).toContainText('合成类别1');
   pending = new Promise<void>(resolve => { release = resolve; });
   await sort.click();
-  await expect(table.locator('.skeleton-row')).toHaveCount(0);
+  await expect(table.locator('.skeleton-row')).toHaveCount(10);
   release();
   await expect(table).toContainText('合成类别4');
   await expect(table.locator('.skeleton-row')).toHaveCount(0);
@@ -310,7 +307,7 @@ for (const outcome of ['empty', 'error'] as const) {
     });
     await page.goto(`/pages/${fixture.id}`);
     const orders = page.locator('[data-tab-panel="orders"]');
-    await expect(orders.locator('.skeleton-row')).toHaveCount(0);
+    await expect(orders.locator('.skeleton-row')).toHaveCount(10);
     await expect(orders.locator('.echart-frame.loading')).toBeVisible();
     release();
     await expect(orders.locator('[aria-busy="true"]')).toHaveCount(0);

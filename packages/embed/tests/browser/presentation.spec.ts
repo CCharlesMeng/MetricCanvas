@@ -316,7 +316,7 @@ for (const container of ['plain', 'card'] as const) test(`${container}: loading/
     }, { serializedDocument, mode });
     for (const title of ['趋势标题', '排行标题', '明细标题']) await expect(page.getByText(title, { exact: true })).toBeVisible();
     if (mode === 'loading') {
-      await expect(page.locator('.skeleton-row')).toHaveCount(0);
+      await expect(page.locator('.skeleton-row')).toHaveCount(10);
       await expect(page.locator('.echart-frame.loading')).toHaveCount(1);
       await expect(page.locator('.echart')).toHaveCSS('filter', 'grayscale(1)');
       await expect(page.locator('.chart-skeleton')).toHaveCount(0);
