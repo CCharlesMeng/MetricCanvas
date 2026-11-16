@@ -56,7 +56,7 @@ describe.sequential('当前契约检查无需旧服务源码', () => {
       cpSync(path.join(root, relative), path.join(isolated, relative));
     }
     mkdirSync(path.join(isolated, 'docs'), { recursive: true });
-    for (const relative of ['docs/schema-metadata.schema.json', 'docs/schema-metadata.md', 'docs/examples/schema-metadata.example.json', 'pnpm-lock.yaml', 'package.json', 'tsconfig.base.json']) {
+    for (const relative of ['docs/schema-metadata.schema.json', 'docs/schema-metadata.md', 'docs/examples/schema-metadata.example.json', 'docs/agents/page-diagnostic-handoff.md', 'pnpm-lock.yaml', 'package.json', 'tsconfig.base.json']) {
       mkdirSync(path.dirname(path.join(isolated, relative)), {recursive: true});
       cpSync(path.join(root, relative), path.join(isolated, relative));
     }
