@@ -1,3 +1,4 @@
+import { debugWarn } from '@metriccanvas/data-execution/runtime';
 import { chartOptionErrorsFor, type ExtensibleChartType } from '@metriccanvas/page/internal';
 import type { EChartsOption } from 'echarts';
 
@@ -57,6 +58,6 @@ export function chartSource(build: () => EChartsOption, props: Record<string, un
 export function logChartFailure(source: ChartSource, stage: ChartStage, cause: unknown, degraded: boolean, path?: string): void {
   const code = degraded ? 'CHART_OPTION_DEGRADED' : stage === 'validate' ? 'CHART_OPTION_INVALID' : 'CHART_RENDER_FAILED';
   const details = { code, ...source.diagnostic, stage, path: path ?? source.diagnostic?.path ?? '/props/echartsOption', cause };
-  if (degraded) console.warn(`[MetricCanvas][${code}] 自定义图表配置失败，回退基础配置`, details);
+  if (degraded) debugWarn(`[MetricCanvas][${code}] 自定义图表配置失败，回退基础配置`, details);
   else console.error(`[MetricCanvas][${code}] 图表绘制失败`, details);
 }

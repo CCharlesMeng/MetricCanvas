@@ -1,3 +1,4 @@
+import { debugWarn } from '../debug-warnings';
 import {isObjectDqeItem,queryLeaves,isPagedJoinQuery} from '@metriccanvas/page/internal';
 import { canonicalizeJson, declaredPaginationLimit, type DataSnapshot, type DataSource, type EffectiveQuery, type TableQueryView, type Row,type EmbeddedInitialRows } from '@metriccanvas/page/internal';
 import type { QueryRunner } from '../query-runner';
@@ -34,7 +35,7 @@ export function checkOrdinaryRange(source: DataSource, snapshot: DataSnapshot, l
   if (incompleteObjectSource(source,count,snapshot.totalCount,options?.allowZeroTotal)) return {status:'error',error:{code:'DQE_ROW_CONTRACT_ERROR',message:'object complete 结果与 totalCount 不一致'}};
   if (diagnostics && snapshot.totalCount !== undefined &&
     totalCountMismatch(count, snapshot.totalCount, source.source.resultScope, diagnostics)) {
-    console.warn('[MetricCanvas][TOTAL_COUNT_MISMATCH] 查询结果总数与返回行数不一致；继续使用已返回数据', {
+    debugWarn('[MetricCanvas][TOTAL_COUNT_MISMATCH] 查询结果总数与返回行数不一致；继续使用已返回数据', {
       code: 'TOTAL_COUNT_MISMATCH', ...diagnostics, ...options?.describeSource?.(), completeness: 'unverified', rowCount: count,
       totalCount: snapshot.totalCount, resultScope: source.source.resultScope
     });
@@ -84,7 +85,7 @@ export async function fetchComplete(query: EffectiveQuery, runner: QueryRunner, 
   }
   function failedPage(result: DataSnapshot): DataSnapshot {
     if (strict || !allowPartial || !rows.length) return result;
-    console.warn('[MetricCanvas][EXPORT_PARTIAL_DATA] 后续分页取数失败；导出已取得的数据，完整性未确认', {
+    debugWarn('[MetricCanvas][EXPORT_PARTIAL_DATA] 后续分页取数失败；导出已取得的数据，完整性未确认', {
       code: 'EXPORT_PARTIAL_DATA', ...diagnostics, ...describeSource?.(),
       accumulatedRowCount: rows.length, expectedTotalCount: expected,
       pagination: { offset, limit }, completeness: 'unverified'
@@ -97,7 +98,7 @@ export async function fetchComplete(query: EffectiveQuery, runner: QueryRunner, 
     if(strict)throw new SourceRangeError('EXPORT_INCOMPLETE_DATA','object 完整结果行数超过 totalCount');
     const sourceDetails = describeSource?.();
     const location = sourceDetails ? ` [数据源 ${sourceDetails.dataSourceId}；组件 ${sourceDetails.components.map(component => `${component.componentTitle ?? component.componentType} (${component.componentId})`).join('、') || '无组件引用'}]` : '';
-    console.warn(`[MetricCanvas][EXPORT_TOTAL_COUNT_MISMATCH]${location} 导出行数超出结果总数；继续导出已取得的数据，完整性未确认`, {
+    debugWarn(`[MetricCanvas][EXPORT_TOTAL_COUNT_MISMATCH]${location} 导出行数超出结果总数；继续导出已取得的数据，完整性未确认`, {
       code: 'EXPORT_TOTAL_COUNT_MISMATCH',
       pageId: diagnostics.pageId,
       pageRevisionId: diagnostics.pageRevisionId,
@@ -157,7 +158,7 @@ export function reportInitialWarnings(source: DataSource, diagnostics: QueryDiag
   const initial = source.source.initial;
   if (!initial?.warnings?.length || reportedInitialWarnings.has(initial)) return;
   reportedInitialWarnings.add(initial);
-  console.warn('[MetricCanvas][QUERY_VALUE_FALLBACK] 初始查询标量异常；保留可用数据', { ...diagnostics, warnings: initial.warnings });
+  debugWarn('[MetricCanvas][QUERY_VALUE_FALLBACK] 初始查询标量异常；保留可用数据', { ...diagnostics, warnings: initial.warnings });
 }
 
 export function reportInitialSnapshotWarnings(source: DataSource, snapshot: DataSnapshot | undefined, diagnostics: QueryDiagnosticContext): void {

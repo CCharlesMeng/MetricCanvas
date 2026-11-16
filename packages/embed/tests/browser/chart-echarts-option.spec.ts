@@ -52,20 +52,32 @@ for (const width of [1440, 390]) test(`${width}: complete scene renders three ex
   expect(errors).toEqual([]);
 });
 
-test('a drawing failure falls back once, retains config, and resize never retries the extension', async ({ page }) => {
+test('a layout failure falls back quietly, retains config, and resize never retries the extension', async ({ page }) => {
   const warnings: string[] = [], errors: string[] = [];
   page.on('console', message => { if (message.type() === 'warning') warnings.push(message.text()); });
   page.on('pageerror', error => errors.push(error.message));
-  await failText(page, 'screen');
+  await page.addInitScript(() => {
+    const original = CanvasRenderingContext2D.prototype.measureText;
+    CanvasRenderingContext2D.prototype.measureText = function(text) {
+      if (text === 'layout-fault' && document.documentElement.dataset.chartFault !== 'off') throw Error('test layout measurement failure');
+      return original.call(this, text);
+    };
+  });
+  await page.route('**/pages/chart-echarts-option-page.json', async request => {
+    const response = await request.fetch(); const document = await response.json();
+    document.sections[0].components[2].props.echartsOption.xAxis = { name: 'layout-fault' };
+    await request.fulfill({ response, json: document });
+  });
   await page.goto(route);
   await expect(page.locator(host)).toHaveAttribute('data-chart-render-mode', 'degraded');
   await expect(page.locator(`${host} canvas`)).toHaveCount(1);
   await expect(page.locator(line)).toContainText('显式覆盖平滑与标签');
   await expect(page.getByRole('alert')).toHaveCount(0);
+  await page.evaluate(() => { document.documentElement.dataset.chartFault = 'off'; });
   await page.setViewportSize({ width: 900, height: 1000 });
   await page.setViewportSize({ width: 1200, height: 1000 });
   await expect(page.locator(host)).toHaveAttribute('data-chart-render-mode', 'degraded');
-  expect(warnings.filter(message => message.includes('CHART_OPTION_DEGRADED'))).toHaveLength(1);
+  expect(warnings.filter(message => message.includes('CHART_OPTION_DEGRADED'))).toEqual([]);
   const retained = await page.evaluate(() => !!(window as any).pageDocument.sections[0].components[2].props.echartsOption);
   expect(retained).toBe(true);
   await page.evaluate(() => {
@@ -138,28 +150,5 @@ test('normal scene downloads PDF and PNG with all custom charts', async ({ page 
     const bytes = await readFile((await download.path())!);
     expect(magic === 'PNG' ? bytes.subarray(1, 4).toString() : bytes.subarray(0, 4).toString()).toBe(magic);
   }
-  await expect(page.getByRole('alert')).toHaveCount(0);
-});
-
-test('layout-stage failure also recovers once and reports its actual stage', async ({ page }) => {
-  const details: unknown[] = [];
-  page.on('console', async message => {
-    if (message.type() === 'warning' && message.text().includes('CHART_OPTION_DEGRADED')) details.push(await message.args()[1]?.jsonValue());
-  });
-  await page.addInitScript(() => {
-    const original = CanvasRenderingContext2D.prototype.measureText;
-    CanvasRenderingContext2D.prototype.measureText = function(text) {
-      if (text === 'layout-fault') throw Error('test layout measurement failure');
-      return original.call(this, text);
-    };
-  });
-  await page.route('**/pages/chart-echarts-option-page.json', async request => {
-    const response = await request.fetch(); const document = await response.json();
-    document.sections[0].components[2].props.echartsOption.xAxis = { name: 'layout-fault' };
-    await request.fulfill({ response, json: document });
-  });
-  await page.goto(route);
-  await expect(page.locator(host)).toHaveAttribute('data-chart-render-mode', 'degraded');
-  await expect.poll(() => details).toContainEqual(expect.objectContaining({ stage: 'layout', componentId: 'lines', path: '/sections/0/components/2/props/echartsOption' }));
   await expect(page.getByRole('alert')).toHaveCount(0);
 });

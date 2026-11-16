@@ -1,3 +1,4 @@
+import { debugWarn } from '../debug-warnings';
 import { createJoinProgress } from './progress';
 import type { ScreenProgressSink } from '../screen-progress';
 import { isPagedJoinQuery, hasQueryFieldMapping, restoreCellFallbacks, dqeDefaultSort, pagedJoinHasComparison, type EffectiveQuery, type DataSnapshot, type DataWarning, type TableQueryView, type Row } from '@metriccanvas/page/internal';
@@ -106,7 +107,7 @@ export async function executeQueryPagedJoin(plan:PagedJoinPlan,runner:QueryRunne
   signal?.throwIfAborted();
   const rows=plan.source.source.records?projectRecordRows(plan,selected.rows,members):projectRows(plan,keys,members);
   enforcePageBudget(plan,rows);
-  if(warnings.length)console.warn('[MetricCanvas][TABLE_RESULT_RECOVERED] 已忽略空关联编号的补充记录',{pageId:plan.page.id,sourceId:plan.sourceId,warnings});
+  if(warnings.length)debugWarn('[MetricCanvas][TABLE_RESULT_RECOVERED] 已忽略空关联编号的补充记录',{pageId:plan.page.id,sourceId:plan.sourceId,warnings});
   return {snapshot:joinWarningSnapshot(ordinalRows(plan,rows,selected.pageIndex*plan.view.pageSize),selected.total,warnings),
     ...(selected.pageIndex===plan.view.pageIndex?{}:{viewCorrection:{...plan.view,pageIndex:selected.pageIndex}})};
 }

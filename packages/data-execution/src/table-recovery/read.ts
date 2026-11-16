@@ -1,3 +1,4 @@
+import { debugWarn } from '../debug-warnings';
 import type { DataSnapshot, DataWarning, EffectiveQuery, Row, TableQueryView } from '@metriccanvas/page/internal';
 import type { QueryRunner } from '../query-runner';
 import { rawSnapshot } from '../snapshots';
@@ -80,7 +81,7 @@ export function recoveryView(context: RecoveryContext, rows: Row[], view: TableQ
   const result = evaluateTableView(rows, view, complete);
   if (complete && result.totalCount > EXPORT_MAX_ROWS) throw new SourceRangeError('EXPORT_ROW_LIMIT', '导出单表超过 10000 行');
   const warnings = [...context.warnings.values()];
-  console.warn('[MetricCanvas][TABLE_RESULT_RECOVERED] 表格已兼容异常数据，结果有缺项或经过整理', { pageId: context.pageId, sourceId: context.sourceId, warnings });
+  debugWarn('[MetricCanvas][TABLE_RESULT_RECOVERED] 表格已兼容异常数据，结果有缺项或经过整理', { pageId: context.pageId, sourceId: context.sourceId, warnings });
   const snapshot = { ...rawSnapshot(result.rows, result.totalCount), warnings };
   return { snapshot, ...(result.pageIndex === view.pageIndex ? {} : { viewCorrection: { ...view, pageIndex: result.pageIndex } }) };
 }

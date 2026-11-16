@@ -1,3 +1,4 @@
+import { debugWarn } from './debug-warnings';
 import {
   finalizationDate, finalizationName, localCalendarDate, supportsNativePreparation,
   type DqeRequestBody, type Page
@@ -47,7 +48,7 @@ export async function lookupFinalizationDates(
   } catch (cause) {
     signal?.throwIfAborted();
     // Business values and upstream messages must not escape through diagnostics.
-    console.warn('[MetricCanvas] 定稿日期查询不可用，默认时间回退当前日期');
+    debugWarn('[MetricCanvas] 定稿日期查询不可用，默认时间回退当前日期');
   }
   return new Map();
 }

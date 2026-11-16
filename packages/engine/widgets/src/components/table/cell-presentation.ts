@@ -1,3 +1,4 @@
+import { debugWarn, runtimeWarningsEnabled } from '@metriccanvas/data-execution/runtime';
 import { fieldContractViolations, type FieldBinding, type TableColumn, type FieldValue, type ValueFormat } from '@metriccanvas/page/internal';
 import { formatValue, finiteNumber, hasDisplayValue } from '../../shared/value-format';
 
@@ -33,12 +34,13 @@ function reportBinding(data: NamedDataSlots, binding: FieldBinding): void {
     return hasDisplayValue(value) && !compatibleTableFormat(value, resolved.format!);
   }).length;
   if (!count) return;
-  console.warn('[MetricCanvas][TABLE_FORMAT_FALLBACK] 单元格格式与值不兼容；显示原文', {
+  debugWarn('[MetricCanvas][TABLE_FORMAT_FALLBACK] 单元格格式与值不兼容；显示原文', {
     componentId: slot.diagnostics?.componentId, dataSourceId: slot.diagnostics?.sourceId ?? resolved.data,
     fieldId: resolved.field, format: resolved.format, count
   });
 }
 export function reportTableFormats(data: NamedDataSlots, columns: readonly TableColumn[]): void {
+  if (!runtimeWarningsEnabled) return;
   for (const column of columns) {
     for (const binding of [column.field, column.secondaryField, column.badgeField]) {
       if (binding) reportBinding(data, binding);

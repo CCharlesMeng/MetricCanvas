@@ -50,7 +50,10 @@ export default defineConfig((config) => {
   const cloudIoc=localPreview?undefined:readCloudIocDevConfig(config,appRoot,'platform');
   return {
     // Library mode intentionally leaves NODE_ENV untouched unless explicitly defined.
-    define: micro ? {'process.env.NODE_ENV': JSON.stringify('production')} : {},
+    define: micro ? {
+      'process.env.NODE_ENV': JSON.stringify('production'),
+      'import.meta.env.VITE_METRICCANVAS_DEBUG_WARNINGS': JSON.stringify(String(debug))
+    } : {},
     plugins: [svelte(), ...(micro ? [htmlEntry()] : localPreview ? [] : [basicSsl()])],
     resolve: {alias: {
       $lib: resolve(appRoot, 'src/lib'),
@@ -61,7 +64,7 @@ export default defineConfig((config) => {
     build: micro ? {
       outDir: debug ? 'dist/microfrontend-debug' : 'dist/microfrontend',
       target: 'es2022',
-      // Debug changes readability only; Vite/Svelte still compile production code.
+      // Vite/Svelte still compile production code for the debug artifact.
       ...(debug ? {minify: false, cssMinify: false, sourcemap: true} : {}),
       lib: {
         entry: 'src/microfrontend/entry.ts', name: 'MetricCanvasPlatform', formats: ['umd'],

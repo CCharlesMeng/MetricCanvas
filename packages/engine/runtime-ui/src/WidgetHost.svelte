@@ -1,5 +1,6 @@
 <svelte:options css="injected" />
 <script lang="ts">
+  import { debugWarn } from '@metriccanvas/data-execution/runtime';
   import type { Snippet } from 'svelte';
   import type { DataSnapshot } from '@metriccanvas/page/internal';
   import { displayDataSnapshot } from './widget-host-state';
@@ -15,7 +16,7 @@
   const renderable = $derived(displayDataSnapshot(snapshot));
 
   $effect(() => {
-    if (notices.length) console.warn('[MetricCanvas][DATA_NOTICE]', ...notices);
+    if (notices.length) debugWarn('[MetricCanvas][DATA_NOTICE]', ...notices);
   });
 </script>
 

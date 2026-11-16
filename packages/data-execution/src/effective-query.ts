@@ -1,3 +1,4 @@
+import { debugWarn } from './debug-warnings';
 import {resolvePeriodComparison, type DisplayInputsSnapshot} from '@metriccanvas/page/internal';
 import {evaluateCondition} from '@metriccanvas/page/internal';
 import {bindingOwnedDqeBody, normalizeDisplayQueryRows, restoreCellFallbacks} from '@metriccanvas/page/internal';
@@ -184,7 +185,7 @@ export async function executeQuery(
     if (!combined) return { status: 'empty', totalCount: 0 };
     if (combined.periodAggregation) return await executePeriodAggregation(combined, (monthly, bounded) => executeQuery(monthly, gateway, diagnosticContext, bounded), signal);
     const result = await gateway.fetchData(combined, diagnosticContext, signal);
-    if (result.warnings?.length) console.warn('[MetricCanvas][QUERY_VALUE_FALLBACK] 查询标量异常；保留可用数据', { ...diagnosticContext, warnings: result.warnings });
+    if (result.warnings?.length) debugWarn('[MetricCanvas][QUERY_VALUE_FALLBACK] 查询标量异常；保留可用数据', { ...diagnosticContext, warnings: result.warnings });
     if (query.pagination && result.totalCount === undefined && query.resultPolicy !== 'display') {
       throw Object.assign(new Error('查询分页结果缺少 totalCount'), { code:'DQE_ROW_CONTRACT_ERROR' });
     }

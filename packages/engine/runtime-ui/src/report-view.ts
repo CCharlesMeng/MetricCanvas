@@ -1,3 +1,4 @@
+import { debugWarn } from '@metriccanvas/data-execution/runtime';
 import { mount, unmount, tick } from 'svelte';
 import type { EffectiveQuery } from '@metriccanvas/page/internal';
 import type { RuntimeDataGateway } from '../../runtime/src';
@@ -31,7 +32,7 @@ export async function withReportView<T>(input:{state:ExportRenderState;queries:R
       const captured=state.snapshots.get(id);
       if(snapshot.status==='error' && (captured?.status==='ready'||captured?.status==='empty')) {
         prepared.set(id,captured);
-        console.warn('[MetricCanvas][EXPORT_PARTIAL_DATA] 导出重新取数失败；保留点击下载时已取得的数据，完整性未确认', {
+        debugWarn('[MetricCanvas][EXPORT_PARTIAL_DATA] 导出重新取数失败；保留点击下载时已取得的数据，完整性未确认', {
           code:'EXPORT_PARTIAL_DATA',pageId:state.page.id,dataSourceId:id,
           accumulatedRowCount:captured.status==='ready'?captured.rows.length:0,completeness:'unverified'
         });

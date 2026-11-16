@@ -1,6 +1,6 @@
 # Platform 打包与浏览器调试
 
-平台微前端第一期沿用 Vite UMD 单文件，分别发布生产包和独立调试包。两者使用同一生产编译逻辑和 qiankun 生命周期，调试包只改变 JS/CSS 可读性并增加 JS source map。真正分块作为 [第二期计划](plan/2026-10-14-platform-microfrontend-build.md) 保留。
+平台微前端第一期沿用 Vite UMD 单文件，分别发布生产包和独立调试包。两者使用同一生产编译逻辑和 qiankun 生命周期。调试包保留统一运行时的控制台 warning、可读的 JS/CSS 和 JS source map。真正分块作为 [第二期计划](plan/2026-10-14-platform-microfrontend-build.md) 保留。
 
 ## 构建命令与产物
 
@@ -24,9 +24,12 @@ pnpm --filter platform pack:microfrontend:debug
 | 归档校验 | 同级 `.tar.gz.sha256` | 同级 `.tar.gz.sha256` |
 | 发布清单 profile | `production` | `debug` |
 | JS/CSS | 压缩 | 不压缩 |
+| 统一运行时的控制台 warning | 关闭 | 开启 |
 | 源码映射 | 不携带 | `assets/platform.umd.js.map`，包含 TS/Svelte 源内容 |
 
 两个静态目录都包含 `index.html`、`assets/platform.umd.js`、`assets/platform.css`、`portal-contract.d.ts`、`release.json` 和两个部署组合脚本。调试包仍为单文件 UMD，不开启开发 fixture、本地身份或 Vite 开发入口。CSS 可读，但当前未生成 CSS source map。
+
+本地 Vite 开发也会输出统一运行时的 warning，例如查询数据容错和图表降级。查询错误、绘制失败等 `console.error` 及导出文件内的数据异常说明在两种构建中均保留。
 
 `release.json` 记录 profile、Git 基线、工作区修改标志、源码树摘要和全部交付资源的 SHA-256。调试目录的 map 也受资源摘要校验；生产打包拒绝夹带 map。归档中的源内容支持脱离本地仓库调试。源码树摘要覆盖平台和所消费的 UI、引擎、页面、数据执行等包；`sourceDirty=true` 时产物含工作区修改，基线提交不代表所有改动已提交。
 

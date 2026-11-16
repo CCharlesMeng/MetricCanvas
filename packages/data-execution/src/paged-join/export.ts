@@ -1,3 +1,4 @@
+import { debugWarn } from '../debug-warnings';
 import {recordJoinReader} from './records-reader';
 import {isObjectDqeItem,queryLeaves} from '@metriccanvas/page/internal';
 import type { Row,DataSnapshot,DataWarning } from '@metriccanvas/page/internal';
@@ -16,7 +17,7 @@ export async function exportPagedJoin(plan: PagedJoinPlan, runner: QueryRunner, 
   const canReturnPartial=plan.strategy!=='queryPage'&&partialAllowed(plan,allowPartial);
   let expected: number | undefined;
   function partial() {
-    console.warn('[MetricCanvas][EXPORT_PARTIAL_DATA] 后续组合分页取数失败；导出已取得的数据，完整性未确认', {
+    debugWarn('[MetricCanvas][EXPORT_PARTIAL_DATA] 后续组合分页取数失败；导出已取得的数据，完整性未确认', {
       code: 'EXPORT_PARTIAL_DATA', pageId: plan.page.id, ...describeExportSource(plan.page, plan.sourceId),
       accumulatedRowCount: rows.length, expectedTotalCount: expected, completeness: 'unverified'
     });

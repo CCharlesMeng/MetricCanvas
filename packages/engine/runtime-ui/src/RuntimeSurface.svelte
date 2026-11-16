@@ -6,7 +6,7 @@
 <script lang="ts">
   import {createAuthRequiredGateway, notifyAuthRequired, type AuthRequiredEvent} from './auth-required';
   import {invalidateAiSummaryPage} from './ai-summary/runtime/session';
-  import {createFinalizationPreparation,inheritFinalizationCache,supportsMembershipCandidates} from '@metriccanvas/data-execution/runtime';
+  import {debugWarn,createFinalizationPreparation,inheritFinalizationCache,supportsMembershipCandidates} from '@metriccanvas/data-execution/runtime';
   import {preparationBlocksPage,preparationBlocksFilter,discardPreparingData} from './preparation-blocked';
   import { officeNavigationTarget, sameNavigationAddress } from './ioc-header/office-navigation';
   import {nativeSourceFilterIds,nativeIocRuntimePage} from '@metriccanvas/page/internal';
@@ -1386,7 +1386,7 @@
   function reportPinnedIssue(component: TableComponent, sourceId: string, snapshot: DataSnapshot): void {
     if (reportedPinned.has(snapshot)) return;
     reportedPinned.add(snapshot);
-    console.warn('[MetricCanvas][TABLE_PINNED_RESULT_INVALID] 置顶结果不可用', { componentId: component.id, dataSourceIds: [sourceId], reason: pinnedSnapshotError(snapshot) });
+    debugWarn('[MetricCanvas][TABLE_PINNED_RESULT_INVALID] 置顶结果不可用', { componentId: component.id, dataSourceIds: [sourceId], reason: pinnedSnapshotError(snapshot) });
   }
 
   function visibleTableRows(component: TableComponent): Row[] {

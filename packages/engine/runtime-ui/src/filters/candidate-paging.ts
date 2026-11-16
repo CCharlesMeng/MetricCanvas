@@ -1,5 +1,5 @@
 import type { FilterCandidate, FilterCandidatesResult } from '@metriccanvas/data-execution';
-import { preservedQueryError } from '@metriccanvas/data-execution/runtime';
+import { debugWarn, preservedQueryError } from '@metriccanvas/data-execution/runtime';
 
 export interface CandidatePageReader {
   key: string;
@@ -56,7 +56,7 @@ export function candidatePaging(publish:(page:CandidatePages)=>void) {
   }
 
   function failedWindow(current:CandidatePageReader, offset:number, reason:string) {
-    console.warn('[MetricCanvas][FILTER_CANDIDATE_WINDOW]', {filterId:current.filterId, dataSourceId:current.sourceId, offset, limit:current.limit, reason});
+    debugWarn('[MetricCanvas][FILTER_CANDIDATE_WINDOW]', {filterId:current.filterId, dataSourceId:current.sourceId, offset, limit:current.limit, reason});
     update({...snapshot, loading:false, error:true});
   }
 

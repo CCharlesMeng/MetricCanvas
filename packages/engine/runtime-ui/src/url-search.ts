@@ -1,3 +1,4 @@
+import { debugWarn } from '@metriccanvas/data-execution/runtime';
 import { filterURLKeys, usesIocRegion, walkPageComponents, type Page } from '@metriccanvas/page/internal';
 import type { RuntimeNavigation } from './types';
 
@@ -29,7 +30,7 @@ export function replaceRuntimeSearch(navigation: RuntimeNavigation | undefined, 
 }
 
 function reportSearchError(error: unknown): void {
-  console.warn('MetricCanvas URL synchronization failed', error);
+  debugWarn('MetricCanvas URL synchronization failed', error);
 }
 
 export function initializeURLSearch(page: Page, search: string, navigation?: RuntimeNavigation): string {

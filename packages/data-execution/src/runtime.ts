@@ -1,4 +1,5 @@
 /** Lockstep engine integration; one-shot callers use the root entry. */
+export {debugWarn,runtimeWarningsEnabled} from './debug-warnings';
 export {inheritFinalizationCache,invalidateFinalizationCache} from './finalization-cache';
 export { composeEffectiveQuery, executeQuery } from './effective-query';
 export type { QueryHeaderFilters } from './effective-query';

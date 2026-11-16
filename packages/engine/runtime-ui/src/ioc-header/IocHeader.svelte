@@ -1,5 +1,6 @@
 <svelte:options css="injected" />
 <script lang="ts">
+  import { debugWarn } from '@metriccanvas/data-execution/runtime';
   import type { Snippet } from 'svelte';
   import { onMount } from 'svelte';
   import type { ResolvedIocHeader } from './model';
@@ -13,7 +14,7 @@
   onMount(() => { browser = window; });
   const backAction = $derived(headerBackAction(model, onback, browser));
   $effect(() => {
-    if (note && !staticView) console.warn('[MetricCanvas][IOC_HEADER_NOTICE]', note);
+    if (note && !staticView) debugWarn('[MetricCanvas][IOC_HEADER_NOTICE]', note);
   });
   const flow=$derived(model.layout==='inline' && model.collapse!=='firstRow');
   const uid = $props.id();

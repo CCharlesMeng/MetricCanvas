@@ -32,6 +32,8 @@ pnpm --filter @metriccanvas/embed build
 
 后续修改和交付统一执行[Embed 分发基线](../../docs/agents/embed-distribution.md)。可用 `pnpm --filter @metriccanvas/embed check:dist` 独立检查已构建目录；build、prepack 与 CI 自动执行同一门禁。
 
+正式构建默认关闭统一运行时的 `console.warn`；查询失败、图表绘制失败等 `console.error`、运行时事件和导出文件内的数据异常说明仍保留。排查可在页面试验场的 Vite 开发环境查看 warning，或以 `VITE_METRICCANVAS_DEBUG_WARNINGS=true` 单独构建调试用 Embed。
+
 ### 复制到项目后直接 import
 
 将**完整 `dist/` 内容**复制到项目的静态资源目录（例如 `public/metriccanvas/`），保持两个入口、`chunks/` 与 `package.json` 的相对位置，再从一个公共入口使用：
