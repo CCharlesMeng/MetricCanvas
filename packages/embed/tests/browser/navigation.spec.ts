@@ -1,6 +1,12 @@
-import {openSelection,closeSelection} from './selection-actions';
+import {chooseTree,openSelection,closeSelection} from './selection-actions';
 import { expect, test } from '@playwright/test';
 import { readFileSync } from 'node:fs';
+import type { RuntimeDataGateway } from '../../src';
+
+declare global {
+  interface Window { officeDrillGateway: RuntimeDataGateway }
+}
+
 const navigationPage = JSON.parse(readFileSync(new URL('../../../page/fixtures/contract-valid/url-navigation-page.json', import.meta.url), 'utf8'));
 
 function paintedBarCenter(element: HTMLElement | SVGElement) {
@@ -226,6 +232,70 @@ test('宿主可选接管，同文档更换初始参数重新初始化，省略�
   await expect(link).toHaveAttribute('href', '?code=B&previous=C#next');
 });
 
+
+test('代表处下钻等待详情文档时保留概览的筛选与查询结果', async ({ page }) => {
+  const sourceSearch = 'region-dept=CN-EAST&period=quarter:2026-Q2';
+  await page.goto('/pages/ioc-office-drill-overview');
+  await expect.poll(() => page.evaluate(() => !!window.runtime)).toBe(true);
+  await page.evaluate(search => {
+    const source = window.pageDocument;
+    const candidates = [
+      { value:'全球', label:'全球', level:'geo' },
+      { value:'CN-EAST', label:'华东地区部', level:'region-dept', parent:{ level:'geo', value:'全球' } },
+      { value:'SH-01', label:'上海代表处', level:'office', parent:{ level:'region-dept', value:'CN-EAST' } }
+    ];
+    const gateway: RuntimeDataGateway = {
+      async fetchFilterCandidates() { return { kind:'values', candidates }; },
+      async fetchData(query) {
+        const scope = query.filterValues.find(value => value.target === 'dimension');
+        document.body.dataset.lastOfficePredicate = JSON.stringify(scope);
+        window.queryCalls.push({});
+        return { rows:[{ region:'已加载结果', amount:12 }], totalCount:1 };
+      }
+    };
+    window.queryCalls = [];
+    window.officeDrillGateway = gateway;
+    window.runtime.update({ document:source, dataGateway:gateway, initialSearch:search, navigation:{
+      navigate(intent) {
+        const target = new URL(intent.href, location.href);
+        history.pushState(null, '', target);
+        window.runtime.update({ document:structuredClone(source), dataGateway:gateway, initialSearch:target.search });
+        return true;
+      }
+    } });
+  }, sourceSearch);
+
+  const region = page.locator('[data-filter-id="region"]');
+  const result = page.getByRole('cell', { name:'已加载结果' });
+  await expect(region).toContainText('华东地区部');
+  await expect(result).toBeVisible();
+  const before = await page.evaluate(() => window.queryCalls.length);
+  await chooseTree(region, '上海代表处');
+  await expect(page).toHaveURL(/ioc-office-drill-detail.*rep-office=SH-01/);
+  await expect(region).toContainText('华东地区部');
+  await expect(result).toBeVisible();
+  expect(await page.evaluate(() => window.queryCalls.length)).toBe(before);
+
+  await page.evaluate(async () => {
+    const detail = await (await fetch('/pages/ioc-office-drill-detail.json')).json();
+    detail.dataSources = window.pageDocument.dataSources;
+    detail.sections[0].components.push(window.pageDocument.sections[0].components[1]);
+    window.runtime.update({ document:detail, dataGateway:window.officeDrillGateway, initialSearch:location.search });
+  });
+  await expect(page.getByRole('heading', { name:'代表处详情', exact:true })).toBeVisible();
+  await expect(region).toContainText('上海代表处');
+  await expect(page.locator('body')).toHaveAttribute('data-last-office-predicate', /"queryField":"代表处".*"SH-01"/);
+
+  await page.evaluate(search => {
+    window.addEventListener('popstate', () => {
+      window.runtime.update({ document:window.pageDocument, dataGateway:window.officeDrillGateway, initialSearch:search });
+    }, { once:true });
+    history.back();
+  }, sourceSearch);
+  await expect(page).toHaveURL(/ioc-office-drill-overview/);
+  await expect(region).toContainText('华东地区部');
+  await expect(page.locator('body')).toHaveAttribute('data-last-office-predicate', /"queryField":"地区部".*"CN-EAST"/);
+});
 
 test('指标值链接从实际点击的数据槽取行参数', async ({ page }) => {
   await page.goto('/pages/ioc-project-overview');

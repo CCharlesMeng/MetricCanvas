@@ -8,7 +8,7 @@
   import {invalidateAiSummaryPage} from './ai-summary/runtime/session';
   import {debugWarn,createFinalizationPreparation,inheritFinalizationCache,supportsMembershipCandidates} from '@metriccanvas/data-execution/runtime';
   import {preparationBlocksPage,preparationBlocksFilter,discardPreparingData} from './preparation-blocked';
-  import { officeNavigationTarget, sameNavigationAddress } from './ioc-header/office-navigation';
+  import { isOfficeNavigationFeedback, officeNavigationTarget, sameNavigationAddress } from './ioc-header/office-navigation';
   import {nativeSourceFilterIds,nativeIocRuntimePage} from '@metriccanvas/page/internal';
   import { hierarchyLevelOf } from '@metriccanvas/page/internal';
   import { projectSnapshotRows, snapshotCellFallbacks, tablePinnedSlots, restoreCellFallbacks, pinnedSnapshotError } from '@metriccanvas/page/internal';
@@ -432,11 +432,29 @@
   setContext(AI_SUMMARY_RUNTIME_CONTEXT, summaryRuntime);
   let session = 0;
   let disposers: Array<() => void> = [];
+  type SessionInput = Pick<RuntimeSurfaceProps, 'document' | 'dataGateway' | 'pageRevisionId' | 'execution'> & { initialSearch: string };
+  let appliedInput: SessionInput | undefined;
+  let pendingOffice: string | undefined;
 
   $effect(() => {
-    void run(document, dataGateway, initialSearch, navigation, onevent, pageRevisionId, execution);
-    return dispose;
+    const next = { document, dataGateway, initialSearch, pageRevisionId, execution };
+    const adapter = navigation;
+    const emit = onevent;
+    untrack(() => applySessionInput(next, adapter, emit));
   });
+  onDestroy(dispose);
+
+  function applySessionInput(next: SessionInput, adapter: RuntimeNavigation | undefined, emit: RuntimeSurfaceProps['onevent']) {
+    // URL feedback can arrive before the destination document. Keep the source session live.
+    if (appliedInput && pendingOffice
+      && next.dataGateway === appliedInput.dataGateway
+      && next.execution === appliedInput.execution
+      && next.pageRevisionId === appliedInput.pageRevisionId
+      && isOfficeNavigationFeedback(appliedInput.document, next.document, next.initialSearch, pendingOffice)) return;
+    if (appliedInput) dispose();
+    appliedInput = next;
+    void run(next.document, next.dataGateway, next.initialSearch, adapter, emit, next.pageRevisionId, next.execution);
+  }
 
   function dispose() {
     untrack(() => closeDetail(false));
@@ -450,6 +468,7 @@
     disposers = [];
     filterState = null;
     stream = null;
+    pendingOffice = undefined;
   }
 
   function localFilterInitializationIssue(
@@ -1308,13 +1327,16 @@
       return;
     }
     navigationMessage = '';
-    navigate(result.href, undefined, entry);
+    const office = entry ? undefined : dimensionValueOf(filters, 'region').values[0];
+    navigate(result.href, undefined, entry, office);
   }
 
-  function navigate(href: string, event?: MouseEvent, entry?: Pick<RuntimeNavigationTarget, 'replace' | 'sourcePageId'>) {
+  function navigate(href: string, event?: MouseEvent, entry?: Pick<RuntimeNavigationTarget, 'replace' | 'sourcePageId'>, office?: string) {
     if (event && (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)) return;
     const sourcePageId = pageState.phase === 'ready' ? pageState.page.id : undefined;
-    const sourceSearch = filterState ? mergedSearch(filterState, initialSearch) : initialSearch;
+    pendingOffice = office;
+    const search = appliedInput!.initialSearch;
+    const sourceSearch = filterState ? mergedSearch(filterState, search) : search;
     const target = { href, sourcePageId, sourceSearch, ...entry };
     onevent?.({ type: 'navigate', ...target });
     if (navigation?.navigate?.(target) === true) event?.preventDefault();
