@@ -36,6 +36,7 @@ export type { ColumnCandidatesRead } from './source-program/column-candidates';
 export { createCandidateValidator } from './candidate-validation';
 
 export { sourceCandidatesGateway, projectSourceCandidates } from './source-candidates';
+export { supportsMembershipCandidates, inheritMembershipCandidates } from './membership-candidates';
 
 export {resolveFinalizationDates,type FinalizationSourceDefinition} from './finalization';
 export {createFinalizationPreparation} from './finalization-preparation';

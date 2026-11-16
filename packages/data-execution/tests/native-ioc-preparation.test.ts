@@ -7,6 +7,9 @@ import type {RuntimeDataGateway,FilterCandidatesResult} from '../src/ports';
 import type {FilterValues} from '../src/filter-values';
 import {sourceCandidatesGateway} from '../src/source-candidates';
 import {filterCandidatesRequest} from '../src/filter-candidates';
+import {dimensionFilterCandidates} from '../src/dqe/filter-candidates';
+import {createCandidateGatewaySession} from '../src/candidate-session';
+import {withOperationMapRegion} from '../src/operation-map-region';
 
 function document(version='6.120',id='key-office') {
   const page=JSON.parse(readFileSync('pages/capabilities/filters/key-office-priority-demo.json','utf8').replaceAll('key-office',id));
@@ -39,14 +42,42 @@ describe('native IOC membership preparation at the shared execution interface',(
     expect(fetchData.mock.calls[0][0]).toMatchObject({filterValues:[{target:'dimension',queryField:'代表处',values:['上海代表处']}]});
     expect(raw).toEqual(original);program.dispose();
   });
-  it('does not add native membership bindings to older documents',async()=>{
-    const raw=document('6.119'),parsed=parsePage(raw);expect(parsed.ok).toBe(true);if(!parsed.ok)return;
-    expect(parsed.page.schemaVersion).toBe('6.119');
+  it.each(['6.102','6.119'])('prepares membership for schema %s without upgrading the document',async version=>{
+    const raw=document(version),before=structuredClone(raw),parsed=parsePage(raw);expect(parsed.ok).toBe(true);if(!parsed.ok)return;
     const normalized=normalizePageDocument(raw);expect(normalized.ok&&normalized.document.schemaVersion).toBe('6.119');
-    const page=parsed.page,fetchData=vi.fn<RuntimeDataGateway['fetchData']>(async()=>({rows:[],totalCount:0})),fetchFilterCandidates=vi.fn();
+    const page=parsed.page,fetchData=vi.fn<RuntimeDataGateway['fetchData']>(async()=>({rows:[],totalCount:0})),fetchFilterCandidates=vi.fn(async()=>members);
     const program=createSourceProgram(page,{gateway:{fetchData,fetchFilterCandidates}});
-    await collect(program,selected());expect(fetchFilterCandidates).not.toHaveBeenCalled();
-    expect(fetchData.mock.calls[0][0].filterValues).toEqual([]);program.dispose();
+    await collect(program,selected());
+    expect(fetchFilterCandidates).toHaveBeenCalledOnce();
+    expect(fetchData.mock.calls[0][0].filterValues).toEqual([{target:'dimension',queryField:'代表处',values:['上海代表处']}]);
+    expect(raw).toEqual(before);
+    program.dispose();
+  });
+  it.each(['absent','dimension','page-source','region'] as const)('keeps older documents compatible with %s candidate adapters',async kind=>{
+    const raw=document('6.102');
+    raw.filters.push({id:'local-office',type:'dimension',dimension:'local-office',candidates:{dataSource:'options',valueField:'office'}});
+    raw.dataSources.options={fields:{office:{type:'string',role:'dimension'}},source:{type:'inline',rows:[{office:'上海代表处'}]}};
+    const fetchData=vi.fn<RuntimeDataGateway['fetchData']>(async()=>({rows:[],totalCount:0}));
+    const base:RuntimeDataGateway={fetchData};
+    if(kind==='dimension')base.fetchFilterCandidates=dimensionFilterCandidates(async()=>({kind:'values',candidates:[]}));
+    const gateway=kind==='page-source'?sourceCandidatesGateway(raw,base):kind==='region'?withOperationMapRegion(base,{async fetchRegionCandidates(){return members;}}):base;
+    const session=createCandidateGatewaySession(gateway);
+    const program=createSourceProgram(raw,{gateway:session.gateway});
+    await collect(program,selected());
+    expect(fetchData.mock.calls[0]?.[0].filterValues).toEqual([]);
+    program.dispose();
+    session.dispose();
+  });
+  it('does not infer membership for an older query without a Region binding',async()=>{
+    const raw=document('6.102');
+    delete raw.dataSources.offices.source.query.filterBindings.region;
+    const fetchData=vi.fn<RuntimeDataGateway['fetchData']>(async()=>({rows:[],totalCount:0}));
+    const fetchFilterCandidates=vi.fn(async()=>members);
+    const program=createSourceProgram(raw,{gateway:{fetchData,fetchFilterCandidates}});
+    await collect(program,selected());
+    expect(fetchFilterCandidates).not.toHaveBeenCalled();
+    expect(fetchData.mock.calls[0]?.[0].filterValues).toEqual([]);
+    program.dispose();
   });
   it('does not infer a business-private ID from its label or declaration',async()=>{
     const raw=document('6.120','key-account-only'),parsed=parsePage(raw);expect(parsed.ok).toBe(true);if(!parsed.ok)return;

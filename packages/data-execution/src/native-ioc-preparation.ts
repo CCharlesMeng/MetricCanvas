@@ -1,6 +1,7 @@
 import {conditionSourceIds,nativeIocBindingTargets,nativeIocRuntimePage,queryLeaves,selectQuery,type Page,type QueryDataSource,type EffectiveQuery} from '@metriccanvas/page/internal';
 import type {FilterValues} from './filter-values';
 import type {FilterCandidate,RuntimeDataGateway} from './ports';
+import {supportsMembershipCandidates} from './membership-candidates';
 
 type MembershipBinding={target:'boolean';queryField:string;whenTrue:string[]};
 function unavailable():Error {return Object.assign(new Error('当前授权重点国代完整名单尚未就绪'),{code:'DQE_CONFIG_ERROR'});}
@@ -42,8 +43,9 @@ function waitFor<T>(promise:Promise<T>,signal:AbortSignal):Promise<T> {
 
 /** One private execution copy per SourceProgram; pending bindings never escape through snapshots. */
 export function createNativeIocPreparation(input:Page,gateway:RuntimeDataGateway) {
-  input=nativeIocRuntimePage(input);
-  const targets=nativeIocBindingTargets(input),copy=executionCopy(input,targets);
+  const hasMembershipCandidates=supportsMembershipCandidates(gateway);
+  input=nativeIocRuntimePage(input,hasMembershipCandidates);
+  const targets=nativeIocBindingTargets(input,hasMembershipCandidates),copy=executionCopy(input,targets);
   const ready=new Set<string>(),pending=new Map<string,Promise<void>>(),failures=new Map<string,unknown>(),controller=new AbortController();
   function activeTargets(sourceId:string,values:FilterValues):string[] {
     const ids=targets.get(sourceId)??[],source=copy.page.dataSources[sourceId];

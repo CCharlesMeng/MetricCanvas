@@ -207,7 +207,7 @@ presets为`{id,label,range:{from?,to?}}[]`，输入和预设使用显示单位�
 
 ## 异步条件准备（6.120）
 
-声明 `schemaVersion:"6.120"` 及以后版本的页面，合法页面结构在名单和定稿日期准备期间先呈现，相关组件保持静态占位。页面不增加异步开关、回调或字段。6.119及以前页面继续按原有声明、名单桥接和默认值初始化执行；只升级引擎不会让旧页面缺失的布尔绑定自动订阅筛选。普通读取和规范化不会把旧页面标为6.120；既有特殊版本保留规则继续生效，其他旧页面最多规范化到6.119。明确执行页面升级并预览验证后才采用新语义。
+合法页面结构先呈现，等待完整条件的组件保持静态占位。重点名单准备兼容旧版页面。旧页符合下述绑定条件且数据网关提供能处理重点名单的 `fetchFilterCandidates` 时，直接启用异步名单，无需升版或修改 JSON。只提供普通维度、Region 或页面数据源候选的内置适配器不会触发旧页名单准备。6.120 及以后的页面继续保留原生名单语义，缺少名单能力时按配置错误处理。定稿默认值非阻塞初始化及会话缓存继续由 6.120 页面版本启用，旧版本沿用原初始化规则。
 
 IOC 页头认领的 `key-national-only`（新页面标准）、`key-office`、`key-rep-only`（既有标识） 勾选后，引擎为消费 Region、且缺少该重点筛选显式绑定的查询准备完整授权名单，沿 `fetchFilterCandidates` 请求 `dimension:"rep-office-name"`、原始 `filterId` 和对应 boolean true；请求不携带当前 Region。已有明确布尔查询绑定原样执行，不按标签猜测或覆盖。普通 boolean 不适用此规则。不根据标签或业务私有 ID 推断此能力；`key-account-only` 不属于标准标识，需由创作方迁移声明、页头引用及 URL，或采用普通 boolean 的显式绑定。
 
@@ -219,7 +219,9 @@ IOC 页头认领的 `key-national-only`（新页面标准）、`key-office`、`k
 
 6.120 的真实定稿表成功结果只缓存于共享定稿解析模块一处，按数据网关会话及固定查询配置隔离，有效期4小时；同一会话的后续页面按定稿名称复用结果。过期后按需重新查询，不使用过期值启动业务查询，不自动改变已打开页面的月份。每页独立请求和取消；同时未命中缓存的页面各自查询，不共享在途 Promise。不缓存失败、回退日期、不完整或含无效记录的表；缓存没有所需名称时重新查询。身份/权限变化须创建新的数据网关会话，HTTP登录失效清除当前会话缓存。页面 JSON 不新增缓存字段，集成应用不另加定稿缓存。旧版本页面仍不跨页缓存。
 
-集成应用升级完整引擎产物，并将需原生名单能力的页面升级到6.120后，可删除该页面路径的前置名单桥接，直接传原文档与现有数据网关。候选 Adapter、finalizationSource、身份和请求取消接线继续保留。旧页面仍用旧接入方式；不支持6.120的旧引擎应在查询前拒绝页面版本。
+集成应用升级完整引擎产物并接通名单候选端口后，可直接传旧文档与现有数据网关。已经通过前置桥接写入的显式绑定继续生效。候选 Adapter、finalizationSource、身份和请求取消接线继续保留。不支持6.120的旧引擎应在查询前拒绝6.120页面。
+
+旧版合成页 [旧版 IOC 重点国代](examples/ioc-legacy-key-office.json)，入口 `/pages/ioc-legacy-key-office`。6.102 根级页头原样运行，勾选后等名单再查询，取消后恢复；`?state=empty` 与 `?state=error` 可验证空名单或失败路径。
 
 合成完整页：[异步条件准备](examples/ioc-async-preparation.json)，入口 `/pages/ioc-async-preparation`。名单和定稿各延迟1秒，页头、表头及无关查询先出现，首个相关请求同时包含完整名单与最终期间。`?key-national-only=false&mtime=month:2026-04` 不获取名单或定稿默认值；`?state=empty|error|date-error` 分别演示空名单、名单失败与定稿回退。该场景不证明真实授权名单或生产 DQE 接入。
 
@@ -3108,6 +3110,7 @@ Schema位置：`#/definitions/searchFilter/properties/default`。
 - [finalization-default-time-detail](examples/finalization-default-time-detail.json)：完整合法页面；查询仅为静态契约证据。
 - [finalization-date-defaults](examples/finalization-date-defaults.json)：完整合法页面；查询仅为静态契约证据。
 - [ioc-async-preparation](examples/ioc-async-preparation.json)：完整合法页面；查询仅为静态契约证据。
+- [ioc-legacy-key-office](examples/ioc-legacy-key-office.json)：完整合法页面；查询仅为静态契约证据。
 
 ## 联合分支见证（生成）
 

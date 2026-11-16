@@ -11,7 +11,7 @@ import { filterBlockedIds, initialFilterValues, type FilterState, type FilterVal
 import type { DataGateway, QueryDiagnosticContext } from './ports';
 import { createTableSession, type TableSession } from './table/session';
 import {isPagedJoinQuery} from '@metriccanvas/page/internal';
-import { presentationQuerySources } from '@metriccanvas/data-execution/runtime';
+import { presentationQuerySources, supportsMembershipCandidates } from '@metriccanvas/data-execution/runtime';
 
 export type PageDataSnapshots = ReadonlyMap<string, DataSnapshot>;
 export interface Subscribable<T> { subscribe(run: (value: T) => void): () => void; }
@@ -40,6 +40,7 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
   diagnostics?: Pick<QueryDiagnosticContext, 'pageRevisionId'>,
   execution?: Pick<import('./execution').ExecutionBootstrap, 'filters' | 'snapshots' | 'sourceKeys'>,timeContext:{displayInputs?:()=>import('@metriccanvas/page/internal').DisplayInputsSnapshot|undefined;filterRevision?:()=>number;now?:Date;clock?:()=>Date}={}, initialTabs: TabSelections = {}, initialViews:ReadonlyMap<string,TableQueryView> = new Map()): PageSnapshotStream {
   let selections = initialTabs;
+  const hasMembershipCandidates = supportsMembershipCandidates(gateway);
   const ids = visibleSourceIds(page), compiled = compileSources(page), defaults = filters?new Map():initialFilterValues(page.filters ?? [],timeContext.now??timeContext.clock?.()??new Date(),timeContext.displayInputs?.(),timeContext.filterRevision?.());
   const subscribers = new Set<(value: PageDataSnapshots) => void>();
   let active: ReturnType<typeof start> | undefined;
@@ -62,7 +63,7 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
     const unsafeReceipts = affectedSourceIds(page.dataSources,remoteHeaderDefaultSources(page));
     let blocked = new Set(filterBlockedIds(filters));
     const gated = (id: string) => initialization.pending.has(id) || [...conditionSourceIds(page,id)].some(key => {
-      return nativeSourceFilterIds(page,key).some(filterId => blocked.has(filterId));
+      return nativeSourceFilterIds(page,key,hasMembershipCandidates).some(filterId => blocked.has(filterId));
     });
     let disposed = false, raw = new Map<string, DataSnapshot>();
     const year = new Date().getFullYear();
@@ -257,7 +258,7 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
       blocked = nextBlocked;
       values = next;
       let targets = new Set([...ids].filter(id => [...conditionSourceIds(page, id)].some(key => {
-        return nativeSourceFilterIds(page,key).some(id => changed.has(id));
+        return nativeSourceFilterIds(page,key,hasMembershipCandidates).some(id => changed.has(id));
       })));
       for(const component of flattenPageComponents(page))if(component.type==='table'&&fieldSelectionIds(component.props).some(id=>changed.has(id))){tables.get(component.data.main)?.resetPresentation();targets.add(component.data.main);}
       const resetTargets = affectedSourceIds(page.dataSources,targets,false);

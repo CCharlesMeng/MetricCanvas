@@ -6,7 +6,7 @@
 <script lang="ts">
   import {createAuthRequiredGateway, notifyAuthRequired, type AuthRequiredEvent} from './auth-required';
   import {invalidateAiSummaryPage} from './ai-summary/runtime/session';
-  import {createFinalizationPreparation,inheritFinalizationCache} from '@metriccanvas/data-execution/runtime';
+  import {createFinalizationPreparation,inheritFinalizationCache,supportsMembershipCandidates} from '@metriccanvas/data-execution/runtime';
   import {preparationBlocksPage,preparationBlocksFilter,discardPreparingData} from './preparation-blocked';
   import {nativeSourceFilterIds,nativeIocRuntimePage} from '@metriccanvas/page/internal';
   import { hierarchyLevelOf } from '@metriccanvas/page/internal';
@@ -523,7 +523,7 @@
 
     let loaded: typeof parsed.page;
     try {
-      loaded = nativeIocRuntimePage(initializeRenderablePage(parsed.page, params.values, params.missing));
+      loaded = nativeIocRuntimePage(initializeRenderablePage(parsed.page, params.values, params.missing),supportsMembershipCandidates(gatewayOverride));
       selectedGroup = initialSectionGroup(loaded, params.values);
     } catch {
       pageState = {phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/params',message:'页面参数无法生成合法查询条件或内容组，请检查输入值与窗口范围'}]};
@@ -770,7 +770,7 @@
   function sourceBlocked(page: Page, sourceId: string): boolean {
     if(stream?.getSourceProgram()?.preparing(sourceId,filterValues))return true;
     return [...conditionSourceIds(page,sourceId)].some(id => {
-      return nativeSourceFilterIds(page,id).some(id=>blockedFilters.includes(id));
+      return nativeSourceFilterIds(page,id,supportsMembershipCandidates(activeGateway)).some(id=>blockedFilters.includes(id));
     });
   }
   async function exportTable(component: TableComponent) {

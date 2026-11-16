@@ -853,6 +853,11 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/ioc-legacy-key-office.json",
+      "target": "product-contracts/page/conformance/valid/ioc-legacy-key-office.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/valid/table-absolute-display-limit.json",
       "target": "product-contracts/page/conformance/valid/table-absolute-display-limit.json",
       "scope": "exact product contract"
@@ -1340,6 +1345,11 @@
     {
       "source": "product:page/conformance/valid/ioc-component-unified-year-header.json",
       "target": "product-contracts/page/conformance/valid/ioc-component-unified-year-header.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/valid/ioc-component-ioc-legacy-key-office.json",
+      "target": "product-contracts/page/conformance/valid/ioc-component-ioc-legacy-key-office.json",
       "scope": "exact product contract"
     },
     {
@@ -7688,6 +7698,11 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/examples/ioc-legacy-key-office.json",
+      "target": "references/page-metadata/examples/ioc-legacy-key-office.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/filters.md",
       "target": "references/page-metadata/filters.md",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -8519,7 +8534,7 @@
     }
   ],
   "counts": {
-    "product": 1671,
+    "product": 1674,
     "authoring": 32,
     "modules": 36,
     "topics": 314,

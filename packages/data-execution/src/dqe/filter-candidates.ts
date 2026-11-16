@@ -1,8 +1,9 @@
 import type {DimensionValuesGateway,FilterCandidatesGateway,FilterCandidate} from '../ports';
+import {dimensionOnlyCandidates} from '../membership-candidates';
 
 /** Reuse the real dimension query; never fabricate cross-level parent relationships. */
 export function dimensionFilterCandidates(fetch:DimensionValuesGateway['fetchDimensionValues']):FilterCandidatesGateway['fetchFilterCandidates'] {
-  return async(request,{signal})=>{
+  return dimensionOnlyCandidates(async(request,{signal})=>{
     if(request.calendarWindow||Object.keys(request.constraints.times).length||Object.keys(request.constraints.booleans??{}).length)return {kind:'unavailable'};
     signal.throwIfAborted();
     if(Object.values(request.constraints.dimensions).some(values=>!values.length))return {kind:'values',candidates:[]};
@@ -16,5 +17,5 @@ export function dimensionFilterCandidates(fetch:DimensionValuesGateway['fetchDim
       ...(request.level&&candidate.parentValue?{parent:{level:request.level,value:candidate.parentValue}}:{})
     }));
     return {kind:'values',candidates};
-  };
+  });
 }

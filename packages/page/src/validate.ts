@@ -191,7 +191,7 @@ export function parsePage(
     };
   }
 
-  const page = nativeIocRuntimePage(canonicalLayoutDocument(materialized.document as Page));
+  const page = nativeIocRuntimePage(canonicalLayoutDocument(materialized.document as Page),false);
   if (page.params) page.params = JSON.parse(JSON.stringify(declarations)) as PageParamDeclaration[];
   const selectionErrors=[...timeExtensionErrors(page),...querySelectionErrors(page),...fieldSelectionErrors(page),...periodAggregationErrors(page),...queryBindingWhenErrors(page)];
   if(selectionErrors.length)return {ok:false,errors:selectionErrors};

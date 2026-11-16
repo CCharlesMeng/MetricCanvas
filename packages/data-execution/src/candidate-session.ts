@@ -1,4 +1,5 @@
 import {canonicalizeJson} from '@metriccanvas/page/internal';
+import {inheritMembershipCandidates} from './membership-candidates';
 import type {RuntimeDataGateway,FilterCandidatesRequest,FilterCandidatesResult} from './ports';
 
 /** Per runtime instance. Reuse complete receipts across UI and execution validation, never across identities. */
@@ -16,5 +17,5 @@ export function createCandidateGatewaySession(base:RuntimeDataGateway) {
       return result;
     }}:{})
   };
-  return {gateway,invalidate(request:FilterCandidatesRequest){const id=key(request);receipts.delete(id);generations.set(id,(generations.get(id)??0)+1);},dispose(){disposed=true;receipts.clear();generations.clear();}};
+  return {gateway:inheritMembershipCandidates(gateway,base),invalidate(request:FilterCandidatesRequest){const id=key(request);receipts.delete(id);generations.set(id,(generations.get(id)??0)+1);},dispose(){disposed=true;receipts.clear();generations.clear();}};
 }

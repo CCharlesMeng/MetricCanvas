@@ -2520,6 +2520,10 @@
       "sha256": "10002bc8dfa490e42131f8adfbf678e31b28b4352ec1ab192bd10c9696d82ffe"
     },
     {
+      "file": "page/conformance/valid/ioc-component-ioc-legacy-key-office.json",
+      "sha256": "70aaa3ed5591a141f134221c87671835343f39efe2b1b526d03004f948f36405"
+    },
+    {
       "file": "page/conformance/valid/ioc-component-ioc-region-url-demo.json",
       "sha256": "b9c611be487ac8cf8b8203d533fb57217e4ad1ea9a8d3d4a6719b049bfab0f41"
     },
@@ -2706,6 +2710,10 @@
     {
       "file": "page/conformance/valid/ioc-header-unconfigured.json",
       "sha256": "8f52b57cc36b6a0cac96f2547ce43c6fb6dee4fa72a711ecaaef8114cc6724dc"
+    },
+    {
+      "file": "page/conformance/valid/ioc-legacy-key-office.json",
+      "sha256": "f44d3fbc5e4d0201c65a213e7348dc43ef067f844a910172037bfa9ed7b08087"
     },
     {
       "file": "page/conformance/valid/ioc-region-url-demo.json",
@@ -3409,7 +3417,7 @@
     },
     {
       "file": "page/reference/data-sources.md",
-      "sha256": "709dde34aac74598044f7305133f424a860bc8c22d599893e85d555aacefb869"
+      "sha256": "7b794adc45937e1b18b2777028393de5a98d038c2458cd9593d723a9551c7526"
     },
     {
       "file": "page/reference/errors/actual-after-captured-month.json",
@@ -6068,6 +6076,10 @@
       "sha256": "8f52b57cc36b6a0cac96f2547ce43c6fb6dee4fa72a711ecaaef8114cc6724dc"
     },
     {
+      "file": "page/reference/examples/ioc-legacy-key-office.json",
+      "sha256": "f44d3fbc5e4d0201c65a213e7348dc43ef067f844a910172037bfa9ed7b08087"
+    },
+    {
       "file": "page/reference/examples/ioc-region-url-demo.json",
       "sha256": "86494794392e04a69d333d23533912f205c22ef8dfe143d57bf860f5d980e375"
     },
@@ -6633,15 +6645,15 @@
     },
     {
       "file": "page/reference/filters.md",
-      "sha256": "fa01f518490ca3f14e77be031448e98e790e66c877f66e3166d2c054f9bfe924"
+      "sha256": "d6f7407eee83096e304a2eda4dfd9ebefb18fa7069a485ad395976de97abbe4c"
     },
     {
       "file": "page/reference/index.json",
-      "sha256": "774d30daea308cfcb3b8cc4c69f0a83f365e31e51f322dc627ba240c0d379bca"
+      "sha256": "3773c77ffe4adcba8b95029d861f2d135c53a1a602036269101863285dfdfaa4"
     },
     {
       "file": "page/reference/page.md",
-      "sha256": "a56199e332f51bd659765b94887c72399cb2a5d788a6dcdeae694940d9e6f2c4"
+      "sha256": "9e99eb321627b7306d2f055fb27f91e336b93ac9527ac6c8778d7fca1de15bec"
     },
     {
       "file": "page/reference/params-and-text-values.md",

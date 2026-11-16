@@ -358,7 +358,7 @@
 自动验收：`pnpm --filter playground exec playwright test tests/dimension-binding-operator.browser.ts`。浏览器读取此 JSON 验证交互、层级切换和异常；执行层回归补充表头交集、关联键、缓存、完整读取与候选。合成 Adapter 调用实际 DQE 编码后筛选三条合成记录，不证明真实 DQE、Relay、空值或生产授权。
 ## 异步条件准备
 
-入口 `/pages/ioc-async-preparation`；启动 `pnpm dev:playground`，无需 DQE 服务。页面显式使用 Schema 6.120 与 dashboard 布局；旧示例版本和接入方式不变。
+入口 `/pages/ioc-async-preparation`；启动 `pnpm dev:playground`，无需 DQE 服务。页面显式使用 Schema 6.120 与 dashboard 布局，用于同时验收名单和定稿。旧版名单兼容使用下文的独立场景。
 
 用途：将名单与定稿日期准备移出全页呈现等待，同时观察首个业务查询的条件完整性。参考对象为首组件 `ioc-header`、`office-table` 的 Region/期间绑定，以及不依赖这两项的 `unrelated-table`。不增加页面字段；移植时须升级匹配引擎、确认真实名单 Adapter 和 finalizationSource，合成名称及数据不可当成生产查询配置。
 
@@ -369,3 +369,13 @@
 异步条件准备示例使用标准 `key-national-only`。定稿成功结果在同一网关会话中缓存4小时；未命中时各页面独立请求，不合并在途请求。浏览器产物验收连续挂载两个页面，检查仅发生一次定稿取数；单测使用时钟覆盖到期刷新及并行未命中两次独立请求。
 
 结构先呈现的产物验收同时覆盖6.119：冻结定稿回执时真实页头和两张表的表头已经可见，主查询尚未发出；释放回执后原DOM节点保持连接，按原有显式绑定查询。6.120额外冻结名单回执，首个相关业务请求须同时含完整重点名单和2026-04期间。
+
+## 旧版 IOC 重点国代
+
+入口 `/pages/ioc-legacy-key-office`，启动 `pnpm dev:playground`，数据由合成 Adapter 提供。保留 Schema 6.102 和根级 IOC 页头以验证向后兼容。参考对象为 `iocHeader.filterIds`、`office-table` 及 `offices` 查询的 Region 绑定。
+
+1. 打开 `/pages/ioc-legacy-key-office?mtime=month:2026-04`。页面直接显示，无名单请求，表中包含南京代表处。
+2. 勾选「仅看重点国代」。旧宽范围数据撤下，无关表仍可见；合成名单延迟1秒后，业务查询携带上海、深圳代表处条件。取消勾选后恢复原范围。
+3. 用 `&key-national-only=true&state=empty` 或 `&key-national-only=true&state=error` 打开页面，观察空名单与失败均不下发宽范围业务查询。
+
+自动验收 `pnpm --filter playground exec playwright test tests/async-preparation.browser.ts`。该场景不证明真实 DQE、名单权限或部署状态。

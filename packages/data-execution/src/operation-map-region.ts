@@ -1,4 +1,5 @@
 import type {FilterCandidate,FilterCandidatesRequest,FilterCandidatesResult,RuntimeDataGateway} from './ports';
+import {inheritMembershipCandidates} from './membership-candidates';
 
 /** Install once per host application; credentials and upstream access remain in the Adapter. */
 export interface OperationMapRegionAdapter {
@@ -14,11 +15,11 @@ function canonicalRegionCandidates(candidates:FilterCandidate[]):FilterCandidate
 
 /** Standard Region routes use the host adapter; all other capabilities keep the base gateway. */
 export function withOperationMapRegion(base:RuntimeDataGateway,adapter:OperationMapRegionAdapter):RuntimeDataGateway {
-  return {...base,async fetchFilterCandidates(request,options){
+  return inheritMembershipCandidates({...base,async fetchFilterCandidates(request,options){
     options.signal.throwIfAborted();
     if(request.filterId!=='region'||!dimensions.has(request.dimension))return base.fetchFilterCandidates?.(request,options)??{kind:'unavailable'};
     const result=await adapter.fetchRegionCandidates(request,options);
     options.signal.throwIfAborted();
     return result.kind==='values'?{kind:'values',candidates:canonicalRegionCandidates(result.candidates)}:result;
-  }};
+  }},base);
 }

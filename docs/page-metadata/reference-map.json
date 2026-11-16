@@ -382,7 +382,8 @@
         "finalization-default-time",
         "finalization-default-time-detail",
         "finalization-date-defaults",
-        "ioc-async-preparation"
+        "ioc-async-preparation",
+        "ioc-legacy-key-office"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -2359,7 +2360,7 @@
     "#/properties/schemaVersion=\"6.117\"": "记录关联单批超时允许超过120秒，最多180秒，旧版本保持120秒上限。",
     "#/properties/schemaVersion=\"6.118\"": "记录组合源 auto 自动选择主查询分页或保留全部条件的完整关联；旧页面执行语义不变。",
     "#/properties/schemaVersion=\"6.119\"": "表格数值列支持按原始绝对值展示阈值，复用颜色和箭头，保留原值。",
-    "#/properties/schemaVersion=\"6.120\"": "标准 IOC 重点绑定通过已有候选端口异步准备，页面结构先呈现；真实定稿结果会话级单处缓存4小时，无跨页在途请求复用；旧页面保留原执行语义。"
+    "#/properties/schemaVersion=\"6.120\"": "标准 IOC 重点绑定通过已有名单候选端口异步准备并兼容旧页；6.120 定稿默认值非阻塞初始化，真实定稿结果会话级缓存4小时，无跨页在途请求复用。"
   },
   "branchExceptions": {
     "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/titleNavigate/properties/query/additionalProperties/oneOf/0": {

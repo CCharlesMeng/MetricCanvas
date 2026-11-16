@@ -1,7 +1,7 @@
 # MetricCanvas 页面元数据规范
 
 拿到合法页面 JSON 后，统一运行时立即挂载真实页头、筛选控件、内容分区和组件结构；外部默认条件、候选值及业务数据返回后原位填充，不显示独立整页骨架或“正在加载”文字。表格保留真实表头与工具栏，在表体内显示静态骨架行。图表保留真实绘图区，在组件内显示各自的静态加载形态。依赖未齐备的查询仍等待完整条件，无关查询独立执行。无需新增字段或 Schema 升版，见[屏幕加载](docs/page-metadata/data-sources.md#screen-loading)，合成场景 `/pages/loading-structure-demo` 与 `/pages/ioc-async-preparation`。
-6.120：IOC 页头重点国代筛选可由引擎通过现有候选端口异步补齐缺失查询绑定；页面结构先呈现，相关查询等待完整名单与定稿默认值，已有显式布尔绑定保留。未勾选不取名单，明确时间输入不等待定稿默认值。新页面使用标准 key-national-only，不自动识别业务私有 ID。定稿成功结果在会话级单处缓存4小时，未命中每页独立查询，不合并在途请求。字段净增0；旧版本页面保持原有桥接与初始化行为，启用新能力须显式升级页面版本。见[异步条件准备](docs/page-metadata/filters.md#异步条件准备6120)，合成入口 `/pages/ioc-async-preparation`。
+IOC 页头重点国代名单兼容旧版页面。集成应用提供现有名单候选端口时，引擎可异步补齐标准重点国代筛选缺失的查询绑定；页面 JSON 和集成调用无需修改。相关查询等到名单齐备后执行，已有显式布尔绑定保留。未勾选不取名单，业务私有 ID 不自动接管。6.120 的定稿默认值非阻塞初始化及成功结果会话缓存4小时继续按页面版本启用。见[异步条件准备](docs/page-metadata/filters.md#异步条件准备6120)，合成入口 `/pages/ioc-legacy-key-office`、`/pages/ioc-async-preparation`。
 
 运行时提供可选 `onAuthRequired` 接入：DQE HTTP 401、403、419 时终止当前页面请求并清理 MC 页面缓存，由集成应用跳登录；未传方法沿用既有错误处理。无需页面 JSON 字段或 Schema 升版。见[认证失败与页面失效](docs/page-metadata/validation.md#认证失败与页面失效)，本地仿真入口 `/auth-required-review`。
 

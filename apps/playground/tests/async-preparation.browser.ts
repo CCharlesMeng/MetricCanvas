@@ -68,3 +68,47 @@ test('a time selection made during initialization wins over the late cutoff',asy
   expect(mainQueries(traces)[0].value.query?.filterValues).toContainEqual({target:'time',period:'month',value:{from:'2026-11',to:'2026-11'}});
   await expect(page.locator('[data-filter-pending]')).toHaveCount(0);
 });
+
+const legacyPage='/pages/ioc-legacy-key-office?mtime=month:2026-04';
+
+test('legacy IOC loads without a bridge, then applies and clears the authorized membership',async({page})=>{
+  const traces=await observe(page);
+  await page.goto(legacyPage);
+  const checkbox=page.getByRole('checkbox',{name:'仅看重点国代'});
+  await expect(page.getByRole('heading',{name:'旧版 IOC 重点国代'})).toBeVisible();
+  await expect(checkbox).not.toBeChecked();
+  const unrelated=page.getByRole('cell',{name:'无关数据已就绪',exact:true});
+  await expect(unrelated).toBeVisible();
+  const nonMember=page.getByRole('cell',{name:'南京代表处',exact:true});
+  await expect(nonMember).toBeVisible();
+  expect(traces.filter(item=>item.kind==='membership-start')).toHaveLength(0);
+
+  const before=mainQueries(traces).length;
+  await checkbox.check();
+  await expect(nonMember).toHaveCount(0);
+  await expect(unrelated).toBeVisible();
+  expect(mainQueries(traces)).toHaveLength(before);
+  await expect(page.getByRole('cell',{name:'上海代表处',exact:true})).toBeVisible();
+  await expect.poll(()=>mainQueries(traces).length).toBe(before+1);
+  expect(mainQueries(traces).at(-1)?.value.query?.filterValues).toContainEqual({
+    target:'dimension',queryField:'代表处',values:['上海代表处','深圳代表处'],
+  });
+  await checkbox.uncheck();
+  await expect(nonMember).toBeVisible();
+  for(const query of mainQueries(traces).slice(before+1)){
+    expect(query.value.query?.filterValues.some(filter=>filter.queryField==='代表处')).toBe(false);
+  }
+  expect(traces.filter(item=>item.kind==='membership-start')).toHaveLength(1);
+  expect(traces.filter(item=>item.kind==='finalization-start')).toHaveLength(0);
+});
+
+for(const state of ['empty','error'])test(`legacy membership ${state} does not query beyond the authorized scope`,async({page})=>{
+  const traces=await observe(page);
+  await page.goto(`${legacyPage}&key-national-only=true&state=${state}`);
+  await expect(page.getByRole('checkbox',{name:'仅看重点国代'})).toBeChecked();
+  await expect(page.getByRole('cell',{name:'无关数据已就绪',exact:true})).toBeVisible();
+  await expect.poll(()=>traces.filter(item=>item.kind==='membership-start').length).toBe(1);
+  await expect(page.getByRole('table').first().locator('.skeleton-row')).toHaveCount(0);
+  expect(mainQueries(traces)).toEqual([]);
+  await expect(page.getByRole('cell',{name:'南京代表处',exact:true})).toHaveCount(0);
+});

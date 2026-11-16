@@ -1,5 +1,5 @@
 import type { RuntimeDataGateway } from '../../runtime/src';
-import {observeQueryHttpError,inheritFinalizationCache,invalidateFinalizationCache} from '@metriccanvas/data-execution/runtime';
+import {observeQueryHttpError,inheritFinalizationCache,invalidateFinalizationCache,inheritMembershipCandidates} from '@metriccanvas/data-execution/runtime';
 
 export interface AuthRequiredEvent {
   type: 'auth-required';
@@ -69,7 +69,7 @@ export function createAuthRequiredGateway(base: RuntimeDataGateway, observe: (ev
     ...(columns ? { fetchColumnCandidates: ((request, context, signal) => execute(next => columns.call(base, request, context, next), signal)) as NonNullable<RuntimeDataGateway['fetchColumnCandidates']> } : {})
   };
   inheritFinalizationCache(gateway,base);
-  return { gateway, dispose() { lifetime.abort(); } };
+  return { gateway:inheritMembershipCandidates(gateway,base), dispose() { lifetime.abort(); } };
 }
 
 /** Application observers cannot interrupt cleanup or create unhandled rejections. */

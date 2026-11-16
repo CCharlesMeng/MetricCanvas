@@ -6,8 +6,8 @@ import {nativeIocFilters} from './native-preparation-capability';
 export {NATIVE_IOC_SCHEMA_MINOR,supportsNativePreparation,nativeIocFilters,nativePreparationPaths} from './native-preparation-capability';
 
 /** Establish dependencies before any receipt exists, without modifying the declaration. */
-export function nativeIocBindingTargets(page:Page):Map<string,string[]> {
-  const filters=nativeIocFilters(page),targets=new Map<string,string[]>();
+export function nativeIocBindingTargets(page:Page,hasMembershipCandidates:boolean):Map<string,string[]> {
+  const filters=nativeIocFilters(page,hasMembershipCandidates),targets=new Map<string,string[]>();
   if(!filters.length)return targets;
   for(const [id,source]of Object.entries(page.dataSources)){
     if(source.source.type!=='query')continue;
@@ -17,8 +17,8 @@ export function nativeIocBindingTargets(page:Page):Map<string,string[]> {
   }
   return targets;
 }
-export function nativeSourceFilterIds(page:Page,sourceId:string):string[] {
-  return [...new Set([...sourceFilterIds(page.dataSources[sourceId]),...(nativeIocBindingTargets(page).get(sourceId)??[])])];
+export function nativeSourceFilterIds(page:Page,sourceId:string,hasMembershipCandidates:boolean):string[] {
+  return [...new Set([...sourceFilterIds(page.dataSources[sourceId]),...(nativeIocBindingTargets(page,hasMembershipCandidates).get(sourceId)??[])])];
 }
 function nativeRuntimeFilter(filter:FilterDeclaration,page:Page,targets:Map<string,string[]>,ids:Set<string>):FilterDeclaration {
   if(filter.type==='boolean'&&ids.has(filter.id)&&filter.overridesFilters?.includes('region'))return {...filter,overridesFilters:filter.overridesFilters.filter(id=>id!=='region')};
@@ -28,10 +28,10 @@ function nativeRuntimeFilter(filter:FilterDeclaration,page:Page,targets:Map<stri
   return {...filter,candidateContext:{...filter.candidateContext,reconcile:filter.candidateContext?.reconcile??'clear',filterIds:[...new Set([...(filter.candidateContext?.filterIds??[]),...dependencies])]}};
 }
 /** Runtime-only candidate dependencies and Region intersection; authored declarations stay intact. */
-export function nativeIocRuntimePage(page:Page):Page {
-  const ids=new Set(nativeIocFilters(page).map(filter=>filter.id));
+export function nativeIocRuntimePage(page:Page,hasMembershipCandidates:boolean):Page {
+  const ids=new Set(nativeIocFilters(page,hasMembershipCandidates).map(filter=>filter.id));
   if(!ids.size)return page;
-  const targets=nativeIocBindingTargets(page);
+  const targets=nativeIocBindingTargets(page,hasMembershipCandidates);
   const filters=page.filters?.map(filter=>nativeRuntimeFilter(filter,page,targets,ids));
   return {...page,filters};
 }

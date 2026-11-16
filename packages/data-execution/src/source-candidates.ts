@@ -1,5 +1,6 @@
 import { candidateDependencies, canonicalizeJson, sourceCandidateErrors, type DimensionFilterDeclaration, type Page, type Row, type DataSnapshot, type DisplayInputsSnapshot } from '@metriccanvas/page/internal';
 import { SourceRangeError } from './source-program/range-policy';
+import { inheritMembershipCandidates } from './membership-candidates';
 import { createSourceProgram } from './source-program/session';
 import type { FilterValue, FilterValues } from './filter-values';
 import type { FilterCandidate, FilterCandidatesRequest, RuntimeDataGateway } from './ports';
@@ -30,7 +31,7 @@ export function sourceCandidatesGateway(page:Page,base:RuntimeDataGateway,contex
     }
   };
   Object.assign(gateway,{[owner]:page});
-  return gateway;
+  return inheritMembershipCandidates(gateway,base);
 }
 function completeRows(snapshot:DataSnapshot|undefined,inline:boolean):Row[] {
   if(snapshot?.status==='error')throw Object.assign(new Error(snapshot.error.message),snapshot.error);
