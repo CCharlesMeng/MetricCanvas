@@ -26,11 +26,21 @@ it('native initialization stays pending until the final date is installed with i
   expect(state.blocked().has('mtime')).toBe(false);
   expect(state.toURL()).toContain('2026-04');expect(state.preparation().size).toBe(0);
 });
-it('explicit time skips the default request',async()=>{
+it('explicit time has no pending default while the rolling cutoff loads',async()=>{
   const base=gateway(Promise.resolve(result));
   const explicit:FilterValues=new Map([['mtime',{type:'timeRange',from:'2026-03',to:'2026-03'}]]);
   const preparation=createFinalizationPreparation(page(),base,explicit,now,new AbortController().signal);
-  expect(preparation.pending.size).toBe(0);await preparation.resolve();expect(base.fetchData).not.toHaveBeenCalled();
+  expect(preparation.pending.size).toBe(0);
+  expect(preparation.values(await preparation.resolve())).toEqual(new Map());
+  expect(base.fetchData).toHaveBeenCalledTimes(1);
+});
+it('uses a mode-only rolling input as the pending selection',async()=>{
+  const base=gateway(Promise.resolve(result));
+  const preparation=createFinalizationPreparation(page(),base,new Map(),now,new AbortController().signal,undefined,new Set(['mtime']));
+  expect(preparation.pending.has('mtime')).toBe(true);
+  expect(preparation.values(await preparation.resolve()).get('mtime')).toMatchObject({
+    from:'2025-05',to:'2026-04',selection:{mode:'last12Months',anchor:'2026-04'}
+  });
 });
 it('older pages still wait for the existing initialization query',async()=>{
   const receipt=deferred<DataGatewayResult>(),base=gateway(receipt.promise);

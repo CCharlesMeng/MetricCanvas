@@ -17,7 +17,7 @@ function setup(state = 'ready') {
   const query = () => composeEffectiveQuery({ page, dataSource: page.dataSources['rep-office-efficiency'] as QueryDataSource, filters: page.filters }, values, 0, [], {});
   return { page, now, values, preview, query };
 }
-it('folds 12 completed months by office with sum, arithmetic mean, zero and all-null values', async () => {
+it('folds 12 calendar months by office with sum, arithmetic mean, zero and all-null values', async () => {
   const test = setup(), saved = structuredClone(test.page);
   const result = await executeQuery(test.query(), test.preview.dataGateway, {});
   expect(result).toMatchObject({ status: 'ready', totalCount: 3, rows: [
@@ -27,8 +27,8 @@ it('folds 12 completed months by office with sum, arithmetic mean, zero and all-
   ] });
   const items = test.preview.requests.map(effectiveDqeItem);
   expect(items).toHaveLength(12);
-  expect(items[0]).toMatchObject({ filter: { time: { period: 'month', start: '2025-11', end: '2025-11', is_aggregate: true } } });
-  expect(items[11]).toMatchObject({ filter: { time: { start: '2026-10', end: '2026-10' } } });
+  expect(items[0]).toMatchObject({ filter: { time: { period: 'month', start: '2025-12', end: '2025-12', is_aggregate: true } } });
+  expect(items[11]).toMatchObject({ filter: { time: { start: '2026-11', end: '2026-11' } } });
   expect(test.preview.requests.every(query => !query.periodAggregation && !query.pagination)).toBe(true);
   expect(test.page).toEqual(saved);
 });

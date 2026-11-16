@@ -2,7 +2,7 @@ import { usesIocRegion } from '@metriccanvas/page/internal';
 import {parsePage} from '@metriccanvas/page';
 import {filterURLKeys,readLevelURLSelection,matchesParamDeclaration,type PageParamDeclaration,type FilterDeclaration} from '@metriccanvas/page/internal';
 import {resolvePageParams} from './page-params';
-import {parseFilterSearch,createFilterState,initialFilterValues,type FilterValues} from './filter-state';
+import {parseFilterSearch,createFilterState,initialFilterValues,requestsRollingFinalization,type FilterValues} from './filter-state';
 
 /** Trusted projection supplied by the integrating application; contains no result rows or credentials. */
 export interface NavigationInputContract {
@@ -36,18 +36,19 @@ export function navigationInputIssue(href:string,contract:NavigationInputContrac
 /** Reject explicit malformed inputs instead of silently querying a default/broader scope. */
 export function filterInputIssue(search:string,filters:readonly FilterDeclaration[],now=new Date(),iocRegion=false):string|undefined {
   const query=new URLSearchParams(search);
+  const readyFilters=filters.filter(filter=>!requestsRollingFinalization(filter,query));
   let values:FilterValues;
-  try{values=parseFilterSearch(query.toString(),filters,now,iocRegion);}catch{return '目标时间模式输入必须为合法完整mode/from/to';}
+  try{values=parseFilterSearch(query.toString(),readyFilters,now,iocRegion);}catch{return '目标时间模式输入必须为合法完整mode/from/to';}
   for(const filter of filters){
     const allKeys=filterURLKeys(filter,iocRegion),selected=readLevelURLSelection(allKeys,query);
     const keys=selected?{value:selected.key}:allKeys,provided=Object.values(keys).some(key=>query.has(key));
     if(!provided)continue;
     if(selected?!selected.value.trim():Object.values(keys).some(key=>query.getAll(key).some(value=>!value.trim())))return `目标筛选输入为空：${filter.id}`;
     if(!selected&&Object.entries(keys).some(([part,key])=>query.getAll(key).length>1&&!(filter.type==='dimension'&&part==='value')))return `目标筛选输入重复：${filter.id}`;
-    if(!values.has(filter.id))return `目标筛选类型、粒度或层级不匹配：${filter.id}`;
+    if(readyFilters.includes(filter)&&!values.has(filter.id))return `目标筛选类型、粒度或层级不匹配：${filter.id}`;
   }
   // Validate only supplied values. Defaults, trusted availability and authorization stay at destination.
-  try{const defaults=initialFilterValues(filters.filter(f=>!values.has(f.id)&&!((f.type==='timePoint'||f.type==='timeRange')&&f.availability?.initial)),now);createFilterState(new Map([...defaults,...values]),filters,new Map(),{now:()=>now});}
+  try{const defaults=initialFilterValues(readyFilters.filter(f=>!values.has(f.id)&&!((f.type==='timePoint'||f.type==='timeRange')&&f.availability?.initial)),now);createFilterState(new Map([...defaults,...values]),readyFilters,new Map(),{now:()=>now});}
   catch{return '目标筛选取值不符合声明';}
   return undefined;
 }

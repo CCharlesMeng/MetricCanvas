@@ -31,7 +31,7 @@ it.each([
 });
 it('uses applied last twelve months and rejects unsupported selection without fallback',()=>{
   const range=resolvePeriodSelection({mode:'last12Months'},now);
-  expect(resolvePeriodQuery(range,{kind:'selection',supportedPeriods:['month']})).toMatchObject({period:'month',from:'2025-10',to:'2026-09'});
+  expect(resolvePeriodQuery(range,{kind:'selection',supportedPeriods:['month']})).toMatchObject({period:'month',from:'2025-11',to:'2026-10'});
   expect(()=>resolvePeriodQuery(range,{kind:'selection',supportedPeriods:['year']})).toThrow('不支持');
   expect(()=>resolvePeriodQuery(resolvePeriodSelection({mode:'quarter',value:'2026-Q1'},now),{kind:'selection',supportedPeriods:['month','year']})).toThrow('不支持');
 });

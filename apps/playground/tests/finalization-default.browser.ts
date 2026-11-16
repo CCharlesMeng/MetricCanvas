@@ -11,12 +11,12 @@ test('schema default, user edits, rolling period and drill-through share the app
   await period.getByRole('combobox').fill('2026-08'); await period.getByRole('combobox').press('Enter');
   await expect(page.getByText('2026-08 至 2026-08；定稿查询 1 次', {exact: true})).toBeVisible();
   await page.getByRole('button', {name: '近一年', exact: true}).click();
-  await expect(period.locator('[data-period-range]')).toHaveText('25年9月~26年8月');
-  await expect(page.getByText('2025-09 至 2026-08；定稿查询 1 次', {exact: true})).toBeVisible();
+  await expect(period.locator('[data-period-range]')).toHaveText('25年11月~26年10月');
+  await expect(page.getByText('2025-11 至 2026-10；定稿查询 1 次', {exact: true})).toBeVisible();
   await page.getByRole('button', {name: '查看同期间下钻页'}).click();
   await expect(page).toHaveURL(/finalization-default-time-detail/);
-  await expect(page.locator('[data-period-range]')).toHaveText('25年9月~26年8月');
-  await expect(page.getByText('2025-09 至 2026-08；定稿查询 1 次', {exact: true})).toBeVisible();
+  await expect(page.locator('[data-period-range]')).toHaveText('25年11月~26年10月');
+  await expect(page.getByText('2025-11 至 2026-10；定稿查询 1 次', {exact: true})).toBeVisible();
   expect(errors).toEqual([]);
 });
 
@@ -24,6 +24,15 @@ for (const state of ['error', 'missing', 'invalid', 'conflict', 'timeout']) test
   await page.goto(`/pages/finalization-default-time?state=${state}`);
   await expect(page.locator('[data-period-filter]').getByRole('combobox')).toHaveValue('2026-11');
   await expect(page.getByText('2026-11 至 2026-11；定稿查询 1 次', {exact: true})).toBeVisible();
+  await page.getByRole('button', {name: '近一年', exact: true}).click();
+  await expect(page.getByText('2025-12 至 2026-11；定稿查询 1 次', {exact: true})).toBeVisible();
+});
+
+test('defaults to and restores a rolling window ending in the finalized month', async ({page}) => {
+  await page.goto('/pages/finalization-default-time-detail');
+  await expect(page.getByText('2025-11 至 2026-10；定稿查询 1 次', {exact: true})).toBeVisible();
+  await page.goto('/pages/finalization-default-time?period-filter=last12Months');
+  await expect(page.getByText('2025-11 至 2026-10；定稿查询 1 次', {exact: true})).toBeVisible();
 });
 
 test('still executes the schema lookup when a navigation period is supplied', async ({page}) => {

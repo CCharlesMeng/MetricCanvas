@@ -20,26 +20,36 @@ export async function resolveFinalizationDates(
   now: Date,
   signal?: AbortSignal
 ): Promise<ReadonlyMap<string, string>> {
+  const dates = await lookupFinalizationDates(page, gateway, signal);
+  const current = localCalendarDate(now);
+  return new Map((page.filters ?? []).flatMap(filter => {
+    const name = finalizationName(filter);
+    return name ? [[name, dates.get(name) ?? current]] : [];
+  }));
+}
+
+/** Successful dates only. Consumers apply the clock appropriate to their operation. */
+export async function lookupFinalizationDates(
+  page: Pick<Page, 'id' | 'filters'> & Partial<Pick<Page,'schemaVersion'>>,
+  gateway: RuntimeDataGateway,
+  signal?: AbortSignal
+): Promise<ReadonlyMap<string, string>> {
   signal?.throwIfAborted();
   const names = new Set((page.filters ?? []).map(finalizationName).filter((name): name is string => !!name));
-  const fallback = new Map([...names].map(name => [name, localCalendarDate(now)]));
-  if (!names.size) return fallback;
+  if (!names.size) return new Map();
   try {
     const load=()=>queryFinalizations(gateway,page.id,signal);
     const dates = page.schemaVersion&&supportsNativePreparation({schemaVersion:page.schemaVersion})
       ? await cachedFinalizations(gateway,names,load,signal)
       : (await load()).dates;
     signal?.throwIfAborted();
-    for (const name of names) {
-      const date = dates.get(name);
-      if (date) fallback.set(name, date);
-    }
+    return new Map([...dates].filter(([name]) => names.has(name)));
   } catch (cause) {
     signal?.throwIfAborted();
     // Business values and upstream messages must not escape through diagnostics.
     console.warn('[MetricCanvas] 定稿日期查询不可用，默认时间回退当前日期');
   }
-  return fallback;
+  return new Map();
 }
 
 async function queryFinalizations(gateway: RuntimeDataGateway, pageId: string, signal?: AbortSignal) {

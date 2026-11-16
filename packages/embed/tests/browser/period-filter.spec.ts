@@ -32,16 +32,16 @@ for(const precision of ['date','month'])test(`period selection queries, restorat
   await expect(period.getByRole('combobox')).toHaveValue('2024-02');
   await expect.poll(()=>requests.filter(q=>q.filter.time.period==='month'&&q.filter.time.start==='2024-02').length).toBe(1);
   await period.getByRole('button',{name:'近一年',exact:true}).click();
-  await expect(period.locator('[data-period-range]')).toHaveText('25年10月~26年9月');
+  await expect(period.locator('[data-period-range]')).toHaveText('25年11月~26年10月');
   await expect(period.getByRole('combobox')).toHaveCount(0);
   await expect(period.getByRole('button',{name:'打开日期选择器'})).toHaveCount(0);
-  await expect.poll(()=>requests.at(-1).filter.time.end).toBe('2026-09');
+  await expect.poll(()=>requests.at(-1).filter.time.end).toBe('2026-10');
   expect(requests.filter(q=>q.output_metrics[0]==='unbound_amount')).toHaveLength(1);
   await page.screenshot({path:info.outputPath('period-filter-rolling.png'),fullPage:true});
   await period.getByRole('button',{name:'月',exact:true}).click();await expect(period.getByRole('combobox')).toHaveValue('2024-02');
   await page.goto(path+'?period-filter=quarter%3A2025-Q2');await expect(period.getByRole('combobox')).toHaveValue('2025 年 Q2');
   await page.clock.setSystemTime(new Date('2026-11-01T12:00:00+08:00'));
-  await period.getByRole('button',{name:'近一年',exact:true}).click();await expect(period.locator('[data-period-range]')).toHaveText('25年11月~26年10月');
+  await period.getByRole('button',{name:'近一年',exact:true}).click();await expect(period.locator('[data-period-range]')).toHaveText('25年12月~26年11月');
   await page.setViewportSize({width:390,height:700});
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>window.innerWidth);expect(overflow).toBe(false);
 });
@@ -62,7 +62,7 @@ test('overflow panel and compact readonly consume the same period declaration',a
   await page.setViewportSize({width:390,height:700});
   expect(await page.evaluate(()=>document.documentElement.scrollWidth>window.innerWidth)).toBe(false);
   await page.goto('/pages/dashboard-period-filter-readonly');
-  await expect(period).toContainText('25年10月~26年9月');
+  await expect(period).toContainText('25年11月~26年10月');
   await expect(period.locator('button,input')).toHaveCount(0);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth>window.innerWidth)).toBe(false);
   await page.screenshot({path:info.outputPath('period-readonly-compact.png'),fullPage:true});

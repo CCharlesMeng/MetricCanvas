@@ -11,7 +11,7 @@
       "label": "统计期间",
       "required": true,
       "default": {
-        "mode": "month",
+        "mode": "last12Months",
         "finalizationName": "经营数据"
       }
     }

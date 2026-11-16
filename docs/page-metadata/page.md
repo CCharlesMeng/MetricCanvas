@@ -44,7 +44,7 @@ report定宽居中，dashboard占满宿主宽度。页面页头统一由 IocHead
 
 IOC 业务页的公共 `region` 输入只允许页头中的一个组织树：`display:"tree"`、`selection.mode:"single"`、`treeSelection:"level"`，声明真实 hierarchy，并由组件 props.filterIds（旧文档为 iocHeader.filterIds）认领。树内可搜索并直接选择地区部或代表处节点，原子提交值与层级。平面 Region、hierarchyPicker 的 tabs/hidden、Region 多选、不可搜索树和拆开的地区部/代表处筛选都被拒绝；旧 schemaVersion 不绕过该规则。普通维度筛选不受此 IOC 约束。
 
-`presentation.density`为normal/compact；`collapse`为none/firstRow，缺省normal/none。firstRow按直接容器实际换行测量，折叠保留首行，隐藏项inert并关闭弹层；展开不改值、不查询。日期复用DatePicker/PeriodFilter；月→季→年→月保留月份锚点，近一年为当前月之前12完整月。锚点与展开是实例局部状态，不写入Page。
+`presentation.density`为normal/compact；`collapse`为none/firstRow，缺省normal/none。firstRow按直接容器实际换行测量，折叠保留首行，隐藏项inert并关闭弹层；展开不改值、不查询。日期复用DatePicker/PeriodFilter；月→季→年→月保留月份锚点，近一年截至定稿月或当前月，含截止月共十二个自然月。锚点与展开是实例局部状态，不写入Page。
 
 `back:true` 声明返回意图，运行时默认调用当前窗口的 `history.back()`，无需集成应用提供路由或 `returnContext`。浏览器挂载后优先用 `window.navigation.canGoBack` 判断可否后退；不支持该 API 时回退到 `history.length>1`。无浏览器环境或判断不可后退时隐藏默认按钮。历史长度包含前进记录，旧浏览器的长度回退不能保证存在前一条记录，此时按原生行为不跳转。集成应用可选提供 `navigation.back` 覆盖默认行为，提供函数即显示按钮，`returnContext` 只用于可选来源信息及无障碍标签。未声明 back 时不显示；只读允许返回，静态导出不包含返回按钮。旧工具栏兼容路径仍需自定义返回函数，不新增默认行为。返回不维护第二套导航栈，不承诺分页、排序、滚动等完整视图恢复。合成场景 `/pages/ioc-default-back-source` → `/pages/ioc-default-back-target` 验证浏览器返回、刷新与自定义覆盖。可选actions、有限枚举/单选、条件启用、V2候选、最新期上限和全页操作分别保留B2–B6规划，6.36不接受这些尚未交付字段。
 

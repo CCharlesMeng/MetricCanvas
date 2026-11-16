@@ -249,7 +249,7 @@
 启动：`pnpm dev:playground` 与 `pnpm sim:dqe`。页面使用静态合成得分和 DQE Sim 合成 Tokens 数据；年/季/月得分是独立示例值，不由月度数据聚合生成。
 
 1. 默认月模式仅显示月度得分及其分组表头，两个查询分别发送 day 和 month。
-2. 切“年”“季”“近一年”，观察对应得分列替换，其他分组表头消失；同一选择仍由日/月查询独立解析。近一年排除当前月，URL 保存模式，重开 URL 后保持列集合。
+2. 切“年”“季”“近一年”，观察对应得分列替换，其他分组表头消失；同一选择仍由日/月查询独立解析。近一年含当前月，URL 保存模式，重开 URL 后保持列集合。
 3. 在月度列排序后切年，再切回月，原用户排序不复活；导出 XLSX 只含当前模式可见列。
 4. 查询体保留 is_aggregate，不写 period/start/end；协议测试覆盖固定年扩大范围、按选择的能力拒绝、未应用选择、非法混写与旧声明兼容。工作台验收入口 `apps/platform/tests/browser/report-date-editor.html?dashboard`，逐查询主动迁移、选择固定策略或按选择策略，预览实际请求期间。
 
@@ -301,7 +301,7 @@
 
 入口：`/pages/quarter-query-period`；[页面 JSON](quarter-query-period.json)。启动 `pnpm dev:playground`。
 
-默认选择 2026-Q3，IOC Header 认领的时间绑定仅声明 `target:"time"`，没有 periodPolicy，旧查询体保留 month 用于验证引擎统一交集。首次请求发送 `filter.time:{period:"quarter",start:"2026-Q3",end:"2026-Q3",is_aggregate:true}`；切换月、年时分别发送 month、year，近一年发送 month 和此前十二个完整月范围，聚合开关保留。显式 fixed/selection、期间比较、字段时间绑定的优先级由自动测试覆盖；月度趋势例外见 `ioc-header-demo` 的 trend 查询。Q0/Q5、日/月格式混入季度和倒置范围继续在发送前拒绝。
+默认选择 2026-Q3，IOC Header 认领的时间绑定仅声明 `target:"time"`，没有 periodPolicy，旧查询体保留 month 用于验证引擎统一交集。首次请求发送 `filter.time:{period:"quarter",start:"2026-Q3",end:"2026-Q3",is_aggregate:true}`；切换月、年时分别发送 month、year，近一年发送 month 和已应用的十二个自然月范围，聚合开关保留。显式 fixed/selection、期间比较、字段时间绑定的优先级由自动测试覆盖；月度趋势例外见 `ioc-header-demo` 的 trend 查询。Q0/Q5、日/月格式混入季度和倒置范围继续在发送前拒绝。
 
 自动验收：`node apps/playground/tests/quarter-query-browser.mjs <证据目录>`，环境变量 `QUARTER_QUERY_BASE_URL` 指向页面试验场（默认端口 5208）。浏览器测试按页面 JSON 驱动控件，以合成 HTTP 回执验证实际请求编码和表格渲染；未调用真实 DQE/Relay，页面脱离测试运行时需要可用的数据网关。
 ## 旧工具栏期间默认规则
@@ -337,9 +337,9 @@
 
 入口：`/pages/finalization-default-time` 与 `/pages/finalization-default-time-detail`。启动 `pnpm dev:playground` 后直接访问；使用确定性合成网关，不需要 DQE Sim。
 
-页面主时间筛选声明 `default:{mode:"month",finalizationName:"经营数据"}`。合成截止日期为2026-10-18，首次选择10月；明细显示实际查询期间和“定稿查询1次”。修改月份、切换年季或近一年后计数仍为1。近一年包含当前时间上下文所在月，并查询十二个完整月份。点击“查看同期间下钻页”后目标页保留已应用模式及起止；直接打开目标页使用自身定稿默认值。页头使用首section首组件iocHeader。
+页面主时间筛选声明 `default:{mode:"month",finalizationName:"经营数据"}`。合成截止日期为2026-10-18，首次选择10月；明细显示实际查询期间和“定稿查询1次”。将月份改为 2026-08，再点「近一年」。查询范围为 2025-11 至 2026-10，定稿查询计数仍为 1。点击「查看同期间下钻页」后保留已应用模式和起止。直接打开明细页，或在来源页使用 `?period-filter=last12Months`，均以定稿月计算范围。页头使用首section首组件iocHeader。
 
-`?state=error` 模拟请求失败，missing无记录、invalid非法日期、conflict同名不同日期、timeout超时；各入口均回退执行环境当前日期所在月。URL明确传入例如 `?period-filter=month%3A2026-08` 时，定稿查询仍执行一次，再由既有导航流程应用8月。
+`?state=error` 模拟请求失败，missing无记录、invalid非法日期、conflict同名不同日期、timeout超时；各入口均回退执行环境当前月。切换近一年后，比如当时为 2026-11，查询范围为 2025-12 至 2026-11。URL明确传入例如 `?period-filter=month%3A2026-08` 时，定稿查询仍执行一次，再由既有导航流程应用8月。
 
 浏览器自动验收：`pnpm --filter playground exec playwright test tests/finalization-default.browser.ts`。场景仅证明协议与引擎，不证明真实截止表、DQE、Relay或生产权限接入。
 
@@ -362,7 +362,7 @@
 
 用途：将名单与定稿日期准备移出全页呈现等待，同时观察首个业务查询的条件完整性。参考对象为首组件 `ioc-header`、`office-table` 的 Region/期间绑定，以及不依赖这两项的 `unrelated-table`。不增加页面字段；移植时须升级匹配引擎、确认真实名单 Adapter 和 finalizationSource，合成名称及数据不可当成生产查询配置。
 
-默认名单和定稿各延迟1秒。页面先呈现真实页头、带静态骨架行的表体、统计期间控件及“无关数据已就绪”；条件齐备后只显示上海和深圳，期间为2026-04，业务查询同时携带重点名单和期间。`?key-national-only=false&mtime=month:2026-04` 立即显示四个代表处，不等待两项默认值。`?state=empty` 重点结果为空且不发主查询；`?state=error` 显示名单错误且不宽查；`?state=date-error` 沿现有规则回退当前日期。
+默认名单和定稿各延迟1秒。页面先呈现真实页头、带静态骨架行的表体、统计期间控件及“无关数据已就绪”；条件齐备后只显示上海和深圳，期间为2026-04，业务查询同时携带重点名单和期间。`?key-national-only=false&mtime=month:2026-04` 立即显示四个代表处，不等待两项默认值；定稿查询在后台准备，供切换「近一年」使用。`?state=empty` 重点结果为空且不发主查询；`?state=error` 显示名单错误且不宽查；`?state=date-error` 沿现有规则回退当前日期。
 
 加载中可主动选择时间或取消重点勾选；迟到默认值不能覆盖用户输入。已有宽范围结果在首次勾选等待名单时撤下，表头候选与导出不能使用准备未完成的范围。数据、权限与延迟均为合成场景；真实集成另验。
 

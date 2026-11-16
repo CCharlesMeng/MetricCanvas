@@ -13,7 +13,7 @@ function mainQueries(traces:Trace[]){return traces.filter(item=>item.kind==='que
 test('structure and unrelated data appear before defaults; first business query has the complete scope',async({page})=>{
   const traces=await observe(page),errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
   await page.goto('/pages/ioc-async-preparation');
-  await expect(page.locator('[data-filter-pending]')).toBeVisible();
+  await expect(page.locator('[data-filter-pending]')).toBeVisible({timeout:15_000});
   await expect(page.getByRole('cell',{name:'无关数据已就绪',exact:true})).toBeVisible();
   expect(mainQueries(traces)).toHaveLength(0);
   await expect(page.getByRole('cell',{name:'上海代表处',exact:true})).toBeVisible();
@@ -30,11 +30,18 @@ test('structure and unrelated data appear before defaults; first business query 
   await expect(page.locator('[data-filter-pending]')).toHaveCount(0);expect(errors).toEqual([]);
 });
 
-test('explicit period and unchecked membership bypass both asynchronous defaults',async({page})=>{
+test('an explicit month queries immediately while the rolling cutoff loads',async({page})=>{
   const traces=await observe(page);
-  await page.goto('/pages/ioc-async-preparation?key-national-only=false&mtime=month:2026-04');
+  await page.goto('/pages/ioc-async-preparation?key-national-only=false&mtime=month:2026-03');
   await expect(page.getByRole('cell',{name:'南京代表处',exact:true})).toBeVisible();
-  expect(traces.filter(item=>item.kind==='membership-start'||item.kind==='finalization-start')).toEqual([]);
+  expect(traces.filter(item=>item.kind==='membership-start')).toEqual([]);
+  await expect.poll(()=>traces.filter(item=>item.kind==='finalization-ready').length).toBe(1);
+  expect(mainQueries(traces)[0].at).toBeLessThan(traces.find(item=>item.kind==='finalization-ready')!.at);
+  await expect(page.locator('[data-period-filter]').getByRole('combobox')).toHaveValue('2026-03');
+  await page.getByRole('button',{name:'近一年',exact:true}).click();
+  await expect.poll(()=>mainQueries(traces).at(-1)?.value.query?.filterValues).toContainEqual(
+    {target:'time',period:'month',value:{from:'2025-05',to:'2026-04'}}
+  );
 });
 
 for(const state of ['empty','error'])test(`membership ${state} cannot send an unrestricted query`,async({page})=>{

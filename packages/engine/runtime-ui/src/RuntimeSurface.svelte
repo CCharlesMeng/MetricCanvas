@@ -22,6 +22,7 @@
   import {sourceCandidatesGateway,createCandidateGatewaySession} from '@metriccanvas/data-execution/runtime';
   let candidateSession:ReturnType<typeof createCandidateGatewaySession>|undefined;
   import {initialFilterInputIssue} from './initial-filter-input';
+  import {requestsRollingFinalization} from '../../runtime/src/filter-state';
   import { filterCandidatesRequest } from '../../runtime/src/filter-candidates';
   import { candidateScopeKey } from '../../runtime/src/dimension-values';
   import { createIocRegionDefault } from './ioc-region-default';
@@ -398,7 +399,8 @@
 
   let declarations = $state<FilterDeclaration[]>([]);
   let candidateClock=$state.raw(new Date());
-  const timeContext=$derived({snapshot:displaySnapshot,revision:filterRevision,pending:preparingFilters,initializing});
+  let resolvedFinalizationDates=$state.raw<ReadonlyMap<string,string>>();
+  const timeContext=$derived({snapshot:displaySnapshot,revision:filterRevision,pending:preparingFilters,initializing,finalizationDates:resolvedFinalizationDates});
   const candidateTimeContext=()=>({displayInputs:displaySnapshot,filterRevision,now:candidateClock});
   const filterCandidateContext=()=>({...candidateTimeContext(),page:pageState.phase==='ready'?pageState.page:undefined});
   let filterState: FilterState | null = null;
@@ -475,6 +477,7 @@
     pageState = { phase: 'loading' };navigationMessage='';
     snapshots = new Map();
     filterValues = new Map();
+    resolvedFinalizationDates=undefined;
     dimensionCandidates = new Map();
     tableViews = {};
     untrack(() => closeDetail(false));
@@ -567,12 +570,12 @@
     const message=initialFilterInputIssue(loaded,search,candidateClock);
     if(message){pageState={phase:'input-invalid',message};emit?.({type:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters',message}]});return;}
     // 旧数组参数的显式 value 固定本次输入；分组参数仍允许 URL 参数与独立筛选初始化。
-    let fromURL:Map<string,FilterValue>;
-    try{fromURL = new Map(capabilities.filters && !paramDeclarations.some(p => !p.path && p.value !== undefined)
-      ? parseFilterSearch(search,declarations,candidateClock,usesIocRegion(loaded))
-      : new Map());}catch{pageState={phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters',message:'时间模式URL必须为合法完整mode/from/to'}]};emit?.({type:'invalid',errors:pageState.errors});return;}
+    let fromURL:Map<string,FilterValue>, rollingInputs:ReadonlySet<string>;
+    try{({fromURL,rollingInputs}=readInitialFilterURL(loaded,search,candidateClock,
+      capabilities.filters && !paramDeclarations.some(p => !p.path && p.value !== undefined),bootstrap));}
+    catch{pageState={phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters',message:'时间模式URL必须为合法完整mode/from/to'}]};emit?.({type:'invalid',errors:pageState.errors});return;}
     const explicit=bootstrap?.filters??fromURL;
-    const preparation=createFinalizationPreparation(loaded,activeGateway,explicit,candidateClock,finalizationController.signal,displaySnapshot);
+    const preparation=createFinalizationPreparation(loaded,activeGateway,explicit,candidateClock,finalizationController.signal,displaySnapshot,rollingInputs);
     const localOptions = filterGroupOptions(loaded);
     const localIssue = localFilterInitializationIssue(localOptions, fromURL, bootstrap, loaded.strictURLInputs === true);
     if (localIssue) {
@@ -677,6 +680,7 @@
     void preparation.resolve().then(dates=>{
       if(session!==mySession||finalizationController.signal.aborted)return;
       finalizationDates=dates;
+      resolvedFinalizationDates=dates;
       state.completePreparation(preparation.values(dates));
       emit?.({type:'ready',pageId:loaded.id});
     }).catch(()=>{
@@ -843,8 +847,15 @@
     filterState?.writeMany(updates);
   }
 
-  function parseFilterURL(search: string, declared: FilterDeclaration[]): FilterValues {
-    return parseFilterSearch(search, declared, undefined, !!declarationPage&&usesIocRegion(declarationPage));
+  function readInitialFilterURL(page:Page,search:string,clock:Date,enabled:boolean,bootstrap:import('../../runtime/src').ExecutionBootstrap|undefined) {
+    if(!enabled)return {fromURL:new Map<string,FilterValue>(),rollingInputs:new Set<string>()};
+    const rollingInputs=new Set<string>(), query=new URLSearchParams(search);
+    const filters=(page.filters??[]).filter(filter=>{
+      if(bootstrap||!requestsRollingFinalization(filter,query))return true;
+      rollingInputs.add(filter.id);
+      return false;
+    });
+    return {fromURL:new Map(parseFilterSearch(search,filters,clock,usesIocRegion(page))),rollingInputs};
   }
 
   function mergedSearch(state: FilterState, initial: string): string {

@@ -32,7 +32,7 @@ it.each([
   expect(page).toEqual(before);
 });
 it.each([
-  [{mode:'last12Months'},'auto','202511','202610'],
+  [{mode:'last12Months'},'auto','202512','202611'],
   [{mode:'year',value:'2026'},'fixed','202601','202612'],
   [{mode:'quarter',value:'2026-Q4'},'fixed','202610','202612']
 ] as const)('encodes multiple monthly ledgers using closed bounds: %j',(selection,id,from,to)=>{

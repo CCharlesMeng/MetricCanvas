@@ -3,6 +3,7 @@ import {initialFilterValues} from '@metriccanvas/data-execution/runtime';
 import type {FilterDeclaration} from '@metriccanvas/page/internal';
 import {createFilterState, filterSearch, parseFilterSearch} from '../src/filter-state';
 import {navigationHref} from '../src/navigate';
+import {filterInputIssue} from '../src/navigation-inputs';
 const now = new Date(2026, 10, 9);
 const filter: FilterDeclaration = {id: 'period', type: 'timeRange', display: 'period', precision: 'date', default: {mode: 'last12Months', finalizationName: '经营数据'}};
 const initial = () => initialFilterValues([filter], now, undefined, 0, new Map([['经营数据', '2026-08-18']]));
@@ -28,7 +29,12 @@ describe('finalized periods keep their applied window', () => {
   it.each(['period=last12Months&period.from=2025-09-01', 'period=last12Months&period.from=2025-09-02&period.to=2026-08-31'])('rejects incomplete or truncated inherited windows', search => {
     expect(parseFilterSearch(search, [filter], now).has('period')).toBe(false);
   });
-  it('keeps the legacy unanchored rolling rule', () => {
-    expect(parseFilterSearch('period=last12Months', [filter], now).get('period')).toMatchObject({from: '2025-11-01', to: '2026-10-31'});
+  it('includes the current month when the URL is decoded without a cutoff', () => {
+    expect(parseFilterSearch('period=last12Months', [filter], now).get('period')).toMatchObject({from: '2025-12-01', to: '2026-11-30'});
+  });
+  it('defers cutoff-dependent validation for a mode-only input and still rejects duplicates', () => {
+    const bounded: FilterDeclaration = {...filter, max:'2026-08-31'};
+    expect(filterInputIssue('period=last12Months', [bounded], now)).toBeUndefined();
+    expect(filterInputIssue('period=last12Months&period=last12Months', [bounded], now)).toContain('重复');
   });
 });

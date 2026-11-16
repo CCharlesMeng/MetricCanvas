@@ -38,7 +38,7 @@ try{
     expect.objectContaining({filter:expect.objectContaining({dims:[{dim_name:'账期',operator:'>=',dim_value_list:['20260701']},{dim_name:'账期',operator:'<=',dim_value_list:['20260930']}]})})
   ]));
   await page.screenshot({path:path.join(output,'quarter.png'),fullPage:true});
-  for(const [label,period,start,end] of [['月','month','2026-07','2026-07'],['年','year','2026','2026'],['近一年','month','2025-10','2026-09']]){
+  for(const [label,period,start,end] of [['月','month','2026-07','2026-07'],['年','year','2026','2026'],['近一年','month','2025-11','2026-10']]){
     await page.getByRole('button',{name:label,exact:true}).click();
     await expect.poll(()=>items().some(item=>item.filter.time?.period===period&&item.filter.time.start===start&&item.filter.time.end===end)).toBe(true);
     await expect(page.getByText('合成地区',{exact:true})).toHaveCount(3);

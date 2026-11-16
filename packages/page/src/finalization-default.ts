@@ -12,6 +12,12 @@ export function finalizationName(filter: FilterDeclaration): string | undefined 
   return isFinalizationDefault(filter.default) ? filter.default.finalizationName.trim() : undefined;
 }
 
+export function rollingFinalizationName(filter: FilterDeclaration): string | undefined {
+  if (filter.type !== 'timeRange' || filter.display !== 'period') return;
+  if (filter.periodModes && !filter.periodModes.includes('last12Months')) return;
+  return finalizationName(filter);
+}
+
 /** Calendar dates are never interpreted as UTC instants. */
 export function finalizationDate(value: unknown): string | undefined {
   if (typeof value !== 'string' || validateTimePointValue(value, 'date')) return;

@@ -10,7 +10,7 @@ it('restores relative intent with the new month and keeps malformed URLs from cl
   state.write('period',{type:'timeRange',...resolvePeriodSelection({mode:'last12Months'},new Date())});
   const url=state.toURL();expect(url).toBe('period=last12Months');
   vi.setSystemTime(new Date(2026,10,1));
-  expect(parseFilterSearch(url,declarations).get('period')).toMatchObject({from:'2025-11-01',to:'2026-10-31',selection:{mode:'last12Months'}});
+  expect(parseFilterSearch(url,declarations).get('period')).toMatchObject({from:'2025-12-01',to:'2026-11-30',selection:{mode:'last12Months'}});
   state.fromURL('period=quarter:2026-Q5',declarations);
   let value:unknown;state.subscribe(v=>value=v.get('period'))();expect(value).toMatchObject({selection:{mode:'last12Months'}});
 });

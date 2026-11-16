@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "49222eaf9a766140e71bfd4beb8c73a4ba1b09134a253fb31348faaec3521e90",
+  "sha256": "e65fdb084810c95aeb5914a52b78f50379e7c343bff62e4b075dcc581aaf3fb0",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -136,7 +136,7 @@
     },
     {
       "file": "docs/page-metadata/filters.md",
-      "sha256": "9a5cfec1d979bfdf1061567148699b438585cd3d71d71cc568627a62725d6c51"
+      "sha256": "dd8327f74f4c50b00d143a3340b58da5fc78c073b1ad9cfc675fb5242e676025"
     },
     {
       "file": "docs/page-metadata/layout-migration.md",
@@ -144,7 +144,7 @@
     },
     {
       "file": "docs/page-metadata/page.md",
-      "sha256": "6004390f7066b0baf98ffa1d723a46a0dca020a097bb865906dc1c04d265a0e9"
+      "sha256": "c8c5947fd976994ede1b8b7db5b1623470bf32ba3a1878bb544937ffc9156a26"
     },
     {
       "file": "docs/page-metadata/parameters.md",
@@ -156,7 +156,7 @@
     },
     {
       "file": "docs/page-metadata/queries-and-bindings.md",
-      "sha256": "011ede879080f450d1c4f030f5272dba222f0ffbdf2036cc2d898b998228147d"
+      "sha256": "a7c172e6f85136f01a59f9ad1857de098fc44da1f1a680eda69f89c5629c4fc1"
     },
     {
       "file": "docs/page-metadata/reference-map.json",
@@ -1648,7 +1648,7 @@
     },
     {
       "file": "packages/page/src/finalization-default.ts",
-      "sha256": "a49fbfac47b50ec8806e95e75fb0f6c537e1cd01075510ee02dfe5e4a6cf70a9"
+      "sha256": "e1f9293b85f8cd907b74a4f4bb6b69d1a9589d96ff666b45b8d845ff3997e4ea"
     },
     {
       "file": "packages/page/src/header-binding.ts",
@@ -1796,7 +1796,7 @@
     },
     {
       "file": "packages/page/src/period-filter.ts",
-      "sha256": "88f97bf1088003794de544a94658c15e04319bf7cd0205bdbe5c930a2a8f97c9"
+      "sha256": "d3419f379e47f1afec30dad146986485b470fff2617b754e59a16d1dac92ee70"
     },
     {
       "file": "packages/page/src/period-query-defaults.ts",
@@ -2516,7 +2516,7 @@
     },
     {
       "file": "pages/capabilities/filters/README.md",
-      "sha256": "03c2d9a0f1e0fc3b9d52a75e5615545dd2d51f63c06c1eeebc2b3da7f2e4116c"
+      "sha256": "cbaf50523008e270140a0f69c810f09c96fc410ca72bfdf6a1712339be0a9dcc"
     },
     {
       "file": "pages/capabilities/filters/chart-include-exclude.json",
@@ -2552,7 +2552,7 @@
     },
     {
       "file": "pages/capabilities/filters/finalization-default-time-detail.json",
-      "sha256": "aad20bfd338c1f755695d77df28dd0b941f02f26e089a732afbac541c712f991"
+      "sha256": "74131cb68970aa4754b06c21f4cb648ec3c8d58e4bd14f9f7933262a2ddae71a"
     },
     {
       "file": "pages/capabilities/filters/finalization-default-time.json",

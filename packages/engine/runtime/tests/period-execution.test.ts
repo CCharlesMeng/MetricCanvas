@@ -11,7 +11,7 @@ function page(){const parsed=parsePage(JSON.parse(readFileSync(new URL('../../..
 function gateway(){return {fetchData:vi.fn<DataGateway['fetchData']>(async()=>({rows:[{entry:'fixture',amount:42}],totalCount:1}))};}
 afterEach(()=>vi.useRealTimers());
 it('mode changes refetch a different grain for the same window and leave the unbound query cached',async()=>{
-  vi.useFakeTimers();vi.setSystemTime(new Date(2026,0,15));const p=page(),g=gateway();
+  vi.useFakeTimers();vi.setSystemTime(new Date(2025,11,15));const p=page(),g=gateway();
   const state=createFilterState(initialFilterValues(p.filters??[]),p.filters);
   const stream=orchestrate(p,g,state);const off=stream.subscribe(()=>{});
   await vi.waitFor(()=>expect(g.fetchData).toHaveBeenCalledTimes(2));
@@ -43,7 +43,7 @@ it('reuses fixed-month results when only the selection mode changes for the same
     state.write('period-filter',{type:'timeRange',...resolvePeriodSelection({mode:'year',value:'2025'},new Date())});
     await vi.waitFor(()=>expect(g.fetchData).toHaveBeenCalledTimes(3));
     await vi.waitFor(()=>expect(status).toBe('ready'));
-    state.write('period-filter',{type:'timeRange',...resolvePeriodSelection({mode:'last12Months'},new Date())});
+    state.write('period-filter',{type:'timeRange',...resolvePeriodSelection({mode:'last12Months',anchor:'2025-12'},new Date())});
     await vi.waitFor(()=>expect(status).toBe('ready'));
     expect(g.fetchData).toHaveBeenCalledTimes(3);
   }finally{off();}
@@ -54,5 +54,5 @@ it('export keeps the applied period when the clock moves into the next month',as
   vi.setSystemTime(new Date(2026,10,1));
   await prepareExportSnapshots(p,g,new Map(),conditions,new AbortController().signal);
   const query=g.fetchData.mock.calls.find(([q])=>q.filterValues.some(v=>v.target==='time'))?.[0];
-  expect(query?.filterValues).toContainEqual({target:'time',period:'month',value:{from:'2025-10',to:'2026-09'}});
+  expect(query?.filterValues).toContainEqual({target:'time',period:'month',value:{from:'2025-11',to:'2026-10'}});
 });

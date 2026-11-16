@@ -9,8 +9,8 @@ test('ordinary header consumes its real page, period anchor and queries; narrow 
   await expect(header.getByRole('heading',{name:'项目概览'})).toBeVisible();await expect(page.locator('[data-filter-id="region"]')).toHaveCount(1);await expect(page.getByText('合成 · 2026-09 至 2026-09；geo_pc_code=R05',{exact:true})).toBeVisible();
   await period.getByRole('button',{name:'季',exact:true}).click();await expect(period.getByRole('combobox')).toHaveValue('2026 年 Q3');
   await period.getByRole('button',{name:'年',exact:true}).click();await period.getByRole('button',{name:'月',exact:true}).click();await expect(period.getByRole('combobox')).toHaveValue('2026-09');
-  await period.getByRole('button',{name:'近一年',exact:true}).click();await expect(header.locator('[data-ioc-fact="period"]')).toContainText('2025-10 至 2026-09');
-  await expect.poll(()=>requests.filter(q=>q.filter?.time?.start==='2025-10'&&q.filter.time.end==='2026-09').length).toBe(1);
+  await period.getByRole('button',{name:'近一年',exact:true}).click();await expect(header.locator('[data-ioc-fact="period"]')).toContainText('2025-11 至 2026-10');
+  await expect.poll(()=>requests.filter(q=>q.filter?.time?.start==='2025-11'&&q.filter.time.end==='2026-10').length).toBe(1);
   expect(requests.filter(q=>q.output_dims[0]==='ioc_header_scope' && !q.filter?.time && !(q.filter?.dims?.length))).toHaveLength(1);
   await period.getByRole('button',{name:'月',exact:true}).click();await expect(period.getByRole('combobox')).toHaveValue('2026-09');
   const geometry=await header.evaluate(node=>{const s=getComputedStyle(node),title=node.querySelector('h1')!;const t=getComputedStyle(title);return [s.paddingTop,s.paddingLeft,t.fontSize,t.lineHeight];});expect(geometry).toEqual(['22px','32px','24px','33px']);

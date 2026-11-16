@@ -21,8 +21,8 @@ it.each([
   [{mode:'quarter',value:'2026-Q4'},'previousPeriod','2026-07-01','2026-07-28'],
   [{mode:'year',value:'2026'},'previousYear','2025-01-01','2025-10-28'],
   [{mode:'year',value:'2026'},'previousPeriod','2025-01-01','2025-10-28'],
-  [{mode:'last12Months'},'previousPeriod','2024-10-01','2025-09-30'],
-  [{mode:'last12Months'},'previousYear','2024-10-01','2025-09-30'],
+  [{mode:'last12Months'},'previousPeriod','2024-11-01','2025-10-28'],
+  [{mode:'last12Months'},'previousYear','2024-11-01','2025-10-28'],
   [{mode:'month',value:'2024-02'},'previousPeriod','2024-01-01','2024-01-31'],
   [{mode:'quarter',value:'2026-Q1'},'previousPeriod','2025-10-01','2025-12-31']
 ] as const)('derives %j %s calendar boundaries',(selection,kind,from,to)=>{
@@ -36,7 +36,7 @@ it('clamps leap dates and month ends, consuming the frozen rolling range',()=>{
   const year=resolvePeriodSelection({mode:'year',value:'2024'},now);
   expect(resolvePeriodComparison(year,{kind:'previousYear',fact:'sales'},inputs('2024-02-29')).to).toBe('2023-02-28');
   const rolling=resolvePeriodSelection({mode:'last12Months'},now,'month');
-  expect(resolvePeriodComparison(rolling,{kind:'previousYear',fact:'sales'},inputs('2027-01-01'))).toEqual({from:'2024-10-01',to:'2025-09-30'});
+  expect(resolvePeriodComparison(rolling,{kind:'previousYear',fact:'sales'},inputs('2027-01-01'))).toEqual({from:'2024-11-01',to:'2025-10-31'});
 });
 it('fails closed on missing/stale cutoff, unavailable current period and calendar underflow',()=>{
   const range=resolvePeriodSelection({mode:'month',value:'2026-10'},now);
@@ -79,7 +79,7 @@ it.each([
  [{mode:'quarter',value:'2026-Q4'},'previousYear','2025-10-01','2025-12-31'],
  [{mode:'quarter',value:'2026-Q4'},'previousPeriod','2026-07-01','2026-09-30'],
  [{mode:'year',value:'2026'},'previousYear','2025-01-01','2025-12-31'],
- [{mode:'last12Months'},'previousYear','2024-10-01','2025-09-30']
+ [{mode:'last12Months'},'previousYear','2024-11-01','2025-10-31']
 ] as const)('compares the full applied selection without host facts: %j %s',(selection,kind,from,to)=>{
  const range=resolvePeriodSelection(selection,now);
  expect(resolvePeriodComparison(range,{kind})).toEqual({from,to});

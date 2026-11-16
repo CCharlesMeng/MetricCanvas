@@ -30,7 +30,7 @@ it.each([
   [{mode:'quarter',value:'2026-Q3'},'quarter','2026-Q3','2026-Q3'],
   [{mode:'year',value:'2026'},'year','2026','2026'],
   [{mode:'month',value:'2026-09'},'month','2026-09','2026-09'],
-  [{mode:'last12Months'},'month','2025-10','2026-09']
+  [{mode:'last12Months'},'month','2025-11','2026-10']
 ] as const)('defaults an IOC period to its selected grain: %j',(selection,period,start,end)=>{
   const page=load(),before=structuredClone(page);
   expect(effectiveDqeItem(compose(page,selection))).toMatchObject({filter:{time:{period,start,end,is_aggregate:true}}});

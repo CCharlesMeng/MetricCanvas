@@ -4,7 +4,7 @@
   import { untrack } from 'svelte';
   import { DatePicker } from '@metriccanvas/ui';
   import { timeAvailabilityIssue,resolvePeriodSelection, periodRangeLabel, type PeriodMode, type PeriodRange, type AppliedPeriodSelection } from '@metriccanvas/page/internal';
-  let {label,precision='date',value,readOnly=false,anchorLast12=false,initialMode,periodModes,min,max,blockedRanges=[],onchange}:{label?:string;precision?:'month'|'date';value:PeriodRange|null;readOnly?:boolean;anchorLast12?:boolean;initialMode?:PeriodMode;periodModes?:PeriodMode[];min?:string;max?:string;blockedRanges?:readonly {from:string;to:string}[];onchange:(value:PeriodRange)=>void}=$props();
+  let {label,precision='date',value,readOnly=false,rollingMonth,rollingPending=false,initialMode,periodModes,min,max,blockedRanges=[],onchange}:{label?:string;precision?:'month'|'date';value:PeriodRange|null;readOnly?:boolean;rollingMonth?:string;rollingPending?:boolean;initialMode?:PeriodMode;periodModes?:PeriodMode[];min?:string;max?:string;blockedRanges?:readonly {from:string;to:string}[];onchange:(value:PeriodRange)=>void}=$props();
   let error=$state('');
   function commit(range:PeriodRange){error=timeAvailabilityIssue({id:'period',type:'timeRange',min,max,blockedRanges:[...blockedRanges]},{type:'timeRange',...range})??'';if(!error)onchange(range);}
   const allModes=[{id:'year',label:'年'},{id:'quarter',label:'季'},{id:'month',label:'月'},{id:'last12Months',label:'近一年'}] as const;
@@ -41,7 +41,7 @@
   function select(next:PeriodMode) {
     const year=anchor.slice(0,4);
     const selection=next==='last12Months'
-      ? {mode:next,...(anchorLast12?{anchor}:{})} as const
+      ? {mode:next,anchor:rollingMonth} as const
       : {mode:next,value:next==='year' ? year : next==='quarter'
         ? `${year}-${rememberedQuarter??`Q${Math.ceil(Number(anchor.slice(5,7))/3)}`}`
         : `${year}-${rememberedMonth??anchor.slice(5,7)}`};
@@ -57,7 +57,7 @@
   {:else}
     {#if modes.length>1}
     <div class="segments" role="group" aria-label={label??'时间粒度'}>
-      {#each modes as item}<button type="button" aria-pressed={mode===item.id} onclick={()=>select(item.id)}>{item.label}</button>{/each}
+      {#each modes as item}<button type="button" aria-pressed={mode===item.id} disabled={item.id==='last12Months'&&rollingPending} onclick={()=>select(item.id)}>{item.label}</button>{/each}
     </div>
     {/if}
     {#if mode==='last12Months'}
@@ -78,6 +78,7 @@
   button {height:30px;min-width:42px;padding:0 12px;border:0;border-right:1px solid #e5e5e5;background:#fff;color:#595959;cursor:pointer;font:inherit;white-space:nowrap;}
   button:first-child{border-radius:5px 0 0 5px;}button:last-child{border-right:0;border-radius:0 5px 5px 0;}
   button:hover{color:#1476ff;}button[aria-pressed=true]{color:#1476ff;background:#deecff;}button:focus-visible{outline:2px solid #1476ff;outline-offset:2px;}
+  button:disabled{color:#71717a;cursor:wait;}
   .range{display:inline-flex;align-items:center;min-height:32px;white-space:nowrap;}
   .picker{max-width:100%;--mc-date-picker-width:220px;--mc-filter-label-display:none;}
 </style>

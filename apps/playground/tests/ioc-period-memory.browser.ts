@@ -72,7 +72,7 @@ test('rolling periods preserve both memories for date precision', async ({ page 
   await input.press('Enter');
   await expect(input).toHaveValue('2025 年 Q1');
   await period.getByRole('button', { name: '近一年', exact: true }).click();
-  await expect(period.locator('[data-period-range]')).toHaveText('25年11月~26年10月');
+  await expect(period.locator('[data-period-range]')).toHaveText('25年12月~26年11月');
   await period.getByRole('button', { name: '月', exact: true }).click();
   await expect(input).toHaveValue('2025-09');
   await period.getByRole('button', { name: '季', exact: true }).click();

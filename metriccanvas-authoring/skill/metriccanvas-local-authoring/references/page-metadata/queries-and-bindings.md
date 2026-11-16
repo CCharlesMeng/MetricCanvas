@@ -22,7 +22,7 @@
 
 ## 期间字段聚合（6.97）
 
-普通指标查询在 `dataSources.<id>.source.query` 增加可选 `periodAggregation`，与 `body/filterBindings` 同层。`filterId` 引用同一查询已绑定、required 的 `display: period` 筛选器；目前 cases 只开放 `last12Months`。未配置保持原行为；选其他期间沿用原查询；近一年使用已应用的前十二个完整月窗口，导出不按当前时钟重新锚定。
+普通指标查询在 `dataSources.<id>.source.query` 增加可选 `periodAggregation`，与 `body/filterBindings` 同层。`filterId` 引用同一查询已绑定、required 的 `display: period` 筛选器；目前 cases 只开放 `last12Months`。未配置保持原行为；选其他期间沿用原查询；近一年使用已应用的十二个自然月窗口，导出不按当前时钟重新锚定。
 
 ```json
 {
@@ -55,13 +55,13 @@ sum 累加有效月值，avg 对有效月值取算术平均。0 参与，null �
 
 ## 查询独立期间策略
 
-普通 `display:"period"` 指标时间绑定省略策略时：年 year、季 quarter、月及近一年 month，近一年为此前十二个完整月份。旧 dashboardToolbar、新旧页头及独立控件一致；queryModes 各分支独立处理，未绑定不订阅。只需 `{target:"time"}`，查询体旧 period 被覆盖，is_aggregate 保留；固定 start/end/param/window 冲突仍报错。
+普通 `display:"period"` 指标时间绑定省略策略时：年 year、季 quarter、月及近一年 month，近一年采用筛选器已应用的十二个自然月。旧 dashboardToolbar、新旧页头及独立控件一致；queryModes 各分支独立处理，未绑定不订阅。只需 `{target:"time"}`，查询体旧 period 被覆盖，is_aggregate 保留；固定 start/end/param/window 冲突仍报错。
 
 6.67 起，指标查询的时间绑定可显式声明 `periodPolicy`，消费 `display:"period"` 筛选器的已应用选择。固定粒度写 `{target:"time",periodPolicy:{kind:"fixed",period:"month"}}`；按所选周期并限制数据能力写 `{target:"time",periodPolicy:{kind:"selection",supportedPeriods:["month","quarter","year"]}}`。显式策略优先；不支持时拒绝查询，不回退。月度趋势、月账期明细等固定粒度查询应显式声明 fixed 策略，选择季度时仍读取对应三个月。
 
 显式策略独占查询粒度与起止，原始 `filter.time` 保留 `is_aggregate` 等原有语义，禁止同时声明 `period/start/end/param`，也不能与绑定的 `window/queryField/valueFormat` 混用。对象账期策略见下文“标准对象账期”。timeModes 已由其 day/month/isoWeek 模式拥有时间配置，不叠加此期间策略；普通查询与 queryModes 的全部 case 支持该策略。默认不接管 `periodComparison`、指定字段的 `queryField/valueFormat` 或时间窗口绑定；非 display=period 的范围与时间点绑定保持原有精度和编码。
 
-固定日/月/季/年分别编码 YYYY-MM-DD、YYYY-MM、YYYY-Qn、YYYY。固定季/年扩大到窗口涉及的完整自然季/年，预览标记扩大。选年固定月取十二个月；选月固定日取完整自然月，不计算年度得分。按选择时，年用 year、月用 month，近一年用 month 和已应用的前十二个完整月窗口，请求及导出不重新取当前时间。6.86 起季度用 quarter：2026-Q3 发送 `filter.time:{period:"quarter",start:"2026-Q3",end:"2026-Q3"}`，只允许 Q1—Q4，跨年编码一致。显式 supportedPeriods 未声明 quarter 时拒绝；固定日/月策略仍可覆盖整季。
+固定日/月/季/年分别编码 YYYY-MM-DD、YYYY-MM、YYYY-Qn、YYYY。固定季/年扩大到窗口涉及的完整自然季/年，预览标记扩大。选年固定月取十二个月；选月固定日取完整自然月，不计算年度得分。按选择时，年用 year、月用 month，近一年用 month 和已应用的十二个自然月窗口，请求及导出不重新取当前时间。6.86 起季度用 quarter：2026-Q3 发送 `filter.time:{period:"quarter",start:"2026-Q3",end:"2026-Q3"}`，只允许 Q1—Q4，跨年编码一致。显式 supportedPeriods 未声明 quarter 时拒绝；固定日/月策略仍可覆盖整季。
 
 工作台逐查询预览粒度与期间。新绑定按原查询的一致 period 预选固定策略，缺失或分支不一致时要求选择。已有未声明策略的绑定显示“沿用默认规则”；选择显式策略才转换该查询全部分支，保留指标、维度、fieldMappings 和 is_aggregate。编辑先校验再应用，失败保留原稿；不自动求和、平均、切换指标或路线。
 
@@ -364,7 +364,7 @@ SourceProgram、Node执行入口、分页/组合查询、导出统一选择合�
 
 查询准备阶段（包括可信截止事实校验）失败时，屏幕读取为该数据源发布结构化错误，依赖它的计算结果失败；其他独立数据源继续完成，不能因单个失败让整页停在 loading。缺失事实的请求不发送到 DQE，补齐事实后可重新查询；取消仍取消整轮读取，严格完整导出仍失败，允许部分结果的读取保留错误快照。
 
-先将本期截至 `min(所选期间末日, latest)`，再派生基期：月环比前移一月，季度环比前移三月，年度和近一年环比前移一年；同比统一前移一年。因此年度、近一年同环比基期相同。近一年仍指已应用的前十二个完整月，不在请求或导出时重新按时钟定位。未完成期间保持相同日历进度，闰日/月末截到目标月最后一天；已完成期间比较完整自然期间。
+先将本期截至 `min(所选期间末日, latest)`，再派生基期：月环比前移一月，季度环比前移三月，年度和近一年环比前移一年；同比统一前移一年。因此年度、近一年同环比基期相同。近一年仍指已应用的十二个自然月，不在请求或导出时重新按时钟定位。未完成期间保持相同日历进度，闰日/月末截到目标月最后一天；已完成期间比较完整自然期间。
 
 `periodComparison` 与 `periodPolicy`、`window` 互斥。指标查询必须显式保留 `filter.time: {"period":"day","is_aggregate":true}`（聚合开关按实际指标契约声明），不能另有固定 start/end/param/window；对象查询可沿用 `queryField` 和 `valueFormat`。所有派生请求使用日边界，期间比较仍沿用日范围契约。服务端须按范围返回正确的指标值，季度/年比率不能由客户端简单累加月度比率。
 

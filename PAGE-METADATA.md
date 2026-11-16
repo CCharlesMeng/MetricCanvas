@@ -63,7 +63,7 @@ IOC 父子表层级选择复用“全球＝不限区域”：保留全部父行�
 
 IOC Header Region 初始化优先选择合法候选中的“全球”，否则选择第一可用项；URL、显式默认值和恢复状态优先，用户清空后不补回。父子表首次展开与延迟回执的高度计算包含展开行，避免成功数据被裁出父表可视区。见 Region 与表格组件文档。
 
-6.104：时间筛选 default.finalizationName 按名称查询日级定稿日期，引擎每页独立查询并初始化日/月/季/年/近一年，失败回退当前日期。下钻保留已应用窗口，导航输入不跳过定稿查询。见[定稿日期默认值](docs/page-metadata/filters.md#定稿日期默认值6104)，合成入口 `/pages/finalization-default-time`。
+6.104：时间筛选 default.finalizationName 按名称查询日级定稿日期，用于初始化日/月/季/年/近一年。「近一年」截至定稿月，定稿日期不可用时截至当前月，含截止月共十二个自然月。该规则适用于当前引擎读取的所有页面版本，沿用现有字段。下钻显式传递起止时保留已应用窗口。见[定稿日期默认值](docs/page-metadata/filters.md#定稿日期默认值6104)，合成入口 `/pages/finalization-default-time`。
 6.103：柱状图字段系列可声明 `aggregate: "avg"`，前端对当前图表全部有效字段值求均值，并在每个原类别显示同一均值柱；与普通当前值系列并排比较。见[前端均值柱系列](docs/page-metadata/components/barChart.md#bar-series-average)，合成入口 `/pages/sdt-period-aggregation`。
 
 6.102：字段绑定 `format` 支持 `{type:"time",pattern:"YYYY-MM-DD HH:mm:ss"}`，兼容常见时间结构并统一按固定 UTC+8 展示；无时区输入按 UTC，表格显示与导出共用格式，Excel 写为文本。旧格式保持。见[时间格式串](docs/page-metadata/field-bindings-and-formats.md#time-format)，合成入口 `/pages/table-time-format`。

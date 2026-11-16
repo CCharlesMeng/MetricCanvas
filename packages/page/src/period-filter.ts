@@ -1,4 +1,4 @@
-import { resolveRelativeTime, validateCalendarTimeRange, type TimeRangeValue } from './filter';
+import { validateCalendarTimeRange, type TimeRangeValue } from './filter';
 
 export type PeriodMode = 'year' | 'quarter' | 'month' | 'last12Months';
 export type PeriodSelection = { mode: 'year' | 'quarter' | 'month'; value?: string; finalizationName?: string } | { mode: 'last12Months'; finalizationName?: string; anchor?: string };
@@ -23,11 +23,8 @@ export function resolvePeriodSelection(input: PeriodSelection, now: Date, precis
 }
 
 function resolveLast12Months(input: Extract<PeriodSelection, {mode: 'last12Months'}>, now: Date, precision: 'month' | 'date'): PeriodRange {
-  if (input.anchor || input.finalizationName) return anchoredLast12Months(input.anchor ?? currentPeriodValue('month', now), precision);
-  const range = resolveRelativeTime({unit: 'month', range: {kind: 'lastN', n: 12}, includeCurrent: false}, now);
-  const result = precision === 'month' ? {from: range.from.slice(0, 7), to: range.to.slice(0, 7)} : range;
-  if (validateCalendarTimeRange(result, precision).length) throw new Error('期间超出公历范围');
-  return {...result, selection: {mode: 'last12Months'}};
+  const range = anchoredLast12Months(input.anchor ?? currentPeriodValue('month', now), precision);
+  return input.anchor || input.finalizationName ? range : {...range, selection: {mode: 'last12Months'}};
 }
 
 function anchoredLast12Months(anchor: string, precision: 'month' | 'date'): PeriodRange {

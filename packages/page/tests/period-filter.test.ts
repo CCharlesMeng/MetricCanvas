@@ -11,16 +11,16 @@ describe('period contract and calendar semantics',()=>{
     [{mode:'quarter',value:'2026-Q1'},'2026-01-01','2026-03-31'],
     [{mode:'quarter',value:'2026-Q4'},'2026-10-01','2026-12-31'],
     [{mode:'month',value:'2024-02'},'2024-02-01','2024-02-29'],
-    [{mode:'last12Months'},'2025-10-01','2026-09-30']
+    [{mode:'last12Months'},'2025-11-01','2026-10-31']
   ] as const)('resolves %j independently from display strings',(selection,from,to)=>{
     expect(resolvePeriodSelection(selection,now)).toMatchObject({from,to});
     expect(resolvePeriodSelection(selection,now,'month')).toMatchObject({from:from.slice(0,7),to:to.slice(0,7)});
   });
-  it('uses current month for default and excludes current month for last twelve',()=>{
+  it('includes the current month when no cutoff is supplied',()=>{
     expect(resolvePeriodSelection({mode:'month'},now).selection).toEqual({mode:'month',value:'2026-10'});
     const range=resolvePeriodSelection({mode:'last12Months'},now);
-    expect(periodRangeLabel(range)).toBe('25年10月~26年9月');
-    expect(resolvePeriodSelection({mode:'last12Months'},new Date(2026,0,1))).toMatchObject({from:'2025-01-01',to:'2025-12-31'});
+    expect(periodRangeLabel(range)).toBe('25年11月~26年10月');
+    expect(resolvePeriodSelection({mode:'last12Months'},new Date(2026,0,1))).toMatchObject({from:'2025-02-01',to:'2026-01-31'});
   });
   it.each(['2026-Q0','2026-Q5','2026-Q2 extra','0000-Q1'])('rejects malformed quarter %s',value=>expect(()=>resolvePeriodSelection({mode:'quarter',value},now)).toThrow());
   it('requires parameter boundaries to match a complete declared natural period',()=>{

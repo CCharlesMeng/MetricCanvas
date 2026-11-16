@@ -2,6 +2,7 @@ import {timeAvailabilityIssue,modeRangeIssue,type DisplayInputsSnapshot} from '@
 import { numberRangeIssue,rangeContextIssue, filterDependencies, dimensionSelectionIssue } from '@metriccanvas/page/internal';
 import { resolvePeriodSelection, isPeriodSelection } from '@metriccanvas/page/internal';
 import { filterURLKeys, readLevelURLSelection } from '@metriccanvas/page/internal';
+import { rollingFinalizationName } from '@metriccanvas/page/internal';
 import {
   timeFilterBoundaryError,
   dimensionOfLevel,
@@ -458,6 +459,14 @@ export function parseFilterSearch(search: string, declarations: readonly FilterD
 }
 
 type ReadURLPart = (part: string) => string | null;
+
+/** A mode-only URL requests the destination's cutoff. Full windows are applied snapshots. */
+export function requestsRollingFinalization(declaration:FilterDeclaration, query:URLSearchParams):boolean {
+  if(!rollingFinalizationName(declaration))return false;
+  const {value,from,to}=filterURLKeys(declaration);
+  return query.get(value!)==='last12Months'&&!query.has(from!)&&!query.has(to!);
+}
+
 function readFilterValue(declaration: FilterDeclaration, query: URLSearchParams, keys: ReturnType<typeof filterURLKeys>, read: ReadURLPart, now: Date): FilterValue | undefined {
   switch (declaration.type) {
     case 'dimension': return readDimensionFilter(declaration, query, keys, read);

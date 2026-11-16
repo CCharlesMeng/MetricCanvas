@@ -1,5 +1,5 @@
 import {periodFact,calendarEndpoint,type FilterDeclaration,type DisplayInputsSnapshot,type TimeRangeValue} from '@metriccanvas/page/internal';
-export interface TimeControlContext {snapshot?:DisplayInputsSnapshot;revision?:number;initializing?:boolean;pending?:readonly string[]}
+export interface TimeControlContext {snapshot?:DisplayInputsSnapshot;revision?:number;initializing?:boolean;pending?:readonly string[];finalizationDates?:ReadonlyMap<string,string>}
 /** Display limits are projections of trusted inputs, never copied into Page metadata. */
 export function timeControlLimits(filter:FilterDeclaration,context:TimeControlContext={}) :{max?:string;blockedRanges:readonly TimeRangeValue[];reason?:string} {
  if(filter.type!=='timeRange'&&filter.type!=='timePoint')return {blockedRanges:[]};
