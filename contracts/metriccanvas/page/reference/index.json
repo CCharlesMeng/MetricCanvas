@@ -104,7 +104,7 @@
     },
     {
       "file": "packages/engine/runtime-ui/src/dashboard/FilterGroup.svelte",
-      "sha256": "b11228aec9123fea885b4fc22738d423c1af747f627261d268b0af5987378161"
+      "sha256": "5e95679bebfc411bad1af0c9fe5462b0ead4858975c48c2093c4b78e77d5e112"
     },
     {
       "file": "packages/engine/runtime-ui/src/initial-tabs.ts",
@@ -572,7 +572,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "eabce264910486378323c80eda3ceeb686e0a26c4601fc836464e89c8613bf0a"
+      "sha256": "f8e4c62760d8b31ff7372b12effdcbe7654b491b53c6a026e0ec1fa99a7bd015"
     }
   ],
   "modules": {
@@ -955,6 +955,7 @@
         "key-office-priority-demo",
         "key-office-priority-target",
         "filter-source-candidates",
+        "filter-source-query-pagination",
         "finalization-default-time",
         "finalization-default-time-detail",
         "finalization-date-defaults",

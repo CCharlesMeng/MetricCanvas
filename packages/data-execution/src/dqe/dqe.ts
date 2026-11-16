@@ -55,6 +55,7 @@ export interface DqeDiagnosticRecord {
   pageRevisionId?: string;
   /** 本次执行服务的页面数据源 id;生效查询去重后可能对应多个。 */
   dataSourceIds?: readonly string[];
+  sourceCandidates?: QueryDiagnosticContext['sourceCandidates'];
   startedAt: string;
   durationMs: number;
   status: DqeDiagnosticStatus;
@@ -67,6 +68,10 @@ export interface DqeDiagnosticRecord {
 
 export interface DqeDiagnostics {
   record(event: DqeDiagnosticRecord): void;
+}
+
+function sourceCandidateDiagnostic(context?: QueryDiagnosticContext): Pick<DqeDiagnosticRecord,'sourceCandidates'> {
+  return context?.sourceCandidates ? {sourceCandidates:context.sourceCandidates} : {};
 }
 
 export interface InMemoryDqeDiagnostics extends DqeDiagnostics {
@@ -216,6 +221,7 @@ export function createDqeGateway(
       ...(pageId !== undefined ? { pageId } : {}),
       ...(pageRevisionId !== undefined ? { pageRevisionId } : {}),
       ...(dataSourceIds !== undefined ? { dataSourceIds } : {}),
+      ...sourceCandidateDiagnostic(call.context),
       startedAt: call.startedAt,
       durationMs: Math.max(0, Date.now() - call.startedMs),
       status: outcome.status,

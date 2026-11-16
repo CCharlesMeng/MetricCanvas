@@ -14,6 +14,7 @@ export function createCandidateGatewaySession(base: RuntimeDataGateway) {
   async function fetchFilterCandidates(request: FilterCandidatesRequest, options: { signal: AbortSignal }) {
     options.signal.throwIfAborted();
     if (disposed) throw Object.assign(new Error('候选会话已结束'), { code: 'DQE_CANCELLED' });
+    if (request.sourceRead?.kind === 'page') return base.fetchFilterCandidates!(request, options);
     const key = canonicalizeJson(request);
     const cached = receipts.get(key);
     if (cached) return structuredClone(cached);

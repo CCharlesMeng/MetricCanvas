@@ -17,6 +17,9 @@ export interface QueryDiagnosticContext {
   pageRevisionId?: string;
   /** 本次执行服务的页面数据源 id;生效查询去重后可能对应多个。 */
   dataSourceIds?: readonly string[];
+  sourceCandidates?:
+    | {filterId: string; reason: 'declared-query-window'; kind: 'page' | 'selection'; offset: number; limit: number}
+    | {filterId: string; reason: import('./source-candidate-window').CompleteCandidateReason; kind: 'complete'};
 }
 
 /**
@@ -104,6 +107,8 @@ export interface FilterCandidate extends DimensionValueCandidate {
   parent?: {level:string;value:string};
 }
 export interface FilterCandidatesRequest {
+  /** Internal reads of a page-owned candidate source, independent of the complete dictionary port. */
+  sourceRead?: {kind:'page';offset:number;search:string} | {kind:'selection';values:readonly string[]};
   /** Page-source candidates retain declared dependency selections, including period mode and hierarchy level. */
   sourceValues?:Readonly<Record<string,import('./filter-values').FilterValue>>;
   filterId:string;
@@ -119,7 +124,7 @@ export interface FilterCandidatesRequest {
   };
 }
 export type FilterCandidatesResult =
-  | {kind:'values';candidates:FilterCandidate[]}
+  | {kind:'values';candidates:FilterCandidate[];totalCount?:number}
   | {kind:'unavailable'|'denied'|'unconfigured'};
 export interface FilterCandidatesGateway {
   fetchFilterCandidates(request:FilterCandidatesRequest,options:{signal:AbortSignal}):Promise<FilterCandidatesResult>;

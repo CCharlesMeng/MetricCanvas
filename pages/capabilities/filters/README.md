@@ -329,6 +329,18 @@
 
 证据仅覆盖产品协议、合成分页 Adapter 与浏览器；真实 DQE、Relay、组织权限服务和生产部署不在本页验收范围。
 
+## 页面数据源候选按需分页
+
+<!-- example-guide: task=source-candidate-query-pagination; page=filter-source-query-pagination; components=service-picker; verified=structure,browser -->
+
+复用用途：为平面维度下拉配置后端分页，滚动追加候选值。入口 `/pages/filter-source-query-pagination`。
+
+参考对象：筛选器 `service`、查询页面数据源 `service-options` 和通用下拉 `service-picker`。用 `candidates.dataSource` 关联页面数据源，在查询的 `order` 设置初始 offset、每批 limit 和稳定排序。
+
+移植边界：将示例的「云服务」和「范围」替换为实际 DQE 字段，保留候选依赖声明，并确认响应包含去重后的匹配总数。查询及数据均为合成。
+
+可观察预期与环境：`pnpm dev:playground` 启动后打开下拉，首批为 10 条，滚动续页。搜索 25 返回对应候选并保留此前的排除项。访问 `?state=page-failure` 验证保留已加载选项和重试第二批。真实 DQE 另行验收。
+
 ## IOC 客户类型固定查询字段
 
 入口 `/pages/ioc-customer-query-field?customer-category=战略`，完整页面 `ioc-customer-query-field.json` 使用首分区首个 `iocHeader` 组件，复用重点国代合成网关。启动 `pnpm dev:playground` 后直接打开。此回归页故意把客户类型绑定写成旧名 `客户类型`；组件查询规则仍固定传 `客户级别`，表格应显示上海、广州两行，XLSX 完整导出相同。改选卓越显示南京、深圳，清空选择恢复四行；勾选重点国代继续与客户条件共同生效。未认领的普通筛选沿用页面显式字段，不能按显示文案推断客户语义。

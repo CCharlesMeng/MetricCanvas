@@ -379,6 +379,7 @@
         "key-office-priority-demo",
         "key-office-priority-target",
         "filter-source-candidates",
+        "filter-source-query-pagination",
         "finalization-default-time",
         "finalization-default-time-detail",
         "finalization-date-defaults",
@@ -3171,7 +3172,8 @@
         "#/definitions/dimensionFilter"
       ],
       "headings": [
-        "页面数据源候选（6.90）"
+        "页面数据源候选（6.90）",
+        "候选查询分页"
       ],
       "dependencies": []
     },
@@ -3434,6 +3436,7 @@
       "布尔候选依赖与条件启用（6.75）",
       "期间筛选驱动同比环比（6.77）",
       "页面数据源候选（6.90）",
+      "候选查询分页",
       "定稿日期默认值（6.104）"
     ],
     "sections-and-layout.md": [

@@ -1158,6 +1158,11 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/filter-source-query-pagination.json",
+      "target": "product-contracts/page/conformance/valid/filter-source-query-pagination.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/valid/ioc-component-availability-page.json",
       "target": "product-contracts/page/conformance/valid/ioc-component-availability-page.json",
       "scope": "exact product contract"
@@ -7733,6 +7738,11 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/examples/filter-source-query-pagination.json",
+      "target": "references/page-metadata/examples/filter-source-query-pagination.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/examples/finalization-default-time.json",
       "target": "references/page-metadata/examples/finalization-default-time.json",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -8604,10 +8614,10 @@
     }
   ],
   "counts": {
-    "product": 1688,
+    "product": 1690,
     "authoring": 32,
     "modules": 36,
-    "topics": 315,
+    "topics": 316,
     "nodes": 2723,
     "tools": 9,
     "components": 20

@@ -212,7 +212,9 @@
         onchange={(next) => ondimension(declaration, next.values, next.level)}
       />
     {:else if declaration.type === 'dimension'}
+      {@const source = sourceFilters?.(declaration.id)}
       <DimensionFilter explicitParents={!!declaration.candidates} searchable={declaration.searchable??true} treeSelection={declaration.candidates?'independent':declaration.treeSelection==='level'?undefined:declaration.treeSelection} selection={declaration.selection??(declaration.options?{mode:'multiple'}:undefined)}
+        pagination={source?.pagination}
         onretry={onretry?()=>onretry(declaration.id):undefined}
         label={declaration.label}
         emptyLabel={emptyText}

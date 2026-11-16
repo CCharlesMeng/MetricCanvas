@@ -4,6 +4,7 @@ import type {RuntimeDataGateway,FilterCandidate} from './ports';
 import type {FilterValue,FilterValues} from './filter-values';
 import {candidateContextKey,filterCandidatesRequest,validFilterCandidates} from './filter-candidates';
 import {overriddenFilterIds,isUnrestrictedIocRegion,iocHeaderDeclaration} from '@metriccanvas/page/internal';
+import {withSourceCandidateSelection} from './source-candidate-window';
 
 /** Execution consumers share this fail-closed boundary, including seeded/initial receipts. */
 export function createCandidateValidator(page:Page,gateway:RuntimeDataGateway,context:{displayInputs?:()=>DisplayInputsSnapshot|undefined;filterRevision?:()=>number;now?:Date}={}) {
@@ -20,7 +21,7 @@ export function createCandidateValidator(page:Page,gateway:RuntimeDataGateway,co
   function key(filter:Extract<FilterDeclaration,{type:'dimension'}>,values:FilterValues) {
     const selected=values.get(filter.id);const level=selected?.type==='dimension'?selected.level:filter.defaultLevel??filter.hierarchy?.[0]?.id;
     const frozen={page,displayInputs:context.displayInputs?.(),filterRevision:context.filterRevision?.(),now:context.now??new Date()};
-    const request=filterCandidatesRequest(filter,declarations,values,level,frozen);
+    const request=withSourceCandidateSelection(page,filter,values,filterCandidatesRequest(filter,declarations,values,level,frozen));
     return {request,key:canonicalizeJson([request,candidateContextKey(filter,declarations,values,frozen)])};
   }
   function selection(filter:FilterDeclaration,values:FilterValues):boolean {

@@ -1,10 +1,12 @@
 import type { DimensionFilterDeclaration } from '@metriccanvas/page/internal';
 import type { DimensionValuesSnapshot, FilterValues } from '../../../runtime/src';
+import type { CandidatePageReader } from '../filters/candidate-paging';
 export const SOURCE_FILTER_CONTEXT=Symbol('sourceFilters');
 export interface SourceFilterBinding {
   declaration:DimensionFilterDeclaration;
   values:string[];
   candidates:DimensionValuesSnapshot;
+  pagination?:CandidatePageReader;
   onchange:(values:string[])=>void;
   onretry:()=>void;
 }

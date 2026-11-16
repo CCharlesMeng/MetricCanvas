@@ -307,6 +307,20 @@ IOC 业务 Region 只允许 iocHeader 内的单个组织树，树内选择地区
 
 完整合成场景：`/pages/filter-source-candidates`，包含 JSON 内联组织树、跨三个查询分页的渠道去重，以及共同消费两项筛选的图表。`?state=error`、`?state=incomplete`、`?state=empty` 分别演示失败、不完整和空候选；操作及证据边界见页面目录 README。仅验证本地合成 Adapter，未验证真实 DQE、Relay 或组织权限服务。
 
+<a id="source-candidate-query-pagination"></a>
+
+## 候选查询分页
+
+平面维度下拉继续用 `candidates.dataSource` 引用普通 DQE 查询。按需加载使用查询项已有的 `order`，例如 `{"order_by_field":"云服务","type":"asc","offset":0,"limit":10}`。每批条数由 `limit` 决定，示例用 10。页面 Schema 字段和版本不变。
+
+引擎只对平面下拉的单字符串维度查询启用按需加载。唯一输出维度必须是候选稳定值对应的 `queryField`，没有度量，显示名省略或使用同一字段，按该字段排序，且显式声明 `offset:0` 和正整数 `limit`。完整结果、计算、查询分支、期间聚合、结果绑定、树形候选和交集校准走原完整读取路径。只声明 `limit` 的业务 TopN 仍按原查询范围处理。
+
+打开下拉时读取首批，滚动列表到底后加载下一批。搜索由 DQE 在分页前执行，从 offset 0 开始。已选值走同一候选查询的等值条件核验，业务查询和导出共用该核验。相关筛选变化时沿用 `candidateContext` 的清空行为。空选若仍受候选门禁约束，最多用一条结果确认候选可用。未搜索且所有候选值已返回后才显示「全选」。
+
+同一页面运行实例在筛选条件和权限上下文相同时复用已通过的上游筛选核验。滚动续页只查询候选值的下一批。筛选或权限变化后重新核验，失败或取消的核验不能供后续请求复用。
+
+每批必须返回匹配候选的准确总数，且同一稳定值只出现一次。失败、总数矛盾或稳定值重复时保留前面成功的候选，重试同一窗口。查询诊断以页面数据源 ID、筛选器 ID、读取原因、offset、limit、返回条数及匹配总数定位批次。稳定排序无法给实时数据提供跨请求快照。上线前应核验实际 DQE 在当前权限和条件下的去重、排序、总数及单字段包含搜索。合成入口为 `/pages/filter-source-query-pagination`。
+
 ## 定稿日期默认值（6.104）
 
 页面的主时间筛选器在 `default.finalizationName` 声明统一截止表中的定稿名称。名称是非空字符串，可使用中文，首尾空白忽略，其余精确匹配；它表示默认日期的查询键。页面只声明名称与时间选择形态，固定 DQE 查询定义由集成应用配置，引擎负责执行。能力下限为6.104，5.x只读兼容也不能使用。首版支持自然期间、普通日/月范围和 timePoint，不支持 datetime 或 display:modes。
@@ -3112,6 +3126,7 @@ Schema位置：`#/definitions/searchFilter/properties/default`。
 - [key-office-priority-demo](examples/key-office-priority-demo.json)：完整合法页面；查询仅为静态契约证据。
 - [key-office-priority-target](examples/key-office-priority-target.json)：完整合法页面；查询仅为静态契约证据。
 - [filter-source-candidates](examples/filter-source-candidates.json)：完整合法页面；查询仅为静态契约证据。
+- [filter-source-query-pagination](examples/filter-source-query-pagination.json)：完整合法页面；查询仅为静态契约证据。
 - [finalization-default-time](examples/finalization-default-time.json)：完整合法页面；查询仅为静态契约证据。
 - [finalization-default-time-detail](examples/finalization-default-time-detail.json)：完整合法页面；查询仅为静态契约证据。
 - [finalization-date-defaults](examples/finalization-date-defaults.json)：完整合法页面；查询仅为静态契约证据。

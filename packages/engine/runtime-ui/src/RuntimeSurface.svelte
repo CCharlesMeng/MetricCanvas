@@ -20,7 +20,8 @@
   import { PRESENTATION_CONTEXT } from './presentation-context';
   import { chartOptionPaths, isChartOptionError } from '@metriccanvas/page/internal';
   import { CHART_OPTION_PATHS } from '../../widgets/src/shared/chart-option-extension';
-  import {sourceCandidatesGateway,createCandidateGatewaySession} from '@metriccanvas/data-execution/runtime';
+  import {sourceCandidatesGateway,createCandidateGatewaySession,sourceCandidateWindow,withSourceCandidateSelection} from '@metriccanvas/data-execution/runtime';
+  import type {CandidatePageReader} from './filters/candidate-paging';
   let candidateSession:ReturnType<typeof createCandidateGatewaySession>|undefined;
   import {initialFilterInputIssue} from './initial-filter-input';
   import {requestsRollingFinalization} from '../../runtime/src/filter-state';
@@ -364,10 +365,23 @@
   function sourceFilterCandidates(declaration:Extract<FilterDeclaration,{type:'dimension'}>) {
     return dimensionCandidates.get(candidateScopeKey(declaration.id,declaration.dimension,undefined,cascadeContext(declaration,declarations,filterValues,filterCandidateContext()))) ?? {status:'loading' as const};
   }
+  function sourceFilterPagination(declaration:Extract<FilterDeclaration,{type:'dimension'}>):CandidatePageReader|undefined {
+    const context = filterCandidateContext();
+    const window = context.page && sourceCandidateWindow(context.page,declaration);
+    if (!window) return;
+    const gateway = activeGateway;
+    const request = filterCandidatesRequest(declaration,declarations,filterValues,undefined,context);
+    const blocked = preparationBlocksFilter(declaration,declarations,preparingFilters);
+    const key = JSON.stringify([session,window.limit,blocked,cascadeContext(declaration,declarations,filterValues,context)]);
+    return {key,filterId:declaration.id,sourceId:window.sourceId,limit:window.limit,read:(offset,search,signal)=>{
+      if (blocked || !gateway.fetchFilterCandidates) return Promise.resolve({kind:'unavailable'});
+      return gateway.fetchFilterCandidates({...request,sourceRead:{kind:'page',offset,search}},{signal});
+    }};
+  }
   setContext<SourceFilterReader>(SOURCE_FILTER_CONTEXT,id=>{
     const declaration=declarations.find(filter=>filter.id===id);
     if(declaration?.type!=='dimension'||!declaration.candidates)return;
-    return {declaration,values:sourceFilterValues(filterValues,id),candidates:sourceFilterCandidates(declaration),
+    return {declaration,values:sourceFilterValues(filterValues,id),candidates:sourceFilterCandidates(declaration),pagination:sourceFilterPagination(declaration),
       onchange:values=>writeDimension(declaration,values),onretry:()=>retryCandidates(id)};
   });
   let tableViews = $state<Record<string, TableViewState>>({});
@@ -1002,7 +1016,15 @@
     const levels=declaration.hierarchy?.map(level=>level.id)??[undefined];
     for(const level of levels){
       if(declaration.candidates||declaration.candidateContext||declaration.treeSelection==='level'||declaration.candidateWindow){
-        let request:ReturnType<typeof filterCandidatesRequest>;try{request=filterCandidatesRequest(declaration,declarations,values,level,filterCandidateContext());}catch{const dimension=declaration.hierarchy?.find(item=>item.id===level)?.dimension??declaration.dimension;loader.unavailable(dimension,{filterId:declaration.id,level,context});continue;}
+        let request:ReturnType<typeof filterCandidatesRequest>;
+        try {
+          const input = filterCandidateContext();
+          request = withSourceCandidateSelection(input.page,declaration,values,filterCandidatesRequest(declaration,declarations,values,level,input));
+        } catch {
+          const dimension = declaration.hierarchy?.find(item=>item.id===level)?.dimension ?? declaration.dimension;
+          loader.unavailable(dimension,{filterId:declaration.id,level,context});
+          continue;
+        }
         if(force)candidateSession?.invalidate(request);
         loader.loadFilter(request,context,declaration.treeSelection==='level'?declaration.hierarchy?.map(item=>item.id):undefined,force);
       }else{

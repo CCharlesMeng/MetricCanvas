@@ -11,6 +11,16 @@ const closure = '决策闭环任务总体闭环率(投标-商务-合同)';
 const metricSets = [mainMetrics,['净商务折扣（原价）'],[closure],['净商务折扣','净商务折扣均值'],['净商务折扣'],['框架执行率','框架已达成金额','框架目标消费金额'],['已闭环任务数(投标-商务-合同)','决策闭环任务总数(投标-商务-合同)',closure],['风险合同率','风险合同数','合同总数']];
 const signatures = new Set(metricSets.flatMap(metrics => dimensionsFor(metrics).map(dims => JSON.stringify([dims,metrics]))));
 const failure = (): DqeSimItemResult => ({code:'DQE_SIM_UNSUPPORTED_QUERY',data:[],total_count:0,retDesc:'业务结果合成场景不支持此查询、期间或谓词',dqe:{columns:[],orders:[],limit:-1,offset:-1,sql:null}});
+const cloudField = '云服务';
+const cloudSignature = JSON.stringify([[cloudField],[]]);
+const customerClasses = ['卓越NA','战略NA','核心NA'];
+
+/** 给每个模拟组织提供多批候选，重叠服务可验证去重和匹配总数。 */
+const cloudServices = fixture.organizations.flatMap((organization, index) =>
+  Array.from({length:25}, (_, item) => {
+    const number = index * 5 + item;
+    return { ...organization, [cloudField]:`模拟云服务 ${String(number + 1).padStart(2,'0')}`, 客户级别:customerClasses[number % customerClasses.length] };
+  }));
 
 function dimensionsFor(metrics: string[]): string[][] {
   if (metrics[0] === closure) return [[],['地区部'],['决策业务类型','地区部'],['决策业务类型','地区部','代表处']];
@@ -21,7 +31,10 @@ function dimensionsFor(metrics: string[]): string[][] {
 
 /** Exact synthetic query signatures; no page ids, initial rows or frontend receipt injection. */
 export function executeBusinessResultMetrics(input: unknown): DqeSimItemResult | undefined {
-  if (!record(input) || !signatures.has(JSON.stringify([input.output_dims,input.output_metrics]))) return;
+  if (!record(input)) return;
+  const signature = JSON.stringify([input.output_dims,input.output_metrics]);
+  if (signature === cloudSignature) return cloudCandidates(input);
+  if (!signatures.has(signature)) return;
   try {
     if (input.query_type !== undefined) return failure();
     const filter = input.filter;
@@ -38,6 +51,48 @@ export function executeBusinessResultMetrics(input: unknown): DqeSimItemResult |
     const data = aggregateRows(selected,dims,metrics,filter.time,categories);
     return result(input,data,[...dims,...metrics]);
   } catch { return failure(); }
+}
+
+function cloudCandidates(input:ObjectValue):DqeSimItemResult {
+  const filter = input.filter, order = input.order;
+  if (input.query_type !== undefined || !record(filter) || !validCloudFilter(filter)) return failure();
+  if (!record(order) || order.order_by_field !== cloudField) return failure();
+  const offset = order.offset, limit = order.limit;
+  if (!wholeNumber(offset,0) || !wholeNumber(limit,1)) return failure();
+  const predicates = (filter.dims as ObjectValue[]);
+  const values = new Set(cloudServices.filter(row => predicates.every(predicate => matchesCloud(row,predicate))).map(row => row[cloudField]));
+  const rows = sortDqeRows([...values].map(value => ({[cloudField]:value})), order, [cloudField]);
+  if (!rows) return failure();
+  return {code:'SUCCESS',data:rows.slice(offset,offset + limit),total_count:rows.length,
+    dqe:{columns:[{id:cloudField,caption:cloudField,type:'dimension',data_type:'STRING'}],orders:[],offset,limit,sql:null}};
+}
+
+function wholeNumber(value:unknown, minimum:number):value is number {
+  return typeof value === 'number' && Number.isSafeInteger(value) && value >= minimum;
+}
+
+function validCloudFilter(filter:ObjectValue):boolean {
+  return record(filter.time) && validTime(filter.time) && JSON.stringify(filter.metrics) === '[]' &&
+    Array.isArray(filter.dims) && filter.dims.every(validCloudPredicate);
+}
+
+function validCloudPredicate(value:unknown):boolean {
+  if (!record(value) || value.is_exclude === true || !Array.isArray(value.dim_value_list)) return false;
+  if (!value.dim_value_list.every(item => typeof item === 'string')) return false;
+  if (value.operator === 'contains') return value.dim_name === cloudField && value.dim_value_list.length === 1;
+  return (value.operator ?? '=') === '=' &&
+    ['geo_pc_code','地区部','代表处','客户级别',cloudField].includes(String(value.dim_name));
+}
+
+function matchesCloud(row:(typeof cloudServices)[number], predicate:ObjectValue):boolean {
+  const field = predicate.dim_name as keyof typeof row;
+  const value = row[field];
+  const choices = predicate.dim_value_list as string[];
+  if (predicate.operator === 'contains') return String(value).includes(choices[0]);
+  if (choices.includes(String(value))) return true;
+  if (field === '地区部') return choices.includes(row.region_dept_code);
+  if (field === '代表处') return choices.includes(row.rep_office_code);
+  return false;
 }
 
 function validTime(time: ObjectValue): boolean {

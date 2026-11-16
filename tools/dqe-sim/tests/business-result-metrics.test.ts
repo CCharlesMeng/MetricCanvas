@@ -98,6 +98,25 @@ function query(source: string): JsonObject {
   return item;
 }
 
+it('sorts and deduplicates business cloud candidates before paging through the match count', () => {
+  const item = {
+    output_dims:['云服务'], output_metrics:[],
+    filter:{time:{period:'month',start:'2026-11',end:'2026-11'},dims:[],metrics:[]},
+    order:{order_by_field:'云服务',type:'asc',offset:0,limit:10}
+  };
+  const first = executeDqeItem(item);
+  const second = executeDqeItem({...item,order:{...item.order,offset:10}});
+  expect(first).toMatchObject({code:'SUCCESS',total_count:45,dqe:{offset:0,limit:10}});
+  expect(second).toMatchObject({code:'SUCCESS',total_count:45,dqe:{offset:10,limit:10}});
+  expect(first.data).toHaveLength(10);
+  expect(second.data).toHaveLength(10);
+  expect(second.data[0]).toEqual({'云服务':'模拟云服务 11'});
+  expect(executeDqeItem({...item,filter:{...item.filter,dims:[
+    {dim_name:'地区部',dim_value_list:['CN-NORTH']},
+    {dim_name:'云服务',dim_value_list:['25'],operator:'contains'}
+  ]}})).toMatchObject({code:'SUCCESS',total_count:1,data:[{'云服务':'模拟云服务 25'}]});
+});
+
 it('rejects unsupported predicates even after an empty match and refuses windowed summaries',() => {
   const main = query('region-dept-summary');
   expect(executeDqeItem({...main,order:{limit:1,offset:0}}).code).toBe('DQE_SIM_UNSUPPORTED_QUERY');

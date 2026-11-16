@@ -96,6 +96,7 @@ resolveQueryResultInputs
 reusableInitialSnapshot
 searchTableRows
 sortTableRows
+sourceCandidateWindow
 sourceCandidatesGateway
 supportsMembershipCandidates
 tableColumnPresentation
@@ -103,6 +104,7 @@ tableDefaultInputsPending
 timeFill
 validFilterCandidates
 visibleSourceIds
+withSourceCandidateSelection
 
 ## ./dqe
 DEFAULT_DQE_ENDPOINT

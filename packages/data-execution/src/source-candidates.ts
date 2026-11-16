@@ -4,12 +4,15 @@ import { inheritMembershipCandidates } from './membership-candidates';
 import { createSourceProgram } from './source-program/session';
 import type { FilterValue, FilterValues } from './filter-values';
 import type { FilterCandidate, FilterCandidatesRequest, RuntimeDataGateway } from './ports';
+import { inspectSourceCandidateWindow } from './source-candidate-window';
+import { createSourceCandidateWindowReader } from './read-source-candidate-window';
 
 const owner=Symbol('sourceCandidatePage');
 type Context={displayInputs?:()=>DisplayInputsSnapshot|undefined;filterRevision?:()=>number;clock?:()=>Date;now?:Date};
 /** The same candidate port serves controls, headless reads and frozen exports. */
 export function sourceCandidatesGateway(page:Page,base:RuntimeDataGateway,context:Context={}):RuntimeDataGateway {
   if((base as RuntimeDataGateway & {[owner]?:Page})[owner]===page||!page.filters?.some(filter=>filter.type==='dimension'&&filter.candidates))return base;
+  const readSourceCandidateWindow = createSourceCandidateWindowReader(page);
   const gateway:RuntimeDataGateway={...base,fetchData:base.fetchData.bind(base),
     ...(base.fetchDimensionValues?{fetchDimensionValues:base.fetchDimensionValues.bind(base)}:{}),
     ...(base.fetchColumnCandidates?{fetchColumnCandidates:base.fetchColumnCandidates.bind(base)}:{}),
@@ -18,7 +21,14 @@ export function sourceCandidatesGateway(page:Page,base:RuntimeDataGateway,contex
       if(filter?.type!=='dimension'||!filter.candidates)return base.fetchFilterCandidates?base.fetchFilterCandidates(request,options):{kind:'unavailable'};
       if(sourceCandidateErrors(page).length)fail('DQE_CONFIG_ERROR','页面数据源候选声明无效');
       const conditions=candidateConditions(page,request);
-      const program=createSourceProgram(page,{gateway,...context});
+      const plan = inspectSourceCandidateWindow(page, filter);
+      if (request.sourceRead) {
+        if (plan.kind !== 'window') return {kind:'unavailable'};
+        const frozen = {displayInputs:context.displayInputs?.(), filterRevision:context.filterRevision?.(), now:context.now??context.clock?.()};
+        return readSourceCandidateWindow(plan, filter.id, request.sourceRead, conditions, gateway, options.signal, frozen);
+      }
+      const reason = plan.kind === 'complete' ? plan.reason : 'complete-candidate-read';
+      const program=createSourceProgram(page,{gateway,...context,diagnostics:{sourceCandidates:{filterId:filter.id,kind:'complete',reason}}});
       let snapshot:DataSnapshot|undefined;
       try {
         for await(const update of program.read({roots:[filter.candidates.dataSource],conditions,purpose:'complete',strictComplete:true,useInitial:false,signal:options.signal,displayInputs:context.displayInputs?.(),filterRevision:context.filterRevision?.(),now:context.now??context.clock?.()}))if(update.sourceId===filter.candidates.dataSource)snapshot=update.snapshot;

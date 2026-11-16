@@ -11,7 +11,7 @@
     },
     {
       "file": "references/authoring-knowledge/model.json",
-      "sha256": "2b230ba0d2b94ff014554ef021a9b45e472e06d9698d49aafa18dc58a62fca21"
+      "sha256": "690d613756ef05a6173ea374770ebd045b334bcc85f7cb220d36e0c12936c677"
     },
     {
       "file": "references/example-guides/chart-customer-series/customer-category-series.md",
@@ -24,6 +24,10 @@
     {
       "file": "references/example-guides/dqe-independent-requests/independent-requests.md",
       "sha256": "1034de55f7e35e51c257d3a658949044f26f09e180aafa52e2bd1f6a51285ce4"
+    },
+    {
+      "file": "references/example-guides/filter-source-query-pagination/source-candidate-query-pagination.md",
+      "sha256": "709ce9fb40c56c69fbe785aed3b7f671f511e6ae3cc58b9ca7ef22d592c1082d"
     },
     {
       "file": "references/example-guides/ioc-auto-back-detail/browser-back.md",
@@ -2738,6 +2742,10 @@
       "sha256": "d75c10dfe8ce723620c07702942a2833e7a6d950966d1fabbe447933828ba677"
     },
     {
+      "file": "references/page-metadata/examples/filter-source-query-pagination.json",
+      "sha256": "122b7e451495f5ffdd5b4a24cc745f1876f02ab801e365e87fae4bea30288698"
+    },
+    {
       "file": "references/page-metadata/examples/filters-page.json",
       "sha256": "2137c4cb6635f98c6bb88d14158756dfaa6c9777ddca1772bc84fedfc03e6135"
     },
@@ -3443,11 +3451,11 @@
     },
     {
       "file": "references/page-metadata/filters.md",
-      "sha256": "ea5aac24062e32ad018a4a792c2cbe486dc7abe65ce3b68b64c2023c756e1d91"
+      "sha256": "b8d482e0f19c2c12ae46abed78038d1f128b819391e4da78143fb8f3f9085b4a"
     },
     {
       "file": "references/page-metadata/index.json",
-      "sha256": "2fd438ce7f3d5d6fef8427f778300ca0506430b1b2ec2e177157e377f63fad6c"
+      "sha256": "6031994aaa7f9fd220becd37b21c4ece449e3c23fe6b19d17842e7dac2a71505"
     },
     {
       "file": "references/page-metadata/page.md",
@@ -3467,7 +3475,7 @@
     },
     {
       "file": "references/page-metadata/rules.json",
-      "sha256": "622aade13b7ed321a84fff479809fe49465815d671139a3436354c45f10175f9"
+      "sha256": "f706d5f2023cd5c980d6727cb8d5efbdfd400b4b4f323f42023ca5e8503d838f"
     },
     {
       "file": "references/page-metadata/schema.json",

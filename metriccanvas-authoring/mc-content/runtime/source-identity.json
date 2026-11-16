@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "eca08c489d924b3b0b40e70367b43d0df504119dd4f4cef89d3beb463c51c2f0",
+  "sha256": "8e2721d4f300405e78899ee2d46c644a0be02e4545b0565976c5bafc33096a22",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -136,7 +136,7 @@
     },
     {
       "file": "docs/page-metadata/filters.md",
-      "sha256": "b74cf0b587fa836152a0ac55c1a88b2fe607226ed338e82df52b50e0a2b4d715"
+      "sha256": "fdf7ce044e45259c9750c0ca72222807344a18f0e3a8337068a8feedce44656a"
     },
     {
       "file": "docs/page-metadata/layout-migration.md",
@@ -160,7 +160,7 @@
     },
     {
       "file": "docs/page-metadata/reference-map.json",
-      "sha256": "6ecbbb6f6b55bff2b64a5baa510c7fc963de980244238af5b75336efd0db1788"
+      "sha256": "187caf3b53e7118d5174b484ec7642d3c95849f9d9d82d21c85671622472a5d7"
     },
     {
       "file": "docs/page-metadata/sections-and-layout.md",
@@ -2520,7 +2520,7 @@
     },
     {
       "file": "pages/capabilities/filters/README.md",
-      "sha256": "6ce33db1b9823ba3891e387acb35d5c54371ad1091790bdaf3f400bfdf1a2cd8"
+      "sha256": "972bac79c73c07d5c3d914c829cc737823cd39f75b7985366cacce85465567be"
     },
     {
       "file": "pages/capabilities/filters/chart-include-exclude.json",
@@ -2553,6 +2553,10 @@
     {
       "file": "pages/capabilities/filters/filter-source-candidates.json",
       "sha256": "d75c10dfe8ce723620c07702942a2833e7a6d950966d1fabbe447933828ba677"
+    },
+    {
+      "file": "pages/capabilities/filters/filter-source-query-pagination.json",
+      "sha256": "122b7e451495f5ffdd5b4a24cc745f1876f02ab801e365e87fae4bea30288698"
     },
     {
       "file": "pages/capabilities/filters/finalization-default-time-detail.json",
@@ -3296,7 +3300,7 @@
     },
     {
       "file": "pages/temporary/business-result-pinned-diagnosis-20261102/business-result-metrics.json",
-      "sha256": "48805cc896d6a3ca96b55a7108aa3f86a2b936edb1dc3a5d21fcdb5841ae093a"
+      "sha256": "4171ef0ecd563c11f2f76960028b9428c66526a14b992b3f0833cf397de5aefd"
     },
     {
       "file": "pages/temporary/contract-maturity-linkage-20261027/README.md",
@@ -3856,11 +3860,11 @@
     },
     {
       "file": "tools/scripts/page-conformance-sources.ts",
-      "sha256": "d63fd316377f672a77002125764bca6d10923747cb8a2191ec8910bb8a099a49"
+      "sha256": "3dc2b667a7205cf883d48938b3bd004d08f5280f5ddc86e9590f3faedb26a712"
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "eabce264910486378323c80eda3ceeb686e0a26c4601fc836464e89c8613bf0a"
+      "sha256": "f8e4c62760d8b31ff7372b12effdcbe7654b491b53c6a026e0ec1fa99a7bd015"
     },
     {
       "file": "tools/scripts/page-files.d.mts",

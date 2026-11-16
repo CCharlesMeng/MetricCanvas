@@ -726,9 +726,10 @@
     },
     {
       "id": "filter-source-candidates",
-      "description": "6.90 页面数据源完整候选、静态树及独立单多选",
+      "description": "6.90 页面数据源候选、静态树及独立单多选",
       "valid": [
-        "filter-source-candidates"
+        "filter-source-candidates",
+        "filter-source-query-pagination"
       ],
       "invalid": [
         "source-candidate-version",

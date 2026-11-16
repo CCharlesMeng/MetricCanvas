@@ -271,7 +271,6 @@
       },
       "source": {
         "type": "query",
-        "resultScope": "complete",
         "query": {
           "language": "dqe",
           "filterBindings": {
@@ -306,7 +305,12 @@
                     "is_aggregate": false
                   }
                 },
-                "order": {}
+                "order": {
+                  "order_by_field": "云服务",
+                  "type": "asc",
+                  "offset": 0,
+                  "limit": 10
+                }
               }
             ]
           }

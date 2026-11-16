@@ -9,10 +9,11 @@
   import { selectionNodes, flattenNodes, filterNodes, selectionState, toggleSelection, type SelectionNode, type TreeSelection } from './selection';
 
   let {options, value = [], label, multiple = true, tree = false, searchable = true,
-    treeSelection = 'independent', clearable = false, disabled = false, loading = false, placeholder = '请选择', allSelectedLabel, statusText, statusError = false, required = false, onretry, onchange}:
+    treeSelection = 'independent', clearable = false, disabled = false, loading = false, placeholder = '请选择', allSelectedLabel, statusText, statusError = false, required = false, onretry, onchange, paging}:
     {options: UiTreeOption[]; value?: string[]; label: string; multiple?: boolean; tree?: boolean;
      loading?: boolean; searchable?: boolean; treeSelection?: TreeSelection; disabled?: boolean; placeholder?: string; allSelectedLabel?: string;
-     statusText?: string; statusError?: boolean; clearable?: boolean; required?: boolean; onretry?:()=>void; onchange?: (value: string[]) => void} = $props();
+     statusText?: string; statusError?: boolean; clearable?: boolean; required?: boolean; onretry?:()=>void; onchange?: (value: string[]) => void;
+     paging?: {onopen:(open:boolean)=>void; onsearch:(term:string)=>void; onmore?:()=>void; complete:boolean; loadingMore:boolean; failed:boolean}} = $props();
 
   let trigger: HTMLButtonElement;
   let popup: HTMLDivElement;
@@ -25,7 +26,7 @@
   let left = $state(0), top = $state(0), width = $state(0);
   const nodes = $derived(selectionNodes(options));
   const flat = $derived(flattenNodes(nodes));
-  const visible = $derived(filterNodes(nodes, keyword));
+  const visible = $derived(paging ? nodes : filterNodes(nodes, keyword));
   const labels = $derived(new Map(flat.map(node => [node.value, node])));
   const policy = $derived(tree ? treeSelection : 'independent');
   const selectable = $derived(flat.filter(node => !node.disabled && node.selectable !== false && (policy !== 'leaf' || !node.children?.length)));
@@ -39,6 +40,16 @@
   $effect(()=>{if(!open||!trigger)return;const observer=new MutationObserver(()=>{if(trigger.closest('[inert]'))close(false);});for(let node:HTMLElement|null=trigger;node;node=node.parentElement)observer.observe(node,{attributes:true,attributeFilter:['inert']});return()=>observer.disconnect();});
   // Reposition after filtering/expanding, without persisting any business selection.
   $effect(() => { visible; expanded; if (open) tick().then(place); });
+  $effect(() => { paging?.onopen(open); });
+
+  function observeMore(node: HTMLElement, more: () => void) {
+    let active = true;
+    const observer = new IntersectionObserver(entries => {
+      if (active && entries.some(entry => entry.isIntersecting)) more();
+    }, {root:node.parentElement});
+    observer.observe(node);
+    return {destroy:() => { active = false; observer.disconnect(); }};
+  }
 
   function place() {
     if (!open) return;
@@ -143,7 +154,7 @@
     ontoggle={event => {open = event.currentTarget.matches(':popover-open');}} onkeydown={popupKeys}>
     {#if searchable}<div class="mc-ui-input mc-ui-input-underline mc-ui-select-dropdown__search">
       <span class="mc-ui-input__prefix"><Icon name="search"/></span>
-      <input bind:this={searchInput} class="mc-ui-input__inner" type="text" aria-label={`搜索${label}`} placeholder="输入关键字搜索" bind:value={keyword}/>
+      <input bind:this={searchInput} class="mc-ui-input__inner" type="text" aria-label={`搜索${label}`} placeholder="输入关键字搜索" bind:value={keyword} oninput={event=>paging?.onsearch(event.currentTarget.value)}/>
     </div>{/if}
     {#if loading}<LoadingPlaceholder />
     {:else if statusText}<p class="selection-status" role={statusError ? 'alert' : 'status'}>{statusText}</p>{#if statusError && onretry}<button type="button" class="mc-ui-option mc-ui-select-dropdown__item choice" onclick={onretry}>重试</button>{/if}
@@ -153,16 +164,19 @@
         {#each visible as node (node.value)}{@render treeRow(node, 1)}{/each}
       </div>
     {:else}
-      <div role="listbox" aria-label={`${label}选项`} aria-multiselectable={multiple}>
-        {#if multiple && !required && !searchActive}<button type="button" class="mc-ui-option mc-ui-select-dropdown__item choice" role="option" aria-selected={allSelected} data-selection-choice onclick={() => onchange?.(allSelected ? value.filter(item => !selectable.some(node => node.value === item)) : [...new Set([...value, ...selectable.map(node => node.value)])])}>
+      <div role="listbox" class:paged={!!paging} aria-label={`${label}选项`} aria-multiselectable={multiple}>
+        {#if multiple && !required && !searchActive && (!paging || paging.complete)}<button type="button" class="mc-ui-option mc-ui-select-dropdown__item choice" role="option" aria-selected={allSelected} data-selection-choice onclick={() => onchange?.(allSelected ? value.filter(item => !selectable.some(node => node.value === item)) : [...new Set([...value, ...selectable.map(node => node.value)])])}>
           {@render checkbox(allSelected, someSelected && !allSelected)}<span>全选</span>
         </button>{/if}
         {#each visible as node (node.value)}<button type="button" class="mc-ui-option mc-ui-select-dropdown__item choice" class:selected={value.includes(node.value)} class:is-disabled={node.disabled}
           role="option" aria-selected={value.includes(node.value)} disabled={node.disabled} data-selection-choice data-value={node.value} title={node.value} onclick={() => choose(node)}>
           {#if multiple}{@render checkbox(value.includes(node.value), false)}{/if}<span>{node.label}</span>
         </button>{/each}
+        {#if open && paging?.onmore}<div class="selection-more" aria-hidden="true" use:observeMore={paging.onmore}></div>{/if}
       </div>
     {/if}
+    {#if paging?.loadingMore}<p class="selection-status" role="status">正在加载更多</p>{/if}
+    {#if paging?.failed}<p class="selection-status" role="alert">后续候选项加载失败</p><button type="button" class="mc-ui-option mc-ui-select-dropdown__item choice" onclick={onretry}>重试</button>{/if}
   </div>
 </Theme>
 
@@ -206,6 +220,8 @@
   .selection-popup[popover]:popover-open{display:flex;flex-direction:column}
   .selection-popup>.mc-ui-select-dropdown__search,.selection-status{flex:none}
   .selection-popup>[role="tree"],.selection-popup>[role="listbox"]{min-height:0;overflow:auto;flex:0 1 auto}
+  .selection-popup>[role="listbox"].paged{max-height:240px}
+  .selection-more{height:1px}
   .mc-ui-input__prefix{position:absolute;left:0;top:0;height:var(--tv-Select-height,32px);display:flex;align-items:center;color:var(--tv-color-icon,#808080)}
   .selection-status{margin:0;padding:var(--tv-space-md,8px) var(--tv-space-xl,16px);color:var(--tv-color-text-weaken,#808080);font-size:var(--tv-font-size-default,14px)}
   .choice{font:inherit;border:0;background:transparent;text-align:left;cursor:pointer;display:flex;align-items:center;gap:var(--tv-space-md,8px);min-width:0}

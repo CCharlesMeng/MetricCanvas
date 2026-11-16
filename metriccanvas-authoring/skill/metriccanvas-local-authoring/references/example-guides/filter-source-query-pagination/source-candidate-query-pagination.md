@@ -1,0 +1,9 @@
+## 页面数据源候选按需分页
+
+复用用途：为平面维度下拉配置后端分页，滚动追加候选值。入口 `/pages/filter-source-query-pagination`。
+
+参考对象：筛选器 `service`、查询页面数据源 `service-options` 和通用下拉 `service-picker`。用 `candidates.dataSource` 关联页面数据源，在查询的 `order` 设置初始 offset、每批 limit 和稳定排序。
+
+移植边界：将示例的「云服务」和「范围」替换为实际 DQE 字段，保留候选依赖声明，并确认响应包含去重后的匹配总数。查询及数据均为合成。
+
+可观察预期与环境：`pnpm dev:playground` 启动后打开下拉，首批为 10 条，滚动续页。搜索 25 返回对应候选并保留此前的排除项。访问 `?state=page-failure` 验证保留已加载选项和重试第二批。真实 DQE 另行验收。

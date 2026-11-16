@@ -6,12 +6,25 @@
   import type {DimensionSelectionExtension} from '@metriccanvas/page/internal';
   import type { DimensionValuesSnapshot } from '../../../runtime/src';
   import { buildFilterTree, type FilterTreeNode } from './tree';
-  let {label, emptyLabel = '全部', allSelectedLabel, candidates, value, display = 'select', selection, searchable = true, treeSelection = 'descendants', explicitParents = false, structural = false, treeLevel = '', disabled = false, onretry, onchange}:
+  import { candidatePaging, type CandidatePageReader, type CandidatePages } from './candidate-paging';
+  let {label, emptyLabel = '全部', allSelectedLabel, candidates, value, display = 'select', selection, searchable = true, treeSelection = 'descendants', explicitParents = false, structural = false, treeLevel = '', disabled = false, onretry, onchange, pagination}:
     {label?: string; emptyLabel?: string; allSelectedLabel?: string; candidates: DimensionValuesSnapshot; value: string[];
      display?: 'select'|'tabs'|'tree'|'search'; selection?: DimensionSelectionExtension['selection']; searchable?: boolean;
-     treeSelection?: TreeSelection; explicitParents?:boolean; structural?:boolean; treeLevel?:string; onretry?:()=>void; disabled?: boolean; onchange: (values:string[]) => void} = $props();
+     treeSelection?: TreeSelection; explicitParents?:boolean; structural?:boolean; treeLevel?:string; onretry?:()=>void; disabled?: boolean; onchange: (values:string[]) => void;
+     pagination?:CandidatePageReader} = $props();
   const loading = $derived(candidates.status === 'idle' || candidates.status === 'loading');
-  const options = $derived(candidates.status === 'ready' ? candidates.candidates : []);
+  let pages = $state<CandidatePages>({candidates:[], loading:false, error:false});
+  const browser = candidatePaging(next => { pages = next; });
+  $effect(() => { browser.configure(pagination); });
+  $effect(() => () => browser.dispose());
+  const hasRows = $derived(pages.candidates.length > 0);
+  const complete = $derived(pages.total === pages.candidates.length);
+  const paging = $derived(pagination ? {
+    onopen:browser.setOpen, onsearch:browser.search, complete,
+    onmore:(!pages.loading && !pages.error && !complete) ? browser.more : undefined,
+    loadingMore:hasRows && pages.loading, failed:hasRows && pages.error
+  } : undefined);
+  const options = $derived(pagination ? pages.candidates : candidates.status === 'ready' ? candidates.candidates : []);
   function toUi(node: FilterTreeNode): UiTreeOption {
     return {value: node.value ?? `structure:${node.path}`, label: node.label, disabled:node.disabled, selectable: node.value !== null, children: node.children.length ? node.children.map(toUi) : undefined};
   }
@@ -37,7 +50,11 @@
     {#if loading}<TextSkeleton lines={1} />{:else if statusText}<span role={candidates.status === 'error' ? 'alert' : 'status'} data-candidates-status={candidates.status}>{statusText}</span>{/if}
   {:else}
     <div class="dropdown" data-candidates-status={candidates.status}>
-      <Selection {loading} label={label ?? '维度筛选'} options={treeResult.options} {value} {onretry} tree={display === 'tree'} multiple={selection?.mode !== 'single'} {searchable} treeSelection={structural?'independent':treeSelection} {disabled} required={selection?.required} clearable={!selection?.required} placeholder={emptyLabel} {allSelectedLabel} {statusText} statusError={treeResult.error || candidates.status === 'error'} onchange={commit}/>
+      <Selection loading={pagination ? pages.loading && !hasRows : loading} label={label ?? '维度筛选'} options={treeResult.options} {value}
+        onretry={pagination ? browser.more : onretry} {paging} tree={display === 'tree'} multiple={selection?.mode !== 'single'} {searchable}
+        treeSelection={structural?'independent':treeSelection} {disabled} required={selection?.required} clearable={!selection?.required} placeholder={emptyLabel} {allSelectedLabel}
+        statusText={pagination ? pages.error && !hasRows ? '候选项加载失败' : undefined : statusText}
+        statusError={pagination ? pages.error : treeResult.error || candidates.status === 'error'} onchange={commit}/>
     </div>
   {/if}
 </div>
