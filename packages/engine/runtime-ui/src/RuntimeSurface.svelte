@@ -8,7 +8,7 @@
   import {invalidateAiSummaryPage} from './ai-summary/runtime/session';
   import {debugWarn,createFinalizationPreparation,inheritFinalizationCache,supportsMembershipCandidates} from '@metriccanvas/data-execution/runtime';
   import {preparationBlocksPage,preparationBlocksFilter,discardPreparingData} from './preparation-blocked';
-  import { isOfficeNavigationFeedback, officeNavigationTarget, sameNavigationAddress } from './ioc-header/office-navigation';
+  import { isOfficeNavigationFeedback, officeNavigationInput, officeNavigationTarget, sameNavigationAddress, type OfficeNavigationInput } from './ioc-header/office-navigation';
   import {nativeSourceFilterIds,nativeIocRuntimePage} from '@metriccanvas/page/internal';
   import { hierarchyLevelOf } from '@metriccanvas/page/internal';
   import { projectSnapshotRows, snapshotCellFallbacks, tablePinnedSlots, restoreCellFallbacks, pinnedSnapshotError } from '@metriccanvas/page/internal';
@@ -434,7 +434,7 @@
   let disposers: Array<() => void> = [];
   type SessionInput = Pick<RuntimeSurfaceProps, 'document' | 'dataGateway' | 'pageRevisionId' | 'execution'> & { initialSearch: string };
   let appliedInput: SessionInput | undefined;
-  let pendingOffice: string | undefined;
+  let pendingOffice: OfficeNavigationInput | undefined;
 
   $effect(() => {
     const next = { document, dataGateway, initialSearch, pageRevisionId, execution };
@@ -1328,10 +1328,10 @@
     }
     navigationMessage = '';
     const office = entry ? undefined : dimensionValueOf(filters, 'region').values[0];
-    navigate(result.href, undefined, entry, office);
+    navigate(result.href, undefined, entry, office ? officeNavigationInput(target, office) : undefined);
   }
 
-  function navigate(href: string, event?: MouseEvent, entry?: Pick<RuntimeNavigationTarget, 'replace' | 'sourcePageId'>, office?: string) {
+  function navigate(href: string, event?: MouseEvent, entry?: Pick<RuntimeNavigationTarget, 'replace' | 'sourcePageId'>, office?: OfficeNavigationInput) {
     if (event && (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)) return;
     const sourcePageId = pageState.phase === 'ready' ? pageState.page.id : undefined;
     pendingOffice = office;

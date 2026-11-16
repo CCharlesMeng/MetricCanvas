@@ -233,12 +233,23 @@ test('宿主可选接管，同文档更换初始参数重新初始化，省略�
 });
 
 
-test('代表处下钻等待详情文档时保留概览的筛选与查询结果', async ({ page }) => {
-  const sourceSearch = 'region-dept=CN-EAST&period=quarter:2026-Q2';
+for (const echoKey of ['rep-office', 'rep-office-name', 'region'] as const) {
+test(`代表处下钻期间保留地区部表格，来源页收到 ${echoKey}`, async ({ page }) => {
+  const sourceSearch = 'region=全球&region.level=geo&period=quarter:2026-Q2';
   await page.goto('/pages/ioc-office-drill-overview');
   await expect.poll(() => page.evaluate(() => !!window.runtime)).toBe(true);
-  await page.evaluate(search => {
+  await page.evaluate(({ search, echoKey }) => {
     const source = window.pageDocument;
+    const control = source.sections[0].components[0].props.components[1];
+    control.props.officeNavigate.query['rep-office-name'] = { source:'filter', id:'region' };
+    source.sections.push({
+      id:'department-overview',
+      visibleWhen:{ any:[
+        { filter:'region', part:'values', op:'isEmpty' },
+        { filter:'region', part:'values', op:'containsAny', values:['全球'] }
+      ] },
+      components:[source.sections[0].components.pop()]
+    });
     const candidates = [
       { value:'全球', label:'全球', level:'geo' },
       { value:'CN-EAST', label:'华东地区部', level:'region-dept', parent:{ level:'geo', value:'全球' } },
@@ -248,7 +259,7 @@ test('代表处下钻等待详情文档时保留概览的筛选与查询结果',
       async fetchFilterCandidates() { return { kind:'values', candidates }; },
       async fetchData(query) {
         const scope = query.filterValues.find(value => value.target === 'dimension');
-        document.body.dataset.lastOfficePredicate = JSON.stringify(scope);
+        document.body.dataset.lastOfficePredicate = JSON.stringify(scope ?? null);
         window.queryCalls.push({});
         return { rows:[{ region:'已加载结果', amount:12 }], totalCount:1 };
       }
@@ -259,27 +270,33 @@ test('代表处下钻等待详情文档时保留概览的筛选与查询结果',
       navigate(intent) {
         const target = new URL(intent.href, location.href);
         history.pushState(null, '', target);
-        window.runtime.update({ document:structuredClone(source), dataGateway:gateway, initialSearch:target.search });
+        const echoed = new URLSearchParams(target.search);
+        echoed.delete('rep-office');
+        echoed.delete('rep-office-name');
+        echoed.set(echoKey, target.searchParams.get('rep-office')!);
+        window.runtime.update({ document:structuredClone(source), dataGateway:gateway, initialSearch:echoed.toString() });
         return true;
       }
     } });
-  }, sourceSearch);
+  }, { search:sourceSearch, echoKey });
 
   const region = page.locator('[data-filter-id="region"]');
   const result = page.getByRole('cell', { name:'已加载结果' });
-  await expect(region).toContainText('华东地区部');
+  await expect(region).toContainText('全球');
   await expect(result).toBeVisible();
+  await result.evaluate(cell => cell.setAttribute('data-before-drill', 'true'));
   const before = await page.evaluate(() => window.queryCalls.length);
   await chooseTree(region, '上海代表处');
   await expect(page).toHaveURL(/ioc-office-drill-detail.*rep-office=SH-01/);
-  await expect(region).toContainText('华东地区部');
+  await expect(region).toContainText('全球');
   await expect(result).toBeVisible();
+  await expect(result).toHaveAttribute('data-before-drill', 'true');
   expect(await page.evaluate(() => window.queryCalls.length)).toBe(before);
 
   await page.evaluate(async () => {
     const detail = await (await fetch('/pages/ioc-office-drill-detail.json')).json();
     detail.dataSources = window.pageDocument.dataSources;
-    detail.sections[0].components.push(window.pageDocument.sections[0].components[1]);
+    detail.sections[0].components.push(window.pageDocument.sections[1].components[0]);
     window.runtime.update({ document:detail, dataGateway:window.officeDrillGateway, initialSearch:location.search });
   });
   await expect(page.getByRole('heading', { name:'代表处详情', exact:true })).toBeVisible();
@@ -293,9 +310,11 @@ test('代表处下钻等待详情文档时保留概览的筛选与查询结果',
     history.back();
   }, sourceSearch);
   await expect(page).toHaveURL(/ioc-office-drill-overview/);
-  await expect(region).toContainText('华东地区部');
-  await expect(page.locator('body')).toHaveAttribute('data-last-office-predicate', /"queryField":"地区部".*"CN-EAST"/);
+  await expect(region).toContainText('全球');
+  await expect(result).toBeVisible();
+  await expect(page.locator('body')).toHaveAttribute('data-last-office-predicate', 'null');
 });
+}
 
 test('指标值链接从实际点击的数据槽取行参数', async ({ page }) => {
   await page.goto('/pages/ioc-project-overview');

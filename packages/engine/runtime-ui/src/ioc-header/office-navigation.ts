@@ -8,12 +8,36 @@ export function officeNavigationTarget(page: Page, region: FilterValue | undefin
   return { ...target, query: { ...target.query, 'rep-office': { source: 'filter', id: 'region' } } };
 }
 
-export function isOfficeNavigationFeedback(source: unknown, incoming: unknown, search: string, office: string): boolean {
+export interface OfficeNavigationInput {
+  value: string;
+  forwardedKeys: string[];
+}
+
+export function officeNavigationInput(target: NavigationTarget, value: string): OfficeNavigationInput {
+  const forwardedKeys = Object.entries(target.query ?? {})
+    .filter(([, binding]) => binding.source === 'filter' && binding.id === 'region' && (binding.part ?? 'value') === 'value')
+    .map(([key]) => key);
+  return { value, forwardedKeys };
+}
+
+function matchesOfficeInput(query: URLSearchParams, office: OfficeNavigationInput): boolean {
   const region = readLevelURLSelection(
     { 'node/region-dept': 'region-dept', 'node/office': 'rep-office' },
-    new URLSearchParams(search)
+    query
   );
-  if (region?.level !== 'office' || region.value !== office) return false;
+  if (region) return region.level === 'office' && region.value === office.value;
+
+  const legacyLevel = query.get('region.level');
+  if (legacyLevel !== null && legacyLevel !== 'office') return false;
+  const keys = query.has('region') ? ['region'] : office.forwardedKeys;
+  return keys.some(key => {
+    const values = query.getAll(key);
+    return values.length === 1 && values[0] === office.value;
+  });
+}
+
+export function isOfficeNavigationFeedback(source: unknown, incoming: unknown, search: string, office: OfficeNavigationInput): boolean {
+  if (!matchesOfficeInput(new URLSearchParams(search), office)) return false;
   if (incoming === source) return true;
   try {
     return canonicalizeJson(incoming) === canonicalizeJson(source);
