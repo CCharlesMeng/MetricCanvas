@@ -75,6 +75,7 @@ filterCandidatesRequest
 filterTableRows
 filterTableRowsByHeaders
 inheritFinalizationCache
+inheritMembershipCandidates
 initialFilterValues
 initialTableViews
 initializePageParams
@@ -95,6 +96,7 @@ reusableInitialSnapshot
 searchTableRows
 sortTableRows
 sourceCandidatesGateway
+supportsMembershipCandidates
 tableColumnPresentation
 tableDefaultInputsPending
 timeFill
