@@ -9,7 +9,7 @@ interface PreviewPages {
 
 interface PreviewNavigationOptions {
   baseURL(): string;
-  visit(href: string): void | Promise<void>;
+  visit(href: string, replace?: true): void | Promise<void>;
   returns?: BrowserDrillReturn;
   onReturnChange?(): void;
   rememberSource?: boolean;
@@ -56,6 +56,10 @@ export function createPlaygroundNavigation(pages: PreviewPages, options: Preview
       const match = /^\/pages\/([^/]+)$/.exec(url.pathname);
       if (!match && url.pathname !== '/navigation-target') return false;
       const href = `${url.pathname}${url.search}${url.hash}`;
+      if (target.replace) {
+        void options.visit(href, true);
+        return true;
+      }
       if (options.returns && options.rememberSource && match) {
         void options.returns.navigate(href, target.sourcePageId, async value=>{await options.visit(value);}).then(options.onReturnChange).catch(error=>console.warn('[MetricCanvas][NAVIGATION_ERROR]',error));
       } else void options.visit(href);

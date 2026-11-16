@@ -2,9 +2,11 @@ import { z } from 'zod';
 import { idZ, nonEmptyTextValueZ } from './primitives';
 import { navigationTargetZ } from './navigation';
 
+const officeNavigationZ = navigationTargetZ.pick({ href: true, query: true });
+
 export const iocHeaderControlZ = z.discriminatedUnion('type', [
   z.object({id:idZ,type:z.literal('filterControl'),props:z.object({filterId:idZ}).strict()}).strict(),
-  z.object({id:idZ,type:z.literal('regionFilter')}).strict()
+  z.object({id:idZ,type:z.literal('regionFilter'),props:z.object({officeNavigate:officeNavigationZ.optional()}).strict().optional()}).strict()
 ]);
 export type IocHeaderControl = z.infer<typeof iocHeaderControlZ>;
 

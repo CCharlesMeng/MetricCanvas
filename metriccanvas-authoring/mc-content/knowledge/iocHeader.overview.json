@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.120",
+  "schemaVersion": "6.121",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "iocHeader.overview"
@@ -30,6 +30,21 @@
           ]
         },
         {
+          "id": "ioc-region-office-navigation",
+          "description": "IOC Region 直接下钻自动携带代表处，其他输入复用普通导航",
+          "valid": [
+            "ioc-office-drill-overview",
+            "ioc-office-drill-detail",
+            "ioc-office-navigation-page-param"
+          ],
+          "invalid": [
+            "ioc-office-navigation-version",
+            "ioc-office-navigation-reserved-key",
+            "ioc-office-navigation-no-row",
+            "ioc-office-navigation-legacy-root"
+          ]
+        },
+        {
           "id": "ioc-header-component",
           "description": "首section首组件全宽、唯一且不混写旧根字段",
           "valid": [
@@ -53,7 +68,10 @@
         "references/page-metadata/examples/ioc-header-section-placement.json",
         "references/page-metadata/examples/ioc-component-availability-page.json",
         "references/page-metadata/examples/ioc-component-ioc-header-page.json",
-        "references/page-metadata/examples/ioc-header-controls.json"
+        "references/page-metadata/examples/ioc-header-controls.json",
+        "references/page-metadata/examples/ioc-office-drill-overview.json",
+        "references/page-metadata/examples/ioc-office-drill-detail.json",
+        "references/page-metadata/examples/ioc-office-navigation-page-param.json"
       ]
     }
   ],

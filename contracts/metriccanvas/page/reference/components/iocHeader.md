@@ -59,8 +59,35 @@ RegionFilter 固定提供可搜索、可清空的单选组织树，层级为 `ge
 
 完整合成入口 `/pages/ioc-header-title-link` 与 `/pages/ioc-header-title-link-target`，覆盖页面参数、布尔筛选、目标校验和条件；操作与证据边界见示例目录 README。该场景不验证真实业务地址或 DQE。
 
+<a id="office-navigation"></a>
 
-页面协议 6.120。结构真源为本册[schema.json](../schema.json)，SHA256 `d09653e9ae42443ff450486875e54f39f2d6cd33ed6179e470426735d4fe6845`。字段表自动生成；可选不等于有默认值。
+## 代表处跨页下钻（6.121）
+
+来源页在 `regionFilter.props.officeNavigate` 声明一个目标。`href` 必填，`query` 可选，沿用 URL 导航的页面参数与筛选传参。控件没有行上下文。引擎以本次选中的 `office` 节点稳定值覆盖 URL 上的 `rep-office`，因此 `query` 不允许声明这个键。目标页使用标准 Region URL 输入，按自身候选权限校验组织值。
+
+```json
+{
+  "id": "region-control",
+  "type": "regionFilter",
+  "props": {
+    "officeNavigate": {
+      "href": "/pages/ioc-office-drill-detail",
+      "query": {
+        "period": { "source": "filter", "id": "stat-period", "part": "value" },
+        "period-from": { "source": "filter", "id": "stat-period", "part": "from" },
+        "period-to": { "source": "filter", "id": "stat-period", "part": "to" }
+      }
+    }
+  }
+}
+```
+
+配置后，在 IOC 页头选中一个代表处会直接打开目标页，保留来源页原有筛选和历史记录。初始化时已有一个代表处（例如 URL 输入）会在概览渲染和业务查询前导航，并替换当前历史记录。`back: true` 及兼容的 `back: "auto"` 沿用浏览器后退行为。目标使用独立详情页，避免指回概览。地区部的子节点数量不影响当前页筛选。省略 `officeNavigate` 时，代表处仍可作为页内筛选使用。
+
+统计期间使用当前已应用值。近一年显式映射模式值及起止范围，以便目标页恢复同一窗口。目标 URL 键由其实际筛选声明决定。合成入口 `/pages/ioc-office-drill-overview` 与 `/pages/ioc-office-drill-detail`，操作见 `pages/capabilities/ioc-header/controls/README.md`。
+
+
+页面协议 6.121。结构真源为本册[schema.json](../schema.json)，SHA256 `70776bd5693238e9632afa53aa79e9d12c8b3564eaa88d936d082d78d37ff36a`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -811,6 +838,186 @@ Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/com
 |---|---|
 | "regionFilter" | 用于选择@iocHeaderComponent.props.components[] · oneOf[1].type分支；同分支其它约束同时成立。 |
 
+<a id="schema-232f646566696e6974696f6e732f696f63486561646572436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f636f6d706f6e656e74732f6974656d732f6f6e654f662f312f70726f706572746965732f70726f7073"></a>
+
+### `@iocHeaderComponent.props.components[] · oneOf[1].props`
+
+Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1/properties/props`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支可选 | additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 组件的受控呈现配置。 |
+
+<a id="schema-232f646566696e6974696f6e732f696f63486561646572436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f636f6d706f6e656e74732f6974656d732f6f6e654f662f312f70726f706572746965732f70726f70732f70726f706572746965732f6f66666963654e61766967617465"></a>
+
+### `@iocHeaderComponent.props.components[] · oneOf[1].props.officeNavigate`
+
+Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1/properties/props/properties/officeNavigate`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支可选 | required=["href"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 代表处跨页下钻目标，页面声明 URL 和显式传参，引擎自动携带 rep-office。 |
+
+<a id="schema-232f646566696e6974696f6e732f696f63486561646572436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f636f6d706f6e656e74732f6974656d732f6f6e654f662f312f70726f706572746965732f70726f70732f70726f706572746965732f6f66666963654e617669676174652f70726f706572746965732f68726566"></a>
+
+### `@iocHeaderComponent.props.components[] · oneOf[1].props.officeNavigate.href`
+
+Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/href`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 目标URL，必须通过安全协议及结构检查。 |
+
+<a id="schema-232f646566696e6974696f6e732f696f63486561646572436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f636f6d706f6e656e74732f6974656d732f6f6e654f662f312f70726f706572746965732f70726f70732f70726f706572746965732f6f66666963654e617669676174652f70726f706572746965732f7175657279"></a>
+
+### `@iocHeaderComponent.props.components[] · oneOf[1].props.officeNavigate.query`
+
+Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支可选 | propertyNames={"type":"string","minLength":1} | Schema未设默认；装配/运行时默认见语义说明 | 受控查询定义，或导航URL参数映射，按所属结构判别。 |
+
+<a id="schema-232f646566696e6974696f6e732f696f63486561646572436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f636f6d706f6e656e74732f6974656d732f6f6e654f662f312f70726f706572746965732f70726f70732f70726f706572746965732f6f66666963654e617669676174652f70726f706572746965732f71756572792f6164646974696f6e616c50726f70657274696573"></a>
+
+### `@iocHeaderComponent.props.components[] · oneOf[1].props.officeNavigate.query{key}`
+
+Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| oneOf联合 | 动态键的值 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f696f63486561646572436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f636f6d706f6e656e74732f6974656d732f6f6e654f662f312f70726f706572746965732f70726f70732f70726f706572746965732f6f66666963654e617669676174652f70726f706572746965732f71756572792f6164646974696f6e616c50726f706572746965732f6f6e654f662f30"></a>
+
+### `@iocHeaderComponent.props.components[] · oneOf[1].props.officeNavigate.query{key} · oneOf[0]`
+
+Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/0`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["source","field"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f696f63486561646572436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f636f6d706f6e656e74732f6974656d732f6f6e654f662f312f70726f706572746965732f70726f70732f70726f706572746965732f6f66666963654e617669676174652f70726f706572746965732f71756572792f6164646974696f6e616c50726f706572746965732f6f6e654f662f302f70726f706572746965732f736f75726365"></a>
+
+### `@iocHeaderComponent.props.components[] · oneOf[1].props.officeNavigate.query{key} · oneOf[0].source`
+
+Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/0/properties/source`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="row" | Schema未设默认；装配/运行时默认见语义说明 | 此处声明的数据来源，分支由type选择。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "row" | 用于选择@iocHeaderComponent.props.components[] · oneOf[1].props.officeNavigate.query{key} · oneOf[0].source分支；同分支其它约束同时成立。 |
+
+<a id="schema-232f646566696e6974696f6e732f696f63486561646572436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f636f6d706f6e656e74732f6974656d732f6f6e654f662f312f70726f706572746965732f70726f70732f70726f706572746965732f6f66666963654e617669676174652f70726f706572746965732f71756572792f6164646974696f6e616c50726f706572746965732f6f6e654f662f302f70726f706572746965732f6669656c64"></a>
+
+### `@iocHeaderComponent.props.components[] · oneOf[1].props.officeNavigate.query{key} · oneOf[0].field`
+
+Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/0/properties/field`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 页面字段引用或字段绑定。 |
+
+<a id="schema-232f646566696e6974696f6e732f696f63486561646572436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f636f6d706f6e656e74732f6974656d732f6f6e654f662f312f70726f706572746965732f70726f70732f70726f706572746965732f6f66666963654e617669676174652f70726f706572746965732f71756572792f6164646974696f6e616c50726f706572746965732f6f6e654f662f31"></a>
+
+### `@iocHeaderComponent.props.components[] · oneOf[1].props.officeNavigate.query{key} · oneOf[1]`
+
+Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/1`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["source","id"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f696f63486561646572436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f636f6d706f6e656e74732f6974656d732f6f6e654f662f312f70726f706572746965732f70726f70732f70726f706572746965732f6f66666963654e617669676174652f70726f706572746965732f71756572792f6164646974696f6e616c50726f706572746965732f6f6e654f662f312f70726f706572746965732f736f75726365"></a>
+
+### `@iocHeaderComponent.props.components[] · oneOf[1].props.officeNavigate.query{key} · oneOf[1].source`
+
+Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/1/properties/source`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="param" | Schema未设默认；装配/运行时默认见语义说明 | 此处声明的数据来源，分支由type选择。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "param" | 用于选择@iocHeaderComponent.props.components[] · oneOf[1].props.officeNavigate.query{key} · oneOf[1].source分支；同分支其它约束同时成立。 |
+
+<a id="schema-232f646566696e6974696f6e732f696f63486561646572436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f636f6d706f6e656e74732f6974656d732f6f6e654f662f312f70726f706572746965732f70726f70732f70726f706572746965732f6f66666963654e617669676174652f70726f706572746965732f71756572792f6164646974696f6e616c50726f706572746965732f6f6e654f662f312f70726f706572746965732f6964"></a>
+
+### `@iocHeaderComponent.props.components[] · oneOf[1].props.officeNavigate.query{key} · oneOf[1].id`
+
+Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/1/properties/id`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 稳定标识符；唯一性范围由所属页面、分区、组件或字段空间决定。 |
+
+<a id="schema-232f646566696e6974696f6e732f696f63486561646572436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f636f6d706f6e656e74732f6974656d732f6f6e654f662f312f70726f706572746965732f70726f70732f70726f706572746965732f6f66666963654e617669676174652f70726f706572746965732f71756572792f6164646974696f6e616c50726f706572746965732f6f6e654f662f32"></a>
+
+### `@iocHeaderComponent.props.components[] · oneOf[1].props.officeNavigate.query{key} · oneOf[2]`
+
+Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/2`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["source","id"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f696f63486561646572436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f636f6d706f6e656e74732f6974656d732f6f6e654f662f312f70726f706572746965732f70726f70732f70726f706572746965732f6f66666963654e617669676174652f70726f706572746965732f71756572792f6164646974696f6e616c50726f706572746965732f6f6e654f662f322f70726f706572746965732f736f75726365"></a>
+
+### `@iocHeaderComponent.props.components[] · oneOf[1].props.officeNavigate.query{key} · oneOf[2].source`
+
+Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/2/properties/source`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="filter" | Schema未设默认；装配/运行时默认见语义说明 | 此处声明的数据来源，分支由type选择。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "filter" | 用于选择@iocHeaderComponent.props.components[] · oneOf[1].props.officeNavigate.query{key} · oneOf[2].source分支；同分支其它约束同时成立。 |
+
+<a id="schema-232f646566696e6974696f6e732f696f63486561646572436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f636f6d706f6e656e74732f6974656d732f6f6e654f662f312f70726f706572746965732f70726f70732f70726f706572746965732f6f66666963654e617669676174652f70726f706572746965732f71756572792f6164646974696f6e616c50726f706572746965732f6f6e654f662f322f70726f706572746965732f6964"></a>
+
+### `@iocHeaderComponent.props.components[] · oneOf[1].props.officeNavigate.query{key} · oneOf[2].id`
+
+Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/2/properties/id`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 稳定标识符；唯一性范围由所属页面、分区、组件或字段空间决定。 |
+
+<a id="schema-232f646566696e6974696f6e732f696f63486561646572436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f636f6d706f6e656e74732f6974656d732f6f6e654f662f312f70726f706572746965732f70726f70732f70726f706572746965732f6f66666963654e617669676174652f70726f706572746965732f71756572792f6164646974696f6e616c50726f706572746965732f6f6e654f662f322f70726f706572746965732f70617274"></a>
+
+### `@iocHeaderComponent.props.components[] · oneOf[1].props.officeNavigate.query{key} · oneOf[2].part`
+
+Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/2/properties/part`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | enum=["value","from","to","level","mode"] | Schema未设默认；装配/运行时默认见语义说明 | 引用分量；导航支持value/from/to/level及modes的mode，期间事实只接受固定事实part并按kind校验。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "value" | 普通单值/多值输入部分。 |
+| "from" | 范围起点部分。 |
+| "to" | 范围终点部分。 |
+| "level" | 层级维度的层级部分。 |
+| "mode" | 导航引用已应用时间模式；只允许display=modes范围筛选，与from/to一起构造目标URL。 |
+
+<a id="schema-232f646566696e6974696f6e732f696f63486561646572436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f636f6d706f6e656e74732f6974656d732f6f6e654f662f312f70726f706572746965732f70726f70732f70726f706572746965732f6f66666963654e617669676174652f70726f706572746965732f71756572792f70726f70657274794e616d6573"></a>
+
+### `@iocHeaderComponent.props.components[] · oneOf[1].props.officeNavigate.query · propertyNames`
+
+Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/propertyNames`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 条件结构 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
 <a id="schema-232f646566696e6974696f6e732f696f63486561646572436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f70726573656e746174696f6e"></a>
 
 ### `@iocHeaderComponent.props.presentation`
@@ -871,6 +1078,7 @@ Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/pre
 
 - `ioc-header-component`：首section首组件全宽、唯一且不混写旧根字段。反例：[ioc-component-detail](../errors/ioc-component-detail.json)、[ioc-component-position](../errors/ioc-component-position.json)、[ioc-component-span](../errors/ioc-component-span.json)、[ioc-component-mixed](../errors/ioc-component-mixed.json)、[ioc-component-count](../errors/ioc-component-count.json)、[ioc-component-old-version](../errors/ioc-component-old-version.json)、[ioc-component-legacy-version](../errors/ioc-component-legacy-version.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `ioc-header-controls`：页头显式组合控件，RegionFilter 唯一拥有标准 region，旧排列仍可读。反例：[ioc-controls-root-filter](../errors/ioc-controls-root-filter.json)、[ioc-controls-root-region](../errors/ioc-controls-root-region.json)、[ioc-controls-version](../errors/ioc-controls-version.json)、[ioc-controls-mixed](../errors/ioc-controls-mixed.json)、[ioc-controls-duplicate-region](../errors/ioc-controls-duplicate-region.json)、[ioc-controls-unknown-filter](../errors/ioc-controls-unknown-filter.json)、[ioc-controls-duplicate-id](../errors/ioc-controls-duplicate-id.json)、[ioc-controls-duplicate-claim](../errors/ioc-controls-duplicate-claim.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `ioc-region-office-navigation`：IOC Region 直接下钻自动携带代表处，其他输入复用普通导航。反例：[ioc-office-navigation-version](../errors/ioc-office-navigation-version.json)、[ioc-office-navigation-reserved-key](../errors/ioc-office-navigation-reserved-key.json)、[ioc-office-navigation-no-row](../errors/ioc-office-navigation-no-row.json)、[ioc-office-navigation-legacy-root](../errors/ioc-office-navigation-legacy-root.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 
@@ -882,6 +1090,9 @@ Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/pre
 - [ioc-component-availability-page](../examples/ioc-component-availability-page.json)：完整合法页面；查询仅为静态契约证据。
 - [ioc-component-ioc-header-page](../examples/ioc-component-ioc-header-page.json)：完整合法页面；查询仅为静态契约证据。
 - [ioc-header-controls](../examples/ioc-header-controls.json)：完整合法页面；查询仅为静态契约证据。
+- [ioc-office-drill-overview](../examples/ioc-office-drill-overview.json)：完整合法页面；查询仅为静态契约证据。
+- [ioc-office-drill-detail](../examples/ioc-office-drill-detail.json)：完整合法页面；查询仅为静态契约证据。
+- [ioc-office-navigation-page-param](../examples/ioc-office-navigation-page-param.json)：完整合法页面；查询仅为静态契约证据。
 
 局部片段提取自[完整页面](../examples/component-iocHeader.json)的`#/sections/0/components/0`；此片段依赖完整页面的数据源/字段，不能单独作为页面校验。
 
@@ -920,3 +1131,6 @@ Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/pre
 - `#/definitions/iocHeaderComponent/properties/props/properties/back/anyOf/1`：[合法完整页面](../examples/ioc-auto-back-page.json)，JSON Pointer `#/sections/0/components/0/props/back`。
 - `#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/0`：[合法完整页面](../examples/chart-customer-series.json)，JSON Pointer `#/sections/0/components/0/props/components/0`。
 - `#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1`：[合法完整页面](../examples/ioc-header-controls.json)，JSON Pointer `#/sections/0/components/0/props/components/1`。
+- `#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/0`：[语义拒绝反例](../errors/ioc-office-navigation-no-row.json)：Region 控件没有行上下文，row 分支由导航语义拒绝。（规则 `ioc-region-office-navigation`）。此项不计入合法示例覆盖。
+- `#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/1`：[合法完整页面](../examples/ioc-office-navigation-page-param.json)，JSON Pointer `#/sections/0/components/0/props/components/0/props/officeNavigate/query/view`。
+- `#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/2`：[合法完整页面](../examples/ioc-office-drill-overview.json)，JSON Pointer `#/sections/0/components/0/props/components/1/props/officeNavigate/query/period`。

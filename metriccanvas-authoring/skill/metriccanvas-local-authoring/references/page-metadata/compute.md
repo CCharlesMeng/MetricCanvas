@@ -117,7 +117,7 @@ Playground `/pages/sum-fields-missing-values` 使用 inline 合成数据验证�
 缺记录策略声明在 `source.projection` 的具体字段：`{"member":"previous","field":"sales","onMissing":"zero"}`；省略或null取空，仅数值度量允许zero。仅成功查询没有该键记录时补零；存在记录中的null/降级标量不补零，查询失败、截断或重复键整轮失败。比较组合的initial不在缺少可信事实证明时复用或采集。完整声明、合成操作和边界见 `/pages/period-comparison-query-page`。
 
 
-页面协议 6.120。结构真源为本册[schema.json](schema.json)，SHA256 `d09653e9ae42443ff450486875e54f39f2d6cd33ed6179e470426735d4fe6845`。字段表自动生成；可选不等于有默认值。
+页面协议 6.121。结构真源为本册[schema.json](schema.json)，SHA256 `70776bd5693238e9632afa53aa79e9d12c8b3564eaa88d936d082d78d37ff36a`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

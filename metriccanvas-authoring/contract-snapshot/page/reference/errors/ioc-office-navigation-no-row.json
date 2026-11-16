@@ -1,0 +1,40 @@
+{
+  "case": "ioc-office-navigation-no-row",
+  "invariant": "ioc-region-office-navigation",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "当前行缺少可传参的标量字段:region",
+      "paths": [
+        "/sections/0/components/0/props/components/1/props/officeNavigate/query/period/field"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "components": [
+                "…",
+                {
+                  "props": {
+                    "officeNavigate": {
+                      "query": {
+                        "period": {
+                          "field": "region"
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/ioc-office-navigation-no-row.json"
+}

@@ -1,10 +1,11 @@
 import type {TypedError} from './errors';
-import {documentIocHeader,headerDeclarations,mapIocHeader} from './header-binding';
+import {documentIocHeader,headerDeclarations,iocHeaderDeclaration,mapIocHeader} from './header-binding';
 import type {Page} from './page';
 import {walkDocumentComponents} from './component-walk';
-import {standardIocRegionFilter,iocHeaderFilterIds} from './ioc-header-controls';
+import {standardIocRegionFilter,iocHeaderFilterIds,iocOfficeNavigation} from './ioc-header-controls';
 
 type RecordValue=Record<string,unknown>;
+const officeNavigationProjections = new WeakSet<object>();
 function record(value:unknown):RecordValue|undefined {
   return value!==null&&typeof value==='object'&&!Array.isArray(value)?value as RecordValue:undefined;
 }
@@ -24,11 +25,22 @@ export function expandIocHeaderRegion(document:unknown):unknown {
 
 /** Existing execution consumers receive the same canonical filter projection as before. */
 export function canonicalIocHeaderControls(page:Page):Page {
+  if (iocOfficeNavigation(iocHeaderDeclaration(page))) {
+    officeNavigationProjections.add(page);
+    return page;
+  }
   return mapIocHeader(page,header=>{
     if(!header.components)return header;
     const {components,...rest}=header;
     return {...rest,filterIds:iocHeaderFilterIds(header)};
   });
+}
+
+/** A parsed Page can be parsed again without treating its expanded Region as authored. */
+export function sourceIocRegionDocument(input: unknown): unknown {
+  if (!input || typeof input !== 'object' || !officeNavigationProjections.has(input)) return input;
+  const page = input as Page;
+  return { ...page, filters: page.filters?.filter(filter => filter.id !== 'region') };
 }
 
 function controlIdentityErrors(controls:unknown[],base:string,ids:Set<unknown>):TypedError[] {

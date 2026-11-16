@@ -1,6 +1,6 @@
 import {nativeIocRuntimePage} from './native-ioc';
 import { tableDefaultSortErrors } from './table/default-sort';
-import {expandIocHeaderRegion,canonicalIocHeaderControls,iocHeaderControlErrors} from './ioc-header-normalization';
+import {expandIocHeaderRegion,canonicalIocHeaderControls,iocHeaderControlErrors,sourceIocRegionDocument} from './ioc-header-normalization';
 import type { TemporalEvaluation } from './temporal-evaluation';
 import {sourceFilterIds} from './data-source-references';
 import { attachInitialFallbacks } from './cell-fallback';
@@ -133,9 +133,10 @@ export interface PageParseOptions {
 
 /** 不可信文档通过结构、字段分组、引用、字段契约和能力校验后才可视为 Page。 */
 export function parsePage(
-  document: unknown,
+  input: unknown,
   options: PageParseOptions = {}
 ): PageParseResult {
+  const document = sourceIocRegionDocument(input);
   const removed = [...obsoleteChartFilterErrors(document), ...chartConstantInputErrors(document), ...iocHeaderControlErrors(document)];
   if (removed.length) return {ok:false,errors:removed};
   const optionErrors = chartOptionErrors(document);
@@ -209,9 +210,10 @@ export function parsePage(
  * 完整文档的兼容读取/唯一写出边界。先校验再复制，仅升级布局表示；
  * 不写入参数物化值、字段展开或归一化后的 initial 行。原始修订/hash 由调用方先核验。
  */
-export function normalizePageDocument(document: unknown, options: PageParseOptions = {}):
+export function normalizePageDocument(input: unknown, options: PageParseOptions = {}):
   | { ok: true; document: PageDocument; errors: [] }
   | { ok: false; errors: TypedError[] } {
+  const document = sourceIocRegionDocument(input);
   const removed = [...obsoleteChartFilterErrors(document), ...chartConstantInputErrors(document), ...iocHeaderControlErrors(document)];
   if (removed.length) return {ok:false,errors:removed};
   const optionErrors = chartOptionErrors(document);

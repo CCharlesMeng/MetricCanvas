@@ -25,12 +25,23 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 120;
+const CURRENT_MINOR = 121;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
  */
 export const LEGACY_READABLE_PAGE_SCHEMA_VERSIONS = ['5.0', '5.1', '5.2', '5.3', '5.4'] as const;
+
+function officeNavigationPaths(document: unknown): string[] {
+  return headerDeclarations(document).flatMap(({ props, path }) => {
+    if (!Array.isArray(props.components)) return [];
+    return props.components.flatMap((value, index) => {
+      const control = record(value);
+      return control?.type === 'regionFilter' && has(record(control.props), 'officeNavigate')
+        ? [`${path}/components/${index}/props/officeNavigate`] : [];
+    });
+  });
+}
 
 export interface PageCapabilityDefinition {
   /** 引入该能力的次版本。 */
@@ -100,6 +111,8 @@ export const pageCapabilities = {
   },
 
   'ioc-header-title-navigation': {minor:115,legacyReadable:false,description:'IOC 页头标题复用普通 URL 导航及页面参数、筛选传参',usedAt:document=>headerDeclarations(document).filter(header=>has(record(header.props.identity),'titleNavigate')).map(header=>header.path+'/identity/titleNavigate')},
+
+  'ioc-region-office-navigation': {minor:121,legacyReadable:false,description:'IOC Region 选中代表处时按来源页声明跨页下钻',usedAt:officeNavigationPaths},
 
   'table-default-sort': {minor:108,legacyReadable:false,description:'完整本地表格按最终字段声明初始排序，先排序再分页',usedAt:document=>componentPaths(document,c=>c.type==='table'&&has(props(c),'defaultSort')).map(path=>path+'/props/defaultSort')},
 

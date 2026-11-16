@@ -1,0 +1,41 @@
+{
+  "case": "ioc-office-navigation-reserved-key",
+  "invariant": "ioc-region-office-navigation",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "代表处 URL 输入由 Region 自动传递",
+      "paths": [
+        "/sections/0/components/0/props/components/1/props/officeNavigate/query/rep-office"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "components": [
+                "…",
+                {
+                  "props": {
+                    "officeNavigate": {
+                      "query": {
+                        "rep-office": {
+                          "source": "filter",
+                          "id": "region"
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

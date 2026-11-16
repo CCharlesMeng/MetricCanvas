@@ -51,7 +51,7 @@
     popup.showPopover(); open = true;
     await tick(); place();
     await tick();
-    if(!popup.matches(':popover-open'))return;
+    if(!popup?.matches(':popover-open'))return;
     if (searchable) searchInput?.focus({preventScroll:true});
     else popup.querySelector<HTMLElement>('[data-selection-choice]:not(:disabled)')?.focus({preventScroll:true});
   }
@@ -139,7 +139,7 @@
   </div>
   <div bind:this={popup} aria-busy={loading} popover="auto" class="mc-ui-select-dropdown selection-popup" role="dialog" aria-label={`${label}候选`} tabindex="-1"
     style:left="{left}px" style:top="{top}px" style:min-width="{Math.max(width, searchable || tree || multiple ? 240 : 0)}px"
-    ontoggle={() => {open = popup.matches(':popover-open');}} onkeydown={popupKeys}>
+    ontoggle={event => {open = event.currentTarget.matches(':popover-open');}} onkeydown={popupKeys}>
     {#if searchable}<div class="mc-ui-input mc-ui-input-underline mc-ui-select-dropdown__search">
       <span class="mc-ui-input__prefix"><Icon name="search"/></span>
       <input bind:this={searchInput} class="mc-ui-input__inner" type="text" aria-label={`搜索${label}`} placeholder="输入关键字搜索" bind:value={keyword}/>

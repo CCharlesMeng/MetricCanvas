@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "6.121",
+  "id": "ioc-office-navigation-page-param",
+  "layout": "dashboard",
+  "meta": { "title": "代表处导航携带页面参数" },
+  "params": { "display": [{ "id": "view", "type": "string", "required": false }] },
+  "dataSources": {},
+  "sections": [{ "id": "main", "components": [
+    { "id": "header", "type": "iocHeader", "layout": { "span": 12 }, "props": {
+      "identity": { "title": "代表处导航携带页面参数" },
+      "components": [{ "id": "region-control", "type": "regionFilter", "props": {
+        "officeNavigate": { "href": "/pages/office-detail", "query": { "view": { "source": "param", "id": "view" } } }
+      } }]
+    } },
+    { "id": "body", "type": "text", "layout": { "span": 12 }, "props": { "body": "导航契约示例" } }
+  ] }]
+}

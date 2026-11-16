@@ -14,3 +14,15 @@
 本场景证明本地页头、候选、URL 与查询绑定链路，不证明真实 Operation Map 网络、权限名单、DQE 数据或部署。
 
 Embed 公共入口复验：先执行 `pnpm --filter @metriccanvas/embed build`，在 Embed 包执行 `node tests/serve.mjs`；访问 `/examples/ioc-header-controls.html`（ES）与 `?entry=global`（global），均读取同一 `ioc-header-controls.json`，并显示 Adapter 已接入及查询回显。
+
+<a id="office-navigation"></a>
+
+## IOC Region 代表处下钻
+
+运行 `pnpm dev:playground`，打开 `/pages/ioc-office-drill-overview`。示例沿用合成组织树与查询适配器，无需真实 Operation Map 或 DQE。
+
+1. 在 IOC 页头选择同码地区部。该地区部只有一个代表处，概览应留在当前页并按地区部查询。
+2. 选择同码代表处。浏览器打开 `/pages/ioc-office-drill-detail`，URL 携带 `rep-office=SAME`、统计期间模式及起止值。概览不执行代表处查询。点目标页返回按钮，概览恢复原地区部及期间。
+3. 从任一已有页面打开 `/pages/ioc-office-drill-overview?rep-office=SAME`。浏览器直接到达详情，后退回到已有页面。新标签页直达且没有前一条历史记录时，详情的默认返回按钮隐藏。
+
+复用时修改 `officeNavigate.href` 和 `query` 目标键，让目标页按自己的 URL 筛选声明恢复期间。两页使用合成组织值，验收只覆盖导航、筛选及本地浏览器历史。

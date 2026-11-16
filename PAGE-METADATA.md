@@ -1,5 +1,7 @@
 # MetricCanvas 页面元数据规范
 
+6.121：来源页可用 `regionFilter.props.officeNavigate` 声明代表处下钻目标。页头选中代表处时从当前筛选状态直接下钻，返回保留原筛选。以代表处初始化时在概览渲染和查询前替换当前历史记录。引擎注入 `rep-office`，统计期间沿用显式导航参数。见 [代表处跨页下钻](docs/page-metadata/components/iocHeader.md#office-navigation)，合成入口 `/pages/ioc-office-drill-overview` 与 `/pages/ioc-office-drill-detail`。
+
 拿到合法页面 JSON 后，统一运行时立即挂载真实页头、筛选控件、内容分区和组件结构；外部默认条件、候选值及业务数据返回后原位填充，不显示独立整页骨架或“正在加载”文字。表格保留真实表头与工具栏，在表体内显示静态骨架行。图表保留真实绘图区，在组件内显示各自的静态加载形态。依赖未齐备的查询仍等待完整条件，无关查询独立执行。无需新增字段或 Schema 升版，见[屏幕加载](docs/page-metadata/data-sources.md#screen-loading)，合成场景 `/pages/loading-structure-demo` 与 `/pages/ioc-async-preparation`。
 IOC 页头重点国代名单兼容旧版页面。集成应用提供现有名单候选端口时，引擎可异步补齐标准重点国代筛选缺失的查询绑定；页面 JSON 和集成调用无需修改。相关查询等到名单齐备后执行，已有显式布尔绑定保留。未勾选不取名单，业务私有 ID 不自动接管。6.120 的定稿默认值非阻塞初始化及成功结果会话缓存4小时继续按页面版本启用。见[异步条件准备](docs/page-metadata/filters.md#异步条件准备6120)，合成入口 `/pages/ioc-legacy-key-office`、`/pages/ioc-async-preparation`。
 

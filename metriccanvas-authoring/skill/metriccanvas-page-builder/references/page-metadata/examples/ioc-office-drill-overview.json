@@ -1,0 +1,170 @@
+{
+  "schemaVersion": "6.121",
+  "id": "ioc-office-drill-overview",
+  "layout": "dashboard",
+  "meta": {
+    "title": "代表处下钻概览 · 合成演示"
+  },
+  "filters": [
+    {
+      "id": "stat-period",
+      "type": "timeRange",
+      "display": "period",
+      "periodModes": [
+        "year",
+        "quarter",
+        "month",
+        "last12Months"
+      ],
+      "precision": "month",
+      "default": {
+        "mode": "quarter",
+        "value": "2026-Q3"
+      },
+      "label": "统计期间",
+      "urlParams": {
+        "value": "period",
+        "from": "period-from",
+        "to": "period-to"
+      }
+    }
+  ],
+  "dataSources": {
+    "scope": {
+      "fields": {
+        "region": {
+          "type": "string",
+          "role": "dimension",
+          "label": "生效组织",
+          "queryField": "地区部"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "label": "合成金额",
+          "queryField": "金额"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "地区部"
+                ],
+                "output_metrics": [
+                  "金额"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": true
+                  },
+                  "dims": [],
+                  "metrics": []
+                }
+              }
+            ]
+          },
+          "filterBindings": {
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "geo": "地理区",
+                "region-dept": "地区部",
+                "office": "代表处"
+              }
+            },
+            "stat-period": {
+              "target": "time"
+            }
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "代表处下钻概览"
+            },
+            "presentation": {
+              "layout": "inline",
+              "density": "normal",
+              "collapse": "none"
+            },
+            "components": [
+              {
+                "id": "year-control",
+                "type": "filterControl",
+                "props": {
+                  "filterId": "stat-period"
+                }
+              },
+              {
+                "id": "region-control",
+                "type": "regionFilter",
+                "props": {
+                  "officeNavigate": {
+                    "href": "/pages/ioc-office-drill-detail",
+                    "query": {
+                      "period": {
+                        "source": "filter",
+                        "id": "stat-period",
+                        "part": "value"
+                      },
+                      "period-from": {
+                        "source": "filter",
+                        "id": "stat-period",
+                        "part": "from"
+                      },
+                      "period-to": {
+                        "source": "filter",
+                        "id": "stat-period",
+                        "part": "to"
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "results",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "scope"
+          },
+          "props": {
+            "columns": [
+              {
+                "field": "region",
+                "title": "生效组织"
+              },
+              {
+                "field": "amount",
+                "title": "合成金额"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

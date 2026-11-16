@@ -8,6 +8,8 @@ export type { DataErrorEvent } from './data-error-events';
 
 export interface RuntimeNavigationTarget {
   href: string;
+  /** Initialization redirects replace the current entry and do not create a drill return. */
+  replace?: true;
   /** 来源页面 id;宿主用它记录回跳,运行时不维护导航栈。 */
   sourcePageId?: string;
   /** 来源页当前查询串,含筛选与页面参数。 */
@@ -74,6 +76,7 @@ export type RuntimeViewEvent =
   | {
       type: 'navigate';
       href: string;
+      replace?: true;
       sourcePageId?: string;
       sourceSearch?: string;
     };

@@ -8,6 +8,7 @@
   import {invalidateAiSummaryPage} from './ai-summary/runtime/session';
   import {createFinalizationPreparation,inheritFinalizationCache,supportsMembershipCandidates} from '@metriccanvas/data-execution/runtime';
   import {preparationBlocksPage,preparationBlocksFilter,discardPreparingData} from './preparation-blocked';
+  import { officeNavigationTarget, sameNavigationAddress } from './ioc-header/office-navigation';
   import {nativeSourceFilterIds,nativeIocRuntimePage} from '@metriccanvas/page/internal';
   import { hierarchyLevelOf } from '@metriccanvas/page/internal';
   import { projectSnapshotRows, snapshotCellFallbacks, tablePinnedSlots, restoreCellFallbacks, pinnedSnapshotError } from '@metriccanvas/page/internal';
@@ -150,6 +151,7 @@
     isDataGateway,
     type RuntimeConfigurationError,
     type RuntimeNavigation,
+    type RuntimeNavigationTarget,
     type RuntimeViewEvent
   } from './types';
 
@@ -586,12 +588,16 @@
     let fromDeclarations:Map<string,FilterValue>;
     try{fromDeclarations=initialFilterValues((loaded.filters??[]).filter(f=>!fromURL.has(f.id)&&!preparation.unresolved.has(f.id)),candidateClock,displaySnapshot,0);}catch{failTimeInitialization(mySession,finalizationController.signal,emit);return;}
     filterValues=new Map([...fromDeclarations,...explicit]);
+    const officeRedirect = officeNavigationTarget(loaded, filterValues.get('region'));
     preparingFilters=[...preparation.unresolved];
     tableController=createTableController(loaded,()=>stream,()=>syncTableState(loaded),()=>filterValues,candidateTimeContext,()=>({gateway:activeGateway,filters:filterValues,params:pageParams,blocked:initializing?declarations.map(filter=>filter.id):blockedFilters,displaySnapshot,filterRevision}));
-    pageState={phase:'ready',page:periodFactPage(filterTextPage(loaded,textBindings,filterValues,preparation.unresolved),displaySnapshot,0),capabilities};
+    publishInitialPage(officeRedirect, loaded, textBindings, preparation.unresolved, capabilities);
     let finalizationDates:ReadonlyMap<string,string>;
-    try{finalizationDates=await preparation.initialDates();fromDeclarations=new Map([...fromDeclarations,...preparation.initialValues(finalizationDates)]);}catch{failTimeInitialization(mySession,finalizationController.signal,emit);return;}
-    if(session!==mySession)return;
+    try {
+      const prepared = await prepareInitialNavigation(loaded, officeRedirect, preparation, fromDeclarations, explicit, mySession);
+      if (!prepared) return;
+      ({ finalizationDates, fromDeclarations } = prepared);
+    } catch {failTimeInitialization(mySession,finalizationController.signal,emit);return;}
     let state:ReturnType<typeof createFilterState>;
     try {
       state = createFilterState(bootstrap ? bootstrap.filters : new Map([...fromDeclarations, ...fromURL]), declarations, localOptions, { iocRegion:usesIocRegion(loaded), candidates:true, displayInputs:()=>displaySnapshot,readOnly: () => filterEditing?.readOnly === true || pageFiltersReadOnly(loaded) });
@@ -728,6 +734,22 @@
     }
 
 
+  }
+
+  function publishInitialPage(redirect: NavigationTarget | undefined, page: Page, bindings: Parameters<typeof filterTextPage>[1], pending: ReadonlySet<string>, capabilities: PageCapabilities) {
+    if (redirect) return;
+    pageState = { phase: 'ready', page: periodFactPage(filterTextPage(page, bindings, filterValues, pending), displaySnapshot, 0), capabilities };
+  }
+
+  async function prepareInitialNavigation(page: Page, redirect: NavigationTarget | undefined, preparation: ReturnType<typeof createFinalizationPreparation>, defaults: Map<string, FilterValue>, explicit: FilterValues, mySession: number) {
+    const finalizationDates = await (redirect && preparation.unresolved.size ? preparation.resolve() : preparation.initialDates());
+    if (mySession !== session || runtimeInvalidated()) return;
+    if (redirect) {
+      const applied = new Map([...defaults, ...preparation.values(finalizationDates), ...explicit]);
+      navigateOffice(redirect, applied, { replace: true, sourcePageId: page.id });
+      return;
+    }
+    return { finalizationDates, fromDeclarations: new Map([...defaults, ...preparation.initialValues(finalizationDates)]) };
   }
 
   function configurationIssue(
@@ -879,6 +901,18 @@
           declaration.dimension)
         : declaration.dimension;
     filterState?.write(declaration.id, values.length || declaration.treeSelection==='level' || declaration.hierarchy&&level ? {type:'dimension',dimension,values,...(level ? {level} : {})} : null);
+  }
+
+  function selectHeaderDimension(declaration: Extract<FilterDeclaration, { type: 'dimension' }>, values: string[], level?: string) {
+    if (pageState.phase === 'ready' && declaration.id === 'region') {
+      const region: FilterValue = { type: 'dimension', dimension: declaration.dimension, values, level };
+      const target = officeNavigationTarget(pageState.page, region);
+      if (target) {
+        navigateOffice(target, new Map([...filterValues, ['region', region]]));
+        return;
+      }
+    }
+    writeDimension(declaration, values, level);
   }
 
   function writeTimeRange(filterId: string, range: TimeRangeValue | null) {
@@ -1185,9 +1219,9 @@
     return { label: link.label, href:targetHref(link), onclick: (event: MouseEvent) => navigateTarget(link,{},event) };
   }
 
-  function targetResult(target:NavigationTarget,row:Row={}) {
+  function targetResult(target:NavigationTarget,row:Row={},filters=filterValues) {
     if(target.validateTargetInputs&&Object.values(target.query??{}).some(b=>b.source==='filter'&&blockedFilters.includes(b.id)))return {ok:false as const,code:'NAVIGATION_INPUT_INVALID' as const,message:'来源筛选尚未通过当前候选确认'};
-    const result=resolveNavigationTarget(target,filterValues,pageParams,row,targetInputs.get(target.href),candidateClock);
+    const result=resolveNavigationTarget(target,filters,pageParams,row,targetInputs.get(target.href),candidateClock);
     if(!result.ok)return result;
     try{return {ok:true as const,href:navigation?.resolveHref?.(result.href)??result.href};}catch{return {ok:false as const,code:'NAVIGATION_INPUT_UNAVAILABLE' as const,message:'目标页面路由不可用'};}
   }
@@ -1197,13 +1231,31 @@
     if(!result.ok){event?.preventDefault();navigationMessage=result.message;onevent?.({type:'navigation-error',href:target.href,code:result.code,message:result.message});return;}
     navigationMessage='';navigate(result.href,event);
   }
-  function navigate(href: string, event?: MouseEvent) {
+
+  function navigateOffice(target: NavigationTarget, filters: FilterValues, entry?: Pick<RuntimeNavigationTarget, 'replace' | 'sourcePageId'>) {
+    const result = targetResult(target, {}, filters);
+    if (!result.ok) {
+      navigationMessage = result.message;
+      onevent?.({ type: 'navigation-error', href: target.href, code: result.code, message: result.message });
+      return;
+    }
+    if (sameNavigationAddress(result.href, window.location.href, window.document.baseURI)) {
+      navigationMessage = '代表处下钻地址必须指向另一个页面';
+      onevent?.({ type: 'navigation-error', href: target.href, code: 'NAVIGATION_INPUT_INVALID', message: navigationMessage });
+      return;
+    }
+    navigationMessage = '';
+    navigate(result.href, undefined, entry);
+  }
+
+  function navigate(href: string, event?: MouseEvent, entry?: Pick<RuntimeNavigationTarget, 'replace' | 'sourcePageId'>) {
     if (event && (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)) return;
     const sourcePageId = pageState.phase === 'ready' ? pageState.page.id : undefined;
     const sourceSearch = filterState ? mergedSearch(filterState, initialSearch) : initialSearch;
-    onevent?.({ type: 'navigate', href, sourcePageId, sourceSearch });
-    if (navigation?.navigate?.({ href, sourcePageId, sourceSearch }) === true) event?.preventDefault();
-    else if (!event) window.location.assign(new URL(href, window.document.baseURI).href);
+    const target = { href, sourcePageId, sourceSearch, ...entry };
+    onevent?.({ type: 'navigate', ...target });
+    if (navigation?.navigate?.(target) === true) event?.preventDefault();
+    else if (!event) window.location[entry?.replace ? 'replace' : 'assign'](new URL(href, window.document.baseURI).href);
   }
 
   function componentSnapshots(component: Component): ComponentSnapshots {
@@ -1537,7 +1589,7 @@
     {/if}
     {#snippet iocHeaderControls(id: string, readOnly: boolean)}
       <FilterBar confirmationIds={confirmationFilters} {timeContext} onretry={retryCandidates} declarations={(presentation?.filters??declarations).filter(filter=>filter.id===id)} values={filterValues} candidates={dimensionCandidates}
-        {readOnly} ondimension={writeDimension} ontimerange={writeTimeRange} ontimepoint={writeTimePoint}
+        {readOnly} ondimension={selectHeaderDimension} ontimerange={writeTimeRange} ontimepoint={writeTimePoint}
         onboolean={writeBoolean} onnumberrange={writeNumberRange} onsearch={writeSearch}/>
     {/snippet}
     {#if pageState.capabilities.filters && hasVisibleFilters(header.content)}

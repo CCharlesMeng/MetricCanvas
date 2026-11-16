@@ -86,6 +86,16 @@ export const invariants: InvariantDefinition[] = [
     {case:'ioc-controls-duplicate-id',base:'ioc-header-controls',expect:/id 不能/,mutate:d=>{firstComponent(d).props.components[1].id='results';}},
     {case:'ioc-controls-duplicate-claim',base:'ioc-header-controls',expect:/重复认领/,mutate:d=>{firstComponent(d).props.components.push({id:'extra',type:'regionFilter'});}}
   ]},
+  {id:'ioc-region-office-navigation',description:'IOC Region 直接下钻自动携带代表处，其他输入复用普通导航',valid:['ioc-office-drill-overview','ioc-office-drill-detail','ioc-office-navigation-page-param'],cases:[
+    {case:'ioc-office-navigation-version',base:'ioc-office-drill-overview',expect:/由 6.121 引入/,mutate:d=>{d.schemaVersion='6.120';}},
+    {case:'ioc-office-navigation-reserved-key',base:'ioc-office-drill-overview',expect:/由 Region 自动传递/,mutate:d=>{firstComponent(d).props.components[1].props.officeNavigate.query['rep-office']={source:'filter',id:'region'};}},
+    {case:'ioc-office-navigation-no-row',base:'ioc-office-drill-overview',expect:/当前行缺少/,mutate:d=>{firstComponent(d).props.components[1].props.officeNavigate.query.period={source:'row',field:'region'};}},
+    {case:'ioc-office-navigation-legacy-root',base:'ioc-office-navigation-page-param',expect:/必须声明在首 section/,mutate:d=>{
+      const header=d.sections[0].components.shift().props;
+      Object.assign(header.components[0].props.officeNavigate.query,{field:{source:'row',field:'region'},region:{source:'filter',id:'region'}});
+      d.iocHeader=header;
+    }}
+  ]},
   {id:'chart-series-visibility',description:'系列展示条件与类型引用校验、版本下限共用现有展示规则',valid:['chart-series-visibility'],cases:[
     {case:'chart-series-version',base:'chart-series-visibility',expect:/6.89/,mutate:d=>{d.schemaVersion='6.88';}},
     {case:'chart-series-unknown-filter',base:'chart-series-visibility',expect:/条件引用了不存在/,mutate:d=>{d.sections[1].components[0].props.series[2].visibleWhen={filter:'unknown',part:'value',op:'eq',value:true};}},

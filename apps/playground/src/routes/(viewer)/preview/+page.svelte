@@ -16,7 +16,7 @@
   let source = $state(DEFAULT_PREVIEW_JSON);
   const navigation = createPlaygroundNavigation(pageRepository, {
     baseURL: () => location.href,
-    visit: (href) => void goto(href)
+    visit: (href, replace) => void goto(href, { replaceState: replace })
   });
   let result = $derived(
     parsePreviewDocument(source, validate)

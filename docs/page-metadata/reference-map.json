@@ -1383,7 +1383,10 @@
         "ioc-header-section-placement",
         "ioc-component-availability-page",
         "ioc-component-ioc-header-page",
-        "ioc-header-controls"
+        "ioc-header-controls",
+        "ioc-office-drill-overview",
+        "ioc-office-drill-detail",
+        "ioc-office-navigation-page-param"
       ],
       "sources": [
         "packages/page/src/schema/components/ioc-header.ts",
@@ -1397,7 +1400,8 @@
       ],
       "rules": [
         "ioc-header-component",
-        "ioc-header-controls"
+        "ioc-header-controls",
+        "ioc-region-office-navigation"
       ]
     },
     "authoring-analysis-rebind.md": {
@@ -1440,6 +1444,8 @@
     }
   },
   "fieldNotes": {
+    "#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1/properties/props/properties/officeNavigate": "代表处跨页下钻目标，页面声明 URL 和显式传参，引擎自动携带 rep-office。",
+    "#/properties/iocHeader/properties/components/items/oneOf/1/properties/props/properties/officeNavigate": "代表处跨页下钻目标，页面声明 URL 和显式传参，引擎自动携带 rep-office。",
     "id": "稳定标识符；唯一性范围由所属页面、分区、组件或字段空间决定。",
     "title": "展示标题；是否必需由此处Schema分支决定，不能推断为空时的行为。",
     "type": "选择所属结构的类型分支。",
@@ -1955,6 +1961,7 @@
     "#/definitions/pagedJoinSource/properties/pagination": "仅 pageSize 保持历史路径；query 显式查询分页并沿用最后操作成员；6.118 auto 在 records 下自动选择基准查询分页或保留条件的完整关联。"
   },
   "enumNotes": {
+    "#/properties/schemaVersion=\"6.121\"": "IOC Region 选中代表处时可跨页下钻，直达时替换当前历史记录。",
     "100": "ratio输出乘100，匹配百分比原值展示。",
     "5.0": "历史5.0文档兼容读取；新创作输出当前6.x版本，能力仍按引入版本检查。",
     "5.1": "历史5.1文档兼容读取；新创作输出当前6.x版本，能力仍按引入版本检查。",
@@ -2363,6 +2370,30 @@
     "#/properties/schemaVersion=\"6.120\"": "标准 IOC 重点绑定通过已有名单候选端口异步准备并兼容旧页；6.120 定稿默认值非阻塞初始化，真实定稿结果会话级缓存4小时，无跨页在途请求复用。"
   },
   "branchExceptions": {
+    "#/properties/iocHeader/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/0": {
+      "case": "ioc-office-navigation-legacy-root",
+      "rule": "ioc-region-office-navigation",
+      "reason": "代表处下钻只允许配置在首分区的 IOC 页头子控件内。",
+      "source": "packages/page/src/navigate.ts"
+    },
+    "#/properties/iocHeader/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/1": {
+      "case": "ioc-office-navigation-legacy-root",
+      "rule": "ioc-region-office-navigation",
+      "reason": "代表处下钻只允许配置在首分区的 IOC 页头子控件内。",
+      "source": "packages/page/src/navigate.ts"
+    },
+    "#/properties/iocHeader/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/2": {
+      "case": "ioc-office-navigation-legacy-root",
+      "rule": "ioc-region-office-navigation",
+      "reason": "代表处下钻只允许配置在首分区的 IOC 页头子控件内。",
+      "source": "packages/page/src/navigate.ts"
+    },
+    "#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/0": {
+      "case": "ioc-office-navigation-no-row",
+      "rule": "ioc-region-office-navigation",
+      "reason": "Region 控件没有行上下文，row 分支由导航语义拒绝。",
+      "source": "packages/page/src/navigate.ts"
+    },
     "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/titleNavigate/properties/query/additionalProperties/oneOf/0": {
       "case": "ioc-title-row-source",
       "rule": "url-navigation-source-contract",
@@ -3583,7 +3614,8 @@
     ],
     "components/iocHeader.md": [
       "页头子控件（6.91）",
-      "标题跳转（6.115）"
+      "标题跳转（6.115）",
+      "代表处跨页下钻（6.121）"
     ],
     "authoring-analysis-rebind.md": [
       "完整基线和关联报告",

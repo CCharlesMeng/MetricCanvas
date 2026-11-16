@@ -23,7 +23,7 @@
   "knowledge": "iocHeader.overview",
   "reference": "references/page-metadata/components/iocHeader.md",
   "versionPolicy": "protocol/version-policy",
-  "currentWriter": "6.120",
+  "currentWriter": "6.121",
   "exampleVersionRequirements": [
     {
       "file": "references/page-metadata/examples/ioc-header-title-link.json",
@@ -325,6 +325,122 @@
           "id": "filter-binding-level-query-fields",
           "minor": 7,
           "description": "层级维度筛选绑定逐级声明谓词字段"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/ioc-office-drill-overview.json",
+      "requiredVersion": "6.121",
+      "capabilities": [
+        {
+          "id": "ioc-region-office-navigation",
+          "minor": 121,
+          "description": "IOC Region 选中代表处时按来源页声明跨页下钻"
+        },
+        {
+          "id": "ioc-header-controls",
+          "minor": 91,
+          "description": "IOC 页头组合筛选控件及内置 RegionFilter"
+        },
+        {
+          "id": "ioc-header-component",
+          "minor": 81,
+          "description": "IOC 页头作为首分区首组件"
+        },
+        {
+          "id": "period-filter-modes",
+          "minor": 41,
+          "description": "自然期间筛选可选模式与单年份选择"
+        },
+        {
+          "id": "period-filter",
+          "minor": 27,
+          "description": "Dashboard 年季月与近一年期间筛选"
+        },
+        {
+          "id": "report-header-date-filters",
+          "minor": 13,
+          "description": "报告页头日期筛选、月份范围、时间范围参数初值及时间点窗口"
+        },
+        {
+          "id": "filter-binding-level-query-fields",
+          "minor": 7,
+          "description": "层级维度筛选绑定逐级声明谓词字段"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/ioc-office-drill-detail.json",
+      "requiredVersion": "6.91",
+      "capabilities": [
+        {
+          "id": "ioc-header-controls",
+          "minor": 91,
+          "description": "IOC 页头组合筛选控件及内置 RegionFilter"
+        },
+        {
+          "id": "ioc-header-component",
+          "minor": 81,
+          "description": "IOC 页头作为首分区首组件"
+        },
+        {
+          "id": "period-filter-modes",
+          "minor": 41,
+          "description": "自然期间筛选可选模式与单年份选择"
+        },
+        {
+          "id": "period-filter",
+          "minor": 27,
+          "description": "Dashboard 年季月与近一年期间筛选"
+        },
+        {
+          "id": "report-header-date-filters",
+          "minor": 13,
+          "description": "报告页头日期筛选、月份范围、时间范围参数初值及时间点窗口"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/ioc-office-navigation-page-param.json",
+      "requiredVersion": "6.121",
+      "capabilities": [
+        {
+          "id": "ioc-region-office-navigation",
+          "minor": 121,
+          "description": "IOC Region 选中代表处时按来源页声明跨页下钻"
+        },
+        {
+          "id": "ioc-header-controls",
+          "minor": 91,
+          "description": "IOC 页头组合筛选控件及内置 RegionFilter"
+        },
+        {
+          "id": "ioc-header-component",
+          "minor": 81,
+          "description": "IOC 页头作为首分区首组件"
+        },
+        {
+          "id": "grouped-params",
+          "minor": 6,
+          "description": "分组参数、多个独立时间区间与查询原位引用"
         },
         {
           "id": "page-layout",

@@ -312,6 +312,8 @@ Tab混合内容的活动项使用 `tab.<组件id>` 查询参数。`navigation.re
 
 Schema 6.91 支持页头 `props.components` 组合控件。显式 `regionFilter` 自带标准组织层级，集成应用在原 dataGateway 上调用一次 `withOperationMapRegion(base, adapter)`，所有页面复用；业务查询仍使用原 `filterBindings.region`。接线示例、候选值约定与取消/失败边界见[Operation Map Region 接入](../../docs/host-contract.md#operation-map-region-接入)。
 
+Schema 6.121 的 `regionFilter.props.officeNavigate` 可让代表处选择跨页下钻。集成应用接管初始化下钻时须按 `target.replace` 替换当前历史记录。浏览器默认导航已区分主动下钻与初始化直达。见 [导航接管](../../docs/host-contract.md#可选导航接管)。
+
 ## 详情弹层与集成应用侧栏
 
 详情弹窗和抽屉通过原生 `dialog.showModal()` 进入浏览器顶层，遮罩覆盖同一文档的整个窗口及集成应用侧栏，打开期间背景不可交互。页面仍可 mount 到小 div，弹层保留在原 ShadowRoot 内；无需新增挂载参数。关闭按钮、Esc、点击遮罩及首尾焦点循环可用，页面更新与 destroy 会清理弹层。iframe 内只能覆盖当前 iframe 文档。

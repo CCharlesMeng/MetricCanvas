@@ -239,6 +239,8 @@ const runtime = MetricCanvas.mount('#dashboard', {
 
 `navigate` 事件字段：`type: "navigate"`、完整目标 `href`、来源 `sourcePageId` 与来源查询串 `sourceSearch`。删除旧目标 `pageId/search` 和 `navigation.href()` 解析器。来源字段供集成应用记录返回路径，不用于解析目标地址。
 
+IOC Region 初始化下钻的 `navigation.navigate(target)` 和 `navigate` 事件携带 `replace: true`。集成应用接管时，使用路由器的替换历史记录选项，并跳过来源返回记录。未接管时引擎调用 `location.replace()`。页头主动选择代表处和现有表格导航沿用普通历史记录。
+
 集成应用实际切页、同页更换 URL 参数、浏览器前进/后退时，用完整 `update({ document, initialSearch, ... })` 重新初始化。`filter-change` 仅同步 URL 时不立即回灌；未编码的排序、分页和滚动位置不保证恢复。
 
 ## Embed 默认 URL 输入

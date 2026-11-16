@@ -91,6 +91,21 @@
       ]
     },
     {
+      "id": "ioc-region-office-navigation",
+      "description": "IOC Region 直接下钻自动携带代表处，其他输入复用普通导航",
+      "valid": [
+        "ioc-office-drill-overview",
+        "ioc-office-drill-detail",
+        "ioc-office-navigation-page-param"
+      ],
+      "invalid": [
+        "ioc-office-navigation-version",
+        "ioc-office-navigation-reserved-key",
+        "ioc-office-navigation-no-row",
+        "ioc-office-navigation-legacy-root"
+      ]
+    },
+    {
       "id": "chart-series-visibility",
       "description": "系列展示条件与类型引用校验、版本下限共用现有展示规则",
       "valid": [

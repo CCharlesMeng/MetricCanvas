@@ -58,3 +58,30 @@ RegionFilter 固定提供可搜索、可清空的单选组织树，层级为 `ge
 省略时呈现普通标题；声明时标题为原生链接，保留现有字号、字重与颜色，悬停显示下划线，可键盘激活、复制地址或在新标签页打开。`visibleWhen` 不满足时只取消链接，标题文字仍显示；`enabledWhen` 不满足时保留文字并标记禁用。返回按钮与标题导航各自独立。只读筛选不禁止导航；静态导出仅保留标题文字。旧根级 IOC 声明在版本满足时复用相同行为；已有无链接页面无需修改。
 
 完整合成入口 `/pages/ioc-header-title-link` 与 `/pages/ioc-header-title-link-target`，覆盖页面参数、布尔筛选、目标校验和条件；操作与证据边界见示例目录 README。该场景不验证真实业务地址或 DQE。
+
+<a id="office-navigation"></a>
+
+## 代表处跨页下钻（6.121）
+
+来源页在 `regionFilter.props.officeNavigate` 声明一个目标。`href` 必填，`query` 可选，沿用 URL 导航的页面参数与筛选传参。控件没有行上下文。引擎以本次选中的 `office` 节点稳定值覆盖 URL 上的 `rep-office`，因此 `query` 不允许声明这个键。目标页使用标准 Region URL 输入，按自身候选权限校验组织值。
+
+```json
+{
+  "id": "region-control",
+  "type": "regionFilter",
+  "props": {
+    "officeNavigate": {
+      "href": "/pages/ioc-office-drill-detail",
+      "query": {
+        "period": { "source": "filter", "id": "stat-period", "part": "value" },
+        "period-from": { "source": "filter", "id": "stat-period", "part": "from" },
+        "period-to": { "source": "filter", "id": "stat-period", "part": "to" }
+      }
+    }
+  }
+}
+```
+
+配置后，在 IOC 页头选中一个代表处会直接打开目标页，保留来源页原有筛选和历史记录。初始化时已有一个代表处（例如 URL 输入）会在概览渲染和业务查询前导航，并替换当前历史记录。`back: true` 及兼容的 `back: "auto"` 沿用浏览器后退行为。目标使用独立详情页，避免指回概览。地区部的子节点数量不影响当前页筛选。省略 `officeNavigate` 时，代表处仍可作为页内筛选使用。
+
+统计期间使用当前已应用值。近一年显式映射模式值及起止范围，以便目标页恢复同一窗口。目标 URL 键由其实际筛选声明决定。合成入口 `/pages/ioc-office-drill-overview` 与 `/pages/ioc-office-drill-detail`，操作见 `pages/capabilities/ioc-header/controls/README.md`。

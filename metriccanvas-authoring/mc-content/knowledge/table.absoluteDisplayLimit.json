@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.120",
+  "schemaVersion": "6.121",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "table.trendArrows",
@@ -387,7 +387,7 @@
           "sections"
         ],
         "title": "页面",
-        "$id": "https://metriccanvas/page/v6.120",
+        "$id": "https://metriccanvas/page/v6.121",
         "properties": {
           "schemaVersion": "#/properties/schemaVersion",
           "id": "#/properties/id",

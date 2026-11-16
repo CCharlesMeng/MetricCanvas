@@ -27,7 +27,7 @@ export function createReadingRuntimeNavigation(services:Pick<PlatformServices,'n
    const projection=projectNavigationInputs(revision.document);
    return projection.pageId===found.pageId?projection:undefined;
   },
-  navigate({href}){if(!target(href))return false;void navigation.navigate(resolveHref(href)).catch(error=>console.warn('[MetricCanvas][NAVIGATION_ERROR]',error));return true;},
+  navigate({href,replace}){if(!target(href))return false;void navigation.navigate(resolveHref(href),{replaceState:replace}).catch(error=>console.warn('[MetricCanvas][NAVIGATION_ERROR]',error));return true;},
   replaceSearch(search){const next=new URLSearchParams(search),resource=navigation.current().searchParams.get('resource');if(resource)next.set('resource',resource);preserveNavigationEntry(()=>navigation.replaceSearch(next.toString()));}
  };
 }

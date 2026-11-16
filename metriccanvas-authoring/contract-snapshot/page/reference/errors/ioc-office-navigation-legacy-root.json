@@ -1,0 +1,27 @@
+{
+  "case": "ioc-office-navigation-legacy-root",
+  "invariant": "ioc-region-office-navigation",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "页头子组件必须声明在首 section 的 iocHeader 组件中",
+      "paths": [
+        "/iocHeader/components"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "iocHeader": {
+      "components": [
+        {
+          "id": "region-control",
+          "type": "regionFilter",
+          "props": {
+            "…": "共1个键"
+          }
+        }
+      ]
+    }
+  },
+  "fullInput": "page/conformance/invalid/ioc-office-navigation-legacy-root.json"
+}

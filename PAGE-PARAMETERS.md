@@ -1,5 +1,7 @@
 # 页面参数：维度、时间与页内筛选
 
+6.121 的 IOC Region 代表处下钻自动沿用 `rep-office` 这一筛选 URL 输入。来源页可在导航 `query` 显式传递已应用期间，目标页按自身筛选 URL 键恢复。见 [代表处跨页下钻](docs/page-metadata/components/iocHeader.md#office-navigation)。
+
 6.67 期间查询策略不新增页面参数：`initialParam` 仍只初始化期间选择，后续查询由当前已应用 selection 与每个绑定的 periodPolicy 决定。新策略禁止同时使用查询体时间参数引用；旧参数/窗口绑定保持行为。URL 恢复期间模式后，查询与列显隐消费同一已应用状态；导出不重新锚定近一年。详见[查询独立期间策略](docs/page-metadata/queries-and-bindings.md#查询独立期间策略)。
 
 <a id="页面参数维度与时间的现行方案"></a>

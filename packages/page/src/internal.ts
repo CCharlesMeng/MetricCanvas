@@ -1,5 +1,6 @@
 export * from './page';
 export * from './header-binding';
+export { iocOfficeNavigation } from './ioc-header-controls';
 export {withPeriodQueryDefaults,hasPeriodQueryDefault,withPeriodQueryDefaults as withIocPeriodDefaults,hasPeriodQueryDefault as hasIocPeriodDefault} from './period-query-defaults';
 export {pagedJoinProjectionFields,pagedJoinHasComparison} from './paged-join-compute';
 export type { IocHeaderDeclaration } from './schema/ioc-header';

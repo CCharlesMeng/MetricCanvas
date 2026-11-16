@@ -1,0 +1,47 @@
+{
+  "case": "ioc-office-navigation-version",
+  "invariant": "ioc-region-office-navigation",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "IOC Region 选中代表处时按来源页声明跨页下钻 由 6.121 引入，文档声明的是 6.120",
+      "paths": [
+        "/sections/0/components/0/props/components/1/props/officeNavigate"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "components": [
+                "…",
+                {
+                  "props": {
+                    "officeNavigate": {
+                      "href": "/pages/ioc-office-drill-detail",
+                      "query": {
+                        "period": {
+                          "…": "共3个键"
+                        },
+                        "period-from": {
+                          "…": "共3个键"
+                        },
+                        "period-to": {
+                          "…": "共3个键"
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/ioc-office-navigation-version.json"
+}

@@ -7,6 +7,7 @@ import type { DataRow as Row } from './field';
 import type { Page, TableColumn, TableColumnNode } from './page';
 import type { TypedError } from './errors';
 import type { NavigationTarget } from './schema/navigation';
+import type { IocHeaderDeclaration } from './schema/ioc-header';
 
 export { isNavigationHref } from './navigation-target-validation';
 
@@ -42,12 +43,26 @@ export function navigationErrors(page: Page): TypedError[] {
     for (const [target, targetPath] of targets) errors.push(...navigationTargetErrors(page,target,targetPath,component));
   });
   for (const header of headerDeclarations(page)) {
-    const identity = header.props.identity as import('./schema/ioc-header').IocHeaderDeclaration['identity'];
-    if (!identity?.titleNavigate) continue;
-    const path = `${header.path}/identity/titleNavigate`;
-    if (!identity.title) fail(path, '标题导航必须同时声明 identity.title');
-    errors.push(...navigationTargetErrors(page,identity.titleNavigate,path));
+    errors.push(...headerNavigationErrors(page, header.props as IocHeaderDeclaration, header.path));
   }
+  return errors;
+}
+
+function headerNavigationErrors(page: Page, header: IocHeaderDeclaration, base: string): TypedError[] {
+  const errors: TypedError[] = [];
+  const title = header.identity;
+  if (title?.titleNavigate) {
+    const path = `${base}/identity/titleNavigate`;
+    if (!title.title) errors.push({ type: 'SCHEMA_ERROR', path, message: '标题导航必须同时声明 identity.title' });
+    errors.push(...navigationTargetErrors(page, title.titleNavigate, path));
+  }
+  header.components?.forEach((control, index) => {
+    if (control.type !== 'regionFilter' || !control.props?.officeNavigate) return;
+    const target = control.props.officeNavigate;
+    const path = `${base}/components/${index}/props/officeNavigate`;
+    errors.push(...navigationTargetErrors(page, target, path));
+    if (Object.hasOwn(target.query ?? {}, 'rep-office')) errors.push({ type: 'SCHEMA_ERROR', path: `${path}/query/rep-office`, message: '代表处 URL 输入由 Region 自动传递' });
+  });
   return errors;
 }
 

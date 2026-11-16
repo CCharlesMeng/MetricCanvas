@@ -10,6 +10,11 @@ export function iocHeaderFilterIds(header:IocHeaderDeclaration):string[] {
   return header.components?.map(iocHeaderControlFilterId)??header.filterIds??[];
 }
 
+export function iocOfficeNavigation(header: IocHeaderDeclaration | undefined) {
+  const region = header?.components?.find(control => control.type === 'regionFilter');
+  return region?.props?.officeNavigate;
+}
+
 /** The Operation Map organization control has one product-owned declaration. */
 export function standardIocRegionFilter():DimensionFilterDeclaration {
   return {

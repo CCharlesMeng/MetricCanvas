@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.120",
-  "schemaSha256": "d09653e9ae42443ff450486875e54f39f2d6cd33ed6179e470426735d4fe6845",
+  "schemaVersion": "6.121",
+  "schemaSha256": "70776bd5693238e9632afa53aa79e9d12c8b3564eaa88d936d082d78d37ff36a",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -1120,11 +1120,15 @@
         "ioc-header-section-placement",
         "ioc-component-availability-page",
         "ioc-component-ioc-header-page",
-        "ioc-header-controls"
+        "ioc-header-controls",
+        "ioc-office-drill-overview",
+        "ioc-office-drill-detail",
+        "ioc-office-navigation-page-param"
       ],
       "rules": [
         "ioc-header-component",
-        "ioc-header-controls"
+        "ioc-header-controls",
+        "ioc-region-office-navigation"
       ]
     },
     "authoring-analysis-rebind.md": {
@@ -1362,7 +1366,8 @@
         "6.117",
         "6.118",
         "6.119",
-        "6.120"
+        "6.120",
+        "6.121"
       ]
     },
     {
@@ -2691,6 +2696,112 @@
       "required": "本分支必填",
       "module": "page.md",
       "const": "regionFilter"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/components/items/oneOf/1/properties/props",
+      "path": "$.iocHeader.components[] · oneOf[1].props",
+      "required": "本分支可选",
+      "module": "page.md"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/components/items/oneOf/1/properties/props/properties/officeNavigate",
+      "path": "$.iocHeader.components[] · oneOf[1].props.officeNavigate",
+      "required": "本分支可选",
+      "module": "page.md"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/href",
+      "path": "$.iocHeader.components[] · oneOf[1].props.officeNavigate.href",
+      "required": "本分支必填",
+      "module": "page.md"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query",
+      "path": "$.iocHeader.components[] · oneOf[1].props.officeNavigate.query",
+      "required": "本分支可选",
+      "module": "page.md"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties",
+      "path": "$.iocHeader.components[] · oneOf[1].props.officeNavigate.query{key}",
+      "required": "动态键的值",
+      "module": "page.md"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/0",
+      "path": "$.iocHeader.components[] · oneOf[1].props.officeNavigate.query{key} · oneOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "page.md"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/0/properties/source",
+      "path": "$.iocHeader.components[] · oneOf[1].props.officeNavigate.query{key} · oneOf[0].source",
+      "required": "本分支必填",
+      "module": "page.md",
+      "const": "row"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/0/properties/field",
+      "path": "$.iocHeader.components[] · oneOf[1].props.officeNavigate.query{key} · oneOf[0].field",
+      "required": "本分支必填",
+      "module": "page.md"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/1",
+      "path": "$.iocHeader.components[] · oneOf[1].props.officeNavigate.query{key} · oneOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "page.md"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/1/properties/source",
+      "path": "$.iocHeader.components[] · oneOf[1].props.officeNavigate.query{key} · oneOf[1].source",
+      "required": "本分支必填",
+      "module": "page.md",
+      "const": "param"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/1/properties/id",
+      "path": "$.iocHeader.components[] · oneOf[1].props.officeNavigate.query{key} · oneOf[1].id",
+      "required": "本分支必填",
+      "module": "page.md"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/2",
+      "path": "$.iocHeader.components[] · oneOf[1].props.officeNavigate.query{key} · oneOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "page.md"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/2/properties/source",
+      "path": "$.iocHeader.components[] · oneOf[1].props.officeNavigate.query{key} · oneOf[2].source",
+      "required": "本分支必填",
+      "module": "page.md",
+      "const": "filter"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/2/properties/id",
+      "path": "$.iocHeader.components[] · oneOf[1].props.officeNavigate.query{key} · oneOf[2].id",
+      "required": "本分支必填",
+      "module": "page.md"
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/2/properties/part",
+      "path": "$.iocHeader.components[] · oneOf[1].props.officeNavigate.query{key} · oneOf[2].part",
+      "required": "本分支可选",
+      "module": "page.md",
+      "enum": [
+        "value",
+        "from",
+        "to",
+        "level",
+        "mode"
+      ]
+    },
+    {
+      "pointer": "#/properties/iocHeader/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/propertyNames",
+      "path": "$.iocHeader.components[] · oneOf[1].props.officeNavigate.query · propertyNames",
+      "required": "条件结构",
+      "module": "page.md"
     },
     {
       "pointer": "#/properties/iocHeader/properties/presentation",
@@ -19719,6 +19830,112 @@
       "const": "regionFilter"
     },
     {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1/properties/props",
+      "path": "@iocHeaderComponent.props.components[] · oneOf[1].props",
+      "required": "本分支可选",
+      "module": "components/iocHeader.md"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1/properties/props/properties/officeNavigate",
+      "path": "@iocHeaderComponent.props.components[] · oneOf[1].props.officeNavigate",
+      "required": "本分支可选",
+      "module": "components/iocHeader.md"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/href",
+      "path": "@iocHeaderComponent.props.components[] · oneOf[1].props.officeNavigate.href",
+      "required": "本分支必填",
+      "module": "components/iocHeader.md"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query",
+      "path": "@iocHeaderComponent.props.components[] · oneOf[1].props.officeNavigate.query",
+      "required": "本分支可选",
+      "module": "components/iocHeader.md"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties",
+      "path": "@iocHeaderComponent.props.components[] · oneOf[1].props.officeNavigate.query{key}",
+      "required": "动态键的值",
+      "module": "components/iocHeader.md"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/0",
+      "path": "@iocHeaderComponent.props.components[] · oneOf[1].props.officeNavigate.query{key} · oneOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/iocHeader.md"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/0/properties/source",
+      "path": "@iocHeaderComponent.props.components[] · oneOf[1].props.officeNavigate.query{key} · oneOf[0].source",
+      "required": "本分支必填",
+      "module": "components/iocHeader.md",
+      "const": "row"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/0/properties/field",
+      "path": "@iocHeaderComponent.props.components[] · oneOf[1].props.officeNavigate.query{key} · oneOf[0].field",
+      "required": "本分支必填",
+      "module": "components/iocHeader.md"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/1",
+      "path": "@iocHeaderComponent.props.components[] · oneOf[1].props.officeNavigate.query{key} · oneOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "components/iocHeader.md"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/1/properties/source",
+      "path": "@iocHeaderComponent.props.components[] · oneOf[1].props.officeNavigate.query{key} · oneOf[1].source",
+      "required": "本分支必填",
+      "module": "components/iocHeader.md",
+      "const": "param"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/1/properties/id",
+      "path": "@iocHeaderComponent.props.components[] · oneOf[1].props.officeNavigate.query{key} · oneOf[1].id",
+      "required": "本分支必填",
+      "module": "components/iocHeader.md"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/2",
+      "path": "@iocHeaderComponent.props.components[] · oneOf[1].props.officeNavigate.query{key} · oneOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "components/iocHeader.md"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/2/properties/source",
+      "path": "@iocHeaderComponent.props.components[] · oneOf[1].props.officeNavigate.query{key} · oneOf[2].source",
+      "required": "本分支必填",
+      "module": "components/iocHeader.md",
+      "const": "filter"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/2/properties/id",
+      "path": "@iocHeaderComponent.props.components[] · oneOf[1].props.officeNavigate.query{key} · oneOf[2].id",
+      "required": "本分支必填",
+      "module": "components/iocHeader.md"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/2/properties/part",
+      "path": "@iocHeaderComponent.props.components[] · oneOf[1].props.officeNavigate.query{key} · oneOf[2].part",
+      "required": "本分支可选",
+      "module": "components/iocHeader.md",
+      "enum": [
+        "value",
+        "from",
+        "to",
+        "level",
+        "mode"
+      ]
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/propertyNames",
+      "path": "@iocHeaderComponent.props.components[] · oneOf[1].props.officeNavigate.query · propertyNames",
+      "required": "条件结构",
+      "module": "components/iocHeader.md"
+    },
+    {
       "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/presentation",
       "path": "@iocHeaderComponent.props.presentation",
       "required": "本分支可选",
@@ -20737,6 +20954,33 @@
         "file": "errors/ioc-controls-root-region.json",
         "reason": "旧根级 iocHeader 仅兼容历史属性；新增子控件必须位于首 section 的页头组件中。",
         "rule": "ioc-header-controls"
+      }
+    },
+    {
+      "schemaPointer": "#/properties/iocHeader/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/0",
+      "module": "page.md",
+      "negativeWitness": {
+        "file": "errors/ioc-office-navigation-legacy-root.json",
+        "reason": "代表处下钻只允许配置在首分区的 IOC 页头子控件内。",
+        "rule": "ioc-region-office-navigation"
+      }
+    },
+    {
+      "schemaPointer": "#/properties/iocHeader/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/1",
+      "module": "page.md",
+      "negativeWitness": {
+        "file": "errors/ioc-office-navigation-legacy-root.json",
+        "reason": "代表处下钻只允许配置在首分区的 IOC 页头子控件内。",
+        "rule": "ioc-region-office-navigation"
+      }
+    },
+    {
+      "schemaPointer": "#/properties/iocHeader/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/2",
+      "module": "page.md",
+      "negativeWitness": {
+        "file": "errors/ioc-office-navigation-legacy-root.json",
+        "reason": "代表处下钻只允许配置在首分区的 IOC 页头子控件内。",
+        "rule": "ioc-region-office-navigation"
       }
     },
     {
@@ -22858,6 +23102,27 @@
       "pointer": "#/sections/0/components/0/props/components/1"
     },
     {
+      "schemaPointer": "#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/0",
+      "module": "components/iocHeader.md",
+      "negativeWitness": {
+        "file": "errors/ioc-office-navigation-no-row.json",
+        "reason": "Region 控件没有行上下文，row 分支由导航语义拒绝。",
+        "rule": "ioc-region-office-navigation"
+      }
+    },
+    {
+      "schemaPointer": "#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/1",
+      "module": "components/iocHeader.md",
+      "file": "examples/ioc-office-navigation-page-param.json",
+      "pointer": "#/sections/0/components/0/props/components/0/props/officeNavigate/query/view"
+    },
+    {
+      "schemaPointer": "#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/2",
+      "module": "components/iocHeader.md",
+      "file": "examples/ioc-office-drill-overview.json",
+      "pointer": "#/sections/0/components/0/props/components/1/props/officeNavigate/query/period"
+    },
+    {
       "schemaPointer": "#/definitions/section/properties/components/items/oneOf/0",
       "module": "sections-and-layout.md",
       "file": "examples/component-reportHeader.json",
@@ -22984,5 +23249,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "d5f404f6bb0428cb580ca627507ceaa649ba107e95f429f3329d23b24728a0f5"
+  "semanticSourceDigest": "1700612487ab3ebf9bd2d637d2b8165e83c0caa74a5a8f7609b7422d904d7e12"
 }

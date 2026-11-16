@@ -1,7 +1,7 @@
 {
   "major": 6,
-  "minor": 120,
-  "current": "6.120",
+  "minor": 121,
+  "current": "6.121",
   "capabilities": {
     "native-ioc-filter-preparation": {
       "minor": 120,
@@ -41,6 +41,11 @@
     "ioc-header-title-navigation": {
       "minor": 115,
       "description": "IOC 页头标题复用普通 URL 导航及页面参数、筛选传参",
+      "legacyReadable": false
+    },
+    "ioc-region-office-navigation": {
+      "minor": 121,
+      "description": "IOC Region 选中代表处时按来源页声明跨页下钻",
       "legacyReadable": false
     },
     "table-default-sort": {
@@ -1065,6 +1070,7 @@
     "6.117",
     "6.118",
     "6.119",
-    "6.120"
+    "6.120",
+    "6.121"
   ]
 }

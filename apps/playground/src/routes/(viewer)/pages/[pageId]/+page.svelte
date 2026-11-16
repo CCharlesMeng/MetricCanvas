@@ -101,7 +101,7 @@
       preserveSearchParams: ['revision', 'state', 'supplementKey', 'sourceFailure', 'rowFailure', 'recoveryState'],
       ...createPlaygroundNavigation(pageRepository, {
         baseURL: () => location.href,
-        visit: (href) => goto(href),
+        visit: (href, replace) => goto(href, { replaceState: replace }),
         returns, onReturnChange:()=>returnRevision++,
         rememberSource: true
       }),
@@ -115,10 +115,14 @@
 
   $effect(() => {
     const pageId = page.params.pageId!;
-    if (page.url.href === activeURL) return;
-    activeURL = page.url.href;
-    initialSearch = page.url.searchParams.toString();
-    pageRevisionId = page.url.searchParams.get('revision') ?? undefined;
+    // The router can restore its pre-replaceState URL on popstate; the address bar owns the applied filters.
+    const url = new URL(page.url.href);
+    const address = new URL(location.href);
+    if (address.pathname === url.pathname) url.search = address.search;
+    if (url.href === activeURL) return;
+    activeURL = url.href;
+    initialSearch = url.searchParams.toString();
+    pageRevisionId = url.searchParams.get('revision') ?? undefined;
     void loadPage(pageId);
   });
 

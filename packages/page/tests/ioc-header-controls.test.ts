@@ -2,10 +2,23 @@ import {readFileSync} from 'node:fs';
 import {describe,expect,it} from 'vitest';
 import {parsePage,normalizePageDocument} from '../src/validate';
 import {iocHeaderDeclaration} from '../src/header-binding';
-import {standardIocRegionFilter} from '../src/ioc-header-controls';
+import {iocOfficeNavigation,standardIocRegionFilter} from '../src/ioc-header-controls';
 
 const sample=()=>JSON.parse(readFileSync('pages/capabilities/ioc-header/controls/ioc-header-controls.json','utf8'));
 describe('IOC Header controls',()=>{
+  it('retains office navigation when validating or writing a parsed page', () => {
+    const source = JSON.parse(readFileSync('pages/capabilities/ioc-header/controls/ioc-office-drill-overview.json', 'utf8'));
+    const first = parsePage(source);
+    if (!first.ok) throw new Error(JSON.stringify(first.errors));
+    const again = parsePage(first.page);
+    if (!again.ok) throw new Error(JSON.stringify(again.errors));
+    expect(iocOfficeNavigation(iocHeaderDeclaration(again.page))?.href).toBe('/pages/ioc-office-drill-detail');
+    const normalized = normalizePageDocument(first.page);
+    if (!normalized.ok) throw new Error(JSON.stringify(normalized.errors));
+    expect(normalized.document.filters).toEqual(source.filters);
+    source.filters.push(standardIocRegionFilter());
+    expect(parsePage(source).ok).toBe(false);
+  });
   it('expands one Region for every consumer without mutating or rewriting compact source',()=>{
     const source=sample(),before=JSON.stringify(source),result=parsePage(source);
     expect(result.ok).toBe(true);if(!result.ok)return;

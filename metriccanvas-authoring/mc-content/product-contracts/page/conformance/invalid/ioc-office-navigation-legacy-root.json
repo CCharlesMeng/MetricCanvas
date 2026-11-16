@@ -1,0 +1,76 @@
+{
+  "case": "ioc-office-navigation-legacy-root",
+  "invariant": "ioc-region-office-navigation",
+  "input": {
+    "schemaVersion": "6.121",
+    "id": "ioc-office-navigation-page-param",
+    "layout": "dashboard",
+    "meta": {
+      "title": "代表处导航携带页面参数"
+    },
+    "params": {
+      "display": [
+        {
+          "id": "view",
+          "type": "string",
+          "required": false
+        }
+      ]
+    },
+    "dataSources": {},
+    "sections": [
+      {
+        "id": "main",
+        "components": [
+          {
+            "id": "body",
+            "type": "text",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "body": "导航契约示例"
+            }
+          }
+        ]
+      }
+    ],
+    "iocHeader": {
+      "identity": {
+        "title": "代表处导航携带页面参数"
+      },
+      "components": [
+        {
+          "id": "region-control",
+          "type": "regionFilter",
+          "props": {
+            "officeNavigate": {
+              "href": "/pages/office-detail",
+              "query": {
+                "view": {
+                  "source": "param",
+                  "id": "view"
+                },
+                "field": {
+                  "source": "row",
+                  "field": "region"
+                },
+                "region": {
+                  "source": "filter",
+                  "id": "region"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/iocHeader/components",
+      "message": "页头子组件必须声明在首 section 的 iocHeader 组件中"
+    }
+  ]
+}
