@@ -2,8 +2,8 @@ import { expect, type Locator, type Page } from '@playwright/test';
 
 type Value = string | number;
 type Row = Record<string, Value>;
-interface Rule { field_name: string; value_list: Value[] }
-interface Dimension { dim_name: string; dim_value_list: Value[] }
+interface Rule { field_name: string; value_list: Value[]; operator?: string }
+interface Dimension { dim_name: string; dim_value_list: Value[]; operator?: string }
 export interface QueryItem {
   query_type?: string; object_type?: string;
   output_fields?: string[]; output_dims?: string[]; output_metrics?: string[];
@@ -69,10 +69,14 @@ function sourceRows(item: QueryItem, data: Populations): Row[] {
     default: return [];
   }
 }
+function matchesValue(value: Value, terms: Value[], operator?: string): boolean {
+  if (operator === 'contains') return terms.some(term => String(value).includes(String(term)));
+  return terms.includes(value);
+}
 function matches(row: Row, item: QueryItem): boolean {
   const fields = (item.filter?.fields ?? []).filter(rule => rule.field_name !== '账期');
   const dims = item.filter?.dims ?? [];
-  return fields.every(rule => rule.value_list.includes(row[rule.field_name])) && dims.every(rule => rule.dim_value_list.includes(row[rule.dim_name]));
+  return fields.every(rule => matchesValue(row[rule.field_name], rule.value_list, rule.operator)) && dims.every(rule => matchesValue(row[rule.dim_name], rule.dim_value_list, rule.operator));
 }
 function execute(item: QueryItem, data: Populations, empty: boolean) {
   const rows = empty ? [] : sourceRows(item, data).filter(row => matches(row, item));

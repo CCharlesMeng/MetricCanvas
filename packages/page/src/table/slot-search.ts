@@ -21,7 +21,7 @@ export function tableSlotSearchPlan(page: Page, table: TableComponent, reference
     const mainId = table.data.main, sourceId = table.data[reference.data];
     const main = page.dataSources[mainId], source = page.dataSources[sourceId];
     if (!sourceId || sourceId === mainId) return unavailable('跨槽搜索必须引用独立的补充数据槽');
-    if (main?.source.type !== 'query' || source?.source.type !== 'query') return unavailable('跨槽精确搜索目前要求主表与补充槽均为普通查询');
+    if (main?.source.type !== 'query' || source?.source.type !== 'query') return unavailable('跨槽搜索要求主表与补充槽均为普通查询');
     if (table.props.pagination?.mode !== 'query' || main.source.resultScope === 'complete') return unavailable('跨槽搜索要求主表使用查询分页');
     const key = table.props.rowKey;
     if (!key) return unavailable('跨槽搜索要求表格声明 rowKey');

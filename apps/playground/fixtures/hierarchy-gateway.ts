@@ -1,4 +1,4 @@
-import { createDqeGateway, DqeGatewayError } from '@metriccanvas/engine/dqe';
+import { createDqeGateway } from '@metriccanvas/engine/dqe';
 import fixture from '../../../tools/dqe-sim/fixtures/table-hierarchy-selection.json';
 import type { DimensionValueCandidate, FilterCandidate, FilterCandidatesResult } from '@metriccanvas/engine';
 
@@ -14,13 +14,9 @@ function regionTree(parents: DimensionValueCandidate[], offices: DimensionValueC
     })
   ];
 }
-/** This named Sim scenario verifies its own text-search encoding over HTTP. */
+/** The Sim scenario exercises the default DQE gateway and supplies a candidate tree. */
 export function createHierarchyGateway(endpoint?: string){
-  const base=createDqeGateway({endpoint,encodeSearch(item,search){
-    if(JSON.stringify(search.queryFields)!=='["h_office_name"]')throw new DqeGatewayError('DQE_CONFIG_ERROR','该合成示例仅提供代表处名称搜索');
-    const filter=item.filter as {dims:import('@metriccanvas/page/internal').JsonValue[];metrics:import('@metriccanvas/page/internal').JsonValue[]};
-    return {...item,filter:{...filter,dims:[...filter.dims,{dim_name:'h_office_name',operator:'contains',dim_value_list:[search.query]}]}};
-  }});
+  const base=createDqeGateway({endpoint});
   return {...base,async fetchFilterCandidates(request:import('@metriccanvas/engine').FilterCandidatesRequest,options:{signal:AbortSignal}):Promise<FilterCandidatesResult>{
     if (request.filterId === 'region') {
       const [parents, offices] = await Promise.all(['h_region', 'h_office'].map(dimension =>

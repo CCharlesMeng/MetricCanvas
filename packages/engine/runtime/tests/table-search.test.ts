@@ -27,10 +27,10 @@ it('searches beyond the current page, resets offset, captures scope and restores
   expect(snapshots.get('records')).toMatchObject({ rows: rows.slice(0, 10), totalCount: 35 });
   expect(JSON.stringify(page)).toBe(before); dispose();
 });
-it('fails explicitly before transport when the real DQE search encoder is absent', async () => {
+it('fails before transport when multi-field DQE search has no OR encoder', async () => {
   const source = fixture().dataSources.records;
-  const query: EffectiveQuery = { language: 'dqe', body: { dsl_list: [{}] }, fieldMappings: source.fields, filterValues: [], search: { queryFields: ['客户'], query: '%_test' } };
-  expect(() => effectiveDqeItem(query)).toThrow('全表文本搜索能力');
+  const query: EffectiveQuery = { language: 'dqe', body: { dsl_list: [{}] }, fieldMappings: source.fields, filterValues: [], search: { queryFields: ['客户', '项目'], query: '%_test' } };
+  expect(() => effectiveDqeItem(query)).toThrow('OR 匹配');
   let fetched = false;
   const gateway = createDqeGateway({ fetchImpl: async () => { fetched = true; throw new Error('transport must not run'); } });
   await expect(gateway.fetchData(query)).rejects.toMatchObject({ code: 'DQE_CONFIG_ERROR' }); expect(fetched).toBe(false);

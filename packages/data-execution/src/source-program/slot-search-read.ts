@@ -18,7 +18,7 @@ export interface SearchRows { rows: Row[]; slots: Map<string, Row[]>; plan: Sear
 export function searchPlan(input: SlotSearchRead): SearchPlan | undefined {
   const search = input.view.search;
   if (!search?.data || search.data === 'main' || !search.query.trim()) return undefined;
-  if (search.match !== 'equals' || search.fields.length !== 1) return searchFailure('跨槽搜索仅支持单字段精确匹配');
+  if (search.fields.length !== 1) return searchFailure('跨槽搜索仅支持单字段匹配');
   const owners = flattenPageComponents(input.page).filter((node): node is TableComponent => node.type === 'table' && node.data.main === input.sourceId);
   if (owners.length !== 1) return searchFailure('跨槽搜索要求主查询由一个表格独占');
   const table = owners[0], declared = table.props.toolbar?.search;
@@ -28,7 +28,7 @@ export function searchPlan(input: SlotSearchRead): SearchPlan | undefined {
   delete source.source.query.resultBindings;
   // The supplementary query retains its own business conditions, never the main page's result binding.
   const lookup = composeEffectiveQuery({ ...input, filters: input.page.filters, dataSource: source }, input.conditions, 0,
-    [{ field: binding.key, direction: 'asc' }], {}, { fields: [binding.field], query: search.query, match: 'equals' });
+    [{ field: binding.key, direction: 'asc' }], {}, { fields: [binding.field], query: search.query, match: search.match });
   return { table, binding, lookup };
 }
 

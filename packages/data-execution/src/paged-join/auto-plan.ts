@@ -11,7 +11,7 @@ export function autoPageEligible(plan:PagedJoinPlan):boolean{
   if(domainField(plan,plan.view.sort[0].field)?.nullable!==false)return false;
   if(plan.view.predicates.some(rule=>rule.op==='isNull'||!domainField(plan,rule.field)))return false;
   const search=plan.view.search;
-  if(search?.query.trim()&&(search.match!=='equals'||search.fields.length!==1||!domainField(plan,search.fields[0])))return false;
+  if(search?.query.trim()&&(search.fields.length!==1||!domainField(plan,search.fields[0])))return false;
   return true;
 }
 

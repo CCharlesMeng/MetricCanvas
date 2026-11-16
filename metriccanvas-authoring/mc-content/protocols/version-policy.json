@@ -35,7 +35,7 @@
     },
     "table-slot-search": {
       "minor": 109,
-      "description": "表格补充数据槽的单字段精确搜索与行键回查",
+      "description": "表格补充数据槽的单字段搜索与行键回查",
       "legacyReadable": false
     },
     "ioc-header-title-navigation": {
@@ -435,7 +435,7 @@
     },
     "table-search-options": {
       "minor": 42,
-      "description": "表格静态搜索选项与单文本字段等值匹配",
+      "description": "表格静态搜索选项与所选字段匹配",
       "legacyReadable": false
     },
     "period-filter-modes": {

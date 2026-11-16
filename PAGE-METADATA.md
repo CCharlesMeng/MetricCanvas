@@ -25,7 +25,7 @@ URL 缺少必需页面参数时保留页面结构，相关数据源及其依赖�
 
 IOC Header 期间控件分别保留最近已应用的季度与月份；选择年份后切回季／月，沿用当前年份和各自的选项，避免互相覆盖为 Q1 或 1 月。记忆限本次控件挂载，不新增页面字段或 URL 状态。见[期间选择](docs/page-metadata/filters.md#dashboard-期间选择627)，合成入口 `/pages/ioc-header-flow-sticky`。
 
-按需 `pagedJoin` 复用 `toolbar.search`，由搜索字段所属成员搜索并分页，暂停其他成员排序、清除其列头条件；清空搜索回到第一页并恢复默认排序。搜索、分页和 Excel 统一执行，不新增 JSON 字段、不扫描完整匹配键；包含搜索继续要求数据网关搜索适配。见[组合查询成员搜索](docs/page-metadata/data-sources.md#paged-join-member-search)，合成入口 `/pages/paged-join-search`。
+按需 `pagedJoin` 复用 `toolbar.search`，由搜索字段所属成员搜索并分页，暂停其他成员排序、清除其列头条件；清空搜索回到第一页并恢复默认排序。搜索、分页和 Excel 统一执行，不新增 JSON 字段、不扫描完整匹配键；单字段包含搜索由默认 DQE 数据网关编码，多字段 OR 仍需搜索适配。见[组合查询成员搜索](docs/page-metadata/data-sources.md#paged-join-member-search)，合成入口 `/pages/paged-join-search`。
 
 Excel 基础数字精度统一：number-0 至 number-5 及已有带符号/千分位格式保留原值和数值类型，按最多小数位去尾零，编辑后数字格式继续生效；原生条件格式处理整数小数点及舍入零符号。页面基础数字同样统一负零为0，无新增字段或版本。见[数字精度](docs/page-metadata/field-bindings-and-formats.md#numeric-value-display)，合成入口 `/pages/number-precision-five`、`/pages/numeric-value-display`。
 
@@ -45,9 +45,9 @@ IOC 父子表层级选择复用“全球＝不限区域”：保留全部父行�
 
 表头筛选修复：所有表格变体的已生效筛选入口统一使用黑色 #191919；pagedJoin 查询分页的补充成员列支持按所属成员自动预加载候选，维度与对象 output_fields 查询均复用现有映射，不触发完整组合读取。全选继续显式配置 `filterable.showSelectAll:true`，省略或 false 隐藏。见[列筛选候选值](docs/page-metadata/components/table.md#列筛选候选值)，入口 `/pages/paged-join-on-demand`。
 
-6.109：表格精确搜索的 `options[].field` 支持复用 `{data,field}` 指向补充数据槽。引擎先在补充查询中完整查出匹配行键，再按每批最多1000个 ID（遵守更小的绑定 `maxValues`）分批读完主记录，统一筛选、排序、计数及分页；不反转页面 `resultBindings`。整次搜索独立限制累计100000行、64 MiB和180秒，超过1000条不再直接拒绝；完整成功结果供分页、候选和最多10000行Excel导出复用，失败不发布部分结果。本次修订不新增页面字段，普通结果绑定规则保持。见[跨槽搜索](docs/page-metadata/components/table.md#跨数据槽精确搜索6109)，入口 `/pages/rep-business-result` 的“合同风险率明细”。
+6.109：表格搜索的 `options[].field` 支持复用 `{data,field}` 指向补充数据槽。引擎先在补充查询中完整查出匹配行键，再按每批最多1000个 ID（遵守更小的绑定 `maxValues`）分批读完主记录，统一筛选、排序、计数及分页；不反转页面 `resultBindings`。整次搜索独立限制累计100000行、64 MiB和180秒，超过1000条不再直接拒绝；完整成功结果供分页、候选和最多10000行Excel导出复用，失败不发布部分结果。本次修订不新增页面字段，普通结果绑定规则保持。见[跨槽搜索](docs/page-metadata/components/table.md#跨数据槽搜索6109)，入口 `/pages/rep-business-result` 的“合同风险率明细”。
 
-表格精确搜索的 `toolbar.search.options` 只有一项时，固定使用该字段，只显示输入框及其 placeholder；两项及以上才显示字段选择器。无需新增 Schema 字段。见[静态搜索选项](docs/page-metadata/components/table.md#静态搜索选项642)，验收入口 `/pages/region-auth-norms-detail` 与 `/pages/table-search-options-demo`。
+表格搜索的 `toolbar.search.options` 只有一项时，固定使用该字段，只显示输入框及其 placeholder；两项及以上才显示字段选择器。无需新增 Schema 字段。见[静态搜索选项](docs/page-metadata/components/table.md#静态搜索选项642)，验收入口 `/pages/region-auth-norms-detail` 与 `/pages/table-search-options-demo`。
 
 6.108：完整本地表格通过 `props.defaultSort` 声明最终字段的初始排序，复用现有排序规则，在计算完成后先排序再分页；用户后续排序、清空和恢复视图优先。远程排序继续在查询或组合源声明。见[本地默认排序](docs/page-metadata/components/table.md#local-default-sort)，合成入口 `/pages/table-default-sort`。
 
@@ -653,7 +653,7 @@ DQE 数据网关单次 HTTP 请求默认超时为180秒，可信接入配置可�
 `strictURLInputs:true`由页面显式开启，兼容规范化升版本不自动开启。来源和目标可分别选择该策略；本批三个验收页均开启。受控编辑使用`set_url_input_validation`，enabled=false仅删除该标记。
 条件呈现与动作资格见[条件规则](docs/page-metadata/conditions.md)：6.35就地声明visibleWhen/enabledWhen，父级约束后代，子项不反推父级。
 
-表格静态搜索选项（6.42）：`props.toolbar.search.options` 声明静态枚举、每项单文本字段与 placeholder，`defaultValue` 可选。切换保留关键词并立即精确搜索；清空保留选项；与既有条件 AND，导出沿用已提交状态。旧 `fields/placeholder` 继续包含匹配。声明与限制见[明细表](docs/page-metadata/components/table.md#静态搜索选项642)，可观察页面见[字段切换示例](pages/capabilities/table/table-search-options-demo.json)。
+表格静态搜索选项（6.42）：`props.toolbar.search.options` 声明静态枚举、每项单文本字段与 placeholder，`defaultValue` 可选。切换保留关键词并立即按所选字段做包含匹配；清空保留选项；与既有条件 AND，导出沿用已提交状态。`fields/placeholder` 按任一字段包含匹配。已有页面 JSON 可直接沿用。声明与限制见[明细表](docs/page-metadata/components/table.md#静态搜索选项642)，可观察页面见[字段切换示例](pages/capabilities/table/table-search-options-demo.json)。
 
 6.43：维度下拉默认支持本地搜索，`searchable:false` 关闭；普通树可声明 `treeSelection:descendants|independent|leaf`。`selection` 继续使用6.37的对象协议，`level`结构树不变。见[筛选声明](docs/page-metadata/filters.md)与IOC选择控件场景。
 

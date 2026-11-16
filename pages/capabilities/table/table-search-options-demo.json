@@ -3,7 +3,7 @@
   "id": "table-search-options-demo",
   "layout": "dashboard",
   "meta": {
-    "title": "表格搜索｜字段切换与精确匹配",
+    "title": "表格搜索｜字段切换与包含匹配",
     "description": "合成演示数据：在表格右上角选择项目编码、项目名称或责任人，输入完整值后搜索。查询表需本地 DQE Sim。"
   },
   "dataSources": {
@@ -160,7 +160,7 @@
             "main": "records"
           },
           "props": {
-            "title": "本地等值搜索（合成数据）",
+            "title": "本地按选定字段搜索（合成数据）",
             "toolbar": {
               "search": {
                 "options": [
@@ -168,26 +168,26 @@
                     "value": "code",
                     "label": "项目编码",
                     "field": "code",
-                    "placeholder": "请输入完整项目编码"
+                    "placeholder": "搜索项目编码"
                   },
                   {
                     "value": "name",
                     "label": "项目名称",
                     "field": "name",
-                    "placeholder": "请输入完整项目名称"
+                    "placeholder": "搜索项目名称"
                   },
                   {
                     "value": "owner",
                     "label": "责任人",
                     "field": "owner",
-                    "placeholder": "请输入完整责任人姓名"
+                    "placeholder": "搜索责任人姓名"
                   }
                 ],
                 "defaultValue": "name"
               },
               "export": {
                 "format": "xlsx",
-                "filename": "本地等值搜索（合成数据）"
+                "filename": "本地按选定字段搜索（合成数据）"
               }
             },
             "pagination": {
@@ -224,7 +224,7 @@
             "main": "queried"
           },
           "props": {
-            "title": "查询等值搜索（DQE 仿真）",
+            "title": "DQE 按选定字段搜索（DQE 仿真）",
             "toolbar": {
               "search": {
                 "options": [
@@ -232,26 +232,26 @@
                     "value": "code",
                     "label": "项目编码",
                     "field": "code",
-                    "placeholder": "请输入完整项目编码"
+                    "placeholder": "搜索项目编码"
                   },
                   {
                     "value": "name",
                     "label": "项目名称",
                     "field": "name",
-                    "placeholder": "请输入完整项目名称"
+                    "placeholder": "搜索项目名称"
                   },
                   {
                     "value": "owner",
                     "label": "责任人",
                     "field": "owner",
-                    "placeholder": "请输入完整责任人姓名"
+                    "placeholder": "搜索责任人姓名"
                   }
                 ],
                 "defaultValue": "name"
               },
               "export": {
                 "format": "xlsx",
-                "filename": "查询等值搜索（DQE 仿真）"
+                "filename": "DQE 按选定字段搜索（DQE 仿真）"
               }
             },
             "pagination": {
@@ -287,7 +287,7 @@
             "main": "records"
           },
           "props": {
-            "title": "原有包含搜索（合成数据）",
+            "title": "多字段包含搜索（合成数据）",
             "toolbar": {
               "search": {
                 "fields": [
@@ -299,7 +299,7 @@
               },
               "export": {
                 "format": "xlsx",
-                "filename": "原有包含搜索（合成数据）"
+                "filename": "多字段包含搜索（合成数据）"
               }
             },
             "pagination": {

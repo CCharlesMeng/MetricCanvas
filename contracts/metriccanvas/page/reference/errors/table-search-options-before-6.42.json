@@ -4,7 +4,7 @@
   "expected": [
     {
       "type": "SCHEMA_ERROR",
-      "message": "表格静态搜索选项与单文本字段等值匹配 由 6.42 引入，文档声明的是 6.41",
+      "message": "表格静态搜索选项与所选字段匹配 由 6.42 引入，文档声明的是 6.41",
       "paths": [
         "/sections/0/components/0",
         "/sections/0/components/1"

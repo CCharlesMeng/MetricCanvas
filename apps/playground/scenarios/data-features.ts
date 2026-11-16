@@ -58,7 +58,7 @@ export const dataFeatures: readonly DataFeature[] = [
     examples: [{ scene: 'visibility', pages: ['page-visibility-region-linkage', 'page-visibility-report'] }] },
   { id: 'permission-facts', topic: 'interactions', title: '权限与事实就绪状态', description: '通过本地模拟输入检查允许、拒绝、等待和错误时的显示资格。',
     examples: [{ scene: 'visibility', pages: ['page-visibility-inputs'] }] },
-  { id: 'search', topic: 'results', title: '字段搜索与精确匹配', description: '选择搜索字段，提交关键词，比较精确匹配与包含搜索。',
+  { id: 'search', topic: 'results', title: '字段切换与包含匹配', description: '选择搜索字段，输入部分名称或编码，查看包含匹配结果。',
     examples: [{ scene: 'table-search', pages: ['table-search-options-demo'] }, { scene: 'export', pages: ['table-toolbar-demo'] }] },
   { id: 'column-filter', topic: 'results', title: '列候选与范围筛选', description: '搜索候选、选择取值或数值范围，核对多列联动及失配已选值。',
     examples: [{ scene: 'table-search', pages: ['table-column-candidates'] }, { scene: 'multiple-sources', pages: ['multi-source-table', 'decision-opinion-details'] }] },

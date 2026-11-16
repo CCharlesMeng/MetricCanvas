@@ -29,13 +29,13 @@ try {
   const local = table('local-table'), remote = table('query-table'), legacy = table('legacy-table');
   await expect(remote.getByRole('cell', { name: '00123', exact: true })).toBeVisible();
   await expect(local.getByRole('button', { name: '表格搜索字段' })).toHaveText('项目名称');
-  await expect(local.getByRole('searchbox')).toHaveAttribute('placeholder', '请输入完整项目名称');
+  await expect(local.getByRole('searchbox')).toHaveAttribute('placeholder', '搜索项目名称');
   await submit(local, '星河项目');
-  await expect(local.locator('tbody tr')).toHaveCount(2);
-  await expect(local.getByRole('cell', { name: '星河项目二期', exact: true })).toHaveCount(0);
+  await expect(local).toContainText('总条数： 3');
+  await expect(local.getByRole('cell', { name: '星河项目二期', exact: true })).toBeVisible();
   await select(local, '责任人');
   await expect(local.getByRole('searchbox')).toHaveValue('星河项目');
-  await expect(local.getByRole('searchbox')).toHaveAttribute('placeholder', '请输入完整责任人姓名');
+  await expect(local.getByRole('searchbox')).toHaveAttribute('placeholder', '搜索责任人姓名');
   await expect(local.getByRole('cell', { name: '其他项目', exact: true })).toBeVisible();
   await local.getByRole('searchbox').fill('00123');
   await select(local, '项目编码');
@@ -51,7 +51,7 @@ try {
   await expect(remote.locator('tbody tr')).toHaveCount(1);
   await expect(remote.getByRole('cell', { name: '00123', exact: true })).toBeVisible();
   const item = requests.at(-1).dsl_list[0];
-  expect(item.filter.dims).toContainEqual({ dim_name: 'search_demo_code', dim_value_list: ['00123'] });
+  expect(item.filter.dims).toContainEqual({ dim_name: 'search_demo_code', dim_value_list: ['00123'], operator: 'contains' });
   expect(item.filter.dims).toContainEqual({ dim_name: 'search_demo_owner', dim_value_list: ['张三', '李四', '星河项目'] });
   expect(item.order.offset).toBe(0);
   await remote.getByRole('searchbox').fill('unsubmitted');
@@ -63,8 +63,10 @@ try {
   expect(workbook.worksheets[0].getCell('A2').value).toBe('00123');
   await download.saveAs(path.join(output, 'submitted-search.xlsx'));
   await submit(remote, '123');
+  await expect(remote.getByRole('cell', { name: '00123', exact: true })).toBeVisible();
+  await submit(remote, 'not-found');
   await expect(remote.getByRole('cell', { name: '暂无数据', exact: true })).toBeVisible();
-  await submit(remote, 'A%_');
+  await submit(remote, '%_');
   await expect(remote.getByRole('cell', { name: 'A%_', exact: true })).toBeVisible();
   const beforeClear = requests.length;
   await remote.getByRole('button', { name: '清空表格搜索' }).click();
@@ -113,7 +115,7 @@ try {
   expect(errors).toEqual([]);
   const result = { status: 'pass', page: '/pages/table-search-options-demo', requests: requests.length,
     evidence: 'local browser and HTTP DQE Sim; production DQE collation and conjunction not verified',
-    checks: ['default option', 'placeholder', 'exact match', 'legacy contains', 'immediate switch', 'independent tables',
+    checks: ['default option', 'placeholder', 'single-field contains', 'multi-field contains', 'immediate switch', 'independent tables',
       'leading zeros', 'literal percent and underscore', 'submitted export', 'clear retains option', 'pagination reset',
       'same query preserves base filter', '390 and 320 layouts', 'invalid default diagnostic'] };
   await writeFile(path.join(output, 'result.json'), JSON.stringify(result, null, 2) + '\n');

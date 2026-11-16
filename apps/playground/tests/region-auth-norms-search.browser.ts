@@ -3,7 +3,7 @@ import { expect, test, type Page } from '@playwright/test';
 interface NormsQuery {
   output_dims?: string[];
   output_metrics?: string[];
-  filter?: { dims?: { dim_name: string; dim_value_list: string[] }[] };
+  filter?: { dims?: { dim_name: string; dim_value_list: string[]; operator?: string }[] };
 }
 
 async function mockNormsResponses(page: Page, empty = false) {
@@ -13,7 +13,7 @@ async function mockNormsResponses(page: Page, empty = false) {
     requests.push(...queries);
     await route.fulfill({ json: { retCode: 'CBC.0000', results: queries.map(query => {
       const nameFilter = query.filter?.dims?.find(filter => ['商务审批人', '审批人名称'].includes(filter.dim_name));
-      const noMatch = empty || (nameFilter !== undefined && !nameFilter.dim_value_list.includes('合成审批人'));
+      const noMatch = empty || (nameFilter !== undefined && !nameFilter.dim_value_list.some(term => '合成审批人'.includes(term)));
       return {
         code: 'SUCCESS', total_count: noMatch ? 0 : 1,
         data: noMatch ? [] : [Object.fromEntries([
@@ -30,6 +30,7 @@ async function mockNormsResponses(page: Page, empty = false) {
 
 test('decision opinion table shows no data after a successful empty gateway receipt', async ({ page }, info) => {
   const { table } = await mockNormsResponses(page, true);
+  await page.getByRole('tab', { name: '决策意见明细', exact: true }).click();
   await expect(table.getByText('暂无数据', { exact: true })).toBeVisible();
   await expect(table.locator('thead')).toBeVisible();
   await expect(table).toContainText('总条数： 0');
@@ -40,7 +41,7 @@ for (const scenario of [
   { name: 'approver', tab: '决策意见明细', title: '决策有效意见明细', keyword: '不存在的审批人' },
   { name: 'reviewer', tab: '申请规范率明细', title: '评审组织人驳回情况统计', keyword: '不存在的评审组织人' }
 ]) {
-  test(`exact ${scenario.name} search reaches both DQE members and clearing restores rows without a config error`, async ({ page }, info) => {
+  test(`contains ${scenario.name} search reaches both DQE members and clearing restores rows without a config error`, async ({ page }, info) => {
     const errors: string[] = [];
     page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
     const { requests } = await mockNormsResponses(page);
@@ -52,8 +53,8 @@ for (const scenario of [
     await table.getByRole('searchbox').fill(scenario.keyword);
     await table.getByRole('searchbox').press('Enter');
     await expect.poll(() => requests.slice(beforeSearch).flatMap(query => query.filter?.dims ?? [])).toEqual(expect.arrayContaining([
-      { dim_name: '商务审批人', dim_value_list: [scenario.keyword] },
-      { dim_name: '审批人名称', dim_value_list: [scenario.keyword] }
+      { dim_name: '商务审批人', dim_value_list: [scenario.keyword], operator: 'contains' },
+      { dim_name: '审批人名称', dim_value_list: [scenario.keyword], operator: 'contains' }
     ]));
     await expect(table.getByText('暂无数据', { exact: true })).toBeVisible();
     await expect(table.getByRole('searchbox')).toHaveValue(scenario.keyword);
@@ -75,7 +76,7 @@ test('multiple search dimensions still show the selector and changing it searche
   await table.getByRole('searchbox').fill('00123');
   await selector.click();
   await page.getByRole('option', { name: '项目编码', exact: true }).click();
-  await expect(table.getByRole('searchbox')).toHaveAttribute('placeholder', '请输入完整项目编码');
+  await expect(table.getByRole('searchbox')).toHaveAttribute('placeholder', '搜索项目编码');
   await expect(table.getByRole('cell', { name: '00123', exact: true })).toBeVisible();
   await expect(table.getByRole('cell', { name: '星河项目二期', exact: true })).toHaveCount(0);
 });

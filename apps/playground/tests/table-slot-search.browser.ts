@@ -1,11 +1,12 @@
 import { expect, test, type Page } from '@playwright/test';
 import { createRequire } from 'node:module';
+import businessPage from '../../../pages/business/dashboard/ioc/approval/rep-office-execution-efficiency.json' with { type: 'json' };
 const ExcelJS: typeof import('../../../packages/engine/node_modules/exceljs') = createRequire(import.meta.url)('../../../packages/engine/node_modules/exceljs');
 
 interface QueryItem {
   query_type?: string; object_type?: string;
   output_dims?: string[]; output_metrics?: string[]; output_fields?: string[];
-  filter?: { dims?: { dim_name: string; dim_value_list: (string | number)[] }[]; fields?: { field_name: string; value_list: (string | number)[] }[] };
+  filter?: { dims?: { dim_name: string; dim_value_list: (string | number)[]; operator?: string }[]; fields?: { field_name: string; value_list: (string | number)[]; operator?: string }[] };
   order?: { offset?: number; limit?: number };
 }
 const records = Array.from({ length: 24 }, (_, index) => ({
@@ -18,8 +19,8 @@ type SyntheticRow = Record<string, string | number>;
 function execute(item: QueryItem) {
   const object = item.query_type === 'object';
   if (object && item.object_type !== 'Business/Basic Business Information') return { code: 'SUCCESS', data: [], total_count: 0 };
-  const filters = object ? (item.filter?.fields ?? []).map(filter => ({ field: filter.field_name, values: filter.value_list })) : (item.filter?.dims ?? []).map(filter => ({ field: filter.dim_name, values: filter.dim_value_list }));
-  const matching = records.filter(row => filters.every(filter => filter.values.includes((row as SyntheticRow)[filter.field])));
+  const filters = object ? (item.filter?.fields ?? []).map(filter => ({ field: filter.field_name, values: filter.value_list, operator: filter.operator })) : (item.filter?.dims ?? []).map(filter => ({ field: filter.dim_name, values: filter.dim_value_list, operator: filter.operator }));
+  const matching = records.filter(row => filters.every(filter => filter.operator === 'contains' ? String((row as SyntheticRow)[filter.field]).includes(String(filter.values[0])) : filter.values.includes((row as SyntheticRow)[filter.field])));
   const fields = object ? item.output_fields ?? [] : [...item.output_dims ?? [], ...item.output_metrics ?? []];
   const rows = !object && !item.output_dims?.length ? matching.slice(0, 1) : matching;
   const offset = item.order?.offset ?? 0, limit = item.order?.limit ?? rows.length;
@@ -32,6 +33,21 @@ function receipt(item: QueryItem, mode: string) {
   return result;
 }
 
+function slotSearchDocument(): unknown {
+  const document = structuredClone(businessPage);
+  const section = document.sections.find(item => item.id === 'detail-section');
+  const props = section?.components.find(component => component.id === 'detail-tabs')?.props;
+  if (!props || !('tabs' in props)) throw new Error('Expected detail tabs');
+  const toolbar = props.tabs.find(tab => tab.id === 'approval-detail')?.component.props.toolbar;
+  if (!toolbar) throw new Error('Expected approval detail search toolbar');
+  Object.assign(toolbar, { search: { options: [
+    { value: 'code', label: '商务编号', field: 'biz-code' },
+    { value: 'owner', label: '责任人', field: { data: 'basic', field: 'owner-name' } },
+    { value: 'customer', label: '客户名称', field: { data: 'basic', field: 'cust-company-name' } }
+  ] } });
+  return document;
+}
+
 async function open(page: Page, mode = 'ready') {
   const requests: QueryItem[] = [];
   await page.route('**/rest/cdi/cdinl2databuilderservice/v1/dsl/execute', async route => {
@@ -39,7 +55,8 @@ async function open(page: Page, mode = 'ready') {
     requests.push(...items);
     await route.fulfill({ json: { retCode: 'CBC.0000', results: items.map(item => receipt(item, mode)) } });
   });
-  await page.goto('/pages/rep-office-execution-efficiency');
+  await page.goto('/preview');
+  await page.getByRole('textbox', { name: 'Page JSON 编辑器' }).fill(JSON.stringify(slotSearchDocument()));
   const table = page.getByRole('tabpanel');
   await expect(table.getByRole('cell', { name: 'B001', exact: true })).toBeVisible();
   return { table, requests };
@@ -52,14 +69,14 @@ test('business approval detail searches owner and customer across all pages and 
   await table.getByRole('button', { name: '表格搜索字段', exact: true }).click();
   await page.getByRole('option', { name: '责任人', exact: true }).click();
   const beforeSearch = requests.length;
-  await table.getByRole('searchbox').fill('合成责任人乙');
+  await table.getByRole('searchbox').fill('责任人乙');
   await table.getByRole('searchbox').press('Enter');
   await expect(table.getByRole('cell', { name: 'B012', exact: true })).toBeVisible();
   await expect(table.getByRole('cell', { name: 'B024', exact: true })).toBeVisible();
   await expect(table).toContainText('总条数： 2');
   const lookups = requests.slice(beforeSearch).filter(item => item.filter?.fields?.some(filter => filter.field_name === '责任人名称'));
   expect(lookups).toHaveLength(1);
-  expect(lookups[0].filter?.fields).toEqual([{ field_name: '责任人名称', value_list: ['合成责任人乙'], operator: '=' }]);
+  expect(lookups[0].filter?.fields).toEqual([{ field_name: '责任人名称', value_list: ['责任人乙'], operator: 'contains' }]);
   await page.screenshot({ path: info.outputPath('owner-slot-search.png'), fullPage: true });
   const downloaded = page.waitForEvent('download');
   await table.getByRole('button', { name: '导出', exact: true }).click();
@@ -67,9 +84,9 @@ test('business approval detail searches owner and customer across all pages and 
   await workbook.xlsx.readFile((await file.path())!);
   const sheet = workbook.worksheets[0];
   expect(sheet.rowCount).toBe(3);
-  expect(sheet.getRow(2).values).toEqual(expect.arrayContaining(['B012', '合成责任人乙']));
-  expect(sheet.getRow(3).values).toEqual(expect.arrayContaining(['B024', '合成责任人乙']));
-  await table.getByRole('searchbox').fill('合成客户乙');
+  expect(sheet.getRow(2).values).toEqual(expect.arrayContaining(['B024', '合成责任人乙']));
+  expect(sheet.getRow(3).values).toEqual(expect.arrayContaining(['B012', '合成责任人乙']));
+  await table.getByRole('searchbox').fill('客户乙');
   await table.getByRole('button', { name: '表格搜索字段', exact: true }).click();
   await page.getByRole('option', { name: '客户名称', exact: true }).click();
   await expect(table.getByRole('cell', { name: 'B011', exact: true })).toBeVisible();
@@ -92,7 +109,7 @@ test('an over-budget lookup reports its error and does not issue a filtered main
   await page.getByRole('option', { name: '责任人', exact: true }).click();
   await expect(table.getByRole('button', { name: '导出', exact: true })).toBeEnabled();
   const beforeSearch = requests.length;
-  await table.getByRole('searchbox').fill('合成责任人乙');
+  await table.getByRole('searchbox').fill('责任人乙');
   await table.getByRole('searchbox').press('Enter');
   await expect.poll(() => errors.some(message => message.includes('DQE_QUERY_REJECTED'))).toBe(true);
   await expect(table.getByText('暂无数据', { exact: true })).toBeVisible();

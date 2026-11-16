@@ -21,9 +21,9 @@ export function slotSearchPage(): Page {
 
 const rows = [
   { code: 'B001', owner: '甲', customer: '客户一', amount: 1 },
-  { code: 'B002', owner: '乙', customer: '客户二', amount: 2 },
+  { code: 'B002', owner: '姓名乙', customer: '客户二', amount: 2 },
   { code: 'B003', owner: '甲', customer: '客户二', amount: 3 },
-  { code: 'B004', owner: '乙', customer: '客户一', amount: 4 }
+  { code: 'B004', owner: '姓名乙', customer: '客户一', amount: 4 }
 ];
 type QueryRow = Record<string, unknown>;
 const fieldIds: Record<string, keyof typeof rows[number]> = { 编号: 'code', 责任人: 'owner', 客户: 'customer', 金额: 'amount' };
@@ -35,9 +35,9 @@ function gateway(mode = 'ready') {
     const results = body.dsl_list.map((item: QueryRow) => {
       requests.push(item);
       const object = item.query_type === 'object';
-      const filter = item.filter as { fields?: { field_name: string; value_list: string[] }[]; dims?: { dim_name: string; dim_value_list: string[] }[] } | undefined;
-      const conditions = object ? (filter?.fields ?? []).map(f => ({ field: f.field_name, values: f.value_list })) : (filter?.dims ?? []).map(f => ({ field: f.dim_name, values: f.dim_value_list }));
-      const matching = rows.filter(row => conditions.every(f => f.values.includes(String(row[fieldIds[f.field]]))));
+      const filter = item.filter as { fields?: { field_name: string; value_list: string[]; operator?: string }[]; dims?: { dim_name: string; dim_value_list: string[]; operator?: string }[] } | undefined;
+      const conditions = object ? (filter?.fields ?? []).map(f => ({ field: f.field_name, values: f.value_list, operator: f.operator })) : (filter?.dims ?? []).map(f => ({ field: f.dim_name, values: f.dim_value_list, operator: f.operator }));
+      const matching = rows.filter(row => conditions.every(f => f.operator === 'contains' ? String(row[fieldIds[f.field]]).includes(f.values[0]) : f.values.includes(String(row[fieldIds[f.field]]))));
       const order = item.order as { offset?: number; limit?: number };
       const fields = (object ? item.output_fields : [...item.output_dims as string[], ...item.output_metrics as string[]]) as string[];
       const data = matching.slice(order.offset ?? 0, (order.offset ?? 0) + (order.limit ?? 1000)).map(row => Object.fromEntries(fields.map(field => [field, row[fieldIds[field]]])));
@@ -62,7 +62,7 @@ async function read(page: Page, option: string, query: string, pageIndex = 0, mo
   } finally { program.dispose(); }
 }
 
-describe('table supplementary-slot exact search', () => {
+describe('table supplementary-slot contains search', () => {
   it.each(['old-version', 'missing-slot', 'missing-key-binding', 'numeric-field'])('rejects invalid %s metadata before querying', kind => {
     const page = slotSearchPage(), table = page.sections[0].components[0] as TableComponent;
     const search = table.props.toolbar!.search!;
@@ -88,8 +88,8 @@ describe('table supplementary-slot exact search', () => {
   it('finds owner matches beyond the original first page before main pagination', async () => {
     const { snapshots, requests } = await read(slotSearchPage(), 'owner', '乙');
     expect(snapshots.get('main')).toMatchObject({ status: 'ready', rows: [{ code: 'B002', amount: 2 }], totalCount: 2 });
-    expect(snapshots.get('basic')).toMatchObject({ status: 'ready', rows: [{ code: 'B002', owner: '乙', customer: '客户二' }] });
-    expect(requests[0]).toMatchObject({ query_type: 'object', filter: { fields: [{ field_name: '责任人', value_list: ['乙'], operator: '=' }] } });
+    expect(snapshots.get('basic')).toMatchObject({ status: 'ready', rows: [{ code: 'B002', owner: '姓名乙', customer: '客户二' }] });
+    expect(requests[0]).toMatchObject({ query_type: 'object', filter: { fields: [{ field_name: '责任人', value_list: ['乙'], operator: 'contains' }] } });
     expect(requests[1]).toMatchObject({ filter: { dims: [{ dim_name: '编号', dim_value_list: ['B002', 'B004'] }] }, order: { offset: 0, limit: 200 } });
   });
   it('pages the matching main rows and only fills the requested page', async () => {
@@ -122,7 +122,7 @@ describe('table supplementary-slot exact search', () => {
     const program = createSourceProgram(page, { gateway: { fetchData() {
       calls++; entered(); return new Promise(resolve => { finish = resolve; });
     } } });
-    const view = { ...defaultSourceView(page, 'main'), search: { fields: ['owner'], data: 'basic', query: '甲', match: 'equals' as const } };
+    const view = { ...defaultSourceView(page, 'main'), search: { fields: ['owner'], data: 'basic', query: '甲' } };
     const reading = (async () => { for await (const _ of program.read({ roots: ['main'], conditions: new Map(), views: new Map([['main', view]]), signal: abort.signal })) {} })();
     const rejected = expect(reading).rejects.toMatchObject({ name: 'AbortError' });
     await started; abort.abort(); finish({ rows: [], totalCount: 0 });
@@ -145,7 +145,7 @@ describe('table supplementary-slot exact search', () => {
       queried = request.query;
       return { kind: 'values' as const, candidates: [{ value: 'B002', label: 'B002' }, { value: 'B004', label: 'B004' }], totalCount: 2 };
     } } });
-    const view = { ...defaultSourceView(page, 'main'), search: { data: 'basic', fields: ['owner'], query: '乙', match: 'equals' as const } };
+    const view = { ...defaultSourceView(page, 'main'), search: { data: 'basic', fields: ['owner'], query: '乙' } };
     try {
       const result = await program.readColumnCandidates({ sourceId: 'main', field: 'code', conditions: new Map(), view });
       expect(result).toMatchObject({ kind: 'values', totalCount: 2 });

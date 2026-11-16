@@ -19,7 +19,7 @@ it('uses the first static option when no explicit default is configured', () => 
   const controller = createTableController(page, () => null, () => {});
   expect(controller.searchOption(table)).toBe('code');
   controller.search(table, '00123');
-  expect(controller.view(table).search).toEqual({ fields: ['code'], query: '00123', match: 'equals' });
+  expect(controller.view(table).search).toEqual({ fields: ['code'], query: '00123' });
   controller.dispose();
 });
 it('blocks option changes and search submission through a disabled toolbar binding', () => {
@@ -44,7 +44,7 @@ it('switches using the current draft, keeps instance state isolated and clears w
   controller.setSearchDraft(table, '00123');
   controller.selectSearchOption(table, 'code');
   expect(controller.view(table)).toMatchObject({ pageIndex: 0, sort: [{ field: 'amount', direction: 'desc' }],
-    predicates: [{ field: 'owner', op: 'in', values: ['张三'] }], search: { fields: ['code'], query: '00123', match: 'equals' } });
+    predicates: [{ field: 'owner', op: 'in', values: ['张三'] }], search: { fields: ['code'], query: '00123' } });
   const source = page.dataSources.records;
   if (source.source.type !== 'inline') throw new Error('Expected inline fixture');
   expect(controller.present(table, source.source.rows, true).rows.map(row => row.code)).toEqual(['00123']);
@@ -89,7 +89,7 @@ it.each([true, false])('keeps the newest selected field after a late response (p
   await vi.waitFor(() => expect(completeOld).toBeDefined());
   controller.setSearchDraft(table, '00123');
   controller.selectSearchOption(table, 'code');
-  await vi.waitFor(() => expect(stream.captureQueries().get('queried')?.search).toEqual({ queryFields: ['search_demo_code'], query: '00123', match: 'equals' }));
+  await vi.waitFor(() => expect(stream.captureQueries().get('queried')?.search).toEqual({ queryFields: ['search_demo_code'], query: '00123' }));
   completeOld!({ rows: [{ ...row, code: 'stale' }], totalCount: 1 });
   await vi.waitFor(() => expect(snapshots.get('queried')).toMatchObject({ status: 'ready', rows: [row] }));
   expect(calls).toContain('search_demo_code');

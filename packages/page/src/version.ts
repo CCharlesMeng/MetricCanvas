@@ -92,7 +92,7 @@ export const pageCapabilities = {
   'field-binding-default-main': { minor: 116, legacyReadable: false, description: '对象字段绑定省略 data 时固定引用 main 数据槽', usedAt: defaultMainBindingPaths },
   'number-integer': {minor:113,legacyReadable:false,description:'普通数值四舍五入为无千分位整数，舍入零不显示负号',usedAt:document=>namedFormatPaths(document,/^number-0$/)},
   'table-slot-search': {
-    minor: 109, legacyReadable: false, description: '表格补充数据槽的单字段精确搜索与行键回查',
+    minor: 109, legacyReadable: false, description: '表格补充数据槽的单字段搜索与行键回查',
     usedAt: document => componentPaths(document, component => {
       const search = record(record(props(component)?.toolbar)?.search);
       return component.type === 'table' && Array.isArray(search?.options) && search.options.some(option => record(record(option)?.field) !== undefined);
@@ -264,7 +264,7 @@ export const pageCapabilities = {
   },
   'dimension-search-tree-policy': {minor:43,description:'维度下拉可选搜索与普通树父子策略',usedAt:document=>filterPaths(document,f=>f.type==='dimension'&&(has(f,'searchable')||['descendants','independent','leaf'].includes(String(f.treeSelection))))},
   'table-search-options': {
-    minor: 42, legacyReadable: false, description: '表格静态搜索选项与单文本字段等值匹配',
+    minor: 42, legacyReadable: false, description: '表格静态搜索选项与所选字段匹配',
     usedAt: document => [
       ...componentPaths(document, component => component.type === 'table' && has(record(record(props(component)?.toolbar)?.search), 'options')),
       ...dataSourcePaths(document, source => has(record(record(record(record(source.source)?.initial)?.view)?.search), 'match'))

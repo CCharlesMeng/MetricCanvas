@@ -310,7 +310,7 @@ SourceProgram、Node执行入口、分页/组合查询、导出统一选择合�
 
 固定维度参数可以在对应 `value_list` 使用 `{param:id}`。固定日期参数使用同字段成对引用：`{param:id,part:start|end,valueFormat:...}`，分别对应 `>=` 和 `<=`，必须来自同一个 `params.query.times` 参数及同一格式，不能混入该字段固定条件或绑定。可在成对引用中声明完全相同的 `window`，此时参数必须为单点并遵循既有窗口精度规则。参数解析仅修改查询副本。旧 paramBindings 的 time 分支在对象查询也须声明 queryField/valueFormat。
 
-查询分页继续使用 `order.offset/limit`。子表格、关联选页和分页合并不自动追加第二排序键；没有其他排序时子表格才以行键升序作为唯一排序。单字段排序编码为 `order_by_field/type`；显式多字段排序需要数据网关的可信 `encodeObjectSort`，未提供时明确报错，不静默丢键或本地排序。文本包含搜索仍需可信 `encodeSearch`；对象列候选使用上文的单字段对象投影或显式 `encodeColumnCandidates`，不能从当前页生成完整候选。
+查询分页继续使用 `order.offset/limit`。子表格、关联选页和分页合并不自动追加第二排序键；没有其他排序时子表格才以行键升序作为唯一排序。单字段排序编码为 `order_by_field/type`；显式多字段排序需要数据网关的可信 `encodeObjectSort`，未提供时明确报错，不静默丢键或本地排序。单字段文本包含搜索由默认数据网关追加 `filter.fields` 条件 `{"field_name":"字段","value_list":["关键词"],"operator":"contains"}`，多字段 OR 仍需可信 `encodeSearch`；对象列候选使用上文的单字段对象投影或显式 `encodeColumnCandidates`，不能从当前页生成完整候选。
 
 窗口、有限选择、complete 的用途边界及取消、缓存、URL、筛选写入规则与普通 DQE 一致。对象 complete 源经共享范围读取取得完整行集后再计算或关联；显式完整导出使用完整读取入口。分页失败、总数变化或累计行数超出总数时不返回部分对象结果冒充完整结果；不收紧普通指标查询原有兼容规则。导出单表最多 10000 行，结果绑定去重集合最多 1000 值，超限拒绝而不截断。没有真实记录标识时不能从重复投影行推断上游重复翻页，也不能据此删除重复行；稳定分页需真实服务验真。
 

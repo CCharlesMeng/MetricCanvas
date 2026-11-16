@@ -111,7 +111,7 @@ export interface DqeGatewayConfig {
   /** Trusted original-result DISTINCT encoding; takes precedence over the explicit fullQuery fallback. */
   encodeColumnCandidates?: (request: ColumnCandidatesQuery) => { query: EffectiveQuery; valueField: string; labelField?: string };
 
-  /** Encode a verified upstream search predicate; absent capability fails explicitly. */
+  /** Override contains encoding for a deployment, including multi-field OR search. */
   encodeSearch?: (item: JsonObject, search: NonNullable<EffectiveQuery['search']>) => JsonObject;
   endpoint?: string;
   headers?: Record<string, string>;
@@ -679,8 +679,7 @@ function encodedDqeItem(query: EffectiveQuery, encodeSearch?: DqeGatewayConfig['
 function encodedObjectItem(query: EffectiveQuery, encodeSearch: DqeGatewayConfig['encodeSearch'], encodeSort?: ObjectSortEncoder): JsonObject {
   const item=encodeObjectQuery(query,encodeSort);
   if(!query.search || query.search.match==='equals')return item;
-  if(!encodeSearch)throw new DqeGatewayError('DQE_CONFIG_ERROR','数据网关未配置全表文本搜索能力');
-  return encodeSearch(item,structuredClone(query.search));
+  return encodeTableSearch(item, query.search, encodeSearch);
 }
 function encodedMetricItem(query: EffectiveQuery, encodeSearch?: DqeGatewayConfig['encodeSearch']): JsonObject {
   const item = cloneJson(query.body.dsl_list[0]);
@@ -736,17 +735,23 @@ function metricOrder(item: JsonObject, query: EffectiveQuery): JsonObject {
 }
 
 function encodeTableSearch(item: JsonObject, search: NonNullable<EffectiveQuery['search']>, encodeSearch?: DqeGatewayConfig['encodeSearch']): JsonObject {
-  if (search.match !== 'equals') {
-    if (!encodeSearch) throw new DqeGatewayError('DQE_CONFIG_ERROR', '数据网关未配置全表文本搜索能力');
-    return encodeSearch(item, structuredClone(search));
+  const contains = search.match !== 'equals';
+  if (contains && encodeSearch) return encodeSearch(item, structuredClone(search));
+  if (search.queryFields.length !== 1) {
+    throw new DqeGatewayError('DQE_CONFIG_ERROR', contains ? '多字段包含搜索需要配置 encodeSearch 以执行 OR 匹配' : '等值搜索只允许一个查询字段');
   }
-  if (search.queryFields.length !== 1) throw new DqeGatewayError('DQE_CONFIG_ERROR', '等值搜索只允许一个查询字段');
-  if (item.filter !== undefined && !isRecord(item.filter)) throw new DqeGatewayError('DQE_CONFIG_ERROR', '等值搜索要求结构化 filter');
+  if (item.filter !== undefined && !isRecord(item.filter)) throw new DqeGatewayError('DQE_CONFIG_ERROR', '文本搜索要求结构化 filter');
   const filter = ensureRecord(item, 'filter');
-  if (filter.dims !== undefined && !Array.isArray(filter.dims)) throw new DqeGatewayError('DQE_CONFIG_ERROR', '等值搜索要求 filter.dims 数组');
-  const existing = Array.isArray(filter.dims) ? filter.dims : [];
+  const [field] = search.queryFields;
+  const objectQuery = isObjectDqeItem(item);
+  const key = objectQuery ? 'fields' : 'dims';
+  const conditions = filter[key];
+  if (conditions !== undefined && !Array.isArray(conditions)) throw new DqeGatewayError('DQE_CONFIG_ERROR', `文本搜索要求 filter.${key} 数组`);
+  const predicate: JsonObject = objectQuery
+    ? { field_name: field, value_list: [search.query], operator: 'contains' }
+    : { dim_name: field, dim_value_list: [search.query], ...(contains ? { operator: 'contains' } : {}) };
   // Add a conjunct; replacing a same-field page/header constraint would broaden its scope.
-  filter.dims = [...existing, { dim_name: search.queryFields[0], dim_value_list: [search.query] }];
+  filter[key] = [...(conditions ?? []), predicate];
   return item;
 }
 

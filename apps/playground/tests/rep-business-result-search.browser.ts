@@ -72,12 +72,12 @@ test('1205 business keys: all three members sort globally, filters survive switc
   expect(await table.getByRole('cell', { name: 'B01206', exact: true }).count()).toBe(0);
 });
 
-test('business last page, exact search outside the first 1000 keys and complete Excel preserve both site rows', async ({ page }) => {
+test('business last page, contains search outside the first 1000 keys and complete Excel preserve both site rows', async ({ page }) => {
   const { table } = await openResult(page, 'business');
   await expect(table).toContainText('总条数： 1206');
   await table.getByRole('button', { name: '121', exact: true }).click();
   await expect(table.getByRole('cell', { name: 'B01205', exact: true })).toBeVisible();
-  await resultSearch(table, 'B01205');
+  await resultSearch(table, '01205');
   await expect(table).toContainText('总条数： 1');
   await table.getByRole('button', { name: '清空表格搜索' }).click();
   await expect(table).toContainText('总条数： 1206');
@@ -115,19 +115,19 @@ test('2410 risk records: reads every batch, sorts supplemental dates and filters
   await page.screenshot({ path: info.outputPath('risk-supplemental-sort-filter.png'), fullPage: true });
 });
 
-test('project/customer/contract exact search, zero results, clearing and full Excel retain all 2410 risk records', async ({ page }) => {
+test('project/customer/contract contains search, zero results, clearing and full Excel retain all 2410 risk records', async ({ page }) => {
   const { table } = await openResult(page, 'contract');
   await expect(table).toContainText('总条数： 2410');
   await resultSort(table, 'activationTime', 'desc');
-  await resultSearch(table, '合成目标项目');
+  await resultSearch(table, '目标项目');
   await expect(table).toContainText('总条数： 2410');
   const sheet = await downloadedWorkbook(page, () => table.getByRole('button', { name: '导出', exact: true }).click());
   expect(sheet.rowCount).toBe(2411);
   expect(sheet.getRow(2).values).toEqual(expect.arrayContaining(['C01205', '合成目标项目']));
   expect(sheet.getRow(2411).values).toEqual(expect.arrayContaining(['C00001', '合成目标项目']));
-  await chooseSearch(page, table, '客户名称', '合成客户乙');
+  await chooseSearch(page, table, '客户名称', '客户乙');
   await expect(table).toContainText('总条数： 6');
-  await chooseSearch(page, table, '合同编号', 'C01205');
+  await chooseSearch(page, table, '合同编号', '01205');
   await expect(table).toContainText('总条数： 2');
   await resultSearch(table, '不存在');
   await expect(table).toContainText('总条数： 0');
