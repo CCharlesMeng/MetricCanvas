@@ -66,6 +66,7 @@ createCandidateGatewaySession
 createCandidateValidator
 createFinalizationPreparation
 createSourceProgram
+debugWarn
 defaultSourceView
 defaultTableView
 evaluateTableView
@@ -94,6 +95,7 @@ remoteHeaderDefaultSources
 resolveFinalizationDates
 resolveQueryResultInputs
 reusableInitialSnapshot
+runtimeWarningsEnabled
 searchTableRows
 sortTableRows
 sourceCandidateWindow
