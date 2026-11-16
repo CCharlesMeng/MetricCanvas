@@ -49,6 +49,33 @@ async function settled(): Promise<void> {
   await Promise.resolve();
 }
 
+it('keeps only the active context snapshot and reloads evicted candidates on revisit', async () => {
+  const { gateway, calls } = deferredGateway();
+  const loader = createDimensionValuesLoader(gateway);
+  let snapshots: DimensionValuesSnapshots = new Map();
+  loader.subscribe(next => { snapshots = next; });
+
+  for (let index = 0; index < 33; index++) {
+    const context = String(index);
+    loader.load('region', undefined, { filterId: 'region', context });
+    calls[index].deferred.resolve({ kind: 'values', candidates: [{ value: context, label: context }] });
+    await settled();
+  }
+
+  expect([...snapshots.keys()]).toEqual([
+    candidateScopeKey('region', 'region'),
+    candidateScopeKey('region', 'region', undefined, '32')
+  ]);
+  loader.load('region', undefined, { filterId: 'region', context: '1' });
+  expect(calls).toHaveLength(33);
+  expect(snapshots.get(candidateScopeKey('region', 'region'))).toMatchObject({
+    status: 'ready', candidates: [{ value: '1' }]
+  });
+  loader.load('region', undefined, { filterId: 'region', context: '0' });
+  expect(calls).toHaveLength(34);
+  loader.dispose();
+});
+
 describe('筛选候选值加载器', () => {
   it('未请求的维度为 idle,请求后经 loading 进入 ready,候选为空进入 empty', async () => {
     const { gateway, calls } = deferredGateway();

@@ -8,6 +8,25 @@ import {createSourceProgram} from '../src/source-program/session';
 import {composeEffectiveQuery} from '../src/effective-query';
 import {createCandidateGatewaySession} from '../src/candidate-session';
 import type {RuntimeDataGateway} from '../src/ports';
+
+it('evicts the least recently used receipt before exceeding the candidate count budget', async () => {
+  const candidates = Array.from({ length: 5000 }, (_, index) => ({ value: String(index), label: String(index) }));
+  const fetchFilterCandidates = vi.fn(async () => ({ kind: 'values' as const, candidates }));
+  const session = createCandidateGatewaySession({ fetchData: async () => ({ rows: [] }), fetchFilterCandidates });
+  const load = (dimension: string) => session.gateway.fetchFilterCandidates!(
+    { filterId: 'f', dimension, constraints: { dimensions: {}, times: {} } },
+    { signal: new AbortController().signal }
+  );
+
+  for (const dimension of ['a', 'b', 'c', 'd', 'e', 'f']) await load(dimension);
+  await load('a');
+  await load('g');
+  await load('a');
+  expect(fetchFilterCandidates).toHaveBeenCalledTimes(7);
+  await load('b');
+  expect(fetchFilterCandidates).toHaveBeenCalledTimes(8);
+  session.dispose();
+});
 const load=(kind:string)=>{const result=parsePage(JSON.parse(readFileSync(pageFilesById('pages').get(`ioc-header-business-${kind}-demo`)!,'utf8')));if(!result.ok)throw Error(JSON.stringify(result.errors));return result.page;};
 describe('B2 complete execution boundary',()=>{
   it('all-unrestricted omits only the dynamic enum predicate and capture/read share it',async()=>{

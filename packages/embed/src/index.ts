@@ -42,7 +42,50 @@ interface MountedInstance {
   update(options: MountOptions): void;
 }
 
+interface MountConfiguration {
+  onEvent: MountOptions['onEvent'];
+  navigationInput: RuntimeInput['navigation'];
+  navigation: RuntimeInput['navigation'];
+}
+
+interface AttachedRuntime {
+  container: HTMLElement;
+  host: HTMLElement;
+  root: EmbedRootExports;
+  configuration: MountConfiguration;
+}
+
 const instances = new WeakMap<HTMLElement, MountedInstance>();
+
+function readInput(input: RuntimeInput, configuration: MountConfiguration): RuntimeInput {
+  // Replacing only the auth handler must not recreate the navigation dependency.
+  if (input.navigation !== configuration.navigationInput) {
+    configuration.navigationInput = input.navigation;
+    configuration.navigation = browserNavigation(configuration.navigationInput, window);
+  }
+  return runtimeInput(input, configuration.navigation);
+}
+
+function createRuntimeHandle(attached: AttachedRuntime | undefined): RuntimeHandle {
+  return {
+    update(input) {
+      if (!attached) throw mountError('MetricCanvas 实例已销毁，不能再次更新。');
+      attached.root.update(readInput(input, attached.configuration));
+    },
+    destroy() {
+      const instance = attached;
+      if (!instance) return;
+      attached = undefined;
+      instance.configuration.onEvent = undefined;
+      instances.delete(instance.container);
+      try {
+        void unmount(instance.root);
+      } finally {
+        instance.host.remove();
+      }
+    }
+  };
+}
 
 export function mount(
   target: string | HTMLElement,
@@ -55,17 +98,13 @@ export function mount(
     return existing.handle;
   }
 
-  let onEvent = options.onEvent;
-  let navigationInput = options.navigation;
-  let navigation = browserNavigation(navigationInput, window);
-  // Replacing only the auth handler must not recreate the navigation dependency.
-  function readInput(input: RuntimeInput): RuntimeInput {
-    if (input.navigation !== navigationInput) {
-      navigationInput = input.navigation;
-      navigation = browserNavigation(navigationInput, window);
-    }
-    return runtimeInput(input, navigation);
-  }
+  const onEvent = options.onEvent;
+  const navigationInput = options.navigation;
+  const configuration: MountConfiguration = {
+    onEvent,
+    navigationInput,
+    navigation: browserNavigation(navigationInput, window)
+  };
   const host = document.createElement('div');
   host.dataset.metriccanvasRuntime = '';
   host.style.display = 'block';
@@ -79,8 +118,11 @@ export function mount(
     root = mountSvelte(EmbedRoot, {
       target: shadow,
       props: {
-        initialInput: readInput(options),
-        onEvent: (event: RuntimeEvent) => onEvent?.(event)
+        initialInput: readInput(options, configuration),
+        onEvent: (event: RuntimeEvent) => {
+          const { onEvent } = configuration;
+          onEvent?.(event);
+        }
       }
     }) as EmbedRootExports;
   } catch (cause) {
@@ -88,26 +130,11 @@ export function mount(
     throw cause;
   }
 
-  let destroyed = false;
-  const handle: RuntimeHandle = {
-    update(input) {
-      if (destroyed) {
-        throw mountError('MetricCanvas 实例已销毁，不能再次更新。');
-      }
-      root.update(readInput(input));
-    },
-    destroy() {
-      if (destroyed) return;
-      destroyed = true;
-      instances.delete(container);
-      void unmount(root);
-      host.remove();
-    }
-  };
+  const handle = createRuntimeHandle({ container, host, root, configuration });
   instances.set(container, {
     handle,
     update(nextOptions) {
-      onEvent = nextOptions.onEvent;
+      configuration.onEvent = nextOptions.onEvent;
       handle.update(nextOptions);
     }
   });

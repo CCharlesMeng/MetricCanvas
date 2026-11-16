@@ -1,5 +1,6 @@
 import { validFilterCandidates } from './filter-candidates';
 import type { QueryError } from '@metriccanvas/page/internal';
+import { createCandidateCache } from '@metriccanvas/data-execution/runtime';
 import type { Subscribable } from './orchestrator';
 import type {
   DimensionValueCandidate,
@@ -50,6 +51,23 @@ export interface DimensionValuesStream extends Subscribable<DimensionValuesSnaps
 
 const IDLE: DimensionValuesSnapshot = { status: 'idle' };
 
+function candidateLoadIdentity(
+  dimension: string,
+  constraints: Readonly<Record<string, readonly string[]>> | undefined,
+  inputScope: { filterId: string; level?: string; context?: string } | string | undefined,
+  request: FilterCandidatesRequest | undefined
+) {
+  const scope = typeof inputScope === 'object' ? inputScope : undefined;
+  const slot = typeof inputScope === 'string' ? candidateKey(dimension, inputScope)
+    : scope ? candidateScopeKey(scope.filterId, dimension, scope.level) : dimension;
+  const contextSlot = scope?.context === undefined ? undefined
+    : candidateScopeKey(scope.filterId, dimension, scope.level, scope.context);
+  const normalized = constraints && Object.fromEntries(Object.keys(constraints).sort()
+    .map(key => [key, [...new Set(constraints[key])].sort()]));
+  const key = JSON.stringify([slot, dimension, normalized ?? {}, scope?.context ?? null, request ?? null]);
+  return { slot, contextSlot, normalized, key };
+}
+
 /**
  * 筛选候选值加载器:候选值从端口到显式状态的唯一编排点。
  *
@@ -63,43 +81,51 @@ export function createDimensionValuesLoader(
 ): DimensionValuesStream {
   const snapshots = new Map<string, DimensionValuesSnapshot>();
   const subscribers = new Set<(value: DimensionValuesSnapshots) => void>();
-  const requests = new Map<string, { controller: AbortController; generation: number; key: string }>();
-  const generations = new Map<string, number>();
+  const requests = new Map<string, AbortController>();
   const activeKeys = new Map<string, string>();
-  const cache = new Map<string, DimensionValuesSnapshot>();
+  const contextKeys = new Map<string, string>();
+  const cache = createCandidateCache<DimensionValuesSnapshot>(snapshot => snapshot.status === 'ready' ? snapshot.candidates.length : 0);
   let disposed = false;
 
   function publish(slot: string, snapshot: DimensionValuesSnapshot, contextSlot?: string): void {
+    const previous = contextKeys.get(slot);
+    if (previous && previous !== contextSlot) {
+      snapshots.delete(previous);
+      contextKeys.delete(slot);
+    }
     snapshots.set(slot, snapshot);
-    if (contextSlot) snapshots.set(contextSlot, snapshot);
+    if (contextSlot) {
+      contextKeys.set(slot, contextSlot);
+      snapshots.set(contextSlot, snapshot);
+    }
     const current: DimensionValuesSnapshots = new Map(snapshots);
     for (const subscriber of subscribers) notify(subscriber, current);
   }
+
+  function cancel(slot: string) {
+    const controller = requests.get(slot);
+    requests.delete(slot);
+    controller?.abort();
+  }
+
   function start(dimension: string, constraints: Readonly<Record<string, readonly string[]>> | undefined,
     force: boolean, inputScope?: {filterId:string;level?:string;context?:string}|string, filterRequest?:FilterCandidatesRequest, levels?:readonly string[]): void {
     if (disposed) return;
-    const scope=typeof inputScope==='object'?inputScope:undefined;
-    const slot = typeof inputScope==='string'?candidateKey(dimension,inputScope):scope ? candidateScopeKey(scope.filterId, dimension, scope.level) : dimension;
-    const contextSlot = scope?.context !== undefined ? candidateScopeKey(scope.filterId,dimension,scope.level,scope.context) : undefined;
-    const normalized = constraints && Object.fromEntries(Object.keys(constraints).sort().map(key => [key, [...new Set(constraints[key])].sort()]));
-    const key = JSON.stringify([slot, dimension, normalized ?? {},scope?.context ?? null,filterRequest??null]);
+    const { slot, contextSlot, normalized, key } = candidateLoadIdentity(dimension, constraints, inputScope, filterRequest);
     if (!force && activeKeys.get(slot) === key) return;
     activeKeys.set(slot,key);
-    const previous = requests.get(slot);
-    if (!force && previous?.key === key) return;
-    previous?.controller.abort();
-    const generation = (generations.get(slot) ?? 0) + 1;
-    generations.set(slot, generation);
-    requests.delete(slot);
-    if (!force && cache.has(key)) { publish(slot, cache.get(key)!, contextSlot); return; }
+    cancel(slot);
+    if (force) cache.delete(key);
+    const cached = cache.get(key);
+    if (cached) { publish(slot, cached, contextSlot); return; }
     if(filterRequest && Object.values(filterRequest.constraints.dimensions).some(values=>values.length===0)){publish(slot,{status:'empty'},contextSlot);return;}
     const fetch = filterRequest ? gateway.fetchFilterCandidates : capability(gateway);
     if (!fetch) { publish(slot, {status:'unavailable'}, contextSlot); return; }
     const controller = new AbortController();
-    const request = {controller,generation,key}; requests.set(slot,request);
+    requests.set(slot,controller);
     publish(slot,{status:'loading'}, contextSlot);
     function settle(snapshot: DimensionValuesSnapshot) {
-      if (disposed || generations.get(slot) !== generation || requests.get(slot) !== request) return;
+      if (requests.get(slot) !== controller) return;
       requests.delete(slot); cache.set(key,snapshot); publish(slot,snapshot,contextSlot);
     }
     let pending: Promise<FilterCandidatesResult | Awaited<ReturnType<DimensionValuesGateway['fetchDimensionValues']>>>;
@@ -133,18 +159,20 @@ export function createDimensionValuesLoader(
     unavailable(dimension, scope) {
       if (disposed) return;
       const slot = candidateScopeKey(scope.filterId, dimension, scope.level);
-      requests.get(slot)?.controller.abort();
-      requests.delete(slot); activeKeys.delete(slot);
-      generations.set(slot, (generations.get(slot) ?? 0) + 1);
+      cancel(slot);
+      activeKeys.delete(slot);
       for (const key of cache.keys()) if (JSON.parse(key)[0] === slot) cache.delete(key);
-      for (const key of snapshots.keys()) if (key.startsWith(slot.slice(0, -1) + ",")) snapshots.delete(key);
       publish(slot, { status: 'unavailable' }, scope.context === undefined ? undefined : candidateScopeKey(scope.filterId, dimension, scope.level, scope.context));
     },
     dispose() {
       if (disposed) return;
       disposed = true;
-      for (const request of requests.values()) request.controller.abort();
-      requests.clear(); cache.clear(); generations.clear();
+      for (const slot of requests.keys()) cancel(slot);
+      cache.clear();
+      activeKeys.clear();
+      contextKeys.clear();
+      snapshots.clear();
+      subscribers.clear();
     }
   };
 }
