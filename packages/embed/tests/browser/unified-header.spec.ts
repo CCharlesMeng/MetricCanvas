@@ -7,7 +7,7 @@ test('canonical readonly header disables every primary and overflow filter',asyn
  const fixture=readFileSync(new URL('../../../page/fixtures/contract-valid/unified-overflow-header.json',import.meta.url),'utf8');
  await page.route('**/pages/unified-overflow-header.json',route=>route.fulfill({contentType:'application/json',body:fixture}));
  await page.goto('/pages/unified-overflow-header');
- const header=page.locator('header[data-ioc-header]');await expect(header).toHaveCount(1);await expect(header).not.toContainText('只读验收：包括更多筛选');await expect.poll(()=>warnings.join('\n')).toContain('只读验收：包括更多筛选');
+ const header=page.locator('header[data-ioc-header]');await expect(header).toHaveCount(1);await expect(header).not.toContainText('只读验收：包括更多筛选');expect(warnings.join('\n')).not.toContain('只读验收：包括更多筛选');
  await header.locator('[data-dashboard-filter-overflow]>summary').click();
  await expect(header.locator('[data-filter-control]')).toHaveCount(10);
  expect(await header.locator('[data-filter-control] :is(input,button)').evaluateAll(nodes=>nodes.length>0&&nodes.every(node=>(node instanceof HTMLInputElement||node instanceof HTMLButtonElement)&&node.disabled))).toBe(true);

@@ -448,7 +448,7 @@
 
 入口 `/pages/table-data-recovery`；[完整页面](table-data-recovery.json)。运行 `pnpm --filter playground dev --host 127.0.0.1 --port 5198 --strictPort`，访问 http://127.0.0.1:5198/pages/table-data-recovery，无需 DQE Sim。
 
-- 默认混合故障：多来源合并保留6条可用记录（不规则行跳过、重复 key 留首条），记录关联保留8条审批记录（重复基本信息留首条）。缺字段和不可用对象值显示 —；两表不显示额外提示，开发环境的控制台以 warning 记录来源诊断。正式构建不输出该 warning，数据与导出说明相同。
+- 默认混合故障：多来源合并保留6条可用记录（不规则行跳过、重复 key 留首条），记录关联保留8条审批记录（重复基本信息留首条）。缺字段和不可用对象值显示 —；两表不显示额外提示，控制台以 warning 记录来源诊断。
 - 合并表每页3条，第二页仍3条，总数6；搜索、筛选和排序作用于整理后的匹配范围。分别导出两表，数据工作表分别为6/8行，不受当前页影响，另有“数据异常说明”工作表。
 - 访问 `?recoveryState=ready` 模拟数据准备好后刷新：两表恢复8条，控制台不再产生异常整理 warning；正常导出不附说明表。
 - 合成数据与故障注入在 `apps/playground/fixtures/table-recovery.ts`，基础种子在 `decision-opinion/model.ts` 与 `rejection-details/gateway.ts`。自动浏览器检查执行 `node apps/playground/tests/table-data-recovery-browser.mjs`，输出到 `docs/evidence/table-data-recovery/browser/`。

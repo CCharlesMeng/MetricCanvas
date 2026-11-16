@@ -47,8 +47,6 @@
 
 查询顶层数值度量的属性漏返也按缺失处理，保留列并记录诊断；缺少维度属性、嵌套映射属性和 inline 数据仍受严格校验。HTTP 异常注入由回归测试覆盖。
 
-在页面试验场开发环境打开控制台，可看到 `QUERY_VALUE_FALLBACK`。正式 Embed 在返回行与总数不一致时仍保留可用数据，并关闭这类 warning；字段映射或行契约错误仍输出 `console.error`。可用 `result-diagnostics.spec.ts` 在合成 HTTP 响应上复验。
-
 关键声明：`dataSources.*.fields`, `dataSources.*.source.initial`。
 
 关联：[empty-state-showcase](../layout/empty-state-showcase.json)。
