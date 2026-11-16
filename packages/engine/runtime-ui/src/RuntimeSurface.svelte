@@ -26,7 +26,7 @@
   import {requestsRollingFinalization} from '../../runtime/src/filter-state';
   import { filterCandidatesRequest } from '../../runtime/src/filter-candidates';
   import { candidateScopeKey } from '../../runtime/src/dimension-values';
-  import { createIocRegionDefault } from './ioc-region-default';
+  import { createIocRegionDefault, pendingIocRegionURL, resolveIocRegionURL } from './ioc-region-default';
   import { createTableController } from './table/controller';
   import { createExportController } from './export-controller';
   import { type TableHeaderFilters, type TableQueryView, hasQueryFieldMapping } from '@metriccanvas/page/internal';
@@ -278,6 +278,7 @@
     return errors.filter(error => !isChartOptionError(error));
   }
   let navigationMessage=$state('');
+  let regionURLIssue=$state('');
   let targetInputs=$state(new Map<string,NavigationInputContract>());
   const targetInputKey=$derived(pageState.phase==='ready'?JSON.stringify([...new Set(declaredNavigationTargets(pageState.page).filter(t=>t.validateTargetInputs).map(t=>t.href))].sort()):'[]');
   $effect(()=>{
@@ -476,7 +477,7 @@
     const mySession = ++session;
     filterRevision=0;
     initializing=true;
-    pageState = { phase: 'loading' };navigationMessage='';
+    pageState = { phase: 'loading' };navigationMessage='';regionURLIssue='';
     snapshots = new Map();
     filterValues = new Map();
     resolvedFinalizationDates=undefined;
@@ -572,8 +573,8 @@
     const message=initialFilterInputIssue(loaded,search,candidateClock);
     if(message){pageState={phase:'input-invalid',message};emit?.({type:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters',message}]});return;}
     // 旧数组参数的显式 value 固定本次输入；分组参数仍允许 URL 参数与独立筛选初始化。
-    let fromURL:Map<string,FilterValue>, rollingInputs:ReadonlySet<string>;
-    try{({fromURL,rollingInputs}=readInitialFilterURL(loaded,search,candidateClock,
+    let fromURL:Map<string,FilterValue>, rollingInputs:ReadonlySet<string>, pendingRegion:ReturnType<typeof pendingIocRegionURL>;
+    try{({fromURL,rollingInputs,pendingRegion}=readInitialFilterURL(loaded,search,candidateClock,
       capabilities.filters && !paramDeclarations.some(p => !p.path && p.value !== undefined),bootstrap));}
     catch{pageState={phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters',message:'时间模式URL必须为合法完整mode/from/to'}]};emit?.({type:'invalid',errors:pageState.errors});return;}
     const explicit=bootstrap?.filters??fromURL;
@@ -586,7 +587,10 @@
       return;
     }
     let fromDeclarations:Map<string,FilterValue>;
-    try{fromDeclarations=initialFilterValues((loaded.filters??[]).filter(f=>!fromURL.has(f.id)&&!preparation.unresolved.has(f.id)),candidateClock,displaySnapshot,0);}catch{failTimeInitialization(mySession,finalizationController.signal,emit);return;}
+    try{fromDeclarations=initialFilterValues((loaded.filters??[]).filter(needsInitialFilterValue),candidateClock,displaySnapshot,0);}catch{failTimeInitialization(mySession,finalizationController.signal,emit);return;}
+    function needsInitialFilterValue(filter: FilterDeclaration): boolean {
+      return !fromURL.has(filter.id) && !preparation.unresolved.has(filter.id) && !(pendingRegion && filter.id === 'region');
+    }
     filterValues=new Map([...fromDeclarations,...explicit]);
     const officeRedirect = officeNavigationTarget(loaded, filterValues.get('region'));
     preparingFilters=[...preparation.unresolved];
@@ -605,22 +609,21 @@
       pageState={phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters',message:'筛选初始化值不符合声明或日期边界'}]};
       emit?.({type:'invalid',errors:pageState.errors});return;
     }
-    for(const id of preparation.pending)state.preparing(id,true);
+    primePendingFilters();
+    function primePendingFilters() {
+      for (const id of preparation.pending) state.preparing(id, true);
+      if (pendingRegion) state.preparing('region', true);
+    }
     filterState = state;
     initializing=false;
     const regionDefault = createIocRegionDefault(loaded, search, new Map([...fromDeclarations, ...fromURL]), !!bootstrap);
+    let redirectingRegion = false;
 
     function receiveCandidates(next:DimensionValuesSnapshots) {
-        for (const declaration of declarations) {
-          if (declaration.type !== 'dimension' || localOptions.has(declaration.id) || declaration.options) continue;
-          const value = filterValues.get(declaration.id);
-          const level = value?.type === 'dimension' ? value.level : declaration.defaultLevel ?? declaration.hierarchy?.[0]?.id;
-          const dimension = declaration.hierarchy?.find(item => item.id === level)?.dimension ?? declaration.dimension;
-          const receipt = next.get(candidateScopeKey(declaration.id,dimension,level,cascadeContext(declaration,declarations,filterValues,filterCandidateContext())));
-          if(receipt&&receipt.status!=='idle'){
-            const allowed=receipt.status==='ready'?receipt.candidates.filter(item=>!item.disabled&&(declaration.treeSelection!=='level'||item.level===level)).map(item=>item.value):undefined;
-            state.candidate(declaration.id,receipt.status==='ready'&&!allowed?.length?'empty':receipt.status,allowed);
-          }
+        publishCandidateReceipts(next);
+        if (pendingRegion) {
+          resolvePendingRegion(pendingRegion, next);
+          return;
         }
         const region = declarations.find(declaration => declaration.id === 'region');
         if (region?.type === 'dimension') {
@@ -629,11 +632,45 @@
         }
     }
 
+    function publishCandidateReceipts(next: DimensionValuesSnapshots) {
+      for (const declaration of declarations) {
+        if (declaration.type !== 'dimension' || localOptions.has(declaration.id) || declaration.options) continue;
+        const value = filterValues.get(declaration.id);
+        const level = value?.type === 'dimension' ? value.level : declaration.defaultLevel ?? declaration.hierarchy?.[0]?.id;
+        const dimension = declaration.hierarchy?.find(item => item.id === level)?.dimension ?? declaration.dimension;
+        const receipt = next.get(candidateScopeKey(declaration.id,dimension,level,cascadeContext(declaration,declarations,filterValues,filterCandidateContext())));
+        if(receipt&&receipt.status!=='idle'){
+          const allowed=receipt.status==='ready'?receipt.candidates.filter(item=>!item.disabled&&(declaration.treeSelection!=='level'||item.level===level)).map(item=>item.value):undefined;
+          state.candidate(declaration.id,receipt.status==='ready'&&!allowed?.length?'empty':receipt.status,allowed);
+        }
+      }
+    }
+
+    function resolvePendingRegion(input: NonNullable<typeof pendingRegion>, next: DimensionValuesSnapshots) {
+      if (!state.preparation().has('region') || redirectingRegion) return;
+      const context = cascadeContext(input.declaration, declarations, filterValues, filterCandidateContext());
+      const resolved = resolveIocRegionURL(input, next, context);
+      regionURLIssue = resolved && 'issue' in resolved ? resolved.issue : '';
+      if (!resolved || 'issue' in resolved) return;
+      const target = officeNavigationTarget(loaded, resolved.value);
+      if (target) {
+        if ([...preparation.pending].some(id => state.preparation().has(id))) return;
+        redirectingRegion = true;
+        navigateOffice(target, new Map([...filterValues, ['region', resolved.value]]), { replace: true, sourcePageId: loaded.id }, true);
+        return;
+      }
+      state.completePreparation(new Map([['region', resolved.value]]));
+    }
+
     let primed = false;
+    function reconcileRegionInitialization(previous: FilterValues, values: FilterValues) {
+      regionDefault.cancel(primed, changedFilters(previous, values).has('region'));
+      if (!state.preparation().has('region')) regionURLIssue = '';
+    }
     disposers.push(
       state.subscribe((values) => {
         const previous = filterValues;
-        regionDefault.cancel(primed, changedFilters(previous, values).has('region'));
+        reconcileRegionInitialization(previous, values);
         filterValues = values;filterRevision=state.revision;candidateClock=state.clock();
         blockedFilters = [...state.blocked()];confirmationFilters=[...state.confirmation()];preparingFilters=[...state.preparation()];
         discardPreparingData(loaded,preparingFilters,values,stream?.getSourceProgram(),retainedScreenData);
@@ -872,17 +909,21 @@
   function readInitialFilterURL(page:Page,search:string,clock:Date,enabled:boolean,bootstrap:import('../../runtime/src').ExecutionBootstrap|undefined) {
     if(!enabled)return {fromURL:new Map<string,FilterValue>(),rollingInputs:new Set<string>()};
     const rollingInputs=new Set<string>(), query=new URLSearchParams(search);
+    const pendingRegion = bootstrap ? undefined : pendingIocRegionURL(page, search);
     const filters=(page.filters??[]).filter(filter=>{
+      if (pendingRegion && filter.id === 'region') return false;
       if(bootstrap||!requestsRollingFinalization(filter,query))return true;
       rollingInputs.add(filter.id);
       return false;
     });
-    return {fromURL:new Map(parseFilterSearch(search,filters,clock,usesIocRegion(page))),rollingInputs};
+    const fromURL = new Map(parseFilterSearch(search, filters, clock, usesIocRegion(page)));
+    return { fromURL, rollingInputs, pendingRegion };
   }
 
   function mergedSearch(state: FilterState, initial: string): string {
     const params = new URLSearchParams(pageURLSearch(declarationPage!, initial, navigation?.preserveSearchParams));
     for (const declaration of declarations) {
+      if (declaration.id === 'region' && preparingFilters.includes('region')) continue;
       for (const key of Object.values(filterURLKeys(declaration,!!declarationPage&&usesIocRegion(declarationPage)))) params.delete(key);
     }
     for (const [key, value] of new URLSearchParams(state.toURL(declarations))) params.append(key, value);
@@ -1219,8 +1260,8 @@
     return { label: link.label, href:targetHref(link), onclick: (event: MouseEvent) => navigateTarget(link,{},event) };
   }
 
-  function targetResult(target:NavigationTarget,row:Row={},filters=filterValues) {
-    if(target.validateTargetInputs&&Object.values(target.query??{}).some(b=>b.source==='filter'&&blockedFilters.includes(b.id)))return {ok:false as const,code:'NAVIGATION_INPUT_INVALID' as const,message:'来源筛选尚未通过当前候选确认'};
+  function targetResult(target:NavigationTarget,row:Row={},filters=filterValues,verifiedRegion=false) {
+    if(target.validateTargetInputs&&Object.values(target.query??{}).some(b=>b.source==='filter'&&blockedFilters.includes(b.id)&&!(verifiedRegion&&b.id==='region')))return {ok:false as const,code:'NAVIGATION_INPUT_INVALID' as const,message:'来源筛选尚未通过当前候选确认'};
     const result=resolveNavigationTarget(target,filters,pageParams,row,targetInputs.get(target.href),candidateClock);
     if(!result.ok)return result;
     try{return {ok:true as const,href:navigation?.resolveHref?.(result.href)??result.href};}catch{return {ok:false as const,code:'NAVIGATION_INPUT_UNAVAILABLE' as const,message:'目标页面路由不可用'};}
@@ -1232,8 +1273,8 @@
     navigationMessage='';navigate(result.href,event);
   }
 
-  function navigateOffice(target: NavigationTarget, filters: FilterValues, entry?: Pick<RuntimeNavigationTarget, 'replace' | 'sourcePageId'>) {
-    const result = targetResult(target, {}, filters);
+  function navigateOffice(target: NavigationTarget, filters: FilterValues, entry?: Pick<RuntimeNavigationTarget, 'replace' | 'sourcePageId'>, verifiedRegion = false) {
+    const result = targetResult(target, {}, filters, verifiedRegion);
     if (!result.ok) {
       navigationMessage = result.message;
       onevent?.({ type: 'navigation-error', href: target.href, code: result.code, message: result.message });
@@ -1486,6 +1527,7 @@
 
 <div class="runtime-view" data-initializing={initializing&&pageState.phase==='ready'?'':undefined} data-runtime-navigation={navigation?.navigate ? true : undefined} bind:this={surfaceRoot}>
   {#if navigationMessage}<p role="alert" data-navigation-error>{navigationMessage}</p>{/if}
+  {#if regionURLIssue}<p role="alert">{regionURLIssue}</p>{/if}
   {#if pageState.phase === 'loading'}
     <!-- Local validation finishes before the first real page structure is mounted. -->
   {:else if pageState.phase === 'auth-required'}

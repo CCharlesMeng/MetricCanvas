@@ -136,6 +136,8 @@ Embed 省略 `initialSearch` 时自动读取当前 URL（含 hash 路由 query�
 IOC Header 认领的客户类型筛选由组件查询规则固定使用 `dim_name:"客户级别"`，覆盖页面误写的查询字段；既有绑定仍控制订阅范围，普通筛选不受影响。无需新增 Schema 字段，标识与边界见[筛选规则](docs/page-metadata/filters.md#business-filters)，合成入口 `/pages/ioc-customer-query-field?customer-category=战略`。
 
 IOC Header 默认用 `region-dept=value` / `rep-office=value` 表达地区部或代表处，页面无需增加 URL 映射字段。同组参数按 URL 顺序取最后项，旧 value/level 链接继续兼容，普通页面筛选保持原行为。见[Region 默认 URL 输入](docs/page-metadata/filters.md#region-level-url)，合成入口 `/pages/ioc-region-url-demo`。本更新不新增页面字段或 Schema 能力下限。
+
+IOC Region 的旧链接只传 `region=value` 时，从各层完整授权候选中唯一匹配稳定值后应用层级。匹配完成前阻断依赖查询，跨层同值时提示补充层级。存量页面无需迁移，合成入口 `/pages/ioc-region-url-demo?region=上海代表处`。见[Region 默认 URL 输入](docs/page-metadata/filters.md#region-level-url)。
 6.80：表格列支持 `enumValues` 前端枚举，统一用于单元格、静态筛选选项和导出；原始编码仍参与条件与交互。见[表格列枚举](docs/page-metadata/components/table.md#前端列枚举680)。
 
 数据加载时保留真实组件结构。独立 DQE 查询分别发送请求并受控并发；表格首次加载显示静态“正在加载…”，指标卡数值显示 `--`，均不使用加载动画。筛选、翻页或同一引擎实例内返回页面时，保留上一份完整组件展示，当前结果就绪后整体替换；旧展示不进入查询、计算或导出。声明与边界见[加载时保留组件结构](docs/page-metadata/data-sources.md#screen-loading)，合成验收入口 `/pages/loading-structure-demo` 和 `/pages/metric-card-loading`。无需新增页面字段或升级 Schema。 级联表格在正确行集和顺序确定后，可通过独立展示通道渐进补列；失败列保留 `--`，正式查询及完整导出仍检查完整结果，见[级联表格渐进补列](docs/page-metadata/data-sources.md#progressive-table-columns)。

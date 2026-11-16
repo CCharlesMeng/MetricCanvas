@@ -13,7 +13,9 @@ export function createRegionURLGateway(): RuntimeDataGateway {
       signal.throwIfAborted();
       return { kind: 'values', candidates: [
         ...['中国地区部', '欧洲地区部'].map(value => ({ value, label: value, level: 'region-dept' })),
-        ...offices.map(item => ({ value: item.office, label: item.office, level: 'office', parent: { level: 'region-dept', value: item.region } }))
+        ...offices.map(item => ({ value: item.office, label: item.office, level: 'office', parent: { level: 'region-dept', value: item.region } })),
+        { value: 'SAME', label: '同码地区部', level: 'region-dept' },
+        { value: 'SAME', label: '同码代表处', level: 'office' }
       ] };
     },
     async fetchData(query) {

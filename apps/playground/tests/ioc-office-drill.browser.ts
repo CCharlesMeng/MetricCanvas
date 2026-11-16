@@ -66,3 +66,12 @@ test('a fresh tab with a direct office entry has no overview to return to', asyn
   await expect(page.locator('[data-dashboard-back]')).toHaveCount(0);
   expect(await page.evaluate(() => sessionStorage.getItem('office-drill-queries'))).toBeNull();
 });
+
+test('a value-only office link resolves the authorized level before drilling', async ({ page }) => {
+  await page.goto(`${overview}?region=上海代表处&period=quarter%3A2026-Q2`);
+  await expect(page).toHaveURL(new RegExp(`${detail}\\?`));
+  await expect(region(page)).toContainText('上海代表处');
+  expect(new URL(page.url()).searchParams.get('rep-office')).toBe('上海代表处');
+  expect(new URL(page.url()).searchParams.get('period')).toBe('quarter:2026-Q2');
+  expect(await page.evaluate(() => sessionStorage.getItem('office-drill-queries'))).toBeNull();
+});

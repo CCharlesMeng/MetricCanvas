@@ -275,6 +275,8 @@
 - `/pages/ioc-region-url-demo?region-dept=中国地区部&rep-office=上海代表处`：取第二项代表处；反过来 `?rep-office=上海代表处&region-dept=中国地区部` 取地区部。
 - `?rep-office=北京代表处&rep-office=上海代表处`：重复键也取最后值。
 - `?region=上海代表处&region.level=office`：旧格式继续选中上海；交互选择后回写新键，并删除旧键。
+- `?region=上海代表处`：各层候选就绪后唯一命中代表处，表格显示上海一条记录，URL 回写为 `?rep-office=上海代表处`。
+- `?region=SAME`：同时命中两层，显示需补层级的提示；`?region=未授权代表处`：提示当前授权候选无匹配。两种情况均等待用户改选或修正链接。
 - `?region-dept=中国地区部&rep-office=`：严格 URL 模式显示输入错误，不向业务查询静默回退。
 - `?rep-office=未授权代表处`：不在完整候选内，查询和导出受门禁阻断。
 

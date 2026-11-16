@@ -535,6 +535,8 @@ IOC Header 中的 Region 默认识别地区部 `region-dept` 与代表处 `rep-o
 
 任一标准参数出现时优先于旧 value/level 输入；都未传时沿用页面初值。树内改选后回写标准参数；最后空值和未知候选按既有严格 URL 模式及候选门禁处理。普通页面的同名 region 筛选不自动启用这些组织键。详细说明见[筛选声明](docs/page-metadata/filters.md#region-level-url)，完整合成入口 `/pages/ioc-region-url-demo`。
 
+旧链接只传 `region` 值时，运行时从各层完整授权候选中匹配稳定值。唯一命中后按该节点层级执行查询并规范化 URL，跨层同值需要显式指定层级，无匹配时提示候选校验失败。
+
 6.81页头文字引用位于 `/sections/0/components/0/props/identity/...`，复用参数/筛选文字取值；组件显隐不改变页级参数和URL状态。旧根级路径继续兼容。
 
 ## 表头参数初值（6.85）
