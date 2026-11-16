@@ -14,6 +14,7 @@
 | 尝试快照及局部验收组合 | Skill 的 scripts/snapshot-attempt.mjs、scripts/finish-edit.mjs；组合入口复用生成校验器，不另写页面规则 |
 | 页面字段、约束、校验 | packages/page/src/ 及合法/非法夹具；涉及公共协议时按产品契约流程同步 |
 | 协议语义正文、示例路由 | docs/page-metadata/ 与 tools/scripts/page-reference.ts |
+| 两个 Skill 的排障交接 | [页面排障交接](page-diagnostic-handoff.md)是共享原文，仓内直接引用，导出器生成独立安装副本 |
 | 成型页面范式 | `tools/scripts/local-authoring-patterns.ts` 选择 `pages/` 中页面并提炼结构；形态识别及分支范式卡由 Skill 作者维护 |
 | PC Report章节组合参考 | `tools/mc-content/layouts/report-composition.md`为单一作者源；经`localPagePatternOutputs`生成到本地`references/page-patterns/report-composition.md`，MC与Platform参考同源。勿在安装目录另维护一份 |
 | 通用概览完整样例 | tools/scripts/local-authoring-overview-example.ts；使用当前写出版本并重新校验 |

@@ -9,11 +9,14 @@ import { versionPolicy } from '../packages/page/src/version';
 const root = resolve('.');
 const folder = mkdtempSync(join(tmpdir(), 'repair-page-test-'));
 const script = resolve('.agents/skills/repair-page-metadata/scripts/inspect-page-metadata.ts');
+const regionDiagnosisScript = resolve('.agents/skills/repair-page-metadata/scripts/diagnose-region-candidates.ts');
+const businessResult = resolve('pages/temporary/business-result-pinned-diagnosis-20261102/business-result-metrics.json');
+const standaloneValidator = resolve('metriccanvas-authoring/skill/metriccanvas-local-authoring/scripts/validate-page.mjs');
 const sample = JSON.parse(readFileSync('packages/page/fixtures/contract-valid/url-navigation-page.json', 'utf8'));
 afterAll(() => rmSync(folder, { recursive: true, force: true }));
 
-function run(args: string[]) {
-  return spawnSync(process.execPath, ['--import', 'tsx', script, ...args], {
+function run(args: string[], entrypoint = script) {
+  return spawnSync(process.execPath, ['--import', 'tsx', entrypoint, ...args], {
     cwd: root, encoding: 'utf8', timeout: 15_000
   });
 }
@@ -33,6 +36,15 @@ describe('repair-page-metadata real CLI', () => {
     expect(result.status, result.stderr).toBe(0);
     expect(JSON.parse(result.stdout)).toMatchObject({ scope: 'file', summary: { files: 1, passed: 1, failed: 0, errors: 0 } });
     expect(readFileSync(file)).toEqual(before);
+  });
+
+  it.each([true, false])('shares ordered static diagnostics with the standalone validator (valid=%s)', valid => {
+    const file = fixture(valid ? `${sample.id}.json` : 'wrong-name.json');
+    const repository = run([file]);
+    const standalone = spawnSync(process.execPath, [standaloneValidator, file], { encoding: 'utf8', timeout: 15_000 });
+    expect(repository.status, repository.stderr).toBe(valid ? 0 : 1);
+    expect(standalone.status, standalone.stderr).toBe(repository.status);
+    expect(JSON.parse(standalone.stdout).errors).toEqual(JSON.parse(repository.stdout).results[0].errors);
   });
 
   it.each(['filename', 'version', 'url', 'binding'])('keeps product ordered errors for %s', mode => {
@@ -79,5 +91,38 @@ describe('repair-page-metadata real CLI', () => {
     const result = run(args);
     expect(result.status).toBe(2);
     expect(JSON.parse(result.stderr).error).toBeTruthy();
+  });
+});
+
+describe('IOC Region candidate diagnosis', () => {
+  it.each([
+    ['region=安徽代表处', 'region-candidate-resolution', 'pending', undefined],
+    ['rep-office=安徽代表处', 'region-candidate-validation', 'unobserved', 'office'],
+  ])('reports the URL stage for %s without echoing candidate values', (search, stage, state, level) => {
+    const result = run([businessResult, '--source', 'cloud-service-options', '--search', search], regionDiagnosisScript);
+    expect(result.status, result.stderr).toBe(0);
+    const output = JSON.parse(result.stdout);
+    expect(output).toMatchObject({
+      stage, state, schemaVersion: '6.120', declaresRegionDependency: true, filterId: 'region', dqeRequest: 'not-observed'
+    });
+    expect(output.level).toBe(level);
+    expect(result.stdout).not.toContain('安徽代表处');
+    expect(Buffer.byteLength(result.stdout)).toBeLessThan(1_024);
+  });
+
+  it.each([
+    ['安徽代表处', 'resolved'],
+    ['其他代表处', 'rejected'],
+  ])('replays complete synthetic candidate receipts with result %s', (officeValue, state) => {
+    const receipts = fixture('receipts.json', {
+      geo: { status: 'ready', candidates: [{ level: 'geo', value: '全球', label: '全球' }] },
+      'region-dept': { status: 'empty' },
+      office: { status: 'ready', candidates: [{ level: 'office', value: officeValue, label: officeValue }] },
+    });
+    const result = run([businessResult, '--source', 'cloud-service-options', '--search', 'region=安徽代表处', '--region-receipts', receipts], regionDiagnosisScript);
+    expect(result.status, result.stderr).toBe(0);
+    const output = JSON.parse(result.stdout);
+    expect(output).toMatchObject({ stage: 'region-candidate-resolution', state, dqeRequest: 'not-observed', receipts: { geo: 'ready', 'region-dept': 'empty', office: 'ready' } });
+    expect(output.level).toBe(state === 'resolved' ? 'office' : undefined);
   });
 });

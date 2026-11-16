@@ -7,24 +7,28 @@ description: 定位、修复并回归验证 MetricCanvas 页面元数据。用�
 
 把页面校验器视为证据源，不视为完备性证明。沿“失败现象 → 最早可控边界 → 最小修复 → 同路回归”完成闭环。
 
+仓内报错由本 Skill 定位。先按[页面排障交接](../../../docs/agents/page-diagnostic-handoff.md)复用证据，再把已确认的页面编辑交给 local-authoring。
+
 ## 1. 建立现场
 
 1. 确定目标页面、用户意图、失败入口和是否涉及查询页面数据源。
-2. 读取 `CONTEXT.md`、`PAGE-METADATA.md`、`packages/page/src/version.ts` 和当前组件定义。先读 `docs/adr/README.md`，再按问题涉及的能力展开 ADR。
-3. 查看 `git status --short` 和目标文件 diff；把现有改动当作用户工作，不覆盖。
+2. 按错误路径取证。版本疑点查询对应能力，组件疑点只读该组件定义，决策疑点从 `docs/adr/README.md` 找对应专题。
+3. 用 `git status --short -- <page-file>` 和目标文件 diff 核对原件。
 4. 保留原始失败输出、JSON Pointer 路径和触发命令，在首次修改前建立错误台账。
 
 若用户只提供一段 JSON，先将它视为单文档诊断；不把文件名、跨页导航或真实查询默认为已验证。
 
 ## 2. 复现并分层
 
-对单文件或目录先运行：
+当前没有匹配的静态回执时，对单文件或目录运行：
 
 ```bash
 pnpm exec tsx .agents/skills/repair-page-metadata/scripts/inspect-page-metadata.ts <file-or-directory>
 ```
 
-读取 [references/validation-surfaces.md](references/validation-surfaces.md)，按其覆盖矩阵补齐必要证据。至少区分：
+静态通过且错误是 IOC Region 直链相关的候选拒绝时，先跑[候选拒绝短诊断](references/region-candidate-diagnosis.md)，按回执选取源码或浏览器证据。
+
+其他失败按[验证边界](references/validation-surfaces.md)补必要证据。区分：
 
 1. JSON 语法与版本；
 2. 页面 Schema 与文档内不变式；

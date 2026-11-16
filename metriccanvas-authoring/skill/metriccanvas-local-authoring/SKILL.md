@@ -2,7 +2,7 @@
 name: metriccanvas-local-authoring
 description: 在本地开发 MetricCanvas 看板、报表和 IOC：新建页面、对接数据与查询、调试页面问题、调整已有页面。附协议知识、数据分析与升级工具、独立校验器；线上保存和发布使用项目提供的接口。
 metadata:
-  version: "1.78.0"
+  version: "1.78.1"
 ---
 
 # 本地页面创作
@@ -15,14 +15,15 @@ metadata:
 |---|---|
 | 新页面开发 | 按下方“新建与结构调整”从需求和真实输入装配完整页面；核对需求涉及的字段、组件及交互，再执行完整校验。数据未接通时明确区分演示页面与待执行候选。 |
 | 数据对接 | 读[数据识别与接数](references/data-analysis.md)，核对查询依据、结果契约与绑定；有执行入口则验真，无入口按该文交候选和缺口。换源核对共享消费者；保持页面意图的关联按需读[受控换源](references/data-association.md)。 |
-| bug调试 | 读[页面调试](references/page-debugging.md)，从实际错误或复现现象定位失败层，完成原因、修改、复验及未验条件的闭环。 |
+| bug调试 | 先按[页面排障交接](references/page-diagnostic-handoff.md)确定输入并复用静态回执，再按[页面调试](references/page-debugging.md)补失败层证据。 |
+| 整页替换 | 按[页面排障交接](references/page-diagnostic-handoff.md)先校验来稿，再核对页头及替换范围。 |
 | 页面调整 | 走下方局部修改；结构调整、删除依赖、页头迁移和升级按[专项路由](references/task-routing.md)选择对应分支。 |
 
 任务可组合：先完成阻塞页面的取数或错误定位，再进行受影响的装配或调整。以用户要求的页面文件、查询候选或诊断结论为产物，不要求每类任务都创建分析报告。交付分别说明配置校验、真实取数和运行时行为的已验范围。
 
 ## 已有页面的局部修改
 
-已有页面在编辑前先运行 `node "<skill-dir>/scripts/upgrade-page.mjs" "<page-file>"`。`unchanged` 继续原任务；`ready` 按[旧页面继续开发](references/page-upgrade.md)保留原件、升级并接回工作文件；`blocked` 按该说明处理语义缺口。新增特性先完成其中的“新增特性的版本闭环”，由 Skill 自动升级到安装包当前协议并复验，不把版本选择交给用户；仅原版有效且本次能力已支持时才保留旧版本局部开发。新建页面也从版本命令取当前版本。
+按下方“修改与验证”核对版本和迁移条件。新增特性按[新增特性的版本闭环](references/page-upgrade.md)处理。
 
 局部修改沿用原形态、数据和查询。定位目标后，读取当前配置和所涉字段契约；配置中的绑定、format及missingText用于确定最小差异，字段类型/defaultFormat及刻度用于判断适用性：
 

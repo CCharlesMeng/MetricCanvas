@@ -561,6 +561,7 @@ async function writeOutputs(
 }
 
 const generatedSkillTrees=['references/page-patterns','references/authoring-knowledge','references/example-guides'];
+const diagnosticHandoff = 'references/page-diagnostic-handoff.md';
 async function writeSkillGenerated(root:string,outputs:OutputMap):Promise<void> {
   for(const tree of generatedSkillTrees) await syncGeneratedTree(path.join(root,tree),new Map(
     [...outputs].filter(([file])=>file.startsWith(tree+'/')).map(([file,text])=>[file.slice(tree.length+1),text])));
@@ -623,6 +624,7 @@ function generatedSkillFile(file:string,mode:string):boolean {
   if(mode!=='none' && file.startsWith('references/page-metadata/')) return true;
   if(mode!=='local-page-metadata') return false;
   return generatedSkillTrees.some(tree=>file.startsWith(tree+'/')) || [
+    diagnosticHandoff,
     'scripts/read-knowledge.mjs','scripts/analyze-data.mjs','scripts/upgrade-page.mjs','scripts/associate-data.mjs',
     'scripts/validate-page.mjs','scripts/THIRD-PARTY-LICENSES.md','references/knowledge.json','references/map-regions.json','assets/layouts/overview-map-led.json'
   ].includes(file);
@@ -636,6 +638,7 @@ async function authoredSkillDocuments(directory:string,mode:string):Promise<Outp
 
 async function localSkillArtifacts(projected:OutputMap,productOutputs:OutputMap):Promise<OutputMap> {
   const generated=await localValidatorOutputs(repoRoot);
+  generated.set(diagnosticHandoff, await readFile(path.join(repoRoot, 'docs/agents/page-diagnostic-handoff.md'), 'utf8'));
   for(const [file,content] of await localAuthoringKnowledge(repoRoot,projected)) {
     if(file.startsWith('references/page-metadata/')) projected.set(file.slice('references/page-metadata/'.length),content);
     else generated.set(file,content);
