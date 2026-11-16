@@ -104,7 +104,7 @@ IOC 页头返回统一使用 `props.back:true`，默认按浏览器后退能力�
 
 可选 IOC Region 空选时首屏立即查询，不等待组织候选；有选值及显式候选上下文仍执行原校验。候选弹层固定搜索框，仅列表滚动。声明边界与业务页验收见[筛选器](docs/page-metadata/filters.md)，入口 `/pages/region-authorization-norms`；不新增 Schema 字段。
 
-维度下拉空选时仅在输入框显示 `emptyLabel`，候选面板不重复显示占位标题；选择、清空与搜索行为见[下拉搜索与普通树](docs/page-metadata/filters.md#下拉搜索与普通树643)，合成入口 `/pages/ioc-header-demo`。
+维度下拉的空选文案显示在输入框。IOC 页头的具名固定枚举多选可只写 `label`，空选时显示「请选择」加名称，收起且全选时显示「全部」加名称；显式 `emptyLabel` 优先作为空选文案。见[下拉搜索与普通树](docs/page-metadata/filters.md#下拉搜索与普通树643)，合成入口 `/pages/ioc-header-demo`。
 
 6.91：IOC 页头通过 `props.components` 组合 `filterControl` 和内置标准 Region 的 `regionFilter`，复用现有筛选、查询与集成应用接线。旧 `filterIds` 继续读取。见[页头子控件](docs/page-metadata/components/iocHeader.md#页头子控件691)，合成验收 `/pages/ioc-header-controls`。
 

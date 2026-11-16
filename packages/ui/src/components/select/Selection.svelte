@@ -9,9 +9,9 @@
   import { selectionNodes, flattenNodes, filterNodes, selectionState, toggleSelection, type SelectionNode, type TreeSelection } from './selection';
 
   let {options, value = [], label, multiple = true, tree = false, searchable = true,
-    treeSelection = 'independent', clearable = false, disabled = false, loading = false, placeholder = '请选择', statusText, statusError = false, required = false, onretry, onchange}:
+    treeSelection = 'independent', clearable = false, disabled = false, loading = false, placeholder = '请选择', allSelectedLabel, statusText, statusError = false, required = false, onretry, onchange}:
     {options: UiTreeOption[]; value?: string[]; label: string; multiple?: boolean; tree?: boolean;
-     loading?: boolean; searchable?: boolean; treeSelection?: TreeSelection; disabled?: boolean; placeholder?: string;
+     loading?: boolean; searchable?: boolean; treeSelection?: TreeSelection; disabled?: boolean; placeholder?: string; allSelectedLabel?: string;
      statusText?: string; statusError?: boolean; clearable?: boolean; required?: boolean; onretry?:()=>void; onchange?: (value: string[]) => void} = $props();
 
   let trigger: HTMLButtonElement;
@@ -30,6 +30,7 @@
   const policy = $derived(tree ? treeSelection : 'independent');
   const selectable = $derived(flat.filter(node => !node.disabled && node.selectable !== false && (policy !== 'leaf' || !node.children?.length)));
   const allSelected = $derived(selectable.length > 0 && selectable.every(node => value.includes(node.value)));
+  const allSelectedText = $derived(!open && multiple && allSelected ? allSelectedLabel : undefined);
   const someSelected = $derived(selectable.some(node => value.includes(node.value)));
   const searchActive = $derived(searchable && keyword.trim().length > 0);
   $effect(() => { if (!searchable) keyword = ''; });
@@ -121,12 +122,12 @@
         aria-label={label}
         aria-haspopup={tree ? 'tree' : 'listbox'} aria-expanded={open}
         onpointerdown={rememberTriggerState} onclick={toggleFromClick} onkeydown={event => {if (event.key === 'ArrowDown') {event.preventDefault(); show();}}}>
-        <span data-filter-display class:placeholder={!value.length}>{multiple && value.length ? '' : labels.get(value[0])?.label ?? value[0] ?? placeholder}</span>
+        <span data-filter-display class:placeholder={!value.length}>{allSelectedText ?? (multiple && value.length ? '' : labels.get(value[0])?.label ?? value[0] ?? placeholder)}</span>
       </button>
       <span class="mc-ui-input__suffix selection-arrow"><span class="mc-ui-input__suffix-inner"><Icon name="chevron-down"/></span></span>
     </div>
     {#if clearable && !required && value.length}<button type="button" class="selection-clear" aria-label={`清空${label}`} {disabled} onclick={() => {if (!disabled) onchange?.([]);}}><Icon name="close"/></button>{/if}
-    {#if multiple && value.length}
+    {#if multiple && value.length && !allSelectedText}
       <div bind:this={tagStrip} class="selection-tags mc-ui-select__tags" role="group" aria-label={`${label}已选标签`}>
         <span class="tag-track">{#each value as candidate (candidate)}<span class="tag-item">
           <span class="mc-ui-tag mc-ui-tag--light" class:is-disabled={disabled} title={labels.get(candidate)?.path ?? candidate}>

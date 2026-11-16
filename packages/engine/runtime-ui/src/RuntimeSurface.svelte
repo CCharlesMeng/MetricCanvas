@@ -1630,7 +1630,7 @@
       <RuntimeSection section={compatibleHeader} {componentContent}/>
     {/if}
     {#snippet iocHeaderControls(id: string, readOnly: boolean)}
-      <FilterBar confirmationIds={confirmationFilters} {timeContext} onretry={retryCandidates} declarations={(presentation?.filters??declarations).filter(filter=>filter.id===id)} values={filterValues} candidates={dimensionCandidates}
+      <FilterBar iocHeader confirmationIds={confirmationFilters} {timeContext} onretry={retryCandidates} declarations={(presentation?.filters??declarations).filter(filter=>filter.id===id)} values={filterValues} candidates={dimensionCandidates}
         {readOnly} ondimension={selectHeaderDimension} ontimerange={writeTimeRange} ontimepoint={writeTimePoint}
         onboolean={writeBoolean} onnumberrange={writeNumberRange} onsearch={writeSearch}/>
     {/snippet}

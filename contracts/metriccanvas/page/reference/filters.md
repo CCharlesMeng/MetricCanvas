@@ -179,7 +179,11 @@ presets为`{id,label,range:{from?,to?}}[]`，输入和预设使用显示单位�
 
 单选值替换后关闭；多选保持32px单行标签并横向滚动。未知已选值保留代码，可移除；required仍恰好一个，不提供清空。树内容左侧16px、带框加减号及浅灰连接线使用冻结OpenTiny样式。
 
-维度下拉未选择时，`emptyLabel` 仅作为输入框占位文案，不在候选面板中重复显示为标题或清除项；选中后使用输入框清空按钮或标签移除操作。合成验收 `/pages/ioc-header-demo` 覆盖客户分类的空选、选择、清空及搜索无匹配；不新增 Schema 字段，不改变筛选值和查询绑定。
+维度下拉未选择时，`emptyLabel` 作为输入框占位文案。候选面板只显示候选、搜索及适用的全选操作。选中后可用输入框清空按钮或标签移除操作。
+
+IOC 页头中，声明固定 `options`、采用平面多选下拉（`display:"select"` 或省略）且有 `label` 的维度筛选器，空选默认显示「请选择」加 `label`，显式 `emptyLabel` 优先。收起时若全部可选项均已选中，显示「全部」加 `label`，部分选中仍显示标签。禁用项不参与全选判断；至少存在一个可选项才会显示全选摘要。展开可查看和调整勾选，搜索结果不会改变全选的判断范围。该规则适用于运行时可读取的页面版本，筛选值仍为实际候选值，查询继续按 `selection.allBehavior` 执行。
+
+合成验收 `/pages/ioc-header-demo` 使用 `label:"客户分类"`，覆盖空选、部分选中、全选、撤选、清空及搜索无匹配。`/pages/chart-customer-series` 核对显式 `emptyLabel` 的优先级。
 
 验收场景：[ioc-header-selection](examples/dimension-selection-page.json)，仅本地合成候选与表格查询；不代表真实服务验收。
 

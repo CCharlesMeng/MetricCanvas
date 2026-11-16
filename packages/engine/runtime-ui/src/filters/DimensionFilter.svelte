@@ -6,8 +6,8 @@
   import type {DimensionSelectionExtension} from '@metriccanvas/page/internal';
   import type { DimensionValuesSnapshot } from '../../../runtime/src';
   import { buildFilterTree, type FilterTreeNode } from './tree';
-  let {label, emptyLabel = '全部', candidates, value, display = 'select', selection, searchable = true, treeSelection = 'descendants', explicitParents = false, structural = false, treeLevel = '', disabled = false, onretry, onchange}:
-    {label?: string; emptyLabel?: string; candidates: DimensionValuesSnapshot; value: string[];
+  let {label, emptyLabel = '全部', allSelectedLabel, candidates, value, display = 'select', selection, searchable = true, treeSelection = 'descendants', explicitParents = false, structural = false, treeLevel = '', disabled = false, onretry, onchange}:
+    {label?: string; emptyLabel?: string; allSelectedLabel?: string; candidates: DimensionValuesSnapshot; value: string[];
      display?: 'select'|'tabs'|'tree'|'search'; selection?: DimensionSelectionExtension['selection']; searchable?: boolean;
      treeSelection?: TreeSelection; explicitParents?:boolean; structural?:boolean; treeLevel?:string; onretry?:()=>void; disabled?: boolean; onchange: (values:string[]) => void} = $props();
   const loading = $derived(candidates.status === 'idle' || candidates.status === 'loading');
@@ -37,7 +37,7 @@
     {#if loading}<TextSkeleton lines={1} />{:else if statusText}<span role={candidates.status === 'error' ? 'alert' : 'status'} data-candidates-status={candidates.status}>{statusText}</span>{/if}
   {:else}
     <div class="dropdown" data-candidates-status={candidates.status}>
-      <Selection {loading} label={label ?? '维度筛选'} options={treeResult.options} {value} {onretry} tree={display === 'tree'} multiple={selection?.mode !== 'single'} {searchable} treeSelection={structural?'independent':treeSelection} {disabled} required={selection?.required} clearable={!selection?.required} placeholder={emptyLabel} {statusText} statusError={treeResult.error || candidates.status === 'error'} onchange={commit}/>
+      <Selection {loading} label={label ?? '维度筛选'} options={treeResult.options} {value} {onretry} tree={display === 'tree'} multiple={selection?.mode !== 'single'} {searchable} treeSelection={structural?'independent':treeSelection} {disabled} required={selection?.required} clearable={!selection?.required} placeholder={emptyLabel} {allSelectedLabel} {statusText} statusError={treeResult.error || candidates.status === 'error'} onchange={commit}/>
     </div>
   {/if}
 </div>

@@ -53,6 +53,7 @@
 
   interface Props {
     declarations: FilterDeclaration[];
+    iocHeader?: boolean;
     confirmationIds?: readonly string[];
     timeContext?:TimeControlContext;
     values: FilterValues;
@@ -71,6 +72,7 @@
 
   let {
     declarations,
+    iocHeader = false,
     confirmationIds = [],
     timeContext={},
     values,
@@ -136,16 +138,30 @@
     return declaration.dimension;
   }
 
-  function dimensionDisplay(declaration: DimensionDeclaration): string {
+  function iocEnumName(declaration: FilterDeclaration): string | undefined {
+    if (!iocHeader || declaration.type !== 'dimension' || !declaration.options) return;
+    if ((declaration.display ?? 'select') !== 'select' || declaration.selection?.mode === 'single') return;
+    return declaration.label;
+  }
+
+  function dimensionDisplay(declaration: DimensionDeclaration, emptyText?: string, allSelectedText?: string): string {
     const selected=dimensionValueOf(values,declaration.id).values;
     const source=sourceFilters?.(declaration.id),options=source?.candidates.status==='ready'?source.candidates.candidates:declaration.options;
-    return (selected.length?selected.map(value=>options?.find(option=>option.value===value)?.label??value).join('、'):undefined) ?? declaration.emptyLabel ?? declaration.label ?? '全部';
+    if (!selected.length) return emptyText ?? declaration.label ?? '全部';
+    if (allSelectedText && options) {
+      const enabled = options.filter(option => !option.disabled);
+      if (enabled.length && enabled.every(option => selected.includes(option.value))) return allSelectedText;
+    }
+    return selected.map(value=>options?.find(option=>option.value===value)?.label??value).join('、');
   }
 </script>
 
 <div use:closeInactiveMenus inert={timeContext.initializing} class:read-only={readOnly} class="filter-bar">
   {#each visible as declaration (declaration.id)}
     {@const limits=timeControlLimits(declaration,timeContext)}
+    {@const enumName = iocEnumName(declaration)}
+    {@const emptyText = declaration.type === 'dimension' ? declaration.emptyLabel ?? (enumName ? `请选择${enumName}` : undefined) : undefined}
+    {@const allSelectedText = enumName ? `全部${enumName}` : undefined}
     <div data-filter-control data-filter-id={declaration.id} data-filter-pending={timeContext.pending?.includes(declaration.id)?'':undefined} aria-busy={timeContext.pending?.includes(declaration.id)||undefined} class="filter-control" role="group" aria-label={declaration.label} aria-describedby={typeof declaration.hint==='string'?`${hintPrefix}-${declaration.id}`:undefined}>
     {#if declaration.type === 'timeRange' && declaration.display === 'modes'}
       <ModeTimeRangeFilter {declaration} value={timeRangeValue(declaration.id)} readOnly={readOnly||!!limits.reason} max={limits.max} blockedRanges={limits.blockedRanges} snapshot={timeContext.snapshot} revision={timeContext.revision} onchange={next=>ontimerange(declaration.id,next)}/>
@@ -174,7 +190,7 @@
         value={timeRangeValue(declaration.id)} readOnly onchange={() => {}} />
     {:else if readOnly && declaration.type === 'dimension'}
       <button type="button" class="readonly-select" aria-label={declaration.label} disabled>
-        <span data-filter-display>{dimensionDisplay(declaration)}</span>
+        <span data-filter-display>{dimensionDisplay(declaration, emptyText, allSelectedText)}</span>
         <span aria-hidden="true" class="readonly-arrow">▾</span>
       </button>
     {:else if readOnly}
@@ -199,7 +215,8 @@
       <DimensionFilter explicitParents={!!declaration.candidates} searchable={declaration.searchable??true} treeSelection={declaration.candidates?'independent':declaration.treeSelection==='level'?undefined:declaration.treeSelection} selection={declaration.selection??(declaration.options?{mode:'multiple'}:undefined)}
         onretry={onretry?()=>onretry(declaration.id):undefined}
         label={declaration.label}
-        emptyLabel={declaration.emptyLabel}
+        emptyLabel={emptyText}
+        allSelectedLabel={allSelectedText}
         candidates={declaration.options?{status:'ready',candidates:declaration.options}:dimensionValuesSnapshot(candidates, candidates.has(candidateScopeKey(declaration.id,declaration.dimension)) ? candidateScopeKey(declaration.id,declaration.dimension) : declaration.dimension)}
         value={dimensionValueOf(values, declaration.id).values}
         display={declaration.display ?? 'select'}
