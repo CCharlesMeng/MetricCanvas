@@ -436,6 +436,12 @@
     --mc-metric-panel-border-color: var(--mc-white-card-border-color, var(--mc-color-report-content-frame, #d4d5ff));
   }
 
+  /* Dashboard cards already provide the top and inline insets for their tables. */
+  :global([data-page-layout-form='dashboard']) .container-card > .section-grid > .cell[data-component-type='table'] {
+    --mc-table-padding-top: 0px;
+    --mc-table-padding-inline: 0px;
+  }
+
   /* plain:无容器,组件完全自带外观 */
   .page-section.container-plain {
     padding: 0;

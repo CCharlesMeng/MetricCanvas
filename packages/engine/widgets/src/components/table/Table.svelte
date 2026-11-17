@@ -876,7 +876,7 @@
     display: flex;
     flex-direction: column;
     gap: 0;
-    padding: 19px 19px 11px;
+    padding: var(--mc-table-padding-top, 19px) var(--mc-table-padding-inline, 19px) 11px;
     background: var(--mc-color-surface, #fff);
     border-radius:
       var(--table-widget-radius-top-left, 16px)
