@@ -1,4 +1,5 @@
 import { debugWarn } from '../debug-warnings';
+import { dqeTimeoutMs, MIN_DQE_TIMEOUT_MS } from '../dqe-timeout';
 import { createJoinProgress } from './progress';
 import type { ScreenProgressSink } from '../screen-progress';
 import { isPagedJoinQuery, hasQueryFieldMapping, restoreCellFallbacks, dqeDefaultSort, pagedJoinHasComparison, type EffectiveQuery, type DataSnapshot, type DataWarning, type TableQueryView, type Row } from '@metriccanvas/page/internal';
@@ -32,8 +33,8 @@ async function runPageQuery(plan:PagedJoinPlan,id:string,query:EffectiveQuery,ru
 }
 
 function pageQueryTimeout(plan:PagedJoinPlan):AbortSignal|undefined {
-  const milliseconds=plan.source.source.records?.timeoutMs??(pagedJoinHasComparison(plan.page,plan.source)?60_000:undefined);
-  return milliseconds?AbortSignal.timeout(milliseconds):undefined;
+  const milliseconds=plan.source.source.records?.timeoutMs??(pagedJoinHasComparison(plan.page,plan.source)?MIN_DQE_TIMEOUT_MS:undefined);
+  return milliseconds?AbortSignal.timeout(dqeTimeoutMs(milliseconds)):undefined;
 }
 
 function selectionQuery(plan:PagedJoinPlan,pageIndex:number){

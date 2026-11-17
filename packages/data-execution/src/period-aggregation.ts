@@ -1,3 +1,4 @@
+import { MIN_DQE_TIMEOUT_MS } from './dqe-timeout';
 import { hasQueryFieldMapping, type DataSnapshot, type EffectiveQuery, type PeriodAggregationCase, type Row, type TablePredicate } from '@metriccanvas/page/internal';
 import type { FilterValues } from './filter-values';
 import type { DqeQueryDefinition } from '@metriccanvas/page/internal';
@@ -119,7 +120,7 @@ function projectResult(rows: Row[], query: EffectiveQuery): DataSnapshot {
 /** The DQE wire receives existing monthly queries only; the engine owns cross-month folding. */
 export async function executePeriodAggregation(query: EffectiveQuery, read: ReadQuery, signal?: AbortSignal): Promise<DataSnapshot> {
   const config = query.periodAggregation!;
-  const bounded = AbortSignal.any([...(signal ? [signal] : []), AbortSignal.timeout(60_000)]);
+  const bounded = AbortSignal.any([...(signal ? [signal] : []), AbortSignal.timeout(MIN_DQE_TIMEOUT_MS)]);
   const groups = new Map<string, Accumulator>();
   let count = 0;
   for (const month of monthWindows(query)) {

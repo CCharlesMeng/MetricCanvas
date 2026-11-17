@@ -1,5 +1,7 @@
+import { useDqeTimeoutClock } from '../../../tests/helpers/dqe-timeout-clock';
 import fs from 'node:fs';
-import {describe,it,expect} from 'vitest';
+import {afterEach,describe,it,expect,vi} from 'vitest';
+afterEach(() => { vi.restoreAllMocks(); vi.useRealTimers(); });
 import {parsePage} from '@metriccanvas/page';
 import type {Page,DataSnapshot,TableQueryView} from '@metriccanvas/page/internal';
 import {createSourceProgram,defaultSourceView,initialFilterValues} from '../src/runtime';
@@ -100,9 +102,10 @@ describe('record-preserving pagedJoin',()=>{
     }finally{program.dispose();}
   });
   it('fails timed-out reads without caching partial results',async()=>{
+    useDqeTimeoutClock();
     const page=parsed(),source=page.dataSources[root].source;if(source.type!=='pagedJoin')throw Error('join');source.records!.timeoutMs=1;
-    const test=setup({rows:8,delayMs:15},page);
-    try{expect(await test.read()).toMatchObject({status:'error',error:{code:'DQE_TIMEOUT'}});}finally{test.program.dispose();}
+    const test=setup({rows:8,delayMs:180_001},page);
+    try{const pending=test.read();await vi.advanceTimersByTimeAsync(180_000);expect(await pending).toMatchObject({status:'error',error:{code:'DQE_TIMEOUT'}});}finally{test.program.dispose();}
   });
 
   it.each(['iso','compact','invalid'] as const)('handles declared %s local date values',async format=>{

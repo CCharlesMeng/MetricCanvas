@@ -1,3 +1,4 @@
+import { dqeTimeoutMs } from '../dqe-timeout';
 import {intersectQueryFilters} from '../intersect-filters';
 import {reportQueryHttpError} from '../query-http-error';
 import {dimensionFilterCandidates} from './filter-candidates';
@@ -121,7 +122,7 @@ export interface DqeGatewayConfig {
   endpoint?: string;
   headers?: Record<string, string>;
   fetchImpl?: typeof fetch;
-  /** 单次 HTTP 请求超时，默认 180000ms；显式配置优先。 */
+  /** 单次 HTTP 请求超时，默认且最少 180000ms；更短配置忽略，更长合法配置保留。 */
   timeoutMs?: number;
   /** Optional HTTP concurrency limit; omitted means no application cap. Each request contains one query. */
   maxConcurrentBatches?: number;
@@ -184,12 +185,13 @@ export function createDqeGateway(
     endpoint = DEFAULT_DQE_ENDPOINT,
     headers = {},
     fetchImpl = fetch,
-    timeoutMs = 180_000,
+    timeoutMs: configuredTimeoutMs,
     maxConcurrentBatches = Infinity,
     credentials = 'same-origin',
     diagnostics,
     devDetail
   } = config;
+  const timeoutMs = dqeTimeoutMs(configuredTimeoutMs);
 
   let sequence = 0;
   let batchSequence = 0;

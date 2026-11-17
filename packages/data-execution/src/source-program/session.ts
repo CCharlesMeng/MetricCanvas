@@ -1,3 +1,4 @@
+import { MIN_DQE_TIMEOUT_MS } from '../dqe-timeout';
 import type { ScreenProgress } from '../screen-progress';
 import { ordinaryScreenProgress } from './screen-progress';
 import {finalizationName} from '@metriccanvas/page/internal';
@@ -329,7 +330,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
         }
         function completeQuerySnapshot(id: string, source: QueryDataSource, query: EffectiveQuery, diagnostics: QueryDiagnosticContext): Promise<DataSnapshot> {
           const comparison = hasPeriodComparison(source.source.query);
-          const signal = comparison ? AbortSignal.any([request.signal, AbortSignal.timeout(request.purpose === 'complete' ? EXPORT_PREPARATION_TIMEOUT_MS : 60_000)]) : request.signal;
+          const signal = comparison ? AbortSignal.any([request.signal, AbortSignal.timeout(request.purpose === 'complete' ? EXPORT_PREPARATION_TIMEOUT_MS : MIN_DQE_TIMEOUT_MS)]) : request.signal;
           return fetchComplete(query, execution, scope, signal, diagnostics, source.source.resultScope === 'complete', () => describeExportSource(page, id), comparison ? false : request.allowPartial, comparison ? false : request.purpose !== 'complete',request.strictComplete);
         }
         async function executeCombined(id: string, source: PagedJoinDataSource | PagedUnionDataSource, view: TableQueryView): Promise<void> {
@@ -350,7 +351,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
         async function executeUnion(id: string, source: PagedUnionDataSource, view: TableQueryView): Promise<void> {
           const plan = compileUnion(page, id, request.conditions, view, request.now);
           const complete = request.purpose === 'complete';
-          const signal = AbortSignal.any([request.signal, AbortSignal.timeout(complete ? EXPORT_PREPARATION_TIMEOUT_MS : 60_000)]);
+          const signal = AbortSignal.any([request.signal, AbortSignal.timeout(complete ? EXPORT_PREPARATION_TIMEOUT_MS : MIN_DQE_TIMEOUT_MS)]);
           const result = await withTableRecovery(() => currentUnion.read(plan, scope, signal, complete),
             () => recoverUnion(plan, execution, scope, signal, complete), signal);
           const applied = result.viewCorrection ?? plan.view;

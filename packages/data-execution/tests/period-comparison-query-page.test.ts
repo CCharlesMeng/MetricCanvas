@@ -88,7 +88,7 @@ it('fails before making a request without a trusted cutoff and rejects calculate
   expect(preview.calls).toHaveLength(0);program.dispose();ready.dispose();
 });
 it('times out a stalled comparison request without reading a complete population',async()=>{
-  const timeout=AbortSignal.timeout.bind(AbortSignal),spy=vi.spyOn(AbortSignal,'timeout').mockImplementation(milliseconds=>timeout(milliseconds===60000?5:milliseconds));
+  const timeout=AbortSignal.timeout.bind(AbortSignal),spy=vi.spyOn(AbortSignal,'timeout').mockImplementation(milliseconds=>timeout(milliseconds===180000?5:milliseconds));
   const preview=createQueryComparisonPreview();
   preview.dataGateway.fetchData=(_query,_context,signal)=>new Promise((_resolve,reject)=>signal?.addEventListener('abort',()=>reject(signal.reason),{once:true}));
   try{expect((await read(preview)).snapshot).toMatchObject({status:'error',error:{code:'DQE_TIMEOUT'}});}

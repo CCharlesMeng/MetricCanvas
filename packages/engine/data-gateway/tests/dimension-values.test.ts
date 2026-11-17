@@ -1,4 +1,5 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+afterEach(() => vi.useRealTimers());
 import type { QueryErrorCode } from '@metriccanvas/page/internal';
 import { DqeGatewayError, createDqeGateway, dimensionValuesDqeItem } from '../src';
 
@@ -195,18 +196,21 @@ describe('DQE 适配器的维度候选值查询(issue #54)', () => {
 
   for (const testCase of failureCases) {
     it(testCase.name, async () => {
+      vi.useFakeTimers();
       const gateway = createDqeGateway({
         fetchImpl: testCase.fetchImpl,
         ...(testCase.timeoutMs !== undefined ? { timeoutMs: testCase.timeoutMs } : {})
       });
 
-      const caught = await gateway.fetchDimensionValues('客户级别').then(
+      const pending = gateway.fetchDimensionValues('客户级别').then(
         () => {
           throw new Error('该场景必须拒绝');
         },
         (cause: unknown) => cause as DqeGatewayError
       );
 
+      await vi.advanceTimersByTimeAsync(180_000);
+      const caught = await pending;
       expect(caught).toBeInstanceOf(DqeGatewayError);
       expect(caught.code).toBe(testCase.code);
       // 错误序列化不包含候选值或上游响应正文(issue #47 红线)。

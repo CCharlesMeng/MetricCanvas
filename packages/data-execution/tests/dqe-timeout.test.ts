@@ -61,12 +61,24 @@ describe.each(operations)('DQE timeout: $name', ({ start }) => {
     expect(vi.getTimerCount()).toBe(0);
   });
 
-  it('honors an explicit timeout override', async () => {
+  it('preserves a longer legal timeout', async () => {
     vi.useFakeTimers();
     const upstream = controlledUpstream();
-    const pending = start(createDqeGateway({ fetchImpl: upstream.fetchImpl, timeoutMs: 10_000 })).catch(error => error);
-    await vi.advanceTimersByTimeAsync(10_000);
+    const pending = start(createDqeGateway({ fetchImpl: upstream.fetchImpl, timeoutMs: 240_000 })).catch(error => error);
+    await vi.advanceTimersByTimeAsync(239_999);
+    expect(upstream.aborted()).toBe(false);
+    await vi.advanceTimersByTimeAsync(1);
+    expect(await pending).toMatchObject({ code: 'DQE_TIMEOUT', detail: { timeoutMs: 240_000 } });
+  });
+
+  it.each([1, 10_000, 60_000, 120_000])('ignores a shorter %s ms override', async timeoutMs => {
+    vi.useFakeTimers();
+    const upstream = controlledUpstream();
+    const pending = start(createDqeGateway({ fetchImpl: upstream.fetchImpl, timeoutMs })).catch(error => error);
+    await vi.advanceTimersByTimeAsync(179_999);
+    expect(upstream.aborted()).toBe(false);
+    await vi.advanceTimersByTimeAsync(1);
     expect(upstream.aborted()).toBe(true);
-    expect(await pending).toMatchObject({ code: 'DQE_TIMEOUT', detail: { timeoutMs: 10_000 } });
+    expect(await pending).toMatchObject({ code: 'DQE_TIMEOUT', detail: { timeoutMs: 180_000 } });
   });
 });

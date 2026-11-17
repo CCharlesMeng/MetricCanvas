@@ -71,5 +71,5 @@ export function rejectionPreviewRowCount(id:string|undefined,mode:'page'|'catalo
 /** Slow synthetic batches demonstrate timeout renewal without calling a real service. */
 export function rejectionPreviewDelay(id:string|undefined,params=new URLSearchParams()):number|undefined {
   if(id!=='record-join-batch-timeout')return undefined;
-  return params.get('sourceTimeout')==='true'?1500:250;
+  return params.get('sourceTimeout')==='true'?180_001:60_000;
 }

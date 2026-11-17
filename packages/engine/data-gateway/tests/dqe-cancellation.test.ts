@@ -1,4 +1,5 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+afterEach(() => vi.useRealTimers());
 import type { EffectiveQuery, JsonObject } from '@metriccanvas/page/internal';
 import {
   DqeGatewayError,
@@ -201,10 +202,13 @@ describe('DQE 数据网关的取消信号(issue #53)', () => {
   });
 
   it('未携带取消信号的查询行为不变:超时仍归类 DQE_TIMEOUT 而不是取消', async () => {
+    vi.useFakeTimers();
     const { fetchImpl, requests } = hangingUpstream();
     const gateway = createDqeGateway({ fetchImpl, timeoutMs: 10 });
 
-    const failure = await captured(gateway.fetchData(numberQuery('金额')));
+    const pending = captured(gateway.fetchData(numberQuery('金额')));
+    await vi.advanceTimersByTimeAsync(180_000);
+    const failure = await pending;
 
     expect(failure).toBeInstanceOf(DqeGatewayError);
     expect(failure).toMatchObject({ code: 'DQE_TIMEOUT' });
