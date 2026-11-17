@@ -9,6 +9,20 @@ const document = () => JSON.parse(readFileSync('packages/page/fixtures/contract-
 
 it.each([
   ['number-0', 113],
+  ['number-ungrouped', 123],
+  ['number-0-ungrouped', 123],
+  ['number-1-ungrouped', 123],
+  ['number-2-ungrouped', 123],
+  ['number-3-ungrouped', 123],
+  ['number-4-ungrouped', 123],
+  ['number-5-ungrouped', 123],
+  ['number-ungrouped-signed', 123],
+  ['number-1-ungrouped-signed', 123],
+  ['number-2-ungrouped-signed', 123],
+  ['number-3-ungrouped-signed', 123],
+  ['number-4-ungrouped-signed', 123],
+  ['number-5-ungrouped-signed', 123],
+
   ['number-3', 107], ['number-4', 107], ['number-5', 107],
   ['number-3-signed', 107], ['number-4-signed', 107], ['number-5-signed', 107],
   ['number-signed', 17], ['number-1-signed', 17],

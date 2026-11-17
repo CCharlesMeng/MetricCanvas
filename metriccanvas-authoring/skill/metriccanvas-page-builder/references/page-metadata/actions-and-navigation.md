@@ -96,7 +96,7 @@ Angular 等路由框架应覆盖 `replaceSearch`，经自身 Router 更新 query
 6.106 起，列动作和组件动作的 `openDetail.title` 可声明固定标题或 `{parts:[固定文字,{field:当前行字段,format:可选格式},…]}`。快照与查询详情共用同一取值规则；旧 `titleField` 继续读取，与 `title` 互斥。完整声明、空值与版本边界见[详情组合标题](components/table.md#detail-composed-title)，合成场景 `/pages/partner-health-interactions` 包含组合标题的表格入口与固定标题的图表入口。
 
 
-页面协议 6.122。结构真源为本册[schema.json](schema.json)，SHA256 `13ba9a68328621d3d83235b763d5e7f16c8e9947498907e9c46e9c41608f7d28`。字段表自动生成；可选不等于有默认值。
+页面协议 6.123。结构真源为本册[schema.json](schema.json)，SHA256 `c09394e359a8bdb6143d8e59ca97dcf33ce189fb32eb37383a512351587bfeb1`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -863,13 +863,13 @@ Schema位置：`#/definitions/detailTitle/anyOf/1/properties/parts/items/anyOf/1
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | enum=["text","number","number-0","number-1","number-signed","number-1-signed","number-2-signed","number-3-signed","number-4-signed","number-5-signed","number-grouped-signed","number-2","number-3","number-4","number-5","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","cny-adaptive-trimmed","cny-adaptive-trimmed-no-yuan","usd-adaptive-km","count-adaptive","resource-adaptive","bytes-adaptive","minutes-adaptive","messages-adaptive","billing-hours","percent-adaptive","percent-adaptive-signed","percent-0","percent-1","percent-2","percent-raw","points-1-signed","yoy-p-signed","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 显示格式，不修改原始数据。 |
+| "string" | 本分支可选 | enum=["text","number","number-0","number-1","number-signed","number-1-signed","number-2-signed","number-3-signed","number-4-signed","number-5-signed","number-grouped-signed","number-2","number-3","number-4","number-5","number-grouped","number-ungrouped","number-0-ungrouped","number-1-ungrouped","number-2-ungrouped","number-3-ungrouped","number-4-ungrouped","number-5-ungrouped","number-ungrouped-signed","number-1-ungrouped-signed","number-2-ungrouped-signed","number-3-ungrouped-signed","number-4-ungrouped-signed","number-5-ungrouped-signed","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","usd-adaptive","cny-adaptive-trimmed","cny-adaptive-trimmed-no-yuan","usd-adaptive-km","count-adaptive","resource-adaptive","bytes-adaptive","minutes-adaptive","messages-adaptive","billing-hours","percent-adaptive","percent-adaptive-signed","percent-0","percent-1","percent-2","percent-raw","points-1-signed","yoy-p-signed","percent-2-signed","date","date-month-day","period"] | Schema未设默认；装配/运行时默认见语义说明 | 显示格式，不修改原始数据。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
 | "text" | 普通文本格式，不能执行HTML。 |
 | "number" | 数值标量或原数值格式，按所在字段解释。 |
-| "number-0" | 6.113新增：四舍五入为无千分位整数，半值远离零，舍入零为0，不缩放，不改变原值。 |
+| "number-0" | 6.113新增：四舍五入为默认千分位整数，半值远离零，舍入零为0，不缩放，不改变原值。 |
 | "number-1" | 保留1位小数。 |
 | "number-signed" | 保留普通数值精度，正数加正号，负数保留负号，零无符号；6.17新增。 |
 | "number-1-signed" | 保留一位小数，舍入后零无符号；表格正负颜色与指标卡变化箭头按展示方向判断；6.17新增。 |
@@ -879,10 +879,23 @@ Schema位置：`#/definitions/detailTitle/anyOf/1/properties/parts/items/anyOf/1
 | "number-5-signed" | 最多保留5位小数并去尾零，正数加+、舍入零无符号，颜色及箭头按展示方向；6.107新增。 |
 | "number-grouped-signed" | 沿用number-grouped千分位与默认小数精度，正数加正号，舍入后零无符号；6.18新增。 |
 | "number-2" | 保留2位小数。 |
-| "number-3" | 最多保留3位小数并去尾零，无千分位；6.107新增。 |
-| "number-4" | 最多保留4位小数并去尾零，无千分位；6.107新增。 |
-| "number-5" | 最多保留5位小数并去尾零，无千分位；6.107新增。 |
+| "number-3" | 最多保留3位小数并去尾零，默认千分位；6.107新增。 |
+| "number-4" | 最多保留4位小数并去尾零，默认千分位；6.107新增。 |
+| "number-5" | 最多保留5位小数并去尾零，默认千分位；6.107新增。 |
 | "number-grouped" | 千分位数值展示。 |
+| "number-ungrouped" | 6.123新增：显式不加千分位，保留同名 number 的精度、去尾零与符号规则。 |
+| "number-0-ungrouped" | 6.123新增：显式不加千分位，保留同名 number 的精度、去尾零与符号规则。 |
+| "number-1-ungrouped" | 6.123新增：显式不加千分位，保留同名 number 的精度、去尾零与符号规则。 |
+| "number-2-ungrouped" | 6.123新增：显式不加千分位，保留同名 number 的精度、去尾零与符号规则。 |
+| "number-3-ungrouped" | 6.123新增：显式不加千分位，保留同名 number 的精度、去尾零与符号规则。 |
+| "number-4-ungrouped" | 6.123新增：显式不加千分位，保留同名 number 的精度、去尾零与符号规则。 |
+| "number-5-ungrouped" | 6.123新增：显式不加千分位，保留同名 number 的精度、去尾零与符号规则。 |
+| "number-ungrouped-signed" | 6.123新增：显式不加千分位，保留同名 number 的精度、去尾零与符号规则。 |
+| "number-1-ungrouped-signed" | 6.123新增：显式不加千分位，保留同名 number 的精度、去尾零与符号规则。 |
+| "number-2-ungrouped-signed" | 6.123新增：显式不加千分位，保留同名 number 的精度、去尾零与符号规则。 |
+| "number-3-ungrouped-signed" | 6.123新增：显式不加千分位，保留同名 number 的精度、去尾零与符号规则。 |
+| "number-4-ungrouped-signed" | 6.123新增：显式不加千分位，保留同名 number 的精度、去尾零与符号规则。 |
+| "number-5-ungrouped-signed" | 6.123新增：显式不加千分位，保留同名 number 的精度、去尾零与符号规则。 |
 | "compact-wan-0" | 按万缩放，0位小数。 |
 | "compact-wan-1" | 按万缩放，1位小数。 |
 | "compact-million-0" | 按百万缩放，0位小数，附加百万后缀。 |

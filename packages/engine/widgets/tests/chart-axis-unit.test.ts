@@ -75,6 +75,6 @@ it('keeps a shared unit across different precision but never guesses conflicting
     { format: 'count-adaptive', unit: '个', magnitude: 125000 }
   ]) as Axis;
   expect(conflict.name).toBeUndefined();
-  expect(conflict.axisLabel.formatter(125000)).toBe('125000');
+  expect(conflict.axisLabel.formatter(125000)).toBe('125,000');
   expect(dualOrSingleAxis(false, 1, true, [{ format: 'percent-1', unit: '%' }])).toMatchObject({ name: '', axisLabel: { show: false } });
 });

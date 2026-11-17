@@ -35,7 +35,7 @@
   "knowledge": "barChart.overview",
   "reference": "references/page-metadata/components/barChart.md",
   "versionPolicy": "protocol/version-policy",
-  "currentWriter": "6.122",
+  "currentWriter": "6.123",
   "exampleVersionRequirements": [
     {
       "file": "references/page-metadata/examples/forecast-page.json",
@@ -355,7 +355,7 @@
         {
           "id": "number-integer",
           "minor": 113,
-          "description": "普通数值四舍五入为无千分位整数，舍入零不显示负号"
+          "description": "普通数值四舍五入为整数，舍入零不显示负号"
         },
         {
           "id": "ioc-header-controls",

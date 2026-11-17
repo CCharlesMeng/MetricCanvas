@@ -16,7 +16,7 @@ import { basicWorkbookNumberFormat, registerWorkbookPrecision } from './workbook
 function numberFormat(value: number, format?: ValueFormat, unit?: string, displayUnit?: string): string {
   if (displayUnit) return `"${appendDisplayUnit(formatValue(value, format, undefined, { unit }), value, displayUnit, format).replaceAll('"', '""')}"`;
   if (typeof format === 'object') return `"${formatValue(value, format)}"`;
-  const basic = basicWorkbookNumberFormat(format);
+  const basic = basicWorkbookNumberFormat(format ?? 'number', value);
   if (basic !== undefined) return basic;
   if (!format || format === 'number') return 'General';
   if (/^percent-[012]$/.test(format)) {
@@ -61,11 +61,15 @@ export function tableWorkbookCell(bodyColumn: TableColumn, row: AlignedTableRow,
   }
   const cell = valueCell(value, resolved.definition?.type, resolved.format, resolvedUnit(resolved), column.unit);
   const arrow = alignedCellArrow(column, data, row);
-  const format = cell.format ?? 'General';
-  const native = !column.unit && basicWorkbookNumberFormat(resolved.format) !== undefined;
-  const arrowFormat = arrowNumberFormat(format, arrow, column.arrowRule?.position === 'after', native);
-  const decorated = typeof value === 'number' && arrow ? { ...cell, format: arrowFormat } : cell;
-  return registerWorkbookPrecision(decorated, resolved.format, column.unit);
+  return decorateWorkbookNumber(cell, column, arrow, resolved.format);
+}
+
+function decorateWorkbookNumber(cell: CellObject, column: TableColumn, arrow: string, format?: ValueFormat): CellObject {
+  const preset = format ?? 'number';
+  const native = !column.unit && basicWorkbookNumberFormat(preset) !== undefined;
+  const arrowFormat = arrowNumberFormat(cell.format ?? 'General', arrow, column.arrowRule?.position === 'after', native);
+  const decorated = typeof cell.value === 'number' && arrow ? { ...cell, format: arrowFormat } : cell;
+  return registerWorkbookPrecision(decorated, preset, column.unit);
 }
 
 function arrowNumberFormat(format: string, arrow: string, after: boolean, native: boolean): string {

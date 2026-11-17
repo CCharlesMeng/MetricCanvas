@@ -11,14 +11,14 @@ test('number-0 rounds table values, field defaults, metrics and chart labels', a
   const rows = page.locator('table').first().locator('tbody tr');
   await expect(rows).toHaveCount(14);
   for (const [index, expected] of [
-    [0, ['1234.4', '1234', '1234']], [1, ['-1234.5', '-1235', '-1235']],
-    [2, ['1234.5', '1235', '1235']], [6, ['0.4', '0', '0']],
+    [0, ['1,234.4', '1,234', '1,234']], [1, ['-1,234.5', '-1,235', '-1,235']],
+    [2, ['1,234.5', '1,235', '1,235']], [6, ['0.4', '0', '0']],
     [7, ['-0.4', '0', '0']], [13, ['--', '--', '--']]
   ] as const) {
     await expect(rows.nth(index).locator('td:nth-child(n+8)')).toHaveText([...expected]);
   }
   await expect(page.getByText('整数格式（合成数据）目标：13', { exact: true })).toBeVisible();
-  await expect(page.locator('.metric-card').nth(1).locator('.row-value')).toHaveText('1234');
+  await expect(page.locator('.metric-card').nth(1).locator('.row-value')).toHaveText('1,234');
   await expect(page.locator('.bar-chart').nth(1)).toBeVisible();
   const chart = page.locator('.bar-chart .echart').nth(1);
   await expect(chart).toHaveAttribute('_echarts_instance_', /.+/);
@@ -29,6 +29,6 @@ test('number-0 rounds table values, field defaults, metrics and chart labels', a
     const option = instance.getOption();
     return option.series[0].data.slice(0, 4).map((item: { value: number }, dataIndex: number) => option.series[0].label.formatter({ value: item.value, dataIndex }));
   });
-  expect(labels).toEqual(['1234', '-1235', '1235', '10']);
+  expect(labels).toEqual(['1,234', '-1,235', '1,235', '10']);
   expect(errors).toEqual([]);
 });

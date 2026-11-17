@@ -49,11 +49,17 @@ text不执行HTML，日期格式只格式化日期值。语义HTML须用专用�
 
 ## 显式数值格式与精度
 
+6.123 起普通数值默认使用英文逗号千分位：未声明格式的真实数字、`number`、`number-0/1/2/3/4/5` 及已有 `-signed` 格式均分组。`number` 只分组，不引入精度截断，科学计数文本保持；其他格式保留原最大精度、去尾零、半值远离零与舍入零规则。`number-grouped` / `number-grouped-signed` 兼容原有最多三位小数规则，不作为其他格式的替代。
+
+显式关闭复用 format/defaultFormat：`number-ungrouped`、`number-0/1/2/3/4/5-ungrouped`；带符号版本为 `number-ungrouped-signed`、`number-1/2/3/4/5-ungrouped-signed`，没有 `number-0-ungrouped-signed`。例如 `{"data":"main","field":"amount","format":"number-2-ungrouped"}` 显示 `12345.68`，同值 `number-2` 显示 `12,345.68`。字段默认、组件绑定、组件常量、数字参数与筛选文本引用共用这些预设；新预设要求 Schema6.123，旧版本不得声明。未声明格式的字符串不转为数字，显式 text 保持原文；percent-*、百分点、日期、期间、金额及数量缩放仍沿用各自规则。年份和数字编号需要原样显示时应显式采用 ungrouped。
+
+这是用户确认的存量展示语义调整：旧页面随新引擎默认分组，不按旧 schemaVersion 保留无千分位；原值、查询、计算、排序、导航值与权限保持。XLSX 保留原始数字和数值类型，数字格式同步分组与 ungrouped，小于1e-6的无精度数字沿用科学计数以免精度截断。实现由共享格式化与导出模块承担，无新增字段。完整合成场景 `/pages/number-default-grouping` 对照未配置格式、精度、显式关闭、带符号、字段默认、常量和数字参数；旧 `/pages/number-precision-five`、`/pages/chart-number-format` 无需迁移即可观察新默认。
+
 组件绑定的显式format优先；未声明时先按可信字段类型、币种、单位及语义格式选择统一规则，再回退字段defaultFormat；不从指标名或字段id猜测。number保留数值语义，number-0四舍五入显示整数，number-1/2/3/4/5控制最多小数位，number-grouped千分位；compact-wan/yi是数量单位缩放。percent-*直接以原数值加百分号，0.42不自动变42%；需要ratio.scale:100或正确的原始刻度。
 
-6.113 新增 `number-0`，绑定可写 `{"data":"main","field":"amount","format":"number-0"}`，字段默认用 `defaultFormat:"number-0"`，数字参数及筛选文本引用也可使用。不加千分位、不缩放，四舍五入到整数（半值远离零）：`12.4 → 12`、`12.5 → 13`、`-12.5 → -13`，`±0.4` 与负零均显示 `0`，缺失仍显示 `--`。只改变展示，原值、计算、排序不变；Excel 保留数值原值，使用原生整数数字格式，编辑后仍按整数显示。6.112 及更早版本不能声明，未新增 `number-0-signed`。合成场景 `/pages/number-precision-five` 覆盖表格显式格式、字段默认、指标卡、柱图及数字参数标题。
+6.113 新增 `number-0`，绑定可写 `{"data":"main","field":"amount","format":"number-0"}`，字段默认用 `defaultFormat:"number-0"`，数字参数及筛选文本引用也可使用。默认加千分位、不缩放，四舍五入到整数（半值远离零）：`12.4 → 12`、`12.5 → 13`、`-12.5 → -13`，`±0.4` 与负零均显示 `0`，缺失仍显示 `--`。只改变展示，原值、计算、排序不变；Excel 保留数值原值，使用原生整数数字格式，编辑后仍按整数显示。6.112 及更早版本不能声明，未新增 `number-0-signed`。合成场景 `/pages/number-precision-five` 覆盖表格显式格式、字段默认、指标卡、柱图及数字参数标题。
 
-6.107 补齐 `number-3`、`number-4`、`number-5` 及对应的 `-signed` 格式，分别最多保留三、四、五位小数，四舍五入后去掉末尾零，不补零、不加千分位、不缩放。格式名仍为封闭枚举，不支持 `number-6` 或 `number-6-signed`。组件 `format`、字段 `defaultFormat`、数字参数及筛选文本引用共用这些预设；6.106 及更早版本不能声明新预设，旧格式行为保持。
+6.107 补齐 `number-3`、`number-4`、`number-5` 及对应的 `-signed` 格式，分别最多保留三、四、五位小数，四舍五入后去掉末尾零，不补零、默认加千分位、不缩放。格式名仍为封闭枚举，不支持 `number-6` 或 `number-6-signed`。组件 `format`、字段 `defaultFormat`、数字参数及筛选文本引用共用这些预设；6.106 及更早版本不能声明新预设，旧格式的其他精度和舍入规则保持。
 
 组件显式 `percent-0/1/2` 保持对应最大精度，微小非零值如 `0.0001` 显式用 `percent-2` 显示 `0%`；作为来源默认建议时按统一语义规则自适应显示 `0.0001%`。零与缺失分别显示 `0%` 与缺失文案。格式仅改变展示，不修改原始数值、计算、排序或筛选；只改组件显示时保留共享字段契约及其他消费者。
 

@@ -15,7 +15,7 @@ test('basic precision is consistent on screen and exported numeric cells remain 
   const download = await pending;
   const book = new ExcelJS.Workbook(); await book.xlsx.readFile((await download.path())!);
   const sheet = book.worksheets[0]!;
-  for (const [index, format] of ['0', '0.#;-0.#;0', '0.##;-0.##;0', '0.###;-0.###;0', '0.####;-0.####;0', '0.#####;-0.#####;0'].entries()) {
+  for (const [index, format] of ['#,##0', '#,##0.#;-#,##0.#;0', '#,##0.##;-#,##0.##;0', '#,##0.###;-#,##0.###;0', '#,##0.####;-#,##0.####;0', '#,##0.#####;-#,##0.#####;0'].entries()) {
     const cell = sheet.getCell(3, index + 3);
     expect(cell.value).toBe(12.345678);
     expect(cell.type).toBe(ExcelJS.ValueType.Number);

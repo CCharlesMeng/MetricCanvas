@@ -32,11 +32,11 @@ function options(input: MainDataSlots, format?: ValueFormatPreset) {
 }
 
 describe('chart numeric display consistency', () => {
-  it('defaults numeric surfaces to two decimals without an implicit unit or grouping', () => {
+  it('defaults numeric surfaces to two decimals with grouping and without an implicit unit', () => {
     const original = structuredClone(data);
     for (const option of options(data)) {
       expect(option.yAxis.name).toBeUndefined();
-      for (const [value, expected] of [[12345.6789, '12345.68'], [0, '0'], [-12345.6789, '-12345.68']] as const) {
+      for (const [value, expected] of [[12345.6789, '12,345.68'], [0, '0'], [-12345.6789, '-12,345.68']] as const) {
         const series = option.series[0]!;
         expect(series.tooltip?.valueFormatter?.(value)).toBe(expected);
         expect(series.label.formatter({ value })).toBe(expected);
@@ -51,7 +51,7 @@ describe('chart numeric display consistency', () => {
   it('inherits field format and lets the binding override it across all numeric surfaces', () => {
     const formatted = structuredClone(data);
     formatted.main.fields.value = { type: 'number', role: 'measure', defaultFormat: 'compact-wan-1' };
-    for (const [format, expected] of [[undefined, '1.2万'], ['number-1', '12345.7'], ['number', '12345.6789'], ['number-3', '12345.679'], ['number-4', '12345.6789'], ['number-5', '12345.6789'], ['number-3-signed', '+12345.679'], ['number-4-signed', '+12345.6789'], ['number-5-signed', '+12345.6789']] as const) {
+    for (const [format, expected] of [[undefined, '1.2万'], ['number-1', '12,345.7'], ['number', '12,345.6789'], ['number-3', '12,345.679'], ['number-4', '12,345.6789'], ['number-5', '12,345.6789'], ['number-3-signed', '+12,345.679'], ['number-4-signed', '+12,345.6789'], ['number-5-signed', '+12,345.6789']] as const) {
       for (const option of options(formatted, format)) {
         expect(option.yAxis.axisLabel.formatter(12345.6789)).toBe(format === undefined ? '1.2' : expected);
         expect(option.yAxis.name).toBe(format === undefined ? '万' : undefined);
@@ -75,7 +75,7 @@ describe('chart numeric display consistency', () => {
 
 
 it('gives constants the chart default while preserving an explicit constant format', () => {
-  for (const [format, expected] of [[undefined, '12345.68'], ['number-1', '12345.7']] as const) {
+  for (const [format, expected] of [[undefined, '12,345.68'], ['number-1', '12,345.7']] as const) {
     const series = [{ value: 12345.6789, format }];
     const charts = [
       barOption(data, { categoryField: 'category', series, showValueLabels: true }),
@@ -93,7 +93,7 @@ it('gives constants the chart default while preserving an explicit constant form
 it('formats horizontal numeric axes and labels while retaining raw data and category text', () => {
   const option = barOption(data, { categoryField: 'category', series: [{ field: 'value' }], horizontal: true, showValueLabels: true });
   const view = option as unknown as DisplayOption & { xAxis: DisplayOption['yAxis']; yAxis: { data: string[] } };
-  expect(view.xAxis.axisLabel.formatter(12345.6789)).toBe('12345.68');
+  expect(view.xAxis.axisLabel.formatter(12345.6789)).toBe('12,345.68');
   expect(view.series[0]!.label.formatter({ value: 0 })).toBe('0');
   expect(view.yAxis.data).toEqual(['甲', '乙']);
   expect(option.series).toMatchObject([{ data: [{ value: 12345.6789 }, { value: 0 }] }]);

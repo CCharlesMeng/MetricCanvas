@@ -1,0 +1,490 @@
+{
+  "case": "number-ungrouped-before-6.123",
+  "invariant": "number-ungrouped",
+  "input": {
+    "schemaVersion": "6.122",
+    "id": "number-default-grouping",
+    "layout": "dashboard",
+    "meta": {
+      "title": {
+        "parts": [
+          "默认千分位（合成数据）年份 ",
+          {
+            "param": "year",
+            "format": "number-0-ungrouped"
+          }
+        ]
+      }
+    },
+    "params": [
+      {
+        "id": "year",
+        "type": "number",
+        "required": true,
+        "default": 2026
+      }
+    ],
+    "dataSources": {
+      "samples": {
+        "fields": {
+          "name": {
+            "type": "string",
+            "role": "dimension"
+          },
+          "value": {
+            "type": "number",
+            "role": "measure",
+            "nullable": true
+          },
+          "defaulted": {
+            "type": "number",
+            "role": "measure",
+            "defaultFormat": "number-2-ungrouped",
+            "nullable": true
+          },
+          "value-2": {
+            "type": "number",
+            "role": "measure",
+            "nullable": true
+          },
+          "value-3": {
+            "type": "number",
+            "role": "measure",
+            "nullable": true
+          },
+          "value-4": {
+            "type": "number",
+            "role": "measure",
+            "nullable": true
+          },
+          "value-5": {
+            "type": "number",
+            "role": "measure",
+            "nullable": true
+          },
+          "value-6": {
+            "type": "number",
+            "role": "measure",
+            "nullable": true
+          },
+          "value-7": {
+            "type": "number",
+            "role": "measure",
+            "nullable": true
+          },
+          "value-8": {
+            "type": "number",
+            "role": "measure",
+            "nullable": true
+          },
+          "value-9": {
+            "type": "number",
+            "role": "measure",
+            "nullable": true
+          },
+          "value-10": {
+            "type": "number",
+            "role": "measure",
+            "nullable": true
+          },
+          "value-11": {
+            "type": "number",
+            "role": "measure",
+            "nullable": true
+          },
+          "value-12": {
+            "type": "number",
+            "role": "measure",
+            "nullable": true
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "name": "正数",
+              "value": 12345.6789012345,
+              "defaulted": 12345.6789012345,
+              "value-2": 12345.6789012345,
+              "value-3": 12345.6789012345,
+              "value-4": 12345.6789012345,
+              "value-5": 12345.6789012345,
+              "value-6": 12345.6789012345,
+              "value-7": 12345.6789012345,
+              "value-8": 12345.6789012345,
+              "value-9": 12345.6789012345,
+              "value-10": 12345.6789012345,
+              "value-11": 12345.6789012345,
+              "value-12": 12345.6789012345
+            },
+            {
+              "name": "负数",
+              "value": -12345.6789012345,
+              "defaulted": -12345.6789012345,
+              "value-2": -12345.6789012345,
+              "value-3": -12345.6789012345,
+              "value-4": -12345.6789012345,
+              "value-5": -12345.6789012345,
+              "value-6": -12345.6789012345,
+              "value-7": -12345.6789012345,
+              "value-8": -12345.6789012345,
+              "value-9": -12345.6789012345,
+              "value-10": -12345.6789012345,
+              "value-11": -12345.6789012345,
+              "value-12": -12345.6789012345
+            },
+            {
+              "name": "零",
+              "value": 0,
+              "defaulted": 0,
+              "value-2": 0,
+              "value-3": 0,
+              "value-4": 0,
+              "value-5": 0,
+              "value-6": 0,
+              "value-7": 0,
+              "value-8": 0,
+              "value-9": 0,
+              "value-10": 0,
+              "value-11": 0,
+              "value-12": 0
+            },
+            {
+              "name": "舍入零",
+              "value": -0.004,
+              "defaulted": -0.004,
+              "value-2": -0.004,
+              "value-3": -0.004,
+              "value-4": -0.004,
+              "value-5": -0.004,
+              "value-6": -0.004,
+              "value-7": -0.004,
+              "value-8": -0.004,
+              "value-9": -0.004,
+              "value-10": -0.004,
+              "value-11": -0.004,
+              "value-12": -0.004
+            },
+            {
+              "name": "缺失",
+              "value": null,
+              "defaulted": null,
+              "value-2": null,
+              "value-3": null,
+              "value-4": null,
+              "value-5": null,
+              "value-6": null,
+              "value-7": null,
+              "value-8": null,
+              "value-9": null,
+              "value-10": null,
+              "value-11": null,
+              "value-12": null
+            }
+          ]
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "comparison",
+        "components": [
+          {
+            "id": "grouping-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "samples"
+            },
+            "props": {
+              "columns": [
+                {
+                  "field": "name",
+                  "title": "场景"
+                },
+                {
+                  "field": "value",
+                  "title": "未配置格式"
+                },
+                {
+                  "field": {
+                    "data": "main",
+                    "field": "value-2",
+                    "format": "number"
+                  },
+                  "title": "number"
+                },
+                {
+                  "field": {
+                    "data": "main",
+                    "field": "value-3",
+                    "format": "number-0"
+                  },
+                  "title": "number-0"
+                },
+                {
+                  "field": {
+                    "data": "main",
+                    "field": "value-4",
+                    "format": "number-2"
+                  },
+                  "title": "number-2"
+                },
+                {
+                  "field": {
+                    "data": "main",
+                    "field": "value-5",
+                    "format": "number-5"
+                  },
+                  "title": "number-5"
+                },
+                {
+                  "field": {
+                    "data": "main",
+                    "field": "value-6",
+                    "format": "number-grouped"
+                  },
+                  "title": "number-grouped"
+                },
+                {
+                  "field": {
+                    "data": "main",
+                    "field": "value-7",
+                    "format": "number-2-signed"
+                  },
+                  "title": "number-2-signed"
+                },
+                {
+                  "field": {
+                    "data": "main",
+                    "field": "value-8",
+                    "format": "number-ungrouped"
+                  },
+                  "title": "number-ungrouped"
+                },
+                {
+                  "field": {
+                    "data": "main",
+                    "field": "value-9",
+                    "format": "number-0-ungrouped"
+                  },
+                  "title": "number-0-ungrouped"
+                },
+                {
+                  "field": {
+                    "data": "main",
+                    "field": "value-10",
+                    "format": "number-2-ungrouped"
+                  },
+                  "title": "number-2-ungrouped"
+                },
+                {
+                  "field": {
+                    "data": "main",
+                    "field": "value-11",
+                    "format": "number-5-ungrouped"
+                  },
+                  "title": "number-5-ungrouped"
+                },
+                {
+                  "field": {
+                    "data": "main",
+                    "field": "value-12",
+                    "format": "number-2-ungrouped-signed"
+                  },
+                  "title": "number-2-ungrouped-signed"
+                },
+                {
+                  "field": "defaulted",
+                  "title": "字段默认不分组"
+                }
+              ],
+              "pagination": {
+                "mode": "none"
+              },
+              "toolbar": {
+                "export": {
+                  "format": "xlsx",
+                  "filename": "默认千分位与显式关闭"
+                }
+              }
+            }
+          },
+          {
+            "id": "grouping-metric",
+            "type": "metricCard",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "samples"
+            },
+            "props": {
+              "rows": [
+                {
+                  "label": "默认千分位",
+                  "valueField": {
+                    "data": "main",
+                    "field": "value",
+                    "format": "number-2"
+                  }
+                },
+                {
+                  "label": "显式不分组",
+                  "valueField": {
+                    "data": "main",
+                    "field": "value",
+                    "format": "number-2-ungrouped"
+                  }
+                },
+                {
+                  "label": "字段默认不分组",
+                  "valueField": "defaulted"
+                }
+              ],
+              "title": "共享数值展示"
+            }
+          },
+          {
+            "id": "grouped-chart",
+            "type": "barChart",
+            "layout": {
+              "span": 6
+            },
+            "data": {
+              "main": "samples"
+            },
+            "props": {
+              "title": "number-2",
+              "categoryField": "name",
+              "series": [
+                {
+                  "field": {
+                    "data": "main",
+                    "field": "value",
+                    "format": "number-2"
+                  }
+                }
+              ],
+              "showValueLabels": true
+            }
+          },
+          {
+            "id": "ungrouped-chart",
+            "type": "barChart",
+            "layout": {
+              "span": 6
+            },
+            "data": {
+              "main": "samples"
+            },
+            "props": {
+              "title": "number-2-ungrouped",
+              "categoryField": "name",
+              "series": [
+                {
+                  "field": {
+                    "data": "main",
+                    "field": "value",
+                    "format": "number-2-ungrouped"
+                  }
+                }
+              ],
+              "showValueLabels": true
+            }
+          },
+          {
+            "id": "constant-chart",
+            "type": "barChart",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "samples"
+            },
+            "props": {
+              "title": "常量不分组",
+              "categoryField": "name",
+              "series": [
+                {
+                  "value": 12345.6789,
+                  "format": "number-2-ungrouped",
+                  "label": "显式不分组常量"
+                }
+              ],
+              "showValueLabels": true
+            }
+          }
+        ],
+        "title": {
+          "parts": [
+            "默认千分位（合成数据）年份 ",
+            {
+              "param": "year",
+              "format": "number-0-ungrouped"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/samples/fields/defaulted/defaultFormat",
+      "message": "普通数值默认千分位，ungrouped 显式关闭且保留精度和符号 由 6.123 引入，文档声明的是 6.122"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns/8/field/format",
+      "message": "普通数值默认千分位，ungrouped 显式关闭且保留精度和符号 由 6.123 引入，文档声明的是 6.122"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns/9/field/format",
+      "message": "普通数值默认千分位，ungrouped 显式关闭且保留精度和符号 由 6.123 引入，文档声明的是 6.122"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns/10/field/format",
+      "message": "普通数值默认千分位，ungrouped 显式关闭且保留精度和符号 由 6.123 引入，文档声明的是 6.122"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns/11/field/format",
+      "message": "普通数值默认千分位，ungrouped 显式关闭且保留精度和符号 由 6.123 引入，文档声明的是 6.122"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns/12/field/format",
+      "message": "普通数值默认千分位，ungrouped 显式关闭且保留精度和符号 由 6.123 引入，文档声明的是 6.122"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/rows/1/valueField/format",
+      "message": "普通数值默认千分位，ungrouped 显式关闭且保留精度和符号 由 6.123 引入，文档声明的是 6.122"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/series/0/field/format",
+      "message": "普通数值默认千分位，ungrouped 显式关闭且保留精度和符号 由 6.123 引入，文档声明的是 6.122"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/4/props/series/0/format",
+      "message": "普通数值默认千分位，ungrouped 显式关闭且保留精度和符号 由 6.123 引入，文档声明的是 6.122"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/meta/title/parts/1/format",
+      "message": "普通数值默认千分位，ungrouped 显式关闭且保留精度和符号 由 6.123 引入，文档声明的是 6.122"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/title/parts/1/format",
+      "message": "普通数值默认千分位，ungrouped 显式关闭且保留精度和符号 由 6.123 引入，文档声明的是 6.122"
+    }
+  ]
+}

@@ -17,7 +17,7 @@ it('exports all basic precisions as editable numeric cells and shares integer/ze
   const bytes = await encodeTableWorkbook(component, data, new AbortController().signal);
   const book = new ExcelJS.Workbook(); await book.xlsx.load(bytes.buffer);
   const sheet = book.worksheets[0]!;
-  const expected = ['0', '0.#;-0.#;0', '0.##;-0.##;0', '0.###;-0.###;0', '0.####;-0.####;0', '0.#####;-0.#####;0', '+0.###;-0.###;0', '#,##0.###;-#,##0.###;0', '+#,##0.###;-#,##0.###;0', '+General;General;0'];
+  const expected = ['#,##0', '#,##0.#;-#,##0.#;0', '#,##0.##;-#,##0.##;0', '#,##0.###;-#,##0.###;0', '#,##0.####;-#,##0.####;0', '#,##0.#####;-#,##0.#####;0', '+#,##0.###;-#,##0.###;0', '#,##0.###;-#,##0.###;0', '+#,##0.###;-#,##0.###;0', '+#,##0.##############################;-#,##0.##############################;0'];
   for (const [index, format] of expected.entries()) {
     expect(sheet.getCell(2, index + 1).value).toBe(12.3);
     expect(sheet.getCell(2, index + 1).numFmt).toBe(format);
@@ -29,13 +29,13 @@ it('exports all basic precisions as editable numeric cells and shares integer/ze
   const files = unzipSync(bytes);
   const xml = strFromU8(files['xl/worksheets/sheet1.xml']!);
   const styles = strFromU8(files['xl/styles.xml']!);
-  expect(xml.match(/<conditionalFormatting /g)).toHaveLength(8);
+  expect(xml.match(/<conditionalFormatting /g)).toHaveLength(9);
   expect(xml).toContain('sqref="B2:B4 B6"');
   expect(xml).toContain('<formula>ROUND(B2,1)=0</formula>');
   expect(xml).toContain('<formula>MOD(ROUND(B2,1),1)=0</formula>');
   expect(xml).toContain('<formula>ROUND(G2,3)=0</formula>');
-  expect(styles).toContain('formatCode="+0;-0;0"');
-  expect(styles).toContain('formatCode="0;0;0"');
+  expect(styles).toContain('formatCode="+#,##0;-#,##0;0"');
+  expect(styles).toContain('formatCode="#,##0;#,##0;0"');
 });
 
 it.each(['number-0', 'number-1', 'number-2', 'number-3', 'number-4', 'number-5', 'number-grouped', 'number-3-signed'] as const)('normalizes rounded negative zero in %s', format => {

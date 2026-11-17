@@ -51,7 +51,7 @@ test('column-specific snapshot detail reuses existing rows and never queries', a
   const dialog = host.getByRole('dialog');
   await expect(dialog).toContainText('客户10');
   await expect(dialog).toContainText('暂无数据');
-  await expect(dialog).toContainText('-1200');
+  await expect(dialog).toContainText('-1,200');
   await dialog.getByRole('button', { name: '下一页' }).click();
   await expect(dialog).toContainText('客户20');
   expect(await page.evaluate(() => window.queryCalls.length)).toBe(0);

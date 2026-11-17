@@ -52,7 +52,7 @@ function axisUnit(field: AxisField, scale: NumericScale | undefined): string | u
 
 function percentAxisText(value: number, format: string): string {
   if (format === 'percent-raw') return String(value);
-  if (!format.startsWith('percent-adaptive')) return formatValue(value, format.replace('percent-', 'number-') as ValueFormat);
+  if (!format.startsWith('percent-adaptive')) return formatValue(value, format.replace(/^percent-([012])(-signed)?$/, 'number-$1-ungrouped$2') as ValueFormat);
   const magnitude = Math.abs(value);
   if (magnitude > 0 && magnitude < 1e-20) return String(value);
   const digits = magnitude >= 100 ? 0 : magnitude >= 10 ? 1 : Math.min(20, Math.max(2, Math.ceil(-Math.log10(magnitude || 1))));
@@ -66,14 +66,14 @@ function axisNumber(value: number, format: ValueFormat | undefined, scale: Numer
     return decimalText(value / scale.divisor, digits, scale.grouped);
   }
   if (typeof format === 'string' && format.startsWith('percent-')) return percentAxisText(value, format);
-  if (format === 'points-1-signed') return formatValue(value, 'number-1-signed');
+  if (format === 'points-1-signed') return formatValue(value, 'number-1-ungrouped-signed');
   if (format === 'yoy-p-signed') return yoyAxisText(value);
   return formatValue(value, format ?? 'number-2');
 }
 
 function yoyAxisText(value: number): string {
-  const rounded = Number(formatValue(value, 'number-2-signed')) * 100;
-  const text = formatValue(rounded, 'number-0');
+  const rounded = Number(formatValue(value, 'number-2-ungrouped-signed')) * 100;
+  const text = formatValue(rounded, 'number-0-ungrouped');
   return rounded > 0 && text !== '0' ? `+${text}` : text;
 }
 

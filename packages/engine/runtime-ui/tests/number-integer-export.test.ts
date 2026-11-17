@@ -31,7 +31,7 @@ it('exports integer display while retaining raw numeric values', async () => {
       const cell = sheet.getCell(row, column);
       expect(cell.type).toBe(ExcelJS.ValueType.Number);
       expect(cell.value).toBe(value);
-      expect(cell.numFmt).toBe('0');
+      expect(cell.numFmt).toBe('#,##0');
     }
   }
   expect(sheet.getCell('I15').value).toBeNull();

@@ -1,5 +1,7 @@
 # MetricCanvas 页面元数据规范
 
+6.123：普通数值展示默认千分位，包括未声明格式的真实数字及旧 number 精度/带符号格式；原精度不变。复用 format/defaultFormat 新增 number-ungrouped、number-0～5-ungrouped 及已有精度的 -signed 版本，显式关闭分组；number-grouped 保留最多三位小数。旧页面统一随引擎采用新默认，表格、指标卡、图表和 Excel 同步，原始值不变。见[数值格式](docs/page-metadata/field-bindings-and-formats.md#显式数值格式与精度)，合成入口 `/pages/number-default-grouping`。
+
 6.122：维度筛选器可用 `candidates.levelField` 从内联候选读取节点层级，单选结构树可放在 `filterGroup` 工具栏。选中父层或子层时，查询按已有的 `levelQueryFields` 选择目标字段。见[内联层级候选](docs/page-metadata/filters.md#source-candidate-levels)。
 
 6.121：来源页可用 `regionFilter.props.officeNavigate` 声明代表处下钻目标。页头选中代表处时从当前筛选状态直接下钻，返回保留原筛选。以代表处初始化时在概览渲染和查询前替换当前历史记录。引擎注入 `rep-office`，统计期间沿用显式导航参数。见 [代表处跨页下钻](docs/page-metadata/components/iocHeader.md#office-navigation)，合成入口 `/pages/ioc-office-drill-overview` 与 `/pages/ioc-office-drill-detail`。
@@ -41,7 +43,7 @@ IOC 父子表层级选择复用“全球＝不限区域”：保留全部父行�
 
 6.115：IOC 页头通过 `identity.titleNavigate` 为标题配置跳转地址，复用普通 URL 导航、页面参数和筛选传参、目标校验及条件；无行上下文，省略时保持普通标题。见[标题跳转](docs/page-metadata/components/iocHeader.md#标题跳转6115)，合成入口 `/pages/ioc-header-title-link`。
 
-6.113：新增 `number-0`，四舍五入显示整数，不加千分位、不缩放，正负半值均向远离零方向舍入，舍入零统一显示 `0`。复用 `format` / `defaultFormat`，原值、计算与排序保持；Excel 保留数值原值并展示同一整数。见[数值格式](docs/page-metadata/field-bindings-and-formats.md)，合成入口 `/pages/number-precision-five`。
+6.113：新增 `number-0`，四舍五入显示整数，默认加千分位、不缩放，正负半值均向远离零方向舍入，舍入零统一显示 `0`。复用 `format` / `defaultFormat`，原值、计算与排序保持；Excel 保留数值原值并展示同一整数。见[数值格式](docs/page-metadata/field-bindings-and-formats.md)，合成入口 `/pages/number-precision-five`。
 
 表格本地分页与查询分页统一使用数字页码。`pagination.mode:"local"` 的 `numbered` 保留历史兼容读取，true、false 或省略均显示数字页码，新页面无需填写；单页/空结果及不分页行为保持。字段净增0，无新增版本分支。见[分页说明](docs/page-metadata/components/table.md)，对照入口 `/pages/table-default-sort`、`/pages/table-row-number` 与 `/pages/paged-join-on-demand`。
 
@@ -55,7 +57,7 @@ IOC 父子表层级选择复用“全球＝不限区域”：保留全部父行�
 
 6.108：完整本地表格通过 `props.defaultSort` 声明最终字段的初始排序，复用现有排序规则，在计算完成后先排序再分页；用户后续排序、清空和恢复视图优先。远程排序继续在查询或组合源声明。见[本地默认排序](docs/page-metadata/components/table.md#local-default-sort)，合成入口 `/pages/table-default-sort`。
 
-6.107：新增 `number-3/4/5` 与 `number-3/4/5-signed`，最多保留对应小数位并去尾零，不加千分位；带符号格式按舍入后的展示结果统一正负号、颜色及箭头，舍入零为中性。复用 format/defaultFormat，无新增字段。见[数值格式](docs/page-metadata/field-bindings-and-formats.md)，合成入口 `/pages/number-precision-five`。
+6.107：新增 `number-3/4/5` 与 `number-3/4/5-signed`，最多保留对应小数位并去尾零，默认加千分位；带符号格式按舍入后的展示结果统一正负号、颜色及箭头，舍入零为中性。复用 format/defaultFormat，无新增字段。见[数值格式](docs/page-metadata/field-bindings-and-formats.md)，合成入口 `/pages/number-precision-five`。
 
 按需组合查询分页允许可空字段排序，补列和完整导出沿用选页成员返回的顺序及空值位置，不再要求排序字段声明 `nullable:false`。Schema 字段净增0；关联键、窗口和准确总数校验保持。见[按需组合查询分页](docs/page-metadata/data-sources.md#按需组合查询分页676)，合成入口 `/pages/paged-join-on-demand?nulls=first` 与 `?nulls=last`。
 

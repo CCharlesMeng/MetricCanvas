@@ -3,12 +3,12 @@ import { formatValue, valuePolarity } from '../src/shared/value-format';
 import { changeValueColor, tableValueColor } from '../src/shared/value-color';
 
 const precisions = [
-  ['number-3', 'number-3-signed', '1234.123', 0.0004, 0.0005, '0.001'],
-  ['number-4', 'number-4-signed', '1234.1235', 0.00004, 0.00005, '0.0001'],
-  ['number-5', 'number-5-signed', '1234.12346', 0.000004, 0.000005, '0.00001']
+  ['number-3', 'number-3-signed', '1,234.123', 0.0004, 0.0005, '0.001'],
+  ['number-4', 'number-4-signed', '1,234.1235', 0.00004, 0.00005, '0.0001'],
+  ['number-5', 'number-5-signed', '1,234.12346', 0.000004, 0.000005, '0.00001']
 ] as const;
 
-it.each(precisions)('%s and %s round without grouping or padding', (plain, signed, rounded) => {
+it.each(precisions)('%s and %s round with grouping and without padding', (plain, signed, rounded) => {
   expect(formatValue(1234.12345678, plain)).toBe(rounded);
   expect(formatValue(-1234.12345678, plain)).toBe(`-${rounded}`);
   expect(formatValue('1234.12345678', signed)).toBe(`+${rounded}`);

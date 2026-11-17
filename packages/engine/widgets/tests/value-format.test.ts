@@ -14,15 +14,15 @@ describe('缺省文案判定', () => {
 });
 
 describe('formatValue', () => {
-  it('无格式时保持存量直观输出,空值显示占位符', () => {
-    expect(formatValue(1234.5)).toBe('1234.5');
+  it('无格式数字默认千分位，文本与空值保持', () => {
+    expect(formatValue(1234.5)).toBe('1,234.5');
     expect(formatValue('06-23')).toBe('06-23');
     expect(formatValue(null)).toBe('--');
     expect(formatValue(undefined)).toBe('--');
   });
 
   it('按封闭预设格式化精度和千分位', () => {
-    expect(formatValue(123456.789, 'number-2')).toBe('123456.79');
+    expect(formatValue(123456.789, 'number-2')).toBe('123,456.79');
     expect(formatValue(123456.789, 'number-grouped')).toBe('123,456.789');
   });
 
@@ -95,8 +95,8 @@ describe('formatValue', () => {
 
 describe('valuePolarity', () => {
   it.each([
-    ['number-2-signed', 1234.5678, '+1234.57', 'positive'],
-    ['number-2-signed', -1234.5678, '-1234.57', 'negative'],
+    ['number-2-signed', 1234.5678, '+1,234.57', 'positive'],
+    ['number-2-signed', -1234.5678, '-1,234.57', 'negative'],
     ['number-2-signed', 0.004, '0', 'neutral'],
     ['number-2-signed', '-0.004', '0', 'neutral'],
     ['number-2-signed', 0.005, '+0.01', 'positive'],

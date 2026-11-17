@@ -23,10 +23,10 @@ it('exports arrows in numeric formats without changing values, precision, zero o
   expect(sheet.getCell('A3').numFmt).toBe('"↑ ""-1.2 天"');
   expect(sheet.getCell('A4').value).toBe(0.04);
   expect(sheet.getCell('A4').numFmt).toBe('"0 天"');
-  expect(sheet.getCell('B2').numFmt).toBe('General" ↓"');
-  expect(sheet.getCell('B3').numFmt).toBe('General" ↓"');
+  expect(sheet.getCell('B2').numFmt).toBe('#,##0.##############################" ↓";-#,##0.##############################" ↓";0" ↓"');
+  expect(sheet.getCell('B3').numFmt).toBe('#,##0.##############################" ↓";-#,##0.##############################" ↓";0" ↓"');
   expect(sheet.getCell('B4').value).toBe(0);
-  expect(sheet.getCell('B4').numFmt).toBe('General" ↓"');
+  expect(sheet.getCell('B4').numFmt).toBe('#,##0.##############################" ↓";-#,##0.##############################" ↓";0" ↓"');
   expect(sheet.getCell('C2').numFmt).not.toMatch(/[↑↓]/);
   expect(sheet.getCell('A5').value).toBeNull();
   expect(data).toEqual(before);

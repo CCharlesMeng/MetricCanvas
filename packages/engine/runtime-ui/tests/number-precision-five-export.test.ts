@@ -22,11 +22,11 @@ it('exports the precision scene with raw numeric cells and editable numeric prec
   await book.xlsx.load(bytes.buffer);
   const sheet = book.worksheets[0]!;
   expect(sheet.rowCount).toBe(15);
-  for (const [index, format] of ['0.###;-0.###;0', '+0.###;-0.###;0', '0.####;-0.####;0', '+0.####;-0.####;0', '0.#####;-0.#####;0', '+0.#####;-0.#####;0'].entries()) {
+  for (const [index, format] of ['#,##0.###;-#,##0.###;0', '+#,##0.###;-#,##0.###;0', '#,##0.####;-#,##0.####;0', '+#,##0.####;-#,##0.####;0', '#,##0.#####;-#,##0.#####;0', '+#,##0.#####;-#,##0.#####;0'].entries()) {
     const cell = sheet.getCell(2, index + 2);
     expect(cell.value).toBe(1234.12345678);
     expect(cell.numFmt).toBe(format);
   }
-  expect(sheet.getCell('G12').numFmt).toBe('+0.#####;-0.#####;0');
+  expect(sheet.getCell('G12').numFmt).toBe('+#,##0.#####;-#,##0.#####;0');
   expect(sheet.getCell('G15').value).toBeNull();
 });

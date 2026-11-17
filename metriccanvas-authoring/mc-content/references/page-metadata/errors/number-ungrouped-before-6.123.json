@@ -1,0 +1,131 @@
+{
+  "case": "number-ungrouped-before-6.123",
+  "invariant": "number-ungrouped",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "普通数值默认千分位，ungrouped 显式关闭且保留精度和符号 由 6.123 引入，文档声明的是 6.122",
+      "paths": [
+        "/dataSources/samples/fields/defaulted/defaultFormat",
+        "/sections/0/components/0/props/columns/8/field/format",
+        "/sections/0/components/0/props/columns/9/field/format",
+        "/sections/0/components/0/props/columns/10/field/format",
+        "/sections/0/components/0/props/columns/11/field/format",
+        "/sections/0/components/0/props/columns/12/field/format",
+        "/sections/0/components/1/props/rows/1/valueField/format",
+        "/sections/0/components/3/props/series/0/field/format",
+        "/sections/0/components/4/props/series/0/format",
+        "/meta/title/parts/1/format",
+        "/sections/0/title/parts/1/format"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "samples": {
+        "fields": {
+          "defaulted": {
+            "defaultFormat": "number-2-ungrouped"
+          }
+        }
+      }
+    },
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "columns": [
+                "…",
+                "…",
+                "…",
+                "…",
+                "…",
+                "…",
+                "…",
+                "…",
+                {
+                  "field": {
+                    "format": "number-ungrouped"
+                  }
+                },
+                {
+                  "field": {
+                    "format": "number-0-ungrouped"
+                  }
+                },
+                {
+                  "field": {
+                    "format": "number-2-ungrouped"
+                  }
+                },
+                {
+                  "field": {
+                    "format": "number-5-ungrouped"
+                  }
+                },
+                {
+                  "field": {
+                    "format": "number-2-ungrouped-signed"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "props": {
+              "rows": [
+                "…",
+                {
+                  "valueField": {
+                    "format": "number-2-ungrouped"
+                  }
+                }
+              ]
+            }
+          },
+          "…",
+          {
+            "props": {
+              "series": [
+                {
+                  "field": {
+                    "format": "number-2-ungrouped"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "props": {
+              "series": [
+                {
+                  "format": "number-2-ungrouped"
+                }
+              ]
+            }
+          }
+        ],
+        "title": {
+          "parts": [
+            "…",
+            {
+              "format": "number-0-ungrouped"
+            }
+          ]
+        }
+      }
+    ],
+    "meta": {
+      "title": {
+        "parts": [
+          "…",
+          {
+            "format": "number-0-ungrouped"
+          }
+        ]
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

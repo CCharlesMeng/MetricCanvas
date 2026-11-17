@@ -10,7 +10,7 @@ test('chart labels and real hover tooltips share the declared numeric format', a
   await page.goto(`/pages/${fixture.id}`);
   const charts = page.locator('[_echarts_instance_]');
   await expect(charts).toHaveCount(fixture.sections[0].components.length);
-  const expected = ['12345.68', '12345.68', '1.2万', '12345.6789', '12345.68', '12345.68', '12345.68', '12345.68'];
+  const expected = ['12,345.68', '12,345.68', '1.2万', '12,345.6789', '12,345.68', '12,345.68', '12,345.68', '12,345.68'];
   for (let index = 0; index < expected.length; index++) {
     const chart = charts.nth(index);
     await chart.hover({ position: { x: 140, y: 100 } });
@@ -19,7 +19,7 @@ test('chart labels and real hover tooltips share the declared numeric format', a
   await charts.first().hover({ position: { x: 287, y: 100 } });
   await expect(charts.first().getByText('0', { exact: true })).toBeVisible();
   await charts.first().hover({ position: { x: 433, y: 100 } });
-  await expect(charts.first().getByText('-2345.68', { exact: true })).toBeVisible();
+  await expect(charts.first().getByText('-2,345.68', { exact: true })).toBeVisible();
   await page.mouse.move(0, 0);
   await page.screenshot({ path: '/tmp/chart-number-format-wide.png', fullPage: true });
   await page.setViewportSize({ width: 390, height: 844 });

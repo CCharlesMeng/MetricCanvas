@@ -11,6 +11,7 @@ export * from './filter-text-value';
 export * from './page-list-entry';
 export * from './data-source';
 export * from './field';
+export { basicNumberFormat } from './number-format';
 export * from './filter';
 export { IOC_KEY_OFFICE_FILTER_IDS, filterOverrideTargets, overriddenFilterIds, isUnrestrictedIocRegion } from './filter-overrides';
 export * from './query';

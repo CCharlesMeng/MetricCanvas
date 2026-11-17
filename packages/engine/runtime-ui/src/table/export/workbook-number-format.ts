@@ -1,24 +1,26 @@
 import type { CellObject, SheetData } from 'write-excel-file/universal';
-import type { ValueFormat } from '@metriccanvas/page/internal';
+import { basicNumberFormat, type ValueFormat } from '@metriccanvas/page/internal';
 
 const precisions = new WeakMap<CellObject, number>();
 
-export function basicWorkbookNumberFormat(format: ValueFormat | undefined): string | undefined {
-  if (typeof format !== 'string') return undefined;
-  const match = /^number(?:-([0-5]|grouped))?(-signed)?$/.exec(format);
-  if (!match) return undefined;
-  const digits = match[1] === 'grouped' ? 3 : Number(match[1] ?? 0);
-  const base = match[1] === undefined ? 'General' : `${match[1] === 'grouped' ? '#,##' : ''}0${digits ? `.${'#'.repeat(digits)}` : ''}`;
-  if (base === 'General') return match[2] ? '+General;General;0' : base;
-  if (!digits && !match[2]) return base;
-  return `${match[2] ? '+' : ''}${base};-${base};0`;
+export function basicWorkbookNumberFormat(format: ValueFormat | undefined, value?: number): string | undefined {
+  const options = basicNumberFormat(format);
+  if (!options) return undefined;
+  if (options.digits === undefined && !options.grouped) return options.signed ? '+General;General;0' : 'General';
+  const scientific = options.digits === undefined && value !== undefined && value !== 0 && Math.abs(value) < 1e-6;
+  const digits = options.digits ?? 30;
+  const base = scientific ? '0.################E+00' : `${options.grouped ? '#,##' : ''}0${digits ? `.${'#'.repeat(digits)}` : ''}`;
+  if (!digits && !options.signed) return base;
+  return `${options.signed ? '+' : ''}${base};-${base};0`;
 }
 
 /** Metadata stays outside the writer's public cell shape and follows the final physical worksheet. */
 export function registerWorkbookPrecision(cell: CellObject, format: ValueFormat | undefined, displayUnit?: string): CellObject {
-  if (typeof cell.value !== 'number' || displayUnit || typeof format !== 'string' || !basicWorkbookNumberFormat(format)) return cell;
-  const match = /^number-(grouped|[1-5])(?:-signed)?$/.exec(format);
-  if (match) precisions.set(cell, match[1] === 'grouped' ? 3 : Number(match[1]));
+  if (typeof cell.value !== 'number' || displayUnit) return cell;
+  const options = basicNumberFormat(format);
+  if (!options || String(cell.format).includes('E+')) return cell;
+  const digits = options.digits ?? (options.grouped ? 30 : 0);
+  if (digits) precisions.set(cell, digits);
   return cell;
 }
 

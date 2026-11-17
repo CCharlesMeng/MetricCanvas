@@ -33,12 +33,12 @@ test('Tokens grouped params: HTTP requests, URL overrides, missing inputs and em
   await mount(filled.document,'region=URL指定值');await expect(page.getByRole('table')).toHaveCount(5);
   await expect.poll(()=>requests.length).toBe(5);
   await expect(page.getByRole('paragraph').filter({hasText:/^2026-01 至 2026-06$/})).toBeVisible();
-  await expect(page.getByText('123456',{exact:true}).first()).toBeVisible();
+  await expect(page.getByText('123,456',{exact:true}).first()).toBeVisible();
   for(const q of requests){expect(q.filter.dims).toEqual([{dim_name:'区域',dim_value_list:['URL指定值']}]);expect(q.filter.time).toMatchObject({start:'2026-01',end:'2026-06'});expect(JSON.stringify(q)).not.toContain('"param"');}
   const empty=resolvePageParams(template,{region:['欧洲区'],'report-period':{start:'2026-07',end:'2026-09',granularity:'month'}});if(!empty.ok)throw Error('fixture');
   await mount(empty.document);await expect.poll(()=>requests.length).toBe(10);
   await expect(page.getByRole('paragraph').filter({hasText:/^2026-07 至 2026-09$/})).toBeVisible();
-  await expect(page.getByText('123456',{exact:true})).toHaveCount(0);
+  await expect(page.getByText('123,456',{exact:true})).toHaveCount(0);
   for(const q of requests.slice(5)){expect(q.filter.dims[0].dim_value_list).toEqual(['欧洲区']);expect(q.filter.time.start).toBe('2026-07');}
   await page.screenshot({path:testInfo.outputPath('metriccanvas-inline-params-empty.png'),fullPage:true});
 });

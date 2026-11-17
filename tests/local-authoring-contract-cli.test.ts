@@ -47,7 +47,7 @@ describe('仓外安装的目标关联契约', () => {
     expect(result.kind).toBe('contract');
     expect(result.coverage).toBe('registered');
     expect(JSON.stringify(result)).toContain('percent-1');
-    expect(JSON.stringify(result)).toContain('小数末尾零');
+    expect(JSON.stringify(allItems('30'))).toContain('小数末尾零');
     expect(JSON.stringify(result)).toContain('missingText');
   });
 

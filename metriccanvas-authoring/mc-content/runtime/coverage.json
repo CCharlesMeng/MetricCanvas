@@ -853,6 +853,11 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/number-default-grouping.json",
+      "target": "product-contracts/page/conformance/valid/number-default-grouping.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/valid/ioc-async-preparation.json",
       "target": "product-contracts/page/conformance/valid/ioc-async-preparation.json",
       "scope": "exact product contract"
@@ -3025,6 +3030,16 @@
     {
       "source": "product:page/conformance/invalid/table-search-options-unmapped.json",
       "target": "product-contracts/page/conformance/invalid/table-search-options-unmapped.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/number-ungrouped-before-6.123.json",
+      "target": "product-contracts/page/conformance/invalid/number-ungrouped-before-6.123.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/number-ungrouped-six-unsupported.json",
+      "target": "product-contracts/page/conformance/invalid/number-ungrouped-six-unsupported.json",
       "scope": "exact product contract"
     },
     {
@@ -6078,6 +6093,16 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/errors/number-ungrouped-before-6.123.json",
+      "target": "references/page-metadata/errors/number-ungrouped-before-6.123.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/number-ungrouped-six-unsupported.json",
+      "target": "references/page-metadata/errors/number-ungrouped-six-unsupported.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/errors/number-precision-binding-before-6.107.json",
       "target": "references/page-metadata/errors/number-precision-binding-before-6.107.json",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -8664,7 +8689,7 @@
     }
   ],
   "counts": {
-    "product": 1700,
+    "product": 1705,
     "authoring": 32,
     "modules": 36,
     "topics": 317,

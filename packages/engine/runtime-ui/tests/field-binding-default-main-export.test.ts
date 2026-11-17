@@ -23,8 +23,8 @@ it('exports omitted main and explicit supplemental slots with original numbers a
   const sheet = book.worksheets[0]!;
   expect(sheet.getCell('B2').value).toBe(1.234);
   expect(sheet.getCell('C2').value).toBe(50);
-  expect(sheet.getCell('B2').numFmt).toBe('+0.##;-0.##;0');
-  expect(sheet.getCell('C2').numFmt).toBe('+0.##;-0.##;0');
+  expect(sheet.getCell('B2').numFmt).toBe('+#,##0.##;-#,##0.##;0');
+  expect(sheet.getCell('C2').numFmt).toBe('+#,##0.##;-#,##0.##;0');
   expect(sheet.getCell('B3').value).toBe(-1.234);
   expect(sheet.getCell('B4').value).toBe(-0.004);
   expect(sheet.getCell('B5').value).toBeNull();

@@ -1,5 +1,5 @@
 import type { FieldValue, ValueFormat, ValueFormatPreset } from '@metriccanvas/page/internal';
-import { formatPeriod } from '@metriccanvas/page/internal';
+import { basicNumberFormat, formatPeriod } from '@metriccanvas/page/internal';
 import { formatTime } from './time-format';
 import { formatAdaptiveMoney } from './adaptive-money-format';
 import { adaptiveNumericText } from './numeric-presentation';
@@ -28,7 +28,8 @@ export function formatValue(
   context: ValueFormatContext = {}
 ): string {
   if (!hasDisplayValue(value)) return missingValueText(missingText);
-  if (!format || format === 'text') return String(value);
+  if (!format) return typeof value === 'number' ? groupNumberText(String(value)) : String(value);
+  if (format === 'text') return String(value);
   if (typeof format === 'object') return formatTime(value, format);
   if (format === 'period') return formatPeriod(String(value));
   if (format === 'date') return formatDate(value);
@@ -52,7 +53,7 @@ function formatNumericValue(numeric: number, format: ValueFormatPreset, context:
   if (adaptive !== undefined) return adaptive;
   if (format === 'percent-raw') return `${numeric}%`;
   if (format === 'yoy-p-signed') return yoyPresentation(numeric).text;
-  if (format === 'points-1-signed') return `${signedNumberPresentation(numeric, 'number-1-signed').text}P`;
+  if (format === 'points-1-signed') return `${signedNumberPresentation(numeric, 'number-1-ungrouped-signed').text}P`;
   const percent = /^percent-([012])(-signed)?$/.exec(format);
   if (percent) return `${percent[2] && numeric > 0 ? '+' : ''}${formatNumber(numeric, Number(percent[1]))}%`;
   return formatStandardNumber(numeric, format);
@@ -60,16 +61,9 @@ function formatNumericValue(numeric: number, format: ValueFormatPreset, context:
 
 function formatStandardNumber(numeric: number, format: ValueFormatPreset): string {
   if (isSignedNumberFormat(format)) return signedNumberPresentation(numeric, format).text;
-  const precision = /^number-([0-5])$/.exec(format);
-  if (precision) {
-    const text = formatNumber(numeric, Number(precision[1]));
-    return text === '-0' ? '0' : text;
-  }
+  const basic = basicNumberFormat(format);
+  if (basic) return basicNumberText(numeric, basic);
   switch (format) {
-    case 'number':
-      return String(numeric);
-    case 'number-grouped':
-      return formatNumber(numeric, undefined, true).replace(/^-0$/, '0');
     case 'cny-adaptive-trimmed':
     case 'cny-adaptive-trimmed-no-yuan':
     case 'usd-adaptive-km':
@@ -93,7 +87,7 @@ export function valuePolarity(
 
 /** 同比先按两位小数舍入，再乘100；最后的整数格式消除二进制乘法尾数。 */
 function yoyPresentation(value: number) {
-  const rounded = signedNumberPresentation(value, 'number-2-signed');
+  const rounded = signedNumberPresentation(value, 'number-2-ungrouped-signed');
   const magnitude = formatNumber(Number(rounded.text) * 100, 0);
   return { text: `${rounded.polarity === 'positive' ? '+' : ''}${magnitude}P`, polarity: rounded.polarity };
 }
@@ -106,18 +100,22 @@ export function isSignedNumberFormat(
 
 /** 文本与方向共用同一次舍入，负零及舍入到零均无符号。 */
 function signedNumberPresentation(value: number, format: SignedNumberFormat) {
-  let magnitude: string;
-  switch (format) {
-    case 'number-signed': magnitude = String(Math.abs(value)); break;
-    case 'number-1-signed': magnitude = formatNumber(Math.abs(value), 1); break;
-    case 'number-2-signed': magnitude = formatNumber(Math.abs(value), 2); break;
-    case 'number-3-signed': magnitude = formatNumber(Math.abs(value), 3); break;
-    case 'number-4-signed': magnitude = formatNumber(Math.abs(value), 4); break;
-    case 'number-5-signed': magnitude = formatNumber(Math.abs(value), 5); break;
-    case 'number-grouped-signed': magnitude = formatNumber(Math.abs(value), undefined, true); break;
-  }
+  const magnitude = basicNumberText(Math.abs(value), basicNumberFormat(format)!);
   const polarity: ValuePolarity = Number(magnitude.replaceAll(',', '')) === 0 ? 'neutral' : value > 0 ? 'positive' : 'negative';
   return { text: `${polarity === 'positive' ? '+' : polarity === 'negative' ? '-' : ''}${magnitude}`, polarity };
+}
+
+/** Group the original decimal text without imposing Intl's default three-digit rounding. */
+function groupNumberText(text: string): string {
+  if (/[eE]/.test(text)) return text;
+  const [integer, fraction] = text.split('.');
+  const grouped = integer!.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  return fraction === undefined ? grouped : `${grouped}.${fraction}`;
+}
+
+function basicNumberText(value: number, options: NonNullable<ReturnType<typeof basicNumberFormat>>): string {
+  if (options.digits === undefined) return options.grouped ? groupNumberText(String(value)) : String(value);
+  return formatNumber(value, options.digits, options.grouped).replace(/^-0$/, '0');
 }
 
 /**

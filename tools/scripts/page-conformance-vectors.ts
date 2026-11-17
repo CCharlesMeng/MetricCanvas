@@ -516,6 +516,15 @@ export const invariants: InvariantDefinition[] = [
     ]
   },
   {
+    id: 'number-ungrouped', description: '普通数值默认千分位，6.123起显式format关闭，支持绑定、默认、常量和文本引用',
+    valid: ['number-default-grouping'], cases: [
+      { case: 'number-ungrouped-before-6.123', base: 'number-default-grouping', expect: /由 6.123 引入/,
+        mutate: d => { d.schemaVersion = '6.122'; } },
+      { case: 'number-ungrouped-six-unsupported', base: 'inline-report', expect: /format/,
+        mutate: d => { firstComponent(d,0,1).props.rows[0].valueField.format = 'number-6-ungrouped'; } }
+    ]
+  },
+  {
     id: 'number-precision-five', description: '三至五位小数及带符号预设由6.107引入，整数预设由6.113引入，对象字段绑定省略data由6.116引入',
     valid: ['number-precision-five'], cases: [
       { case: 'number-precision-binding-before-6.107', base: 'inline-report', expect: /由 6.107 引入/,
