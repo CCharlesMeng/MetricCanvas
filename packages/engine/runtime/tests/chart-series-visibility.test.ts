@@ -103,8 +103,8 @@ it('preserves implicit secondary ownership and formatting when the first line is
   if (!Array.isArray(axes)) throw Error('expected dual axes');
   const formatter = axes[1]!.axisLabel!.formatter;
   expect(formatter).toBeTypeOf('function');
-  expect(axes[1]!.name).toBe('%');
-  expect((formatter as (value: number) => string)(25)).toBe('25');
+  expect(axes[1]!.name).toBeUndefined();
+  expect((formatter as (value: number) => string)(25)).toBe('25%');
 });
 
 it('repeated presentation projection preserves declaration indices and advanced patches', () => {
