@@ -4,7 +4,7 @@ import { chartSeriesColor } from '../../shared/chart-series-presentation';
 import { resolveBarSeriesValue } from './series-value';
 import { resolveComponentValue } from '../../shared/component-value';
 import type { BarChartProps, ValueFormat } from '@metriccanvas/page/internal';
-import type { EChartsOption, LabelLayoutOptionCallbackParams } from 'echarts';
+import type { BarSeriesOption, EChartsOption, LabelLayoutOptionCallbackParams } from 'echarts';
 import type { MainDataSlots } from '../../shared/component-data';
 import { resolveField } from '../../shared/component-data';
 import { chartAxisField } from '../../shared/chart-axis-presentation';
@@ -29,6 +29,8 @@ const FLOATING_LABEL_MIN_LENGTH = 7;
  * 它同时接管 role 档位色与未显式着色系列的取色。`reportForecast` 变体的
  * 实测/预测双色是该变体自己的语义色,不受形态色板影响。
  */
+type LegendSelection = Readonly<Record<string, boolean>>;
+
 export function barOption(
   data: MainDataSlots,
   props: BarChartProps,
@@ -36,10 +38,7 @@ export function barOption(
 ): EChartsOption {
   if (explicitChartAxes(props)) return mixedOption(data, props, palette);
   const rows = data.main.snapshot.rows;
-  const category = resolveField(props.categoryField, data);
-  const categories = rows.map((row) =>
-    formatValue(row[category.field], category.format, category.missingText)
-  );
+  const categories = barCategories(data, props);
   const categoryAxis = { type: 'category' as const, data: categories,
     ...(props.horizontal ? { inverse: true } : {}),
     ...categoryLabelOption(props.categoryLabels, props.showValueLabels) };
@@ -57,16 +56,8 @@ export function barOption(
   for (const entry of seriesEntries) {
     topEntryByGroup.set(entry.series.role ?? 'default', entry);
   }
-  const stackTotals = rows.map((row) =>
-    props.series.reduce((total, series) => {
-      const field = resolveComponentValue(series, data, props.emptyBehavior);
-      return total + (finiteNumber(field.read(row)) ?? 0);
-    }, 0)
-  );
-  const legendData = props.series.map((series) => {
-    const field = resolveBarSeriesValue(series, data, props.emptyBehavior);
-    return seriesDisplayName(series.label ?? field.label, series.unit);
-  });
+  const legendData = barSeriesNames(data, props);
+  const stackLabels = barStackLabels(data, props, categories, legendData);
   return {
     ...(palette ? { color: [...palette] } : {}),
     ...(props.categoryLabels?.mode === 'all' ? {} : categoryWindow(rows.length, props.horizontal)),
@@ -75,19 +66,7 @@ export function barOption(
       ...(rows.length > 20 && props.categoryLabels?.mode !== 'all' ? (props.horizontal ? { right: 40 } : { bottom: 36 }) : {})
     },
     tooltip: { trigger: 'axis', confine: true },
-    ...(chartLegendVisible(chartDeclaration(props).series)
-      ? {
-          legend: reportForecast
-            ? {
-                top: 0,
-                right: 0,
-                ...(props.series.some((series) => series.stackOrder !== undefined)
-                  ? { data: legendData }
-                  : {})
-              }
-            : { top: 0, left: 0 }
-        }
-      : {}),
+    ...barLegend(props, legendData),
     // 横向条形:类目轴与数值轴对调(覆盖存量两个水平条形组件的场景)
     xAxis: props.horizontal ? horizontalAxis : categoryAxis,
     yAxis: props.horizontal ? categoryAxis : valueAxis,
@@ -163,29 +142,7 @@ export function barOption(
               }
             }
           : {}),
-        ...(props.showStackTotalLabels && isTopSeries
-          ? {
-              markPoint: {
-                symbol: 'circle',
-                symbolSize: 0,
-                silent: true,
-                label: {
-                  show: true,
-                  position: 'top' as const,
-                  distance: 8,
-                  color: '#121e3b',
-                  fontSize: 12,
-                  formatter: valueLabelFormatter(field.format, field.unit, series.unit)
-                },
-                data: rows.flatMap((row, rowIndex) => {
-                  if (values[rowIndex] === undefined) return [];
-                  const value = stackTotals[rowIndex] ?? 0;
-                  const amounts = props.series.map(series => finiteNumber(resolveComponentValue(series, data, props.emptyBehavior).read(row)) ?? 0);
-                  return [stackTotalPoint(categories[rowIndex] ?? '', value, amounts, props.horizontal)];
-                })
-              }
-            }
-          : {}),
+        ...stackLabels.get(originalIndex),
         ...(series.role === 'forecast'
           ? {
               lineStyle: {
@@ -204,6 +161,89 @@ export function barOption(
       };
     })
   };
+}
+
+function barCategories(data: MainDataSlots, props: BarChartProps): string[] {
+  const category = resolveField(props.categoryField, data);
+  return data.main.snapshot.rows.map(row => formatValue(row[category.field], category.format, category.missingText));
+}
+
+function barSeriesNames(data: MainDataSlots, props: BarChartProps): string[] {
+  return props.series.map(series => {
+    const field = resolveBarSeriesValue(series, data, props.emptyBehavior);
+    return seriesDisplayName(series.label ?? field.label, series.unit);
+  });
+}
+
+function barLegend(props: BarChartProps, names: string[]): Pick<EChartsOption, 'legend'> {
+  if (!chartLegendVisible(chartDeclaration(props).series)) return {};
+  if (props.variant !== 'reportForecast') return { legend: { top: 0, left: 0 } };
+  const data = props.series.some(series => series.stackOrder !== undefined) ? names : undefined;
+  return { legend: { top: 0, right: 0, ...(data ? { data } : {}) } };
+}
+
+/** Reapply the current selection after option replacement and move labels to surviving series. */
+export function barLegendProjection(
+  option: EChartsOption,
+  data: MainDataSlots,
+  props: BarChartProps,
+  selection?: LegendSelection
+): EChartsOption {
+  const legend = option.legend;
+  if (!legend || Array.isArray(legend) || !Array.isArray(option.series)) return option;
+  const selected = selection ?? legend.selected;
+  if (!selected) return option;
+  const order = barSeriesOrder(props);
+  const labels = barStackLabels(data, props, barCategories(data, props), barSeriesNames(data, props), selected);
+  return { ...option, legend: { ...legend, selected }, series: option.series.map((series, index) => ({
+    ...series, markPoint: labels.get(order[index]!)?.markPoint
+  })) };
+}
+
+type StackLabel = Required<Pick<BarSeriesOption, 'markPoint'>>;
+
+function barStackLabels(
+  data: MainDataSlots, props: BarChartProps, categories: string[], names: string[], selected?: LegendSelection
+): Map<number, StackLabel> {
+  const labels = new Map<number, StackLabel>();
+  if (!props.showStackTotalLabels) return labels;
+  const order = barSeriesOrder(props);
+  const shown = order.filter(index => selected?.[names[index]!] !== false);
+  const groups = stackLabelGroups(props, shown);
+  const fields = props.series.map(series => resolveComponentValue(series, data, props.emptyBehavior));
+  const displayed = props.series.map(series => resolveBarSeriesValue(series, data, props.emptyBehavior));
+  const rows = data.main.snapshot.rows;
+  const totals = rows.map(row => fields.reduce((total, field) => total + (finiteNumber(field.read(row)) ?? 0), 0));
+  for (const group of groups) {
+    const owner = group.at(-1)!;
+    const series = props.series[owner]!;
+    const field = resolveBarSeriesValue(series, data, props.emptyBehavior);
+    const points = rows.flatMap((row, index) => {
+      if (!group.some(member => finiteNumber(displayed[member]!.read(row)) !== undefined)) return [];
+      const anchorFields = props.stacked ? displayed : fields;
+      const visible = shown.map(member => finiteNumber(anchorFields[member]!.read(row)) ?? 0);
+      return [stackTotalPoint(categories[index]!, totals[index]!, visible, props.horizontal)];
+    });
+    labels.set(owner, { markPoint: {
+      symbol: 'circle', symbolSize: 0, silent: true,
+      label: { show: true, position: 'top', distance: 8, color: '#121e3b', fontSize: 12,
+        formatter: valueLabelFormatter(field.format, field.unit, series.unit) },
+      data: points
+    } });
+  }
+  return labels;
+}
+
+function stackLabelGroups(props: BarChartProps, shown: number[]): number[][] {
+  if (!props.stacked) return shown.map(index => [index]);
+  const groups = new Map<string, number[]>();
+  for (const index of shown) {
+    const key = props.series[index]!.role ?? 'default';
+    const group = groups.get(key) ?? [];
+    group.push(index);
+    groups.set(key, group);
+  }
+  return [...groups.values()];
 }
 
 /** Anchor outside the visible stack while retaining the net total, including deductions. */

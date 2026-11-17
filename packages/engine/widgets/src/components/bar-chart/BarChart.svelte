@@ -9,7 +9,7 @@
   import { cartesianChartSource } from '../../shared/chart-series-presentation';
   import { CATEGORICAL_PALETTE_PROPERTY, readColorList } from '../../shared/chart-palette';
   import { chartLegendVisible } from '../../shared/display-unit';
-  import { barOption, barSeriesOrder } from './options';
+  import { barLegendProjection, barOption, barSeriesOrder } from './options';
 
   /**
    * 柱状图(纯渲染,ECharts):点击柱条只上抛行上下文,
@@ -28,6 +28,8 @@
 
   /* 形态色板从绘图容器的计算样式读(见 shared/chart-palette.ts)。 */
   let chartContainer = $state<HTMLDivElement>();
+  const projectLegend = $derived(props.stacked && props.showStackTotalLabels ?
+    ((option, selection) => barLegendProjection(option, data, props, selection)) satisfies NonNullable<import('svelte').ComponentProps<typeof EChart>['projectLegend']> : undefined);
   const palette = $derived(readColorList(chartContainer, CATEGORICAL_PALETTE_PROPERTY));
   const source = $derived(cartesianChartSource(() => barOption(data, props, palette), props, diagnostic ?? { componentId: 'direct-bar-chart', componentType: 'barChart', path: '/props/echartsOption' }, barSeriesOrder(props)));
   const forecast = $derived(props.series.some((series) => series.role === 'forecast'));
@@ -66,6 +68,7 @@
   <EChart
     loading={data.main.sourceStatus === 'loading'}
     {source}
+    {projectLegend}
     cartesian
     expandForLabels={props.showValueLabels === true || props.categoryLabels?.mode === 'all'}
     bind:container={chartContainer}

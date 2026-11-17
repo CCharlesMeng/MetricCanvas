@@ -4,7 +4,7 @@
   import { EXPORT_SCALE_CONTEXT, STATIC_EXPORT_CONTEXT } from './export-context';
   import { loadingChartSource } from './chart-loading';
   import * as echarts from './echarts-runtime';
-  import type { EChartsOption, XAXisComponentOption } from 'echarts';
+  import type { EChartsOption, SeriesOption, XAXisComponentOption } from 'echarts';
   import { cartesianFrame } from './chart-presentation';
   import { copyChartOption, logChartFailure, type ChartSource, type ChartStage } from './chart-option-extension';
 
@@ -18,6 +18,7 @@
     source?: ChartSource;
     cartesian?: boolean;
     expandForLabels?: boolean;
+    projectLegend?: (option: EChartsOption, selection?: Record<string, boolean>) => EChartsOption;
     /** replace 用于完整图表快照；merge 用于需要保留前后状态的数值过渡。 */
     updateMode?: 'replace' | 'merge';
     /**
@@ -39,6 +40,7 @@
     source,
     cartesian = false,
     expandForLabels = false,
+    projectLegend,
     updateMode = 'replace',
     container = $bindable(),
     onitemclick
@@ -51,6 +53,7 @@
   let instance: echarts.ECharts | undefined;
   let stopped = false;
   let current: ChartSource | undefined;
+  let legendSelection: Record<string, boolean> | undefined;
   let mode: 'extended' | 'base' | 'failed' = 'base';
   let stage: ChartStage = 'layout';
 
@@ -64,29 +67,45 @@
     container.dataset.exportChartError = `图表 ${current?.diagnostic?.componentId ?? ''} 自定义呈现未能完整导出`;
     container.dataset.exportChartReady = 'false';
   }
-  function apply(value: EChartsOption) {
+  function markerPatch(series: SeriesOption): SeriesOption {
+    if (series.type !== 'bar') return series;
+    return { type: 'bar', markPoint: series.markPoint ?? { data: [] } };
+  }
+  function exportOption(option: EChartsOption): EChartsOption {
+    const series = option.series === undefined ? undefined :
+      (Array.isArray(option.series) ? option.series : [option.series]).map(item => ({ ...item, animation: false }));
+    const fit = (axis: XAXisComponentOption): XAXisComponentOption => axis.type === 'category'
+      ? { ...axis, axisLabel: { ...axis.axisLabel, hideOverlap: axis.axisLabel?.hideOverlap ?? true, showMinLabel: true, showMaxLabel: true, alignMinLabel: 'left', alignMaxLabel: 'right' } } : axis;
+    const xAxis = option.xAxis === undefined ? undefined : Array.isArray(option.xAxis) ? option.xAxis.map(fit) : fit(option.xAxis);
+    return { ...option, dataZoom: [], animation: false, ...(series ? { series } : {}), ...(xAxis ? { xAxis } : {}) };
+  }
+  function apply(value: EChartsOption, markersOnly = false) {
     const el = container!;
     stage = 'layout';
-    const frame = cartesian ? cartesianFrame(copyChartOption(value), el.clientWidth, expandForLabels, el.clientHeight) : { option: copyChartOption(value), minHeight: undefined };
-    minHeight = frame.minHeight;
-    let final = frame.option;
-    if (staticExport) {
-      const series = final.series === undefined ? undefined : (Array.isArray(final.series) ? final.series : [final.series]).map(item => ({ ...item, animation: false }));
-      const fit = (axis: XAXisComponentOption): XAXisComponentOption => axis.type === 'category'
-        ? { ...axis, axisLabel: { ...axis.axisLabel, hideOverlap: axis.axisLabel?.hideOverlap ?? true, showMinLabel: true, showMaxLabel: true, alignMinLabel: 'left', alignMaxLabel: 'right' } } : axis;
-      const xAxis = final.xAxis === undefined ? undefined : Array.isArray(final.xAxis) ? final.xAxis.map(fit) : fit(final.xAxis);
-      final = { ...final, dataZoom: [], animation: false, ...(series ? { series } : {}), ...(xAxis ? { xAxis } : {}) };
+    const option = copyChartOption(projectLegend?.(value, legendSelection) ?? value);
+    if (markersOnly && instance && Array.isArray(option.series)) {
+      stage = 'apply';
+      instance.setOption({ series: option.series.map(markerPatch) });
+      return;
     }
+    const frame = cartesian ? cartesianFrame(option, el.clientWidth, expandForLabels, el.clientHeight) : { option, minHeight: undefined };
+    minHeight = frame.minHeight;
+    const final = staticExport ? exportOption(frame.option) : frame.option;
     stage = 'init';
     if (!instance) {
       instance = echarts.init(el, undefined, staticExport ? { devicePixelRatio: exportScale } : undefined);
+      instance.on('legendselectchanged', event => {
+        if (!projectLegend) return;
+        legendSelection = (event as { selected: Record<string, boolean> }).selected;
+        paint(true);
+      });
       instance.on('click', params => onitemclick?.(params.dataIndex, typeof params.name === 'string' ? params.name : undefined, params.seriesIndex));
     }
     stage = 'apply';
     instance.setOption(final, { notMerge: staticExport || updateMode === 'replace' });
     if (staticExport && !el.dataset.exportChartError) el.dataset.exportChartReady = 'true';
   }
-  function paint() {
+  function paint(markersOnly = false) {
     if (stopped || !container || container.clientWidth <= 0 || container.clientHeight <= 0 || !current || mode === 'failed') return;
     if (staticExport && (Math.ceil(container.clientWidth * exportScale) > 8192 || Math.ceil(container.clientHeight * exportScale) > 8192 || container.clientWidth * container.clientHeight * exportScale ** 2 > 16_777_216)) {
       container.dataset.exportChartError = '图表尺寸超出图片导出支持范围';
@@ -102,7 +121,7 @@
         stage = current.failure?.stage ?? 'build';
         throw current.failure?.cause ?? Error('缺少基础图表配置');
       }
-      apply(selected);
+      apply(selected, markersOnly);
     } catch (cause) {
       dispose();
       if (mode === 'extended' && current.base) {

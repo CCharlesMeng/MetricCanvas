@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 
 const business = JSON.parse(readFileSync(new URL('../../../pages/partner-health.json',import.meta.url),'utf8'));
 const fieldTypes = new Map<string,string>(Object.values(business.dataSources).flatMap((value: any)=>
@@ -72,4 +73,40 @@ test('computed health scores sort before local pagination, compose row titles an
   await page.screenshot({path:'/tmp/partner-health-interactions.png',fullPage:true});
   expect(calls).toEqual([]);
   expect(errors).toEqual([]);
+});
+
+test('legend filters move the stack totals without changing their values', async ({page}) => {
+  const chartSelector = '.bar-chart [_echarts_instance_]';
+  const runtimeUrl = '/@fs' + fileURLToPath(new URL('../../../packages/engine/widgets/src/shared/echarts-runtime.ts', import.meta.url));
+  await page.setViewportSize({width:1440,height:1100});
+  await page.goto('/pages/partner-health-interactions');
+  await expect(page.locator(chartSelector)).toBeVisible();
+  const chartState = (name?: string) => page.evaluate(async ({selector, url, name}) => {
+    const echarts = await import(url);
+    const chart = echarts.getInstanceByDom(document.querySelector(selector));
+    if (name) chart.dispatchAction({type:'legendToggleSelect', name});
+    const option = chart.getOption();
+    const series: Array<{markPoint?: {data: Array<{coord: [string, number]}>}}> = option.series;
+    const markers = series.flatMap(item => item.markPoint?.data ?? []);
+    const display: Array<{type: string; style: {fill: string; text: string}}> = chart.getZr().storage.getDisplayList(true);
+    const totals = display
+      .filter(item => item.type === 'tspan' && item.style.fill === '#121e3b')
+      .map(item => Number(item.style.text)).sort((left, right) => left - right);
+    return { totals, anchors:markers.map(marker => marker.coord[1]), selected:option.legend[0].selected };
+  }, {selector:chartSelector,url:runtimeUrl,name});
+  const initial = await chartState();
+  expect(initial.totals).toHaveLength(12);
+  await chartState('风险管控');
+  await expect.poll(async () => (await chartState()).totals).toEqual(initial.totals);
+  await chartState('伙伴能力与贡献');
+  await expect.poll(async () => (await chartState()).anchors[0]).toBeLessThan(initial.anchors[0]);
+  await expect.poll(async () => (await chartState()).totals).toEqual(initial.totals);
+  await page.setViewportSize({width:900,height:1100});
+  await expect.poll(async () => (await chartState()).selected).toMatchObject({'风险管控':false,'伙伴能力与贡献':false});
+  await chartState('伙伴对华为的感知');
+  await chartState('客户对伙伴的满意度');
+  await expect.poll(async () => (await chartState()).totals).toEqual([]);
+  await chartState('风险管控');
+  await expect.poll(async () => (await chartState()).totals).toEqual(initial.totals);
+  await expect.poll(async () => (await chartState()).anchors.every(anchor => anchor <= 0)).toBe(true);
 });
