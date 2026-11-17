@@ -9,7 +9,7 @@
   import { hierarchyControlValues } from '../map-hierarchy';
   import DimensionFilter from './DimensionFilter.svelte';
   import HierarchyTreeFilter from './HierarchyTreeFilter.svelte';
-  import { usesHierarchyTree } from './hierarchy-tree';
+  import { hierarchyTreeSnapshot, usesHierarchyTree } from './hierarchy-tree';
 
   interface Props {
     label?: string;
@@ -59,7 +59,7 @@
   {#if label}<span class="label">{label}</span>{/if}
   {#if integratedTree}
     <HierarchyTreeFilter {label} {emptyLabel} {levels} {level} {values} {structural} {treeSelection} {searchable} {onretry} {onchange}
-      required={selection?.required} receipts={candidateLevels ?? { [level]: candidates }}/>
+      required={selection?.required} snapshot={hierarchyTreeSnapshot(levels, candidateLevels ?? { [level]: candidates }, structural)}/>
   {:else}
     {#if (picker ?? 'tabs') === 'tabs'}
       <div class="tabs" role="tablist">

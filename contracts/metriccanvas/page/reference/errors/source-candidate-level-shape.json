@@ -1,0 +1,23 @@
+{
+  "case": "source-candidate-level-shape",
+  "invariant": "filter-source-candidate-levels",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "层级候选仅支持在单个树形下拉中单选",
+      "paths": [
+        "/filters/0/candidates/levelField"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      {
+        "candidates": {
+          "levelField": "level"
+        }
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/source-candidate-level-shape.json"
+}

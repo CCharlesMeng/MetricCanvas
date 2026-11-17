@@ -283,7 +283,7 @@ IOC 业务 Region 只允许 iocHeader 内的单个组织树，树内选择地区
 
 ## 页面数据源候选（6.90）
 
-普通维度筛选可通过 `candidates` 引用页面数据源的结果字段；静态候选使用 `inline`，动态候选使用 `query`。它与固定 `options`、`hierarchy`、`dependsOn`、`candidateWindow` 互斥。候选来源不等于被筛选的图表数据源；筛选生效范围继续由查询 `filterBindings` 决定。
+维度筛选可通过 `candidates` 引用页面数据源的结果字段；静态候选使用 `inline`，动态候选使用 `query`。它与固定 `options`、`dependsOn`、`candidateWindow` 互斥。与 `hierarchy` 同用时须按下文声明内联层级候选。筛选生效范围由业务查询的 `filterBindings` 决定。
 
 ```json
 {
@@ -306,6 +306,16 @@ IOC 业务 Region 只允许 iocHeader 内的单个组织树，树内选择地区
 图表卡内用省略 `props.options` 的 `filterGroup` 引用此筛选器，并显式声明 `props.display:"select"`。页面通用筛选栏也消费同一声明。静态导出冻结已选稳定值及其显示名，不查询或建立交互控件。既有固定 options 按钮及下拉保持原必选单选语义。
 
 完整合成场景：`/pages/filter-source-candidates`，包含 JSON 内联组织树、跨三个查询分页的渠道去重，以及共同消费两项筛选的图表。`?state=error`、`?state=incomplete`、`?state=empty` 分别演示失败、不完整和空候选；操作及证据边界见页面目录 README。仅验证本地合成 Adapter，未验证真实 DQE、Relay 或组织权限服务。
+
+<a id="source-candidate-levels"></a>
+
+## 内联层级候选（6.122）
+
+单选结构树可在 `candidates` 增加 `levelField`，引用内联候选数据源的字符串输出字段。筛选器声明 `hierarchy`、`display:"tree"`、`treeSelection:"level"`、`selection.mode:"single"` 和 `candidates.parentField`，省略 `hierarchyPicker`。例如候选行 `{"code":"beijing","name":"北京","level":"office","parent":"north"}` 的 `level` 必须等于某个 `hierarchy[].id`。首层的父值为空；其他层通过 `parentField` 指向紧邻上一层的业务值。
+
+引擎完整读取候选，按层级和值组成节点身份。同值可出现在不同层；未知层级、缺失父节点、错误归属或同层同值的冲突行使整批候选失败。树内搜索按显示名、编码和祖先路径查找节点，选择时提交该节点的层级和原始业务值。每个消费查询使用现有的 `levelQueryFields` 声明各层目标字段。工具栏沿用 `filterGroup.props:{filterId,display:"select",align:"right"}`，静态导出按选中层级解析显示名。
+
+合成入口 `/pages/filter-source-candidate-levels` 显示区域和城市分别使用不同查询字段。业务入口 `/pages/business-result-metrics` 的「净商务折扣执行情况」使用 `业务类型编码` 与 `子业务类型编码`。右侧「云服务排除项」沿用平面候选滚动分页。
 
 <a id="source-candidate-query-pagination"></a>
 

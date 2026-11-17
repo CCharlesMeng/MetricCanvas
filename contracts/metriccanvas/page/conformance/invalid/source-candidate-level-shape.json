@@ -1,0 +1,205 @@
+{
+  "case": "source-candidate-level-shape",
+  "invariant": "filter-source-candidate-levels",
+  "input": {
+    "schemaVersion": "6.122",
+    "id": "filter-source-candidate-levels",
+    "layout": "dashboard",
+    "meta": {
+      "title": "图表工具栏的层级维度筛选（合成演示）"
+    },
+    "filters": [
+      {
+        "id": "organization",
+        "type": "dimension",
+        "dimension": "department",
+        "label": "组织",
+        "display": "tree",
+        "treeSelection": "level",
+        "selection": {
+          "mode": "multiple",
+          "required": true
+        },
+        "hierarchy": [
+          {
+            "id": "department",
+            "dimension": "department",
+            "label": "区域"
+          },
+          {
+            "id": "office",
+            "dimension": "office",
+            "label": "城市"
+          }
+        ],
+        "defaultLevel": "department",
+        "default": [
+          "north"
+        ],
+        "candidates": {
+          "dataSource": "organizations",
+          "valueField": "code",
+          "labelField": "name",
+          "parentField": "parent",
+          "levelField": "level"
+        }
+      }
+    ],
+    "dataSources": {
+      "organizations": {
+        "fields": {
+          "code": {
+            "type": "string",
+            "role": "dimension"
+          },
+          "name": {
+            "type": "string",
+            "role": "dimension"
+          },
+          "parent": {
+            "type": "string",
+            "role": "dimension"
+          },
+          "level": {
+            "type": "string",
+            "role": "dimension"
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "code": "north",
+              "name": "北区",
+              "parent": null,
+              "level": "department"
+            },
+            {
+              "code": "beijing",
+              "name": "北京",
+              "parent": "north",
+              "level": "office"
+            },
+            {
+              "code": "south",
+              "name": "南区",
+              "parent": null,
+              "level": "department"
+            },
+            {
+              "code": "shenzhen",
+              "name": "深圳",
+              "parent": "south",
+              "level": "office"
+            }
+          ]
+        }
+      },
+      "layered-chart-data": {
+        "fields": {
+          "org": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "org"
+          },
+          "amount": {
+            "type": "number",
+            "role": "measure",
+            "queryField": "amount"
+          }
+        },
+        "source": {
+          "type": "query",
+          "query": {
+            "language": "dqe",
+            "filterBindings": {
+              "organization": {
+                "target": "dimension",
+                "levelQueryFields": {
+                  "department": "org",
+                  "office": "office"
+                }
+              }
+            },
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "org"
+                  ],
+                  "output_metrics": [
+                    "amount"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {}
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "organization-chart",
+        "components": [
+          {
+            "id": "organization-card",
+            "type": "compositeCard",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "title": "组织指标",
+              "variant": "metricGrid",
+              "filterLayout": "toolbar",
+              "components": [
+                {
+                  "id": "organization-picker",
+                  "type": "filterGroup",
+                  "layout": {
+                    "span": 6
+                  },
+                  "props": {
+                    "filterId": "organization",
+                    "display": "select",
+                    "align": "right"
+                  }
+                },
+                {
+                  "id": "organization-bars",
+                  "type": "barChart",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "layered-chart-data"
+                  },
+                  "props": {
+                    "categoryField": "org",
+                    "series": [
+                      {
+                        "field": "amount",
+                        "label": "金额"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/filters/0/candidates/levelField",
+      "message": "层级候选仅支持在单个树形下拉中单选"
+    }
+  ]
+}

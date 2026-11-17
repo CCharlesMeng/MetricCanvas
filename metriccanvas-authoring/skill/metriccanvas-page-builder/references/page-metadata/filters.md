@@ -283,7 +283,7 @@ IOC 业务 Region 只允许 iocHeader 内的单个组织树，树内选择地区
 
 ## 页面数据源候选（6.90）
 
-普通维度筛选可通过 `candidates` 引用页面数据源的结果字段；静态候选使用 `inline`，动态候选使用 `query`。它与固定 `options`、`hierarchy`、`dependsOn`、`candidateWindow` 互斥。候选来源不等于被筛选的图表数据源；筛选生效范围继续由查询 `filterBindings` 决定。
+维度筛选可通过 `candidates` 引用页面数据源的结果字段；静态候选使用 `inline`，动态候选使用 `query`。它与固定 `options`、`dependsOn`、`candidateWindow` 互斥。与 `hierarchy` 同用时须按下文声明内联层级候选。筛选生效范围由业务查询的 `filterBindings` 决定。
 
 ```json
 {
@@ -306,6 +306,16 @@ IOC 业务 Region 只允许 iocHeader 内的单个组织树，树内选择地区
 图表卡内用省略 `props.options` 的 `filterGroup` 引用此筛选器，并显式声明 `props.display:"select"`。页面通用筛选栏也消费同一声明。静态导出冻结已选稳定值及其显示名，不查询或建立交互控件。既有固定 options 按钮及下拉保持原必选单选语义。
 
 完整合成场景：`/pages/filter-source-candidates`，包含 JSON 内联组织树、跨三个查询分页的渠道去重，以及共同消费两项筛选的图表。`?state=error`、`?state=incomplete`、`?state=empty` 分别演示失败、不完整和空候选；操作及证据边界见页面目录 README。仅验证本地合成 Adapter，未验证真实 DQE、Relay 或组织权限服务。
+
+<a id="source-candidate-levels"></a>
+
+## 内联层级候选（6.122）
+
+单选结构树可在 `candidates` 增加 `levelField`，引用内联候选数据源的字符串输出字段。筛选器声明 `hierarchy`、`display:"tree"`、`treeSelection:"level"`、`selection.mode:"single"` 和 `candidates.parentField`，省略 `hierarchyPicker`。例如候选行 `{"code":"beijing","name":"北京","level":"office","parent":"north"}` 的 `level` 必须等于某个 `hierarchy[].id`。首层的父值为空；其他层通过 `parentField` 指向紧邻上一层的业务值。
+
+引擎完整读取候选，按层级和值组成节点身份。同值可出现在不同层；未知层级、缺失父节点、错误归属或同层同值的冲突行使整批候选失败。树内搜索按显示名、编码和祖先路径查找节点，选择时提交该节点的层级和原始业务值。每个消费查询使用现有的 `levelQueryFields` 声明各层目标字段。工具栏沿用 `filterGroup.props:{filterId,display:"select",align:"right"}`，静态导出按选中层级解析显示名。
+
+合成入口 `/pages/filter-source-candidate-levels` 显示区域和城市分别使用不同查询字段。业务入口 `/pages/business-result-metrics` 的「净商务折扣执行情况」使用 `业务类型编码` 与 `子业务类型编码`。右侧「云服务排除项」沿用平面候选滚动分页。
 
 <a id="source-candidate-query-pagination"></a>
 
@@ -351,7 +361,7 @@ IOC 业务 Region 只允许 iocHeader 内的单个组织树，树内选择地区
 合成入口为 `/pages/finalization-default-time` 与 `/pages/finalization-default-time-detail`，`?state=error|missing|invalid|conflict|timeout` 验证回退。集成应用通过数据网关的finalizationSource提供固定DQE请求体、nameField与dateField映射，页面作者不填写端点、凭据或表结构。这些场景不证明真实截止表或生产DQE已接入。
 
 
-页面协议 6.121。结构真源为本册[schema.json](schema.json)，SHA256 `70776bd5693238e9632afa53aa79e9d12c8b3564eaa88d936d082d78d37ff36a`。字段表自动生成；可选不等于有默认值。
+页面协议 6.122。结构真源为本册[schema.json](schema.json)，SHA256 `13ba9a68328621d3d83235b763d5e7f16c8e9947498907e9c46e9c41608f7d28`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -769,7 +779,17 @@ Schema位置：`#/definitions/dimensionFilter/properties/candidates/properties/p
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | tree 必填的父节点值输出字段 ID；根节点为空，父子节点独立选择。 |
+| "string" | 本分支可选 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | tree 必填的父节点值输出字段 ID；根节点为空。声明 levelField 时父节点必须位于紧邻上一层。 |
+
+<a id="schema-232f646566696e6974696f6e732f64696d656e73696f6e46696c7465722f70726f706572746965732f63616e646964617465732f70726f706572746965732f6c6576656c4669656c64"></a>
+
+### `@dimensionFilter.candidates.levelField`
+
+Schema位置：`#/definitions/dimensionFilter/properties/candidates/properties/levelField`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 内联候选行中保存 hierarchy 层级 ID 的字符串输出字段。仅用于单选结构树，查询以相同层级 ID 查找 levelQueryFields。 |
 
 <a id="schema-232f646566696e6974696f6e732f64696d656e73696f6e46696c7465722f70726f706572746965732f6f7074696f6e73"></a>
 
@@ -3086,6 +3106,7 @@ Schema位置：`#/definitions/searchFilter/properties/default`。
 - `unified-page-header`：6.41 唯一页头及自然年选择。反例：[unified-header-version](errors/unified-header-version.json)、[unified-header-conflict](errors/unified-header-conflict.json)、[period-modes-empty](errors/period-modes-empty.json)、[period-modes-duplicate](errors/period-modes-duplicate.json)、[period-modes-default](errors/period-modes-default.json)、[period-modes-plain-range](errors/period-modes-plain-range.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `required-multiple-selection`：6.46必选多选保持非空离散集合。反例：[required-multiple-version](errors/required-multiple-version.json)、[required-multiple-empty](errors/required-multiple-empty.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `independent-filter-candidates`：6.46显式无依赖候选使用V2及局部门禁。反例：[independent-candidates-version](errors/independent-candidates-version.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `filter-source-candidate-levels`：6.122 内联候选行通过层级 ID 使用不同查询字段。反例：[source-candidate-level-version](errors/source-candidate-level-version.json)、[source-candidate-level-field](errors/source-candidate-level-field.json)、[source-candidate-level-shape](errors/source-candidate-level-shape.json)、[source-candidate-level-binding](errors/source-candidate-level-binding.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `currency-range-presets`：6.46单位case内的币种预设保持单一金额状态。反例：[currency-presets-version](errors/currency-presets-version.json)、[currency-presets-missing](errors/currency-presets-missing.json)、[currency-presets-shared](errors/currency-presets-shared.json)、[currency-presets-invalid](errors/currency-presets-invalid.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
@@ -3126,6 +3147,7 @@ Schema位置：`#/definitions/searchFilter/properties/default`。
 - [key-office-priority-demo](examples/key-office-priority-demo.json)：完整合法页面；查询仅为静态契约证据。
 - [key-office-priority-target](examples/key-office-priority-target.json)：完整合法页面；查询仅为静态契约证据。
 - [filter-source-candidates](examples/filter-source-candidates.json)：完整合法页面；查询仅为静态契约证据。
+- [filter-source-candidate-levels](examples/filter-source-candidate-levels.json)：完整合法页面；查询仅为静态契约证据。
 - [filter-source-query-pagination](examples/filter-source-query-pagination.json)：完整合法页面；查询仅为静态契约证据。
 - [finalization-default-time](examples/finalization-default-time.json)：完整合法页面；查询仅为静态契约证据。
 - [finalization-default-time-detail](examples/finalization-default-time-detail.json)：完整合法页面；查询仅为静态契约证据。

@@ -1163,6 +1163,11 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/filter-source-candidate-levels.json",
+      "target": "product-contracts/page/conformance/valid/filter-source-candidate-levels.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/valid/ioc-component-availability-page.json",
       "target": "product-contracts/page/conformance/valid/ioc-component-availability-page.json",
       "scope": "exact product contract"
@@ -2615,6 +2620,26 @@
     {
       "source": "product:page/conformance/invalid/source-candidate-self.json",
       "target": "product-contracts/page/conformance/invalid/source-candidate-self.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/source-candidate-level-version.json",
+      "target": "product-contracts/page/conformance/invalid/source-candidate-level-version.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/source-candidate-level-field.json",
+      "target": "product-contracts/page/conformance/invalid/source-candidate-level-field.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/source-candidate-level-shape.json",
+      "target": "product-contracts/page/conformance/invalid/source-candidate-level-shape.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/source-candidate-level-binding.json",
+      "target": "product-contracts/page/conformance/invalid/source-candidate-level-binding.json",
       "scope": "exact product contract"
     },
     {
@@ -5648,6 +5673,26 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/errors/source-candidate-level-version.json",
+      "target": "references/page-metadata/errors/source-candidate-level-version.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/source-candidate-level-field.json",
+      "target": "references/page-metadata/errors/source-candidate-level-field.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/source-candidate-level-shape.json",
+      "target": "references/page-metadata/errors/source-candidate-level-shape.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/source-candidate-level-binding.json",
+      "target": "references/page-metadata/errors/source-candidate-level-binding.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/errors/filter-select-version.json",
       "target": "references/page-metadata/errors/filter-select-version.json",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -7738,6 +7783,11 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/examples/filter-source-candidate-levels.json",
+      "target": "references/page-metadata/examples/filter-source-candidate-levels.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/examples/filter-source-query-pagination.json",
       "target": "references/page-metadata/examples/filter-source-query-pagination.json",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -8614,11 +8664,11 @@
     }
   ],
   "counts": {
-    "product": 1690,
+    "product": 1700,
     "authoring": 32,
     "modules": 36,
-    "topics": 316,
-    "nodes": 2723,
+    "topics": 317,
+    "nodes": 2724,
     "tools": 9,
     "components": 20
   },

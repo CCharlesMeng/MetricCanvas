@@ -3,6 +3,12 @@
   import type { FilterGroupComponent } from '@metriccanvas/page/internal';
   import type { SourceFilterBinding } from './source-filter-context';
   import DimensionFilter from '../filters/DimensionFilter.svelte';
+  import HierarchyTreeFilter from '../filters/HierarchyTreeFilter.svelte';
+
+  function selectedLabel(source:SourceFilterBinding,value:string):string {
+    if(source.candidates.status!=='ready')return value;
+    return source.candidates.candidates.find(option=>option.value===value&&option.level===source.level)?.label??value;
+  }
 
   let { control, source, value, label, exportMode = false, disabled = false, onchange }: {
     control: FilterGroupComponent['props'];
@@ -13,12 +19,18 @@
     disabled?: boolean;
     onchange: (value: string) => void;
   } = $props();
-  const selectedLabels=$derived(source ? source.values.map(value=>source.candidates.status==='ready'?source.candidates.candidates.find(option=>option.value===value)?.label??value:value).join('、') || source.declaration.emptyLabel || '全部' : control.options?.find(option=>option.value===value)?.label);
+  const selectedLabels=$derived(source ? source.values.map(value=>selectedLabel(source,value)).join('、') || source.declaration.emptyLabel || '全部' : control.options?.find(option=>option.value===value)?.label);
 </script>
 
 <div class="filter-group" class:right={control.align === 'right'} data-filter-group={control.filterId} role={exportMode ? undefined : 'group'} aria-label={exportMode ? undefined : label}>
   {#if exportMode}
     <span data-filter-group-selection>{selectedLabels}</span>
+  {:else if source?.declaration.hierarchy}
+    <HierarchyTreeFilter {label} {disabled} levels={source.declaration.hierarchy}
+      level={source.level ?? source.declaration.defaultLevel ?? source.declaration.hierarchy[0]!.id} values={source.values}
+      snapshot={source.candidates} required={source.declaration.selection?.required}
+      searchable={source.declaration.searchable ?? true} emptyLabel={source.declaration.emptyLabel}
+      onchange={({values,level})=>source.onchange(values,level)} onretry={source.onretry}/>
   {:else if source}
     <DimensionFilter {label} {disabled} candidates={source.candidates} value={source.values}
       display={source.declaration.display==='tree'?'tree':'select'} selection={source.declaration.selection}

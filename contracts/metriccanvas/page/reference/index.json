@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.121",
-  "schemaSha256": "70776bd5693238e9632afa53aa79e9d12c8b3564eaa88d936d082d78d37ff36a",
+  "schemaVersion": "6.122",
+  "schemaSha256": "13ba9a68328621d3d83235b763d5e7f16c8e9947498907e9c46e9c41608f7d28",
   "semanticSources": [
     {
       "file": "metriccanvas-authoring/core/page/analysis-report.ts",
@@ -104,7 +104,7 @@
     },
     {
       "file": "packages/engine/runtime-ui/src/dashboard/FilterGroup.svelte",
-      "sha256": "5e95679bebfc411bad1af0c9fe5462b0ead4858975c48c2093c4b78e77d5e112"
+      "sha256": "79ae2b4c7d07ab9b0491a042127fa4ee76d2eb261dfd33391d19c391d87c803e"
     },
     {
       "file": "packages/engine/runtime-ui/src/initial-tabs.ts",
@@ -440,7 +440,7 @@
     },
     {
       "file": "packages/page/src/schema/filter.ts",
-      "sha256": "e3e516aea40900226f2744c5c91f24473f89d42662444721b191c5b9c281a746"
+      "sha256": "65d47b849fe42f16a9cc2ba5ef75282811e400c78f9ab1c1833b9874401fc55a"
     },
     {
       "file": "packages/page/src/schema/ioc-header.ts",
@@ -472,7 +472,7 @@
     },
     {
       "file": "packages/page/src/source-candidates.ts",
-      "sha256": "c401ec2e66e828fbfb34de6ea8e3e54e5693346ace74d3a17a3d8c5f40699d48"
+      "sha256": "e612731209da01f283fbadf3022f6505f6063c259a6a2737ca9d908932e73c5d"
     },
     {
       "file": "packages/page/src/table/candidate-search.ts",
@@ -572,7 +572,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "f8e4c62760d8b31ff7372b12effdcbe7654b491b53c6a026e0ec1fa99a7bd015"
+      "sha256": "4596aa6564a8ecd182a05f7f931b0404ff66089665531b98ed8e0931a4a889d7"
     }
   ],
   "modules": {
@@ -955,6 +955,7 @@
         "key-office-priority-demo",
         "key-office-priority-target",
         "filter-source-candidates",
+        "filter-source-candidate-levels",
         "filter-source-query-pagination",
         "finalization-default-time",
         "finalization-default-time-detail",
@@ -1007,6 +1008,7 @@
         "unified-page-header",
         "required-multiple-selection",
         "independent-filter-candidates",
+        "filter-source-candidate-levels",
         "currency-range-presets"
       ]
     },
@@ -1929,7 +1931,8 @@
         "filter-group-page",
         "filter-group-state-page",
         "chart-local-filter-page",
-        "filter-source-candidates"
+        "filter-source-candidates",
+        "filter-source-candidate-levels"
       ],
       "sources": [
         "packages/page/src/schema/components/filter-group.ts",
@@ -2231,7 +2234,8 @@
         "6.118",
         "6.119",
         "6.120",
-        "6.121"
+        "6.121",
+        "6.122"
       ]
     },
     {
@@ -9815,6 +9819,12 @@
     {
       "pointer": "#/definitions/dimensionFilter/properties/candidates/properties/parentField",
       "path": "@dimensionFilter.candidates.parentField",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/candidates/properties/levelField",
+      "path": "@dimensionFilter.candidates.levelField",
       "required": "本分支可选",
       "module": "filters.md"
     },

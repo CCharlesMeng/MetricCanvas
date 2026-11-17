@@ -1,5 +1,7 @@
 # MetricCanvas 页面元数据规范
 
+6.122：维度筛选器可用 `candidates.levelField` 从内联候选读取节点层级，单选结构树可放在 `filterGroup` 工具栏。选中父层或子层时，查询按已有的 `levelQueryFields` 选择目标字段。见[内联层级候选](docs/page-metadata/filters.md#source-candidate-levels)。
+
 6.121：来源页可用 `regionFilter.props.officeNavigate` 声明代表处下钻目标。页头选中代表处时从当前筛选状态直接下钻，返回保留原筛选。以代表处初始化时在概览渲染和查询前替换当前历史记录。引擎注入 `rep-office`，统计期间沿用显式导航参数。见 [代表处跨页下钻](docs/page-metadata/components/iocHeader.md#office-navigation)，合成入口 `/pages/ioc-office-drill-overview` 与 `/pages/ioc-office-drill-detail`。
 
 拿到合法页面 JSON 后，统一运行时立即挂载真实页头、筛选控件、内容分区和组件结构；外部默认条件、候选值及业务数据返回后原位填充，不显示独立整页骨架或“正在加载”文字。表格保留真实表头与工具栏，在表体内显示静态骨架行。图表保留真实绘图区，在组件内显示各自的静态加载形态。依赖未齐备的查询仍等待完整条件，无关查询独立执行。无需新增字段或 Schema 升版，见[屏幕加载](docs/page-metadata/data-sources.md#screen-loading)，合成场景 `/pages/loading-structure-demo` 与 `/pages/ioc-async-preparation`。

@@ -126,7 +126,8 @@
   import {projectFieldSelections} from '@metriccanvas/page/internal';
   import {periodFactPage, filterTextPage } from './filter-text';
   import { validateCalendarTimeRange } from '@metriccanvas/page/internal';
-  import {SOURCE_FILTER_CONTEXT,sourceFilterValues,type SourceFilterReader} from './dashboard/source-filter-context';
+  import {SOURCE_FILTER_CONTEXT,sourceFilterSelection,type SourceFilterReader} from './dashboard/source-filter-context';
+  import { hierarchyTreeSnapshot } from './filters/hierarchy-tree';
   import FilterBar from './filters/FilterBar.svelte';
   import { compatibilityHeaderSection, leadingHeaderSectionId } from './ioc-header/render-plan';
   import { usesIocRegion } from '@metriccanvas/page/internal';
@@ -363,7 +364,13 @@
   /** 筛选候选值快照(维度名 → 显式状态):筛选控件与表头筛选共用。 */
   let dimensionCandidates = $state<DimensionValuesSnapshots>(new Map());
   function sourceFilterCandidates(declaration:Extract<FilterDeclaration,{type:'dimension'}>) {
-    return dimensionCandidates.get(candidateScopeKey(declaration.id,declaration.dimension,undefined,cascadeContext(declaration,declarations,filterValues,filterCandidateContext()))) ?? {status:'loading' as const};
+    const context=cascadeContext(declaration,declarations,filterValues,filterCandidateContext());
+    const levels=declaration.hierarchy;
+    if(levels){
+      const receipts=Object.fromEntries(levels.map(({id,dimension})=>[id,dimensionCandidates.get(candidateScopeKey(declaration.id,dimension,id,context)) ?? {status:'loading' as const}]));
+      return hierarchyTreeSnapshot(levels,receipts);
+    }
+    return dimensionCandidates.get(candidateScopeKey(declaration.id,declaration.dimension,undefined,context)) ?? {status:'loading' as const};
   }
   function sourceFilterPagination(declaration:Extract<FilterDeclaration,{type:'dimension'}>):CandidatePageReader|undefined {
     const context = filterCandidateContext();
@@ -381,8 +388,8 @@
   setContext<SourceFilterReader>(SOURCE_FILTER_CONTEXT,id=>{
     const declaration=declarations.find(filter=>filter.id===id);
     if(declaration?.type!=='dimension'||!declaration.candidates)return;
-    return {declaration,values:sourceFilterValues(filterValues,id),candidates:sourceFilterCandidates(declaration),pagination:sourceFilterPagination(declaration),
-      onchange:values=>writeDimension(declaration,values),onretry:()=>retryCandidates(id)};
+    return {declaration,...sourceFilterSelection(filterValues,id),candidates:sourceFilterCandidates(declaration),pagination:sourceFilterPagination(declaration),
+      onchange:(values,level)=>writeDimension(declaration,values,level),onretry:()=>retryCandidates(id)};
   });
   let tableViews = $state<Record<string, TableViewState>>({});
   let selectedGroup = $state<string | undefined>();

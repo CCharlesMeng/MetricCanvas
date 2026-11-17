@@ -15,6 +15,7 @@ function candidateErrors(page:Page,filter:DimensionFilterDeclaration,path:string
   const spec=filter.candidates!,source=page.dataSources[spec.dataSource];
   if(!source){error('/dataSource','候选必须引用已声明的页面数据源');return errors;}
   if(!['inline','query'].includes(source.source.type))error('/dataSource','候选来源支持 inline 或 query 页面数据源');
+  if(spec.levelField && source.source.type!=='inline')error('/dataSource','层级候选必须引用 inline 页面数据源');
   checkShape(filter,error);
   checkFields();
   const dependencies=new Set(candidateDependencies(filter));
@@ -24,6 +25,7 @@ function candidateErrors(page:Page,filter:DimensionFilterDeclaration,path:string
   return errors;
   function checkFields():void {
     const fields=resolveDataSourceFields(source!);
+    if(spec.levelField && fields[spec.levelField]?.type!=='string')error('/levelField','候选层级字段必须引用已声明的字符串输出');
     for(const key of ['valueField','labelField','parentField'] as const){
       const name=spec[key];if(!name)continue;
       const field=fields[name];
@@ -34,8 +36,17 @@ function candidateErrors(page:Page,filter:DimensionFilterDeclaration,path:string
 
 function checkShape(filter:DimensionFilterDeclaration,error:(suffix:string,message:string)=>unknown):void {
   const spec=filter.candidates!;
+  if(spec.levelField){checkHierarchyShape(filter,error);return;}
   if(filter.options||filter.hierarchy||filter.dependsOn||filter.candidateWindow)error('','数据源候选不能同时声明固定选项、层级、dependsOn 或候选窗口');
   if(filter.treeSelection&&filter.treeSelection!=='independent')error('','数据源树的节点按自身值独立选择，treeSelection 必须为 independent');
   if(filter.display==='tree'&&!spec.parentField)error('/parentField','树形候选必须显式引用父节点字段');
   if(spec.parentField&&filter.display!=='tree')error('/parentField','父节点字段仅用于 tree 展示');
+}
+
+function checkHierarchyShape(filter:DimensionFilterDeclaration,error:(suffix:string,message:string)=>unknown):void {
+  if(!filter.hierarchy?.length || filter.display!=='tree' || filter.treeSelection!=='level' || !filter.candidates?.parentField) {
+    error('/levelField','层级候选需要 hierarchy、display:tree、treeSelection:level 与 parentField');
+  }
+  if(filter.selection?.mode!=='single'||filter.hierarchyPicker)error('/levelField','层级候选仅支持在单个树形下拉中单选');
+  if(filter.options||filter.dependsOn||filter.candidateWindow)error('','层级候选不能同时声明固定选项、dependsOn 或候选窗口');
 }

@@ -1,0 +1,23 @@
+{
+  "case": "source-candidate-level-field",
+  "invariant": "filter-source-candidate-levels",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "候选层级字段必须引用已声明的字符串输出",
+      "paths": [
+        "/filters/0/candidates/levelField"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      {
+        "candidates": {
+          "levelField": "missing"
+        }
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

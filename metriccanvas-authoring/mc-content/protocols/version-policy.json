@@ -1,7 +1,7 @@
 {
   "major": 6,
-  "minor": 121,
-  "current": "6.121",
+  "minor": 122,
+  "current": "6.122",
   "capabilities": {
     "native-ioc-filter-preparation": {
       "minor": 120,
@@ -166,6 +166,11 @@
     "filter-source-candidates": {
       "minor": 90,
       "description": "筛选候选读取页面数据源完整输出，支持树节点独立单多选",
+      "legacyReadable": false
+    },
+    "filter-source-candidate-levels": {
+      "minor": 122,
+      "description": "内联树候选按声明层级绑定不同查询字段",
       "legacyReadable": false
     },
     "chart-table-display-unit": {
@@ -1071,6 +1076,7 @@
     "6.118",
     "6.119",
     "6.120",
-    "6.121"
+    "6.121",
+    "6.122"
   ]
 }

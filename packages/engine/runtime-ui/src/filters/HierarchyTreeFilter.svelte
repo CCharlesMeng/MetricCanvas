@@ -3,15 +3,14 @@
   import { Selection, type TreeSelection } from '@metriccanvas/ui';
   import type { DimensionValuesSnapshot } from '../../../runtime/src';
   import type { FilterHierarchyLevel } from '@metriccanvas/page/internal';
-  import { hierarchyNodeKey, hierarchyTreeOptions, hierarchyTreeSelection, hierarchyTreeSnapshot, hierarchyTreeStatus } from './hierarchy-tree';
+  import { hierarchyNodeKey, hierarchyTreeOptions, hierarchyTreeSelection, hierarchyTreeStatus } from './hierarchy-tree';
 
-  let { label = '维度筛选', emptyLabel = '全部', levels, level, values, receipts, structural = true, treeSelection = 'independent', required = false, searchable = true, onretry, onchange }: {
+  let { label = '维度筛选', emptyLabel = '全部', levels, level, values, snapshot, structural = true, treeSelection = 'independent', required = false, searchable = true, disabled = false, onretry, onchange }: {
     label?: string; emptyLabel?: string; levels: FilterHierarchyLevel[]; level: string; values: string[];
-    receipts: Record<string, DimensionValuesSnapshot>; structural?: boolean; treeSelection?: TreeSelection; required?: boolean; searchable?: boolean;
+    snapshot: DimensionValuesSnapshot; structural?: boolean; treeSelection?: TreeSelection; required?: boolean; searchable?: boolean; disabled?: boolean;
     onretry?: () => void; onchange: (next: { level: string; values: string[] }) => void;
   } = $props();
 
-  const snapshot = $derived(hierarchyTreeSnapshot(levels, receipts, structural));
   const options = $derived(hierarchyTreeOptions(snapshot, level, values, structural ? undefined : levels));
   const controlValues = $derived(values.map(value => hierarchyNodeKey(level, value)));
   function commit(keys: string[]) {
@@ -23,7 +22,7 @@
 
 <div class="dropdown" data-candidates-status={snapshot.status}>
   <Selection loading={snapshot.status === 'idle' || snapshot.status === 'loading'} {label} {options} value={controlValues} multiple={false} tree {treeSelection}
-    {searchable} {required} clearable={!required} placeholder={emptyLabel}
+    {searchable} {required} {disabled} clearable={!required} placeholder={emptyLabel}
     statusText={hierarchyTreeStatus(snapshot)} statusError={snapshot.status === 'error'} {onretry} onchange={commit}/>
 </div>
 

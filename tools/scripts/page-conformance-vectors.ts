@@ -380,6 +380,12 @@ export const invariants: InvariantDefinition[] = [
     {case:'source-candidate-version',base:'filter-source-candidates',expect:/由 6.90 引入/,mutate:d=>{d.schemaVersion='6.89';}},
     {case:'source-candidate-self',base:'filter-source-candidates',expect:/自身筛选/,mutate:d=>{d.dataSources['channel-options'].source.query.filterBindings={channel:{target:'dimension',queryField:'code'}};}}
   ]},
+  {id:'filter-source-candidate-levels',description:'6.122 内联候选行通过层级 ID 使用不同查询字段',valid:['filter-source-candidate-levels'],cases:[
+    {case:'source-candidate-level-version',base:'filter-source-candidate-levels',expect:/由 6.122 引入/,mutate:d=>{d.schemaVersion='6.121';}},
+    {case:'source-candidate-level-field',base:'filter-source-candidate-levels',expect:/必须引用已声明的字符串输出/,mutate:d=>{d.filters[0].candidates.levelField='missing';}},
+    {case:'source-candidate-level-shape',base:'filter-source-candidate-levels',expect:/单个树形下拉中单选/,mutate:d=>{d.filters[0].selection.mode='multiple';}},
+    {case:'source-candidate-level-binding',base:'filter-source-candidate-levels',expect:/office 缺少谓词字段/,mutate:d=>{d.dataSources['layered-chart-data'].source.query.filterBindings.organization.levelQueryFields={department:'org',unknown:'office'};}}
+  ]},
   {id:'filter-group-presentation',description:'6.47固定单选下拉和左右对齐',valid:['filter-group-page'],cases:[
     {case:'filter-select-version',base:'filter-group-page',expect:/由 6.47 引入/,mutate:d=>{d.schemaVersion='6.46';}},
     {case:'filter-select-default',base:'filter-group-page',expect:/default/,mutate:d=>{d.filters[1].default=['unknown'];}}

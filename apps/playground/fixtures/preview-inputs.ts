@@ -18,6 +18,7 @@ const exactInputs = new Map([
   ['ioc-header-controls','header-controls'],
   ['ioc-office-drill-overview','header-controls'], ['ioc-office-drill-detail','header-controls'],
   ['filter-source-candidates','source-candidates'],
+  ['filter-source-candidate-levels','source-candidates'],
   ['filter-source-query-pagination','source-candidates'],
   ['chart-global-benchmark','global-benchmark'],
   ['table-row-expansion-cache','row-cache'],

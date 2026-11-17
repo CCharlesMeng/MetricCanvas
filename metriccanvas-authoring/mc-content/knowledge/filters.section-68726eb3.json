@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.121",
+  "schemaVersion": "6.122",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "filters.section-68726eb3"
@@ -136,6 +136,19 @@
             "period-filter-datetime",
             "period-filter-no-default",
             "period-filter-static-time"
+          ]
+        },
+        {
+          "id": "filter-source-candidate-levels",
+          "description": "6.122 内联候选行通过层级 ID 使用不同查询字段",
+          "valid": [
+            "filter-source-candidate-levels"
+          ],
+          "invalid": [
+            "source-candidate-level-version",
+            "source-candidate-level-field",
+            "source-candidate-level-shape",
+            "source-candidate-level-binding"
           ]
         },
         {
@@ -334,6 +347,7 @@
         "references/page-metadata/examples/key-office-priority-demo.json",
         "references/page-metadata/examples/key-office-priority-target.json",
         "references/page-metadata/examples/filter-source-candidates.json",
+        "references/page-metadata/examples/filter-source-candidate-levels.json",
         "references/page-metadata/examples/filter-source-query-pagination.json",
         "references/page-metadata/examples/finalization-default-time.json",
         "references/page-metadata/examples/finalization-default-time-detail.json",

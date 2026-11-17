@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.121",
-  "schemaSha256": "70776bd5693238e9632afa53aa79e9d12c8b3564eaa88d936d082d78d37ff36a",
+  "schemaVersion": "6.122",
+  "schemaSha256": "13ba9a68328621d3d83235b763d5e7f16c8e9947498907e9c46e9c41608f7d28",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -321,6 +321,7 @@
         "key-office-priority-demo",
         "key-office-priority-target",
         "filter-source-candidates",
+        "filter-source-candidate-levels",
         "filter-source-query-pagination",
         "finalization-default-time",
         "finalization-default-time-detail",
@@ -349,6 +350,7 @@
         "unified-page-header",
         "required-multiple-selection",
         "independent-filter-candidates",
+        "filter-source-candidate-levels",
         "currency-range-presets"
       ]
     },
@@ -1096,7 +1098,8 @@
         "filter-group-page",
         "filter-group-state-page",
         "chart-local-filter-page",
-        "filter-source-candidates"
+        "filter-source-candidates",
+        "filter-source-candidate-levels"
       ],
       "rules": [
         "filter-group",
@@ -1368,7 +1371,8 @@
         "6.118",
         "6.119",
         "6.120",
-        "6.121"
+        "6.121",
+        "6.122"
       ]
     },
     {
@@ -8952,6 +8956,12 @@
     {
       "pointer": "#/definitions/dimensionFilter/properties/candidates/properties/parentField",
       "path": "@dimensionFilter.candidates.parentField",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/candidates/properties/levelField",
+      "path": "@dimensionFilter.candidates.levelField",
       "required": "本分支可选",
       "module": "filters.md"
     },
@@ -23250,5 +23260,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "aa1b2f9144cbf7c404e8fa323367fff6b2b091063e99cedcec77d2609ff8fae2"
+  "semanticSourceDigest": "ee739a6649da4a7804e4a1fd3908bd38ab2a9f85930d4f666cef6234d60eaa74"
 }

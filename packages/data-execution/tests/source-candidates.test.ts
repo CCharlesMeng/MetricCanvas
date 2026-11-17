@@ -98,3 +98,31 @@ it('preserves stored dependency state when an override removes its effective can
  const request=filterCandidatesRequest(channel,p.filters!,values);
  expect(request.constraints.dimensions).toEqual({});expect(request.sourceValues?.scope).toEqual(scope);expect(request.sourceValues).not.toHaveProperty('channel');
 });
+
+function hierarchyFilter():DimensionFilterDeclaration {
+  return {
+    id:'type',type:'dimension',dimension:'parent',display:'tree',treeSelection:'level',selection:{mode:'single'},
+    hierarchy:[{id:'parent',dimension:'parent'},{id:'child',dimension:'child'}],
+    candidates:{dataSource:'types',valueField:'code',labelField:'label',parentField:'parent',levelField:'level'},
+  };
+}
+
+it('projects complete candidates by level and value, including the same code at two levels',()=>{
+  const parent={code:'1',label:'父',level:'parent'};
+  const child={code:'1',label:'子',level:'child',parent:'1'};
+  expect(projectSourceCandidates(hierarchyFilter(),[parent,child,child])).toEqual([
+    {level:'parent',value:'1',label:'父'},
+    {level:'child',value:'1',label:'子',parent:{level:'parent',value:'1'}},
+  ]);
+});
+
+it.each([
+  [{code:'1',label:'未知层',level:'unknown'}],
+  [{code:'1',label:'缺层'}],
+  [{code:'1',label:'缺父',level:'child'}],
+  [{code:'1',label:'错父',level:'child',parent:'1'}],
+  [{code:'1',label:'非法根',level:'parent',parent:'1'}],
+  [{code:'1',label:'父',level:'parent'},{code:'1',label:'重复父',level:'parent'}],
+])('rejects malformed inline hierarchy %j',(...rows)=>{
+  expect(()=>projectSourceCandidates(hierarchyFilter(),rows)).toThrow(expect.objectContaining({code:'DQE_ROW_CONTRACT_ERROR'}));
+});

@@ -737,6 +737,19 @@
       ]
     },
     {
+      "id": "filter-source-candidate-levels",
+      "description": "6.122 内联候选行通过层级 ID 使用不同查询字段",
+      "valid": [
+        "filter-source-candidate-levels"
+      ],
+      "invalid": [
+        "source-candidate-level-version",
+        "source-candidate-level-field",
+        "source-candidate-level-shape",
+        "source-candidate-level-binding"
+      ]
+    },
+    {
       "id": "filter-group-presentation",
       "description": "6.47固定单选下拉和左右对齐",
       "valid": [

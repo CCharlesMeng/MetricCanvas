@@ -5,12 +5,14 @@ export const SOURCE_FILTER_CONTEXT=Symbol('sourceFilters');
 export interface SourceFilterBinding {
   declaration:DimensionFilterDeclaration;
   values:string[];
+  level?:string;
   candidates:DimensionValuesSnapshot;
   pagination?:CandidatePageReader;
-  onchange:(values:string[])=>void;
+  onchange:(values:string[],level?:string)=>void;
   onretry:()=>void;
 }
 export type SourceFilterReader=(id:string)=>SourceFilterBinding|undefined;
-export function sourceFilterValues(values:FilterValues,id:string):string[] {
-  const selected=values.get(id);return selected?.type==='dimension'?selected.values:[];
+export function sourceFilterSelection(values:FilterValues,id:string):Pick<SourceFilterBinding,'values'|'level'> {
+  const selected=values.get(id);
+  return selected?.type==='dimension'?{values:selected.values,level:selected.level}:{values:[]};
 }

@@ -1,8 +1,12 @@
 # 业务结果指标：独立合计与 IOC 页头
 
-入口：http://localhost:5174/pages/business-result-metrics
+启动 `pnpm dev:playground`，打开 `/pages/business-result-metrics`。
 
 本页为 Dashboard，根级 iocHeader 认领统计期间、区域、客户分类和重点国代开关。区域为可搜索单选组织树，保留原 geo / region-dept / office 层级。各图原有独立筛选保留。
+
+「净商务折扣执行情况」右上角的业务类型树使用内联候选。选择「华为公有云CORE」按 `业务类型编码` 查询；展开并选择「公网REGION」按 `子业务类型编码` 查询；选择「全部业务类型」省略该条件。绑定覆盖图表主值、整体均值和月／季／年变化查询。旁边的「云服务排除项」打开后读取首批 10 条，滚到底继续读取下一批，选择的服务按 `!=` 下推。
+
+自动验收入口为 `pnpm --filter playground test:ioc business-type-levels.browser.ts source-candidate-window.browser.ts`，测试使用合成响应。接入真实 DQE 后需核验新字段在五个查询中的可用性及云服务分页的结果总数。
 
 ## 合计取数
 
@@ -23,7 +27,7 @@ Schema 6.79：props.pinnedTop.additionalData 声明额外独立单行查询槽�
 
 ## 验证与环境
 
-页面不注册模拟网关，全部 14 个数据源使用 query/dqe，无 inline 数据、initial 或内嵌数据行。Playground 默认运行时须注入真实 DQE 入口、身份与组织候选；缺少可信组织候选时会停在等待筛选状态。页面 JSON 不保存凭证。
+业务查询需要真实 DQE 入口和身份，区域筛选需要可信组织候选。业务类型候选由页面内联声明。Playground 合成回执仅用于交互与查询请求验收，页面 JSON 不保存凭证。
 
 查询组装与组件自动化测试显式使用合成回执，已覆盖多查询合计、区域/时间绑定、空行、失败及 Excel 导出；此前本地合成浏览器验收覆盖两条合计、选择地区部和异常隐藏。它们不代表真实 DQE 授权、指标聚合或部署已验证。当前用户会在内网完成真实取数验证。
 

@@ -1,0 +1,39 @@
+{
+  "case": "source-candidate-level-binding",
+  "invariant": "filter-source-candidate-levels",
+  "expected": [
+    {
+      "type": "FILTER_BINDING_ERROR",
+      "message": "层级 office 缺少谓词字段;层级绑定必须逐级声明",
+      "paths": [
+        "/dataSources/layered-chart-data/source/query/filterBindings/organization/levelQueryFields"
+      ]
+    },
+    {
+      "type": "FILTER_BINDING_ERROR",
+      "message": "筛选器 organization 未声明层级:unknown",
+      "paths": [
+        "/dataSources/layered-chart-data/source/query/filterBindings/organization/levelQueryFields/unknown"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "layered-chart-data": {
+        "source": {
+          "query": {
+            "filterBindings": {
+              "organization": {
+                "levelQueryFields": {
+                  "department": "org",
+                  "unknown": "office"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "fullInput": "page/conformance/invalid/source-candidate-level-binding.json"
+}

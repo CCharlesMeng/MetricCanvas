@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.121",
+  "schemaVersion": "6.122",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "filterGroup.section-894a2b8b"
@@ -47,7 +47,8 @@
         "references/page-metadata/examples/filter-group-page.json",
         "references/page-metadata/examples/filter-group-state-page.json",
         "references/page-metadata/examples/chart-local-filter-page.json",
-        "references/page-metadata/examples/filter-source-candidates.json"
+        "references/page-metadata/examples/filter-source-candidates.json",
+        "references/page-metadata/examples/filter-source-candidate-levels.json"
       ]
     }
   ],

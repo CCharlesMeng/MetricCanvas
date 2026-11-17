@@ -28,12 +28,17 @@ export function createSourceCandidatesPreview(state='ready') {
       const totalCount=state==='incomplete'&&offset>0?rows.length+1:rows.length;
       return {rows:rows.slice(offset,offset+limit),totalCount};
     }
-    const org=selected(query,'org'),channel=selected(query,'channel');
-    const multiplier=channel?.includes('partner')?2:channel?.includes('online')?3:1;
-    const rows=organizations.filter(([value])=>!org||org.includes(value)).map(([org,amount])=>({org,amount:amount*multiplier}));
-    return {rows,totalCount:rows.length};
+    return organizationRows(query);
   }};
   return {dataGateway,requests};
+}
+
+function organizationRows(query:EffectiveQuery) {
+  const org=selected(query,'org') ?? selected(query,'office');
+  const channel=selected(query,'channel');
+  const multiplier=channel?.includes('partner')?2:channel?.includes('online')?3:1;
+  const rows=organizations.filter(([value])=>!org||org.includes(value)).map(([org,amount])=>({org,amount:amount*multiplier}));
+  return {rows,totalCount:rows.length};
 }
 
 function serviceWindow(query:EffectiveQuery, context:QueryDiagnosticContext, state:string) {

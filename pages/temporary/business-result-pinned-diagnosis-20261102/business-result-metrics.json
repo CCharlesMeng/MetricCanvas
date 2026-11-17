@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.120",
+  "schemaVersion": "6.122",
   "id": "business-result-metrics",
   "layout": "dashboard",
   "meta": {
@@ -142,7 +142,7 @@
       "label": "业务类型",
       "emptyLabel": "全部业务类型",
       "display": "tree",
-      "treeSelection": "independent",
+      "treeSelection": "level",
       "selection": {
         "mode": "single",
         "required": true
@@ -155,8 +155,22 @@
         "dataSource": "business-type-options",
         "valueField": "value",
         "labelField": "label",
-        "parentField": "parent"
-      }
+        "parentField": "parent",
+        "levelField": "level"
+      },
+      "hierarchy": [
+        {
+          "id": "business-type",
+          "dimension": "business-type",
+          "label": "业务类型"
+        },
+        {
+          "id": "sub-business-type",
+          "dimension": "sub-business-type",
+          "label": "子业务类型"
+        }
+      ],
+      "defaultLevel": "business-type"
     },
     {
       "id": "cloud-service",
@@ -198,6 +212,10 @@
         "parent": {
           "type": "string",
           "role": "dimension"
+        },
+        "level": {
+          "type": "string",
+          "role": "dimension"
         }
       },
       "source": {
@@ -206,57 +224,68 @@
           {
             "value": "all",
             "label": "全部业务类型",
-            "parent": null
+            "parent": null,
+            "level": "business-type"
           },
           {
             "value": "SERVICE_TYPE_HUAWEI_PUBLIC_CLOUD_CORE",
             "label": "华为公有云CORE",
-            "parent": null
+            "parent": null,
+            "level": "business-type"
           },
           {
             "value": "SUB_SERVICE_TYPE_PUBLIC_REGION",
             "label": "公网REGION",
-            "parent": "SERVICE_TYPE_HUAWEI_PUBLIC_CLOUD_CORE"
+            "parent": "SERVICE_TYPE_HUAWEI_PUBLIC_CLOUD_CORE",
+            "level": "sub-business-type"
           },
           {
             "value": "SUB_SERVICE_TYPE_PROFESSIONAL_SERVICE",
             "label": "专业服务",
-            "parent": "SERVICE_TYPE_HUAWEI_PUBLIC_CLOUD_CORE"
+            "parent": "SERVICE_TYPE_HUAWEI_PUBLIC_CLOUD_CORE",
+            "level": "sub-business-type"
           },
           {
             "value": "SUB_SERVICE_TYPE_BASE_CLOUD",
             "label": "基地云",
-            "parent": "SERVICE_TYPE_HUAWEI_PUBLIC_CLOUD_CORE"
+            "parent": "SERVICE_TYPE_HUAWEI_PUBLIC_CLOUD_CORE",
+            "level": "sub-business-type"
           },
           {
             "value": "SUB_SERVICE_TYPE_MARKET_PLACE",
             "label": "云市场",
-            "parent": "SERVICE_TYPE_HUAWEI_PUBLIC_CLOUD_CORE"
+            "parent": "SERVICE_TYPE_HUAWEI_PUBLIC_CLOUD_CORE",
+            "level": "sub-business-type"
           },
           {
             "value": "SUB_SERVICE_TYPE_CORE_OTHERS",
             "label": "Core其他",
-            "parent": "SERVICE_TYPE_HUAWEI_PUBLIC_CLOUD_CORE"
+            "parent": "SERVICE_TYPE_HUAWEI_PUBLIC_CLOUD_CORE",
+            "level": "sub-business-type"
           },
           {
             "value": "SERVICE_TYPE_TRAFFIC_BASED",
             "label": "云通信",
-            "parent": null
+            "parent": null,
+            "level": "business-type"
           },
           {
             "value": "SUB_SERVICE_TYPE_CDN",
             "label": "CDN",
-            "parent": "SERVICE_TYPE_TRAFFIC_BASED"
+            "parent": "SERVICE_TYPE_TRAFFIC_BASED",
+            "level": "sub-business-type"
           },
           {
             "value": "SUB_SERVICE_TYPE_SMS",
             "label": "短信",
-            "parent": "SERVICE_TYPE_TRAFFIC_BASED"
+            "parent": "SERVICE_TYPE_TRAFFIC_BASED",
+            "level": "sub-business-type"
           },
           {
             "value": "SUB_SERVICE_TYPE_TRAFFIC_BASED_OTHERS",
             "label": "云通信其他",
-            "parent": "SERVICE_TYPE_TRAFFIC_BASED"
+            "parent": "SERVICE_TYPE_TRAFFIC_BASED",
+            "level": "sub-business-type"
           }
         ]
       }
@@ -625,7 +654,10 @@
             },
             "business-type": {
               "target": "dimension",
-              "queryField": "业务类型编码",
+              "levelQueryFields": {
+                "business-type": "业务类型编码",
+                "sub-business-type": "子业务类型编码"
+              },
               "when": {
                 "not": {
                   "filter": "business-type",
@@ -782,7 +814,10 @@
             },
             "business-type": {
               "target": "dimension",
-              "queryField": "业务类型编码",
+              "levelQueryFields": {
+                "business-type": "业务类型编码",
+                "sub-business-type": "子业务类型编码"
+              },
               "when": {
                 "not": {
                   "filter": "business-type",
@@ -881,7 +916,10 @@
             },
             "business-type": {
               "target": "dimension",
-              "queryField": "业务类型编码",
+              "levelQueryFields": {
+                "business-type": "业务类型编码",
+                "sub-business-type": "子业务类型编码"
+              },
               "when": {
                 "not": {
                   "filter": "business-type",
@@ -986,7 +1024,10 @@
             },
             "business-type": {
               "target": "dimension",
-              "queryField": "业务类型编码",
+              "levelQueryFields": {
+                "business-type": "业务类型编码",
+                "sub-business-type": "子业务类型编码"
+              },
               "when": {
                 "not": {
                   "filter": "business-type",
@@ -1091,7 +1132,10 @@
             },
             "business-type": {
               "target": "dimension",
-              "queryField": "业务类型编码",
+              "levelQueryFields": {
+                "business-type": "业务类型编码",
+                "sub-business-type": "子业务类型编码"
+              },
               "when": {
                 "not": {
                   "filter": "business-type",

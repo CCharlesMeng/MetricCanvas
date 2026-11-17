@@ -1,0 +1,49 @@
+{
+  "case": "source-candidate-level-version",
+  "invariant": "filter-source-candidate-levels",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "内联树候选按声明层级绑定不同查询字段 由 6.122 引入，文档声明的是 6.121",
+      "paths": [
+        "/filters/0"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      {
+        "id": "organization",
+        "type": "dimension",
+        "dimension": "department",
+        "label": "组织",
+        "display": "tree",
+        "treeSelection": "level",
+        "selection": {
+          "mode": "single",
+          "required": true
+        },
+        "hierarchy": [
+          {
+            "…": "共3个键"
+          },
+          {
+            "…": "共3个键"
+          }
+        ],
+        "defaultLevel": "department",
+        "default": [
+          "north"
+        ],
+        "candidates": {
+          "dataSource": "organizations",
+          "valueField": "code",
+          "labelField": "name",
+          "parentField": "parent",
+          "levelField": "level"
+        }
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/source-candidate-level-version.json"
+}

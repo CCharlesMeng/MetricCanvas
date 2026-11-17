@@ -4,6 +4,7 @@ import { inheritMembershipCandidates } from './membership-candidates';
 import { createSourceProgram } from './source-program/session';
 import type { FilterValue, FilterValues } from './filter-values';
 import type { FilterCandidate, FilterCandidatesRequest, RuntimeDataGateway } from './ports';
+import { validFilterCandidates } from './filter-candidates';
 import { inspectSourceCandidateWindow } from './source-candidate-window';
 import { createSourceCandidateWindowReader } from './read-source-candidate-window';
 
@@ -74,6 +75,7 @@ function restoreSourceSelections(page:Page,request:FilterCandidatesRequest,value
 }
 /** Deduplicate only after the complete read; conflicting identities never pick an arbitrary label/parent. */
 export function projectSourceCandidates(filter:DimensionFilterDeclaration,rows:readonly Row[]):FilterCandidate[] {
+  if(filter.candidates?.levelField)return projectHierarchyCandidates(filter,rows);
   const spec=filter.candidates!,byValue=new Map<string,FilterCandidate>();
   for(const row of rows){
     const value=scalar(row[spec.valueField]);if(value===undefined)continue;
@@ -89,6 +91,42 @@ export function projectSourceCandidates(filter:DimensionFilterDeclaration,rows:r
   validateParents(byValue);
   return candidates;
 }
+
+function projectHierarchyCandidates(filter:DimensionFilterDeclaration,rows:readonly Row[]):FilterCandidate[] {
+  const levels=filter.hierarchy!.map(level=>level.id);
+  const byIdentity=new Map<string,FilterCandidate>();
+  for(const row of rows){
+    const candidate=hierarchyCandidate(filter.candidates!,levels,row);
+    if(!candidate)continue;
+    const key=JSON.stringify([candidate.level,candidate.value]);
+    const previous=byIdentity.get(key);
+    if(previous&&canonicalizeJson(previous)!==canonicalizeJson(candidate)) {
+      fail('DQE_ROW_CONTRACT_ERROR','候选层级及稳定值对应的显示名或父节点不一致');
+    }
+    byIdentity.set(key,candidate);
+  }
+  const candidates=[...byIdentity.values()];
+  if(candidates.length>10000)fail('DQE_QUERY_REJECTED','候选值超过完整结果预算');
+  if(!validFilterCandidates(candidates,levels))fail('DQE_ROW_CONTRACT_ERROR','候选父节点不在声明的上一层');
+  return candidates;
+}
+
+function hierarchyCandidate(spec:NonNullable<DimensionFilterDeclaration['candidates']>,levels:readonly string[],row:Row):FilterCandidate|undefined {
+  const level=row[spec.levelField!];
+  const index=typeof level==='string'?levels.indexOf(level):-1;
+  if(index<0)fail('DQE_ROW_CONTRACT_ERROR','候选行必须包含已声明的层级 ID');
+  const value=scalar(row[spec.valueField]);
+  if(value===undefined)return;
+  const label=spec.labelField?scalar(row[spec.labelField])??value:value;
+  const parentValue=scalar(row[spec.parentField!]);
+  if(index===0){
+    if(parentValue!==undefined)fail('DQE_ROW_CONTRACT_ERROR','根层的候选节点不能声明父节点');
+    return {level:levels[0]!,value,label};
+  }
+  if(parentValue===undefined)fail('DQE_ROW_CONTRACT_ERROR','非根层的候选节点必须声明父节点');
+  return {level:levels[index]!,value,label,parent:{level:levels[index-1]!,value:parentValue}};
+}
+
 function scalar(value:unknown):string|undefined {
   if(value===null||value===undefined||value==='')return;
   if(typeof value==='string'||typeof value==='boolean'||typeof value==='number'&&Number.isFinite(value))return String(value);
