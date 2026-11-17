@@ -47,6 +47,7 @@
     "relay:pack": "python3 -B tools/relay-reference/package_cli.py pack",
     "relay:verify": "python3 -B tools/relay-reference/package_cli.py verify",
     "relay:replay": "python3 -B tools/relay-reference/package_cli.py replay",
+    "architecture:check": "node --test tools/architecture/ratchet.test.mjs && node tools/architecture/check.mjs",
     "complexity:audit": "node tools/scripts/audit-code-complexity.mjs",
     "complexity:check": "node --test tools/scripts/measure-ts-complexity.test.mjs tools/scripts/audit-code-complexity.test.mjs && node tools/scripts/audit-code-complexity.mjs --check"
   },

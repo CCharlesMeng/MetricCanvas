@@ -4,7 +4,7 @@ import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { execFileSync } from 'node:child_process';
-import { categoryOf, gateFailures, regressionFailures, summarize, svelteScript } from './audit-code-complexity.mjs';
+import { categoryOf, gateFailures, ledgerFailures, regressionFailures, summarize, svelteScript } from './audit-code-complexity.mjs';
 import { measureSource } from './measure-ts-complexity.mjs';
 
 const file = (functions) => ({ functions: functions.map(selfCC => ({ selfCC })) });
@@ -60,4 +60,26 @@ test('rejects new, increased, moved and duplicated high-complexity functions wit
   assert.equal(regressionFailures([row, shifted], [row]).length, 1);
   assert.equal(regressionFailures([row], []).length, 1);
   assert.deepEqual(regressionFailures([{ ...row, selfCC: 18 }], [row]), []);
+});
+
+test('requires closing or lowering a repaid allowance and rejects raising it with the code', () => {
+  const row = selfCC => ({ file: 'source.ts', language: 'typescript-javascript', qualifiedName: 'run', line: 5, selfCC });
+  // The scanner reports only scores above 15, so both 9 and 10 have empty debt.
+  assert.match(ledgerFailures([], [row(28)], [row(28)])[0], /remove unused allowance/);
+  assert.deepEqual(ledgerFailures([], [], [row(28)]), []);
+  assert.deepEqual(ledgerFailures([], [], []), []);
+  assert.match(ledgerFailures([row(16)], [row(16)], [])[0], /ledger exceeds base.*permitted 15/);
+  assert.match(ledgerFailures([row(36)], [row(48)], [row(48)])[0], /lower allowance to 36/);
+  assert.deepEqual(ledgerFailures([row(36)], [row(36)], [row(48)]), []);
+  assert.match(ledgerFailures([row(37)], [row(36)], [row(36)])[0], /CC=37 exceeds permitted 36/);
+  assert.match(ledgerFailures([row(37)], [row(37)], [row(36)])[0], /ledger exceeds base.*permitted 36/);
+});
+
+test('matches anonymous siblings by descending score and multiplicity on both sides of the ratchet', () => {
+  const row = (line, selfCC) => ({ file: 'x.ts', language: 'typescript-javascript', qualifiedName: `outer/<anonymous@${line}:1>`, line, selfCC });
+  const previous = [row(6, 18), row(3, 25)];
+  const measured = [row(10, 22), row(15, 17)];
+  assert.deepEqual(ledgerFailures(measured, measured.toReversed(), previous), []);
+  assert.equal(ledgerFailures(measured, previous, previous).length, 2);
+  assert.match(ledgerFailures([row(10, 22)], measured, previous)[0], /remove unused allowance/);
 });

@@ -30,12 +30,15 @@ describe('parallel CI keeps a complete required gate', () => {
     const workflow = parse(readFileSync(resolve(root, '.github/workflows/ci.yml'), 'utf8'));
     const {ci, ...checks} = workflow.jobs;
     expect([...ci.needs].sort()).toEqual(Object.keys(checks).sort());
-    expect(Object.keys(checks).sort()).toEqual(['authoring','build','compatibility','embed-distribution','mc-distribution','relay-distribution','relay-release','tests','types']);
+    expect(Object.keys(checks).sort()).toEqual(['architecture','authoring','build','compatibility','embed-distribution','mc-distribution','relay-distribution','relay-release','tests','types']);
     expect(ci.if).toBe('${{ always() }}');
     expect(ci.steps.at(-1).env.CI_JOB_RESULTS).toBe('${{ toJSON(needs) }}');
     expect(ci.steps.at(-1).run).toBe('node tools/scripts/check-ci-results.mjs');
     expect(workflow.jobs.tests.steps.at(-1).run).toBe('pnpm test --maxWorkers=2');
     expect(workflow.jobs.types.steps.at(-1).run).toBe('pnpm check');
+    const architecture = workflow.jobs.architecture.steps.at(-1);
+    expect(architecture.env.METRICCANVAS_ARCHITECTURE_BASE).toBe('${{ github.event.pull_request.base.sha || github.event.before }}');
+    expect(architecture.run.trim().split('\n').at(-1)).toBe('pnpm architecture:check');
     // Source checks execute independently, rather than serially behind other jobs.
     for(const [name, job] of Object.entries(checks)) {
       if(!['mc-distribution', 'relay-distribution'].includes(name)) expect(job).not.toHaveProperty('needs');

@@ -115,21 +115,43 @@ export function gateFailures(report, enforceFunctions = false) {
 function debtKey(row) {
   return JSON.stringify([row.file, row.language, row.qualifiedName.replace(/<anonymous@\d+:\d+>/g, '<anonymous>')]);
 }
+function increasedScore(row, maximum) {
+  return `${row.file}:${row.line} ${row.qualifiedName}: CC=${row.selfCC} exceeds permitted ${maximum}`;
+}
 /** A counted multiset prevents an extra anonymous sibling from borrowing an existing allowance. */
-export function regressionFailures(violations, baseline) {
+export function regressionFailures(violations, baseline, describe = increasedScore) {
   const available = new Map();
   for (const row of baseline) {
     const key = debtKey(row), scores = available.get(key) ?? [];
     scores.push(row.selfCC); available.set(key, scores);
   }
+  for (const scores of available.values()) scores.sort((a, b) => a - b);
   const failures = [];
   for (const row of [...violations].sort((a,b) => b.selfCC - a.selfCC)) {
-    const scores = available.get(debtKey(row)) ?? [];
-    const index = scores.findIndex(score => score >= row.selfCC);
-    if (index < 0) failures.push(`${row.file}:${row.line} ${row.qualifiedName}: new or increased CC=${row.selfCC} exceeds 15`);
-    else scores.splice(index, 1);
+    const maximum = available.get(debtKey(row))?.pop();
+    if (maximum === undefined || row.selfCC > maximum) {
+      failures.push(describe(row, maximum ?? limits.functionMaximum));
+    }
   }
   return failures;
+}
+function staleAllowance(row, measured) {
+  const correction = measured > limits.functionMaximum ? `lower allowance to ${measured}` : 'remove unused allowance';
+  return `${row.file}:${row.line} ${row.qualifiedName}: ledger CC=${row.selfCC}; ${correction}`;
+}
+const ledgerPath = 'tools/scripts/complexity-debt.json';
+function readLedger(ref) {
+  const source = ref === undefined
+    ? readFileSync(resolve(root, ledgerPath), 'utf8')
+    : execFileSync('git', ['show', `${ref}:${ledgerPath}`], { cwd: root, encoding: 'utf8' });
+  return JSON.parse(source).violations;
+}
+export function ledgerFailures(measured, candidate, previous) {
+  return [
+    ...regressionFailures(measured, candidate),
+    ...regressionFailures(candidate, measured, staleAllowance),
+    ...regressionFailures(candidate, previous).map(message => `ledger exceeds base: ${message}`),
+  ];
 }
 export function audit(repository = root, python = process.env.METRICCANVAS_PYTHON ?? 'python3', sourceRef) {
   const commit = execFileSync('git', ['rev-parse', '--verify', (sourceRef ?? 'HEAD') + '^{commit}'], { cwd: repository, encoding: 'utf8' }).trim();
@@ -157,9 +179,9 @@ function main() {
   const report = audit(root, process.env.METRICCANVAS_PYTHON ?? 'python3', values.baseline);
   if (values.output) writeFileSync(resolve(values.output), JSON.stringify(report, null, 2) + '\n');
   const failures = gateFailures(report, values['check-functions']);
-  if (values.check && !values.baseline) {
-    const debt = JSON.parse(readFileSync(new URL('./complexity-debt.json', import.meta.url), 'utf8'));
-    failures.push(...regressionFailures(report.violations, debt.violations));
+  if (values.check) {
+    const previous = readLedger(process.env.METRICCANVAS_COMPLEXITY_BASE ?? 'HEAD');
+    failures.push(...ledgerFailures(report.violations, readLedger(values.baseline), previous));
   }
   console.log(JSON.stringify({ ...report, files: undefined, violations: undefined, failures }, null, 2));
   if (values.check || values['check-functions']) process.exitCode = Number(failures.length > 0);

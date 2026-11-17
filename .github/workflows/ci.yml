@@ -10,6 +10,18 @@ env:
   PYTHONDONTWRITEBYTECODE: '1'
 
 jobs:
+  architecture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-workspace
+      - name: 检查新增循环与跨层依赖路径
+        env:
+          METRICCANVAS_ARCHITECTURE_BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          git fetch --no-tags --depth=1 origin "$METRICCANVAS_ARCHITECTURE_BASE"
+          pnpm architecture:check
+
   authoring:
     runs-on: ubuntu-latest
     steps:
@@ -30,7 +42,11 @@ jobs:
           python tools/scripts/check-authoring-complexity.py
 
       - name: 审计全项目平均圈复杂度与函数热点
-        run: pnpm complexity:check
+        env:
+          METRICCANVAS_COMPLEXITY_BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          git fetch --no-tags --depth=1 origin "$METRICCANVAS_COMPLEXITY_BASE"
+          pnpm complexity:check
 
       # 校验页面文档(结构 + 语义 + 文件名)。失败时按错误分型汇总到 job summary:
       # 页面文档只做当前协议的结构与绑定契约校验；DQE 查询错误在预览/运行阶段返回。
@@ -345,7 +361,7 @@ jobs:
 
   ci:
     if: ${{ always() }}
-    needs: [authoring, mc-distribution, relay-release, relay-distribution, tests, types, build, compatibility, embed-distribution]
+    needs: [architecture, authoring, mc-distribution, relay-release, relay-distribution, tests, types, build, compatibility, embed-distribution]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

@@ -1,7 +1,7 @@
 {
-  "sourceCommit": "56e822b4d20aed73c56aa1344dd22dac8840733b",
-  "snapshot": "delivery-on-latest-main",
-  "inventorySha256": "e0df50949e9e92bd73da0b660bbd04e43d8333a6a95dcfcf21dc27fbae532cc6",
+  "sourceCommit": "e8ce59f70b187f8a58ffc9fee4440a4516c63027",
+  "snapshot": "HEAD",
+  "inventorySha256": "87315e7ec93478b70122178ae297b7b455569c92e9fd4c25688378bfb1bc9d8f",
   "analyzers": {
     "typescript": "metriccanvas-ts-ast/1",
     "typescriptVersion": "5.9.3",
@@ -153,14 +153,14 @@
       "file": "metriccanvas-authoring/scripts/check_bundle.py",
       "language": "python",
       "qualifiedName": "validate_skills",
-      "line": 52,
+      "line": 53,
       "selfCC": 59
     },
     {
       "file": "metriccanvas-authoring/scripts/deployment_fingerprint.py",
       "language": "python",
       "qualifiedName": "fingerprint",
-      "line": 51,
+      "line": 52,
       "selfCC": 22
     },
     {
@@ -545,7 +545,7 @@
       "file": "packages/data-execution/src/candidate-validation.ts",
       "language": "typescript-javascript",
       "qualifiedName": "createCandidateValidator/selection",
-      "line": 26,
+      "line": 27,
       "selfCC": 22
     },
     {
@@ -559,7 +559,7 @@
       "file": "packages/data-execution/src/dqe/dqe.ts",
       "language": "typescript-javascript",
       "qualifiedName": "gatewayNormalizationError",
-      "line": 859,
+      "line": 898,
       "selfCC": 16
     },
     {
@@ -589,20 +589,6 @@
       "qualifiedName": "validFilterCandidates",
       "line": 65,
       "selfCC": 17
-    },
-    {
-      "file": "packages/data-execution/src/filter-values.ts",
-      "language": "typescript-javascript",
-      "qualifiedName": "initialFilterValues",
-      "line": 66,
-      "selfCC": 16
-    },
-    {
-      "file": "packages/data-execution/src/filter-values.ts",
-      "language": "typescript-javascript",
-      "qualifiedName": "initialValue",
-      "line": 86,
-      "selfCC": 28
     },
     {
       "file": "packages/data-execution/src/page-params.ts",
@@ -657,7 +643,7 @@
       "file": "packages/engine/runtime-ui/src/export-render-state.ts",
       "language": "typescript-javascript",
       "qualifiedName": "exportComponentData",
-      "line": 40,
+      "line": 41,
       "selfCC": 23
     },
     {
@@ -713,35 +699,21 @@
       "file": "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
       "language": "typescript-javascript",
       "qualifiedName": "run",
-      "line": 386,
-      "selfCC": 48
-    },
-    {
-      "file": "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
-      "language": "typescript-javascript",
-      "qualifiedName": "run/<anonymous@536:23>",
-      "line": 536,
-      "selfCC": 20
+      "line": 506,
+      "selfCC": 36
     },
     {
       "file": "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
       "language": "typescript-javascript",
       "qualifiedName": "run/refreshPeriodFacts",
-      "line": 591,
+      "line": 776,
       "selfCC": 17
     },
     {
       "file": "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
       "language": "typescript-javascript",
-      "qualifiedName": "openDetailFor",
-      "line": 927,
-      "selfCC": 18
-    },
-    {
-      "file": "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
-      "language": "typescript-javascript",
       "qualifiedName": "handleChartClick",
-      "line": 973,
+      "line": 1256,
       "selfCC": 24
     },
     {
@@ -750,13 +722,6 @@
       "qualifiedName": "scopedFilterValues",
       "line": 22,
       "selfCC": 36
-    },
-    {
-      "file": "packages/engine/runtime/src/dimension-values.ts",
-      "language": "typescript-javascript",
-      "qualifiedName": "createDimensionValuesLoader/start",
-      "line": 78,
-      "selfCC": 23
     },
     {
       "file": "packages/engine/runtime/src/navigate.ts",
@@ -782,50 +747,43 @@
     {
       "file": "packages/engine/runtime/tests/ioc-project-overview.test.ts",
       "language": "typescript-javascript",
-      "qualifiedName": "<anonymous@36:37>/<anonymous@141:40>",
-      "line": 141,
+      "qualifiedName": "<anonymous@35:37>/<anonymous@140:40>",
+      "line": 140,
       "selfCC": 22
     },
     {
       "file": "packages/engine/runtime/tests/ioc-project-overview.test.ts",
       "language": "typescript-javascript",
-      "qualifiedName": "<anonymous@36:37>/<anonymous@400:59>",
-      "line": 400,
+      "qualifiedName": "<anonymous@35:37>/<anonymous@399:59>",
+      "line": 399,
       "selfCC": 17
     },
     {
       "file": "packages/engine/widgets/src/components/bar-chart/options.ts",
       "language": "typescript-javascript",
-      "qualifiedName": "barOption",
-      "line": 27,
-      "selfCC": 17
-    },
-    {
-      "file": "packages/engine/widgets/src/components/bar-chart/options.ts",
-      "language": "typescript-javascript",
-      "qualifiedName": "barOption/<anonymous@90:31>",
-      "line": 90,
-      "selfCC": 26
+      "qualifiedName": "barOption/<anonymous@74:31>",
+      "line": 74,
+      "selfCC": 22
     },
     {
       "file": "packages/engine/widgets/src/components/map-chart/options.ts",
       "language": "typescript-javascript",
       "qualifiedName": "mapOption",
-      "line": 66,
-      "selfCC": 27
+      "line": 67,
+      "selfCC": 26
     },
     {
       "file": "packages/engine/widgets/src/shared/chart-presentation.ts",
       "language": "typescript-javascript",
       "qualifiedName": "cartesianFrame",
-      "line": 39,
+      "line": 40,
       "selfCC": 16
     },
     {
       "file": "packages/engine/widgets/src/shared/EChart.svelte",
       "language": "typescript-javascript",
       "qualifiedName": "paint",
-      "line": 86,
+      "line": 108,
       "selfCC": 21
     },
     {
@@ -853,7 +811,7 @@
       "file": "packages/page/src/amount-filter.ts",
       "language": "typescript-javascript",
       "qualifiedName": "numberRangeIssue",
-      "line": 5,
+      "line": 6,
       "selfCC": 17
     },
     {
@@ -916,7 +874,7 @@
       "file": "packages/page/src/filter.ts",
       "language": "typescript-javascript",
       "qualifiedName": "parseCalendarValue",
-      "line": 420,
+      "line": 422,
       "selfCC": 22
     },
     {
@@ -930,7 +888,7 @@
       "file": "packages/page/src/materialize.ts",
       "language": "typescript-javascript",
       "qualifiedName": "queryRowIssueError",
-      "line": 112,
+      "line": 114,
       "selfCC": 18
     },
     {
@@ -944,14 +902,14 @@
       "file": "packages/page/src/migrate-param-bindings.ts",
       "language": "typescript-javascript",
       "qualifiedName": "migrateParamBindings",
-      "line": 13,
+      "line": 14,
       "selfCC": 40
     },
     {
       "file": "packages/page/src/page-param.ts",
       "language": "typescript-javascript",
       "qualifiedName": "matchesParamDeclaration",
-      "line": 305,
+      "line": 318,
       "selfCC": 19
     },
     {
@@ -983,13 +941,6 @@
       "selfCC": 36
     },
     {
-      "file": "packages/page/src/period-filter.ts",
-      "language": "typescript-javascript",
-      "qualifiedName": "resolvePeriodSelection",
-      "line": 18,
-      "selfCC": 25
-    },
-    {
       "file": "packages/page/src/query-param-references.ts",
       "language": "typescript-javascript",
       "qualifiedName": "queryParamReferenceErrors",
@@ -1014,21 +965,14 @@
       "file": "packages/page/src/resolve-page-params.ts",
       "language": "typescript-javascript",
       "qualifiedName": "resolvePageParams",
-      "line": 26,
+      "line": 29,
       "selfCC": 35
-    },
-    {
-      "file": "packages/page/src/resolve-page-params.ts",
-      "language": "typescript-javascript",
-      "qualifiedName": "changedParamSourceIds",
-      "line": 120,
-      "selfCC": 16
     },
     {
       "file": "packages/page/src/time-extension-validation.ts",
       "language": "typescript-javascript",
       "qualifiedName": "timeExtensionErrors",
-      "line": 8,
+      "line": 9,
       "selfCC": 55
     },
     {
@@ -1042,7 +986,7 @@
       "file": "packages/page/src/validate.ts",
       "language": "typescript-javascript",
       "qualifiedName": "parsePage",
-      "line": 125,
+      "line": 135,
       "selfCC": 23
     },
     {
@@ -1063,42 +1007,42 @@
       "file": "packages/ui/src/components/date-picker/DatePicker.svelte",
       "language": "typescript-javascript",
       "qualifiedName": "submit",
-      "line": 112,
+      "line": 103,
       "selfCC": 21
     },
     {
       "file": "packages/ui/src/components/date-picker/DatePicker.svelte",
       "language": "typescript-javascript",
       "qualifiedName": "canNavigate",
-      "line": 126,
+      "line": 117,
       "selfCC": 17
     },
     {
       "file": "packages/ui/src/components/date-picker/DatePicker.svelte",
       "language": "typescript-javascript",
       "qualifiedName": "cellDisabled",
-      "line": 141,
+      "line": 132,
       "selfCC": 16
     },
     {
       "file": "packages/ui/src/components/date-picker/DatePicker.svelte",
       "language": "typescript-javascript",
       "qualifiedName": "cellClass",
-      "line": 168,
+      "line": 159,
       "selfCC": 20
     },
     {
       "file": "packages/ui/src/components/date-picker/DatePicker.svelte",
       "language": "typescript-javascript",
       "qualifiedName": "cellKey",
-      "line": 189,
+      "line": 180,
       "selfCC": 42
     },
     {
       "file": "packages/ui/src/components/select/Selection.svelte",
       "language": "typescript-javascript",
       "qualifiedName": "popupKeys",
-      "line": 92,
+      "line": 105,
       "selfCC": 23
     },
     {
@@ -1133,42 +1077,42 @@
       "file": "tools/dqe-sim/src/execute.ts",
       "language": "typescript-javascript",
       "qualifiedName": "executeExactScenarios",
-      "line": 197,
+      "line": 198,
       "selfCC": 19
     },
     {
       "file": "tools/dqe-sim/src/execute.ts",
       "language": "typescript-javascript",
       "qualifiedName": "executeFlowAnalysisReport",
-      "line": 417,
+      "line": 418,
       "selfCC": 39
     },
     {
       "file": "tools/dqe-sim/src/execute.ts",
       "language": "typescript-javascript",
       "qualifiedName": "executeIocOpportunityList",
-      "line": 496,
+      "line": 497,
       "selfCC": 18
     },
     {
       "file": "tools/dqe-sim/src/execute.ts",
       "language": "typescript-javascript",
       "qualifiedName": "executeInspectionDetail",
-      "line": 660,
+      "line": 661,
       "selfCC": 17
     },
     {
       "file": "tools/dqe-sim/src/execute.ts",
       "language": "typescript-javascript",
       "qualifiedName": "executeCustomerActivityRisk",
-      "line": 759,
+      "line": 760,
       "selfCC": 16
     },
     {
       "file": "tools/dqe-sim/src/execute.ts",
       "language": "typescript-javascript",
       "qualifiedName": "executeSalesAnalytics",
-      "line": 981,
+      "line": 982,
       "selfCC": 22
     },
     {
@@ -1200,17 +1144,10 @@
       "selfCC": 20
     },
     {
-      "file": "tools/dqe-sim/src/table-search-options.ts",
-      "language": "typescript-javascript",
-      "qualifiedName": "executeTableSearchOptions",
-      "line": 11,
-      "selfCC": 25
-    },
-    {
       "file": "tools/package-build/surface.ts",
       "language": "typescript-javascript",
       "qualifiedName": "exportedNames",
-      "line": 63,
+      "line": 64,
       "selfCC": 30
     },
     {
