@@ -171,7 +171,9 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
       changed=new Set([...changed,...reconcileColumns(),...reconcileDemand()]);
       if (!changed.size) return;
       const demanded = demand();
-      const targets = new Set([...(firstRead ? changed : affectedSourceIds(page.dataSources, changed, false))].filter(id => ids.has(id) && demanded.has(id)));
+      const affected = firstRead ? changed : affectedSourceIds(page.dataSources, changed, false);
+      // Submit ready roots in active section/component order, independently of invalidation order.
+      const targets = new Set([...demanded].filter(id => ids.has(id) && affected.has(id)));
       if(!firstRead&&!releaseInitial)for(const id of targets)pendingInitial.delete(id);
       for (const id of targets) tokens.set(id, (tokens.get(id) ?? 0) + 1);
       for (const id of targets) {
