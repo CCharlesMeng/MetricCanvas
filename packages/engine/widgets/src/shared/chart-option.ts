@@ -9,7 +9,8 @@ import { numericAxisPresentation, type AxisField } from './chart-axis-presentati
  */
 
 /** 绘图区内边距 */
-export const GRID = { left: 8, right: 12, top: 28, bottom: 4, containLabel: true } as const;
+export const GRID = { left: 8, right: 12, top: 28, bottom: 4,
+  containLabel: false, outerBoundsMode: 'same', outerBoundsContain: 'all' } as const;
 
 /**
  * 业务图表默认色板(ECharts 默认七色)。
@@ -47,7 +48,8 @@ export function dualOrSingleAxis(
 
 /** 副数值轴跟随主轴刻度，只由主轴绘制网格线。保留轴格式与单位。 */
 export function alignedSecondaryAxis<T extends object>(axis: T) {
-  return { ...axis, alignTicks: true, splitLine: { show: false } };
+  return { ...axis, nameTextStyle: { align: 'left' as const, padding: [0, 0, 0, 8] },
+    alignTicks: true, splitLine: { show: false } };
 }
 
 /** All numeric chart branches share the same format consensus and hidden-axis policy. */
@@ -58,6 +60,7 @@ export function formattedValueAxis(group: AxisFormat[], hideAxis = false) {
   return {
     type: 'value' as const,
     ...numericAxisPresentation(fields),
+    nameTextStyle: { align: 'right' as const, padding: [0, 8, 0, 0] },
     ...(hideAxis
       ? {
           name: '',

@@ -62,7 +62,8 @@ export function barOption(
     ...(palette ? { color: [...palette] } : {}),
     ...(props.categoryLabels?.mode === 'all' ? {} : categoryWindow(rows.length, props.horizontal)),
     grid: {
-      ...(reportForecast ? { top: 44, right: 0, bottom: 20, left: 0, containLabel: true } : GRID),
+      ...GRID,
+      ...(reportForecast ? { top: 44, right: 0, bottom: 20, left: 0 } : {}),
       ...(rows.length > 20 && props.categoryLabels?.mode !== 'all' ? (props.horizontal ? { right: 40 } : { bottom: 36 }) : {})
     },
     tooltip: { trigger: 'axis', confine: true },
@@ -259,7 +260,8 @@ function stackTotalPoint(category: string, value: number, amounts: number[], hor
 /** Keep long formatted ticks inside narrow horizontal drawing areas. All data
  * remain in the series and tooltip; only colliding automatic ticks are omitted. */
 function horizontalValueLabels<T extends { axisLabel?: object }>(axis: T) {
-  return { ...axis, axisLabel: { ...axis.axisLabel, hideOverlap: true,
+  return { ...axis, nameGap: 12, nameTextStyle: { align: 'left' as const, padding: 0 },
+    axisLabel: { ...axis.axisLabel, hideOverlap: true,
     alignMinLabel: 'left' as const, alignMaxLabel: 'right' as const } };
 }
 

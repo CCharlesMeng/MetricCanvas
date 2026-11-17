@@ -51,18 +51,22 @@
   class:static-export={staticExport}
   class="composite-card"
 >
-  {#if title}<h3>
-    {#if titleIcon}<img src={titleIcons[titleIcon]} alt="" aria-hidden="true" />{/if}
-    <span>{title}</span>
-  </h3>{/if}
-  {#if toolbar && contentOffset > 0}
-    <div class="filter-toolbar" role="group" aria-label="局部筛选工具栏">
-      {#if toolbar.left.length}<div class="toolbar-start">
-        {#each toolbar.left as index}<div class="toolbar-item">{@render children(index)}</div>{/each}
-      </div>{/if}
-      {#if toolbar.right.length}<div class="toolbar-end">
-        {#each toolbar.right as index}<div class="toolbar-item">{@render children(index)}</div>{/each}
-      </div>{/if}
+  {#if title || (toolbar && contentOffset > 0)}
+    <div class="composite-header">
+      {#if title}<h3>
+        {#if titleIcon}<img src={titleIcons[titleIcon]} alt="" aria-hidden="true" />{/if}
+        <span>{title}</span>
+      </h3>{/if}
+      {#if toolbar && contentOffset > 0}
+        <div class="filter-toolbar" role="group" aria-label="局部筛选工具栏">
+          {#if toolbar.left.length}<div class="toolbar-start">
+            {#each toolbar.left as index}<div class="toolbar-item">{@render children(index)}</div>{/each}
+          </div>{/if}
+          {#if toolbar.right.length}<div class="toolbar-end">
+            {#each toolbar.right as index}<div class="toolbar-item">{@render children(index)}</div>{/each}
+          </div>{/if}
+        </div>
+      {/if}
     </div>
   {/if}
   <div class:with-dividers={dividers === true} class="composite-grid">
@@ -83,7 +87,9 @@
 </div>
 
 <style>
-  .filter-toolbar { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; min-width:0; width:100%; }
+  .composite-header { display:flex; flex-wrap:wrap; align-items:center; gap:12px; min-width:0; }
+  .composite-header > h3 { min-width:0; flex:0 1 auto; }
+  .filter-toolbar { display:flex; flex:1 1 auto; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; min-width:0; }
   .toolbar-start, .toolbar-end { display:flex; flex-wrap:wrap; align-items:center; gap:12px; min-width:0; max-width:100%; }
   .toolbar-end { margin-left:auto; justify-content:flex-end; }
   .toolbar-item { display:flex; min-width:0; max-width:100%; }
@@ -125,7 +131,7 @@
     height: 280px;
     min-height: 280px;
   }
-  .compact > h3 {
+  .compact > .composite-header > h3 {
     text-shadow: 0 1px 5px rgb(0 0 0 / 0.05);
   }
   .metric-grid {
@@ -170,7 +176,7 @@
     background: #fff;
     border-radius: 16px;
   }
-  .project-norms > h3 {
+  .project-norms > .composite-header > h3 {
     margin-left: 2px;
     color: #191919;
     font-size: 16px;

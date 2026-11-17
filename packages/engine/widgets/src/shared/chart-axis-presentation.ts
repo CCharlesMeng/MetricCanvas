@@ -77,7 +77,7 @@ function yoyAxisText(value: number): string {
   return rounded > 0 && text !== '0' ? `+${text}` : text;
 }
 
-/** Axis layout owns the unit; scalar formatters still own tooltip and label text. */
+/** Percent units follow each tick; other units belong to the axis heading. */
 export function numericAxisPresentation(fields: AxisField[]) {
   const format = sharedFormat(fields);
   const magnitude = fields.reduce((max, field) => Math.max(max, field.magnitude ?? 0), 0);
@@ -87,8 +87,10 @@ export function numericAxisPresentation(fields: AxisField[]) {
   const sameUnit = units.every(unit => unit === units[0]);
   const compatible = sameUnit && fields.every(field => (field.unit ?? field.displayUnit ?? inferredUnit(field.format)) === (sourceUnit ?? inferredUnit(fields[0]?.format)));
   const name = compatible ? units[0] : undefined;
+  const percent = name === '%';
   return {
-    name, nameLocation: 'end' as const, nameRotate: 0, nameGap: 12,
-    axisLabel: { formatter: (value: number) => axisNumber(value, compatible ? format : undefined, compatible ? scale : undefined) }
+    // The top tick is centered on the endpoint: 16px clear gap + half its 12px text height.
+    name: percent ? undefined : name, nameLocation: 'end' as const, nameRotate: 0, nameGap: 22,
+    axisLabel: { formatter: (value: number) => `${axisNumber(value, compatible ? format : undefined, compatible ? scale : undefined)}${percent ? '%' : ''}` }
   };
 }

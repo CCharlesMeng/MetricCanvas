@@ -86,9 +86,9 @@ it('explicit mixed series use each axis group format, including reordered primar
   ] });
   const axes = option.yAxis as Array<{ axisLabel: { formatter: (v: number) => string } }>;
   expect(axes[0]).toMatchObject({ name: '万元' });
-  expect(axes[1]).toMatchObject({ name: '%' });
+  expect(axes[1]).toMatchObject({ name: undefined });
   expect(axes[0]?.axisLabel?.formatter(125000000)).toBe('12,500');
-  expect(axes[1]?.axisLabel?.formatter(12)).toBe('12');
+  expect(axes[1]?.axisLabel?.formatter(12)).toBe('12%');
   expect(option.series).toMatchObject([{ yAxisIndex: 1, data: [12] }, { yAxisIndex: 0, data: [125000000] }]);
 });
 
@@ -105,7 +105,7 @@ it('keeps a shared percentage axis for adaptive fields and explicit fixed-format
   const axis = dualOrSingleAxis(false, 2, false, [
     { format: 'percent-adaptive', unit: '%' }, { format: 'percent-0' }
   ]) as { axisLabel: { formatter: (value: number) => string } };
-  expect(axis).toMatchObject({ name: '%' });
-  expect(axis.axisLabel.formatter(25)).toBe('25');
-  expect(axis.axisLabel.formatter(12.345)).toBe('12.3');
+  expect(axis).toMatchObject({ name: undefined });
+  expect(axis.axisLabel.formatter(25)).toBe('25%');
+  expect(axis.axisLabel.formatter(12.345)).toBe('12.3%');
 });

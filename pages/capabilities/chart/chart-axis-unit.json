@@ -114,7 +114,7 @@
             "main": "sample"
           },
           "props": {
-            "title": "普通数字：单位默认在轴顶",
+            "title": "普通数字：轴顶单位与刻度右对齐",
             "categoryField": "category",
             "series": [
               {
@@ -157,7 +157,7 @@
             "main": "sample"
           },
           "props": {
-            "title": "双轴：万元与百分比",
+            "title": "双轴：万元对齐，刻度逐行带%",
             "categoryField": "category",
             "series": [
               {
@@ -210,7 +210,7 @@
             "main": "sample"
           },
           "props": {
-            "title": "字段与常量基线共用默认规则",
+            "title": "双轴：左单位右对齐，右单位左对齐",
             "categoryField": "category",
             "series": [
               {

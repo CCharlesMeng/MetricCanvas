@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "8c96dded8ebc040994fae48b08dabb9dbab0257f1814f94c2332117ed3bc8e66",
+  "sha256": "b44b87477f22f7c12e294d99b4724ad0511e9626b4b81eb918cc7bcb22e0b97f",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -36,7 +36,7 @@
     },
     {
       "file": "docs/page-metadata/components/barChart.md",
-      "sha256": "8653635dc74869f7cd39c0d943f4e1827e214a30abe4c08feb906ac4eaf2ceab"
+      "sha256": "c3ebb28522ca934350e9e1a721516aaa5dca254b0c69e9465dd5ede29cfbf4f1"
     },
     {
       "file": "docs/page-metadata/components/button.md",
@@ -48,7 +48,7 @@
     },
     {
       "file": "docs/page-metadata/components/compositeCard.md",
-      "sha256": "c0b32386c7d3a21475f0d8456d7fa14972cc3ae076b52074f8cc595c337fd488"
+      "sha256": "90fb0925bf9b09b018d0b1dd650ebb00fd5c7220d9cb94a410a26b1339444dbe"
     },
     {
       "file": "docs/page-metadata/components/fieldText.md",
@@ -72,7 +72,7 @@
     },
     {
       "file": "docs/page-metadata/components/lineChart.md",
-      "sha256": "816cd253cdf991b2746f6b7c7e798e708a3c4b90ae55c06f39cf01a088e28564"
+      "sha256": "1ad1fa29707f4d69638a2a5f3de8478a070b5160f7246048710d68834d785e04"
     },
     {
       "file": "docs/page-metadata/components/mapChart.md",
@@ -128,7 +128,7 @@
     },
     {
       "file": "docs/page-metadata/field-bindings-and-formats.md",
-      "sha256": "66f132b83ea7a570949554d2a1ee81132f5dcc43caea7fabb81ff950a877bece"
+      "sha256": "63b871e37d7588a02f3582a59757c5164ecc8cff03a0bc520f52e5b4b98c0ff4"
     },
     {
       "file": "docs/page-metadata/fields.md",
@@ -2372,7 +2372,7 @@
     },
     {
       "file": "pages/capabilities/chart/README.md",
-      "sha256": "28f43ab68495cd67a8a2dfc4627aa96710d563a5f6a1e8a1f20e4fb7feb7e984"
+      "sha256": "ea700e98f09b5ee1752037888abe95a8e308605c25d6ca3e9203a3f26ad990cf"
     },
     {
       "file": "pages/capabilities/chart/bar-width-defaults.json",
@@ -2380,7 +2380,7 @@
     },
     {
       "file": "pages/capabilities/chart/chart-axis-unit.json",
-      "sha256": "4c43e2e0fe04333453933a35ccedeea4783541c949d2ac2c63240bc665f9c33e"
+      "sha256": "22c1bffaae6208ccd51dd671d0590a2446ea4061900492345173f18c5099505b"
     },
     {
       "file": "pages/capabilities/chart/chart-constant-values-page.json",
@@ -2520,7 +2520,7 @@
     },
     {
       "file": "pages/capabilities/filters/README.md",
-      "sha256": "e7a25a94f40cb037edc2392157e4f528cdddfcb8846f302ccc9f7457c5032a34"
+      "sha256": "3236babf62f3d6732c29b769022a872ffe4ecf185da7638c87ddcc01735d9464"
     },
     {
       "file": "pages/capabilities/filters/chart-include-exclude.json",
@@ -2544,7 +2544,7 @@
     },
     {
       "file": "pages/capabilities/filters/filter-group-parallel-selects.json",
-      "sha256": "3a9e52a7ea400b8a834cb5ccbe30e2d8cfbde8120190c2ebb832255d568d80c1"
+      "sha256": "4bc588e8432f0fa17f7be0e874b100bdb90b3444874d3746150e551a0520d12d"
     },
     {
       "file": "pages/capabilities/filters/filter-group-state-page.json",

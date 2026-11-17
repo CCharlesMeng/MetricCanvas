@@ -33,7 +33,7 @@ IOC Header 期间控件分别保留最近已应用的季度与月份；选择年
 
 Excel 基础数字精度统一：number-0 至 number-5 及已有带符号/千分位格式保留原值和数值类型，按最多小数位去尾零，编辑后数字格式继续生效；原生条件格式处理整数小数点及舍入零符号。页面基础数字同样统一负零为0，无新增字段或版本。见[数字精度](docs/page-metadata/field-bindings-and-formats.md#numeric-value-display)，合成入口 `/pages/number-precision-five`、`/pages/numeric-value-display`。
 
-柱图、折线图、柱线混合图及横向条形图统一数值轴单位：单位默认在数值轴末端水平显示，刻度只显示数字；自适应格式整轴使用同一缩放档位，提示与标签保留原格式。旧页面随引擎采用新默认，显式 ECharts 配置优先，无新增字段或 Schema 版本。见[数值轴规则](docs/page-metadata/field-bindings-and-formats.md#chart-number-format)，合成入口 `/pages/chart-axis-unit`。
+柱图、折线图、柱线混合图及横向条形图统一数值轴单位：非百分比单位默认在数值轴末端水平显示，纵向左轴单位与刻度数字右对齐、右轴左对齐，默认字号下与下方最高刻度数字净距16px；百分号直接跟随每个刻度值（如 `10%`、`20%`），不再单独显示在轴顶；自适应格式整轴使用同一缩放档位，提示与标签保留原格式。旧页面随引擎采用新默认，显式 ECharts 配置优先，无新增字段或 Schema 版本。见[数值轴规则](docs/page-metadata/field-bindings-and-formats.md#chart-number-format)，合成入口 `/pages/chart-axis-unit`。
 
 6.116：对象字段绑定可省略 `data`，固定默认 `main`，与字符串简写一致；适用于共用字段绑定的组件及 `byFilter` 叶子，多源组件也不推断其他槽。组件数据源绑定和 `FieldReference` 约束保持，旧显式写法兼容。见[默认数据槽](docs/page-metadata/field-bindings-and-formats.md)，合成入口 `/pages/number-precision-five`。字段净增0。
 
@@ -180,7 +180,7 @@ Schema 6.67 增加查询绑定 `periodPolicy`（固定粒度或按所选周期�
 
 6.41 将通用 DashboardToolbar 的呈现能力并入 IocHeader，只保留一个页头实现。6.81起新页面使用首 section 首组件 `type:"iocHeader"`，业务属性位于 `props`；根级 `iocHeader` 保留兼容读取，旧 `dashboardToolbar` 只作兼容读取；布局、更多筛选、只读和说明见[唯一页头](docs/page-metadata/page.md#唯一页头641)。仅选年份使用共享 `periodModes:["year"]`，见[现有期间页面](pages/capabilities/filters/dashboard-period-filter.json)。 Header组件默认自带16px底部外间距，声明和兼容边界见同一页头模块。
 
-6.63 为组合卡增加 `filterLayout:"toolbar"`：左侧按钮组与右侧多个下拉在同一工具栏排列，右组整体贴右且按内容宽度紧凑排列，窄屏整组回流。示例 `/pages/filter-group-parallel-selects`；声明与边界见[组合卡](docs/page-metadata/components/compositeCard.md#筛选工具栏663)。普通栅格与已有单下拉弹层修复保持。
+6.63 为组合卡增加 `filterLayout:"toolbar"`：有标题时标题与工具栏同排，空间不足时回流；左侧按钮组与右侧多个下拉在同一工具栏排列，右组整体贴右且按内容宽度紧凑排列，窄屏整组回流。示例 `/pages/filter-group-parallel-selects`；声明与边界见[组合卡](docs/page-metadata/components/compositeCard.md#筛选工具栏663)。普通栅格与已有单下拉弹层修复保持。
 
 6.47 为独立 `filterGroup` 增加 `display:"select"` 与 `align:"right"`，支持图表卡左侧按钮、右侧下拉共享查询筛选。入口 `/pages/filter-group-page`，声明与状态规则见[独立筛选](docs/page-metadata/components/filterGroup.md)。
 

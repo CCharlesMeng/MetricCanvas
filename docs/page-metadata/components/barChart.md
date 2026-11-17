@@ -77,7 +77,7 @@ Dashboard 正文通过独立 [filterGroup](filterGroup.md) 组件声明筛选按
 
 ## 数值格式
 
-标签、悬浮提示及数值轴使用[统一数值格式规则](../field-bindings-and-formats.md#chart-number-format)。数值轴默认在轴顶显示单位，刻度只显示数字；横向图在数值轴末端显示，双轴分别处理。无格式与可信语义时默认两位小数，不隐式缩放为万；显式 `number` 保留原值，`compact-wan-0` 显式采用万单位。场景：`/pages/chart-number-format`、`/pages/chart-axis-unit`。
+标签、悬浮提示及数值轴使用[统一数值格式规则](../field-bindings-and-formats.md#chart-number-format)。数值轴默认在轴顶显示非百分比单位，左轴与刻度数字右对齐、右轴左对齐；百分号跟随每个刻度值（如 `10%`、`20%`），不单独显示在轴顶；横向图在数值轴末端显示，双轴分别处理。无格式与可信语义时默认两位小数，不隐式缩放为万；显式 `number` 保留原值，`compact-wan-0` 显式采用万单位。场景：`/pages/chart-number-format`、`/pages/chart-axis-unit`。
 
 <a id="chart-series-visibility"></a>
 

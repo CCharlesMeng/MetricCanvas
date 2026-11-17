@@ -351,7 +351,7 @@ it('IOC F6 显式柱线共享横轴、正确分轴与单位、缺点不连成0',
     { field: 'income', kind: 'bar', axis: 'primary' }, { field: 'rate', kind: 'line', axis: 'secondary' }
   ] });
   expect(result).toMatchObject({
-    xAxis: { data: ['1月', '2月'] }, yAxis: [{ name: '元' }, { name: '%' }],
+    xAxis: { data: ['1月', '2月'] }, yAxis: [{ name: '元' }, { name: undefined }],
     series: [{ type: 'bar', yAxisIndex: 0, data: [100, 200] }, { type: 'line', yAxisIndex: 1, connectNulls: false, data: [10, null] }]
   });
 });

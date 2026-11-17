@@ -26,8 +26,8 @@ it.each([
   ['number-1', '天', 12.5, '天', '12.5', undefined],
   ['number-1', '天', 12.5, '日', '12.5', '日'],
   ['number-1', '天', 12.5, undefined, '12.5', ''],
-  ['percent-1', '%', 25, '%', '25', undefined],
-  ['percent-adaptive', undefined, 600, '%', '600', undefined],
+  ['percent-1', '%', 25, undefined, '25%', undefined],
+  ['percent-adaptive', undefined, 600, undefined, '600%', undefined],
   ['compact-wan-1', '元', 125000, '万元', '12.5', undefined],
   ['compact-wan-1', '元', 125000, '万元', '12.5', '万元'],
   ['compact-million-2', undefined, 1250000, '百万', '1.25', undefined],
@@ -50,7 +50,7 @@ it.each([
     expect(axis).toMatchObject({ nameLocation: 'end', nameRotate: 0 });
     expect(axis.name).toBe(name);
     expect(axis.axisLabel.formatter(max)).toBe(expected);
-    expect(axis.axisLabel.formatter(0)).toBe('0');
+    expect(axis.axisLabel.formatter(0)).toBe(expected.endsWith('%') ? '0%' : '0');
     expect(axis.axisLabel.formatter(-max)).toBe(`-${expected.replace(/^\+/, '')}`);
     expect(option.series).toMatchObject([{ data: [max, 0, -max] }]);
   }
