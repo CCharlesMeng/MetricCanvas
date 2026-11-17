@@ -1,3 +1,4 @@
+import { MIN_DQE_TIMEOUT_MS } from '../dqe-timeout';
 import { hasQueryFieldMapping, type Page } from '@metriccanvas/page/internal';
 import type { ColumnCandidatesRead } from '../source-program/column-candidates';
 import type { ColumnCandidate, ColumnCandidatesPage } from '../ports';
@@ -6,7 +7,7 @@ import { candidateKey, candidateView } from '../column-candidates';
 import { compileUnion, unionError, type UnionMemberPlan, type UnionPlan } from './plan';
 
 export async function unionCandidates(page: Page, request: ColumnCandidatesRead, runner: QueryRunner, scope: string, inputSignal?: AbortSignal): Promise<ColumnCandidatesPage> {
-  const signal = AbortSignal.any([...(inputSignal ? [inputSignal] : []), AbortSignal.timeout(60_000)]);
+  const signal = AbortSignal.any([...(inputSignal ? [inputSignal] : []), AbortSignal.timeout(MIN_DQE_TIMEOUT_MS)]);
   const view = candidateView(request.view, request.field);
   const plan = compileUnion(page, request.sourceId, request.conditions, view, request.now);
   const values = new Map<string, ColumnCandidate>();

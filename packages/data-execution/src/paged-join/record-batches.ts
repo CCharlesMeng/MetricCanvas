@@ -1,3 +1,4 @@
+import { dqeTimeoutMs } from '../dqe-timeout';
 import {restoreCellFallbacks,queryResultFieldContract,validateContractRows,type EffectiveQuery,type Row,type FieldDefinition} from '@metriccanvas/page/internal';
 import type {QueryRunner} from '../query-runner';
 import {intersectQueryFilters} from '../intersect-filters';
@@ -28,7 +29,7 @@ export function validateRecordRows(rows:Row[],fields:Record<string,FieldDefiniti
   if(!validateContractRows(rows,contract).ok)throw rowFailure('记录结果违反字段契约');
 }
 async function readRecordBatch(plan:PagedJoinPlan,id:string,query:EffectiveQuery,runner:QueryRunner,scope:string,budget:RecordBudget){
-  const timeout=AbortSignal.timeout(plan.source.source.records!.timeoutMs);
+  const timeout=AbortSignal.timeout(dqeTimeoutMs(plan.source.source.records!.timeoutMs));
   const signal=AbortSignal.any([budget.signal,timeout]);
   try{
     const result=await runner.run(query,{pageId:plan.page.id,dataSourceIds:[plan.sourceId,plan.source.source.members[id].source]},scope,signal);

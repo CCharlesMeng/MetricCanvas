@@ -1,4 +1,5 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+afterEach(() => vi.useRealTimers());
 import type { EffectiveQuery, JsonObject, QueryErrorCode } from '@metriccanvas/page/internal';
 import { createDqeGateway, DqeGatewayError } from '../src/dqe';
 
@@ -159,18 +160,21 @@ const cases: ClassificationCase[] = [
 describe('查询错误分类:上游状况 → 稳定可判别分类(表驱动,issue #51)', () => {
   for (const testCase of cases) {
     it(testCase.name, async () => {
+      vi.useFakeTimers();
       const gateway = createDqeGateway({
         fetchImpl: testCase.fetchImpl,
         ...(testCase.timeoutMs !== undefined ? { timeoutMs: testCase.timeoutMs } : {})
       });
 
-      const caught = await gateway.fetchData(sentinelQuery()).then(
+      const pending = gateway.fetchData(sentinelQuery()).then(
         () => {
           throw new Error('该场景必须拒绝');
         },
         (cause: unknown) => cause as DqeGatewayError
       );
 
+      await vi.advanceTimersByTimeAsync(180_000);
+      const caught = await pending;
       expect(caught).toBeInstanceOf(DqeGatewayError);
       expect(caught.code).toBe(testCase.code);
       // 错误序列化不包含查询结果、筛选值或上游响应正文(issue #47 红线)。

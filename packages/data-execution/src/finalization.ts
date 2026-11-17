@@ -1,4 +1,5 @@
 import { debugWarn } from './debug-warnings';
+import { dqeTimeoutMs } from './dqe-timeout';
 import {
   finalizationDate, finalizationName, localCalendarDate, supportsNativePreparation,
   type DqeRequestBody, type Page
@@ -11,6 +12,7 @@ export interface FinalizationSourceDefinition {
   body: DqeRequestBody;
   nameField: string;
   dateField: string;
+  /** Defaults to 180000ms; shorter values use the engine minimum. */
   timeoutMs?: number;
 }
 
@@ -59,7 +61,7 @@ async function queryFinalizations(gateway: RuntimeDataGateway, pageId: string, s
   const controller = new AbortController();
   const abort = () => controller.abort(signal?.reason);
   signal?.addEventListener('abort', abort, { once: true });
-  const timeout = finalizationTimeout(source.timeoutMs);
+  const timeout = dqeTimeoutMs(source.timeoutMs);
   let timer: ReturnType<typeof setTimeout> | undefined;
   try {
     const expired = new Promise<never>((_, reject) => {
@@ -81,10 +83,6 @@ async function queryFinalizations(gateway: RuntimeDataGateway, pageId: string, s
     clearTimeout(timer);
     signal?.removeEventListener('abort', abort);
   }
-}
-
-function finalizationTimeout(value: number | undefined): number {
-  return typeof value === 'number' && Number.isFinite(value) && value > 0 ? Math.min(value, 2147483647) : 5000;
 }
 
 function indexFinalizations(rows: readonly Record<string, unknown>[]): FinalizationLookup {

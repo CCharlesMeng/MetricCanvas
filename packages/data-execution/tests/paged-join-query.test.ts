@@ -1,4 +1,6 @@
-import {describe,it,expect} from 'vitest';
+import { useDqeTimeoutClock } from '../../../tests/helpers/dqe-timeout-clock';
+import {afterEach,describe,it,expect,vi} from 'vitest';
+afterEach(() => { vi.restoreAllMocks(); vi.useRealTimers(); });
 import pageDocument from '../../../pages/capabilities/table/paged-join-on-demand.json';
 import recordDocument from '../../../pages/capabilities/table/record-join-on-demand.json';
 import {parsePage} from '@metriccanvas/page';
@@ -49,7 +51,8 @@ describe('query-paged join',()=>{
     expect(await read(page,preview.dataGateway,{},'rejection-overview')).toMatchObject({status:'error',error:{code:'DQE_QUERY_REJECTED'}});
     expect(preview.calls).toHaveLength(2);
   });
-  it('enforces a per-request timeout and never starts supplements after it',async()=>{
+  it('floors per-request timeout at 180s and never starts supplements after it',async()=>{
+    useDqeTimeoutClock();
     const page=parsed(recordDocument),source=page.dataSources['rejection-overview'].source;
     if(source.type!=='pagedJoin'||!source.records)throw Error('records');source.records.timeoutMs=5;
     const calls:EffectiveQuery[]=[];
@@ -57,7 +60,9 @@ describe('query-paged join',()=>{
       calls.push(query);
       return new Promise<never>((_resolve,reject)=>signal?.addEventListener('abort',()=>reject(signal.reason),{once:true}));
     }};
-    expect(await read(page,gateway,{},'rejection-overview')).toMatchObject({status:'error',error:{code:'DQE_TIMEOUT'}});
+    const pending=read(page,gateway,{},'rejection-overview');
+    await vi.advanceTimersByTimeAsync(180_000);
+    expect(await pending).toMatchObject({status:'error',error:{code:'DQE_TIMEOUT'}});
     expect(calls).toHaveLength(1);
   });
   it.each([80,100001])('only selects one page and its keys with %i source rows',async count=>{

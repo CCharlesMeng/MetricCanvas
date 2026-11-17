@@ -1,5 +1,7 @@
+import { useDqeTimeoutClock } from '../../../tests/helpers/dqe-timeout-clock';
 import fs from 'node:fs';
-import {describe,it,expect} from 'vitest';
+import {afterEach,describe,it,expect,vi} from 'vitest';
+afterEach(() => { vi.restoreAllMocks(); vi.useRealTimers(); });
 import {parsePage} from '@metriccanvas/page';
 import type {DataSnapshot,EffectiveQuery} from '@metriccanvas/page/internal';
 import type {DataGateway} from '../src/ports';
@@ -29,11 +31,14 @@ function isTarget(query:EffectiveQuery,member:'main'|'supplement'){
 
 describe('records per-batch timeout',()=>{
   it('completes main and supplement batches whose cumulative wait exceeds timeoutMs',async()=>{
-    const preview=createRejectionPreview({rows:12,delayMs:250}),test=setup(preview.dataGateway);
+    useDqeTimeoutClock();
+    const preview=createRejectionPreview({rows:12,delayMs:60_000}),test=setup(preview.dataGateway);
     try{
       const start=performance.now();
-      expect(await test.read()).toMatchObject({status:'ready',totalCount:12});
-      expect(performance.now()-start).toBeGreaterThan(1000);
+      const pending=test.read();
+      await vi.advanceTimersByTimeAsync(540_000);
+      expect(await pending).toMatchObject({status:'ready',totalCount:12});
+      expect(performance.now()-start).toBeGreaterThan(180_000);
       expect(preview.calls.filter(query=>'approval-stage' in query.fieldMappings)).toHaveLength(6);
       expect(preview.calls.filter(query=>!('approval-stage' in query.fieldMappings))).toHaveLength(3);
       await test.read();
@@ -42,6 +47,7 @@ describe('records per-batch timeout',()=>{
   });
 
   it.each(['main','supplement'] as const)('rejects a slow %s batch, ignores its late result, and retries from the start',async member=>{
+    useDqeTimeoutClock();
     const preview=createRejectionPreview({rows:12});
     let release!:()=>void,blocked=false,aborted=false;
     const gate=new Promise<void>(resolve=>{release=resolve;});
@@ -56,11 +62,16 @@ describe('records per-batch timeout',()=>{
     }};
     const test=setup(gateway,30);
     try{
-      expect(await test.read()).toMatchObject({status:'error',error:{code:'DQE_TIMEOUT'}});
+      let settled=false;
+      const pending=test.read().then(result=>{settled=true;return result;});
+      await vi.advanceTimersByTimeAsync(179_999);
+      expect(settled).toBe(false);expect(aborted).toBe(false);
+      await vi.advanceTimersByTimeAsync(1);
+      expect(await pending).toMatchObject({status:'error',error:{code:'DQE_TIMEOUT'}});
       expect(aborted).toBe(true);
       expect(await test.read()).toMatchObject({status:'ready',totalCount:12});
       expect(preview.calls.filter(query=>'approval-stage' in query.fieldMappings&&query.pagination?.offset===0)).toHaveLength(2);
-      release();await gate;await new Promise(resolve=>setTimeout(resolve,0));
+      release();await gate;await vi.advanceTimersByTimeAsync(0);
       const calls=preview.calls.length;
       expect(await test.read()).toMatchObject({status:'ready',totalCount:12});
       expect(preview.calls).toHaveLength(calls);

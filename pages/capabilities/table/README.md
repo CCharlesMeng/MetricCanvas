@@ -457,9 +457,9 @@
 
 ## 记录关联单批超时
 
-入口 `/pages/record-join-batch-timeout`，完整页面 `record-join-batch-timeout.json`，无需 URL 参数。启动 `pnpm --filter playground dev --host 127.0.0.1 --port 5203`。合成适配器位于 `apps/playground/fixtures/rejection-details/gateway.ts`，12条审批、每批2条，主表与补列请求每次延迟250ms，`records.timeoutMs: 1000`。整轮耗时超过1秒后仍应显示12条完整记录；搜索 `BIZ-00005` 应找到两条审批及当前责任人，翻页和搜索复用完整结果。
+入口 `/pages/record-join-batch-timeout`，完整页面 `record-join-batch-timeout.json`，无需 URL 参数。启动 `pnpm --filter playground dev --host 127.0.0.1 --port 5203`。合成适配器位于 `apps/playground/fixtures/rejection-details/gateway.ts`，12条审批、每批2条，主表与补列请求每次延迟60秒，保留旧声明 `records.timeoutMs: 1000`，实际每批采用180秒下限。整轮耗时超过180秒后仍应显示12条完整记录；搜索 `BIZ-00005` 应找到两条审批及当前责任人，翻页和搜索复用完整结果。
 
-加 `?sourceTimeout=true` 将每次请求延迟改为1500ms，单批超过1000ms后出现错误态，无审批行；去掉参数可重新完整读取。字节仍整轮累计，已有字节拒绝回归保持。自动浏览器验收 `node apps/playground/tests/record-batch-timeout-browser.mjs <证据目录>`（`RECORD_TIMEOUT_BASE_URL` 可覆盖默认地址）。本场景仅证明合成适配器下的超时、完整性及缓存行为，不证明真实 DQE/Relay 性能。
+加 `?sourceTimeout=true` 将每次请求延迟改为180001ms，179999ms仍加载，单批达到180000ms后出现错误态，无审批行；去掉参数可重新完整读取。字节仍整轮累计，已有字节拒绝回归保持。自动浏览器验收 `node apps/playground/tests/record-batch-timeout-browser.mjs <证据目录>`（`RECORD_TIMEOUT_BASE_URL` 可覆盖默认地址）。自动验收使用浏览器虚拟时钟，无需实际等待三分钟；Node原生 AbortSignal 计时在测试中接入虚拟时钟。本场景仅证明合成适配器下的超时、完整性及缓存行为，不证明真实 DQE/Relay 性能。
 
 ## 组合查询按需分页
 

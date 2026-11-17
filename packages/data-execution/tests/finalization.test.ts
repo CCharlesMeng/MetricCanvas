@@ -66,11 +66,15 @@ describe('page-scoped finalization initialization', () => {
     for (const base of [failed, partial, unconfigured]) expect((await resolveFinalizationDates(page, base, now)).get('经营数据')).toBe('2026-11-09');
     expect(unconfigured.fetchData).not.toHaveBeenCalled();
   });
-  it('times out even if an adapter ignores cancellation', async () => {
+  it.each([[undefined, 180_000], [10, 180_000], [60_000, 180_000], [240_000, 240_000]])('times out configured %s ms after %s ms even if an adapter ignores cancellation', async (timeoutMs, effectiveMs) => {
     vi.useFakeTimers();
-    const base: RuntimeDataGateway = {...gateway(), finalizationSource: {...source, timeoutMs: 10}, fetchData: () => new Promise(() => {})};
+    const base: RuntimeDataGateway = {...gateway(), finalizationSource: {...source, timeoutMs}, fetchData: () => new Promise(() => {})};
     const pending = resolveFinalizationDates(page, base, now);
-    await vi.advanceTimersByTimeAsync(11);
+    let settled = false;
+    void pending.then(() => { settled = true; });
+    await vi.advanceTimersByTimeAsync(effectiveMs! - 1);
+    expect(settled).toBe(false);
+    await vi.advanceTimersByTimeAsync(1);
     expect((await pending).get('经营数据')).toBe('2026-11-09');
   });
   it('cancels an obsolete page without publishing a fallback', async () => {
