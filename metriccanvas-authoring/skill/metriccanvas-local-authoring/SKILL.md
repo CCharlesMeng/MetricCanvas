@@ -1,8 +1,8 @@
 ---
 name: metriccanvas-local-authoring
-description: 在本地开发 MetricCanvas 看板、报表和 IOC：新建页面、对接数据与查询、调试页面问题、调整已有页面。附协议知识、数据分析与升级工具、独立校验器；线上保存和发布使用项目提供的接口。
+description: 解答 MetricCanvas 看板、报表和 IOC 的功能与配置问题，在本地新建、接数、调试或调整页面。附协议知识、数据分析与升级工具、独立校验器；线上保存和发布使用项目提供的接口。
 metadata:
-  version: "1.81.0"
+  version: "1.82.0"
 ---
 
 # 本地页面创作
@@ -13,6 +13,7 @@ metadata:
 
 | 任务 | 入口与交付 |
 |---|---|
+| 功能咨询（能否配置、怎么配置） | 按[知识与示例渐进读取](references/knowledge-consumption.md)的「配置能力答复」核对产品支持范围和入口，先给结论，再给配置方法或限制。仅咨询时可直接答复，明确要求修改时再进入页面调整。 |
 | 新页面开发 | 按下方“新建与结构调整”从需求和真实输入装配完整页面；核对需求涉及的字段、组件及交互，再执行完整校验。数据未接通时明确区分演示页面与待执行候选。 |
 | 数据对接 | 读[数据识别与接数](references/data-analysis.md)，核对查询依据、结果契约与绑定；有执行入口则验真，无入口按该文交候选和缺口。换源核对共享消费者；保持页面意图的关联按需读[受控换源](references/data-association.md)。 |
 | bug调试 | 先按[页面排障交接](references/page-diagnostic-handoff.md)确定输入并复用静态回执，再按[页面调试](references/page-debugging.md)补失败层证据。 |
