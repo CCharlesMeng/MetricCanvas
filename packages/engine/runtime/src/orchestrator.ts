@@ -87,27 +87,30 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
     let presentationIds = demand();
     const projectedSources = () => presentationQuerySources(page,tableContext(),{ selections, views: views() });
     const projectionKeys = () => new Map([...projectedSources()].map(([id,source]) => [id, JSON.stringify({fields:Object.keys(source.fields),compute:source.compute})]));
-    let projectedKeys = projectionKeys();
+    const projectedKeys: Map<string, string | undefined> = projectionKeys();
     const resumed = new Set<string>();
     function reconcileDemand(): Set<string> {
       const next = demand();
-      const added = new Set([...next].filter(id => !presentationIds.has(id)));
       const nextKeys = projectionKeys();
-      for (const id of next) if (projectedKeys.get(id) !== nextKeys.get(id)) added.add(id);
-      for (const id of new Set([...presentationIds].filter(id => !next.has(id)).concat([...added]))) {
+      const changed = new Set<string>();
+      for (const id of next) {
+        const key = nextKeys.get(id);
+        const projectionChanged = projectedKeys.get(id) !== key;
+        if (projectionChanged || !presentationIds.has(id) && !reusableSnapshot(raw.get(id))) changed.add(id);
+        // An inactive tab has no current consumer projection. Keep its last active key.
+        projectedKeys.set(id, key);
+      }
+      for (const id of new Set([...presentationIds].filter(id => !next.has(id)).concat([...changed]))) {
         if (page.dataSources[id]?.source.type === 'inline') continue;
-        const projectionChanged = projectedKeys.get(id) !== nextKeys.get(id);
-        if (added.has(id) && !projectionChanged && raw.get(id)?.status === 'ready') continue;
         tokens.set(id, (tokens.get(id) ?? 0) + 1);
         requests.get(id)?.abort();
         pendingInitial.delete(id);
         matched.delete(id);
-        if (added.has(id) || raw.get(id)?.status !== 'ready') raw.set(id, { status: 'loading' });
-        if (added.has(id)) resumed.add(id);
+        if (changed.has(id) || !reusableSnapshot(raw.get(id))) raw.set(id, { status: 'loading' });
+        if (changed.has(id)) resumed.add(id);
       }
       presentationIds = next;
-      projectedKeys = nextKeys;
-      return added;
+      return changed;
     }
     const initialSnapshots=execution?new Map<string,DataSnapshot>():program.initialSnapshots({roots:[...demand()],conditions:values,views:views(),selections});
     initializeSnapshots();
@@ -278,7 +281,10 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
     refetch(new Set([...demand()].filter(id => !matched.has(id) && raw.get(id)?.status === 'loading')), true);
     return {
       syncPresentation() { const changed=new Set([...reconcileColumns(),...reconcileDemand()]);if(changed.size)refetch(changed);else publish(); },
-      activate() { refetch(new Set([...demand()].filter(id => raw.get(id)?.status === 'loading')), true); },
+      activate() {
+        const loading = [...demand()].filter(id => raw.get(id)?.status === 'loading' && !requests.has(id));
+        refetch(new Set(loading), true);
+      },
       refresh: (id: string) => {program.retryPreparation(id,values);refetch(new Set([id]));},
       program, tables, views, year, current: () => snapshots,
       raw: () => new Map(raw), progress: () => new Map(progress), screen: (id: string) => progress.get(id),
@@ -307,6 +313,10 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
     ,resetQueryDefault(id,view) { if(active?.tables.get(id)?.resetDefault(view))active.refresh(id); }
   };
 }
+function reusableSnapshot(snapshot: DataSnapshot | undefined): boolean {
+  return snapshot?.status === 'ready' || snapshot?.status === 'empty';
+}
+
 function same(left: FilterValues, right: FilterValues) { return [...new Set([...left.keys(), ...right.keys()])].every(id => JSON.stringify(left.get(id)) === JSON.stringify(right.get(id))); }
 
 function queryCondition(value: import('./filter-state').FilterValue | undefined): string | undefined { return JSON.stringify(value?.type === 'timeRange' ? {type:value.type,mode:value.mode,selection:value.selection,from:value.from,to:value.to} : value); }

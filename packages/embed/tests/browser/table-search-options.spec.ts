@@ -18,7 +18,7 @@ test('packaged runtime renders static search options and submits the new field i
   await table.getByRole('button', { name: '表格搜索字段' }).click();
   await page.getByRole('option', { name: '责任人', exact: true }).click();
   await expect(table.getByRole('cell', { name: '其他项目', exact: true })).toBeVisible();
-  await expect(table.getByRole('searchbox')).toHaveAttribute('placeholder', '请输入完整责任人姓名');
+  await expect(table.getByRole('searchbox')).toHaveAttribute('placeholder', '搜索责任人姓名');
   await table.getByRole('button', { name: '清空表格搜索' }).click();
   await expect(table.getByRole('button', { name: '表格搜索字段' })).toHaveText('责任人');
   await expect(table.locator('tbody tr')).toHaveCount(2);

@@ -21,7 +21,7 @@
 4. `pnpm --filter @metriccanvas/embed exec playwright test`：验证 ES/global、复制完整目录、公开 API、模块复用、加载失败与已有页面行为。内置图片须在页面 `<base>` 不同于分发地址时正确加载；Webpack 5 development/production 在 URL 资源解析开启和关闭两种配置下重新打包，内置图片及经真实 Embed 配置构建的大图均须正常解码。更换源码基线或转移实现后，对对应产物重新执行。
 5. 实际打包并核对归档包含全部 JS；ZIP 或 tarball 解包后逐文件沿用相同体积上限。发布兼容性继续按 [构建与仓外兼容性门禁](../../tools/package-build/README.md) 执行。
 
-分包匹配统一处理正斜杠、反斜杠与混合分隔符；依赖和产品源码的归属由 `tests/embed-chunking.test.ts` 对实际 Vite 配置回归。CI 的 `embed-distribution` 矩阵必须在 Linux、Windows **各自原生构建 embed**，执行同一 1 MB 门禁并上传完整 dist；该矩阵纳入最终 `ci` 汇总。Windows 上其他产品的分发通过，不能替代 Windows embed 构建通过。
+分包匹配统一处理正斜杠、反斜杠与混合分隔符。每次变更用 `tests/embed-chunking.test.ts` 检查实际 Vite 配置，并执行 Linux 产品构建和 Chrome 接入冒烟。定期全量及发布前的 `embed-distribution` 矩阵必须在 Linux、Windows **各自原生构建 Embed**，执行同一 1 MB 门禁并上传完整 dist。发布前核对同一候选提交的 `ci` 和 `ci-full` 结果。
 
 该矩阵同时执行 `distribution.spec.ts` 与 `webpack-consumer.spec.ts`：完整复制到仓外独立目录，原生 ES/global 接入通过；Webpack 5 development/production 默认模块解析不得出现构建错误或依赖警告，重新打包后挂载、按需 Excel 导出与销毁通过。不得通过忽略 Critical dependency 警告或更改集成应用根模块类型代替修复分发边界。
 

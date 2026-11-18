@@ -87,7 +87,7 @@ Python 测试需要 Bundle 锁定依赖；使用已装依赖的环境执行，�
 
 运行 `pnpm skills:pack --output <new-path.tar.gz>` 生成完整安装目录归档与同名 `.release.json` 回执。维护工具需 Python 3.12+ 和 Node.js 22+；安装后的 Skill 仍只依赖 Node。工具拒绝覆盖、符号链接、知识清单漂移，回读实际归档，在仓库外执行版本、合法示例和非法文档检查。回执锁定作者文件在内的全部文件摘要、Skill/Schema/产品版本、来源提交和脏工作区标记，并记录实际校验命令和退出码。
 
-CI 在生成与两个核心入口检查通过后上传归档与回执，再下载执行 `python3 tools/scripts/skill-release.py verify --archive <downloaded-path.tar.gz>`。CI 运行与回执来源为同一提交；脏工作区产物只作为本地检查证据。Schema、产品发行与 Skill 版本各自演进，来源 SHA 放外部回执，避免生成文件提交自引用。
+每次变更的 `authoring` 任务检查生成一致性和工具类型。定期全量及交付前的 `authoring-distribution` 任务上传归档与回执，再下载执行 `python3 tools/scripts/skill-release.py verify --archive <downloaded-path.tar.gz>`。完整入口与归档 Vitest 回归由全量工作流同一提交的 `tests` 执行，并在 `ci-full` 汇总。CI 运行与回执来源为同一提交，脏工作区产物只作为本地检查证据。Schema、产品发行与 Skill 版本各自演进，来源 SHA 放外部回执，避免生成文件提交自引用。
 
 安装或回退时核对回执摘要，并完整替换 Skill 目录；替换后运行版本命令和代表页面校验，记录实际安装版本。仓库更新、归档通过和外部安装成功分别报告。真实 Relay、DQE 和目标设备部署由实际环境另验。
 
@@ -105,7 +105,7 @@ CI 在生成与两个核心入口检查通过后上传归档与回执，再下�
 
 页面 Schema、验证器、迁移、组件目录、语义章节/规则/例子、发现/查询/参数或工具契约更新（包括不升 Schema 的语义修复），同批执行 `pnpm authoring:contracts` 与 `pnpm mc:content:check`。原有导出入口从同一产品输出图生成 MC 和 local-authoring；完整 MC 覆盖检查使用产品注册/reference-map/活动工具注册作为分母，不能只核对已有文件 hash。不要从安装副本回读事实。
 
-CI authoring job 不按变更路径跳过此链路；MC 独立归档使用 `pnpm mc:content:pack --output <new-path>`，源树/内容/归档摘要和部署状态分开记录。每次发布补旧页可读/可迁移/人工处理矩阵及受影响产品引擎回放；真实 Relay/DQE/保存/预览由部署方另验。local-authoring 仍整目录仓外安装，不依赖 MC 兄弟目录。说明与验收入口见 `tools/mc-content/README.md`、`HANDOFF.md` 和 `docs/plan/2026-10-24-layout-standards/mc-content-completeness-plan.md`。
+定期全量及发布前验证执行完整的 MC 独立分发链路。MC 独立归档使用 `pnpm mc:content:pack --output <new-path>`，源树/内容/归档摘要和部署状态分开记录。每次发布补旧页可读/可迁移/人工处理矩阵及受影响产品引擎回放；真实 Relay/DQE/保存/预览由部署方另验。local-authoring 仍整目录仓外安装，不依赖 MC 兄弟目录。说明与验收入口见 `tools/mc-content/README.md`、`HANDOFF.md` 和 `docs/plan/2026-10-24-layout-standards/mc-content-completeness-plan.md`。
 
 ## 局部读取与委派的效果复测
 

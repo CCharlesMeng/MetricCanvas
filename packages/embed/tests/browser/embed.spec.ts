@@ -282,7 +282,7 @@ test('机会点清单使用单一标准页头并把密集筛选收纳到更多�
 
     if (viewport.width === 1980) {
       expect(await toolbar.evaluate((element) => element.getBoundingClientRect().height))
-        .toBeCloseTo(80, 0);
+        .toBeCloseTo(77, 0);
     }
 
     await overflow.locator(':scope > summary').click();
@@ -663,7 +663,7 @@ test('analysisStack 页签每个选中面板顺序渲染三张表', async ({ pag
   await expect(host.getByRole('tab', { name: '代表处' })).toHaveAttribute('aria-selected', 'true');
 });
 
-test('compact 工具栏显示七个只读筛选并不伪造返回', async ({ page }) => {
+test('compact 工具栏显示七个只读筛选，滚动吸顶且不伪造返回', async ({ page }) => {
   await page.setViewportSize({ width: 1980, height: 1080 });
   await page.goto('/examples/query.html');
   await page.evaluate(() => {
@@ -716,26 +716,23 @@ test('compact 工具栏显示七个只读筛选并不伪造返回', async ({ pag
   )).toBe(true);
   await expect(toolbar.getByText('合成演示数据，非生产口径，筛选尚未接入')).toHaveCount(0);
   await expect(toolbar.locator('[data-dashboard-back]')).toHaveCount(0);
-  const toolbarLayout = await toolbar.evaluate((element) => {
-    const style = getComputedStyle(element);
-    const rect = element.getBoundingClientRect();
-    const controls = [...element.querySelectorAll('[data-filter-control]')]
-      .map((control) => control.getBoundingClientRect());
-    const note = element.querySelector('.filter-note')?.getBoundingClientRect();
-    return {
-      height: rect.height,
-      position: style.position,
-      borderBottomWidth: style.borderBottomWidth,
-      singleLine: [...controls, ...(note ? [note] : [])]
-        .every((item) => item.top >= rect.top && item.bottom <= rect.bottom)
-    };
+  await page.evaluate(() => {
+    const dashboard = document.querySelector('#dashboard')!;
+    const before = document.createElement('div');
+    before.style.height = '180px';
+    dashboard.before(before);
+    const after = document.createElement('div');
+    after.style.height = '1800px';
+    dashboard.after(after);
+    window.scrollTo(0, 0);
   });
-  expect(toolbarLayout).toEqual({
-    height: 56,
-    position: 'sticky',
-    borderBottomWidth: '1px',
-    singleLine: true
-  });
+  const pinnedHeader = host.locator('[data-ioc-floating="true"]');
+  await expect(pinnedHeader).toHaveCount(0);
+  await page.evaluate(() => window.scrollTo(0, 220));
+  await expect(pinnedHeader).toHaveCount(1);
+  await expect.poll(async () => Math.round((await toolbar.boundingBox())!.y)).toBe(0);
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expect(pinnedHeader).toHaveCount(0);
 });
 
 test('metricGrid 横排双指标在窄视口保持等分且上下分隔线同轴', async ({ page }) => {
@@ -2311,7 +2308,7 @@ test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态',
       }
     });
   }, flowReportDocument);
-  await expect(yoyDropTable.locator('tbody')).toHaveText('');
+  await expect(yoyDropTable.locator('tbody')).toHaveText('暂无数据');
   await expect(yoyDropTable.getByRole('alert')).toHaveCount(0);
   await expect(yoyDropTable.getByText('流水数据网关测试错误')).toHaveCount(0);
   await expect(host.getByRole('heading', { name: '2026年2月流水分析报告' })).toBeVisible();

@@ -1,6 +1,6 @@
 import { expect, it, vi } from 'vitest';
 import { parsePage, normalizePageDocument } from '@metriccanvas/page';
-import type { EffectiveQuery, DataSnapshot } from '@metriccanvas/page/internal';
+import { tabChildren, type EffectiveQuery, type DataSnapshot } from '@metriccanvas/page/internal';
 import fixture from '../../../page/fixtures/contract-valid/tab-mixed-content.json';
 import { orchestrate, type PageDataSnapshots } from '../src/orchestrator';
 import { createFilterState, initialFilterValues } from '../src/filter-state';
@@ -26,7 +26,12 @@ it('loads active dependency closure, retains inactive results and defers dirty h
     expect(snapshots.has('summary-data')).toBe(false);
     expect(requests).toHaveLength(2);
     stream.setActiveTabs({ analysis: 'overview' });
+    const details = snapshots.get('revenue-data');
+    stream.setActiveTabs({ analysis: 'details' });
+    expect(stream.captureRawSnapshots().get('revenue-data')?.status).toBe('ready');
+    expect(snapshots.get('revenue-data')).toEqual(details);
     expect(requests).toHaveLength(2);
+    stream.setActiveTabs({ analysis: 'overview' });
     filters.write('domestic', { type: 'boolean', value: true });
     await vi.waitFor(() => expect(snapshots.get('orders-data')?.status).toBe('ready'));
     expect(requests).toHaveLength(3);
@@ -34,6 +39,10 @@ it('loads active dependency closure, retains inactive results and defers dirty h
     stream.setActiveTabs({ analysis: 'details' });
     // OVERSEAS AND CN produces empty without invoking the gateway.
     await vi.waitFor(() => expect(snapshots.get('revenue-data')).toEqual({ status: 'empty', totalCount: 0 }));
+    stream.setActiveTabs({ analysis: 'overview' });
+    stream.setActiveTabs({ analysis: 'details' });
+    expect(stream.captureRawSnapshots().get('revenue-data')).toEqual({ status: 'empty', totalCount: 0 });
+    expect(requests).toHaveLength(3);
     expect(filters.toURL()).toContain('revenue-region=OVERSEAS');
   } finally { stop(); }
 });
@@ -51,6 +60,26 @@ it('shared one-shot execution follows the default Tab; Report complete reads sti
   expect(snapshots.has('summary-data')).toBe(false);
   expect(calls).toHaveLength(2);
 });
+
+it('keeps a pending query when both tabs need the same projection', async () => {
+  const page = loaded();
+  const container = page.sections[0].components[0];
+  if (container.type !== 'tabContainer') throw Error('fixture');
+  const chart = container.props.tabs.flatMap(tabChildren).find(component => component.id === 'revenue');
+  if (chart?.type !== 'lineChart') throw Error('fixture');
+  chart.data.main = 'orders-data';
+
+  const fetchData = vi.fn<DataGateway['fetchData']>(() => new Promise(() => {}));
+  const stream = orchestrate(page, {fetchData});
+  const stop = stream.subscribe(() => {});
+  try {
+    await vi.waitFor(() => expect(fetchData).toHaveBeenCalledTimes(1));
+    const signal = fetchData.mock.calls[0][2];
+    stream.setActiveTabs({ analysis: 'details' });
+    expect(signal?.aborted).toBe(false);
+  } finally { stop(); }
+});
+
 it('an obsolete hidden response cannot overwrite the new filter generation', async () => {
   const page = loaded(), filters = createFilterState(initialFilterValues(page.filters ?? []));
   let release: ((value: { rows: { category: string; value: number }[]; totalCount: number }) => void) | undefined;

@@ -9,6 +9,8 @@ import {sourceCheckCommands} from '../tools/package-build/compatibility-profile.
 const root = resolve(import.meta.dirname, '..');
 const sha = 'a'.repeat(40), tree = 'b'.repeat(40);
 const context = {githubActions:'true', ci:'true', githubSha:sha, headSha:sha, sourceTree:tree, headTree:tree};
+const regular = parse(readFileSync(resolve(root, '.github/workflows/ci.yml'), 'utf8'));
+const full = parse(readFileSync(resolve(root, '.github/workflows/ci-full.yml'), 'utf8'));
 
 function gate(results: unknown) {
   return spawnSync(process.execPath, [resolve(root, 'tools/scripts/check-ci-results.mjs')], {
@@ -26,25 +28,50 @@ describe('parallel CI keeps a complete required gate', () => {
     expect(gate({tests:{result:'success'},build:{result:'success'}}).status).toBe(0);
   });
 
-  it('requires every job and always runs the gate, including when an upstream check fails', () => {
-    const workflow = parse(readFileSync(resolve(root, '.github/workflows/ci.yml'), 'utf8'));
-    const {ci, ...checks} = workflow.jobs;
+  it('requires the per-change jobs for pull requests and pushes to main', () => {
+    expect(regular.on).toEqual({pull_request: null, push: {branches: ['main']}});
+    const {ci, ...checks} = regular.jobs;
     expect([...ci.needs].sort()).toEqual(Object.keys(checks).sort());
-    expect(Object.keys(checks).sort()).toEqual(['architecture','authoring','build','compatibility','embed-distribution','mc-distribution','relay-distribution','relay-release','tests','types']);
+    expect(Object.keys(checks).sort()).toEqual(['architecture','authoring','build','tests','types']);
     expect(ci.if).toBe('${{ always() }}');
     expect(ci.steps.at(-1).env.CI_JOB_RESULTS).toBe('${{ toJSON(needs) }}');
     expect(ci.steps.at(-1).run).toBe('node tools/scripts/check-ci-results.mjs');
-    expect(workflow.jobs.tests.steps.at(-1).run).toBe('pnpm test --maxWorkers=2');
-    expect(workflow.jobs.types.steps.at(-1).run).toBe('pnpm check');
-    const architecture = workflow.jobs.architecture.steps.at(-1);
+    expect(checks.types.steps.at(-1).run).toBe('pnpm check');
+    const architecture = checks.architecture.steps.at(-1);
     expect(architecture.env.METRICCANVAS_ARCHITECTURE_BASE).toBe('${{ github.event.pull_request.base.sha || github.event.before }}');
     expect(architecture.run.trim().split('\n').at(-1)).toBe('pnpm architecture:check');
     // Source checks execute independently, rather than serially behind other jobs.
-    for(const [name, job] of Object.entries(checks)) {
-      if(!['mc-distribution', 'relay-distribution'].includes(name)) expect(job).not.toHaveProperty('needs');
-    }
-    const distribution = workflow.jobs['mc-distribution'];
-    expect(distribution.needs).toBe('authoring');
+    for(const job of Object.values(checks)) expect(job).not.toHaveProperty('needs');
+  });
+
+  it('shards the frequent suite and defers only the listed files to the complete suite', () => {
+    const sharding = {'fail-fast': false, matrix: {shard: [1, 2, 3]}};
+    const run = 'pnpm test --maxWorkers=2 --shard=${{ matrix.shard }}/3';
+    expect(regular.jobs.tests.strategy).toEqual(sharding);
+    expect(full.jobs.tests.strategy).toEqual(sharding);
+    expect(regular.jobs.tests.steps.at(-1).run).toBe([
+      run,
+      '--exclude tests/authoring-export-isolation.test.ts',
+      '--exclude tests/authoring-temporal-evaluation.test.ts',
+      '--exclude tests/skill-release.test.ts'
+    ].join(' '));
+    expect(full.jobs.tests.steps.at(-1).run).toBe(run);
+    expect(full.jobs.types.steps.at(-1).run).toBe('pnpm check');
+  });
+
+  it('runs the full release checks on schedule and on demand, with a separate result', () => {
+    expect(full.on).toEqual({schedule: [{cron: '17 18 * * *'}], workflow_dispatch: null});
+    const {'ci-full': gate, ...checks} = full.jobs;
+    expect([...gate.needs].sort()).toEqual(Object.keys(checks).sort());
+    expect(Object.keys(checks).sort()).toEqual([
+      'authoring-distribution', 'compatibility', 'embed-distribution', 'mc-distribution',
+      'platform-distribution', 'relay-distribution', 'relay-release', 'tests', 'types'
+    ]);
+    expect(gate.if).toBe('${{ always() }}');
+    expect(gate.steps.at(-1).run).toBe('node tools/scripts/check-ci-results.mjs');
+    expect(gate.steps.at(-1).env.CI_JOB_RESULTS).toBe('${{ toJSON(needs) }}');
+    const distribution = checks['mc-distribution'];
+    expect(distribution.needs).toBe('authoring-distribution');
     expect(distribution.strategy.matrix.os).toEqual(['ubuntu-latest', 'windows-latest']);
     expect(distribution.steps.find((step: {uses?: string}) => step.uses === 'actions/download-artifact@v4').with.name)
       .toBe('mc-content-${{ github.sha }}');
@@ -52,8 +79,7 @@ describe('parallel CI keeps a complete required gate', () => {
   });
 
   it('uses the CI-only compatibility profile and uploads diagnostics without workspace dependencies', () => {
-    const workflow = parse(readFileSync(resolve(root, '.github/workflows/ci.yml'), 'utf8'));
-    const steps = workflow.jobs.compatibility.steps;
+    const steps = full.jobs.compatibility.steps;
     expect(steps.find((step: {run?: string}) => step.run?.includes('compatibility:check')).run)
       .toContain('--source-checks=ci');
     const paths = steps.at(-1).with.path.trim().split('\n');
@@ -63,10 +89,26 @@ describe('parallel CI keeps a complete required gate', () => {
     for(const path of paths) expect(path).not.toMatch(/node_modules|\/source(?:\/|$)/);
   });
 
-  it('requires real Linux and Windows embed builds with the unchanged distribution guard', () => {
-    const workflow = parse(readFileSync(resolve(root, '.github/workflows/ci.yml'), 'utf8'));
-    const distribution = workflow.jobs['embed-distribution'];
-    expect(workflow.jobs.ci.needs).toContain('embed-distribution');
+  it('keeps authoring consistency in the regular workflow and archives in the full workflow', () => {
+    const commands = regular.jobs.authoring.steps.map((step: {run?: string}) => step.run ?? '').join('\n');
+    expect(commands).not.toMatch(/^\s*pnpm (?:test|skills:check|skills:repair:check|authoring:check)\b/m);
+    expect(commands).toContain('pnpm exec tsc --noEmit -p tools/tsconfig.skills.json');
+    expect(commands).toContain('pnpm authoring:contracts:check');
+    expect(commands).not.toContain('pnpm skills:pack');
+    const archiveCommands = full.jobs['authoring-distribution'].steps.map((step: {run?: string}) => step.run ?? '').join('\n');
+    expect(archiveCommands).toContain('pnpm skills:pack');
+    expect(archiveCommands).toContain('pnpm mc:content:test');
+    expect(archiveCommands).toContain('mc-content-fixtures.py --check');
+  });
+
+  it('keeps basic Embed browser and size checks fast and requires both native release builds', () => {
+    const commands = regular.jobs.build.steps.map((step: {run?: string}) => step.run ?? '').join('\n');
+    expect(commands).toContain('pnpm build');
+    expect(commands).toContain('check:dist');
+    expect(commands).toContain('playwright test mount-lifecycle.spec.ts distribution.spec.ts');
+    expect(commands).not.toContain('webpack-consumer.spec.ts');
+    const distribution = full.jobs['embed-distribution'];
+    expect(full.jobs['ci-full'].needs).toContain('embed-distribution');
     expect(distribution['runs-on']).toBe('${{ matrix.os }}');
     expect(distribution.strategy.matrix.os).toEqual(['ubuntu-latest', 'windows-latest']);
     expect(distribution.steps.some((step: {run?: string}) => step.run === 'pnpm test tests/embed-chunking.test.ts')).toBe(true);
@@ -77,8 +119,7 @@ describe('parallel CI keeps a complete required gate', () => {
   });
 
   it('builds and round-trips actual four artifacts independently from mc-content', () => {
-    const workflow = parse(readFileSync(resolve(root, '.github/workflows/ci.yml'), 'utf8'));
-    const job = workflow.jobs['relay-release'];
+    const job = full.jobs['relay-release'];
     const commands = job.steps.flatMap((step: {run?: string}) => step.run ? [step.run] : []);
     expect(job.env.METRICCANVAS_PYTHON).toBe('python');
     expect(commands.some((command: string) => command.startsWith('pnpm relay:build '))).toBe(true);
@@ -93,12 +134,11 @@ describe('parallel CI keeps a complete required gate', () => {
     expect(upload.with.path).toContain('metriccanvas-relay-reference.zip.release.json');
     const download = job.steps.find((step: {uses?: string}) => step.uses === 'actions/download-artifact@v4');
     expect(download.with.name).toBe(upload.with.name);
-    expect(workflow.jobs.ci.needs).toContain('relay-release');
+    expect(full.jobs['ci-full'].needs).toContain('relay-release');
   });
 
   it('requires native minimum Node 22 consumers with only six initial dependencies', () => {
-    const workflow = parse(readFileSync(resolve(root, '.github/workflows/ci.yml'), 'utf8'));
-    const job = workflow.jobs['relay-distribution'];
+    const job = full.jobs['relay-distribution'];
     expect(job.needs).toBe('relay-release');
     expect(job.strategy.matrix.os).toEqual(['ubuntu-latest', 'windows-latest']);
     expect(job['runs-on']).toBe('${{ matrix.os }}');
@@ -110,7 +150,7 @@ describe('parallel CI keeps a complete required gate', () => {
     expect(commands.some((command: string) => command.includes('package_cli.py extract') && command.includes('relay-native-current-test'))).toBe(true);
     expect(commands.some((command: string) => command.includes('package_cli.py verify') && command.includes('--probe') && command.includes('--expected-source'))).toBe(true);
     expect(commands.some((command: string) => command.includes('pnpm') || command.includes('pip install -e'))).toBe(false);
-    expect(workflow.jobs.ci.needs).toContain('relay-distribution');
+    expect(full.jobs['ci-full'].needs).toContain('relay-distribution');
   });
 });
 

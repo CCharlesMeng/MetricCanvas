@@ -374,10 +374,14 @@ it('reuses a real heavy validator across an isolated shared-install checkout and
   const root = path.join(temporary, 'real-validator-checkout');
   const cacheDir = path.join(temporary, 'real-validator-cache');
   await copyRealValidatorTree(root);
+  const beforePrime = getLocalBuildCacheStats();
   const original = await localValidatorOutputs(process.cwd(), undefined, undefined, {cacheDir});
+  const priming = delta(beforePrime);
+  const records = await readdir(cacheDir).catch(() => []);
   let before = getLocalBuildCacheStats();
   const isolated = await localValidatorOutputs(root, undefined, undefined, {cacheDir});
-  expect(delta(before).hits).toBe(1);
+  expect(delta(before), `Shared-install lookup after priming: ${JSON.stringify(priming)}, ${records.length} records`)
+    .toEqual({hits: 1, misses: 0, disabled: 0});
   expect([...isolated]).toEqual([...original]);
   // A cold build inside the same isolation layout must validate its own graph;
   // priming only from the source root hides physical/virtual pnpm scope drift.

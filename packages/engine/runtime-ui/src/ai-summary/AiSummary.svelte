@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { getContext, untrack } from 'svelte';
+  import { getContext, onDestroy, untrack } from 'svelte';
   import { SUMMARY_EXPORT_CAPTURE, type SummaryCapture } from '../export-render-state';
-  import { hasAiSummaryBody, type AiSummaryProps } from '@metriccanvas/page/internal';
+  import { activePageComponents, hasAiSummaryBody, type AiSummaryProps } from '@metriccanvas/page/internal';
   import type { PageDataSnapshots } from '../../../runtime/src';
   import AiSummaryView from './view/AiSummaryView.svelte';
   import { AI_SUMMARY_RUNTIME_CONTEXT, assembleGenerationInput, type AiSummaryRuntimeReader } from './runtime/input';
@@ -18,6 +18,13 @@
   let data = $state<AiSummarySnapshot>({ status: 'loading' });
   let retry = $state(0);
   let lastRetry = 0;
+  let unsubscribe: (() => void) | undefined;
+
+  function stopWatching() {
+    unsubscribe?.();
+    unsubscribe = undefined;
+  }
+  onDestroy(stopWatching);
 
   $effect(() => {
     if (!componentId || !capture) return;
@@ -30,20 +37,27 @@
     const force = retry !== lastRetry;
     lastRetry = retry;
     if (hasAiSummaryBody(props)) {
+      stopWatching();
       data = providedContent(props.body ?? '');
       return;
     }
     const context = runtime?.();
-    if (!context) { data = { status: 'loading' }; return; }
-    const input = assembleGenerationInput(props, componentId, sourceSnapshots, context);
-    if (!input) { data = { status: 'loading' }; return; }
+    const input = context && assembleGenerationInput(props, componentId, sourceSnapshots, context);
+    if (!context || !input) {
+      stopWatching();
+      data = { status: 'loading' };
+      return;
+    }
+    // A retained tab still receives its in-flight result. Its current projection can omit the query.
+    if (!activePageComponents(context.page, context.tabs).some(component => component.id === componentId)) return;
+    stopWatching();
     if (!config) {
       data = { status: 'error', error: { message: 'AI 总结未配置 generate(question, contextInfo)' } };
       return;
     }
     const options = config;
     // Session creation and result callbacks must not become reactive input dependencies.
-    return untrack(() => aiSummaryTaskSession(options).watch(input, next => { data = next; }, force));
+    unsubscribe = untrack(() => aiSummaryTaskSession(options).watch(input, next => { data = next; }, force));
   });
 
   function providedContent(body: string): AiSummarySnapshot {

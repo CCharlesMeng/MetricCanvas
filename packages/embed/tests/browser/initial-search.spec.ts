@@ -29,9 +29,9 @@ for(const mode of ['esm','classic']){
   });
   test(`${mode}: explicit empty search disables URL inheritance`,async({page})=>{
     await open(page,mode,'?account-name=outer','');
-    await expect(page.getByText('华为云账号',{exact:false}).first()).toBeVisible();
+    await expect(page.getByText('—',{exact:true})).toBeVisible();
     await expect(page.getByText('outer',{exact:true})).toHaveCount(0);
-    await expect(page.getByRole('heading',{name:'URL 账号参数',exact:true})).toHaveCount(0);
+    await expect(page.getByRole('heading',{name:'URL 账号参数',exact:true})).toBeVisible();
   });
   test(`${mode}: URL changes wait for update; omitted update input rereads URL`,async({page})=>{
     await open(page,mode,'?account-name=first');
@@ -43,8 +43,8 @@ for(const mode of ['esm','classic']){
   });
   test(`${mode}: repeated single account values remain invalid`,async({page})=>{
     await open(page,mode,'#/detail?account-name=one&account-name=two');
-    await expect(page.getByText('华为云账号',{exact:false}).first()).toBeVisible();
-    await expect(page.getByRole('heading',{name:'URL 账号参数',exact:true})).toHaveCount(0);
+    await expect(page.getByText('—',{exact:true})).toBeVisible();
+    await expect(page.getByRole('heading',{name:'URL 账号参数',exact:true})).toBeVisible();
   });
 }
 
@@ -76,6 +76,8 @@ test('automatic input reaches native DQE conditions and missing input blocks req
     history.replaceState(null,'','/examples/inline.html');
     window.runtime.update({document:raw,dataGateway:MetricCanvas.createDqeGateway({endpoint:'/url-params-dqe'})});
   },raw);
-  await expect(page.getByText('regions',{exact:false}).first()).toBeVisible();
+  await expect(page.getByRole('heading',{name:'Regional sales',exact:true})).toBeVisible();
+  await expect(page.getByRole('columnheader',{name:'region',exact:true})).toBeVisible();
+  await expect(page.getByRole('table').getByText('暂无数据',{exact:true})).toBeVisible();
   expect(requests).toHaveLength(0);
 });
