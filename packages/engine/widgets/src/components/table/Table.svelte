@@ -598,11 +598,12 @@
             </tr>
           {/each}
         {:else}
-        {#each rows as row, i (expandable && validExpansionKeys.has(expansion?.key(row.main) ?? '') ? expansion!.key(row.main)! : i)}
+        {#each rows as row, i (expandable && row.kind !== 'pinnedTop' && validExpansionKeys.has(expansion?.key(row.main) ?? '') ? expansion!.key(row.main)! : i)}
+          {@const canExpandRow = expandable && rowTiers[i] === 'detail' && validExpansionKeys.has(expansion!.key(row.main) ?? '')}
           <tr class:subtotal-row={rowTiers[i] === 'subtotal'} class:total-row={row.kind !== 'pinnedTop' && rowTiers[i] === 'total'} data-pinned-top={row.kind === 'pinnedTop' ? '' : undefined}>
             {#if expandable}
               <td class="expand-column fixed" data-column-index="0" style="left:0">
-                {#if rowTiers[i] !== 'subtotal' && rowTiers[i] !== 'total' && validExpansionKeys.has(expansion!.key(row.main) ?? '')}
+                {#if canExpandRow}
                   <button class="row-expand-button" type="button" aria-label={expansion!.expanded(row.main) ? '收起子表格' : '展开子表格'}
                     aria-expanded={expansion!.expanded(row.main)} aria-controls={`${expansion!.id}-${encodeURIComponent(expansion!.key(row.main)!)}`}
                     onclick={() => expansion!.toggle(row.main)}><TableControlIcon name={expansion!.expanded(row.main) ? 'down' : 'right'} /></button>
@@ -763,7 +764,7 @@
               {/if}
             {/each}
           </tr>
-          {#if expandable && expandedRow && validExpansionKeys.has(expansion!.key(row.main) ?? '') && expansion!.expanded(row.main)}
+          {#if canExpandRow && expandedRow && expansion!.expanded(row.main)}
             <tr class="row-expansion-row"><td class="row-expansion-cell" colspan={leaves.length + leadingColumnCount}>
               <div id={`${expansion!.id}-${encodeURIComponent(expansion!.key(row.main)!)}`} role="region" aria-label="子表格" class="row-expansion-content">{@render expandedRow(row.main)}</div>
             </td></tr>

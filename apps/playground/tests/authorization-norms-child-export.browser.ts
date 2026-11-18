@@ -50,7 +50,6 @@ for (const width of [1440, 1280, 800, 390]) {
     await page.goto('/pages/authorization-norms');
     const parent = page.locator('[data-component="region-dept-auth-norms/region-dept-auth-norms-table"]');
     await expect(parent.getByRole('cell', {name: '华东地区部', exact: true})).toBeVisible();
-    await parent.getByRole('button', {name: '展开子表格', exact: true}).click();
     await expect(parent.getByRole('cell', {name: '江苏代表处', exact: true})).toBeVisible();
     await assertExpandedContentFits(parent);
     await exportAndCheck(page, parent);

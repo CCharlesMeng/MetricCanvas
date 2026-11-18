@@ -13,6 +13,7 @@ export interface TableRenderBinding {
   onretry?: () => void;
   expansion?: { page: import('@metriccanvas/page').Page; gateway: import('../../runtime/src').RuntimeDataGateway;
     selection?: import('../../runtime/src/table/hierarchy-selection').HierarchySelection;
+    defaultExpansion?: { row: Row; snapshot: DataSnapshot };
     displaySnapshot?: import('@metriccanvas/page/internal').DisplaySnapshot; filterRevision?: number;
     filters: import('../../runtime/src').FilterValues; params: import('../../runtime/src').PageParamValues; instanceId: string };
   searchDraft?: string;
