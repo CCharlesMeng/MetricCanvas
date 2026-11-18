@@ -53,12 +53,12 @@ it('preserves expansion and committed child state on common refresh, resets its 
   control.toggle(parent);control.sync([parent],{filters,params:new Map()},{status:'unrestricted',identity:'null'});expect(control.get(parent)).toBeUndefined();
  }finally{control.dispose();await sim.close();}
 });
-it('auto-opens once for a logical child choice and removes the optional input for a parent choice',async()=>{
+it('auto-opens a ready singleton and removes the optional input for a parent choice',async()=>{
  const {page,table,filters}=hierarchyFixture(),sim=await hierarchySim();const selected=choose(filters,'O101');
  const receipt={status:'selected' as const,identity:'office-O101',parentValue:'R01',childValue:'O101'};
  const control=createRowExpansionController(page,table,sim.gateway,selected,new Map(),()=>{});
  try{
-  control.sync([parent],{filters:selected,params:new Map()},receipt);await expect.poll(()=>control.get(parent)?.snapshots.get('office-detail')?.status).toBe('ready');
+  control.sync([parent],{filters:selected,params:new Map()},receipt,parent);await expect.poll(()=>control.get(parent)?.snapshots.get('office-detail')?.status).toBe('ready');
   expect(control.get(parent)!.snapshots.get('office-detail')).toMatchObject({rows:[{'office-id':'O101',amount:360}],totalCount:1});
   control.toggle(parent);control.sync([parent],{filters:selected,params:new Map()},receipt);expect(control.get(parent)).toBeUndefined();
   const values=rowExpansionFilters(page,table,parent,{filters:choose(filters,'R01','region-dept'),params:new Map()},{status:'selected',identity:'p',parentValue:'R01'});expect(values.has('detail-office')).toBe(false);
@@ -107,15 +107,15 @@ it('aborts a superseded child scope and discards an ignored-abort late response'
  }finally{control.dispose();await sim.close();}
 });
 
-it('moves a selected child to a newly located parent while preserving manual collapse intent',async()=>{
+it('opens the singleton again when the selected child is located under a new parent',async()=>{
  const {page,table,filters}=hierarchyFixture(),sim=await hierarchySim(),selected=choose(filters,'O101');
  const control=createRowExpansionController(page,table,sim.gateway,selected,new Map(),()=>{});
  const first={status:'selected' as const,identity:'office-O101',parentValue:'R01',childValue:'O101'},second={...first,parentValue:'R02'};
  const other={'row-id':2,'region-id':'R02',amount:900};
  try{
-  control.sync([parent],{filters:selected,params:new Map()},first);expect(control.get(parent)).toBeDefined();
-  control.sync([other],{filters:selected,params:new Map()},second);expect(control.get(parent)).toBeUndefined();expect(control.get(other)).toBeDefined();
-  control.toggle(other);control.sync([parent],{filters:selected,params:new Map()},first);expect(control.get(parent)).toBeUndefined();
+  control.sync([parent],{filters:selected,params:new Map()},first,parent);expect(control.get(parent)).toBeDefined();
+  control.sync([other],{filters:selected,params:new Map()},second,other);expect(control.get(parent)).toBeUndefined();expect(control.get(other)).toBeDefined();
+  control.toggle(other);control.sync([parent],{filters:selected,params:new Map()},first,parent);expect(control.get(parent)).toBeDefined();
  }finally{control.dispose();await sim.close();}
 });
 it('keeps a 6.44 numeric-keyed query-paginated parent working without lookup requests',async()=>{

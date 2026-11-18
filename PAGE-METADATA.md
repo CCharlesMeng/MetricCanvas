@@ -43,6 +43,8 @@ Excel 基础数字精度统一：number-0 至 number-5 及已有带符号/千分
 
 IOC 父子表层级选择复用“全球＝不限区域”：保留全部父行，按父行查询子表，界面与 URL 保留全球；完整父子 Excel 共用解析。内置 regionFilter 的标准三层树可使用 region-dept / office 联动，无需手写 hierarchy；普通组织树仍限两层。无新增 Schema 字段。见[层级筛选联动](docs/page-metadata/components/table.md#hierarchy-selection)，合成入口 `/pages/table-hierarchy-selection` 与 `/pages/table-hierarchy-standard-region`。
 
+行内子表格在筛选后的完整父结果只有一条可展开记录时默认展开，父结果重新加载后重新判断。计数基于分页前的明细父行。已有页面直接使用此默认行为，无需新增字段或升级 Schema。见[行内子表格](docs/page-metadata/components/table.md#row-expansion)，合成入口 `/pages/table-hierarchy-standard-region`、`/pages/table-child-keyless` 与 `/pages/table-row-expansion-inline`。
+
 6.115：IOC 页头通过 `identity.titleNavigate` 为标题配置跳转地址，复用普通 URL 导航、页面参数和筛选传参、目标校验及条件；无行上下文，省略时保持普通标题。见[标题跳转](docs/page-metadata/components/iocHeader.md#标题跳转6115)，合成入口 `/pages/ioc-header-title-link`。
 
 6.113：新增 `number-0`，四舍五入显示整数，默认加千分位、不缩放，正负半值均向远离零方向舍入，舍入零统一显示 `0`。复用 `format` / `defaultFormat`，原值、计算与排序保持；Excel 保留数值原值并展示同一整数。见[数值格式](docs/page-metadata/field-bindings-and-formats.md)，合成入口 `/pages/number-precision-five`。

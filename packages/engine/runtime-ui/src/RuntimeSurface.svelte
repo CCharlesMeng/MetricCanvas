@@ -34,6 +34,7 @@
   import { applyTableSearch, remoteTableSearch } from './table/search';
   import { exportVisibleTable } from './table/export/task';
   import { tablePagination } from './table/pagination';
+  import { singleExpandableParent } from '../../runtime/src/table/expansion';
   import { tick, untrack, setContext, onDestroy } from 'svelte';
   const rowScopeInstanceId = $props.id();
   import { initialSectionGroup, selectedSectionGroup, sectionGroupFor, visibleSections } from './section-navigation';
@@ -1458,6 +1459,18 @@
     return tablePagination(component, snapshot, stream?.getQueryPageSize(component.data.main));
   }
 
+  function tableDefaultExpansion(loaded: Page, table: TableComponent, snapshot: DataSnapshot | undefined) {
+    if (snapshot?.status !== 'ready') return;
+    const pagination = resolvedTablePagination(table, snapshot);
+    const remote = remoteTableSearch(loaded.dataSources[table.data.main]);
+    if ((remote || pagination?.mode === 'query') && snapshot.totalCount !== snapshot.rows.length) return;
+    const rows = pagination?.mode === 'query' ? snapshot.rows : remote
+      ? presentation?.rows(table, snapshot.rows) ?? snapshot.rows
+      : filteredTableRows(table, snapshot);
+    const row = singleExpandableParent(table, rows);
+    if (row) return { row, snapshot };
+  }
+
   function tablePaginationState(
     loaded: Page,
     component: TableComponent,
@@ -1518,7 +1531,7 @@
     if (component.type !== 'table') return undefined;
     void tableRevision;
     return tableController?.binding(component,{
-      expansion: component.props.rowExpansion ? { page: loaded, gateway: activeGateway, filters: filterValues, params: pageParams, displaySnapshot, filterRevision, instanceId: rowScopeInstanceId, selection: tableController?.hierarchy(component) } : undefined,
+      expansion: component.props.rowExpansion ? { page: loaded, gateway: activeGateway, filters: filterValues, params: pageParams, displaySnapshot, filterRevision, instanceId: rowScopeInstanceId, selection: tableController?.hierarchy(component), defaultExpansion: tableDefaultExpansion(loaded, component, slots.get('main')) } : undefined,
       onexport: () => { void exportTable(component); },
       oncancelexport: () => exportController.cancel(component.id),
       exporting: tableExportStates[component.id]?.busy,

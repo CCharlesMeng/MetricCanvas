@@ -20,6 +20,23 @@ export interface RowTableInstance {
     dispose(): void;
 }
 const unavailable = (): DataSnapshot => ({ status: 'error', error: { code: 'DQE_ROW_CONTRACT_ERROR', message: '子表格字段或行键不可用' } });
+function parentExpansionKey(table: TableComponent, row: Row): string | undefined {
+    const { rowKindField, rowKey } = table.props;
+    const kind = rowKindField && row[rowKindField];
+    if (!rowKey || kind === 'subtotal' || kind === 'total') return;
+    return expansionRowKey(row[rowKey]);
+}
+
+export function singleExpandableParent(table: TableComponent, rows: readonly Row[]): Row | undefined {
+    let onlyParent: Row | undefined;
+    for (const row of rows) {
+        if (parentExpansionKey(table, row) === undefined) continue;
+        if (onlyParent) return;
+        onlyParent = row;
+    }
+    return onlyParent;
+}
+
 function checkedRows(snapshot: DataSnapshot, table: TableComponent): DataSnapshot {
     if (snapshot.status !== 'ready' || table.props.rowKey === undefined)
         return snapshot;
@@ -70,15 +87,12 @@ function limitedGateway(gateway: DataGateway): DataGateway {
 /** Each parent owns an isolated query session; successful folds can be resumed. */
 export function createRowExpansionController(page: Page, parent: TableComponent, gateway: DataGateway, filters: FilterValues, params: PageParamValues, changed: () => void, displaySnapshot?: import('@metriccanvas/page/internal').DisplaySnapshot, filterRevision?: number) {
     let selection:HierarchySelection|undefined;
-    let autoAttempted=false;
-    let childIntent=false;
-    let selectedParentValue:string|undefined;
     let presentationKey = JSON.stringify([displaySnapshot, filterRevision]);
     const instances = new Map<string, RowTableInstance>();
     const folded=createFoldedTableCache();
     const foldContext=()=>canonicalizeJson({filters:[...filters],params:[...params],selection,displaySnapshot,filterRevision});
     const limited = limitedGateway(gateway);
-    const keyOf = (row: Row) => ['subtotal', 'total'].includes(String(row[parent.props.rowKindField ?? ''])) ? undefined : parent.props.rowKey ? expansionRowKey(row[parent.props.rowKey]) : undefined;
+    const keyOf = (row: Row) => parentExpansionKey(parent, row);
     function close(key: string, cache=false) {
         const instance=instances.get(key);
         if(!instance)return;
@@ -138,32 +152,21 @@ export function createRowExpansionController(page: Page, parent: TableComponent,
         const views=new Map([...instance.stream?.captureViews()??[]].map(([id,view])=>[id,{...view,pageIndex:0}]));
         instance.dispose();instance.snapshots=new Map();startQuery(instance,views);
     }
-    function selectionMove(next:HierarchySelection|undefined){
-        const moved=next?.status==='selected'&&selectedParentValue!==undefined&&selectedParentValue!==next.parentValue;
-        if(!moved)return {moved:false,views:undefined};
-        const instance=[...instances.values()][0];
-        return {moved:true,views:instance?.stream?.captureViews()};
-    }
-    function syncSelectedRow(rows:readonly Row[],next:HierarchySelection|undefined,move:ReturnType<typeof selectionMove>){
-        if(next?.status!=='selected'||!next.childValue)return;
-        selectedParentValue=next.parentValue;
-        if(autoAttempted&&!move.moved)return;
-        if(!autoAttempted)childIntent=true;
-        autoAttempted=true;
-        if(!childIntent||rows.length!==1)return;
-        const row=rows[0]!,key=keyOf(row);
-        if(key===undefined||instances.has(key))return;
-        const views=move.views&&new Map([...move.views].map(([id,view])=>[id,{...view,pageIndex:0}]));
-        open(row,key,views);
+    function movedChildViews(next: HierarchySelection | undefined) {
+        if (next?.status !== 'selected' || !next.childValue || !selection?.parentValue || selection.parentValue === next.parentValue) return;
+        const views = instances.values().next().value?.stream?.captureViews();
+        return views && new Map([...views].map(([id, view]) => [id, { ...view, pageIndex: 0 }]));
     }
     return {
         keyOf,
-        sync(rows:readonly Row[],context:HierarchyContext,next?:HierarchySelection){
+        sync(rows: readonly Row[], context: HierarchyContext, next?: HierarchySelection, defaultParent?: Row) {
+            const views = movedChildViews(next);
             filters=context.filters;params=context.params;selection=next;
             this.updatePresentation(context.displaySnapshot,context.filterRevision);
-            const move=selectionMove(next);
             this.retain(rows);
-            syncSelectedRow(rows,next,move);
+            if (!defaultParent || !rows.includes(defaultParent)) return;
+            const key = keyOf(defaultParent);
+            if (key !== undefined && !instances.has(key)) open(defaultParent, key, views);
         },
         updatePresentation(snapshot: typeof displaySnapshot, revision: typeof filterRevision) {
             const key = JSON.stringify([snapshot, revision]);
@@ -185,7 +188,6 @@ export function createRowExpansionController(page: Page, parent: TableComponent,
             const key = keyOf(row);
             if (key === undefined)
                 return;
-            if(selection?.childValue)childIntent=!instances.has(key);
             if (instances.has(key)) {
                 close(key,true);
                 changed();

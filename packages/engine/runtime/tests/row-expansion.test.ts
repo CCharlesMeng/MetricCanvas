@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { parsePage, type Page } from '@metriccanvas/page';
 import type { TableComponent, EffectiveQuery, Row } from '@metriccanvas/page/internal';
-import { createRowExpansionController } from '../src/table/expansion';
+import { createRowExpansionController, singleExpandableParent } from '../src/table/expansion';
 import { orchestrate } from '../src/orchestrator';
 import { initialQuerySourceIds } from '../../../data-execution/src/source-scope';
 
@@ -23,6 +23,16 @@ function result(query: EffectiveQuery) {
 }
 
 describe('isolated expanded table scopes', () => {
+  it('counts expandable detail parents independently of subtotal and total rows', () => {
+    const { table, rows: [first, second] } = fixture('inline');
+    table.props.rowKindField = 'tier';
+    const subtotal = { 'customer-id': 'subtotal', tier: 'subtotal' };
+    const total = { 'customer-id': 'total', tier: 'total' };
+    expect(singleExpandableParent(table, [subtotal, first!, total])).toBe(first);
+    expect(singleExpandableParent(table, [subtotal, total])).toBeUndefined();
+    expect(singleExpandableParent(table, [first!, second!, total])).toBeUndefined();
+    expect(singleExpandableParent(table, [first!, { ...first! }])).toBeUndefined();
+  });
   it('does not execute child queries until expansion, including the initial page program', async () => {
     const { page } = fixture(); let calls = 0;
     expect(initialQuerySourceIds(page)).toEqual([]);

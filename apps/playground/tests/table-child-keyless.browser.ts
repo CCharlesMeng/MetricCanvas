@@ -45,7 +45,29 @@ test('keyless query and inline children keep duplicates, paging, folds and compl
   await expect(child.getByRole('cell', { name: '上海', exact: true })).toHaveCount(2);
   expect(counts(await workbook(page))).toEqual([1, 2]);
   const inline = page.locator('[data-component="inline-keyless/keyless-inline-table"]');
-  await inline.getByRole('button', { name: '展开子表格', exact: true }).click();
   await expect(inline.getByRole('cell', { name: '甲代表处', exact: true })).toHaveCount(2);
   await expect(inline.getByRole('cell', { name: '20', exact: true })).toBeVisible();
+});
+
+test('a one-row page stays collapsed when the parent result spans multiple pages', async ({ page }) => {
+  await page.goto('/pages/table-row-expansion-inline');
+  const table = page.locator('[data-component]').filter({
+    has: page.getByRole('heading', { name: '父行自带明细 · 默认干净呈现' })
+  }).last();
+  await table.getByRole('button', { name: '下一页', exact: true }).click();
+  await expect(table.getByRole('button', { name: '展开子表格', exact: true })).toHaveCount(1);
+  await expect(table.getByRole('region', { name: '子表格', exact: true })).toHaveCount(0);
+});
+
+test('local parent search auto-expands the only matching row', async ({ page }) => {
+  await page.goto('/pages/table-column-visibility-scopes');
+  const table = page.locator('[data-component="scope-main/scope-parent"]');
+  const search = table.getByPlaceholder('搜索客户、项目或负责人');
+  const child = table.getByRole('region', { name: '子表格', exact: true });
+  await search.fill('华南客户');
+  await search.press('Enter');
+  await expect(child.getByRole('cell', { name: '服务A', exact: true })).toBeVisible();
+  await search.fill('无匹配客户');
+  await search.press('Enter');
+  await expect(child).toHaveCount(0);
 });

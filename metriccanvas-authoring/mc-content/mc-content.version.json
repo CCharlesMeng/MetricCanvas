@@ -1,7 +1,7 @@
 {
   "interfaceVersion": "1.0",
-  "contentVersion": "1-9e1f0c95c97ad03d",
-  "contentSha256": "9e1f0c95c97ad03d1e7bb76546a0cf63572d89851a83cdd6c89919167ebb0378",
+  "contentVersion": "1-b170dc14c91e01e1",
+  "contentSha256": "b170dc14c91e01e1802e7c186c4f7d89aff91e8e89c381983bea66fdd2fc7528",
   "files": [
     {
       "file": "authoring-contracts/authored/adapter-interface.md",
@@ -2701,7 +2701,7 @@
     },
     {
       "file": "knowledge/table.hierarchy-selection.json",
-      "sha256": "8da5ae5e576e86abc391bb209d68466cb583c7b18740da7a5dedc33de4a95e00"
+      "sha256": "fe250d7d6a01d08a22eda34d038866537ffa630648002eb4097ffc3404204276"
     },
     {
       "file": "knowledge/table.overview.json",
@@ -2793,7 +2793,7 @@
     },
     {
       "file": "knowledge/table.section-58b4d4e1.json",
-      "sha256": "ae1affce026c8488ccd1ab2a984d6bf33499610786388d0fc48ec99e48439501"
+      "sha256": "93f95aa1cbe5ef4e3854c19aacbb3e482b914f18628231a221cfa721f61c2ef1"
     },
     {
       "file": "knowledge/table.section-60cced4d.json",
@@ -2813,7 +2813,7 @@
     },
     {
       "file": "knowledge/table.section-a5ac2f1a.json",
-      "sha256": "482e546ea0d799fd332834c4089cc07eceb95f3e05be5183d0898f98b543e25f"
+      "sha256": "7149baa4fd038d225bc6643bdd378ae4ab3349f4706b236f218e2c6af2504a7b"
     },
     {
       "file": "knowledge/table.section-a7993e9c.json",
@@ -2849,7 +2849,7 @@
     },
     {
       "file": "knowledge/table.section-d4954fde.json",
-      "sha256": "8bcbd297a8ce58ed863057071892d87f978a7b0c0fbf3186f7110fe59d61b035"
+      "sha256": "fb0e59208ae6fcffe18a73ac72f7dee3f5df5972d2524e7d4ba98030ef6af0d4"
     },
     {
       "file": "knowledge/table.section-db1b57b9.json",
@@ -2901,7 +2901,7 @@
     },
     {
       "file": "knowledge/table.visibility.json",
-      "sha256": "539e39bf481a4f84442666db391c3892104c8ab437a7e78363d723d8a3168471"
+      "sha256": "0fb189504d565cc84057022ae5e8c1f55fd00a5b4064d5076c16d2aac5f40862"
     },
     {
       "file": "knowledge/table.width.json",
@@ -3009,7 +3009,7 @@
     },
     {
       "file": "product-contracts/manifest.json",
-      "sha256": "5329dd2d5f69f5c9aa3af4674be4a43917f4130fdc3794d86e305a6f713acac3"
+      "sha256": "40492e7e3afd7584d9b33f03c9f8ff9b861a95a79b8b32855374e51e988d3ef7"
     },
     {
       "file": "product-contracts/page/component-catalog.json",
@@ -6417,7 +6417,7 @@
     },
     {
       "file": "references/authoring-knowledge/model.json",
-      "sha256": "6dbcd5293e4056a290d7a855871254cb9aeee93167b23ca4bd3599480f45a7ef"
+      "sha256": "3231f77d9bd803396a94c32b4de208a19abcee42531350a086459c857fc0799b"
     },
     {
       "file": "references/example-guides/chart-customer-series/customer-category-series.md",
@@ -6557,7 +6557,7 @@
     },
     {
       "file": "references/page-metadata/components/table.md",
-      "sha256": "9af5e9a39a76e5217665d882ca2c2f18960c6e8a060b3bfaacade598fceefd14"
+      "sha256": "b803e927c07b876d7509bdba6bef5027e1bb95d1b56971d84bcd2d9a837b6164"
     },
     {
       "file": "references/page-metadata/components/text.md",
@@ -9937,7 +9937,7 @@
     },
     {
       "file": "runtime/contract-alignment.json",
-      "sha256": "bebefd68db7db22b1e3fd86ed68ee847e87ca12b760e0b23ba37ad4a05d78c3a"
+      "sha256": "e1a0950b3fc2e4dc55b87a19c30173b30a94c17ab8392350ecb7a1c4727d586a"
     },
     {
       "file": "runtime/coverage.json",
@@ -9985,7 +9985,7 @@
     },
     {
       "file": "runtime/source-identity.json",
-      "sha256": "d16759094a84e291729fe4fac94a8400abf8f045d5ecb1022e96d662ee559839"
+      "sha256": "050024a3827342a2b04eaddc4d8d8ecd77c3d4c76bdbf32784f8e5f90b2e129b"
     },
     {
       "file": "runtime/tool-behavior.md",
@@ -10095,7 +10095,7 @@
   "alignedWith": {
     "productContractVersion": "1.0.0-rc.4",
     "productManifest": "contract-snapshot/manifest.json",
-    "productManifestSha256": "5329dd2d5f69f5c9aa3af4674be4a43917f4130fdc3794d86e305a6f713acac3",
+    "productManifestSha256": "40492e7e3afd7584d9b33f03c9f8ff9b861a95a79b8b32855374e51e988d3ef7",
     "authoringContractVersion": "0.3.1",
     "authoringManifest": "contracts/manifest.json",
     "authoringManifestSha256": "8384342638e5329ec29d096511cfe3c9f3110907e30a9fefe66904df7dbe0b50",
