@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { expect, it, vi } from 'vitest';
-import { parsePage, resolvePeriodSelection, type DimensionFilterDeclaration, type EffectiveQuery } from '@metriccanvas/page/internal';
+import { parsePage, resolvePeriodSelection, type DimensionFilterDeclaration, type EffectiveQuery, type Page } from '@metriccanvas/page/internal';
 import { effectiveDqeItem } from '../src/dqe/dqe';
 import { createSourceCandidateSession, sourceCandidatesGateway } from '../src/source-candidates';
 import { createSourceProgram } from '../src/source-program/session';
@@ -128,6 +128,12 @@ function keyOfficeBusinessPage() {
   return result.page;
 }
 
+function businessMonth(page:Page) {
+  const period=page.filters?.find(filter=>filter.id==='mtime');
+  if(period?.type!=='timeRange'||(period.precision!=='date'&&period.precision!=='month'))throw Error('business period');
+  return resolvePeriodSelection({mode:'month',value:'2026-10'},new Date('2026-11-17T04:00:00Z'),period.precision);
+}
+
 it.each([
   undefined,
   {kind:'page', offset:0, search:''},
@@ -145,7 +151,7 @@ it.each([
   });
   const conditions:FilterValues = new Map([
     ['key-national-only',{type:'boolean',value:true}],
-    ['mtime',{type:'timeRange',...resolvePeriodSelection({mode:'month',value:'2026-10'},new Date('2026-11-17T04:00:00Z'),'month')}],
+    ['mtime',{type:'timeRange',...businessMonth(page)}],
     ['region',{type:'dimension',dimension:'geo-pc-code',level:'geo',values:['全球']}]
   ]);
   const request = filterCandidatesRequest(filter,page.filters!,conditions,undefined,{page});
@@ -169,7 +175,7 @@ it.each(['empty','denied'] as const)('does not dispatch an unrestricted candidat
   });
   const conditions:FilterValues = new Map([
     ['key-national-only',{type:'boolean',value:true}],
-    ['mtime',{type:'timeRange',...resolvePeriodSelection({mode:'month',value:'2026-10'},new Date('2026-11-17T04:00:00Z'),'month')}],
+    ['mtime',{type:'timeRange',...businessMonth(page)}],
     ['region',{type:'dimension',dimension:'geo-pc-code',level:'geo',values:['全球']}]
   ]);
   const request = filterCandidatesRequest(filter,page.filters!,conditions,undefined,{page});

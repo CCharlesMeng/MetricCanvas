@@ -124,6 +124,7 @@ GroupedPageParams
 GroupedQueryDataSource
 GroupedQueryFields
 HeaderBinding
+INDEPENDENT_EXCLUSION_CANDIDATES_MINOR
 IOC_KEY_OFFICE_FILTER_IDS
 InlineDataSource
 InlineSource
@@ -424,6 +425,7 @@ hasTimeConstraints
 headerDeclarations
 headerDefaultValues
 hierarchyLevelOf
+independentExclusionFilterIds
 initialFilterTextValues
 initialModeRange
 initialTabSelections
@@ -575,6 +577,7 @@ stableRowQuery
 standardIocRegionFilter
 staticFieldBinding
 supportedVersions
+supportsIndependentExclusionCandidates
 supportsNativePreparation
 supportsUnrestrictedFilterClear
 tabChildren

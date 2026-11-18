@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.124",
+  "schemaVersion": "6.125",
   "id": "business-result-metrics",
   "layout": "dashboard",
   "meta": {
@@ -8,7 +8,7 @@
   },
   "filters": [
     {
-      "id": "key-account-only",
+      "id": "key-national-only",
       "type": "boolean",
       "label": "仅看重点国代",
       "default": false
@@ -17,7 +17,7 @@
       "id": "mtime",
       "type": "timeRange",
       "display": "period",
-      "precision": "month",
+      "precision": "date",
       "label": "统计期间",
       "required": true,
       "default": {
@@ -30,38 +30,6 @@
         "month",
         "last12Months"
       ]
-    },
-    {
-      "id": "region",
-      "type": "dimension",
-      "dimension": "geo-pc-code",
-      "label": "区域",
-      "emptyLabel": "区域",
-      "selection": {
-        "mode": "single",
-        "required": true
-      },
-      "hierarchy": [
-        {
-          "id": "geo",
-          "dimension": "geo-pc-code",
-          "label": "全球"
-        },
-        {
-          "id": "region-dept",
-          "dimension": "region-dept-code",
-          "label": "地区部"
-        },
-        {
-          "id": "office",
-          "dimension": "rep-office-code",
-          "label": "代表处"
-        }
-      ],
-      "defaultLevel": "geo",
-      "display": "tree",
-      "treeSelection": "level",
-      "searchable": true
     },
     {
       "id": "customer-class",
@@ -87,6 +55,10 @@
         {
           "label": "核心NA",
           "value": "核心NA"
+        },
+        {
+          "label": "商业客户",
+          "value": "商业客户"
         }
       ]
     },
@@ -461,6 +433,10 @@
             },
             "mtime": {
               "target": "time"
+            },
+            "customer-class": {
+              "target": "dimension",
+              "queryField": "客户级别"
             }
           }
         }
@@ -676,6 +652,10 @@
             },
             "mtime": {
               "target": "time"
+            },
+            "customer-class": {
+              "target": "dimension",
+              "queryField": "客户级别"
             }
           }
         }
@@ -836,6 +816,10 @@
             },
             "mtime": {
               "target": "time"
+            },
+            "customer-class": {
+              "target": "dimension",
+              "queryField": "客户级别"
             }
           }
         }
@@ -944,6 +928,10 @@
                   "month"
                 ]
               }
+            },
+            "customer-class": {
+              "target": "dimension",
+              "queryField": "客户级别"
             }
           }
         }
@@ -1052,6 +1040,10 @@
                   "quarter"
                 ]
               }
+            },
+            "customer-class": {
+              "target": "dimension",
+              "queryField": "客户级别"
             }
           }
         }
@@ -1160,6 +1152,10 @@
                   "year"
                 ]
               }
+            },
+            "customer-class": {
+              "target": "dimension",
+              "queryField": "客户级别"
             }
           }
         }
@@ -1265,6 +1261,10 @@
             },
             "mtime": {
               "target": "time"
+            },
+            "customer-class": {
+              "target": "dimension",
+              "queryField": "客户级别"
             }
           }
         }
@@ -1370,6 +1370,10 @@
             },
             "mtime": {
               "target": "time"
+            },
+            "customer-class": {
+              "target": "dimension",
+              "queryField": "客户级别"
             }
           }
         }
@@ -1471,6 +1475,10 @@
             },
             "mtime": {
               "target": "time"
+            },
+            "customer-class": {
+              "target": "dimension",
+              "queryField": "客户级别"
             }
           }
         }
@@ -1591,6 +1599,10 @@
             },
             "mtime": {
               "target": "time"
+            },
+            "customer-class": {
+              "target": "dimension",
+              "queryField": "客户级别"
             }
           }
         }
@@ -1777,6 +1789,10 @@
             },
             "mtime": {
               "target": "time"
+            },
+            "customer-class": {
+              "target": "dimension",
+              "queryField": "客户级别"
             }
           }
         }
@@ -1902,6 +1918,10 @@
             },
             "mtime": {
               "target": "time"
+            },
+            "customer-class": {
+              "target": "dimension",
+              "queryField": "客户级别"
             }
           }
         }
@@ -1991,6 +2011,10 @@
                   "quarter"
                 ]
               }
+            },
+            "customer-class": {
+              "target": "dimension",
+              "queryField": "客户级别"
             }
           }
         }
@@ -2056,6 +2080,10 @@
                   "year"
                 ]
               }
+            },
+            "customer-class": {
+              "target": "dimension",
+              "queryField": "客户级别"
             }
           }
         }
@@ -2121,6 +2149,10 @@
                   "month"
                 ]
               }
+            },
+            "customer-class": {
+              "target": "dimension",
+              "queryField": "客户级别"
             }
           }
         }
@@ -2207,6 +2239,10 @@
                   "quarter"
                 ]
               }
+            },
+            "customer-class": {
+              "target": "dimension",
+              "queryField": "客户级别"
             }
           }
         }
@@ -2293,6 +2329,10 @@
                   "year"
                 ]
               }
+            },
+            "customer-class": {
+              "target": "dimension",
+              "queryField": "客户级别"
             }
           }
         }
@@ -2379,6 +2419,10 @@
                   "month"
                 ]
               }
+            },
+            "customer-class": {
+              "target": "dimension",
+              "queryField": "客户级别"
             }
           }
         }
@@ -2400,18 +2444,68 @@
             "identity": {
               "title": "业务结果指标情况"
             },
-            "filterIds": [
-              "key-account-only",
-              "mtime",
-              "region",
-              "customer-class"
-            ],
             "note": "地区部与代表处业务结果指标情况，内嵌合成演示数据（占位值），不来自真实系统，不得用于业务判断",
             "presentation": {
               "layout": "inline",
               "density": "normal",
               "collapse": "none"
-            }
+            },
+            "components": [
+              {
+                "id": "header-key-national-only-control",
+                "type": "filterControl",
+                "props": {
+                  "filterId": "key-national-only"
+                }
+              },
+              {
+                "id": "header-mtime-control",
+                "type": "filterControl",
+                "props": {
+                  "filterId": "mtime"
+                }
+              },
+              {
+                "id": "header-region-control",
+                "type": "regionFilter",
+                "props": {
+                  "officeNavigate": {
+                    "href": "/operationmap/manage-contract-business/rep-business-result",
+                    "query": {
+                      "rep-office-name": {
+                        "source": "filter",
+                        "id": "region"
+                      },
+                      "mtime": {
+                        "source": "filter",
+                        "id": "mtime"
+                      },
+                      "mtime.from": {
+                        "source": "filter",
+                        "id": "mtime",
+                        "part": "from"
+                      },
+                      "mtime.to": {
+                        "source": "filter",
+                        "id": "mtime",
+                        "part": "to"
+                      },
+                      "customer-category": {
+                        "source": "filter",
+                        "id": "customer-class"
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "id": "header-customer-class-control",
+                "type": "filterControl",
+                "props": {
+                  "filterId": "customer-class"
+                }
+              }
+            ]
           }
         }
       ]
@@ -2491,7 +2585,8 @@
                 "selection": {
                   "writes": {
                     "region": {
-                      "field": "region-dept-name"
+                      "field": "region-dept-name",
+                      "level": "region-dept"
                     }
                   }
                 }
@@ -2640,13 +2735,27 @@
                       "source": "filter",
                       "id": "mtime"
                     },
-                    "rep-office-name": {
-                      "source": "row",
-                      "field": "rep-office-name"
+                    "mtime.from": {
+                      "source": "filter",
+                      "id": "mtime",
+                      "part": "from"
+                    },
+                    "mtime.to": {
+                      "source": "filter",
+                      "id": "mtime",
+                      "part": "to"
                     },
                     "customer-category": {
                       "source": "filter",
                       "id": "customer-class"
+                    },
+                    "rep-office": {
+                      "source": "row",
+                      "field": "rep-office-name"
+                    },
+                    "rep-office-name": {
+                      "source": "row",
+                      "field": "rep-office-name"
                     }
                   }
                 }

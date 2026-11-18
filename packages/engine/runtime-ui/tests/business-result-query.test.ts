@@ -15,6 +15,11 @@ function conditionsFor(page:Page) {
  conditions.set('region',{type:'dimension',dimension:'geo-pc-code',level:'geo',values:['全球']});
  return conditions;
 }
+function periodPrecision(page:Page) {
+ const period=page.filters?.find(filter=>filter.id==='mtime');
+ if(period?.type!=='timeRange'||(period.precision!=='date'&&period.precision!=='month'))throw Error('business period');
+ return period.precision;
+}
 function syntheticGateway(requests:EffectiveQuery[]):RuntimeDataGateway {
  return {
   async fetchData(query) {
@@ -33,7 +38,7 @@ it('renders the supplied business page with selection policies and only the matc
  const program=createSourceProgram(page,{gateway:syntheticGateway(requests),now});
  try {
   for(const [mode,value,label] of [['month','2026-09','月'],['quarter','2026-Q3','季'],['year','2026','年']] as const) {
-   conditions.set('mtime',{type:'timeRange',...resolvePeriodSelection({mode,value},now,'month')});
+   conditions.set('mtime',{type:'timeRange',...resolvePeriodSelection({mode,value},now,periodPrecision(page))});
    conditions.set('business-type',{type:'dimension',dimension:'sub-business-type',level:'sub-business-type',values:['SUB_SERVICE_TYPE_PUBLIC_REGION']});
    requests.length=0;
    let snapshot:DataSnapshot|undefined;
