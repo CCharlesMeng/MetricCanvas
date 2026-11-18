@@ -6,6 +6,12 @@ allowBuilds:
   esbuild: true
   # core-js only prints a funding banner; the PDF dependencies need no postinstall artifacts.
   core-js: false
+  # testcontainers chain (dev-only deps of metric-fulfillment/page-lifecycle/template-library)
+  # re-resolves in CI because main-synced lockfile lacks them; pnpm 11 hard-fails (ERR_PNPM_IGNORED_BUILDS)
+  # on undeclared build scripts. Declared as ignored: ssh2 falls back to pure JS, no native build needed.
+  cpu-features: false
+  protobufjs: false
+  ssh2: false
 overrides:
   # Kit 2.70.2 uses cookie's legacy parse/serialize API; 0.7.2 fixes GHSA-pxg6-pf52-xh8x.
   '@sveltejs/kit@2.70.2>cookie': 0.7.2
