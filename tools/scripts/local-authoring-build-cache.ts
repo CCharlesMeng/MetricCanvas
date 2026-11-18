@@ -33,13 +33,15 @@ interface CacheRecord {
 const digest = (value: string | Buffer) => createHash('sha256').update(value).digest('hex');
 const slash = (value: string) => value.split(path.sep).join('/');
 const require = createRequire(import.meta.url);
-const cacheFormat = 'metriccanvas-local-build/1';
+const cacheFormat = 'metriccanvas-local-build/2';
 const cacheStats = {hits: 0, misses: 0, disabled: 0};
 export function getLocalBuildCacheStats() { return {...cacheStats}; }
 
 /** Logical locations allow identical source/dependency bytes in another checkout. */
 function location(root: string, file: string): string {
   file = path.resolve(file);
+  const nodePath = nodePathLocation(file);
+  if (nodePath !== undefined) return nodePath;
   const relative = path.relative(root, file);
   if (relative === 'node_modules' || relative.startsWith('node_modules/')) return `dependency/${slash(relative)}`;
   if (!relative.startsWith('..') && !path.isAbsolute(relative)) return `source/${slash(relative)}`;
@@ -48,9 +50,26 @@ function location(root: string, file: string): string {
   throw new Error('Uncacheable external build input');
 }
 
+// A runner's pnpm installation and the workspace can both have the same
+// node_modules suffix. Preserve the resolver scope instead of merging them.
+function nodePathLocation(file: string): string | undefined {
+  for (const [index, folder] of nodePaths().entries()) {
+    const relative = path.relative(path.resolve(folder), file);
+    if (relative === '..' || relative.startsWith(`..${path.sep}`) || path.isAbsolute(relative)) continue;
+    return `node-path/${index}/${slash(relative)}`;
+  }
+}
+
 function physical(root: string, value: string): string {
   const [kind, ...parts] = value.split('/');
-  if (!['source', 'dependency'].includes(kind) || parts.includes('..')) throw new Error('Invalid cache location');
+  if (parts.includes('..')) throw new Error('Invalid cache location');
+  if (kind === 'node-path') {
+    const [index, ...relative] = parts;
+    const folder = nodePaths()[Number(index)];
+    if (!folder) throw new Error('Invalid NODE_PATH cache location');
+    return path.join(path.resolve(folder), ...relative);
+  }
+  if (!['source', 'dependency'].includes(kind)) throw new Error('Invalid cache location');
   return path.join(root, ...parts);
 }
 

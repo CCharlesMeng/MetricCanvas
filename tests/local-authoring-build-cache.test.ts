@@ -1,4 +1,4 @@
-import {afterAll, describe, expect, it} from 'vitest';
+import {afterAll, describe, expect, it, vi} from 'vitest';
 import {cp, mkdir, mkdtemp, readFile, readdir, rm, symlink, writeFile} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import path from 'node:path';
@@ -46,6 +46,34 @@ describe.sequential('local deterministic bundle cache', () => {
     await withLocalBuildCache(root,'dot-path',{cacheDir},build);
     expect(delta(before).hits).toBe(1);
   });
+
+  it('validates an external NODE_PATH probe against its own installation', async () => {
+    const root = await fixture('external-node-path');
+    const installedScope = path.join(root, 'node_modules/.pnpm/node_modules');
+    const externalScope = path.join(temporary, 'external-tools/node_modules/.pnpm/node_modules');
+    await mkdir(installedScope, {recursive: true});
+    const cacheDir = path.join(temporary, 'external-node-path-cache');
+    const build = async () => ({
+      outputs: new Map([['result', 'same']]),
+      files: [path.join(root, 'package.json')],
+      directories: [externalScope],
+    });
+    vi.stubEnv('NODE_PATH', externalScope);
+    try {
+      await withLocalBuildCache(root, 'external-node-path', {cacheDir}, build);
+      let before = getLocalBuildCacheStats();
+      await withLocalBuildCache(root, 'external-node-path', {cacheDir}, build);
+      expect(delta(before).hits).toBe(1);
+
+      await mkdir(externalScope, {recursive: true});
+      before = getLocalBuildCacheStats();
+      await withLocalBuildCache(root, 'external-node-path', {cacheDir}, build);
+      expect(delta(before).misses).toBe(1);
+    } finally {
+      vi.unstubAllEnvs();
+    }
+  });
+
   it('reuses identical graphs across directories and matches uncached output byte for byte', async () => {
     const first = await fixture('cross-first');
     const second = await fixture('cross-second');
