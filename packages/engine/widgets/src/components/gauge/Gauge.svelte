@@ -36,7 +36,7 @@
 </script>
 
 <div class:mini={props.variant === 'mini'} class="gauge">
-  {#if props.title}<h3>{props.title}</h3>{/if}
+  {#if props.title}<h3 class="mc-data-heading">{props.title}</h3>{/if}
   <div class="gauge-plot" class:loading aria-busy={loading} inert={loading}>
   {#if onclick}
     <button type="button" class="dial" {onclick}>

@@ -2028,6 +2028,13 @@
     color: var(--mc-color-report-text);
     background: var(--mc-color-dashboard-canvas);
   }
+  .page-content.layout-dashboard :global(h3.mc-data-heading) {
+    font-family: 'PingFang SC', sans-serif;
+    font-style: normal;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-align: left;
+  }
   .page-content.layout-dashboard.dashboard-toolbar-hidden {
     --mc-page-sections-margin-top: 0;
   }

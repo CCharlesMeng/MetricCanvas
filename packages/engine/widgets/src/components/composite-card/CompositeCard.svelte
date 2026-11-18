@@ -53,7 +53,7 @@
 >
   {#if title || (toolbar && contentOffset > 0)}
     <div class="composite-header">
-      {#if title}<h3>
+      {#if title}<h3 class="mc-data-heading">
         {#if titleIcon}<img src={titleIcons[titleIcon]} alt="" aria-hidden="true" />{/if}
         <span>{title}</span>
       </h3>{/if}
@@ -89,7 +89,17 @@
 <style>
   .composite-header { display:flex; flex-wrap:wrap; align-items:center; gap:12px; min-width:0; }
   .composite-header > h3 { min-width:0; flex:0 1 auto; }
-  .filter-toolbar { display:flex; flex:1 1 auto; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; min-width:0; }
+  .filter-toolbar {
+    --mc-filter-group-margin-bottom: 0px;
+
+    display: flex;
+    flex: 1 1 auto;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-width: 0;
+  }
   .toolbar-start, .toolbar-end { display:flex; flex-wrap:wrap; align-items:center; gap:12px; min-width:0; max-width:100%; }
   .toolbar-end { margin-left:auto; justify-content:flex-end; }
   .toolbar-item { display:flex; min-width:0; max-width:100%; }

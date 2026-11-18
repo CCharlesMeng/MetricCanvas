@@ -5,7 +5,7 @@
 </script>
 {#if title || subtitle || showTools}
   <div class="table-heading">
-    {#if title}<h3>{title}</h3>{/if}
+    {#if title}<h3 class="mc-data-heading">{title}</h3>{/if}
     {#if subtitle}<div class="subtitle"><span aria-hidden="true">*</span>{subtitle}</div>{/if}
     {#if showTools && tools}{@render tools()}{/if}
   </div>

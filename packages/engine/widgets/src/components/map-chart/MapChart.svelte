@@ -203,7 +203,7 @@
 <!-- `display: contents` 的读样式锚点:自定义属性靠继承可读,而它不生成盒,
      所以既拿到了 `getComputedStyle` 的入口,又不改变单元格内的布局。 -->
 <div class="safe-area-probe" bind:this={host} data-export-pending={staticExport ? !basemap : undefined}>
-  {#if props.title}<h3>{props.title}</h3>{/if}
+  {#if props.title}<h3 class="mc-data-heading">{props.title}</h3>{/if}
   {#if basemap}
     <!-- 图例贴在绘图区左下角(图表库自带那块视觉映射条原来的位置),所以
          这里要有一个定位参照物;它接手 EChart 原来占的那一格弹性空间,

@@ -61,7 +61,7 @@
   data-segment-labels={props.showSegmentLabels === true ? 'true' : 'false'}
   data-total-labels={props.showStackTotalLabels === true ? 'true' : 'false'}
 >
-  {#if props.title}<h3>{props.title}</h3>{/if}
+  {#if props.title}<h3 class="mc-data-heading">{props.title}</h3>{/if}
   <span class="chart-semantics">
     {props.series.map((series) => series.label).filter(Boolean).join(' ')} {categories.join(' ')}
   </span>

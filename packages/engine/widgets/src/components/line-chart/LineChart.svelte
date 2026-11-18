@@ -25,7 +25,7 @@
   const source = $derived(cartesianChartSource(() => lineOption(data, props, palette), props, diagnostic ?? { componentId: 'direct-line-chart', componentType: 'lineChart', path: '/props/echartsOption' }, props.series.map((_, index) => index)));
 </script>
 
-{#if props.title}<h3>{props.title}</h3>{/if}
+{#if props.title}<h3 class="mc-data-heading">{props.title}</h3>{/if}
 <EChart
     loading={data.main.sourceStatus === 'loading'}
   {source}

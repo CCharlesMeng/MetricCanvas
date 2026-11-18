@@ -32,7 +32,7 @@
 </script>
 
 <div class:compact-ring={props.variant === 'compactRing'} class:has-table-legend={!!legend} class="pie-chart">
-  {#if props.title}<h3>{props.title}</h3>{/if}
+  {#if props.title}<h3 class="mc-data-heading">{props.title}</h3>{/if}
   <div class="pie-layout" class:loading={data.main.sourceStatus === 'loading'} class:legend-left={props.legend?.position === 'left'}>
   <div class="pie-plot">
   <EChart

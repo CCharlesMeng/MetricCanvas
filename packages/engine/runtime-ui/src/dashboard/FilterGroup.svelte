@@ -63,7 +63,7 @@
     min-width: 0;
     max-width: 100%;
     width: 100%;
-    margin-bottom: 8px;
+    margin-bottom: var(--mc-filter-group-margin-bottom, 8px);
     align-self: flex-start;
     color: var(--mc-color-text, #191919);
     font-size: 14px;
