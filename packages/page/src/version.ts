@@ -25,7 +25,8 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 123;
+export const UNRESTRICTED_FILTER_CLEAR_MINOR = 124;
+const CURRENT_MINOR = UNRESTRICTED_FILTER_CLEAR_MINOR;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -144,6 +145,12 @@ export const pageCapabilities = {
   'yoy-p-format': {minor:87,legacyReadable:false,description:'同比先保留两位再乘100并追加P的带符号格式',usedAt:document=>namedFormatPaths(document,/^yoy-p-signed$/)},
   'quarter-query-period': {minor:86,legacyReadable:false,description:'季度查询使用 quarter 与 YYYY-Qn 编码',usedAt:quarterQueryCapabilityPaths},
   'filter-source-candidates':{minor:90,legacyReadable:false,description:'筛选候选读取页面数据源完整输出，支持树节点独立单多选',usedAt:document=>filterPaths(document,f=>has(f,'candidates'))},
+  'unrestricted-filter-clear': {
+    minor: UNRESTRICTED_FILTER_CLEAR_MINOR,
+    description: '可选平面维度与金额范围原本不限时，联动清空免确认',
+    // The version selects the behavior. The existing declarations are valid at their original floors.
+    usedAt: () => []
+  },
   'filter-source-candidate-levels':{minor:122,legacyReadable:false,description:'内联树候选按声明层级绑定不同查询字段',usedAt:document=>filterPaths(document,f=>has(record(f.candidates),'levelField'))},
 
   'chart-table-display-unit': { minor:94, legacyReadable:false, description:'柱线系列与表格列显式展示单位', usedAt:document=>[
@@ -925,6 +932,12 @@ function containsPresentationKey(value: unknown, key: string): boolean {
   if (Array.isArray(value)) return value.some(item => containsPresentationKey(item, key));
   const object = record(value);
   return object !== undefined && (has(object, key) || Object.values(object).some(item => containsPresentationKey(item, key)));
+}
+
+export function supportsUnrestrictedFilterClear(version: string | undefined): boolean {
+  if (!version) return false;
+  const parsed = parseVersion(version);
+  return parsed?.major === PAGE_SCHEMA_MAJOR && parsed.minor >= UNRESTRICTED_FILTER_CLEAR_MINOR;
 }
 
 export function versionErrors(

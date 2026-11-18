@@ -9,10 +9,14 @@ export function createIocRegionDefault(page: Page, search: string, initial: Filt
   const query = new URLSearchParams(search);
   let pending = usesIocRegion(page) && !restored && declaration?.default === undefined && !initial.has('region') &&
     !!declaration?.hierarchy && !Object.values(filterURLKeys(declaration, true)).some(key => query.has(key));
+  let initialReceipt = false;
   return {
+    waiting: () => pending && !initialReceipt,
     take(snapshots: DimensionValuesSnapshots, context: string): FilterValue | undefined {
       if (!pending || !declaration?.hierarchy) return;
       const tree = regionTree(declaration, snapshots, context);
+      if (tree.status === 'loading' || tree.status === 'idle') return;
+      initialReceipt = true;
       if (tree.status !== 'ready') return;
       const available = tree.candidates.filter(candidate => !candidate.disabled);
       const node = available.find(candidate => candidate.value === '全球') ?? available[0];

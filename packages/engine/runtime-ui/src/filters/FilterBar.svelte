@@ -7,7 +7,7 @@
   import {getContext} from 'svelte';
   import {SOURCE_FILTER_CONTEXT,type SourceFilterReader} from '../dashboard/source-filter-context';
   const sourceFilters=getContext<SourceFilterReader|undefined>(SOURCE_FILTER_CONTEXT);
-  import {usesHierarchyTree} from './hierarchy-tree';
+  import FilterConfirmation from './FilterConfirmation.svelte';
   import {PRESENTATION_CONTEXT,type PresentationReader} from '../presentation-context';
   const presentation=getContext<PresentationReader|undefined>(PRESENTATION_CONTEXT);
   import {selectedCase,appliedAmountRange} from '@metriccanvas/page/internal';
@@ -144,6 +144,15 @@
     return declaration.label;
   }
 
+  function confirmationCandidates(declaration:DimensionDeclaration) {
+    if (declaration.options || !(declaration.candidates || declaration.candidateContext || declaration.candidateWindow)) return;
+    const source = sourceFilters?.(declaration.id);
+    if (source) return source.candidates;
+    const current = dimensionValueOf(values, declaration.id);
+    const level = current.level ?? declaration.defaultLevel ?? declaration.hierarchy?.[0]?.id;
+    return dimensionValuesSnapshot(candidates, candidateScopeKey(declaration.id,currentDimension(declaration),level));
+  }
+
   function dimensionDisplay(declaration: DimensionDeclaration, emptyText?: string, allSelectedText?: string): string {
     const selected=dimensionValueOf(values,declaration.id).values;
     const source=sourceFilters?.(declaration.id),options=source?.candidates.status==='ready'?source.candidates.candidates:declaration.options;
@@ -267,8 +276,17 @@
         onchange={(query) => onsearch(declaration.id, query)}
       />
     {/if}
-    {#if declaration.type==='dimension' && confirmationIds.includes(declaration.id) && !declaration.selection?.required && !(declaration.hierarchy && usesHierarchyTree(declaration.display??'select',declaration.selection?.mode,declaration.hierarchyPicker))}
-      <button type="button" disabled={readOnly} onclick={()=>ondimension(declaration,[],dimensionValueOf(values,declaration.id).level)}>确认不限</button>
+    {#if confirmationIds.includes(declaration.id)}
+      {#if declaration.type === 'dimension'}
+        <FilterConfirmation disabled={readOnly} required={declaration.selection?.required}
+          preparing={timeContext.pending?.includes(declaration.id) || sourceFilters?.(declaration.id)?.preparing}
+          candidates={confirmationCandidates(declaration)}
+          onconfirm={() => ondimension(declaration,[],dimensionValueOf(values,declaration.id).level)}
+          onretry={onretry ? () => onretry(declaration.id) : undefined}/>
+      {:else if declaration.type === 'numberRange'}
+        <FilterConfirmation disabled={readOnly} preparing={timeContext.pending?.includes(declaration.id)}
+          onconfirm={() => onnumberrange(declaration.id,null)}/>
+      {/if}
     {/if}
     {#if limits.reason}<span role="status">{limits.reason}</span>{/if}
     {#if declaration.type==='timeRange'&&declaration.presets&&!readOnly}<div class="time-presets" role="group" aria-label="时间快捷预设">{#each declaration.presets as item}<button type="button" disabled={!!limits.reason} onclick={()=>preset(declaration,item.range)}>{item.label}</button>{/each}</div>{/if}

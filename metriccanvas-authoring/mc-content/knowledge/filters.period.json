@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.123",
+  "schemaVersion": "6.124",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "filters.period"
@@ -136,6 +136,16 @@
             "period-filter-datetime",
             "period-filter-no-default",
             "period-filter-static-time"
+          ]
+        },
+        {
+          "id": "unrestricted-filter-clear",
+          "description": "6.124 可选筛选原本不限时联动免确认",
+          "valid": [
+            "filter-source-query-pagination"
+          ],
+          "invalid": [
+            "unrestricted-filter-clear-version-ahead"
           ]
         },
         {
@@ -374,7 +384,7 @@
           "sections"
         ],
         "title": "页面",
-        "$id": "https://metriccanvas/page/v6.123",
+        "$id": "https://metriccanvas/page/v6.124",
         "properties": {
           "schemaVersion": "#/properties/schemaVersion",
           "id": "#/properties/id",

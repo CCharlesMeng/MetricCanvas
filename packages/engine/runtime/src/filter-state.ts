@@ -1,5 +1,5 @@
 import {timeAvailabilityIssue,modeRangeIssue,type DisplayInputsSnapshot} from '@metriccanvas/page/internal';
-import { numberRangeIssue,rangeContextIssue, filterDependencies, dimensionSelectionIssue } from '@metriccanvas/page/internal';
+import { numberRangeIssue,rangeContextIssue, filterDependencies, dimensionSelectionIssue, supportsUnrestrictedFilterClear } from '@metriccanvas/page/internal';
 import { resolvePeriodSelection, isPeriodSelection } from '@metriccanvas/page/internal';
 import { filterURLKeys, readLevelURLSelection } from '@metriccanvas/page/internal';
 import { rollingFinalizationName } from '@metriccanvas/page/internal';
@@ -58,7 +58,7 @@ export interface FilterState {
   fromURL(search: string, declarations: readonly FilterDeclaration[]): void;
 }
 
-export function createFilterState(initial?: FilterValues, declarations: readonly FilterDeclaration[] = [], dimensionOptions: ReadonlyMap<string, readonly string[]> = new Map(), editing: { iocRegion?: boolean; readOnly?: () => boolean; candidates?: boolean; displayInputs?: () => DisplayInputsSnapshot | undefined; now?: () => Date } = {}): CoordinatedFilterState {
+export function createFilterState(initial?: FilterValues, declarations: readonly FilterDeclaration[] = [], dimensionOptions: ReadonlyMap<string, readonly string[]> = new Map(), editing: { schemaVersion?: string; iocRegion?: boolean; readOnly?: () => boolean; candidates?: boolean; displayInputs?: () => DisplayInputsSnapshot | undefined; now?: () => Date } = {}): CoordinatedFilterState {
   function accepted(id: string, value: FilterValue | null | undefined): boolean {
     const options = dimensionOptions.get(id);
     return !options || !!value && value.type === 'dimension' && value.values.length === 1 && options.includes(value.values[0]!);
@@ -91,7 +91,8 @@ export function createFilterState(initial?: FilterValues, declarations: readonly
   let revision = 0, operationClock = editing.now?.() ?? new Date();
   const receipts = new Map<string, { status: string; values?: readonly string[] }>();
   const preparation=new Set<string>();
-  // Cleared descendants require an explicit choice/clear, never an automatic broadened query.
+  const skipUnrestrictedClearConfirmation = supportsUnrestrictedFilterClear(editing.schemaVersion);
+  // A lost selection continues to require an explicit choice or clear.
   const confirmation = new Set<string>();
   const intersections = new Set<string>();
   function invalidate(changed: readonly string[], normalized: Map<string, FilterValue | null>, trusted: boolean) {
@@ -100,10 +101,20 @@ export function createFilterState(initial?: FilterValues, declarations: readonly
       if (!filterDependencies(declaration).includes(parent)) continue;
       if (!visited.has(declaration.id)) { visited.add(declaration.id); queue.push(declaration.id); }
       receipts.delete(declaration.id);
-      const intersect = declaration.type === 'dimension' && declaration.candidateContext?.reconcile === 'intersection' && !declaration.clearOnChangeOf?.includes(parent);
-      if (intersect && !normalized.has(declaration.id)) intersections.add(declaration.id);
-      else if (!intersect) { intersections.delete(declaration.id); if (!trusted && !normalized.has(declaration.id)) { normalized.set(declaration.id, null); confirmation.add(declaration.id); } }
+      if (reconcilesByIntersection(declaration, parent)) {
+        if (!normalized.has(declaration.id)) intersections.add(declaration.id);
+        continue;
+      }
+      const interruptedIntersection = intersections.delete(declaration.id);
+      if (trusted || normalized.has(declaration.id)) continue;
+      normalized.set(declaration.id, null);
+      if (interruptedIntersection || needsClearConfirmation(declaration)) confirmation.add(declaration.id);
     }
+  }
+  function needsClearConfirmation(declaration: FilterDeclaration): boolean {
+    if (!skipUnrestrictedClearConfirmation || current.has(declaration.id) || dimensionOptions.has(declaration.id)) return true;
+    if (declaration.type === 'numberRange') return false;
+    return declaration.type !== 'dimension' || !!declaration.selection?.required || !!declaration.hierarchy;
   }
   function blocked(): Set<string> {
     const result = new Set([...confirmation,...preparation]);
@@ -397,6 +408,10 @@ function normalizeNumberRange(value: Extract<FilterValue, { type: 'numberRange' 
   if (value.from !== undefined && !Number.isFinite(value.from)) return undefined;
   if (value.to !== undefined && !Number.isFinite(value.to)) return undefined;
   return value;
+}
+
+function reconcilesByIntersection(declaration: FilterDeclaration, parent: string): boolean {
+  return declaration.type === 'dimension' && declaration.candidateContext?.reconcile === 'intersection' && !declaration.clearOnChangeOf?.includes(parent);
 }
 
 function sameValue(a: FilterValue | undefined, b: FilterValue | null): boolean {

@@ -2,7 +2,7 @@ import { MIN_DQE_TIMEOUT_MS } from '../dqe-timeout';
 import type { ScreenProgress } from '../screen-progress';
 import { ordinaryScreenProgress } from './screen-progress';
 import {finalizationName} from '@metriccanvas/page/internal';
-import { sourceCandidatesGateway } from '../source-candidates';
+import { createSourceCandidateSession, type SourceCandidateSession } from '../source-candidates';
 import { readSearchExportSlot } from './slot-search-read';
 import { createTableSlotSearchReader, mainTableSearch, selectSearchRows } from './slot-search';
 import {hasPeriodQueryDefault} from '@metriccanvas/page/internal';
@@ -79,10 +79,11 @@ export function defaultSourceView(page: Page, id: string, pageSize?: number): Ta
     sort: (source?.source.type === 'pagedJoin' || source?.source.type === 'pagedUnion') ? structuredClone(source.source.ordering.default) : [], predicates: [] };
 }
 /** All execution policies are owned here; adapters own publication and lifecycle. */
-export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGateway; diagnostics?: QueryDiagnosticContext; displayInputs?: () => DisplayInputsSnapshot | undefined; filterRevision?: () => number; now?: Date; clock?: () => Date }) {
-  const native=createNativeIocPreparation(page,config.gateway);
-  page=native.page;
-  config = {...config,gateway:sourceCandidatesGateway(page,config.gateway,config)};
+export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGateway; diagnostics?: QueryDiagnosticContext; displayInputs?: () => DisplayInputsSnapshot | undefined; filterRevision?: () => number; now?: Date; clock?: () => Date; candidateSession?: SourceCandidateSession }) {
+  const candidateSession = config.candidateSession ?? createSourceCandidateSession(page, config.gateway, config);
+  const native = candidateSession.native;
+  page = native.page;
+  config = {...config, gateway:candidateSession.gateway};
   const compiled = compileSources(page);
   for (const id of compiled.automatic) { const source = compiled.sources.get(id)!; if (source.source.type === 'query') { const size = automaticQueryPageSize(source as QueryDataSource, reusableInitialSnapshot(source)); if (size) compiled.limits.set(id, size); } }
   const runner = createQueryRunner(config);
@@ -165,6 +166,13 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
       return structuredClone(query);
     } catch { return undefined; } // read owns rejected-source diagnostics; an invalid query cannot be captured.
   }
+  function captureCurrentCandidates() {
+    return candidateSession.capture({
+      now:config.now ?? config.clock?.() ?? new Date(),
+      displayInputs:structuredClone(config.displayInputs?.()),
+      filterRevision:config.filterRevision?.()
+    });
+  }
   const program = {
     prepareView(id:string,conditions:FilterValues,view:TableQueryView,field?:string,previous?:TableQueryView):TableQueryView {
       const source=page.dataSources[id];
@@ -174,14 +182,19 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
       return compilePagedJoin(page,id,conditions,reconcilePagedJoinView(source as PagedJoinDataSource,view,field,previous),config.now??config.clock?.(),{displayInputs:config.displayInputs?.(),filterRevision:config.filterRevision?.()}).view;
     },
     async readColumnCandidates(request: ColumnCandidatesRead) {
-      const preparation=native.ensure(request.sourceId,request.conditions,request.signal??new AbortController().signal);
+      const {signal:permissionSignal} = captureCurrentCandidates();
+      const signal = request.signal ? AbortSignal.any([request.signal, permissionSignal]) : permissionSignal;
+      const preparation=native.ensure(request.sourceId,request.conditions,signal);
       if(preparation)await preparation;
-      return createColumnCandidatesReader(page, runner, value => program.read(value), compiled.limits, { ...config, slotSearch })(request);
+      return createColumnCandidatesReader(page, runner, value => program.read(value), compiled.limits, { ...config, slotSearch })({...request, signal});
     },
     preparing(sourceId:string,conditions:FilterValues){return native.waiting(sourceId,conditions);},
-    prepareInputs(sourceId:string,conditions:FilterValues){return native.ensure(sourceId,conditions,new AbortController().signal)??Promise.resolve();},
+    prepareInputs(sourceId:string,conditions:FilterValues) {
+      return native.ensure(sourceId,conditions,captureCurrentCandidates().signal) ?? Promise.resolve();
+    },
     retryPreparation(sourceId:string,conditions:FilterValues){native.retry(sourceId,conditions);},
     initialSnapshots(request: Pick<SourceRead, 'roots' | 'conditions' | 'views' | 'selections'>): Map<string, DataSnapshot> {
+      captureCurrentCandidates();
       const snapshots = new Map<string, DataSnapshot>();
       const sources = presentationQuerySources(page, {declarations:page.filters??[],filters:request.conditions,displaySnapshot:config.displayInputs?.(),filterRevision:config.filterRevision?.()}, request);
       for (const id of executionSourceIds(page, request.roots, sources)) {
@@ -191,6 +204,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
       } return snapshots;
     },
     captureQueries(conditions: FilterValues, views: ReadonlyMap<string, TableQueryView>, raw: ReadonlyMap<string, DataSnapshot>, selections?: import('@metriccanvas/page/internal').TabSelections): ReadonlyMap<string, EffectiveQuery> {
+      captureCurrentCandidates();
       const queries = new Map<string, EffectiveQuery>(), now = config.now ?? config.clock?.() ?? new Date();
       const limits = new Map(compiled.limits);
       const context = {declarations:page.filters??[],filters:conditions,displaySnapshot:config.displayInputs?.(),filterRevision:config.filterRevision?.()};
@@ -209,11 +223,15 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
     async *read(input: SourceRead): AsyncGenerator<SourceUpdate> {
       const controller = new AbortController();
       const signals = readSignals(controller, input);
-      const request = freezeReadRequest(input, signals);
+      const frozenRevision = input.filterRevision ?? config.filterRevision?.();
+      const frozenInputs = structuredClone(input.displayInputs ?? config.displayInputs?.());
+      const now = input.now ?? config.now ?? config.clock?.() ?? new Date();
+      input.signal?.throwIfAborted();
+      const candidateScope = candidateSession.capture({displayInputs:frozenInputs, filterRevision:frozenRevision, now});
+      const request = freezeReadRequest({...input, now}, [...signals, candidateScope.signal]);
       const execution = candidateQueryRunner(runner, request.background);
       const currentUnion = candidateUnionReader(union, execution, request.background);
-      const frozenInputs = structuredClone(request.displayInputs ?? config.displayInputs?.()); const frozenRevision = request.filterRevision ?? config.filterRevision?.();
-      const candidates = createCandidateValidator(page, config.gateway, { displayInputs: () => frozenInputs, filterRevision: () => frozenRevision ?? 0, now: request.now });
+      const candidates = createCandidateValidator(page, candidateScope.gateway, { displayInputs: () => frozenInputs, filterRevision: () => frozenRevision ?? 0, now: request.now });
       const scope = sourceReadScope(request.freshness, frozenInputs);
       try {
         const sources = presentationQuerySources(page, {declarations:page.filters??[],filters:request.conditions,displaySnapshot:frozenInputs,filterRevision:frozenRevision}, request);
@@ -521,7 +539,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
         }
       } finally { controller.abort(); if (request.freshness === 'refresh' || scope !== contextScope) runner.forgetScope(scope); }
     },
-    dispose() { native.dispose(); union.clear(); slotSearch.clear(); clearRecordJoinCache(runner); runner.dispose(); }
+    dispose() { if (!config.candidateSession) candidateSession.dispose(); union.clear(); slotSearch.clear(); clearRecordJoinCache(runner); runner.dispose(); }
   };
   return program;
 }
@@ -536,4 +554,3 @@ function captureConsistentInitial(count: number, total: number | undefined, wind
   if (strict && total === 0 && count > 0) return false;
   return !windowed || (total !== undefined && count === Math.min(pageSize, total));
 }
-import {createNativeIocPreparation} from '../native-ioc-preparation';

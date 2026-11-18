@@ -134,7 +134,7 @@ urlParams仅映射该类允许的value/from/to/level键，不能与本页其它�
 层级维度只要声明 `hierarchy`、`selection.mode:"single"`，且 `display` 省略或为 `select`／`tree`，省略 `hierarchyPicker` 就默认使用单个树形下拉。旧候选端口仅提供各层平面值时，按已声明的层级展示不可选择的分组节点；各业务节点直接提交所属层级与原始值，不虚构跨层父子归属，也不强制旧页切换到V2候选端口。普通维度的显式 `hierarchyPicker`、多选和 `display:"tabs"` 保留既有行为。IOC 业务 Region 另受[页头约束](page.md)限制：必须显式声明单选结构树，不允许旧切层写法。`ioc-opportunity-list`、`contract-maturity-score` 与 `ioc-project-overview` 的 Region 均已迁移为页头内单个组织树。
 
 IOC 业务 Region 必须采用单选树形下拉：`{id:"region",type:"dimension",dimension:"地区部编码",display:"tree",treeSelection:"level",selection:{mode:"single"},hierarchy:[{id:"region-dept",dimension:"地区部编码",label:"地区部"},{id:"office",dimension:"代表处编码",label:"代表处"}],defaultLevel:"region-dept"}`。字段名及业务值须按实际数据契约替换，候选必须由集成应用提供显式父子关系；不因需要树形外观伪造归属，不把 `hierarchyPicker:"hidden"` 当作单树替代。完整联动验收入口为 `ioc-header-standard`；同码样例为 `ioc-header-business-tree-demo`。`table-hierarchy-selection` 补充验证同一个树形下拉内选择代表处后，通过独立父级定位查询联动父子表格；其候选父子关系来自明确标注的合成夹具。普通维度继续支持显式层级按钮、地图切层及多选；这些写法不适用于 IOC Region。
-- candidateContext用filterIds列出维度/单点时间/范围时间依赖，reconcile为clear/intersection。与旧dependsOn、clearOnChangeOf合图查重、检环；旧dependsOn仍只支持单个维度上游。clear在上游变化时递归清值，等用户显式确认；intersection保留摘要，等新完整可信候选到达后取交集。空交集、未就绪、失败、拒绝和未配置不能自动查询全部。上游被阻断时，候选依赖后代同样阻断。
+- candidateContext用filterIds列出维度/单点时间/范围时间依赖，reconcile为clear/intersection。与旧dependsOn、clearOnChangeOf合图查重、检环；旧dependsOn仍只支持单个维度上游。clear在上游变化时递归清值，确认遵循[联动清空与确认](#unrestricted-filter-clear)；intersection保留摘要，等新完整可信候选到达后取交集。空交集、未就绪、失败、拒绝和未配置不能自动查询全部。上游被阻断时，候选依赖后代同样阻断。
 - 共用hint为TextValue，可引用不可变参数或已应用筛选，缺值省略；clearOnChangeOf是明确失效关系，不伪装成候选请求约束。普通只读不清合法条件。
 
 V2 fetchFilterCandidates由宿主Adapter提供，与旧fetchDimensionValues并存。请求包含filterId/dimension/level和完整维度、时间约束；timePoint按原精度投影为同值from/to，timeRange保留已应用范围，绝不截成详情单月。新结构树或candidateContext缺V2时明确unavailable，不丢约束调用旧端口。结果保留ready/empty/unavailable/error并区分denied和unconfigured；失败重试当前依赖。首批要求完整候选，最多10000项，不接受部分列表做全选或交集。按语言组合网关存在多个不同V2 Adapter时返回unconfigured，不合并授权域。
@@ -149,7 +149,7 @@ V2 fetchFilterCandidates由宿主Adapter提供，与旧fetchDimensionValues并�
 
 numberRange可声明constraints的min/max（基本单位）和bounds:strict（双边from必须小于to）。单边允许；普通旧范围仍允许相等。全部是无端点的显式清空，不是无限大数字；拒绝负数约束冲突、NaN/Infinity及比例溢出。
 
-units为`{filterId,cases:{RMB:{currency:"CNY",label:"万元",scale:10000},USD:{currency:"USD",label:"万美元",scale:10000}}}`，控制筛选必须为required单选options并穷尽有效枚举。scale为正安全整数。必须用clearOnChangeOf引用该币种，换币与清金额在同一事务；自动清空沿用等待用户显式确认的门禁。
+units为`{filterId,cases:{RMB:{currency:"CNY",label:"万元",scale:10000},USD:{currency:"USD",label:"万美元",scale:10000}}}`，控制筛选必须为required单选options并穷尽有效枚举。scale为正安全整数。必须用clearOnChangeOf引用该币种，换币与清金额在同一事务；自动清空按页面版本应用[联动清空与确认](#unrestricted-filter-clear)。
 
 presets为`{id,label,range:{from?,to?}}[]`，输入和预设使用显示单位，确定时乘一次scale。default、URL、restore、执行回执和FilterValue已经是基本单位，查询绑定不再次换算。新面板有草稿/取消/确定，预设只修改草稿；切币种、只读或页头折叠会关闭旧草稿。币种尚未选择时金额等待选择，不隐式按人民币处理。
 
@@ -279,6 +279,16 @@ IOC 业务 Region 只允许 iocHeader 内的单个组织树，树内选择地区
 
 已有年、季度、月、近一年四种期间选择可通过查询 `filterBindings.periodComparison` 自动派生本期和比较期。近一年上期与去年同期均前移一年。相同统计进度来自宿主可信期间事实，而非筛选值或机器时钟。完整声明、完整结果排序及错误边界见[查询与绑定](queries-and-bindings.md)，操作场景 `/pages/period-comparison-demo`。
 
+<a id="unrestricted-filter-clear"></a>
+
+### 联动清空与确认（6.124）
+
+页面声明 `schemaVersion: "6.124"` 时，`candidateContext.reconcile: "clear"` 或 `clearOnChangeOf` 引起的联动清空，若可选平面维度或金额范围在变更前已归一为不限，更新候选上下文并在新范围校验通过后自动继续。金额上下限都未设置才属于不限。已有实际选择或任一金额端点被清掉时，仍须重新选择或确认不限。6.123 及以前的可读版本继续在联动清空后要求显式确认，可选条件原本为空时也一样。
+
+已进入待确认的条件仍须显式处理。必选、层级选择、全选语义及 `intersection` 的交集流程沿用原规则。候选或权限失败、空候选、执行条件准备未完成及不可验证的范围继续阻断相关查询。查看图表工具栏、IOC 页头或普通筛选栏中的状态，候选就绪后可重选或对可选条件点「确认不限」。
+
+复用现有声明，字段净增减为零。示例中 `service.candidateContext` 仍是 `{"filterIds":["service-scope"],"reconcile":"clear"}`，由页面版本选择确认规则。页面作者显式升级后应回放相关筛选操作。完整合成场景见[查询分页候选](examples/filter-source-query-pagination.json)。
+
 <a id="source-candidates"></a>
 
 ## 页面数据源候选（6.90）
@@ -327,7 +337,7 @@ IOC 业务 Region 只允许 iocHeader 内的单个组织树，树内选择地区
 
 打开下拉时读取首批，滚动列表到底后加载下一批。搜索由 DQE 在分页前执行，从 offset 0 开始。已选值走同一候选查询的等值条件核验，业务查询和导出共用该核验。相关筛选变化时沿用 `candidateContext` 的清空行为。空选若仍受候选门禁约束，最多用一条结果确认候选可用。未搜索且所有候选值已返回后才显示「全选」。
 
-同一页面运行实例在筛选条件和权限上下文相同时复用已通过的上游筛选核验。滚动续页只查询候选值的下一批。筛选或权限变化后重新核验，失败或取消的核验不能供后续请求复用。
+同一页面运行实例在筛选条件和权限上下文相同时复用候选读取与已通过的上游筛选核验。完整候选、分页和已选值核验共享执行准备，应用重点国代授权名单和 Region 等来源条件。名单为空时返回空范围，失败时保留门禁。不同搜索和窗口各自复用，分页结果用于对应窗口。筛选或权限变化后重新核验，失败或取消的核验不能供后续请求复用。
 
 每批必须返回匹配候选的准确总数，且同一稳定值只出现一次。失败、总数矛盾或稳定值重复时保留前面成功的候选，重试同一窗口。查询诊断以页面数据源 ID、筛选器 ID、读取原因、offset、limit、返回条数及匹配总数定位批次。稳定排序无法给实时数据提供跨请求快照。上线前应核验实际 DQE 在当前权限和条件下的去重、排序、总数及单字段包含搜索。合成入口为 `/pages/filter-source-query-pagination`。
 

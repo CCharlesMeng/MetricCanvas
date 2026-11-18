@@ -46,7 +46,7 @@ test('requests one candidate window, loads more on scroll and keeps exclusions a
   await expect(list.getByRole('option',{name:'甲云服务20',exact:true})).toBeVisible();
   await scrollToEnd(list);
   await expect(list.getByRole('option',{name:'全选'})).toBeVisible();
-  expect(await requestWindows()).toEqual([[0,10],[10,10],[0,10],[0,10],[10,10],[20,10]]);
+  expect(await requestWindows()).toEqual([[0,10],[10,10],[0,10],[20,10]]);
   await menu.getByRole('textbox').press('Escape');
   await page.getByRole('button',{name:'范围',exact:true}).click();
   await page.getByRole('option',{name:'乙',exact:true}).click();
@@ -71,4 +71,49 @@ test('shows an empty candidate window and does not request a continuation',async
   const {menu,requestWindows} = await openMenu(page, 'empty');
   await expect(menu.getByRole('status')).toHaveText('无候选项');
   expect(await requestWindows()).toEqual([[0,10]]);
+});
+
+async function switchScope(page:Page, label:string) {
+  await page.getByRole('button',{name:'范围',exact:true}).click();
+  await page.getByRole('option',{name:label,exact:true}).click();
+}
+
+test('6.124 continues from an unrestricted exclusion and waits after clearing a real choice', async ({page}) => {
+  await page.goto('/pages/filter-source-query-pagination');
+  const group = page.locator('[data-filter-group="service"]');
+  const chart = page.locator('article .widget-content').filter({has:page.locator('.echart')});
+  await expect(chart).toHaveAttribute('aria-busy','false');
+
+  await switchScope(page,'乙');
+  await expect(chart).toHaveAttribute('aria-busy','false');
+  await expect(group.locator('[data-filter-confirmation]')).toHaveCount(0);
+
+  await group.getByRole('button',{name:'云服务排除项',exact:true}).click();
+  await group.getByRole('option',{name:'乙云服务01',exact:true}).click();
+  await page.keyboard.press('Escape');
+  await expect(chart).toHaveAttribute('aria-busy','false');
+
+  await switchScope(page,'甲');
+  await expect(group.locator('[data-filter-confirmation]').getByRole('status')).toHaveText('筛选范围已变更，请重新选择');
+  await expect(chart).toHaveAttribute('inert','');
+  await group.getByRole('button',{name:'确认不限',exact:true}).click();
+  await expect(chart).toHaveAttribute('aria-busy','false');
+  await expect(chart).not.toHaveAttribute('inert','');
+});
+
+test('6.123 still requires confirmation for an empty exclusion', async ({page}) => {
+  await page.route('**/filter-source-query-pagination.json*', async route => {
+    const response = await route.fetch();
+    const original = await response.text();
+    const historical = original.replaceAll('"6.124"','"6.123"');
+    expect(historical).not.toBe(original);
+    await route.fulfill({response,body:historical});
+  });
+  await page.goto('/pages/filter-source-query-pagination');
+  const group = page.locator('[data-filter-group="service"]');
+  await expect(group.getByRole('button',{name:'云服务排除项',exact:true})).toBeVisible();
+  await switchScope(page,'乙');
+  await expect(group.getByRole('button',{name:'确认不限',exact:true})).toBeEnabled();
+  await group.getByRole('button',{name:'确认不限',exact:true}).click();
+  await expect(group.locator('[data-filter-confirmation]')).toHaveCount(0);
 });

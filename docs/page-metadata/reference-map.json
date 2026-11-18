@@ -408,10 +408,14 @@
         "packages/page/src/finalization-default.ts",
         "packages/data-execution/src/finalization.ts",
         "packages/page/src/native-ioc.ts",
+        "packages/page/src/version.ts",
+        "packages/page/src/layout-compatibility.ts",
+        "packages/engine/runtime/src/filter-state.ts",
         "packages/data-execution/src/native-ioc-preparation.ts",
         "packages/data-execution/src/finalization-preparation.ts"
       ],
       "rules": [
+        "unrestricted-filter-clear",
         "filter-id-unique",
         "time-range-default-calendar",
         "relative-time-anchor",
@@ -1966,6 +1970,7 @@
     "#/definitions/pagedJoinSource/properties/pagination": "仅 pageSize 保持历史路径；query 显式查询分页并沿用最后操作成员；6.118 auto 在 records 下自动选择基准查询分页或保留条件的完整关联。"
   },
   "enumNotes": {
+    "#/properties/schemaVersion=\"6.124\"": "联动清空时，原本不限的可选平面维度或金额范围可在新范围校验后自动继续。",
     "#/properties/schemaVersion=\"6.123\"": "普通数值默认千分位，ungrouped 显式关闭。",
     "#/properties/schemaVersion=\"6.121\"": "IOC Region 选中代表处时可跨页下钻，直达时替换当前历史记录。",
     "#/properties/schemaVersion=\"6.122\"": "内联候选行可声明层级，图表工具栏单选结构树按层级选择查询字段。",

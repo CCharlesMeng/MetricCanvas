@@ -18,7 +18,7 @@ export function candidateContextKey(declaration:DimensionFilterDeclaration,decla
   return JSON.stringify([scope,[...ids].sort().map(id=>{const value=values.get(id);return [id,value?.type==='dimension'?{...value,values:[...new Set(value.values)].sort()}:value??null];})]);
 }
 type CandidateContext = {page?:import('@metriccanvas/page/internal').Page;now?:Date;displayInputs?:DisplayInputsSnapshot;filterRevision?:number};
-function candidateDependencyIds(declaration:DimensionFilterDeclaration,declarations:readonly FilterDeclaration[]):Set<string> {
+export function candidateDependencyIds(declaration:DimensionFilterDeclaration,declarations:readonly FilterDeclaration[]):Set<string> {
   const ids=new Set<string>(),queue=candidateDependencies(declaration);
   for(const id of queue)if(!ids.has(id)){
     ids.add(id);const parent=declarations.find(item=>item.id===id);

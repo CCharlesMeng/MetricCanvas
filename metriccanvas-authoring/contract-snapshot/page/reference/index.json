@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.123",
-  "schemaSha256": "c09394e359a8bdb6143d8e59ca97dcf33ce189fb32eb37383a512351587bfeb1",
+  "schemaVersion": "6.124",
+  "schemaSha256": "c1d13efe5fca75c34d30a8890156bb1b8fcc73b64c7757289bd52a3dbf5f95b1",
   "semanticSources": [
     {
       "file": "metriccanvas-authoring/core/page/analysis-report.ts",
@@ -44,7 +44,7 @@
     },
     {
       "file": "packages/data-execution/src/native-ioc-preparation.ts",
-      "sha256": "7a0513cce9aff67a8ec52383292e199827e1f3aa001f1ed5ad04ed181a659b2c"
+      "sha256": "f6b3a7cdf79f297a8c0f50b82eb0a1fda65cc8f35be9f149671e4ce9eb41217d"
     },
     {
       "file": "packages/data-execution/src/operation-map-region.ts",
@@ -56,7 +56,7 @@
     },
     {
       "file": "packages/data-execution/src/source-program/session.ts",
-      "sha256": "c417c73bcb6f537ee22e0c19de1931915dbe0275efe230d75c4bc7e67089a721"
+      "sha256": "cea102876105a91943974edd3e964741efb95965ae40f5aacef7263c8bf8bed9"
     },
     {
       "file": "packages/data-execution/src/source-program/slot-search-batches.ts",
@@ -104,7 +104,7 @@
     },
     {
       "file": "packages/engine/runtime-ui/src/dashboard/FilterGroup.svelte",
-      "sha256": "79ae2b4c7d07ab9b0491a042127fa4ee76d2eb261dfd33391d19c391d87c803e"
+      "sha256": "6d9199c0fbd9072cb9a1feea770f8659fe60a596add5a8a2a8b0c6e337711a29"
     },
     {
       "file": "packages/engine/runtime-ui/src/initial-tabs.ts",
@@ -137,6 +137,10 @@
     {
       "file": "packages/engine/runtime/src/export-snapshots.ts",
       "sha256": "e9667f0a5f5d64c7d87df5e8b73454951528a88572f93398a5cfada84c20863d"
+    },
+    {
+      "file": "packages/engine/runtime/src/filter-state.ts",
+      "sha256": "81334510d39250d3f32e81b5e24fa071f5236cb176882a308f518d4300f3dca7"
     },
     {
       "file": "packages/engine/runtime/src/navigate.ts",
@@ -285,6 +289,10 @@
     {
       "file": "packages/page/src/ioc-header.ts",
       "sha256": "51fe0f7fe27ff61c203773af66b397859464a25463927c2c52192aabf7d4d250"
+    },
+    {
+      "file": "packages/page/src/layout-compatibility.ts",
+      "sha256": "18e8cd1e7a5f547a596e8626963a9bd388332922eb0a6e36dd91b39ff6a92f69"
     },
     {
       "file": "packages/page/src/metric-before.ts",
@@ -563,6 +571,10 @@
       "sha256": "1c2d702cf2b86f042cfd44105a220d1f8d0b706565995f330192a113f2013338"
     },
     {
+      "file": "packages/page/src/version.ts",
+      "sha256": "f400e38956165cb27ebffea50a69ead672ef56b2d92baca27bbe925a7f038a5d"
+    },
+    {
       "file": "packages/page/tests/ai-summary-regions.test.ts",
       "sha256": "e2a447e13ae9f9cdee1ac5c82d3b25c003efd7edd0926de0b102901872e922c8"
     },
@@ -572,7 +584,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "c8c95b00aa01936d7e97fdfefc95a57a49aa59fe4679716321acdc38d90ef678"
+      "sha256": "83966926a66cfcc45f8f012153358282dcbeb18a2ce5a543895ac4673093e5e6"
     }
   ],
   "modules": {
@@ -984,10 +996,14 @@
         "packages/page/src/finalization-default.ts",
         "packages/data-execution/src/finalization.ts",
         "packages/page/src/native-ioc.ts",
+        "packages/page/src/version.ts",
+        "packages/page/src/layout-compatibility.ts",
+        "packages/engine/runtime/src/filter-state.ts",
         "packages/data-execution/src/native-ioc-preparation.ts",
         "packages/data-execution/src/finalization-preparation.ts"
       ],
       "rules": [
+        "unrestricted-filter-clear",
         "filter-id-unique",
         "time-range-default-calendar",
         "relative-time-anchor",
@@ -2236,7 +2252,8 @@
         "6.120",
         "6.121",
         "6.122",
-        "6.123"
+        "6.123",
+        "6.124"
       ]
     },
     {

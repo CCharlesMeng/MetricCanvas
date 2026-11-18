@@ -2,6 +2,7 @@
 <script lang="ts">
   import type { FilterGroupComponent } from '@metriccanvas/page/internal';
   import type { SourceFilterBinding } from './source-filter-context';
+  import FilterConfirmation from '../filters/FilterConfirmation.svelte';
   import DimensionFilter from '../filters/DimensionFilter.svelte';
   import HierarchyTreeFilter from '../filters/HierarchyTreeFilter.svelte';
 
@@ -46,6 +47,10 @@
         {option.label}
       </button>
     {/each}
+  {/if}
+  {#if !exportMode && source?.confirmation}
+    <FilterConfirmation {disabled} required={source.declaration.selection?.required} preparing={source.preparing}
+      candidates={source.candidates} onconfirm={() => source.onchange([],source.level)} onretry={source.onretry}/>
   {/if}
 </div>
 

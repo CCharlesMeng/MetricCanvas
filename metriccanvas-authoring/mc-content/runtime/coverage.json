@@ -2628,6 +2628,11 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/invalid/unrestricted-filter-clear-version-ahead.json",
+      "target": "product-contracts/page/conformance/invalid/unrestricted-filter-clear-version-ahead.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/invalid/source-candidate-level-version.json",
       "target": "product-contracts/page/conformance/invalid/source-candidate-level-version.json",
       "scope": "exact product contract"
@@ -5688,6 +5693,11 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/errors/unrestricted-filter-clear-version-ahead.json",
+      "target": "references/page-metadata/errors/unrestricted-filter-clear-version-ahead.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/errors/source-candidate-level-version.json",
       "target": "references/page-metadata/errors/source-candidate-level-version.json",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -8689,7 +8699,7 @@
     }
   ],
   "counts": {
-    "product": 1705,
+    "product": 1707,
     "authoring": 32,
     "modules": 36,
     "topics": 317,

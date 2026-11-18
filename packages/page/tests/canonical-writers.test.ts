@@ -23,7 +23,7 @@ it('当前页面与样例使用受支持版本/layout，旧兼容夹具明确隔
           if (basename(name) === 'report-export-scale-fallback.json') expect(normalizePageDocument(normalized.document)).toEqual(normalized);
           else {
             const legacyDefault=raw.layout==='dashboard'&&!raw.iocHeader&&raw.dashboardToolbar===undefined&&Number(raw.schemaVersion.split('.')[1])<81;
-            const current= supportsNativePreparation(raw)?versionPolicy.current:`6.${NATIVE_IOC_SCHEMA_MINOR-1}`;
+            const current = supportsNativePreparation(raw) ? (Number(raw.schemaVersion.split('.')[1]) < 124 ? '6.123' : versionPolicy.current) : `6.${NATIVE_IOC_SCHEMA_MINOR-1}`;
             const outputVersion=['6.5','6.13','6.14'].includes(raw.schemaVersion)?raw.schemaVersion:legacyDefault?'6.80':hasLegacyTableCandidateSearch(raw)?'6.111':current;
             expect(normalized.document, name).toEqual({...raw,schemaVersion:outputVersion});
           }
@@ -43,4 +43,11 @@ it('黄金矩阵保留原始旧输入，包括缺省和双字段', () => {
   expect(legacy[0].input).not.toHaveProperty('layoutForm');
   expect(legacy[2].input).toMatchObject({ layoutForm: 'dashboard' });
   expect(legacy[2].input).not.toHaveProperty('layout');
+});
+
+it.each(['6.123','6.124'])('layout normalization preserves the confirmation boundary for %s', schemaVersion => {
+  const fixture = JSON.parse(readFileSync('pages/capabilities/filters/filter-source-query-pagination.json','utf8'));
+  const result = normalizePageDocument({...fixture,schemaVersion});
+  expect(result).toMatchObject({ok:true,document:{schemaVersion}});
+  if (result.ok) expect(normalizePageDocument(result.document)).toEqual(result);
 });

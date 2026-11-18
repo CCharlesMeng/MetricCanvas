@@ -4,6 +4,7 @@ import { PAGE_SCHEMA_MAJOR, pageCapabilities, requiredMinorVersion, supportedVer
 const introducedAt: Record<string, number> = {
   'number-ungrouped':123,
   'ioc-region-office-navigation':121,
+  'unrestricted-filter-clear':124,
   'filter-source-candidate-levels':122,
   'native-ioc-filter-preparation':120,
   'table-absolute-display-limit':119,

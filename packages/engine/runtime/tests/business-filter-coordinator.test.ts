@@ -44,3 +44,54 @@ it('a ready descendant cannot run before its intersection ancestor becomes trust
   state.write('month',{type:'timePoint',granularity:'month',value:'2026-09'});state.candidate('b','ready',['B']);expect(state.blocked().has('b')).toBe(true);state.candidate('a','denied');expect(state.blocked().has('b')).toBe(true);
   state.candidate('a','ready',['A']);expect([...state.blocked()]).toEqual([]);
 });
+
+it.each(['6.123','6.124'])('keeps the candidate gate for an empty dimension after a scope change in %s', schemaVersion => {
+  const declarations: FilterDeclaration[] = [
+    {id:'region',type:'dimension',dimension:'region',options:[{value:'甲',label:'甲'},{value:'乙',label:'乙'}]},
+    {id:'service',type:'dimension',dimension:'service',candidateContext:{filterIds:['region'],reconcile:'clear'}}
+  ];
+  const state = createFilterState(new Map([['region',dim('region','甲')]]), declarations, new Map(), {
+    candidates:true, schemaVersion
+  });
+  state.candidate('service','ready',['甲服务']);
+  expect(state.blocked()).not.toContain('service');
+
+  state.write('region',dim('region','乙'));
+  expect(state.blocked()).toContain('service');
+  expect(state.confirmation().has('service')).toBe(schemaVersion === '6.123');
+  for (const result of ['loading','denied','empty','unconfigured','error'] as const) {
+    state.candidate('service',result);
+    expect(state.blocked()).toContain('service');
+  }
+  state.candidate('service','ready',['乙服务']);
+  expect(state.blocked().has('service')).toBe(schemaVersion === '6.123');
+});
+
+it('preserves confirmation across further scope changes after a real selection is lost', () => {
+  const declarations: FilterDeclaration[] = [
+    {id:'region',type:'dimension',dimension:'region'},
+    {id:'service',type:'dimension',dimension:'service',candidateContext:{filterIds:['region'],reconcile:'clear'}}
+  ];
+  const state = createFilterState(new Map([['region',dim('region','甲')],['service',dim('service','甲服务')]]), declarations,
+    new Map(), {schemaVersion:'6.124'});
+  state.write('region',dim('region','乙'));
+  expect(state.toURL()).not.toContain('service=');
+  expect(state.confirmation()).toContain('service');
+  state.write('region',dim('region','丙'));
+  expect(state.blocked()).toContain('service');
+  state.write('service',null);
+  expect(state.confirmation()).not.toContain('service');
+});
+
+it('keeps required and level-based empty dimensions on their original confirmation path', () => {
+  const declarations: FilterDeclaration[] = [
+    {id:'region',type:'dimension',dimension:'region'},
+    {id:'required',type:'dimension',dimension:'required',selection:{mode:'single',required:true},clearOnChangeOf:['region']},
+    {id:'tree',type:'dimension',dimension:'office',treeSelection:'level',hierarchy:[{id:'office',dimension:'office'}],clearOnChangeOf:['region']}
+  ];
+  const values = new Map([['region',dim('region','甲')],['tree',{...dim('office'),level:'office'} as FilterValue]]);
+  const state = createFilterState(values,declarations,new Map(),{schemaVersion:'6.124'});
+  state.write('region',dim('region','乙'));
+  expect(state.confirmation()).toEqual(new Set(['required','tree']));
+  expect(state.blocked()).toContain('required');
+});

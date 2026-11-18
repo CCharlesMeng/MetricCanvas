@@ -4,7 +4,7 @@ import {reconcileTableSources} from './table/presentation-session';
 import {requiresQueryContext,hasPeriodQueryDefault} from '@metriccanvas/page/internal';
 import {fieldSelectionIds,flattenPageComponents} from '@metriccanvas/page/internal';
 import { createSourceProgram, composeEffectiveQuery, intersectQueryFilters, activeSourceIds, visibleSourceIds, compileSources, defaultSourceView, computedSnapshots, automaticQueryPageSize, initialTableViews, remoteHeaderDefaultSources } from '@metriccanvas/data-execution/runtime';
-import type { QueryHeaderFilters, ScreenProgress } from '@metriccanvas/data-execution/runtime';
+import type { QueryHeaderFilters, ScreenProgress, SourceCandidateSession } from '@metriccanvas/data-execution/runtime';
 import { affectedSourceIds, conditionSourceIds, queryResultDependencies, type Page, type DataSnapshot, type EffectiveQuery, type QueryDataSource, type TabSelections, type TableQueryView } from '@metriccanvas/page/internal';
 import { executionSourceKey } from './execution';
 import { filterBlockedIds, initialFilterValues, type FilterState, type FilterValues } from './filter-state';
@@ -38,7 +38,7 @@ export interface PageSnapshotStream extends Subscribable<PageDataSnapshots> {
 }
 export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterState,
   diagnostics?: Pick<QueryDiagnosticContext, 'pageRevisionId'>,
-  execution?: Pick<import('./execution').ExecutionBootstrap, 'filters' | 'snapshots' | 'sourceKeys'>,timeContext:{displayInputs?:()=>import('@metriccanvas/page/internal').DisplayInputsSnapshot|undefined;filterRevision?:()=>number;now?:Date;clock?:()=>Date}={}, initialTabs: TabSelections = {}, initialViews:ReadonlyMap<string,TableQueryView> = new Map()): PageSnapshotStream {
+  execution?: Pick<import('./execution').ExecutionBootstrap, 'filters' | 'snapshots' | 'sourceKeys'>,timeContext:{displayInputs?:()=>import('@metriccanvas/page/internal').DisplayInputsSnapshot|undefined;filterRevision?:()=>number;now?:Date;clock?:()=>Date;candidateSession?:SourceCandidateSession}={}, initialTabs: TabSelections = {}, initialViews:ReadonlyMap<string,TableQueryView> = new Map()): PageSnapshotStream {
   let selections = initialTabs;
   const hasMembershipCandidates = supportsMembershipCandidates(gateway);
   const ids = visibleSourceIds(page), compiled = compileSources(page), defaults = filters?new Map():initialFilterValues(page.filters ?? [],timeContext.now??timeContext.clock?.()??new Date(),timeContext.displayInputs?.(),timeContext.filterRevision?.());

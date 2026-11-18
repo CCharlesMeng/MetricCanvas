@@ -380,6 +380,9 @@ export const invariants: InvariantDefinition[] = [
     {case:'source-candidate-version',base:'filter-source-candidates',expect:/由 6.90 引入/,mutate:d=>{d.schemaVersion='6.89';}},
     {case:'source-candidate-self',base:'filter-source-candidates',expect:/自身筛选/,mutate:d=>{d.dataSources['channel-options'].source.query.filterBindings={channel:{target:'dimension',queryField:'code'}};}}
   ]},
+  {id:'unrestricted-filter-clear',description:'6.124 可选筛选原本不限时联动免确认',valid:['filter-source-query-pagination'],cases:[
+    {case:'unrestricted-filter-clear-version-ahead',base:'filter-source-query-pagination',expect:/高于运行时当前次版本/,mutate:d=>{d.schemaVersion=minorAheadOfCurrent;}}
+  ]},
   {id:'filter-source-candidate-levels',description:'6.122 内联候选行通过层级 ID 使用不同查询字段',valid:['filter-source-candidate-levels'],cases:[
     {case:'source-candidate-level-version',base:'filter-source-candidate-levels',expect:/由 6.122 引入/,mutate:d=>{d.schemaVersion='6.121';}},
     {case:'source-candidate-level-field',base:'filter-source-candidate-levels',expect:/必须引用已声明的字符串输出/,mutate:d=>{d.filters[0].candidates.levelField='missing';}},

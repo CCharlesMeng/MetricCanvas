@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.123",
-  "schemaSha256": "c09394e359a8bdb6143d8e59ca97dcf33ce189fb32eb37383a512351587bfeb1",
+  "schemaVersion": "6.124",
+  "schemaSha256": "c1d13efe5fca75c34d30a8890156bb1b8fcc73b64c7757289bd52a3dbf5f95b1",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -330,6 +330,7 @@
         "ioc-legacy-key-office"
       ],
       "rules": [
+        "unrestricted-filter-clear",
         "filter-id-unique",
         "time-range-default-calendar",
         "relative-time-anchor",
@@ -1373,7 +1374,8 @@
         "6.120",
         "6.121",
         "6.122",
-        "6.123"
+        "6.123",
+        "6.124"
       ]
     },
     {
@@ -23508,5 +23510,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "0f42d3a01246a14da396d19f3bf5ca69bfc671b3728ae7f4e25be812ff0831b8"
+  "semanticSourceDigest": "6a452d4d705cad1741fd7a1b14dd7f4b18f43082f42a4ec6d2b8329d630a60ee"
 }

@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "0d1ff5ccf89e842a22cecd40986e5486e6ba5a2165c3b869789720739355296a",
+  "sha256": "a26de98bbb23a019cdb36322f848ded47998fb541d69263e910d5324c5701ac4",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -136,7 +136,7 @@
     },
     {
       "file": "docs/page-metadata/filters.md",
-      "sha256": "a116212bf58b34c634595b32b8cd37193e4adc524518bdee378b1179bc82ea96"
+      "sha256": "e6a1fa1776ad64f50094bccab8eb6ec2c6472b384029b281b58a196b4045b1b2"
     },
     {
       "file": "docs/page-metadata/layout-migration.md",
@@ -144,7 +144,7 @@
     },
     {
       "file": "docs/page-metadata/page.md",
-      "sha256": "c8c5947fd976994ede1b8b7db5b1623470bf32ba3a1878bb544937ffc9156a26"
+      "sha256": "d646a4b3310f2c7b795db362b9a77a6069b577653022620f91da5c7b2802b4eb"
     },
     {
       "file": "docs/page-metadata/parameters.md",
@@ -160,7 +160,7 @@
     },
     {
       "file": "docs/page-metadata/reference-map.json",
-      "sha256": "9fa80fab46da0d7766d1b846e44958ea51a3076521148f4bfab0d978d299f8bc"
+      "sha256": "52ed88cb7149d5c790cb066897495087797b40ecb3d3be307a5a12d1d0bbcb79"
     },
     {
       "file": "docs/page-metadata/sections-and-layout.md",
@@ -1688,7 +1688,7 @@
     },
     {
       "file": "packages/page/src/layout-compatibility.ts",
-      "sha256": "97b71fac199b9516bb0fce0271df1acf2c8f93063d7102ed45ceef8201e6b2d8"
+      "sha256": "18e8cd1e7a5f547a596e8626963a9bd388332922eb0a6e36dd91b39ff6a92f69"
     },
     {
       "file": "packages/page/src/legacy-compatibility.ts",
@@ -2208,7 +2208,7 @@
     },
     {
       "file": "packages/page/src/version.ts",
-      "sha256": "ce316b360087c4326b16cf613732814040fb743786677acd14909c7a5121d805"
+      "sha256": "f400e38956165cb27ebffea50a69ead672ef56b2d92baca27bbe925a7f038a5d"
     },
     {
       "file": "packages/page/src/write-version.ts",
@@ -2528,7 +2528,7 @@
     },
     {
       "file": "pages/capabilities/filters/README.md",
-      "sha256": "3236babf62f3d6732c29b769022a872ffe4ecf185da7638c87ddcc01735d9464"
+      "sha256": "d1845f3818b577892cd126f565e777c5b6c25ecff826e0ac37097bb8ecb17fd8"
     },
     {
       "file": "pages/capabilities/filters/chart-include-exclude.json",
@@ -2568,7 +2568,7 @@
     },
     {
       "file": "pages/capabilities/filters/filter-source-query-pagination.json",
-      "sha256": "122b7e451495f5ffdd5b4a24cc745f1876f02ab801e365e87fae4bea30288698"
+      "sha256": "27cfa13b9b12d366bc4d1d7379e81612f161b3a9b875d72ec3ffc767982605eb"
     },
     {
       "file": "pages/capabilities/filters/finalization-default-time-detail.json",
@@ -2856,15 +2856,15 @@
     },
     {
       "file": "pages/capabilities/layout/mc-content-layout-demo.json",
-      "sha256": "42d7c5fe758b474ab5c9509c3cbfd6de95c6cbc3c3ca09792fe94e02bd926d66"
+      "sha256": "adba73118da7bc307d3ab78ae28209cf8d2324c10e5a3b06fecb67184454760c"
     },
     {
       "file": "pages/capabilities/layout/mc-layout-business-report.json",
-      "sha256": "87645c999bd9576516a0c77e094e0de5cc3b1097749f349d73aa1a7eb95c37be"
+      "sha256": "c7bcf52390df7f089fadc71bc42e00c40e574236ba24445569ccbdbc4091aa04"
     },
     {
       "file": "pages/capabilities/layout/mc-layout-usage-report.json",
-      "sha256": "850c21e2834b42478608e6f690a81b25b367649f7f8f1228694f7304aef2d3a5"
+      "sha256": "0a3f254812dbc4d041c56221f3fb6c4933d36a786e652425bad1c9a4766708ae"
     },
     {
       "file": "pages/capabilities/layout/metric-card-equation.json",
@@ -2884,7 +2884,7 @@
     },
     {
       "file": "pages/capabilities/layout/schema-upgrade-demo.json",
-      "sha256": "de87429ab473baa29cc88eb289de6c7ea4a161591f663499e018d6ee1086e740"
+      "sha256": "18321139917d71098918b7d430050ec214d8f4326be94ba4fe4ef8048f08d26a"
     },
     {
       "file": "pages/capabilities/layout/tab-mixed-content-report.json",
@@ -3312,7 +3312,7 @@
     },
     {
       "file": "pages/temporary/business-result-pinned-diagnosis-20261102/business-result-metrics.json",
-      "sha256": "29287d29d60418ece46b035e183b29cdcb5289b2fc7aca7ebfb03dcd6b054d5b"
+      "sha256": "dfb2e278a01b6d951e9367c42195e319f4223556a18ae9927cc2c828668be8c6"
     },
     {
       "file": "pages/temporary/contract-maturity-linkage-20261027/README.md",
@@ -3876,7 +3876,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "c8c95b00aa01936d7e97fdfefc95a57a49aa59fe4679716321acdc38d90ef678"
+      "sha256": "83966926a66cfcc45f8f012153358282dcbeb18a2ce5a543895ac4673093e5e6"
     },
     {
       "file": "tools/scripts/page-files.d.mts",

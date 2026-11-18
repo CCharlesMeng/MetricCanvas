@@ -737,6 +737,16 @@
       ]
     },
     {
+      "id": "unrestricted-filter-clear",
+      "description": "6.124 可选筛选原本不限时联动免确认",
+      "valid": [
+        "filter-source-query-pagination"
+      ],
+      "invalid": [
+        "unrestricted-filter-clear-version-ahead"
+      ]
+    },
+    {
       "id": "filter-source-candidate-levels",
       "description": "6.122 内联候选行通过层级 ID 使用不同查询字段",
       "valid": [

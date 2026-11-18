@@ -20,9 +20,9 @@
   import { PRESENTATION_CONTEXT } from './presentation-context';
   import { chartOptionPaths, isChartOptionError } from '@metriccanvas/page/internal';
   import { CHART_OPTION_PATHS } from '../../widgets/src/shared/chart-option-extension';
-  import {sourceCandidatesGateway,createCandidateGatewaySession,sourceCandidateWindow,withSourceCandidateSelection} from '@metriccanvas/data-execution/runtime';
+  import {createSourceCandidateSession,sourceCandidateWindow,withSourceCandidateSelection} from '@metriccanvas/data-execution/runtime';
   import type {CandidatePageReader} from './filters/candidate-paging';
-  let candidateSession:ReturnType<typeof createCandidateGatewaySession>|undefined;
+  let candidateSession:ReturnType<typeof createSourceCandidateSession>|undefined;
   import {initialFilterInputIssue} from './initial-filter-input';
   import {requestsRollingFinalization} from '../../runtime/src/filter-state';
   import { filterCandidatesRequest } from '../../runtime/src/filter-candidates';
@@ -389,6 +389,7 @@
     const declaration=declarations.find(filter=>filter.id===id);
     if(declaration?.type!=='dimension'||!declaration.candidates)return;
     return {declaration,...sourceFilterSelection(filterValues,id),candidates:sourceFilterCandidates(declaration),pagination:sourceFilterPagination(declaration),
+      confirmation:confirmationFilters.includes(id),preparing:preparationBlocksFilter(declaration,declarations,preparingFilters),
       onchange:(values,level)=>writeDimension(declaration,values,level),onretry:()=>retryCandidates(id)};
   });
   let tableViews = $state<Record<string, TableViewState>>({});
@@ -596,7 +597,7 @@
     authPageId=loaded.id;
     const authGateway=createAuthRequiredGateway(gatewayOverride??inlineGateway,receiveAuthRequired);
     disposers.push(()=>authGateway.dispose());
-    const nextCandidateSession=createCandidateGatewaySession(sourceCandidatesGateway(loaded,authGateway.gateway,{displayInputs:()=>displaySnapshot,filterRevision:()=>filterRevision,clock:()=>candidateClock}));
+    const nextCandidateSession=createSourceCandidateSession(loaded,authGateway.gateway,{displayInputs:()=>displaySnapshot,filterRevision:()=>filterRevision,clock:()=>candidateClock});
     inheritFinalizationCache(nextCandidateSession.gateway,authGateway.gateway);
     candidateSession=nextCandidateSession;activeGateway=nextCandidateSession.gateway;
     disposers.push(()=>{nextCandidateSession.dispose();if(candidateSession===nextCandidateSession)candidateSession=undefined;});
@@ -644,7 +645,7 @@
     } catch {failTimeInitialization(mySession,finalizationController.signal,emit);return;}
     let state:ReturnType<typeof createFilterState>;
     try {
-      state = createFilterState(bootstrap ? bootstrap.filters : new Map([...fromDeclarations, ...fromURL]), declarations, localOptions, { iocRegion:usesIocRegion(loaded), candidates:true, displayInputs:()=>displaySnapshot,readOnly: () => filterEditing?.readOnly === true || pageFiltersReadOnly(loaded) });
+      state = createFilterState(bootstrap ? bootstrap.filters : new Map([...fromDeclarations, ...fromURL]), declarations, localOptions, { schemaVersion:loaded.schemaVersion, iocRegion:usesIocRegion(loaded), candidates:true, displayInputs:()=>displaySnapshot,readOnly: () => filterEditing?.readOnly === true || pageFiltersReadOnly(loaded) });
     } catch {
       pageState={phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters',message:'筛选初始化值不符合声明或日期边界'}]};
       emit?.({type:'invalid',errors:pageState.errors});return;
@@ -659,6 +660,14 @@
     const regionDefault = createIocRegionDefault(loaded, search, new Map([...fromDeclarations, ...fromURL]), !!bootstrap);
     let redirectingRegion = false;
 
+    function loadCandidates(loader: NonNullable<typeof candidatesLoader>, values: FilterValues) {
+      for (const declaration of declarations) {
+        if (declaration.type !== 'dimension' || localOptions.has(declaration.id) || declaration.options) continue;
+        if (declaration.candidates && regionDefault.waiting() && preparationBlocksFilter(declaration,declarations,['region'])) continue;
+        loadDimensionCandidates(loader, declaration, values);
+      }
+    }
+
     function receiveCandidates(next:DimensionValuesSnapshots) {
         publishCandidateReceipts(next);
         if (pendingRegion) {
@@ -667,8 +676,10 @@
         }
         const region = declarations.find(declaration => declaration.id === 'region');
         if (region?.type === 'dimension') {
+          const waiting = regionDefault.waiting();
           const value = regionDefault.take(next, cascadeContext(region, declarations, filterValues, filterCandidateContext()));
           if (value) state.commit({ type: 'initialize', values: new Map([...filterValues, ['region', value]]) });
+          else if (waiting && !regionDefault.waiting() && candidatesLoader) loadCandidates(candidatesLoader,filterValues);
         }
     }
 
@@ -716,7 +727,7 @@
         discardPreparingData(loaded,preparingFilters,values,stream?.getSourceProgram(),retainedScreenData);
         cancelBlockedExports(loaded);
         if (candidatesLoader && changedFilters(previous,values).size) {
-          for (const declaration of declarations) if (declaration.type === 'dimension' && !localOptions.has(declaration.id) && !declaration.options) loadDimensionCandidates(candidatesLoader,declaration,values);
+          loadCandidates(candidatesLoader,values);
           receiveCandidates(dimensionCandidates);
         }
         const presentation = periodFactPage(filterTextPage(loaded, textBindings, values,state.preparation()),displaySnapshot,state.revision);
@@ -745,7 +756,7 @@
       activeGateway,
       capabilities.filters ? state : undefined,
       revisionId !== undefined ? { pageRevisionId: revisionId } : undefined,
-      bootstrap,{displayInputs:()=>displaySnapshot,filterRevision:()=>state.revision,clock:()=>state.clock()}, tabSelections
+      bootstrap,{displayInputs:()=>displaySnapshot,filterRevision:()=>state.revision,clock:()=>state.clock(),candidateSession:nextCandidateSession}, tabSelections
     );
     stream = pageStream;
     const emittedDataErrors = new Map<string, string>();
@@ -805,10 +816,7 @@
       })
     );
 
-    for (const declaration of declarations) {
-      if (declaration.type !== 'dimension' || localOptions.has(declaration.id) || declaration.options) continue;
-      loadDimensionCandidates(loader, declaration, filterValues);
-    }
+    loadCandidates(loader,filterValues);
 
 
   }
@@ -1238,7 +1246,7 @@
         detailFilters=input.filters;
         if (view?.mode === 'query') {
           const generation = detailGeneration;
-          detailDispose = orchestrate(input.page, activeGateway, createFilterState(input.filters, input.page.filters ?? [])).subscribe(value => {
+          detailDispose = orchestrate(input.page, activeGateway, createFilterState(input.filters, input.page.filters ?? [], new Map(), {schemaVersion:input.page.schemaVersion})).subscribe(value => {
             if (generation === detailGeneration && openDetail) detailSnapshots = value;
           });
         } else detailSnapshots = snapshots;

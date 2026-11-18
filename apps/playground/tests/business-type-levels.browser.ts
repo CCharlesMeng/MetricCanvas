@@ -37,6 +37,7 @@ function cloudServiceWindow(item: QueryItem) {
 test('业务类型按层下推并与分页的云服务排除一起作用', async ({ page }) => {
   const requests: QueryItem[] = [];
   const cloudPages: number[] = [];
+  const cloudProbes: QueryItem[] = [];
   await page.addInitScript(() => Object.assign(window, { __METRICCANVAS__: {
     dqeEndpoint: '/synthetic-business-type-dqe', pageMetadataBaseUrl: '/pages',
     authToken: 'synthetic', operatorId: 'synthetic', workspaceId: 'synthetic'
@@ -49,6 +50,7 @@ test('业务类型按层下推并与分页的云服务排除一起作用', async
       if (region) return { code: 'SUCCESS', data: [{ [dimension]: region }], total_count: 1 };
       if (dimension === '云服务' && item.output_metrics.length === 0) {
         if (item.order?.limit === 10) cloudPages.push(item.order.offset!);
+        else cloudProbes.push(item);
         return cloudServiceWindow(item);
       }
       if (item.output_metrics.some(metric => metric.startsWith('净商务折扣（原价）'))) requests.push(item);
@@ -59,6 +61,7 @@ test('业务类型按层下推并与分页的云服务排除一起作用', async
   await page.goto('/pages/business-result-metrics?mtime=last12Months&mtime.from=2025-11&mtime.to=2026-10&region=华东地区部');
   await expect(page).toHaveURL(/business-result-metrics.*region-dept=/);
   await expect.poll(() => requests.some(item => item.output_metrics.includes('净商务折扣（原价）'))).toBe(true);
+  expect(cloudProbes).toHaveLength(1);
   const control = page.locator('[data-filter-group="business-type"]');
   const parent = '华为公有云CORE';
   const child = '公网REGION';
@@ -76,6 +79,7 @@ test('业务类型按层下推并与分页的云服务排除一起作用', async
     { dimensions: ['代表处'], predicates: [childPredicate] },
     { dimensions: [], predicates: [childPredicate] },
   ]));
+  expect(cloudProbes).toHaveLength(1);
   const restoredUrl = page.url();
   await page.reload();
   await expect(control.getByRole('button', { name: '业务类型', exact: true })).toHaveText(child);

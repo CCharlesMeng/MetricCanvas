@@ -19,3 +19,26 @@ describe('amount coordinator',()=>{
   const bad=new Map(values).set('amount',{type:'numberRange',from:5,to:5});expect(state.commit({type:'restore',values:bad})).toMatchObject({ok:false});expect(values.get('amount')).toMatchObject({from:1000000});
  });
 });
+
+it.each(['6.123','6.124'])('applies the page version to an already unrestricted amount in %s', schemaVersion => {
+  const page = load();
+  const initial = new Map(initialFilterValues(page.filters ?? []));
+  initial.set('amount',{type:'numberRange'});
+  const state = createFilterState(initial,page.filters,new Map(),{schemaVersion});
+
+  state.write('currency',{type:'dimension',dimension:'currency_code',values:['USD']});
+  expect(state.confirmation().has('amount')).toBe(schemaVersion === '6.123');
+  expect(state.toURL()).not.toContain('amount.');
+});
+
+it('requires explicit confirmation when a zero lower bound is cleared by a currency change', () => {
+  const page = load();
+  const state = createFilterState(initialFilterValues(page.filters ?? []),page.filters,new Map(),{schemaVersion:'6.124'});
+  state.write('amount',{type:'numberRange',from:0});
+  expect(state.toURL()).toContain('amount.from=0');
+  state.write('currency',{type:'dimension',dimension:'currency_code',values:['USD']});
+  expect(state.blocked()).toContain('amount');
+  expect(state.toURL()).not.toContain('amount.from=');
+  state.write('amount',null);
+  expect(state.blocked()).not.toContain('amount');
+});

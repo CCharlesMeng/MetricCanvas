@@ -8,6 +8,8 @@ export interface SourceFilterBinding {
   level?:string;
   candidates:DimensionValuesSnapshot;
   pagination?:CandidatePageReader;
+  confirmation?:boolean;
+  preparing?:boolean;
   onchange:(values:string[],level?:string)=>void;
   onretry:()=>void;
 }

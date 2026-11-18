@@ -1,8 +1,8 @@
 import { readFileSync } from 'node:fs';
 import { expect, it, vi } from 'vitest';
-import { parsePage, type DimensionFilterDeclaration, type EffectiveQuery } from '@metriccanvas/page/internal';
+import { parsePage, resolvePeriodSelection, type DimensionFilterDeclaration, type EffectiveQuery } from '@metriccanvas/page/internal';
 import { effectiveDqeItem } from '../src/dqe/dqe';
-import { sourceCandidatesGateway } from '../src/source-candidates';
+import { createSourceCandidateSession, sourceCandidatesGateway } from '../src/source-candidates';
 import { createSourceProgram } from '../src/source-program/session';
 import { filterCandidatesRequest } from '../src/filter-candidates';
 import { sourceCandidateWindow } from '../src/source-candidate-window';
@@ -102,7 +102,7 @@ it('keeps business selection verification independent of the open menu and rejec
     expect((await read('乙云服务01'))?.candidateRejected).toBe(true);
     expect(preview.requests).toHaveLength(3);
     expect((await read('甲云服务25','complete'))?.snapshot.status).toBe('ready');
-    expect(preview.requests[3].pagination).toEqual({offset:0,limit:1});
+    expect(preview.requests.filter(query => query.pagination)).toHaveLength(2);
   } finally { program.dispose(); }
 });
 
@@ -118,4 +118,95 @@ it('recognizes only explicit single-dimension windows and rejects invalid page t
   const gateway = sourceCandidatesGateway(page,{fetchData});
   await expect(gateway.fetchFilterCandidates!({...request,sourceRead:{kind:'page',offset:0,search:''}},{signal:new AbortController().signal}))
     .rejects.toMatchObject({code:'DQE_ROW_CONTRACT_ERROR'});
+});
+
+function keyOfficeBusinessPage() {
+  const path = new URL('../../../pages/temporary/business-result-pinned-diagnosis-20261102/business-result-metrics.json',import.meta.url);
+  const document = JSON.parse(readFileSync(path, 'utf8').replaceAll('"key-account-only"', '"key-national-only"'));
+  const result = parsePage(document);
+  if (!result.ok) throw new Error(JSON.stringify(result.errors));
+  return result.page;
+}
+
+it.each([
+  undefined,
+  {kind:'page', offset:0, search:''},
+  {kind:'selection', values:['重点云服务']}
+] as const)('applies the authorized key-office scope to candidate read %j', async sourceRead => {
+  const page = keyOfficeBusinessPage();
+  const filter = page.filters!.find(item => item.id === 'cloud-service') as DimensionFilterDeclaration;
+  const fetchData = vi.fn(async (_query:EffectiveQuery) => ({rows:[{service:'重点云服务'}],totalCount:1}));
+  const gateway = sourceCandidatesGateway(page, {
+    fetchData,
+    async fetchFilterCandidates(request) {
+      const candidates = request.filterId === 'region' ? [{value:'全球',label:'全球',level:'geo'}] : [{value:'北京代表处',label:'北京代表处'}];
+      return {kind:'values',candidates};
+    }
+  });
+  const conditions:FilterValues = new Map([
+    ['key-national-only',{type:'boolean',value:true}],
+    ['mtime',{type:'timeRange',...resolvePeriodSelection({mode:'month',value:'2026-10'},new Date('2026-11-17T04:00:00Z'),'month')}],
+    ['region',{type:'dimension',dimension:'geo-pc-code',level:'geo',values:['全球']}]
+  ]);
+  const request = filterCandidatesRequest(filter,page.filters!,conditions,undefined,{page});
+  await gateway.fetchFilterCandidates!({...request,sourceRead:sourceRead && structuredClone(sourceRead)},{signal:new AbortController().signal});
+  expect(fetchData).toHaveBeenCalledTimes(1);
+  expect(fetchData.mock.calls[0]![0].filterValues).toContainEqual(expect.objectContaining({
+    queryField:'代表处', values:['北京代表处']
+  }));
+});
+
+it.each(['empty','denied'] as const)('does not dispatch an unrestricted candidate query with a %s key-office roster', async status => {
+  const page = keyOfficeBusinessPage();
+  const filter = page.filters!.find(item => item.id === 'cloud-service') as DimensionFilterDeclaration;
+  const fetchData = vi.fn<import('../src/ports').RuntimeDataGateway['fetchData']>();
+  const gateway = sourceCandidatesGateway(page, {
+    fetchData,
+    async fetchFilterCandidates(request) {
+      if (request.filterId === 'region') return {kind:'values',candidates:[{value:'全球',label:'全球',level:'geo'}]};
+      return status === 'empty' ? {kind:'values',candidates:[]} : {kind:'denied'};
+    }
+  });
+  const conditions:FilterValues = new Map([
+    ['key-national-only',{type:'boolean',value:true}],
+    ['mtime',{type:'timeRange',...resolvePeriodSelection({mode:'month',value:'2026-10'},new Date('2026-11-17T04:00:00Z'),'month')}],
+    ['region',{type:'dimension',dimension:'geo-pc-code',level:'geo',values:['全球']}]
+  ]);
+  const request = filterCandidatesRequest(filter,page.filters!,conditions,undefined,{page});
+  const read = gateway.fetchFilterCandidates!({...request,sourceRead:{kind:'page',offset:0,search:''}},{signal:new AbortController().signal});
+  if (status === 'empty') await expect(read).resolves.toEqual({kind:'values',candidates:[],totalCount:0});
+  else await expect(read).rejects.toMatchObject({code:'DQE_CONFIG_ERROR'});
+  expect(fetchData).not.toHaveBeenCalled();
+});
+
+it('cancels the previous permission scope and prevents its late window from being reused', async () => {
+  const {page, request} = setup();
+  type Result = import('../src/ports').DataGatewayResult;
+  const replies: Array<(result: Result) => void> = [];
+  const fetchData = vi.fn<import('../src/ports').RuntimeDataGateway['fetchData']>(
+    () => new Promise(resolve => replies.push(resolve))
+  );
+  let permissionRevision = 'first';
+  const session = createSourceCandidateSession(page, {fetchData}, {
+    displayInputs: () => ({permissionRevision, permissions:{}, values:{}})
+  });
+  const window = {...request,sourceRead:{kind:'page' as const, offset:0,search:''}};
+  const load = () => session.gateway.fetchFilterCandidates!(window,{signal:new AbortController().signal});
+  try {
+    const superseded = expect(load()).rejects.toMatchObject({name:'AbortError'});
+    await vi.waitFor(() => expect(fetchData).toHaveBeenCalledTimes(1));
+    permissionRevision = 'second';
+    const current = load();
+    await superseded;
+    expect(fetchData.mock.calls[0]![2]?.aborted).toBe(true);
+    await vi.waitFor(() => expect(fetchData).toHaveBeenCalledTimes(2));
+    replies[0]!({rows:[{service:'旧范围'}],totalCount:1});
+    replies[1]!({rows:[{service:'当前范围'}],totalCount:1});
+    const expected = {kind:'values',candidates:[{value:'当前范围',label:'当前范围'}],totalCount:1};
+    await expect(current).resolves.toEqual(expected);
+    await expect(load()).resolves.toEqual(expected);
+    expect(fetchData).toHaveBeenCalledTimes(2);
+  } finally {
+    session.dispose();
+  }
 });

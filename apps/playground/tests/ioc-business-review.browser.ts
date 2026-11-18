@@ -33,6 +33,21 @@ test('currency presets keep draft cancellation, strict bounds, and atomic cleari
  const currency=page.locator('[data-filter-id="currency"]');await openSelection(currency);await currency.getByRole('option',{name:'美元',exact:true}).click();amount=page.locator('[data-filter-id="amount"]');await amount.getByLabel('预签金额',{exact:true}).click();await expect(amount.getByRole('button',{name:'1M$~10M$',exact:true})).toBeVisible();await expect(page.getByText('2000000 ~ 10000000',{exact:true})).toHaveCount(0);
  await amount.getByLabel('预签金额下限').fill('10');await amount.getByLabel('预签金额上限').fill('10');await amount.getByRole('button',{name:'确定',exact:true}).click();await expect(amount.getByRole('alert')).toBeVisible();await amount.getByRole('button',{name:'1M$~10M$',exact:true}).click();await amount.getByRole('button',{name:'确定',exact:true}).click();await expect(page.getByText('1000000 ~ 10000000',{exact:true})).toBeVisible();await expect(page.getByText('demo_amount_usd',{exact:true})).toBeVisible();
 });
+test('an empty amount range still requires confirmation after a currency change', async ({page}) => {
+  await page.goto('/ioc-header-review?view=ioc-header-currency');
+  const currency = page.locator('[data-filter-id="currency"]');
+  const amount = page.locator('[data-filter-id="amount"]');
+
+  await openSelection(currency);
+  await currency.getByRole('option',{name:'美元',exact:true}).click();
+  const confirmation = amount.locator('[data-filter-confirmation]');
+  await expect(confirmation.getByRole('status')).toHaveText('筛选范围已变更，请重新选择');
+  await confirmation.getByRole('button',{name:'确认不限'}).click();
+  await expect(confirmation).toHaveCount(0);
+  await expect(page.getByRole('row',{name:'demo_currency USD 1'})).toBeVisible();
+  await expect(page.getByText('demo_amount_usd',{exact:true})).toHaveCount(0);
+});
+
 test('months remain discrete, required multi can add and remove without clearing last',async({page})=>{
  await page.goto('/ioc-header-review?view=ioc-header-months');await expect(page.getByText('202610 | 202608',{exact:true})).toBeVisible();const months=page.locator('[data-filter-id="months"]');await openSelection(months);
  await months.getByRole('option',{name:'2026年9月',exact:true}).click();await expect(page.getByText('202610 | 202608 | 202609',{exact:true})).toBeVisible();

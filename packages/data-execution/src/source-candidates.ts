@@ -1,49 +1,166 @@
-import { candidateDependencies, canonicalizeJson, sourceCandidateErrors, type DimensionFilterDeclaration, type Page, type Row, type DataSnapshot, type DisplayInputsSnapshot } from '@metriccanvas/page/internal';
+import { canonicalizeJson, conditionSourceIds, periodFact, selectQuery, sourceCandidateErrors, type DimensionFilterDeclaration, type Page, type Row, type DataSnapshot, type DisplayInputsSnapshot } from '@metriccanvas/page/internal';
 import { SourceRangeError } from './source-program/range-policy';
-import { inheritMembershipCandidates } from './membership-candidates';
+import { bindCandidateGateway, createCandidateRequestPool } from './candidate-session';
+import { createNativeIocPreparation } from './native-ioc-preparation';
 import { createSourceProgram } from './source-program/session';
 import type { FilterValue, FilterValues } from './filter-values';
 import type { FilterCandidate, FilterCandidatesRequest, RuntimeDataGateway } from './ports';
-import { validFilterCandidates } from './filter-candidates';
-import { inspectSourceCandidateWindow } from './source-candidate-window';
+import { candidateDependencyIds, validFilterCandidates } from './filter-candidates';
+import { inspectSourceCandidateWindow, type CompleteCandidateReason } from './source-candidate-window';
 import { createSourceCandidateWindowReader } from './read-source-candidate-window';
 
-const owner=Symbol('sourceCandidatePage');
-type Context={displayInputs?:()=>DisplayInputsSnapshot|undefined;filterRevision?:()=>number;clock?:()=>Date;now?:Date};
-/** The same candidate port serves controls, headless reads and frozen exports. */
-export function sourceCandidatesGateway(page:Page,base:RuntimeDataGateway,context:Context={}):RuntimeDataGateway {
-  if((base as RuntimeDataGateway & {[owner]?:Page})[owner]===page||!page.filters?.some(filter=>filter.type==='dimension'&&filter.candidates))return base;
-  const readSourceCandidateWindow = createSourceCandidateWindowReader(page);
-  const gateway:RuntimeDataGateway={...base,fetchData:base.fetchData.bind(base),
-    ...(base.fetchDimensionValues?{fetchDimensionValues:base.fetchDimensionValues.bind(base)}:{}),
-    ...(base.fetchColumnCandidates?{fetchColumnCandidates:base.fetchColumnCandidates.bind(base)}:{}),
-    fetchFilterCandidates:async(request,options)=>{
-      const filter=page.filters?.find(item=>item.id===request.filterId);
-      if(filter?.type!=='dimension'||!filter.candidates)return base.fetchFilterCandidates?base.fetchFilterCandidates(request,options):{kind:'unavailable'};
-      if(sourceCandidateErrors(page).length)fail('DQE_CONFIG_ERROR','页面数据源候选声明无效');
-      const conditions=candidateConditions(page,request);
-      const plan = inspectSourceCandidateWindow(page, filter);
-      if (request.sourceRead) {
-        if (plan.kind !== 'window') return {kind:'unavailable'};
-        const frozen = {displayInputs:context.displayInputs?.(), filterRevision:context.filterRevision?.(), now:context.now??context.clock?.()};
-        return readSourceCandidateWindow(plan, filter.id, request.sourceRead, conditions, gateway, options.signal, frozen);
-      }
-      const reason = plan.kind === 'complete' ? plan.reason : 'complete-candidate-read';
-      const program=createSourceProgram(page,{gateway,...context,diagnostics:{sourceCandidates:{filterId:filter.id,kind:'complete',reason}}});
-      let snapshot:DataSnapshot|undefined;
-      try {
-        for await(const update of program.read({roots:[filter.candidates.dataSource],conditions,purpose:'complete',strictComplete:true,useInitial:false,signal:options.signal,displayInputs:context.displayInputs?.(),filterRevision:context.filterRevision?.(),now:context.now??context.clock?.()}))if(update.sourceId===filter.candidates.dataSource)snapshot=update.snapshot;
-        options.signal.throwIfAborted();
-        return {kind:'values',candidates:projectSourceCandidates(filter,completeRows(snapshot,page.dataSources[filter.candidates.dataSource]!.source.type==='inline'))};
-      } catch(cause) {
-        if(cause instanceof SourceRangeError)fail(cause.code==='EXPORT_ROW_LIMIT'?'DQE_QUERY_REJECTED':'DQE_ROW_CONTRACT_ERROR','候选来源完整读取失败');
-        throw cause;
-      } finally {program.dispose();}
+type Context = { displayInputs?: () => DisplayInputsSnapshot | undefined; filterRevision?: () => number; clock?: () => Date; now?: Date };
+type FrozenContext = { displayInputs?: DisplayInputsSnapshot; filterRevision?: number; now: Date };
+
+export interface SourceCandidateSession {
+  gateway: RuntimeDataGateway;
+  native: ReturnType<typeof createNativeIocPreparation>;
+  capture(context: FrozenContext): {gateway: RuntimeDataGateway; signal: AbortSignal};
+  invalidate(request: FilterCandidatesRequest): void;
+  dispose(): void;
+}
+
+/** A page instance owns both its prepared sources and the candidate receipts derived from them. */
+export function createSourceCandidateSession(input: Page, base: RuntimeDataGateway, context: Context = {}): SourceCandidateSession {
+  const native = createNativeIocPreparation(input, base);
+  const page = native.page;
+  const filters = new Map(page.filters?.flatMap(filter => filter.type === 'dimension' ? [[filter.id, filter] as const] : []));
+  const hasPageCandidates = [...filters.values()].some(filter => filter.candidates);
+  const validSources = !hasPageCandidates || sourceCandidateErrors(page).length === 0;
+  let active = permissionScope(page, undefined);
+  let disposed = false;
+
+  const session: SourceCandidateSession = {
+    native,
+    gateway: gatewayWithContext(() => freezeContext(context)),
+    capture(frozen) {
+      const scope = scopeFor(frozen);
+      return {gateway:gatewayWithContext(() => frozen, scope), signal:scope.controller.signal};
+    },
+    invalidate(request) {
+      active.pool.invalidate(request);
+      const sourceId = filters.get(request.filterId)?.candidates?.dataSource;
+      if (sourceId) native.retry(sourceId, candidateConditions(page, request));
+    },
+    dispose() {
+      disposed = true;
+      endPermissionScope(active);
+      native.dispose();
     }
   };
-  Object.assign(gateway,{[owner]:page});
-  return inheritMembershipCandidates(gateway,base);
+  return session;
+
+  function gatewayWithContext(freeze: () => FrozenContext, capturedScope?: ReturnType<typeof permissionScope>): RuntimeDataGateway {
+    if (!hasPageCandidates && !base.fetchFilterCandidates) return base;
+    const gateway = bindCandidateGateway(base, async (request, {signal}) => {
+      const frozen = freeze();
+      const scope = capturedScope ?? scopeFor(frozen);
+      scope.controller.signal.throwIfAborted();
+      const copy = structuredClone(request);
+      const filter = filters.get(copy.filterId);
+      if (!filter?.candidates) {
+        return scope.pool.read(copy, '', signal,
+          shared => base.fetchFilterCandidates?.(copy, {signal:shared}) ?? Promise.resolve({kind:'unavailable'}));
+      }
+      if (!validSources) fail('DQE_CONFIG_ERROR', '页面数据源候选声明无效');
+      const conditions = candidateConditions(page, copy);
+      const key = sourceReceiptScope(page, filter.candidates.dataSource, conditions, frozen);
+      const plan = inspectSourceCandidateWindow(page, filter);
+      if (copy.sourceRead) {
+        if (plan.kind !== 'window') return {kind:'unavailable'};
+        const read = copy.sourceRead;
+        return scope.pool.read(copy, key, signal, async shared => {
+          await native.ensure(plan.sourceId, conditions, shared);
+          return scope.readWindow(plan, filter.id, read, conditions, gateway, shared, frozen);
+        });
+      }
+      const reason = plan.kind === 'complete' ? plan.reason : 'complete-candidate-read';
+      return scope.pool.read(copy, key, signal, shared => readCompleteCandidates(session, gateway, filter, reason, conditions, shared, frozen));
+    });
+    return gateway;
+  }
+
+  function scopeFor(frozen: FrozenContext) {
+    if (disposed) fail('DQE_CANCELLED', '候选会话已结束');
+    const revision = frozen.displayInputs?.permissionRevision;
+    if (active.revision !== revision) {
+      endPermissionScope(active);
+      native.reset();
+      active = permissionScope(page, revision);
+    }
+    return active;
+  }
 }
+
+function freezeContext(context: Context): FrozenContext {
+  return {
+    displayInputs:structuredClone(context.displayInputs?.()), filterRevision:context.filterRevision?.(),
+    now:context.now ?? context.clock?.() ?? new Date()
+  };
+}
+
+function permissionScope(page: Page, revision: string | undefined) {
+  return {revision, controller:new AbortController(), pool:createCandidateRequestPool(), readWindow:createSourceCandidateWindowReader(page)};
+}
+
+function endPermissionScope(scope: ReturnType<typeof permissionScope>) {
+  scope.controller.abort();
+  scope.pool.dispose();
+}
+
+/** Standalone candidate adapter. Runtime consumers with a lifecycle use the session directly. */
+export function sourceCandidatesGateway(page: Page, base: RuntimeDataGateway, context: Context = {}): RuntimeDataGateway {
+  if (!page.filters?.some(filter => filter.type === 'dimension' && filter.candidates)) return base;
+  return createSourceCandidateSession(page, base, context).gateway;
+}
+
+async function readCompleteCandidates(session: SourceCandidateSession, gateway: RuntimeDataGateway, filter: DimensionFilterDeclaration,
+  reason: CompleteCandidateReason, conditions: FilterValues, signal: AbortSignal, context: FrozenContext) {
+  const page = session.native.page;
+  const sourceId = filter.candidates!.dataSource;
+  const program = createSourceProgram(page, {gateway, candidateSession:session, diagnostics:{sourceCandidates:{filterId:filter.id, kind:'complete', reason}}});
+  let snapshot: DataSnapshot | undefined;
+  try {
+    for await (const update of program.read({roots:[sourceId], conditions, purpose:'complete', strictComplete:true, useInitial:false, signal, ...context})) {
+      if (update.sourceId === sourceId) snapshot = update.snapshot;
+    }
+    signal.throwIfAborted();
+    return {kind:'values' as const, candidates:projectSourceCandidates(filter, completeRows(snapshot, page.dataSources[sourceId]!.source.type === 'inline'))};
+  } catch (cause) {
+    if (cause instanceof SourceRangeError) fail(cause.code === 'EXPORT_ROW_LIMIT' ? 'DQE_QUERY_REJECTED' : 'DQE_ROW_CONTRACT_ERROR', '候选来源完整读取失败');
+    throw cause;
+  } finally {
+    program.dispose();
+  }
+}
+
+function sourceReceiptScope(page: Page, sourceId: string, conditions: FilterValues, context: FrozenContext): string {
+  const {now, displayInputs, filterRevision} = context;
+  const factIds = new Set<string>();
+  for (const id of conditions.keys()) {
+    const filter = page.filters?.find(item => item.id === id);
+    if ((filter?.type === 'timePoint' || filter?.type === 'timeRange') && filter.availability) factIds.add(filter.availability.fact);
+  }
+  for (const id of conditionSourceIds(page, sourceId)) {
+    const source = page.dataSources[id];
+    if (source?.source.type !== 'query') continue;
+    const query = selectQuery(source.source.query, conditions);
+    for (const binding of Object.values(query.filterBindings ?? {})) {
+      if (binding.target === 'time' && binding.periodComparison?.fact) factIds.add(binding.periodComparison.fact);
+    }
+  }
+  const facts = [...factIds].sort().map(id => [id, periodFact(displayInputs, id, filterRevision)]);
+  const legacyRevision = usesLegacyCandidateDependency(page, conditions) ? filterRevision ?? null : null;
+  return canonicalizeJson([displayInputs?.permissionRevision ?? null, now.getFullYear(), now.getMonth(), now.getDate(), facts, legacyRevision]);
+}
+function usesLegacyCandidateDependency(page: Page, conditions: FilterValues): boolean {
+  return page.filters?.some(filter => {
+    if (filter.type !== 'dimension' || filter.options || filter.candidates || filter.candidateContext || filter.candidateWindow || filter.treeSelection === 'level') return false;
+    const value = conditions.get(filter.id);
+    return value?.type === 'dimension' && value.values.length > 0;
+  }) ?? false;
+}
+
 function completeRows(snapshot:DataSnapshot|undefined,inline:boolean):Row[] {
   if(snapshot?.status==='error')throw Object.assign(new Error(snapshot.error.message),snapshot.error);
   if(snapshot?.status==='empty')return [];
@@ -51,28 +168,44 @@ function completeRows(snapshot:DataSnapshot|undefined,inline:boolean):Row[] {
   return snapshot.rows;
 }
 function candidateConditions(page:Page,request:FilterCandidatesRequest):FilterValues {
-  const values=new Map<string,FilterValue>();
-  for(const filter of page.filters??[]){
-    if(filter.id===request.filterId)continue;
-    if(filter.type==='dimension'){
-      const selected=request.constraints.dimensions[filter.dimension];
-      if(selected)values.set(filter.id,{type:'dimension',dimension:filter.dimension,values:[...selected]});
-    }else if(filter.type==='timePoint'||filter.type==='timeRange'){
-      const range=request.constraints.times[filter.id];if(!range)continue;
-      if(filter.type==='timePoint')values.set(filter.id,{type:'timePoint',granularity:filter.granularity,value:range.from});
-      else values.set(filter.id,{type:'timeRange',from:range.from,to:range.to,...(range.mode?{mode:range.mode}:{})});
-    }else if(filter.type==='boolean'&&request.constraints.booleans?.[filter.id]!==undefined)values.set(filter.id,{type:'boolean',value:request.constraints.booleans[filter.id]!});
+  const values = new Map<string,FilterValue>();
+  const declarations = page.filters ?? [];
+  const target = declarations.find(filter => filter.id === request.filterId);
+  if (target?.type !== 'dimension') return values;
+  const dependencies = candidateDependencyIds(target, declarations);
+  for (const filter of declarations) {
+    if (!dependencies.has(filter.id)) continue;
+    const selection = request.sourceValues?.[filter.id] ?? constraintSelection(filter,request.constraints);
+    if (selection) values.set(filter.id, selection);
   }
-  restoreSourceSelections(page,request,values);
   return values;
 }
-function restoreSourceSelections(page:Page,request:FilterCandidatesRequest,values:Map<string,FilterValue>):void {
-  const target=page.filters?.find(filter=>filter.id===request.filterId);
-  if(!target)return;
-  const ids=new Set<string>(),queue=candidateDependencies(target);
-  for(const id of queue)if(!ids.has(id)){ids.add(id);const parent=page.filters?.find(filter=>filter.id===id);if(parent)queue.push(...candidateDependencies(parent));}
-  for(const [id,value] of Object.entries(request.sourceValues??{}))if(ids.has(id)&&id!==request.filterId)values.set(id,structuredClone(value));
+
+function constraintSelection(filter:NonNullable<Page['filters']>[number], constraints:FilterCandidatesRequest['constraints']):FilterValue|undefined {
+  switch (filter.type) {
+    case 'dimension': {
+      const values = constraints.dimensions[filter.dimension];
+      if (values) return {type:'dimension', dimension:filter.dimension, values:[...values]};
+      break;
+    }
+    case 'timePoint': {
+      const range = constraints.times[filter.id];
+      if (range) return {type:'timePoint', granularity:filter.granularity, value:range.from};
+      break;
+    }
+    case 'timeRange': {
+      const range = constraints.times[filter.id];
+      if (range) return {type:'timeRange', ...range};
+      break;
+    }
+    case 'boolean': {
+      const value = constraints.booleans?.[filter.id];
+      if (value !== undefined) return {type:'boolean', value};
+      break;
+    }
+  }
 }
+
 /** Deduplicate only after the complete read; conflicting identities never pick an arbitrary label/parent. */
 export function projectSourceCandidates(filter:DimensionFilterDeclaration,rows:readonly Row[]):FilterCandidate[] {
   if(filter.candidates?.levelField)return projectHierarchyCandidates(filter,rows);

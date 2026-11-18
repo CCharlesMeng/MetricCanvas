@@ -94,9 +94,57 @@ describe('B2 complete execution boundary',()=>{
     const calls:Array<(value:any)=>void>=[];const gateway:RuntimeDataGateway={async fetchData(){return {rows:[]};},fetchFilterCandidates:()=>new Promise(resolve=>calls.push(resolve))};
     const session=createCandidateGatewaySession(gateway),request={filterId:'f',dimension:'d',constraints:{dimensions:{},times:{}}};
     const controller=new AbortController();const old=session.gateway.fetchFilterCandidates!(request,{signal:controller.signal});
-    session.invalidate(request);const fresh=session.gateway.fetchFilterCandidates!(request,{signal:new AbortController().signal});
-    calls[1]({kind:'values',candidates:[{value:'new',label:'new'}]});await fresh;calls[0]({kind:'values',candidates:[{value:'old',label:'old'}]});await old;
+    await Promise.resolve();session.invalidate(request);const fresh=session.gateway.fetchFilterCandidates!(request,{signal:new AbortController().signal});
+    await Promise.resolve();calls[1]({kind:'values',candidates:[{value:'new',label:'new'}]});await fresh;calls[0]({kind:'values',candidates:[{value:'old',label:'old'}]});await old;
     expect(await session.gateway.fetchFilterCandidates!(request,{signal:new AbortController().signal})).toMatchObject({candidates:[{value:'new'}]});expect(calls).toHaveLength(2);
-    const independent=createCandidateGatewaySession(gateway);const pending=independent.gateway.fetchFilterCandidates!(request,{signal:new AbortController().signal});expect(calls).toHaveLength(3);calls[2]({kind:'values',candidates:[]});await pending;session.dispose();independent.dispose();
+    const independent=createCandidateGatewaySession(gateway);const pending=independent.gateway.fetchFilterCandidates!(request,{signal:new AbortController().signal});await Promise.resolve();expect(calls).toHaveLength(3);calls[2]({kind:'values',candidates:[]});await pending;session.dispose();independent.dispose();
   });
+});
+
+it('shares an in-flight candidate read while cancelling consumers independently', async () => {
+  let resolve!: (result: Awaited<ReturnType<NonNullable<RuntimeDataGateway['fetchFilterCandidates']>>>) => void;
+  const fetchFilterCandidates = vi.fn<NonNullable<RuntimeDataGateway['fetchFilterCandidates']>>(
+    () => new Promise(done => { resolve = done; })
+  );
+  const session = createCandidateGatewaySession({fetchData:async () => ({rows:[]}), fetchFilterCandidates});
+  const first = new AbortController(), second = new AbortController();
+  const request = {filterId:'service', dimension:'service', constraints:{times:{}, dimensions:{}}};
+  const abandoned = session.gateway.fetchFilterCandidates!(request,{signal:first.signal});
+  const retained = session.gateway.fetchFilterCandidates!(request,{signal:second.signal});
+  await Promise.resolve();
+  expect(fetchFilterCandidates).toHaveBeenCalledTimes(1);
+  const firstResult = expect(abandoned).rejects.toMatchObject({name:'AbortError'});
+  first.abort();
+  const receipt = {kind:'values', candidates:[{value:'A',label:'A'}]} as const;
+  resolve(structuredClone({...receipt,candidates:[...receipt.candidates]}));
+  await firstResult;
+  await expect(retained).resolves.toEqual(receipt);
+  expect(fetchFilterCandidates).toHaveBeenCalledTimes(1);
+  expect(fetchFilterCandidates.mock.calls[0]![1].signal.aborted).toBe(false);
+  session.dispose();
+});
+
+it('abandons a candidate flight when every consumer cancels and discards its late result', async () => {
+  type Fetch = NonNullable<RuntimeDataGateway['fetchFilterCandidates']>;
+  const pending: Array<(result: Awaited<ReturnType<Fetch>>) => void> = [];
+  const fetchFilterCandidates = vi.fn<Fetch>(() => new Promise(resolve => pending.push(resolve)));
+  const session = createCandidateGatewaySession({fetchData:async () => ({rows:[]}),fetchFilterCandidates});
+  const request = {filterId:'service',dimension:'service',constraints:{times:{},dimensions:{}}};
+  const controller = new AbortController();
+  const old = session.gateway.fetchFilterCandidates!(request,{signal:controller.signal});
+  const cancelled = expect(old).rejects.toMatchObject({name:'AbortError'});
+  await Promise.resolve();
+  controller.abort();
+  await cancelled;
+  expect(fetchFilterCandidates.mock.calls[0]![1].signal.aborted).toBe(true);
+
+  const signal = new AbortController().signal;
+  const fresh = session.gateway.fetchFilterCandidates!(request,{signal});
+  await Promise.resolve();
+  const current = {kind:'values' as const,candidates:[{value:'new',label:'新值'}]};
+  pending[1]!(current);
+  await expect(fresh).resolves.toEqual(current);
+  pending[0]!({kind:'values',candidates:[{value:'stale',label:'旧值'}]});
+  await expect(session.gateway.fetchFilterCandidates!(request,{signal})).resolves.toEqual(current);
+  session.dispose();
 });

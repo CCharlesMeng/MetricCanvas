@@ -1,5 +1,7 @@
 # MetricCanvas 页面元数据规范
 
+6.124 的可选平面维度与金额范围在原值已归一为不限时，联动清空可自动继续。新范围仍须通过候选与执行准备。原有限制被清掉时继续等待显式确认。声明只使用现有筛选字段和 `schemaVersion`。合成入口为 `/pages/filter-source-query-pagination`。见[联动清空与确认](docs/page-metadata/filters.md#unrestricted-filter-clear)。
+
 6.123：普通数值展示默认千分位，包括未声明格式的真实数字及旧 number 精度/带符号格式；原精度不变。复用 format/defaultFormat 新增 number-ungrouped、number-0～5-ungrouped 及已有精度的 -signed 版本，显式关闭分组；number-grouped 保留最多三位小数。旧页面统一随引擎采用新默认，表格、指标卡、图表和 Excel 同步，原始值不变。见[数值格式](docs/page-metadata/field-bindings-and-formats.md#显式数值格式与精度)，合成入口 `/pages/number-default-grouping`。
 
 6.122：维度筛选器可用 `candidates.levelField` 从内联候选读取节点层级，单选结构树可放在 `filterGroup` 工具栏。选中父层或子层时，查询按已有的 `levelQueryFields` 选择目标字段。见[内联层级候选](docs/page-metadata/filters.md#source-candidate-levels)。

@@ -1,6 +1,7 @@
 import {conditionSourceIds,nativeIocBindingTargets,nativeIocRuntimePage,queryLeaves,selectQuery,type Page,type QueryDataSource,type EffectiveQuery} from '@metriccanvas/page/internal';
 import type {FilterValues} from './filter-values';
-import type {FilterCandidate,RuntimeDataGateway} from './ports';
+import {createCandidateRequestPool} from './candidate-session';
+import type {FilterCandidate,FilterCandidatesRequest,RuntimeDataGateway} from './ports';
 import {supportsMembershipCandidates} from './membership-candidates';
 
 type MembershipBinding={target:'boolean';queryField:string;whenTrue:string[]};
@@ -32,21 +33,14 @@ function executionCopy(page:Page,targets:Map<string,string[]>) {
   }
   return {page:{...page,dataSources},bindings};
 }
-function waitFor<T>(promise:Promise<T>,signal:AbortSignal):Promise<T> {
-  signal.throwIfAborted();
-  return new Promise((resolve,reject)=>{
-    const abort=()=>reject(signal.reason);
-    signal.addEventListener('abort',abort,{once:true});
-    promise.then(resolve,reject).finally(()=>signal.removeEventListener('abort',abort));
-  });
-}
-
-/** One private execution copy per SourceProgram; pending bindings never escape through snapshots. */
+/** The candidate session owns one execution copy; pending bindings never escape through snapshots. */
 export function createNativeIocPreparation(input:Page,gateway:RuntimeDataGateway) {
   const hasMembershipCandidates=supportsMembershipCandidates(gateway);
   input=nativeIocRuntimePage(input,hasMembershipCandidates);
   const targets=nativeIocBindingTargets(input,hasMembershipCandidates),copy=executionCopy(input,targets);
-  const ready=new Set<string>(),pending=new Map<string,Promise<void>>(),failures=new Map<string,unknown>(),controller=new AbortController();
+  const ready = new Set<string>();
+  const failures = new Map<string,unknown>();
+  let membershipReads = createCandidateRequestPool();
   function activeTargets(sourceId:string,values:FilterValues):string[] {
     const ids=targets.get(sourceId)??[],source=copy.page.dataSources[sourceId];
     if(source?.source.type!=='query')return [];
@@ -59,24 +53,30 @@ export function createNativeIocPreparation(input:Page,gateway:RuntimeDataGateway
     const ids=new Set([...conditionSourceIds(input,sourceId)].flatMap(id=>activeTargets(id,values)));
     return [...ids].filter(id=>{const value=values.get(id);return value?.type==='boolean'&&value.value;});
   }
-  async function fetchMembership(id:string):Promise<void> {
-    if(!gateway.fetchFilterCandidates)throw unavailable();
-    const result=await gateway.fetchFilterCandidates({filterId:id,dimension:'rep-office-name',constraints:{dimensions:{},times:{},booleans:{[id]:true}}},{signal:controller.signal});
-    controller.signal.throwIfAborted();
-    if(result.kind!=='values')throw unavailable();
-    const names=memberNames(result.candidates);
-    for(const binding of copy.bindings.get(id)??[])binding.whenTrue=[...names];
-    ready.add(id);
+  async function fetchMembership(request:FilterCandidatesRequest, signal:AbortSignal) {
+    try {
+      if (!hasMembershipCandidates || !gateway.fetchFilterCandidates) throw unavailable();
+      const result = await gateway.fetchFilterCandidates(request,{signal});
+      signal.throwIfAborted();
+      if (result.kind !== 'values') throw unavailable();
+      const names = memberNames(result.candidates);
+      for (const binding of copy.bindings.get(request.filterId) ?? []) binding.whenTrue = [...names];
+      ready.add(request.filterId);
+      return result;
+    } catch (cause) {
+      if (!signal.aborted) failures.set(request.filterId,cause);
+      throw cause;
+    }
   }
-  function load(id:string):Promise<void> {
-    if(ready.has(id))return Promise.resolve();
-    if(failures.has(id))return Promise.reject(failures.get(id));
-    const existing=pending.get(id);if(existing)return existing;
-    const request=fetchMembership(id).catch(cause=>{failures.set(id,cause);throw cause;}).finally(()=>pending.delete(id));pending.set(id,request);return request;
+  async function load(id:string, signal:AbortSignal):Promise<void> {
+    if (ready.has(id)) return;
+    if (failures.has(id)) throw failures.get(id);
+    const request = {filterId:id, dimension:'rep-office-name', constraints:{dimensions:{}, times:{}, booleans:{[id]:true}}};
+    await membershipReads.read(request, '', signal, shared => fetchMembership(request, shared));
   }
   async function ensureSelected(ids:string[],signal:AbortSignal):Promise<void> {
-    const bounded=AbortSignal.any([signal,controller.signal]);
-    await Promise.all(ids.map(id=>waitFor(load(id),bounded)));bounded.throwIfAborted();
+    await Promise.all(ids.map(id=>load(id,signal)));
+    signal.throwIfAborted();
   }
   return {
     page:copy.page,
@@ -88,6 +88,13 @@ export function createNativeIocPreparation(input:Page,gateway:RuntimeDataGateway
       const ids=selected(sourceId,values);
       if(ids.length)return ensureSelected(ids,signal);
     },
-    dispose(){controller.abort();pending.clear();ready.clear();failures.clear();}
+    reset() {
+      membershipReads.dispose();
+      membershipReads = createCandidateRequestPool();
+      ready.clear();
+      failures.clear();
+      for (const bindings of copy.bindings.values()) for (const binding of bindings) binding.whenTrue = [];
+    },
+    dispose() { membershipReads.dispose(); }
   };
 }
