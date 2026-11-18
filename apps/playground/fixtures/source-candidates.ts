@@ -14,6 +14,8 @@ export function createSourceCandidatesPreview(state='ready') {
   const dataGateway:RuntimeDataGateway={async fetchData(query,context,signal){
     signal?.throwIfAborted();requests.push(structuredClone(query));
     if (context?.dataSourceIds?.includes('service-options')) {
+      if (state === 'candidate-pending') await untilCancelled(signal);
+      if (state === 'candidate-error') throw Object.assign(new Error('合成候选请求失败'), {code:'DQE_UPSTREAM_ERROR'});
       if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('metriccanvas:source-candidate-window',{detail:context.sourceCandidates}));
       if (state === 'page-failure' && query.pagination?.offset === 10 && !pageFailed) {
         pageFailed = true;
@@ -54,4 +56,11 @@ function serviceWindow(query:EffectiveQuery, context:QueryDiagnosticContext, sta
     .map(service => ({service}));
   const totalCount = rows.length + Number(state === 'incomplete' && context.sourceCandidates?.kind === 'page' && offset > 0);
   return {rows:rows.slice(offset,offset + limit),totalCount};
+}
+
+function untilCancelled(signal:AbortSignal|undefined):Promise<never> {
+  return new Promise((_resolve,reject)=>{
+    signal?.throwIfAborted();
+    signal?.addEventListener('abort',()=>reject(signal.reason),{once:true});
+  });
 }

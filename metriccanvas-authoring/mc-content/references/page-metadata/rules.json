@@ -737,6 +737,16 @@
       ]
     },
     {
+      "id": "independent-exclusion-candidates",
+      "description": "6.125 动态排除候选独立加载并保留选择",
+      "valid": [
+        "filter-exclusion-candidates"
+      ],
+      "invalid": [
+        "independent-exclusion-version-ahead"
+      ]
+    },
+    {
       "id": "unrestricted-filter-clear",
       "description": "6.124 可选筛选原本不限时联动免确认",
       "valid": [

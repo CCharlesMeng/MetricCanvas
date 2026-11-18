@@ -26,7 +26,8 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
 export const UNRESTRICTED_FILTER_CLEAR_MINOR = 124;
-const CURRENT_MINOR = 124;
+export const INDEPENDENT_EXCLUSION_CANDIDATES_MINOR = 125;
+const CURRENT_MINOR = 125;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -145,6 +146,11 @@ export const pageCapabilities = {
   'yoy-p-format': {minor:87,legacyReadable:false,description:'同比先保留两位再乘100并追加P的带符号格式',usedAt:document=>namedFormatPaths(document,/^yoy-p-signed$/)},
   'quarter-query-period': {minor:86,legacyReadable:false,description:'季度查询使用 quarter 与 YYYY-Qn 编码',usedAt:quarterQueryCapabilityPaths},
   'filter-source-candidates':{minor:90,legacyReadable:false,description:'筛选候选读取页面数据源完整输出，支持树节点独立单多选',usedAt:document=>filterPaths(document,f=>has(f,'candidates'))},
+  'independent-exclusion-candidates': {
+    minor: INDEPENDENT_EXCLUSION_CANDIDATES_MINOR,
+    description: '可选动态排除条件保留选值，候选加载不阻断指标查询',
+    usedAt: () => []
+  },
   'unrestricted-filter-clear': {
     minor: UNRESTRICTED_FILTER_CLEAR_MINOR,
     description: '可选平面维度与金额范围原本不限时，联动清空免确认',
@@ -932,6 +938,12 @@ function containsPresentationKey(value: unknown, key: string): boolean {
   if (Array.isArray(value)) return value.some(item => containsPresentationKey(item, key));
   const object = record(value);
   return object !== undefined && (has(object, key) || Object.values(object).some(item => containsPresentationKey(item, key)));
+}
+
+export function supportsIndependentExclusionCandidates(version: string | undefined): boolean {
+  if (!version) return false;
+  const parsed = parseVersion(version);
+  return parsed?.major === PAGE_SCHEMA_MAJOR && parsed.minor >= INDEPENDENT_EXCLUSION_CANDIDATES_MINOR;
 }
 
 export function supportsUnrestrictedFilterClear(version: string | undefined): boolean {

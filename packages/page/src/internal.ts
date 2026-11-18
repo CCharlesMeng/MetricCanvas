@@ -119,3 +119,5 @@ export {iocHeaderFilterIds,standardIocRegionFilter} from './ioc-header-controls'
 
 export * from './finalization-default';
 export {supportsNativePreparation,nativeIocFilters,nativeIocBindingTargets,nativeSourceFilterIds,nativeIocRuntimePage,NATIVE_IOC_SCHEMA_MINOR} from './native-ioc';
+
+export {independentExclusionFilterIds} from './exclusion-filters';

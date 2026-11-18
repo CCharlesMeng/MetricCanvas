@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.124",
+  "schemaVersion": "6.125",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "filters.section-1124728a"
@@ -136,6 +136,16 @@
             "period-filter-datetime",
             "period-filter-no-default",
             "period-filter-static-time"
+          ]
+        },
+        {
+          "id": "independent-exclusion-candidates",
+          "description": "6.125 动态排除候选独立加载并保留选择",
+          "valid": [
+            "filter-exclusion-candidates"
+          ],
+          "invalid": [
+            "independent-exclusion-version-ahead"
           ]
         },
         {
@@ -363,7 +373,8 @@
         "references/page-metadata/examples/finalization-default-time-detail.json",
         "references/page-metadata/examples/finalization-date-defaults.json",
         "references/page-metadata/examples/ioc-async-preparation.json",
-        "references/page-metadata/examples/ioc-legacy-key-office.json"
+        "references/page-metadata/examples/ioc-legacy-key-office.json",
+        "references/page-metadata/examples/filter-exclusion-candidates.json"
       ]
     }
   ],

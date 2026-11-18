@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.124",
-  "schemaSha256": "c1d13efe5fca75c34d30a8890156bb1b8fcc73b64c7757289bd52a3dbf5f95b1",
+  "schemaVersion": "6.125",
+  "schemaSha256": "85afa953d5f65aa71900f61cd016b77155ec12e622263151700f29cad7bb302d",
   "semanticSources": [
     {
       "file": "metriccanvas-authoring/core/page/analysis-report.ts",
@@ -140,7 +140,7 @@
     },
     {
       "file": "packages/engine/runtime/src/filter-state.ts",
-      "sha256": "81334510d39250d3f32e81b5e24fa071f5236cb176882a308f518d4300f3dca7"
+      "sha256": "d6f0dc410e129e5481c3c5ba47cd526bd36aa86a8933248f273c13dd1600b053"
     },
     {
       "file": "packages/engine/runtime/src/navigate.ts",
@@ -247,6 +247,10 @@
       "sha256": "78aad278fcb2b9d4a331c9777eb2a0f1c8204cdc7c3600b0e0395dc4f299347a"
     },
     {
+      "file": "packages/page/src/exclusion-filters.ts",
+      "sha256": "7e18491654bae3f7c88d077a7a908ff7348fa748065789ebb23c2c009708cb56"
+    },
+    {
       "file": "packages/page/src/field-resolution.ts",
       "sha256": "740f8a914b38c86bcc163361197c766798e39518313261683b8006e75764693e"
     },
@@ -292,7 +296,7 @@
     },
     {
       "file": "packages/page/src/layout-compatibility.ts",
-      "sha256": "18e8cd1e7a5f547a596e8626963a9bd388332922eb0a6e36dd91b39ff6a92f69"
+      "sha256": "011798f79afb7363dfa028df2ca3e8af5907d823eba5b8e7e4ea9daccaa4121a"
     },
     {
       "file": "packages/page/src/metric-before.ts",
@@ -572,7 +576,7 @@
     },
     {
       "file": "packages/page/src/version.ts",
-      "sha256": "6a19209b2b00bb5df8b9c6d910f7648b6a47b7453a0b71c3c427269e00466083"
+      "sha256": "909bc495efe0469b17e25cb2dae5f4cdf07ef91db1b3c75022800ed5d2c58f55"
     },
     {
       "file": "packages/page/tests/ai-summary-regions.test.ts",
@@ -584,7 +588,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "83966926a66cfcc45f8f012153358282dcbeb18a2ce5a543895ac4673093e5e6"
+      "sha256": "269fc12a823af419460a31da23200ccf3fd132f9f9ec2b78445509b6cc82227e"
     }
   ],
   "modules": {
@@ -973,7 +977,8 @@
         "finalization-default-time-detail",
         "finalization-date-defaults",
         "ioc-async-preparation",
-        "ioc-legacy-key-office"
+        "ioc-legacy-key-office",
+        "filter-exclusion-candidates"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -1000,7 +1005,8 @@
         "packages/page/src/layout-compatibility.ts",
         "packages/engine/runtime/src/filter-state.ts",
         "packages/data-execution/src/native-ioc-preparation.ts",
-        "packages/data-execution/src/finalization-preparation.ts"
+        "packages/data-execution/src/finalization-preparation.ts",
+        "packages/page/src/exclusion-filters.ts"
       ],
       "rules": [
         "unrestricted-filter-clear",
@@ -1025,7 +1031,8 @@
         "required-multiple-selection",
         "independent-filter-candidates",
         "filter-source-candidate-levels",
-        "currency-range-presets"
+        "currency-range-presets",
+        "independent-exclusion-candidates"
       ]
     },
     "sections-and-layout.md": {
@@ -2253,7 +2260,8 @@
         "6.121",
         "6.122",
         "6.123",
-        "6.124"
+        "6.124",
+        "6.125"
       ]
     },
     {

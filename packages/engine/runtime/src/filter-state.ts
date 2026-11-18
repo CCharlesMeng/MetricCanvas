@@ -1,4 +1,4 @@
-import {timeAvailabilityIssue,modeRangeIssue,type DisplayInputsSnapshot} from '@metriccanvas/page/internal';
+import {independentExclusionFilterIds,type Page,timeAvailabilityIssue,modeRangeIssue,type DisplayInputsSnapshot} from '@metriccanvas/page/internal';
 import { numberRangeIssue,rangeContextIssue, filterDependencies, dimensionSelectionIssue, supportsUnrestrictedFilterClear } from '@metriccanvas/page/internal';
 import { resolvePeriodSelection, isPeriodSelection } from '@metriccanvas/page/internal';
 import { filterURLKeys, readLevelURLSelection } from '@metriccanvas/page/internal';
@@ -33,6 +33,7 @@ export type CommitResult = { ok: true; filterRevision: number; changedIds: strin
 export interface FilterCoordinator { commit(intent: FilterIntent): CommitResult; }
 
 interface CoordinatedFilterState extends FilterState, FilterCoordinator {
+  configurePage(page:Page):void;
   /** A legality gate, independent of visibility. The owning runtime feeds candidate receipts. */
   blocked(): ReadonlySet<string>;
   refreshContext():void;
@@ -47,6 +48,8 @@ interface CoordinatedFilterState extends FilterState, FilterCoordinator {
 }
 
 export interface FilterState {
+  /** Bind page-owned predicate semantics before coordinating query consumers. */
+  configurePage?(page:Page):void;
   readonly revision?: number;
   subscribe(run: (values: FilterValues) => void): () => void;
   write(filterId: string, value: FilterValue | null): void;
@@ -94,6 +97,7 @@ export function createFilterState(initial?: FilterValues, declarations: readonly
   const skipUnrestrictedClearConfirmation = supportsUnrestrictedFilterClear(editing.schemaVersion);
   // A lost selection continues to require an explicit choice or clear.
   const confirmation = new Set<string>();
+  let exclusions = new Set<string>();
   const intersections = new Set<string>();
   function invalidate(changed: readonly string[], normalized: Map<string, FilterValue | null>, trusted: boolean) {
     const queue = [...changed], visited = new Set<string>();
@@ -101,6 +105,7 @@ export function createFilterState(initial?: FilterValues, declarations: readonly
       if (!filterDependencies(declaration).includes(parent)) continue;
       if (!visited.has(declaration.id)) { visited.add(declaration.id); queue.push(declaration.id); }
       receipts.delete(declaration.id);
+      if (exclusions.has(declaration.id)) continue;
       if (reconcilesByIntersection(declaration, parent)) {
         if (!normalized.has(declaration.id)) intersections.add(declaration.id);
         continue;
@@ -139,6 +144,7 @@ export function createFilterState(initial?: FilterValues, declarations: readonly
   function blockCandidate(declaration: Extract<FilterDeclaration, {
     type: 'dimension';
   }>, selected: FilterValue | undefined, result: Set<string>): void {
+    if (exclusions.has(declaration.id)) return;
     if (!editing.candidates || dimensionOptions.has(declaration.id) || declaration.options)
       return;
     if (declaration.candidates || declaration.candidateContext || declaration.candidateWindow) {
@@ -296,6 +302,7 @@ export function createFilterState(initial?: FilterValues, declarations: readonly
     },
 
     commit,
+    configurePage(page) { exclusions = independentExclusionFilterIds(page); },
     blocked,
     confirmation:()=>new Set(confirmation),
     get revision() { return revision; }, clock: () => new Date(operationClock),

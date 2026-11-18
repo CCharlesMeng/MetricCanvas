@@ -289,6 +289,18 @@ IOC 业务 Region 只允许 iocHeader 内的单个组织树，树内选择地区
 
 复用现有声明，字段净增减为零。示例中 `service.candidateContext` 仍是 `{"filterIds":["service-scope"],"reconcile":"clear"}`，由页面版本选择确认规则。页面作者显式升级后应回放相关筛选操作。完整合成场景见[查询分页候选](examples/filter-source-query-pagination.json)。
 
+<a id="independent-exclusion-candidates"></a>
+
+## 动态排除候选独立加载（6.125）
+
+页面声明 `schemaVersion: "6.125"` 时，引擎从现有查询绑定推导动态排除条件，无新增页面字段。可选平面维度由 `candidates` 或 `candidateContext` 提供候选，且其所有查询消费及所有查询分支均仅使用 `target:"dimension", operator:"!="`，则候选回执不再作为该条件的业务查询前置门禁。未选时省略排除谓词；已有选值时继续携带完整排除集合，不因候选加载中、失败、为空或新范围不含这些值而自动删值。
+
+`candidateContext.reconcile:"clear"` 在此类排除条件上更新候选上下文但保留原选择。候选仍按其声明的全部依赖重新加载，分页、搜索、取消、重试和旧回执隔离不变。候选暂未返回与候选中不存在某值不等价，但两种状态都不改变已明确选择的排除谓词。业务查询本身的上游条件准备、权限、期间和参数校验继续执行；候选成功不授权更大的业务数据范围。
+
+组件沿用标准选中项、移除、清空、下拉加载及重试交互，不额外显示范围状态标签或确认文案。用户取消排除项时才移除对应谓词。包含式消费、混合包含/排除消费、必选、层级或树选择、固定枚举、显式 `clearOnChangeOf` 以及 `intersection` 保持既有规则，不自动套用本行为。6.124 及以前的页面保持原候选门禁和联动清空规则，读取规范化不会替旧页面启用新语义。
+
+完整合成场景见仓库 `/pages/filter-exclusion-candidates`；`?state=candidate-pending`、`?state=candidate-error` 和 `?state=empty` 分别验证候选挂起、失败和空结果时业务图表独立显示。选择甲云服务后切换到乙，原排除选择及谓词保留，乙候选正常加载，用户通过标准移除按钮取消。
+
 <a id="source-candidates"></a>
 
 ## 页面数据源候选（6.90）
@@ -371,7 +383,7 @@ IOC 业务 Region 只允许 iocHeader 内的单个组织树，树内选择地区
 合成入口为 `/pages/finalization-default-time` 与 `/pages/finalization-default-time-detail`，`?state=error|missing|invalid|conflict|timeout` 验证回退。集成应用通过数据网关的finalizationSource提供固定DQE请求体、nameField与dateField映射，页面作者不填写端点、凭据或表结构。这些场景不证明真实截止表或生产DQE已接入。
 
 
-页面协议 6.124。结构真源为本册[schema.json](schema.json)，SHA256 `c1d13efe5fca75c34d30a8890156bb1b8fcc73b64c7757289bd52a3dbf5f95b1`。字段表自动生成；可选不等于有默认值。
+页面协议 6.125。结构真源为本册[schema.json](schema.json)，SHA256 `85afa953d5f65aa71900f61cd016b77155ec12e622263151700f29cad7bb302d`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -974,11 +986,11 @@ Schema位置：`#/definitions/dimensionFilter/properties/candidateContext/proper
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支必填 | enum=["clear","intersection"] | Schema未设默认；装配/运行时默认见语义说明 | clear递归清理；intersection等待新完整可信候选再取交集。 |
+| "string" | 本分支必填 | enum=["clear","intersection"] | Schema未设默认；装配/运行时默认见语义说明 | clear递归清理；6.125 起仅排除消费的可选动态条件保留选值。intersection等待完整可信候选取交集。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
-| "clear" | 上游变化递归清值并等待显式确认。 |
+| "clear" | 上游变化清值并遵循确认规则；6.125 起仅排除消费的可选动态条件更新候选但保留选择。 |
 | "intersection" | 新完整可信候选就绪后保留交集；空交集保持门禁。 |
 
 <a id="schema-232f646566696e6974696f6e732f74696d6552616e676546696c746572"></a>
@@ -3119,6 +3131,7 @@ Schema位置：`#/definitions/searchFilter/properties/default`。
 - `independent-filter-candidates`：6.46显式无依赖候选使用V2及局部门禁。反例：[independent-candidates-version](errors/independent-candidates-version.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `filter-source-candidate-levels`：6.122 内联候选行通过层级 ID 使用不同查询字段。反例：[source-candidate-level-version](errors/source-candidate-level-version.json)、[source-candidate-level-field](errors/source-candidate-level-field.json)、[source-candidate-level-shape](errors/source-candidate-level-shape.json)、[source-candidate-level-binding](errors/source-candidate-level-binding.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `currency-range-presets`：6.46单位case内的币种预设保持单一金额状态。反例：[currency-presets-version](errors/currency-presets-version.json)、[currency-presets-missing](errors/currency-presets-missing.json)、[currency-presets-shared](errors/currency-presets-shared.json)、[currency-presets-invalid](errors/currency-presets-invalid.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `independent-exclusion-candidates`：6.125 动态排除候选独立加载并保留选择。反例：[independent-exclusion-version-ahead](errors/independent-exclusion-version-ahead.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 
@@ -3165,6 +3178,7 @@ Schema位置：`#/definitions/searchFilter/properties/default`。
 - [finalization-date-defaults](examples/finalization-date-defaults.json)：完整合法页面；查询仅为静态契约证据。
 - [ioc-async-preparation](examples/ioc-async-preparation.json)：完整合法页面；查询仅为静态契约证据。
 - [ioc-legacy-key-office](examples/ioc-legacy-key-office.json)：完整合法页面；查询仅为静态契约证据。
+- [filter-exclusion-candidates](examples/filter-exclusion-candidates.json)：完整合法页面；查询仅为静态契约证据。
 
 ## 联合分支见证（生成）
 

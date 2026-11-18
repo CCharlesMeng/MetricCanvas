@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.124",
-  "schemaSha256": "c1d13efe5fca75c34d30a8890156bb1b8fcc73b64c7757289bd52a3dbf5f95b1",
+  "schemaVersion": "6.125",
+  "schemaSha256": "85afa953d5f65aa71900f61cd016b77155ec12e622263151700f29cad7bb302d",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -327,7 +327,8 @@
         "finalization-default-time-detail",
         "finalization-date-defaults",
         "ioc-async-preparation",
-        "ioc-legacy-key-office"
+        "ioc-legacy-key-office",
+        "filter-exclusion-candidates"
       ],
       "rules": [
         "unrestricted-filter-clear",
@@ -352,7 +353,8 @@
         "required-multiple-selection",
         "independent-filter-candidates",
         "filter-source-candidate-levels",
-        "currency-range-presets"
+        "currency-range-presets",
+        "independent-exclusion-candidates"
       ]
     },
     "sections-and-layout.md": {
@@ -1375,7 +1377,8 @@
         "6.121",
         "6.122",
         "6.123",
-        "6.124"
+        "6.124",
+        "6.125"
       ]
     },
     {
@@ -23510,5 +23513,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "84bcc5c811b560b679b24e5173c60f03aaf11dbf1c858bf698d05c3d5b0f9aed"
+  "semanticSourceDigest": "5b055d14f92d857e9d6f4fa994e3f6b289364f9d0c6885b0a2383044d7cd82da"
 }

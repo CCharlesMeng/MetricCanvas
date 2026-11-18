@@ -405,3 +405,11 @@
 3. 用 `&key-national-only=true&state=empty` 或 `&key-national-only=true&state=error` 打开页面，观察空名单与失败均不下发宽范围业务查询。
 
 自动验收 `pnpm --filter playground exec playwright test tests/async-preparation.browser.ts`。该场景不证明真实 DQE、名单权限或部署状态。
+
+## 动态排除候选独立加载
+
+入口 `/pages/filter-exclusion-candidates`，执行 `pnpm dev:playground` 后访问。页面使用 Schema 6.125 和合成查询，无真实 DQE 依赖。复用现有 `service.candidates`、`candidateContext` 及查询 `operator:"!="`，未增加筛选声明字段。
+
+打开云服务排除下拉选择甲云服务01，再将范围切到乙。图表继续显示，甲云服务01 的标准选中项保持，可通过原移除按钮取消；下拉显示乙范围候选，没有新增范围状态标签或确认文案。访问 `?state=candidate-pending` 时候选持续加载，`?state=candidate-error` 显示标准重试交互，`?state=empty` 显示标准空列表；三种情况下图表均独立显示。候选查询仍消费范围条件，业务查询仍携带范围与已有排除集合。
+
+自动验收读取该页面：`pnpm --filter playground exec playwright test tests/exclusion-candidates.browser.ts`。旧版行为保留在 `/pages/filter-source-query-pagination`，包含式及混合消费不套用排除规则。真实权限、DQE 和部署需另验。

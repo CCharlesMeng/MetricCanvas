@@ -385,7 +385,8 @@
         "finalization-default-time-detail",
         "finalization-date-defaults",
         "ioc-async-preparation",
-        "ioc-legacy-key-office"
+        "ioc-legacy-key-office",
+        "filter-exclusion-candidates"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -412,7 +413,8 @@
         "packages/page/src/layout-compatibility.ts",
         "packages/engine/runtime/src/filter-state.ts",
         "packages/data-execution/src/native-ioc-preparation.ts",
-        "packages/data-execution/src/finalization-preparation.ts"
+        "packages/data-execution/src/finalization-preparation.ts",
+        "packages/page/src/exclusion-filters.ts"
       ],
       "rules": [
         "unrestricted-filter-clear",
@@ -437,7 +439,8 @@
         "required-multiple-selection",
         "independent-filter-candidates",
         "filter-source-candidate-levels",
-        "currency-range-presets"
+        "currency-range-presets",
+        "independent-exclusion-candidates"
       ]
     },
     "sections-and-layout.md": {
@@ -1801,7 +1804,7 @@
     "#/definitions/dimensionFilter/properties/treeSelection": "level保留6.37层级树；6.43普通树支持descendants、independent、leaf。",
     "#/definitions/dimensionFilter/properties/candidateContext": "候选依赖与可信候选到达后的协调策略。",
     "#/definitions/dimensionFilter/properties/candidateContext/properties/filterIds": "维度及已应用期间依赖，合并旧dependsOn后检环。",
-    "#/definitions/dimensionFilter/properties/candidateContext/properties/reconcile": "clear递归清理；intersection等待新完整可信候选再取交集。",
+    "#/definitions/dimensionFilter/properties/candidateContext/properties/reconcile": "clear递归清理；6.125 起仅排除消费的可选动态条件保留选值。intersection等待完整可信候选取交集。",
     "#/definitions/dimensionFilter/properties/hint": "TextValue筛选提示，可引用参数和已应用筛选，缺值省略。",
     "#/definitions/dimensionFilter/properties/clearOnChangeOf": "依赖变化的原子失效清理；不添加候选端口约束。",
     "#/definitions/timeRangeFilter/properties/hint": "TextValue筛选提示，可引用参数和已应用筛选，缺值省略。",
@@ -2200,7 +2203,7 @@
     "#/definitions/dimensionFilter/properties/selection/properties/mode=\"multiple\"": "保留多个显式值，required仍要求恰好一个。",
     "#/definitions/dimensionFilter/properties/selection/properties/allBehavior=\"values\"": "完整传递已选值集合。",
     "#/definitions/dimensionFilter/properties/selection/properties/allBehavior=\"unrestricted\"": "穷尽有效封闭枚举全部选中时省略动态维度谓词。",
-    "#/definitions/dimensionFilter/properties/candidateContext/properties/reconcile=\"clear\"": "上游变化递归清值并等待显式确认。",
+    "#/definitions/dimensionFilter/properties/candidateContext/properties/reconcile=\"clear\"": "上游变化清值并遵循确认规则；6.125 起仅排除消费的可选动态条件更新候选但保留选择。",
     "#/definitions/dimensionFilter/properties/candidateContext/properties/reconcile=\"intersection\"": "新完整可信候选就绪后保留交集；空交集保持门禁。",
     "#/properties/schemaVersion=\"6.37\"": "业务筛选选择规则、封闭枚举、结构树和依赖候选。",
     "#/definitions/staticFieldBinding/anyOf/1/properties/format=\"period\"": "日期单点原值显示，范围“开始 至 结束”；同端点折叠，空筛选为全部期间。",
@@ -2392,7 +2395,8 @@
     "number-2-ungrouped-signed": "6.123新增：显式不加千分位，保留同名 number 的精度、去尾零与符号规则。",
     "number-3-ungrouped-signed": "6.123新增：显式不加千分位，保留同名 number 的精度、去尾零与符号规则。",
     "number-4-ungrouped-signed": "6.123新增：显式不加千分位，保留同名 number 的精度、去尾零与符号规则。",
-    "number-5-ungrouped-signed": "6.123新增：显式不加千分位，保留同名 number 的精度、去尾零与符号规则。"
+    "number-5-ungrouped-signed": "6.123新增：显式不加千分位，保留同名 number 的精度、去尾零与符号规则。",
+    "#/properties/schemaVersion=\"6.125\"": "可选动态排除条件独立加载候选并保留选择，候选状态不阻断指标查询。"
   },
   "branchExceptions": {
     "#/properties/iocHeader/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/0": {
@@ -3460,6 +3464,7 @@
       "布尔筛选覆盖（6.84）",
       "布尔候选依赖与条件启用（6.75）",
       "期间筛选驱动同比环比（6.77）",
+      "动态排除候选独立加载（6.125）",
       "页面数据源候选（6.90）",
       "内联层级候选（6.122）",
       "候选查询分页",

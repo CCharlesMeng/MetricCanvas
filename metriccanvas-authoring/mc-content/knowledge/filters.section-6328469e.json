@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.124",
+  "schemaVersion": "6.125",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "filters.section-6328469e"
@@ -10,7 +10,7 @@
       "reference": "references/page-metadata/filters.md",
       "blocks": [
         "# 筛选声明与运行状态",
-        "## 期间筛选驱动同比环比（6.77）\n\n已有年、季度、月、近一年四种期间选择可通过查询 `filterBindings.periodComparison` 自动派生本期和比较期。近一年上期与去年同期均前移一年。相同统计进度来自宿主可信期间事实，而非筛选值或机器时钟。完整声明、完整结果排序及错误边界见[查询与绑定](queries-and-bindings.md)，操作场景 `/pages/period-comparison-demo`。\n\n<a id=\"unrestricted-filter-clear\"></a>\n\n### 联动清空与确认（6.124）\n\n页面声明 `schemaVersion: \"6.124\"` 时，`candidateContext.reconcile: \"clear\"` 或 `clearOnChangeOf` 引起的联动清空，若可选平面维度或金额范围在变更前已归一为不限，更新候选上下文并在新范围校验通过后自动继续。金额上下限都未设置才属于不限。已有实际选择或任一金额端点被清掉时，仍须重新选择或确认不限。6.123 及以前的可读版本继续在联动清空后要求显式确认，可选条件原本为空时也一样。\n\n已进入待确认的条件仍须显式处理。必选、层级选择、全选语义及 `intersection` 的交集流程沿用原规则。候选或权限失败、空候选、执行条件准备未完成及不可验证的范围继续阻断相关查询。查看图表工具栏、IOC 页头或普通筛选栏中的状态，候选就绪后可重选或对可选条件点「确认不限」。\n\n复用现有声明，字段净增减为零。示例中 `service.candidateContext` 仍是 `{\"filterIds\":[\"service-scope\"],\"reconcile\":\"clear\"}`，由页面版本选择确认规则。页面作者显式升级后应回放相关筛选操作。完整合成场景见[查询分页候选](examples/filter-source-query-pagination.json)。\n\n<a id=\"source-candidates\"></a>"
+        "## 期间筛选驱动同比环比（6.77）\n\n已有年、季度、月、近一年四种期间选择可通过查询 `filterBindings.periodComparison` 自动派生本期和比较期。近一年上期与去年同期均前移一年。相同统计进度来自宿主可信期间事实，而非筛选值或机器时钟。完整声明、完整结果排序及错误边界见[查询与绑定](queries-and-bindings.md)，操作场景 `/pages/period-comparison-demo`。\n\n<a id=\"unrestricted-filter-clear\"></a>\n\n### 联动清空与确认（6.124）\n\n页面声明 `schemaVersion: \"6.124\"` 时，`candidateContext.reconcile: \"clear\"` 或 `clearOnChangeOf` 引起的联动清空，若可选平面维度或金额范围在变更前已归一为不限，更新候选上下文并在新范围校验通过后自动继续。金额上下限都未设置才属于不限。已有实际选择或任一金额端点被清掉时，仍须重新选择或确认不限。6.123 及以前的可读版本继续在联动清空后要求显式确认，可选条件原本为空时也一样。\n\n已进入待确认的条件仍须显式处理。必选、层级选择、全选语义及 `intersection` 的交集流程沿用原规则。候选或权限失败、空候选、执行条件准备未完成及不可验证的范围继续阻断相关查询。查看图表工具栏、IOC 页头或普通筛选栏中的状态，候选就绪后可重选或对可选条件点「确认不限」。\n\n复用现有声明，字段净增减为零。示例中 `service.candidateContext` 仍是 `{\"filterIds\":[\"service-scope\"],\"reconcile\":\"clear\"}`，由页面版本选择确认规则。页面作者显式升级后应回放相关筛选操作。完整合成场景见[查询分页候选](examples/filter-source-query-pagination.json)。\n\n<a id=\"independent-exclusion-candidates\"></a>"
       ],
       "rules": [
         {
@@ -136,6 +136,16 @@
             "period-filter-datetime",
             "period-filter-no-default",
             "period-filter-static-time"
+          ]
+        },
+        {
+          "id": "independent-exclusion-candidates",
+          "description": "6.125 动态排除候选独立加载并保留选择",
+          "valid": [
+            "filter-exclusion-candidates"
+          ],
+          "invalid": [
+            "independent-exclusion-version-ahead"
           ]
         },
         {
@@ -363,7 +373,8 @@
         "references/page-metadata/examples/finalization-default-time-detail.json",
         "references/page-metadata/examples/finalization-date-defaults.json",
         "references/page-metadata/examples/ioc-async-preparation.json",
-        "references/page-metadata/examples/ioc-legacy-key-office.json"
+        "references/page-metadata/examples/ioc-legacy-key-office.json",
+        "references/page-metadata/examples/filter-exclusion-candidates.json"
       ]
     }
   ],

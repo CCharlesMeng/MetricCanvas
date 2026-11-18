@@ -289,6 +289,18 @@ IOC 业务 Region 只允许 iocHeader 内的单个组织树，树内选择地区
 
 复用现有声明，字段净增减为零。示例中 `service.candidateContext` 仍是 `{"filterIds":["service-scope"],"reconcile":"clear"}`，由页面版本选择确认规则。页面作者显式升级后应回放相关筛选操作。完整合成场景见[查询分页候选](examples/filter-source-query-pagination.json)。
 
+<a id="independent-exclusion-candidates"></a>
+
+## 动态排除候选独立加载（6.125）
+
+页面声明 `schemaVersion: "6.125"` 时，引擎从现有查询绑定推导动态排除条件，无新增页面字段。可选平面维度由 `candidates` 或 `candidateContext` 提供候选，且其所有查询消费及所有查询分支均仅使用 `target:"dimension", operator:"!="`，则候选回执不再作为该条件的业务查询前置门禁。未选时省略排除谓词；已有选值时继续携带完整排除集合，不因候选加载中、失败、为空或新范围不含这些值而自动删值。
+
+`candidateContext.reconcile:"clear"` 在此类排除条件上更新候选上下文但保留原选择。候选仍按其声明的全部依赖重新加载，分页、搜索、取消、重试和旧回执隔离不变。候选暂未返回与候选中不存在某值不等价，但两种状态都不改变已明确选择的排除谓词。业务查询本身的上游条件准备、权限、期间和参数校验继续执行；候选成功不授权更大的业务数据范围。
+
+组件沿用标准选中项、移除、清空、下拉加载及重试交互，不额外显示范围状态标签或确认文案。用户取消排除项时才移除对应谓词。包含式消费、混合包含/排除消费、必选、层级或树选择、固定枚举、显式 `clearOnChangeOf` 以及 `intersection` 保持既有规则，不自动套用本行为。6.124 及以前的页面保持原候选门禁和联动清空规则，读取规范化不会替旧页面启用新语义。
+
+完整合成场景见仓库 `/pages/filter-exclusion-candidates`；`?state=candidate-pending`、`?state=candidate-error` 和 `?state=empty` 分别验证候选挂起、失败和空结果时业务图表独立显示。选择甲云服务后切换到乙，原排除选择及谓词保留，乙候选正常加载，用户通过标准移除按钮取消。
+
 <a id="source-candidates"></a>
 
 ## 页面数据源候选（6.90）

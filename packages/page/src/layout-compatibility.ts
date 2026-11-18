@@ -1,7 +1,7 @@
 import { documentIocHeader, hasLegacyDefaultHeader } from './header-binding';
 import type { TypedError } from './errors';
 import type { PageLayoutForm } from './page';
-import { supportsUnrestrictedFilterClear, UNRESTRICTED_FILTER_CLEAR_MINOR, versionPolicy } from './version';
+import { supportsUnrestrictedFilterClear, supportsIndependentExclusionCandidates, INDEPENDENT_EXCLUSION_CANDIDATES_MINOR, UNRESTRICTED_FILTER_CLEAR_MINOR, versionPolicy } from './version';
 import { hasLegacyTableCandidateSearch } from './table/candidate-search';
 import {supportsNativePreparation,NATIVE_IOC_SCHEMA_MINOR} from './native-preparation-capability';
 
@@ -9,9 +9,8 @@ function canonicalTargetMinor(schemaVersion:string):number {
   if(schemaVersion==='6.5')return 5;
   if(['6.13','6.14'].includes(schemaVersion))return Number(schemaVersion.split('.')[1]);
   if (!supportsNativePreparation({schemaVersion})) return Math.min(versionPolicy.minor,NATIVE_IOC_SCHEMA_MINOR-1);
-  return supportsUnrestrictedFilterClear(schemaVersion)
-    ? versionPolicy.minor
-    : Math.min(versionPolicy.minor,UNRESTRICTED_FILTER_CLEAR_MINOR-1);
+  if (!supportsUnrestrictedFilterClear(schemaVersion)) return Math.min(versionPolicy.minor,UNRESTRICTED_FILTER_CLEAR_MINOR-1);
+  return supportsIndependentExclusionCandidates(schemaVersion) ? versionPolicy.minor : Math.min(versionPolicy.minor,INDEPENDENT_EXCLUSION_CANDIDATES_MINOR-1);
 }
 
 /** 6.1 增量兼容规则；两字段即使同值也不建立双真源。 */

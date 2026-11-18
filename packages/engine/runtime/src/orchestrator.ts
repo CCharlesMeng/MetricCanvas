@@ -39,6 +39,7 @@ export interface PageSnapshotStream extends Subscribable<PageDataSnapshots> {
 export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterState,
   diagnostics?: Pick<QueryDiagnosticContext, 'pageRevisionId'>,
   execution?: Pick<import('./execution').ExecutionBootstrap, 'filters' | 'snapshots' | 'sourceKeys'>,timeContext:{displayInputs?:()=>import('@metriccanvas/page/internal').DisplayInputsSnapshot|undefined;filterRevision?:()=>number;now?:Date;clock?:()=>Date;candidateSession?:SourceCandidateSession}={}, initialTabs: TabSelections = {}, initialViews:ReadonlyMap<string,TableQueryView> = new Map()): PageSnapshotStream {
+  filters?.configurePage?.(page);
   let selections = initialTabs;
   const hasMembershipCandidates = supportsMembershipCandidates(gateway);
   const ids = visibleSourceIds(page), compiled = compileSources(page), defaults = filters?new Map():initialFilterValues(page.filters ?? [],timeContext.now??timeContext.clock?.()??new Date(),timeContext.displayInputs?.(),timeContext.filterRevision?.());

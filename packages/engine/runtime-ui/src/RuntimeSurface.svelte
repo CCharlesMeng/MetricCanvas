@@ -650,6 +650,7 @@
       pageState={phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters',message:'筛选初始化值不符合声明或日期边界'}]};
       emit?.({type:'invalid',errors:pageState.errors});return;
     }
+    state.configurePage(loaded);
     primePendingFilters();
     function primePendingFilters() {
       for (const id of preparation.pending) state.preparing(id, true);

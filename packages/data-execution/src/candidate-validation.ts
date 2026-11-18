@@ -1,4 +1,4 @@
-import {requiresTimeValidation,timeAvailabilityIssue,timeFilterBoundaryError,type DisplayInputsSnapshot} from '@metriccanvas/page/internal';
+import {independentExclusionFilterIds,requiresTimeValidation,timeAvailabilityIssue,timeFilterBoundaryError,type DisplayInputsSnapshot} from '@metriccanvas/page/internal';
 import { queryFilterIds,numberRangeIssue,rangeContextIssue,filterGroupOptions, candidateDependencies, filterDependencies, dimensionSelectionIssue, conditionSourceIds, canonicalizeJson, type Page, type FilterDeclaration } from '@metriccanvas/page/internal';
 import type {RuntimeDataGateway,FilterCandidate} from './ports';
 import type {FilterValue,FilterValues} from './filter-values';
@@ -8,7 +8,7 @@ import {withSourceCandidateSelection} from './source-candidate-window';
 
 /** Execution consumers share this fail-closed boundary, including seeded/initial receipts. */
 export function createCandidateValidator(page:Page,gateway:RuntimeDataGateway,context:{displayInputs?:()=>DisplayInputsSnapshot|undefined;filterRevision?:()=>number;now?:Date}={}) {
-  const localOptions=filterGroupOptions(page);
+  const localOptions=filterGroupOptions(page), exclusions=independentExclusionFilterIds(page);
   const declarations=page.filters??[],byId=new Map(declarations.map(filter=>[filter.id,filter]));
   function filterIds(sourceId:string,values?:FilterValues):string[] {
     const ids=new Set<string>();
@@ -43,7 +43,7 @@ export function createCandidateValidator(page:Page,gateway:RuntimeDataGateway,co
       if(!filter||!selection(filter,values))return false;
       const selected=values.get(filter.id);
       // Optional empty choices need no candidate receipt; explicit contexts still do.
-      const receipt=filter.type==='dimension'&&needsCandidateReceipt(filter,selected);
+      const receipt=filter.type==='dimension'&&!exclusions.has(id)&&needsCandidateReceipt(filter,selected);
       return !dynamic(filter)||!requires(sourceId)||!receipt;
     });
   }
@@ -72,7 +72,7 @@ export function createCandidateValidator(page:Page,gateway:RuntimeDataGateway,co
       for(const parent of candidateDependencies(filter!))await verifyFilter(parent);
       if(!filter||filter.type!=='dimension'||!dynamic(filter))return;
       const selected=values.get(id);
-      if(!needsCandidateReceipt(filter,selected))return;
+      if(exclusions.has(id)||!needsCandidateReceipt(filter,selected))return;
       const dimension=filter;
       const identity=key(dimension,values);let candidates=cache.get(identity.key);
       if(!candidates){

@@ -380,6 +380,9 @@ export const invariants: InvariantDefinition[] = [
     {case:'source-candidate-version',base:'filter-source-candidates',expect:/由 6.90 引入/,mutate:d=>{d.schemaVersion='6.89';}},
     {case:'source-candidate-self',base:'filter-source-candidates',expect:/自身筛选/,mutate:d=>{d.dataSources['channel-options'].source.query.filterBindings={channel:{target:'dimension',queryField:'code'}};}}
   ]},
+  {id:'independent-exclusion-candidates',description:'6.125 动态排除候选独立加载并保留选择',valid:['filter-exclusion-candidates'],cases:[
+    {case:'independent-exclusion-version-ahead',base:'filter-exclusion-candidates',expect:/高于运行时当前次版本/,mutate:d=>{d.schemaVersion=minorAheadOfCurrent;}}
+  ]},
   {id:'unrestricted-filter-clear',description:'6.124 可选筛选原本不限时联动免确认',valid:['filter-source-query-pagination'],cases:[
     {case:'unrestricted-filter-clear-version-ahead',base:'filter-source-query-pagination',expect:/高于运行时当前次版本/,mutate:d=>{d.schemaVersion=minorAheadOfCurrent;}}
   ]},

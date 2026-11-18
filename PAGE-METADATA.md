@@ -742,3 +742,5 @@ Tokens 百万选择、最终字段绑定检查及受控多槽表格装配见[创
 空值占位统一修复：图表、表格、指标卡、进度环、仪表和期间占位共用 `--`，移除图表间隔转换及百分比空值后缀。既有业务自定义文案和真实字符串保持。无 Schema 字段增减，场景 `/pages/chart-table-unit`、`/pages/numeric-value-display` 和 `/pages/semantic-numeric-display`。
 
 维度绑定包含与排除（6.114）：`filterBindings` 的普通及层级 `dimension` 绑定支持可选 `operator:"=" | "!="`；省略维持原有包含，`!=` 排除整个所选集合，清空不生成条件。声明、静态条件归属和 DQE 编码见[维度绑定运算](docs/page-metadata/queries-and-bindings.md#dimension-binding-operator)，合成验收 `/pages/dimension-binding-operator`。
+
+Schema 6.125 的可选动态排除条件从既有 `operator:"!="` 推导候选独立加载与选值保留，不增加字段。仅排除消费时，候选请求不再阻断业务查询；混合消费、必选、层级及显式清空策略保持原规则。详见[动态排除候选独立加载](docs/page-metadata/filters.md#independent-exclusion-candidates)。

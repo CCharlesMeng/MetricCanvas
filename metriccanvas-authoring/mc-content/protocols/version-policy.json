@@ -1,7 +1,7 @@
 {
   "major": 6,
-  "minor": 124,
-  "current": "6.124",
+  "minor": 125,
+  "current": "6.125",
   "capabilities": {
     "number-ungrouped": {
       "minor": 123,
@@ -172,6 +172,11 @@
       "minor": 90,
       "description": "筛选候选读取页面数据源完整输出，支持树节点独立单多选",
       "legacyReadable": false
+    },
+    "independent-exclusion-candidates": {
+      "minor": 125,
+      "description": "可选动态排除条件保留选值，候选加载不阻断指标查询",
+      "legacyReadable": true
     },
     "unrestricted-filter-clear": {
       "minor": 124,
@@ -1089,6 +1094,7 @@
     "6.121",
     "6.122",
     "6.123",
-    "6.124"
+    "6.124",
+    "6.125"
   ]
 }
