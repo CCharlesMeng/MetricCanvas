@@ -87,6 +87,35 @@ for(const shadow of [false,true]) test(`mouse tag, blank frame, clear and empty 
  await expect(popup).toHaveCount(0);
 });
 
+test('clear replaces the selected single and open multi arrow on the first hover frame', async ({page}) => {
+ const control = page.locator('.mc-selection').first();
+ const trigger = page.getByRole('button', {name:'区域', exact:true});
+ const arrow = control.locator('.selection-arrow');
+
+ for (const multiple of [false, true]) {
+  await page.getByRole('heading').hover();
+  await page.getByRole('checkbox', {name:'多选', exact:true}).setChecked(multiple);
+  if (multiple) {
+   await trigger.press('ArrowDown');
+   await expect(page.getByRole('textbox', {name:'搜索区域'})).toBeFocused();
+  }
+  await expect(arrow).toHaveCSS('visibility', 'visible');
+  await control.evaluate(element => {
+   delete element.dataset.suffixVisibility;
+   const arrow = element.querySelector('.selection-arrow')!;
+   const clear = element.querySelector('.selection-clear')!;
+   element.addEventListener('pointerenter', () => {
+    requestAnimationFrame(() => {
+     element.dataset.suffixVisibility = `${getComputedStyle(arrow).visibility}/${getComputedStyle(clear).visibility}`;
+    });
+   }, {once:true});
+  });
+
+  await trigger.hover({position:{x:3, y:12}});
+  await expect(control).toHaveAttribute('data-suffix-visibility', 'hidden/visible');
+ }
+});
+
 test('official geometry, neutral tag colors, icons and panel rows',async({page})=>{
  const trigger=page.getByRole('button',{name:'区域',exact:true});const control=page.locator('.mc-selection').first();
  const arrow=control.locator('.selection-arrow svg');

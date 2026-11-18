@@ -203,7 +203,8 @@
   .selection-trigger{width:100%;text-align:left;padding-right:var(--tv-size-height-md,32px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .selection-trigger span{overflow:hidden;text-overflow:ellipsis;display:block}.placeholder{color:var(--tv-color-text-placeholder,#808080)}
   .mc-ui-input__suffix{pointer-events:none}.mc-ui-input__suffix-inner{display:flex;align-items:center;height:100%}
-  .mc-selection .selection-input .selection-arrow{color:var(--tv-Select-icon-color,#808080)}
+  /* The clear button shares this slot, so the visibility swap must be immediate. */
+  .mc-selection .selection-input .selection-arrow{color:var(--tv-Select-icon-color,#808080);transition:none}
   .mc-selection .selection-input .selection-arrow :global(*){pointer-events:none}
   .mc-selection .selection-input .selection-arrow :global(svg){color:var(--tv-Select-icon-color,#808080);fill:currentColor;transition:transform .3s}
   .mc-selection.is-disabled .selection-arrow :global(svg){color:var(--tv-Select-icon-color-disabled,#c2c2c2)}.is-open .selection-arrow :global(svg){transform:rotate(180deg)}

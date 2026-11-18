@@ -93,6 +93,7 @@
 {/if}
 <style>
   header{margin-bottom:16px;background:#fff;color:#191919;padding:22px 32px;min-height:77px;min-width:0;max-width:100%;box-sizing:border-box;font-size:14px;--mc-filter-control-height:33px;}
+  header { box-shadow: rgba(0, 0, 0, 0.2) 0px 3px 5px 0px; }
   .identity{margin-bottom:16px;min-width:0;}.heading{display:flex;gap:0;align-items:center;flex-wrap:wrap;min-width:0;}
   h1{font-size:24px;line-height:33px;font-weight:700;margin:0 40px 0 0;overflow-wrap:anywhere;max-width:100%;}
   h1 a{color:inherit;font:inherit;text-decoration:none;}h1 a:hover{text-decoration:underline;}h1 a:focus-visible{outline:2px solid #1476ff;outline-offset:2px;}
