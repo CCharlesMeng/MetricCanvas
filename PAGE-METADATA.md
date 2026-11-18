@@ -31,7 +31,7 @@ URL 缺少必需页面参数时保留页面结构，相关数据源及其依赖�
 
 所有表头 select 筛选候选统一将显示名为 `--` 的选项放在列表最后，覆盖静态枚举、动态候选、搜索及失配已选项保留；其他选项保持原顺序，无新增 Schema 字段。见[列筛选候选值](docs/page-metadata/components/table.md#列筛选候选值)，合成入口 `/pages/table-header-placeholder-last`。
 
-IOC Header 期间控件分别保留最近已应用的季度与月份；选择年份后切回季／月，沿用当前年份和各自的选项，避免互相覆盖为 Q1 或 1 月。记忆限本次控件挂载，不新增页面字段或 URL 状态。见[期间选择](docs/page-metadata/filters.md#dashboard-期间选择627)，合成入口 `/pages/ioc-header-flow-sticky`。
+IOC Header 期间控件分别记忆年、季、月最近已应用的完整期间。切回时恢复该模式的选择，季度和月份各自保留当时的年份。记忆限本次控件挂载。见[期间选择](docs/page-metadata/filters.md#dashboard-期间选择627)，合成入口 `/pages/ioc-header-flow-sticky`。
 
 按需 `pagedJoin` 复用 `toolbar.search`，由搜索字段所属成员搜索并分页，暂停其他成员排序、清除其列头条件；清空搜索回到第一页并恢复默认排序。搜索、分页和 Excel 统一执行，不新增 JSON 字段、不扫描完整匹配键；单字段包含搜索由默认 DQE 数据网关编码，多字段 OR 仍需搜索适配。见[组合查询成员搜索](docs/page-metadata/data-sources.md#paged-join-member-search)，合成入口 `/pages/paged-join-search`。
 

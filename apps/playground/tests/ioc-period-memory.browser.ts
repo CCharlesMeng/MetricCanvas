@@ -4,7 +4,7 @@ test.beforeEach(async ({ page }) => {
   await page.clock.install({ time: new Date('2026-11-11T12:00:00+08:00') });
 });
 
-test('IOC Header remembers the quarter independently of the month', async ({ page }) => {
+test('IOC Header restores the full selection for each calendar mode', async ({ page }) => {
   await page.goto('/pages/ioc-header-flow-sticky');
   const period = page.locator('[data-period-filter]');
   const input = period.getByRole('combobox');
@@ -13,45 +13,41 @@ test('IOC Header remembers the quarter independently of the month', async ({ pag
   await input.press('Enter');
   await expect(input).toHaveValue('2025 年 Q3');
   await period.getByRole('button', { name: '月', exact: true }).click();
-  await input.fill('2025-01');
+  await input.fill('2023-08');
   await input.press('Enter');
-  await expect(input).toHaveValue('2025-01');
+  await expect(input).toHaveValue('2023-08');
   await period.getByRole('button', { name: '年', exact: true }).click();
   await input.click();
   await page.getByRole('button', { name: '2024', exact: true }).click();
   await expect(input).toHaveValue('2024 年');
   await period.getByRole('button', { name: '季', exact: true }).click();
-  await expect(input).toHaveValue('2024 年 Q3');
+  await expect(input).toHaveValue('2025 年 Q3');
   await period.getByRole('button', { name: '月', exact: true }).click();
-  await expect(input).toHaveValue('2024-01');
-  await period.getByRole('button', { name: '季', exact: true }).click();
-  await expect(input).toHaveValue('2024 年 Q3');
+  await expect(input).toHaveValue('2023-08');
+  await period.getByRole('button', { name: '年', exact: true }).click();
+  await expect(input).toHaveValue('2024 年');
 });
 
-test('IOC Header remembers the month independently of the quarter', async ({ page }) => {
+test('editing the month preserves the already applied year and quarter', async ({ page }) => {
   await page.goto('/pages/ioc-header-flow-sticky');
   const period = page.locator('[data-period-filter]');
   const input = period.getByRole('combobox');
-  await period.getByRole('button', { name: '月', exact: true }).click();
-  await input.fill('2025-08');
+  await input.fill('2024');
   await input.press('Enter');
-  await expect(input).toHaveValue('2025-08');
-  await period.getByRole('button', { name: '季', exact: true }).click();
-  await input.fill('2025-Q1');
-  await input.press('Enter');
-  await expect(input).toHaveValue('2025 年 Q1');
-  await period.getByRole('button', { name: '年', exact: true }).click();
-  await input.click();
-  await page.getByRole('button', { name: '2024', exact: true }).click();
   await expect(input).toHaveValue('2024 年');
-  await period.getByRole('button', { name: '月', exact: true }).click();
-  await expect(input).toHaveValue('2024-08');
   await period.getByRole('button', { name: '季', exact: true }).click();
-  await expect(input).toHaveValue('2024 年 Q1');
+  await input.fill('2025-Q3');
+  await input.press('Enter');
+  await expect(input).toHaveValue('2025 年 Q3');
   await period.getByRole('button', { name: '月', exact: true }).click();
-  await expect(input).toHaveValue('2024-08');
+  await input.fill('2023-08');
+  await input.press('Enter');
+  await expect(input).toHaveValue('2023-08');
+  await period.getByRole('button', { name: '年', exact: true }).click();
+  await expect(input).toHaveValue('2024 年');
+  await period.getByRole('button', { name: '季', exact: true }).click();
+  await expect(input).toHaveValue('2025 年 Q3');
 });
-
 
 test('first visits still derive a period from the applied year', async ({ page }) => {
   await page.goto('/pages/ioc-header-flow-sticky');
@@ -74,32 +70,26 @@ test('rolling periods preserve both memories for date precision', async ({ page 
   await period.getByRole('button', { name: '近一年', exact: true }).click();
   await expect(period.locator('[data-period-range]')).toHaveText('25年12月~26年11月');
   await period.getByRole('button', { name: '月', exact: true }).click();
-  await expect(input).toHaveValue('2025-09');
+  await expect(input).toHaveValue('2026-09');
   await period.getByRole('button', { name: '季', exact: true }).click();
   await expect(input).toHaveValue('2025 年 Q1');
 });
 
-test('a rejected future month leaves the applied year and remembered month intact', async ({ page }) => {
+test('a rejected future month leaves the remembered year and month intact', async ({ page }) => {
   await page.goto('/pages/ioc-header-flow-sticky');
   const period = page.locator('[data-period-filter]');
   const input = period.getByRole('combobox');
-  await period.getByRole('button', { name: '年', exact: true }).click();
-  await input.fill('2025');
+  await input.fill('2026');
   await input.press('Enter');
   await period.getByRole('button', { name: '月', exact: true }).click();
   await input.fill('2025-12');
   await input.press('Enter');
   await expect(input).toHaveValue('2025-12');
+  await input.fill('2026-12');
+  await input.press('Enter');
+  await expect(input).toHaveAttribute('aria-invalid', 'true');
   await period.getByRole('button', { name: '年', exact: true }).click();
-  await input.fill('2026');
-  await input.press('Enter');
   await expect(input).toHaveValue('2026 年');
-  await period.getByRole('button', { name: '月', exact: true }).click();
-  await expect(input).toHaveValue('2026 年');
-  await expect(period.getByRole('button', { name: '年', exact: true })).toHaveAttribute('aria-pressed', 'true');
-  await expect(period.getByRole('button', { name: '月', exact: true })).toHaveAttribute('aria-pressed', 'false');
-  await input.fill('2025');
-  await input.press('Enter');
   await period.getByRole('button', { name: '月', exact: true }).click();
   await expect(input).toHaveValue('2025-12');
 });
