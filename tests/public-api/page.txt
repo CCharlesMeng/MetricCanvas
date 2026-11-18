@@ -310,6 +310,7 @@ TimeRangeValue
 TimeValueFormat
 TimeWindow
 TypedError
+UNRESTRICTED_FILTER_CLEAR_MINOR
 UnionKeysOperator
 ValueFormat
 ValueFormatPreset
@@ -575,6 +576,7 @@ standardIocRegionFilter
 staticFieldBinding
 supportedVersions
 supportsNativePreparation
+supportsUnrestrictedFilterClear
 tabChildren
 tabSearch
 tableAlignedSlots

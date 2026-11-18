@@ -38,6 +38,7 @@ NumberRangeFilterValue
 QueryHeaderFilters
 ScreenProgress
 SearchFilterValue
+SourceCandidateSession
 SourceProgram
 SourceRangeError
 SourceRead
@@ -65,6 +66,7 @@ createCandidateCache
 createCandidateGatewaySession
 createCandidateValidator
 createFinalizationPreparation
+createSourceCandidateSession
 createSourceProgram
 debugWarn
 defaultSourceView
