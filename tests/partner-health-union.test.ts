@@ -30,7 +30,7 @@ async function readScores(grain:string,state='ready') {
 }
 
 describe('partner-health 正式页面使用完整组织并集',()=>{
-  it.each(['region','representative'])('%s：1/10/13 => 15，缺项 --、真实0和负数保留',async grain=>{
+  it.each(['region','representative'])('%s：1/10/13 => 15，缺项 —、真实0和负数保留',async grain=>{
     const {table,sourceId,snapshot}=await readScores(grain);
     const fixture=grain==='representative'?mock.representative:mock;
     const prefix=grain==='representative'?'REP':'ORG';
@@ -49,7 +49,7 @@ describe('partner-health 正式页面使用完整组织并集',()=>{
     const total=columns.find(c=>typeof c.field==='object'&&'field' in c.field&&c.field.field==='total-score')!;
     expect(alignedCellText(total.field,data,aligned.find(r=>r.main.region===`${prefix}-03`)!)).toBe('0');
     const missing=columns.find(c=>typeof c.field==='object'&&'field' in c.field&&c.field.field==='satisfaction-evaluation')!;
-    expect(alignedCellText(missing.field,data,aligned.find(r=>r.main.region===`${prefix}-04`)!)).toBe('--');
+    expect(alignedCellText(missing.field,data,aligned.find(r=>r.main.region===`${prefix}-04`)!)).toBe('—');
   });
   it.each([['emptyMain',14],['empty',0]])('%s 不依赖主查询构造行集合',async(state,count)=>{
     const {snapshot}=await readScores('region',state);
@@ -75,7 +75,7 @@ describe('partner-health 正式页面使用完整组织并集',()=>{
 });
 
 describe('DQE 数字归一化与展示',()=>{
-  it.each([[0,'0',5],[null,'--',5],['','--',5],['   ','--',5],['0','0',5],[-2,'-2',3],['坏值','坏值',5]])('%s 的显示和求和', (input,text,total)=>{
+  it.each([[0,'0',5],[null,'—',5],['','—',5],['   ','—',5],['0','0',5],[-2,'-2',3],['坏值','坏值',5]])('%s 的显示和求和', (input,text,total)=>{
     const fields={score:{type:'number',role:'measure',queryField:'得分'}} as const;
     const result=normalizeQueryRows([{得分:input}],fields);
     if(!result.ok) throw Error(JSON.stringify(result.issues));

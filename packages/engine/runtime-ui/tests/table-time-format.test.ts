@@ -23,13 +23,13 @@ it('shares table presentation with Excel, including query scalar fallback eviden
   if (column.kind === 'group') throw Error('column');
   const expected = [
     ...Array<string>(7).fill('2026-11-10 02:30:00'),
-    '2027-01-01 02:30:00', '2026-02-30T18:30:00Z', '--', '2026-11-10 02:30:00'
+    '2027-01-01 02:30:00', '2026-02-30T18:30:00Z', '—', '2026-11-10 02:30:00'
   ];
   expect(projectTableRows(data, table.props).map(row => alignedCellText(column.field, data, row))).toEqual(expected);
   const bytes = await encodeTableWorkbook(table, data, new AbortController().signal);
   const workbook = new ExcelJS.Workbook();
   await workbook.xlsx.load(bytes.buffer);
-  expect(expected.map((_, i) => workbook.worksheets[0].getCell(i + 2, 2).value)).toEqual(expected.map(value => value === '--' ? null : value));
+  expect(expected.map((_, i) => workbook.worksheets[0].getCell(i + 2, 2).value)).toEqual(expected.map(value => value === '—' ? null : value));
   expect(workbook.worksheets[0].getCell(2, 2).type).toBe(ExcelJS.ValueType.String);
   for (const [index, expected] of [[3, '2026-11-10'], [4, '2026-11-10 02:30'], [5, '02:30:00'], [6, '2026年11月10日']] as const) {
     const column = table.props.columns[index];

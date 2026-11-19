@@ -110,7 +110,7 @@ IOC 页头返回统一使用 `props.back:true`，默认按浏览器后退能力�
 
 6.95：表格列 `selection.writes` 可用 `level` 显式选择目标维度筛选的组织层级；复用页头 Region 状态、候选校验和查询绑定。省略保持原默认层级行为。见[单元格点击与筛选联动](docs/page-metadata/components/table.md#单元格点击与筛选联动)，入口 `/pages/ioc-header-controls`。
 
-6.93：按可信字段语义全局选择金额、比率、人数、资源、存储与时长格式，组件显式格式优先；增加9个封闭预设，字段净增0。同比/环比基期非正或缺失返回null，普通ratio保持。系统空值统一显示连续两个 ASCII 短横线 `--`，图表与百分比同样不加空格、百分号或单位。见[统一语义格式](docs/page-metadata/field-bindings-and-formats.md#numeric-value-display)，合成入口 `/pages/semantic-numeric-display`。
+6.93：按可信字段语义全局选择金额、比率、人数、资源、存储与时长格式，组件显式格式优先；增加9个封闭预设，字段净增0。同比/环比基期非正或缺失返回null，普通ratio保持。系统空值统一显示单个长横线 `—`，图表与百分比同样不追加百分号或单位。见[统一语义格式](docs/page-metadata/field-bindings-and-formats.md#numeric-value-display)，合成入口 `/pages/semantic-numeric-display`。
 
 普通查询表格首屏按 DQE `order.order_by_field/type` 回显列头方向，用户操作后沿用会话排序；不新增字段或改变查询。常量基线与指标排序可以同时使用。声明和边界见[查询默认排序](docs/page-metadata/components/table.md#查询默认排序的首屏方向)，入口 `/pages/query-sort-baseline`。
 
@@ -354,7 +354,7 @@ Schema元数据另见[数据上下文规则](docs/schema-metadata.md)，页面�
 
 <a id="百万单位的使用65"></a>
 
-缺失值默认显示 `--`（百分比为 `--%`，图表短横线分开绘制）；整数（含百分比、金额、缩放单位及舍入后整数）省略 `.0` / `.00`，非整数按声明精度四舍五入并舍弃小数末尾零；自定义缺失文字仍优先。无需新增字段或升级 Schema，场景 `/pages/numeric-value-display`。详见[整数与缺失值的统一显示](docs/page-metadata/field-bindings-and-formats.md#numeric-value-display)。
+缺失值默认显示 `—`（包括百分比和图表）；整数（含百分比、金额、缩放单位及舍入后整数）省略 `.0` / `.00`，非整数按声明精度四舍五入并舍弃小数末尾零；自定义缺失文字仍优先。无需新增字段或升级 Schema，场景 `/pages/numeric-value-display`。详见[整数与缺失值的统一显示](docs/page-metadata/field-bindings-and-formats.md#numeric-value-display)。
 
 格式由组件字段绑定声明，页面数据源可以提供 `defaultFormat` 建议，原始数据保留基础单位。格式清单、覆盖优先级及百万单位的用法统一见[字段绑定与格式](contracts/metriccanvas/page/reference/field-bindings-and-formats.md)。
 
@@ -747,7 +747,9 @@ Tokens 百万选择、最终字段绑定检查及受控多槽表格装配见[创
 
 图表与表格的整数展示复用统一数值格式化，去掉小数尾零；`unit` 在格式化后追加，`-2 天`、`0 天` 和 `12.5 天` 对照见 `/pages/chart-table-unit`。
 
-空值占位统一修复：图表、表格、指标卡、进度环、仪表和期间占位共用 `--`，移除图表间隔转换及百分比空值后缀。既有业务自定义文案和真实字符串保持。无 Schema 字段增减，场景 `/pages/chart-table-unit`、`/pages/numeric-value-display` 和 `/pages/semantic-numeric-display`。
+图表、表格、指标卡、进度环、仪表和期间占位共用单个长横线 `—`（U+2014）。既有业务自定义文案和真实字符串保持。无 Schema 字段增减，场景 `/pages/chart-table-unit`、`/pages/numeric-value-display` 和 `/pages/semantic-numeric-display`。
+
+表格备注使用既有 `props.subtitle`，以 12 px 灰字显示在标题右侧 16 px，无标题时左对齐。完整说明及合成场景见[表格标题与备注](docs/page-metadata/components/table.md#表格标题与备注)。
 
 维度绑定包含与排除（6.114）：`filterBindings` 的普通及层级 `dimension` 绑定支持可选 `operator:"=" | "!="`；省略维持原有包含，`!=` 排除整个所选集合，清空不生成条件。声明、静态条件归属和 DQE 编码见[维度绑定运算](docs/page-metadata/queries-and-bindings.md#dimension-binding-operator)，合成验收 `/pages/dimension-binding-operator`。
 

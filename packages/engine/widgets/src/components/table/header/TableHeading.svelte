@@ -5,8 +5,12 @@
 </script>
 {#if title || subtitle || showTools}
   <div class="table-heading">
-    {#if title}<h3 class="mc-data-heading">{title}</h3>{/if}
-    {#if subtitle}<div class="subtitle"><span aria-hidden="true">*</span>{subtitle}</div>{/if}
+    {#if title || subtitle}
+      <div class="heading-copy">
+        {#if title}<h3 class="mc-data-heading">{title}</h3>{/if}
+        {#if subtitle}<div class="subtitle">{subtitle}</div>{/if}
+      </div>
+    {/if}
     {#if showTools && tools}{@render tools()}{/if}
   </div>
 {/if}
@@ -19,6 +23,14 @@
     justify-content: space-between;
     gap: 16px;
     margin-bottom: 12px;
+  }
+  .heading-copy {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 16px;
+    min-width: 0;
+    overflow-wrap: anywhere;
   }
   h3 {
     margin: 0;
@@ -36,10 +48,5 @@
     font-size: 12px;
     font-weight: 400;
     line-height: 22px;
-    white-space: nowrap;
-  }
-  .subtitle span {
-    margin-right: 4px;
-    color: #f21e1e;
   }
 </style>

@@ -19,12 +19,12 @@ test('object bindings use main across single and multi-source tables, cards and 
   const tables = page.locator('table').filter({ hasText: '省略槽名' });
   await expect(tables).toHaveCount(2);
   for (const [index, expected] of [
-    ['正数', '+1.23', '+1.23'], ['负数', '-1.23', '-1.23'], ['舍入零', '0', '0'], ['缺失', '--', '--']
+    ['正数', '+1.23', '+1.23'], ['负数', '-1.23', '-1.23'], ['舍入零', '0', '0'], ['缺失', '—', '—']
   ].entries()) {
     await expect(tables.nth(0).locator('tbody tr').nth(index).locator('td')).toHaveText(expected);
   }
   await expect(tables.nth(1).locator('tbody tr').nth(0).locator('td')).toHaveText(['正数', '+1.23', '+50']);
-  await expect(tables.nth(1).locator('tbody tr').nth(3).locator('td')).toHaveText(['缺失', '--', '+53']);
+  await expect(tables.nth(1).locator('tbody tr').nth(3).locator('td')).toHaveText(['缺失', '—', '+53']);
   await expect(page.locator('.metric-card').filter({ hasText: '指标卡共享默认槽' })).toContainText('+1.23');
   await expect(page.locator('.bar-chart').filter({ hasText: '图表共享默认槽' })).toBeVisible();
   for (const label of ['+1.23', '-1.23', '0']) {

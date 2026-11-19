@@ -26,7 +26,7 @@ test('selected columns appear first; a failed supplement keeps them and prevents
   await page.getByRole('button',{name:'补列失败',exact:true}).click();
   await expect(table).toHaveAttribute('aria-busy','false');
   await expect(table.getByRole('cell',{name:'测试项目11',exact:true})).toBeVisible();
-  await expect(table.locator('tbody tr').first()).toContainText('--');
+  await expect(table.locator('tbody tr').first()).toContainText('—');
   await expect(table.getByRole('button',{name:'导出',exact:true})).toBeDisabled();
   expect(errors).toEqual([]);
 });

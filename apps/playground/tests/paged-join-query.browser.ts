@@ -16,8 +16,8 @@ for(const nulls of ['first','last']){
     const keys=table.locator('tbody td[data-column-field="project-id"]');
     if(nulls==='first'){
       await expect(keys).toHaveText(['P000001','P000012','P000023','P000034','P000045','P000056','P000067','P000078','P000002','P000003']);
-      await expect(cells.nth(0)).toHaveText('--');
-      await expect(cells.nth(7)).toHaveText('--');
+      await expect(cells.nth(0)).toHaveText('—');
+      await expect(cells.nth(7)).toHaveText('—');
     }else await expect(keys).toHaveText(['P000002','P000003','P000004','P000005','P000006','P000007','P000008','P000009','P000010','P000011']);
     await table.getByRole('button',{name:'下一页',exact:true}).click();
     await expect(keys.first()).toHaveText(nulls==='first'?'P000004':'P000013');

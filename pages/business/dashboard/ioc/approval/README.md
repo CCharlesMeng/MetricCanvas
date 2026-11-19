@@ -8,7 +8,7 @@
 
 本页 `decision-valid-table` 与 `reviewer-rejection-table` 各声明一个 `toolbar.search.options` 字段。输入审批人或评审组织人姓名的一部分即可匹配；单字段输入框沿用页面原有提示。两表经 `pagedUnion` 分别对商务及合同成员的“商务审批人”和“审批人名称”追加 `operator:"contains"`。移植时保留成员的字段映射。紧急决策两表使用完整关联结果的本地搜索。真实 DQE 的字段支持、条件叠加与匹配总数仍需联调。
 
-行权规范情况入口：`/pages/region-authorization-norms`，[JSON](region-authorization-norms.json)。无必填 URL 参数；沿用页面默认统计期间，Region 空选时立即发起地区部、代表处和三张趋势图的查询，不必先选全球。全球不添加区域谓词，选择地区部或代表处后按对应字段筛选。Playground 使用合成组织候选，业务查询仍走 DQE 网关；可先运行 `pnpm dev:dqe` 和 `pnpm dev:playground`。打开 Region，展开长组织树并缩短窗口时，只滚动候选列表，搜索框固定。自动回归 `apps/playground/tests/authorization-norms.browser.ts` 拦截业务响应，覆盖首屏请求、区域切换、单层滚动及正常/空/失败状态，不代表真实 DQE 或线上部署验收。
+行权规范情况入口：`/pages/region-authorization-norms`，[JSON](region-authorization-norms.json)。无必填 URL 参数。地区部和代表处表格的标题右侧均显示 12 px 灰字「— 代表本周期没有合同单/商务单」，间距 16 px。IOC 页头仍提供重点国代、统计期间、Region 和客户级别。沿用页面默认统计期间，Region 空选时立即发起地区部、代表处和三张趋势图的查询，不必先选全球。全球不添加区域谓词，选择地区部或代表处后按对应字段筛选。地区部表在全球层级显示，切换到地区部或代表处层级后隐藏。Playground 使用合成组织候选，业务查询仍走 DQE 网关；可先运行 `pnpm dev:dqe` 和 `pnpm dev:playground`。打开 Region，展开长组织树并缩短窗口时，只滚动候选列表，搜索框固定。自动回归 `apps/playground/tests/authorization-norms.browser.ts` 拦截业务响应，覆盖首屏请求、区域切换、单层滚动及正常/空/失败状态，不代表真实 DQE 或线上部署验收。
 
 - 行权效率：`/pages/rep-office-execution-efficiency`，[JSON](rep-office-execution-efficiency.json)。
 - 业务结果指标：`/pages/rep-business-result`，[JSON](rep-business-result.json)。

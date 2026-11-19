@@ -16,7 +16,7 @@ test('time format renders UTC+8 independently of browser timezone and exports it
   }
   await expect(rows.nth(7).locator('td').nth(1)).toHaveText('2027-01-01 02:30:00');
   await expect(rows.nth(8).locator('td').nth(1)).toHaveText('2026-02-30T18:30:00Z');
-  await expect(rows.nth(9).locator('td').nth(1)).toHaveText('--');
+  await expect(rows.nth(9).locator('td').nth(1)).toHaveText('—');
   const pending = page.waitForEvent('download');
   await table.getByRole('button', { name: '导出', exact: true }).click();
   const download = await pending;

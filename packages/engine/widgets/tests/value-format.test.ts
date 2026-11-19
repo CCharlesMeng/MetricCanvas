@@ -17,8 +17,8 @@ describe('formatValue', () => {
   it('无格式数字默认千分位，文本与空值保持', () => {
     expect(formatValue(1234.5)).toBe('1,234.5');
     expect(formatValue('06-23')).toBe('06-23');
-    expect(formatValue(null)).toBe('--');
-    expect(formatValue(undefined)).toBe('--');
+    expect(formatValue(null)).toBe('—');
+    expect(formatValue(undefined)).toBe('—');
   });
 
   it('按封闭预设格式化精度和千分位', () => {
@@ -40,7 +40,7 @@ describe('formatValue', () => {
     [0, 'compact-million-2', '0百万'],
     [500_000, 'compact-million-1', '0.5百万'],
     ['2500000', 'compact-million-2', '2.5百万'],
-    [null, 'compact-million-2', '--'],
+    [null, 'compact-million-2', '—'],
     ['暂无', 'compact-million-2', '暂无']
   ] as const)('百万格式 %s / %s → %s', (value, format, expected) => {
     expect(formatValue(value, format)).toBe(expected);
@@ -72,9 +72,9 @@ describe('formatValue', () => {
     expect(formatValue(-12.6, 'cny-adaptive')).toBe('-13元');
     expect(formatValue(0, 'cny-adaptive')).toBe('0元');
     expect(formatValue(-0, 'cny-adaptive')).toBe('0元');
-    expect(formatValue(null, 'cny-adaptive')).toBe('--');
-    expect(formatValue(Number.NaN, 'cny-adaptive')).toBe('--');
-    expect(formatValue(Number.POSITIVE_INFINITY, 'cny-adaptive')).toBe('--');
+    expect(formatValue(null, 'cny-adaptive')).toBe('—');
+    expect(formatValue(Number.NaN, 'cny-adaptive')).toBe('—');
+    expect(formatValue(Number.POSITIVE_INFINITY, 'cny-adaptive')).toBe('—');
   });
 
   it('百分比不乘 100,并接受数据快照中的数值字符串', () => {
@@ -84,7 +84,7 @@ describe('formatValue', () => {
   });
 
   it('空值统一显示占位符', () => {
-    expect(formatValue(null, 'number')).toBe('--');
+    expect(formatValue(null, 'number')).toBe('—');
   });
 
   it('支持日期完整值与 Tokens 趋势所需 MM-DD', () => {
@@ -127,7 +127,7 @@ describe('valuePolarity', () => {
     [0.05, '+0.1', 'positive'], [-0.05, '-0.1', 'negative'],
     [0, '0', 'neutral'], [-0, '0', 'neutral'],
     ['0.04', '0', 'neutral'], ['-0.05', '-0.1', 'negative'],
-    [null, '--', 'neutral'], [Infinity, '--', 'neutral'], [NaN, '--', 'neutral']
+    [null, '—', 'neutral'], [Infinity, '—', 'neutral'], [NaN, '—', 'neutral']
   ] as const)('signed decimal text and direction agree for %s', (value, text, polarity) => {
     expect(formatValue(value, 'number-1-signed')).toBe(text);
     expect(valuePolarity(value, 'number-1-signed')).toBe(polarity);
@@ -165,7 +165,7 @@ it('formats percentage point differences without scaling and with rounded neutra
   expect(formatValue(10, 'points-1-signed')).toBe('+10P');
   expect(formatValue(-2.56, 'points-1-signed')).toBe('-2.6P');
   expect(formatValue(-0.04, 'points-1-signed')).toBe('0P');
-  expect(formatValue(null, 'points-1-signed')).toBe('--');
+  expect(formatValue(null, 'points-1-signed')).toBe('—');
 });
 
 
@@ -183,15 +183,15 @@ it.each([
   expect(formatValue(value, format)).toBe(expected);
 });
 
-it.each([null, undefined, NaN, Infinity, -Infinity])('missing %s uses adjacent ASCII hyphens', value => {
-  expect(formatValue(value)).toBe('--');
-  expect(formatValue(value, 'percent-2')).toBe('--');
+it.each([null, undefined, NaN, Infinity, -Infinity])('missing %s uses a single em dash', value => {
+  expect(formatValue(value)).toBe('—');
+  expect(formatValue(value, 'percent-2')).toBe('—');
   expect(formatValue(value, 'number-2', '暂无')).toBe('暂无');
 });
 
 
-it.each(['--', '—', '- -'])('legacy missing placeholder %s uses adjacent ASCII hyphens', missingText => {
-  expect(formatValue(null, 'percent-1', missingText)).toBe('--');
+it.each(['--', '—', '- -'])('legacy missing placeholder %s uses a single em dash', missingText => {
+  expect(formatValue(null, 'percent-1', missingText)).toBe('—');
   expect(formatValue(0, 'percent-1', missingText)).toBe('0%');
   expect(formatValue(missingText, 'text', missingText)).toBe(missingText);
 });

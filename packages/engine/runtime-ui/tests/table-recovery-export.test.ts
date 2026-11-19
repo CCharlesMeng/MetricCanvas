@@ -25,6 +25,6 @@ for (const source of ['opinions','rejection-overview']) {
     const warnings = workbook.getWorksheet('数据异常说明')!;
     expect(warnings.getCell('A1').text).toContain('可能存在缺项');
     expect(warnings.rowCount).toBeGreaterThan(2);
-    expect(JSON.stringify(workbook.getWorksheet('表格数据')!.getSheetValues())).toContain('--');
+    expect(JSON.stringify(workbook.getWorksheet('表格数据')!.getSheetValues())).toContain('—');
   });
 }

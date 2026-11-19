@@ -45,7 +45,7 @@ it.each(precisions)('%s shares the displayed zero boundary across signed consume
 it.each(precisions)('%s and %s keep missing values and nonnumeric text safe', (plain, signed) => {
   for (const format of [plain, signed]) {
     for (const missing of [null, undefined, NaN, Infinity, -Infinity]) {
-      expect(formatValue(missing, format)).toBe('--');
+      expect(formatValue(missing, format)).toBe('—');
       expect(formatValue(missing, format, '未提供')).toBe('未提供');
       expect(valuePolarity(missing, format)).toBe('neutral');
     }

@@ -18,7 +18,7 @@ test('three to five decimals share rounding, colors and metric arrows', async ({
     [8, ['五位正边界', '0', '0', '0', '0', '0.00001', '+0.00001']],
     [9, ['五位负边界', '0', '0', '0', '0', '-0.00001', '-0.00001']],
     [10, ['正向舍入零', '0', '0', '0', '0', '0', '0']],
-    [13, ['缺失', '--', '--', '--', '--', '--', '--']]
+    [13, ['缺失', '—', '—', '—', '—', '—', '—']]
   ] as const) {
     await expect(rows.nth(index).locator('td:nth-child(-n+7)')).toHaveText([...expected]);
   }

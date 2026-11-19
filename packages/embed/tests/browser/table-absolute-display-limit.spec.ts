@@ -13,7 +13,7 @@ for (const entry of ['global', 'esm'] as const) {
     }, { document, entry });
     const table = page.locator('[data-component="main/limit-table"]');
     const cells = table.locator('tbody td[data-column-field="change"]');
-    await expect(cells).toHaveText(['↑ > 500', '↓ > 500', '↑ +500', '↓ -500', '↑ > 500', '↓ > 500', '↑ +500', '↓ -500', '0', '--']);
+    await expect(cells).toHaveText(['↑ > 500', '↓ > 500', '↑ +500', '↓ -500', '↑ > 500', '↓ > 500', '↑ +500', '↓ -500', '0', '—']);
     await expect(cells.nth(0)).toHaveCSS('color', 'rgb(82, 196, 26)');
     await expect(cells.nth(1)).toHaveCSS('color', 'rgb(245, 34, 45)');
     const download = page.waitForEvent('download');

@@ -10,7 +10,7 @@ test('absolute display limits use raw values and share arrows, colors, compact t
   await page.goto(`/pages/${fixture.id}`);
   const table = page.locator('[data-component="main/limit-table"]');
   const cells = table.locator('tbody td[data-column-field="change"]');
-  await expect(cells).toHaveText(['↑ > 500', '↓ > 500', '↑ +500', '↓ -500', '↑ > 500', '↓ > 500', '↑ +500', '↓ -500', '0', '--']);
+  await expect(cells).toHaveText(['↑ > 500', '↓ > 500', '↑ +500', '↓ -500', '↑ > 500', '↓ > 500', '↑ +500', '↓ -500', '0', '—']);
   await expect(cells.nth(0)).toHaveCSS('color', 'rgb(82, 196, 26)');
   await expect(cells.nth(1)).toHaveCSS('color', 'rgb(245, 34, 45)');
   await expect(cells.nth(0).getByLabel('上箭头')).toHaveText('↑');

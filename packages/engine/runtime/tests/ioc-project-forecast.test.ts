@@ -56,7 +56,7 @@ describe('项目详情全年销售预测', () => {
     expect(formatValue(5000000, format)).toBe('500万');
     expect(formatValue(100000000, format)).toBe('1亿');
     expect(formatValue(0, format)).toBe('0元');
-    expect(formatValue(null, format)).toBe('--');
+    expect(formatValue(null, format)).toBe('—');
   });
   it('实际预测页面显式采用全空汇总为零，明细仍为空', () => {
     const source = load().dataSources['sales-forecast']!;

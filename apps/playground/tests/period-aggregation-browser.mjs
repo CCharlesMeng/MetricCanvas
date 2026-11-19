@@ -34,7 +34,7 @@ try {
   await table.getByRole('button', { name: '下一页', exact: true }).click();
   await expect(rows).toHaveCount(1);
   await expect(rows.first()).toContainText('合成代表处丙');
-  await expect(rows.first()).toContainText('--');
+  await expect(rows.first()).toContainText('—');
   const downloading = page.waitForEvent('download');
   await table.getByRole('button', { name: '导出', exact: true }).click();
   const filename = path.join(output, 'annual.xlsx');

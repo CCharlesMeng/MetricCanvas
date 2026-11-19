@@ -101,7 +101,7 @@ describe('buildRankingDetailRows', () => {
       '客户A',
       '客户E',
       '客户C',
-      '--'
+      '—'
     ]);
     expect(rows.map((row) => row.rank)).toEqual([1, 2, 3, 4, 5]);
   });
@@ -123,7 +123,7 @@ describe('buildRankingDetailRows', () => {
       badges: ['KA'],
       change: { text: '0%', polarity: 'neutral' }
     });
-    expect(rows[4]).toMatchObject({ name: '--', badges: [] });
+    expect(rows[4]).toMatchObject({ name: '—', badges: [] });
   });
 
   it('字段未声明时只省略对应可选内容，不抛出整页错误', () => {

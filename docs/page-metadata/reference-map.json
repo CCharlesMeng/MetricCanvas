@@ -3340,6 +3340,17 @@
       ],
       "dependencies": []
     },
+    "table.subtitle": {
+      "module": "table",
+      "title": "表格标题与备注",
+      "roots": [
+        "#/definitions/tableComponent/properties/props/properties/subtitle"
+      ],
+      "headings": [
+        "表格标题与备注"
+      ],
+      "dependencies": []
+    },
     "table.default-sort": {
       "module": "table",
       "title": "完整本地计算结果默认排序",
@@ -3602,7 +3613,8 @@
       "列级绝对值展示阈值（6.119）",
       "列级上下箭头（6.99）",
       "时间列转换（6.102）",
-      "详情组合标题（6.106）"
+      "详情组合标题（6.106）",
+      "表格标题与备注"
     ],
     "components/mapChart.md": [
       "查阅方式",

@@ -166,6 +166,7 @@
           },
           "props": {
             "title": "统一格式",
+            "subtitle": "灰色备注示例",
             "columns": [
               {
                 "field": "case",
@@ -194,6 +195,39 @@
                   "missingText": "未提供"
                 },
                 "title": "自定义缺失"
+              }
+            ],
+            "pagination": {
+              "mode": "none"
+            }
+          }
+        },
+        {
+          "id": "untitled-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "sample"
+          },
+          "props": {
+            "subtitle": "无标题时从左侧显示备注",
+            "toolbar": {
+              "search": {
+                "fields": [
+                  "case"
+                ]
+              }
+            },
+            "columns": [
+              {
+                "field": "case",
+                "title": "场景"
+              },
+              {
+                "field": "rate",
+                "title": "百分比"
               }
             ],
             "pagination": {

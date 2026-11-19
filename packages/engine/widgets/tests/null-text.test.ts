@@ -4,16 +4,16 @@ import {formatValue} from '../src/shared/value-format';
 import {formatChartNumber} from '../src/shared/chart-option';
 import {formatTableCell} from '../src/components/table/cell-presentation';
 
-it.each(valueFormatPresets)('%s renders actual missing values as exactly two adjacent ASCII hyphens',format=>{
+it.each(valueFormatPresets)('%s renders actual missing values as a single em dash',format=>{
   for(const value of [null,undefined,NaN,Infinity,-Infinity]){
-    expect(formatValue(value,format)).toBe('--');
-    expect(formatTableCell(value,format)).toBe('--');
-    expect(formatChartNumber(value,format,undefined,'%', '天')).toBe('--');
+    expect(formatValue(value,format)).toBe('—');
+    expect(formatTableCell(value,format)).toBe('—');
+    expect(formatChartNumber(value,format,undefined,'%', '天')).toBe('—');
   }
 });
 it.each(['—','–','-','- -','--','--%','- -%'])('normalizes legacy missing placeholder %s without rewriting real strings',text=>{
-  expect(formatValue(null,'percent-1',text)).toBe('--');
-  expect(formatChartNumber(null,'percent-1',text)).toBe('--');
+  expect(formatValue(null,'percent-1',text)).toBe('—');
+  expect(formatChartNumber(null,'percent-1',text)).toBe('—');
   expect(formatValue(text,'text')).toBe(text);
   expect(formatChartNumber(text,'text')).toBe(text);
 });

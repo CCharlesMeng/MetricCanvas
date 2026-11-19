@@ -20,14 +20,14 @@ test('custom units appear on the real canvas, hover tooltips and table cells',as
   await expect(rows.nth(1).getByText('12.5 天',{exact:true})).toBeVisible();
   await expect(rows.nth(1).getByText('12.5 万元',{exact:true})).toBeVisible();
   await expect(rows.nth(2).getByText('0 天',{exact:true})).toBeVisible();
-  for(const index of [1,2,3]) await expect(rows.nth(4).locator('td').nth(index).getByText('--',{exact:true})).toBeVisible();
+  for(const index of [1,2,3]) await expect(rows.nth(4).locator('td').nth(index).getByText('—',{exact:true})).toBeVisible();
   await expect(page.locator('[aria-label="表格式图例"]').getByText('12 家',{exact:true})).toBeVisible();
   await charts.first().hover({position:{x:140,y:100}});
   await expect(charts.first().getByText('12.5 天',{exact:true})).toBeVisible();
   await page.mouse.move(0,0);
   await page.getByRole('button',{name:'时长',exact:true}).click();
   await expect(rows.nth(1).getByText('-2 天',{exact:true})).toBeVisible();
-  await expect(rows.nth(4).locator('td').nth(1).getByText('--',{exact:true})).toBeVisible();
+  await expect(rows.nth(4).locator('td').nth(1).getByText('—',{exact:true})).toBeVisible();
   await page.getByRole('button',{name:/时长/}).click();
   await expect(rows.nth(1).getByText('12.5 天',{exact:true})).toBeVisible();
   await page.screenshot({path:testInfo.outputPath('unit-wide.png'),fullPage:true});

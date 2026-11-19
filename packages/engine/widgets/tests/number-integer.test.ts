@@ -5,8 +5,8 @@ import { formatChartNumber } from '../src/shared/chart-option';
 it.each([
   [1234.4, '1,234'], [1234.5, '1,235'], [-1234.4, '-1,234'], [-1234.5, '-1,235'],
   [9.999, '10'], [0.5, '1'], [-0.5, '-1'], [0.4, '0'], [-0.4, '0'], [-0, '0'],
-  [0, '0'], [1234, '1,234'], ['12.6', '13'], [null, '--'], [undefined, '--'],
-  [NaN, '--'], [Infinity, '--'], [-Infinity, '--'], ['未计算', '未计算']
+  [0, '0'], [1234, '1,234'], ['12.6', '13'], [null, '—'], [undefined, '—'],
+  [NaN, '—'], [Infinity, '—'], [-Infinity, '—'], ['未计算', '未计算']
 ] as const)('formats %s as integer %s', (value, expected) => {
   expect(formatValue(value, 'number-0')).toBe(expected);
 });
