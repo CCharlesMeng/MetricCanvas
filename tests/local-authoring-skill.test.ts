@@ -405,7 +405,14 @@ describe('独立本地创作 Skill', () => {
     await writeFile(data, JSON.stringify(vectors));
     const runner = path.join(isolated, 'verify.mjs');
     await writeFile(runner, `import {readFileSync} from 'node:fs';\nimport {inspectPageDocument} from './skill/scripts/validate-page.mjs';\nconst cases=JSON.parse(readFileSync(new URL('./vectors.json',import.meta.url),'utf8'));\nconsole.log(JSON.stringify(cases.map(c=>({name:c.name,errors:inspectPageDocument(c.fileName,c.document)}))));\n`);
-    const result = spawnSync(process.execPath, [runner], {cwd: isolated, encoding:'utf8',timeout:20_000,env:{PATH:process.env.PATH}});
+    const result = spawnSync(process.execPath, [runner], {
+      cwd: isolated,
+      encoding: 'utf8',
+      timeout: 20_000,
+      maxBuffer: 8 * 1024 * 1024,
+      env: { PATH: process.env.PATH }
+    });
+    expect(result.error).toBeUndefined();
     expect(result.status, result.stderr).toBe(0);
     expect(JSON.parse(result.stdout)).toEqual(vectors.map(v=>({name:v.name,errors:v.expected})));
     expect(vectors.length).toBeGreaterThan(100);

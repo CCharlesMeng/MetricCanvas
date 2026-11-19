@@ -44,6 +44,7 @@ import {
   sectionZ
 } from './schema/page';
 import { flattenPageComponents } from './component-walk';
+import { hasMetricRowAction } from './metric-card';
 
 /*
  * 组件形状的单一真源在 `./schema/`（Zod 4 定义）：本文件的每个组件类型都
@@ -391,9 +392,9 @@ export function deriveComponentCapabilities(
   const tableSelection =
     component.type === 'table' &&
     component.props.columns.some((column) => tableColumnHasSelection(column));
-  const hasNavigate = (props.actions ?? []).some((action) => 'navigate' in action);
-  // 页内详情与 navigate 同理:读当前行、不依赖 query 重跑,inline 组件也可声明。
-  const hasOpenDetail = (props.actions ?? []).some((action) => 'openDetail' in action);
+  const hasStandaloneAction = props.actions?.some(
+    (action) => 'navigate' in action || 'openDetail' in action
+  ) || hasMetricRowAction(component);
   const columnDetail = (columns: TableColumnNode[]): boolean => columns.some(column => column.kind === 'group'
     ? columnDetail(column.children) : column.openDetail !== undefined || column.navigate !== undefined || column.navigateBySource !== undefined);
   const hasMapHierarchy =
@@ -410,8 +411,7 @@ export function deriveComponentCapabilities(
     actions:
       component.type==='button' ||
       ((hasQuery || Number(page.schemaVersion.split('.')[1])>=34&&hasObservableWrites(page,component)) && ((props.actions?.length ?? 0) > 0 || tableSelection)) ||
-      hasNavigate ||
-      hasOpenDetail ||
+      hasStandaloneAction ||
       (component.type === 'table' && columnDetail(component.props.columns)) ||
       hasMapHierarchy,
     remotePagination:

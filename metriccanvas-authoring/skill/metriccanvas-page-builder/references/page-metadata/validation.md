@@ -33,7 +33,7 @@ SCHEMA_ERROR对应结构和页面语义；FIELD_CONTRACT_ERROR对应结果字段
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](README.md)。
 
 
-页面协议 6.125。结构真源为本册[schema.json](schema.json)，SHA256 `85afa953d5f65aa71900f61cd016b77155ec12e622263151700f29cad7bb302d`。字段表自动生成；可选不等于有默认值。
+页面协议 6.126。结构真源为本册[schema.json](schema.json)，SHA256 `266c4792f1dd35514f6d2076dd81ab381d16cbb98bb2cee708b12e08a3056ebc`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -89,7 +89,7 @@ SCHEMA_ERROR对应结构和页面语义；FIELD_CONTRACT_ERROR对应结果字段
 - `detail-field-consumption`：嵌套明细字段只能由显式支持 detail 的组件属性消费。反例：[detail-field-in-generic-binding](errors/detail-field-in-generic-binding.json)、[record-list-in-table-column](errors/record-list-in-table-column.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `field-binding-match`：行匹配字段必须是 dimension，匹配值符合其类型。反例：[match-field-unknown](errors/match-field-unknown.json)、[match-field-not-dimension](errors/match-field-not-dimension.json)、[match-value-type-mismatch](errors/match-value-type-mismatch.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `ai-summary-related-data`：AI 总结关联数据引用已声明数据源中的非明细字段，不重复且术语一致。反例：[ai-summary-unknown-source](errors/ai-summary-unknown-source.json)、[ai-summary-unknown-field](errors/ai-summary-unknown-field.json)、[ai-summary-detail-field](errors/ai-summary-detail-field.json)、[ai-summary-duplicate-field](errors/ai-summary-duplicate-field.json)、[ai-summary-term-conflict](errors/ai-summary-term-conflict.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
-- `metric-row-link-needs-navigate`：指标行声明 link 时组件必须至少有一个 navigate 动作。反例：[metric-row-link-without-navigate](errors/metric-row-link-without-navigate.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `metric-row-link-needs-navigate`：指标行声明 link 时组件必须有 navigate 或 openDetail 动作。反例：[metric-row-link-without-navigate](errors/metric-row-link-without-navigate.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `bar-forecast-boundary`：实际 / 预测系列不得跨越采集时间所在月。反例：[forecast-before-captured-month](errors/forecast-before-captured-month.json)、[actual-after-captured-month](errors/actual-after-captured-month.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `table-row-key`：多数据槽表格必须声明各槽都有且类型一致的 dimension rowKey。反例：[table-multi-slot-without-row-key](errors/table-multi-slot-without-row-key.json)、[table-row-key-missing-in-slot](errors/table-row-key-missing-in-slot.json)、[table-row-key-not-dimension](errors/table-row-key-not-dimension.json)、[table-row-key-type-inconsistent](errors/table-row-key-type-inconsistent.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `table-row-kind-field`：表格行类别字段必须存在且由该数据源的折叠算子写入。反例：[table-row-kind-field-unknown](errors/table-row-kind-field-unknown.json)、[table-row-kind-field-not-written](errors/table-row-kind-field-not-written.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。

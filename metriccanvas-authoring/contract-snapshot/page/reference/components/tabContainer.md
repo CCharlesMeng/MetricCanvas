@@ -18,6 +18,8 @@
 
 Report整页导出按声明顺序展开全部Tab，补齐普通数据，只捕获已有AI文本，未生成则空态；Dashboard不新增整页导出，表格Excel保留自身范围。可观察入口：[混合内容](../examples/tab-mixed-content.json)，Playground `/pages/tab-mixed-content`。Report验收入口 `/pages/tab-mixed-content-report`。使用本地DQE Sim，不证明真实DQE或Relay接入。
 
+同页的指标值可以通过 [selectTab 动作](../actions-and-navigation.md#metric-select-tab) 切换到此容器中的指定页签。手动选择和指标值联动共用活动项与地址规则。
+
 ## 查阅方式
 
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](../README.md)。
@@ -49,7 +51,7 @@ Report整页导出按声明顺序展开全部Tab，补齐普通数据，只捕�
 6.49起声明混合内容或显式grid的容器使用 `tab.<组件id>` 保存活动项，优先于 `initialTabUrlParam` 的合法初值；旧表格容器仍按显式参数只初始化、不回写。两个入口均拒绝重复键并回退默认页签。独立筛选使用当前 `filterGroup` 组件，Tab内容包括已存在的筛选按钮组和受控按钮，仍遵守各自布局形态与动作约束。
 
 
-页面协议 6.125。结构真源为本册[schema.json](../schema.json)，SHA256 `85afa953d5f65aa71900f61cd016b77155ec12e622263151700f29cad7bb302d`。字段表自动生成；可选不等于有默认值。
+页面协议 6.126。结构真源为本册[schema.json](../schema.json)，SHA256 `266c4792f1dd35514f6d2076dd81ab381d16cbb98bb2cee708b12e08a3056ebc`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -550,6 +552,7 @@ Schema位置：`#/definitions/tabItem/anyOf/1/properties/components/items`。目
 - [composite-page](../examples/composite-page.json)：完整合法页面；查询仅为静态契约证据。
 - [tab-url-initialization](../examples/tab-url-initialization.json)：完整合法页面；查询仅为静态契约证据。
 - [tab-mixed-content](../examples/tab-mixed-content.json)：完整合法页面；查询仅为静态契约证据。
+- [metric-card-select-tab](../examples/metric-card-select-tab.json)：完整合法页面；查询仅为静态契约证据。
 - [tab-content-aisummary](../examples/tab-content-aisummary.json)：完整合法页面；查询仅为静态契约证据。
 - [tab-content-barchart](../examples/tab-content-barchart.json)：完整合法页面；查询仅为静态契约证据。
 - [tab-content-categorybreakdown](../examples/tab-content-categorybreakdown.json)：完整合法页面；查询仅为静态契约证据。

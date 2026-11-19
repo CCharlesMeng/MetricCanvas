@@ -8,6 +8,25 @@
 
 宿主生命周期必须在真实 embed 入口验收：运行 `pnpm --filter @metriccanvas/embed build` 和 `pnpm --filter @metriccanvas/embed preview:examples`，访问 `http://127.0.0.1:4175/examples/mount-lifecycle.html`。该入口读取上面同一份 JSON，连续点击“再次 mount”时卡片计数增加，活动实例始终为1且句柄不变；点击“销毁”后为0，再点击“再次 mount”可恢复为1。事件回调替换、不同容器隔离与销毁后旧句柄边界由 `packages/embed/tests/browser/mount-lifecycle.spec.ts` 验证。Playground 的页面呈现不作为宿主重复挂载的证明；本场景不涉及真实 DQE/Relay 或目标 Angular 宿主部署。
 
+## 指标值切换同页 Tab
+
+入口 `/pages/metric-card-select-tab`。[页面 JSON](metric-card-select-tab.json)。
+
+启动 `pnpm dev:dqe`，或分别运行 `pnpm dev:playground` 与 `pnpm sim:dqe`。可用 `?demo-context=订单监控` 覆盖卡片标题。数值和明细为合成演示，明细查询通过本地 DQE Sim 执行。
+
+1. 默认显示订单概览。切换「订单区域」到「海外」。超期明细首次激活前不发明细请求。
+2. 点击「超期单数」的数值 12，切换到「超期明细」。区域仍为「海外」，查询首行订单量为 20，地址包含 `orders-region=OVERSEAS` 和 `tab.order-detail-tabs=overdue`。
+3. 再次点击同一数值，明细不重复加载。「历史详情入口」执行卡片级详情。关闭详情后，按 Enter 激活同卡「零值指标」回到订单概览。缺失指标显示占位。
+4. 将动作引用改成不存在的容器或页签，校验在相应 ID 位置报错。使用 6.125 时定位 `selectTab` 的版本下限。
+
+参考卡片 `overdue-count` 与目标 `order-detail-tabs` 的 `overdue` 页签。移植时将各指标行 `action.selectTab` 的两个 ID 映射到目标页面，并沿用该页的数据与筛选。需要行级动作的指标移除旧的 `link: true`。浏览器验证页内会话、筛选与合成查询行为。真实 DQE 与目标宿主部署需另验。
+
+## IOC 行权效率指标与明细联动
+
+入口 `/pages/rep-office-execution-efficiency-tab-demo`。[页面 JSON](rep-office-execution-efficiency-tab-demo.json)。
+
+该页复用「行权效率-代表处」的布局、筛选、数据源及三个明细页签。运行 `pnpm dev:playground`，页面专用仿真网关提供 2026 年 11 月的合成 KPI 和明细。可先选「卓越NA」，再点顶部的决策时长、人数或闭环率数值。两张 SDT 指标卡进入「商务审批明细」，两张闭环率指标卡分别进入商务和合同闭环率明细。页头客户分类和统计期间在切换后保留。
+
 ## 主指标与多行次级指标
 
 入口：`/pages/metric-card-primary-detail`；[页面 JSON](metric-card-primary-detail.json)。

@@ -1,0 +1,125 @@
+{
+  "schemaVersion": "6.126",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "actions-and-navigation.section-28c86a73"
+  ],
+  "semantics": [
+    {
+      "module": "actions-and-navigation",
+      "reference": "references/page-metadata/actions-and-navigation.md",
+      "blocks": [
+        "# 交互与导航\n\n受控action支持写筛选与导航。writeFilter目标须存在且类型匹配；表格selection只把受控字段/固定值映射到允许目标。URL导航使用目标页面公开参数名，保留标准anchor能力，宿主可选择接管。\n\n表格列selection与link同时存在时selection优先。行导航只在声明的入口列触发。当前页字段、目标页面参数和筛选器id不能靠同名猜映射。文本链接与普通URL不开放脚本执行。",
+        "## 指标值切换同页 Tab（6.126）\n\n在 `metricCard.props.rows[]` 或 `secondaryRows[]` 的指标行上声明单个 `action`：\n\n```json\n{\n  \"label\": \"超期单数\",\n  \"valueField\": { \"data\": \"main\", \"field\": \"overdueCount\" },\n  \"action\": {\n    \"on\": \"click\",\n    \"selectTab\": { \"componentId\": \"order-detail-tabs\", \"tabId\": \"overdue\" }\n  }\n}\n```\n\n`componentId` 引用同页的 `tabContainer.id`，`tabId` 引用该容器的 `props.tabs[].id`。每行独立指定目标。真实零值可点击，缺失值显示占位。首版行级 `action` 支持 `selectTab`。\n\n同一张卡可同时有行级动作和既有卡片级导航或详情。已有 `link: true` 的行继续执行卡片的 `props.actions`。同一行同时声明 `action` 和 `link: true` 时，在该行的 `link` 报错。卡片级 `props.actions` 继续接受已有动作。\n\n点击指标值与手动选择页签共用状态、查询激活、缓存和地址同步规则，使用当前已应用筛选与页面实例。目标不可见或已选中时保留当前页签状态。切换由引擎完成。URL 和 `tab-change` 沿用[现有活动页签规则](components/tabContainer.md)，页面参数仍按初始化输入读取。\n\n[完整合成示例](examples/metric-card-select-tab.json)同时演示两个指标绑定不同页签，以及同卡保留卡片级详情入口。Playground 入口 `/pages/metric-card-select-tab`。\n\n<a id=\"链接传参与目标页签\"></a>"
+      ],
+      "rules": [
+        {
+          "id": "url-navigation-source-contract",
+          "description": "URL 与来源绑定可校验，目标存在性与必填项由目标负责",
+          "valid": [
+            "url-navigation-page",
+            "ioc-header-title-link",
+            "ioc-header-title-link-legacy"
+          ],
+          "invalid": [
+            "ioc-title-row-source",
+            "ioc-title-root-row-source",
+            "ioc-title-unsafe-url",
+            "ioc-title-missing-title",
+            "navigation-invalid-authority",
+            "navigation-invalid-port",
+            "navigation-scheme-without-authority",
+            "navigation-unsafe-url",
+            "navigation-missing-row-field",
+            "navigation-unknown-param",
+            "navigation-wrong-filter-part",
+            "navigation-text-row-source",
+            "navigation-text-unsafe-url",
+            "navigation-url-input-collision",
+            "navigation-url-input-wrong-part",
+            "navigation-clicked-slot-missing-field",
+            "navigation-legacy-target-rejected"
+          ]
+        },
+        {
+          "id": "metric-row-link-needs-navigate",
+          "description": "指标行声明 link 时组件必须有 navigate 或 openDetail 动作",
+          "valid": [
+            "composite-page"
+          ],
+          "invalid": [
+            "metric-row-link-without-navigate"
+          ]
+        },
+        {
+          "id": "metric-card-select-tab",
+          "description": "指标值只能切换当前页目标容器中已声明的页签",
+          "valid": [
+            "metric-card-select-tab"
+          ],
+          "invalid": [
+            "metric-select-tab-missing-container",
+            "metric-select-tab-invalid-container-type",
+            "metric-select-tab-unknown-tab",
+            "metric-select-tab-link-conflict",
+            "metric-select-tab-secondary-link-conflict",
+            "metric-select-tab-card-level",
+            "metric-select-tab-unsupported-row-action",
+            "metric-select-tab-version-floor"
+          ]
+        },
+        {
+          "id": "actions-live-only",
+          "description": "旧版本writeFilter只允许query组件；6.35的本地入口必须有查询或显隐消费方",
+          "valid": [
+            "query-dashboard",
+            "filters-page",
+            "params-page",
+            "composite-page",
+            "map-page"
+          ],
+          "invalid": [
+            "write-filter-on-inline-component"
+          ]
+        },
+        {
+          "id": "write-filter-target",
+          "description": "回写目标是已声明的 dimension 筛选器",
+          "valid": [
+            "query-dashboard",
+            "filters-page"
+          ],
+          "invalid": [
+            "write-filter-undeclared",
+            "write-filter-non-dimension"
+          ]
+        },
+        {
+          "id": "navigation-filter-source",
+          "description": "导航绑定只能引用已声明的筛选器",
+          "valid": [
+            "filters-page",
+            "map-page"
+          ],
+          "invalid": [
+            "navigation-filter-undeclared"
+          ]
+        }
+      ],
+      "examples": [
+        "references/page-metadata/examples/partner-health-interactions.json",
+        "references/page-metadata/examples/url-navigation-page.json",
+        "references/page-metadata/examples/reference-export-detail-bindings.json",
+        "references/page-metadata/examples/tab-url-source.json",
+        "references/page-metadata/examples/metric-card-select-tab.json",
+        "references/page-metadata/examples/time-modes-page.json",
+        "references/page-metadata/examples/navigation-source-page.json",
+        "references/page-metadata/examples/navigation-list-page.json",
+        "references/page-metadata/examples/navigation-detail-page.json",
+        "references/page-metadata/examples/ioc-region-url-demo.json"
+      ]
+    }
+  ],
+  "nodes": [],
+  "unresolvedRefs": []
+}

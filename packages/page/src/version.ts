@@ -27,7 +27,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  */
 export const UNRESTRICTED_FILTER_CLEAR_MINOR = 124;
 export const INDEPENDENT_EXCLUSION_CANDIDATES_MINOR = 125;
-const CURRENT_MINOR = 125;
+const CURRENT_MINOR = 126;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -82,6 +82,12 @@ function bindingOperatorUsed(query:Record<string,unknown>|undefined):boolean {
 }
 
 export const pageCapabilities = {
+  'metric-card-select-tab': {
+    minor: 126,
+    legacyReadable: false,
+    description: '指标值切换同页 Tab',
+    usedAt: metricCardSelectTabPaths
+  },
   'number-ungrouped': { minor:123, legacyReadable:false, description:'普通数值默认千分位，ungrouped 显式关闭且保留精度和符号', usedAt:document=>namedFormatPaths(document,/^number(?:-[0-5])?-ungrouped(?:-signed)?$/) },
   'native-ioc-filter-preparation': {
     minor:120,legacyReadable:false,description:'IOC 重点名单原生异步解析与定稿默认值非阻塞初始化',
@@ -1155,6 +1161,22 @@ function sectionColumnTrackPaths(document: unknown): string[] {
       ? [`/sections/${index}/columnTracks`]
       : []
   );
+}
+
+function metricCardSelectTabPaths(document: unknown): string[] {
+  const paths: string[] = [];
+  walkDocumentComponents(document, (component, path) => {
+    if (component.type !== 'metricCard') return;
+    const metricProps = props(component);
+    for (const key of ['rows', 'secondaryRows']) {
+      const rows = metricProps?.[key];
+      if (!Array.isArray(rows)) continue;
+      rows.forEach((row, index) => {
+        if (has(record(record(row)?.action), 'selectTab')) paths.push(`${path}/props/${key}/${index}/action/selectTab`);
+      });
+    }
+  });
+  return paths;
 }
 
 function keyValueItemUnitPaths(document: unknown): string[] {

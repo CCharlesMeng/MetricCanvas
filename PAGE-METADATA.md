@@ -1,5 +1,7 @@
 # MetricCanvas 页面元数据规范
 
+Schema 6.126 支持指标值切换同页 Tab。每个主、次指标行可声明 `action.selectTab` 并分别引用目标容器与页签。同一行的 `action` 和 `link: true` 互斥，其他行可以继续使用卡片级动作。切换沿用当前页面实例和筛选。见[指标值切换同页 Tab](docs/page-metadata/actions-and-navigation.md#metric-select-tab)与合成入口 `/pages/metric-card-select-tab`。
+
 6.124 的可选平面维度与金额范围在原值已归一为不限时，联动清空可自动继续。新范围仍须通过候选与执行准备。原有限制被清掉时继续等待显式确认。声明只使用现有筛选字段和 `schemaVersion`。合成入口为 `/pages/filter-source-query-pagination`。见[联动清空与确认](docs/page-metadata/filters.md#unrestricted-filter-clear)。
 
 6.123：普通数值展示默认千分位，包括未声明格式的真实数字及旧 number 精度/带符号格式；原精度不变。复用 format/defaultFormat 新增 number-ungrouped、number-0～5-ungrouped 及已有精度的 -signed 版本，显式关闭分组；number-grouped 保留最多三位小数。旧页面统一随引擎采用新默认，表格、指标卡、图表和 Excel 同步，原始值不变。见[数值格式](docs/page-metadata/field-bindings-and-formats.md#显式数值格式与精度)，合成入口 `/pages/number-default-grouping`。

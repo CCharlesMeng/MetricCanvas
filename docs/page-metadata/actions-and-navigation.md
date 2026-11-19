@@ -16,6 +16,31 @@
 
 `t11-evidence.md`记录两形态真实Chrome→createDqeGateway→本地HTTP，选择/清空raw_region、未绑定表格保留，以及真实anchor跳转携row/param/filter/fixed/hash。实际外部DQE、权限及目标业务页仍待独立联调。源码定位：`metriccanvas-authoring/tool/metriccanvas_authoring/pages/editing/interaction_editing.py`、`page_editing.py`，公开回归`test_content_interactions.py`。
 
+<a id="metric-select-tab"></a>
+
+## 指标值切换同页 Tab（6.126）
+
+在 `metricCard.props.rows[]` 或 `secondaryRows[]` 的指标行上声明单个 `action`：
+
+```json
+{
+  "label": "超期单数",
+  "valueField": { "data": "main", "field": "overdueCount" },
+  "action": {
+    "on": "click",
+    "selectTab": { "componentId": "order-detail-tabs", "tabId": "overdue" }
+  }
+}
+```
+
+`componentId` 引用同页的 `tabContainer.id`，`tabId` 引用该容器的 `props.tabs[].id`。每行独立指定目标。真实零值可点击，缺失值显示占位。首版行级 `action` 支持 `selectTab`。
+
+同一张卡可同时有行级动作和既有卡片级导航或详情。已有 `link: true` 的行继续执行卡片的 `props.actions`。同一行同时声明 `action` 和 `link: true` 时，在该行的 `link` 报错。卡片级 `props.actions` 继续接受已有动作。
+
+点击指标值与手动选择页签共用状态、查询激活、缓存和地址同步规则，使用当前已应用筛选与页面实例。目标不可见或已选中时保留当前页签状态。切换由引擎完成。URL 和 `tab-change` 沿用[现有活动页签规则](components/tabContainer.md)，页面参数仍按初始化输入读取。
+
+[完整合成示例](examples/metric-card-select-tab.json)同时演示两个指标绑定不同页签，以及同卡保留卡片级详情入口。Playground 入口 `/pages/metric-card-select-tab`。
+
 <a id="链接传参与目标页签"></a>
 
 ## 链接传参与目标页签

@@ -1,8 +1,13 @@
 {
   "major": 6,
-  "minor": 125,
-  "current": "6.125",
+  "minor": 126,
+  "current": "6.126",
   "capabilities": {
+    "metric-card-select-tab": {
+      "minor": 126,
+      "description": "指标值切换同页 Tab",
+      "legacyReadable": false
+    },
     "number-ungrouped": {
       "minor": 123,
       "description": "普通数值默认千分位，ungrouped 显式关闭且保留精度和符号",
@@ -1095,6 +1100,7 @@
     "6.122",
     "6.123",
     "6.124",
-    "6.125"
+    "6.125",
+    "6.126"
   ]
 }

@@ -552,7 +552,8 @@
       "definitions": [
         "actions",
         "componentAction",
-        "detailTitle"
+        "detailTitle",
+        "selectTabAction"
       ],
       "keywords": [
         "actions-and-navigation",
@@ -563,6 +564,7 @@
         "url-navigation-page",
         "reference-export-detail-bindings",
         "tab-url-source",
+        "metric-card-select-tab",
         "time-modes-page",
         "navigation-source-page",
         "navigation-list-page",
@@ -584,6 +586,7 @@
       "rules": [
         "url-navigation-source-contract",
         "metric-row-link-needs-navigate",
+        "metric-card-select-tab",
         "actions-live-only",
         "write-filter-target",
         "navigation-filter-source"
@@ -753,7 +756,8 @@
       "examples": [
         "inline-report",
         "metric-card-equation",
-        "metric-card-primary-detail"
+        "metric-card-primary-detail",
+        "metric-card-select-tab"
       ],
       "sources": [
         "packages/page/src/schema/components/metric-card.ts",
@@ -767,7 +771,8 @@
         "field-binding-role",
         "field-binding-match",
         "metric-card-before",
-        "metric-card-primary-detail"
+        "metric-card-primary-detail",
+        "metric-card-select-tab"
       ]
     },
     "components/barChart.md": {
@@ -1044,6 +1049,7 @@
         "composite-page",
         "tab-url-initialization",
         "tab-mixed-content",
+        "metric-card-select-tab",
         "tab-content-aisummary",
         "tab-content-barchart",
         "tab-content-categorybreakdown",
@@ -1455,6 +1461,9 @@
     }
   },
   "fieldNotes": {
+    "#/definitions/selectTabAction/properties/selectTab": "指标值点击后选中当前页面的指定页签，使用当前筛选状态。",
+    "#/definitions/selectTabAction/properties/selectTab/properties/componentId": "当前页面中目标 tabContainer 组件的 ID。",
+    "#/definitions/selectTabAction/properties/selectTab/properties/tabId": "目标容器 props.tabs 中已声明的页签 ID。",
     "#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1/properties/props/properties/officeNavigate": "代表处跨页下钻目标，页面声明 URL 和显式传参，引擎自动携带 rep-office。",
     "#/properties/iocHeader/properties/components/items/oneOf/1/properties/props/properties/officeNavigate": "代表处跨页下钻目标，页面声明 URL 和显式传参，引擎自动携带 rep-office。",
     "id": "稳定标识符；唯一性范围由所属页面、分区、组件或字段空间决定。",
@@ -2396,7 +2405,8 @@
     "number-3-ungrouped-signed": "6.123新增：显式不加千分位，保留同名 number 的精度、去尾零与符号规则。",
     "number-4-ungrouped-signed": "6.123新增：显式不加千分位，保留同名 number 的精度、去尾零与符号规则。",
     "number-5-ungrouped-signed": "6.123新增：显式不加千分位，保留同名 number 的精度、去尾零与符号规则。",
-    "#/properties/schemaVersion=\"6.125\"": "可选动态排除条件独立加载候选并保留选择，候选状态不阻断指标查询。"
+    "#/properties/schemaVersion=\"6.125\"": "可选动态排除条件独立加载候选并保留选择，候选状态不阻断指标查询。",
+    "#/properties/schemaVersion=\"6.126\"": "指标卡的主次指标行使用 action.selectTab 在当前页面独立选中指定页签。"
   },
   "branchExceptions": {
     "#/properties/iocHeader/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/0": {
@@ -3499,6 +3509,7 @@
     "actions-and-navigation.md": [
       "查阅方式",
       "当前内容工具边界",
+      "指标值切换同页 Tab（6.126）",
       "链接传参与目标页签",
       "6.40 显式跨页传值",
       "IOC Region 默认 URL 输入",

@@ -8,7 +8,7 @@ import {
   nonEmptyTextValueZ,
   textValueZ
 } from '../primitives';
-import { actionsZ } from '../actions';
+import { actionsZ, selectTabActionZ } from '../actions';
 import { componentCatalogRegistry } from '../registry';
 import { colorRuleZ } from '../presentation';
 
@@ -30,6 +30,7 @@ const metricCardRowZ = z
     valueField: fieldBindingZ,
     /** 显式将该行的非空主值声明为组件 actions 的触发入口。 */
     link: z.boolean().optional(),
+    action: selectTabActionZ.optional().describe('该指标值独立执行的点击动作；与同一行的 link: true 互斥。'),
     unit: textValueZ.optional(),
     changes: z.array(metricCardChangeZ).optional()
   })

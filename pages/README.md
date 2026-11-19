@@ -1,5 +1,7 @@
 # 页面示例与验收场景
 
+指标卡与页签的页内联动见[指标值切换同页 Tab](capabilities/layout/README.md#指标值切换同页-tab)。
+
 - [默认千分位与显式关闭](capabilities/data/README.md#普通数值默认千分位6123)：`/pages/number-default-grouping`，默认、精度、符号、ungrouped、图表及导出对照；内联合成数据。
 
 新增、修改或推荐可复用示例，遵循 [Playground 示例维护约定](../docs/agents/playground-example-maintenance.md)。完整 JSON 保持唯一运行真源，目录 README 维护用途、参考对象、移植边界和可观察预期；后续 Skill 索引与局部读取按 [整体规划](../docs/plan/2026-11-09-local-authoring-knowledge-consumption.md) 实施。

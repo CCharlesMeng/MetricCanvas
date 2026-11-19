@@ -20,7 +20,9 @@
 
 与单面板 `compactStack` 混排时，该紧凑卡的外层及唯一面板共同拉伸，同一视觉行的卡面底边保持一致；各自的 variant、文字、字体、颜色、间距及内容在卡内的位置保持原样，仅在较短卡的底部留白。不需要新增高度字段或切换 variant。带次级面板或进度环的 `compactStack` 保留原有多块内容布局，不把每块面板强制等分高度。混排验收见 `/pages/metric-card-primary-detail` 的 `mixed-variants` 分区。
 
-只有显式声明 `row.link: true` 且有合法的 `navigate` / `openDetail` 动作，非空指标值才成为可聚焦、可点击的入口，其数值及单位显示下划线；未声明链接或缺失值显示为无下划线的普通文本。真实零值仍可作为链接。`valueField`、单位、格式、数据槽与筛选联动均复用现有绑定协议。`secondaryRows` 在其他形态中保持既有呈现。
+只有显式声明 `row.link: true` 且有合法的 `navigate` 或 `openDetail` 动作，非空指标值才成为可聚焦、可点击的入口，其数值及单位显示下划线；未声明链接或缺失值显示为无下划线的普通文本。真实零值仍可作为链接。`valueField`、单位、格式、数据槽与筛选联动均复用现有绑定协议。`secondaryRows` 在其他形态中保持既有呈现。
+
+6.126 起，主次指标行可声明 [`action.selectTab`](../actions-and-navigation.md#metric-select-tab)，每行独立决定目标页签。配置了行级动作的非空值可以直接点击。同一行的 `action` 与 `link: true` 互斥，其他行仍可使用卡片级导航或详情。
 
 验收入口：`/pages/metric-card-primary-detail`，完整页面为 `pages/capabilities/layout/metric-card-primary-detail.json`；仅内联合成数据，覆盖0/1/3/6行等高、长名称、零、缺失值与显式链接。该场景不证明真实DQE/Relay接入。
 
@@ -49,7 +51,7 @@ Dashboard 的 plain/card 内容分区可以在顶层相邻指标卡的 `layout.b
 数值与单位遵循[统一语义格式](../field-bindings-and-formats.md#numeric-value-display)：组件显式格式优先，自动金额和数量不再重复追加旧的元/万等单位标签。比率变化项使用正负号，即使 `showTrendArrows: true` 也不显示箭头；绝对变化项保留既有箭头行为。进度环图形可裁到0–100%，文字仍按真实比率格式化，不把超过100%的真实值改成100%。缺失比率默认显示 `--%`，自定义缺失文字按原声明。合成场景 `/pages/semantic-numeric-display`。
 
 
-页面协议 6.125。结构真源为本册[schema.json](../schema.json)，SHA256 `85afa953d5f65aa71900f61cd016b77155ec12e622263151700f29cad7bb302d`。字段表自动生成；可选不等于有默认值。
+页面协议 6.126。结构真源为本册[schema.json](../schema.json)，SHA256 `266c4792f1dd35514f6d2076dd81ab381d16cbb98bb2cee708b12e08a3056ebc`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -355,6 +357,26 @@ Schema位置：`#/definitions/metricCardComponent/properties/props/properties/ro
 |---|---|---|---|---|
 | "boolean" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 把当前列/指标行作为导航入口，需对应navigate。 |
 
+<a id="schema-232f646566696e6974696f6e732f6d657472696343617264436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f726f77732f6974656d732f70726f706572746965732f616374696f6e"></a>
+
+### `@metricCardComponent.props.rows[].action`
+
+Schema位置：`#/definitions/metricCardComponent/properties/props/properties/rows/items/properties/action`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 该指标值独立执行的点击动作；与同一行的 link: true 互斥。 |
+
+<a id="schema-232f646566696e6974696f6e732f6d657472696343617264436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f726f77732f6974656d732f70726f706572746965732f616374696f6e2f616c6c4f662f30"></a>
+
+### `@metricCardComponent.props.rows[].action · allOf[0]`
+
+Schema位置：`#/definitions/metricCardComponent/properties/props/properties/rows/items/properties/action/allOf/0`。目标：[#/definitions/selectTabAction](../actions-and-navigation.md#schema-232f646566696e6974696f6e732f73656c656374546162416374696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/selectTabAction | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
 <a id="schema-232f646566696e6974696f6e732f6d657472696343617264436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f726f77732f6974656d732f70726f706572746965732f756e6974"></a>
 
 ### `@metricCardComponent.props.rows[].unit`
@@ -541,6 +563,26 @@ Schema位置：`#/definitions/metricCardComponent/properties/props/properties/se
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "boolean" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 把当前列/指标行作为导航入口，需对应navigate。 |
+
+<a id="schema-232f646566696e6974696f6e732f6d657472696343617264436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f7365636f6e64617279526f77732f6974656d732f70726f706572746965732f616374696f6e"></a>
+
+### `@metricCardComponent.props.secondaryRows[].action`
+
+Schema位置：`#/definitions/metricCardComponent/properties/props/properties/secondaryRows/items/properties/action`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 该指标值独立执行的点击动作；与同一行的 link: true 互斥。 |
+
+<a id="schema-232f646566696e6974696f6e732f6d657472696343617264436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f7365636f6e64617279526f77732f6974656d732f70726f706572746965732f616374696f6e2f616c6c4f662f30"></a>
+
+### `@metricCardComponent.props.secondaryRows[].action · allOf[0]`
+
+Schema位置：`#/definitions/metricCardComponent/properties/props/properties/secondaryRows/items/properties/action/allOf/0`。目标：[#/definitions/selectTabAction](../actions-and-navigation.md#schema-232f646566696e6974696f6e732f73656c656374546162416374696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/selectTabAction | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f6d657472696343617264436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f7365636f6e64617279526f77732f6974656d732f70726f706572746965732f756e6974"></a>
 
@@ -763,6 +805,7 @@ Schema位置：`#/definitions/metricCardComponent/properties/props/properties/ac
 - `field-binding-match`：行匹配字段必须是 dimension，匹配值符合其类型。反例：[match-field-unknown](../errors/match-field-unknown.json)、[match-field-not-dimension](../errors/match-field-not-dimension.json)、[match-value-type-mismatch](../errors/match-value-type-mismatch.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `metric-card-before`：6.34 Dashboard 顶层指标卡前置文字、受控间距与整组跨度。反例：[metric-before-version](../errors/metric-before-version.json)、[metric-before-report](../errors/metric-before-report.json)、[metric-before-tracks](../errors/metric-before-tracks.json)、[metric-before-span](../errors/metric-before-span.json)、[metric-before-empty](../errors/metric-before-empty.json)、[metric-before-gap](../errors/metric-before-gap.json)、[metric-before-nested](../errors/metric-before-nested.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `metric-card-primary-detail`：主次指标卡有且仅有一个主指标，次级字段和链接复用既有契约。反例：[metric-primary-multiple](../errors/metric-primary-multiple.json)、[metric-primary-version](../errors/metric-primary-version.json)、[metric-secondary-field](../errors/metric-secondary-field.json)、[metric-secondary-link](../errors/metric-secondary-link.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `metric-card-select-tab`：指标值只能切换当前页目标容器中已声明的页签。反例：[metric-select-tab-missing-container](../errors/metric-select-tab-missing-container.json)、[metric-select-tab-invalid-container-type](../errors/metric-select-tab-invalid-container-type.json)、[metric-select-tab-unknown-tab](../errors/metric-select-tab-unknown-tab.json)、[metric-select-tab-link-conflict](../errors/metric-select-tab-link-conflict.json)、[metric-select-tab-secondary-link-conflict](../errors/metric-select-tab-secondary-link-conflict.json)、[metric-select-tab-card-level](../errors/metric-select-tab-card-level.json)、[metric-select-tab-unsupported-row-action](../errors/metric-select-tab-unsupported-row-action.json)、[metric-select-tab-version-floor](../errors/metric-select-tab-version-floor.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 
@@ -777,6 +820,7 @@ Schema位置：`#/definitions/metricCardComponent/properties/props/properties/ac
 - [inline-report](../examples/inline-report.json)：完整合法页面；查询仅为静态契约证据。
 - [metric-card-equation](../examples/metric-card-equation.json)：完整合法页面；查询仅为静态契约证据。
 - [metric-card-primary-detail](../examples/metric-card-primary-detail.json)：完整合法页面；查询仅为静态契约证据。
+- [metric-card-select-tab](../examples/metric-card-select-tab.json)：完整合法页面；查询仅为静态契约证据。
 
 局部片段提取自[完整页面](../examples/component-metricCard.json)的`#/sections/0/components/0`；此片段依赖完整页面的数据源/字段，不能单独作为页面校验。
 

@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.125",
-  "schemaSha256": "85afa953d5f65aa71900f61cd016b77155ec12e622263151700f29cad7bb302d",
+  "schemaVersion": "6.126",
+  "schemaSha256": "266c4792f1dd35514f6d2076dd81ab381d16cbb98bb2cee708b12e08a3056ebc",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -441,7 +441,8 @@
       "definitions": [
         "actions",
         "componentAction",
-        "detailTitle"
+        "detailTitle",
+        "selectTabAction"
       ],
       "keywords": [
         "actions-and-navigation",
@@ -452,6 +453,7 @@
         "url-navigation-page",
         "reference-export-detail-bindings",
         "tab-url-source",
+        "metric-card-select-tab",
         "time-modes-page",
         "navigation-source-page",
         "navigation-list-page",
@@ -461,6 +463,7 @@
       "rules": [
         "url-navigation-source-contract",
         "metric-row-link-needs-navigate",
+        "metric-card-select-tab",
         "actions-live-only",
         "write-filter-target",
         "navigation-filter-source"
@@ -610,7 +613,8 @@
       "examples": [
         "inline-report",
         "metric-card-equation",
-        "metric-card-primary-detail"
+        "metric-card-primary-detail",
+        "metric-card-select-tab"
       ],
       "rules": [
         "schema-structure",
@@ -619,7 +623,8 @@
         "field-binding-role",
         "field-binding-match",
         "metric-card-before",
-        "metric-card-primary-detail"
+        "metric-card-primary-detail",
+        "metric-card-select-tab"
       ]
     },
     "components/barChart.md": {
@@ -843,6 +848,7 @@
         "composite-page",
         "tab-url-initialization",
         "tab-mixed-content",
+        "metric-card-select-tab",
         "tab-content-aisummary",
         "tab-content-barchart",
         "tab-content-categorybreakdown",
@@ -1378,7 +1384,8 @@
         "6.122",
         "6.123",
         "6.124",
-        "6.125"
+        "6.125",
+        "6.126"
       ]
     },
     {
@@ -11367,6 +11374,51 @@
       "module": "components/metricCard.md"
     },
     {
+      "pointer": "#/definitions/metricCardComponent/properties/props/properties/rows/items/properties/action",
+      "path": "@metricCardComponent.props.rows[].action",
+      "required": "本分支可选",
+      "module": "components/metricCard.md"
+    },
+    {
+      "pointer": "#/definitions/metricCardComponent/properties/props/properties/rows/items/properties/action/allOf/0",
+      "path": "@metricCardComponent.props.rows[].action · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/metricCard.md",
+      "ref": "#/definitions/selectTabAction"
+    },
+    {
+      "pointer": "#/definitions/selectTabAction",
+      "path": "@selectTabAction",
+      "required": "类型/分支",
+      "module": "actions-and-navigation.md"
+    },
+    {
+      "pointer": "#/definitions/selectTabAction/properties/on",
+      "path": "@selectTabAction.on",
+      "required": "本分支必填",
+      "module": "actions-and-navigation.md",
+      "const": "click"
+    },
+    {
+      "pointer": "#/definitions/selectTabAction/properties/selectTab",
+      "path": "@selectTabAction.selectTab",
+      "required": "本分支必填",
+      "module": "actions-and-navigation.md"
+    },
+    {
+      "pointer": "#/definitions/selectTabAction/properties/selectTab/properties/componentId",
+      "path": "@selectTabAction.selectTab.componentId",
+      "required": "本分支必填",
+      "module": "actions-and-navigation.md",
+      "ref": "#/definitions/componentId"
+    },
+    {
+      "pointer": "#/definitions/selectTabAction/properties/selectTab/properties/tabId",
+      "path": "@selectTabAction.selectTab.tabId",
+      "required": "本分支必填",
+      "module": "actions-and-navigation.md"
+    },
+    {
       "pointer": "#/definitions/metricCardComponent/properties/props/properties/rows/items/properties/unit",
       "path": "@metricCardComponent.props.rows[].unit",
       "required": "本分支可选",
@@ -11549,6 +11601,19 @@
       "path": "@metricCardComponent.props.secondaryRows[].link",
       "required": "本分支可选",
       "module": "components/metricCard.md"
+    },
+    {
+      "pointer": "#/definitions/metricCardComponent/properties/props/properties/secondaryRows/items/properties/action",
+      "path": "@metricCardComponent.props.secondaryRows[].action",
+      "required": "本分支可选",
+      "module": "components/metricCard.md"
+    },
+    {
+      "pointer": "#/definitions/metricCardComponent/properties/props/properties/secondaryRows/items/properties/action/allOf/0",
+      "path": "@metricCardComponent.props.secondaryRows[].action · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/metricCard.md",
+      "ref": "#/definitions/selectTabAction"
     },
     {
       "pointer": "#/definitions/metricCardComponent/properties/props/properties/secondaryRows/items/properties/unit",
@@ -23513,5 +23578,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "02c6ce58aa8950ff08ae8bf4f3d53eb184459af8591f633933e3207487a75aa5"
+  "semanticSourceDigest": "8c13e14d03368d6e40a0602b867c9f76d638f1e8473db9d8dbebeb983816d932"
 }

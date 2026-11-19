@@ -1,0 +1,141 @@
+{
+  "schemaVersion": "6.126",
+  "id": "metric-card-select-tab",
+  "layout": "dashboard",
+  "meta": { "title": "指标值切换同页 Tab（合成演示）" },
+  "params": {
+    "display": [{ "id": "demo-context", "type": "string", "value": "订单指标" }]
+  },
+  "filters": [{
+    "id": "orders-region",
+    "type": "dimension",
+    "dimension": "chart_demo_region",
+    "label": "订单区域",
+    "default": ["CN"]
+  }],
+  "dataSources": {
+    "order-metrics": {
+      "fields": {
+        "overdueCount": { "type": "number", "role": "measure" },
+        "zeroCount": { "type": "number", "role": "measure" },
+        "missingCount": { "type": "number", "role": "measure" }
+      },
+      "source": { "type": "inline", "rows": [{ "overdueCount": 12, "zeroCount": 0, "missingCount": null }] }
+    },
+    "order-details": {
+      "fields": {
+        "category": { "type": "string", "role": "dimension", "queryField": "chart_demo_category" },
+        "value": { "type": "number", "role": "measure", "queryField": "chart_demo_orders" }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "filterBindings": {
+            "orders-region": { "target": "dimension", "queryField": "chart_demo_region" }
+          },
+          "body": {
+            "dsl_list": [{
+              "schema_id": "MC_LOADING_STRUCTURE_DEMO",
+              "output_dims": ["chart_demo_category"],
+              "output_metrics": ["chart_demo_orders"],
+              "filter": { "dims": [], "metrics": [] },
+              "order": {}
+            }]
+          }
+        }
+      }
+    }
+  },
+  "sections": [{
+    "id": "orders",
+    "components": [
+      {
+        "id": "overdue-count",
+        "type": "metricCard",
+        "layout": { "span": 12 },
+        "data": { "main": "order-metrics" },
+        "props": {
+          "title": { "param": "demo-context" },
+          "variant": "compactStack",
+          "rows": [
+            {
+              "label": "超期单数",
+              "valueField": { "data": "main", "field": "overdueCount" },
+              "action": { "on": "click", "selectTab": { "componentId": "order-detail-tabs", "tabId": "overdue" } }
+            },
+            {
+              "label": "缺失指标",
+              "valueField": { "data": "main", "field": "missingCount" },
+              "action": { "on": "click", "selectTab": { "componentId": "order-detail-tabs", "tabId": "overdue" } }
+            },
+            { "label": "历史详情入口", "valueField": { "data": "main", "field": "overdueCount" }, "link": true }
+          ],
+          "secondaryRows": [
+            {
+              "label": "零值指标",
+              "valueField": { "data": "main", "field": "zeroCount" },
+              "action": { "on": "click", "selectTab": { "componentId": "order-detail-tabs", "tabId": "overview" } }
+            }
+          ],
+          "actions": [{
+            "on": "click",
+            "openDetail": {
+              "surface": "modal",
+              "title": "历史详情",
+              "fields": [{ "label": "超期单数", "field": "overdueCount" }]
+            }
+          }]
+        }
+      },
+      {
+        "id": "orders-region-buttons",
+        "type": "filterGroup",
+        "layout": { "span": 12 },
+        "props": {
+          "filterId": "orders-region",
+          "options": [
+            { "label": "中国区", "value": "CN" },
+            { "label": "海外", "value": "OVERSEAS" }
+          ]
+        }
+      },
+      {
+        "id": "order-detail-tabs",
+        "type": "tabContainer",
+        "layout": { "span": 12 },
+        "props": {
+          "defaultTab": "overview",
+          "tabs": [
+            {
+              "id": "overview",
+              "label": "订单概览",
+              "component": {
+                "id": "order-overview",
+                "type": "text",
+                "layout": { "span": 12 },
+                "props": { "body": "点击上方的超期单数可打开超期明细。" }
+              }
+            },
+            {
+              "id": "overdue",
+              "label": "超期明细",
+              "component": {
+                "id": "overdue-details",
+                "type": "table",
+                "layout": { "span": 12 },
+                "data": { "main": "order-details" },
+                "props": {
+                  "columns": [
+                    { "field": "category", "title": "合成类别" },
+                    { "field": "value", "title": "订单量" }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }]
+}

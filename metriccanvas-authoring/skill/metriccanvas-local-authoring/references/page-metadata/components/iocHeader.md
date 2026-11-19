@@ -87,7 +87,7 @@ RegionFilter 固定提供可搜索、可清空的单选组织树，层级为 `ge
 统计期间使用当前已应用值。近一年显式映射模式值及起止范围，以便目标页恢复同一窗口。目标 URL 键由其实际筛选声明决定。合成入口 `/pages/ioc-office-drill-overview` 与 `/pages/ioc-office-drill-detail`，操作见 `pages/capabilities/ioc-header/controls/README.md`。
 
 
-页面协议 6.125。结构真源为本册[schema.json](../schema.json)，SHA256 `85afa953d5f65aa71900f61cd016b77155ec12e622263151700f29cad7bb302d`。字段表自动生成；可选不等于有默认值。
+页面协议 6.126。结构真源为本册[schema.json](../schema.json)，SHA256 `266c4792f1dd35514f6d2076dd81ab381d16cbb98bb2cee708b12e08a3056ebc`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

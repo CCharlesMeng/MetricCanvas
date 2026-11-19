@@ -6,6 +6,7 @@ const introducedAt: Record<string, number> = {
   'ioc-region-office-navigation':121,
   'unrestricted-filter-clear':124,
   'independent-exclusion-candidates':125,
+  'metric-card-select-tab':126,
   'filter-source-candidate-levels':122,
   'native-ioc-filter-preparation':120,
   'table-absolute-display-limit':119,

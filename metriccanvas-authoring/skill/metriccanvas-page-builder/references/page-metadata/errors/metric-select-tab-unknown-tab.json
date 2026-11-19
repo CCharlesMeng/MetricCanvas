@@ -1,0 +1,35 @@
+{
+  "case": "metric-select-tab-unknown-tab",
+  "invariant": "metric-card-select-tab",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "selectTab 引用的页签不属于目标 Tab 容器",
+      "paths": [
+        "/sections/0/components/0/props/rows/0/action/selectTab/tabId"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "rows": [
+                {
+                  "action": {
+                    "selectTab": {
+                      "tabId": "missing-tab"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/metric-select-tab-unknown-tab.json"
+}

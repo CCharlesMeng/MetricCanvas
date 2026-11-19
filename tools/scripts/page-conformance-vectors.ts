@@ -2104,7 +2104,7 @@ export const invariants: InvariantDefinition[] = [
   },
   {
     id: 'metric-row-link-needs-navigate',
-    description: '指标行声明 link 时组件必须至少有一个 navigate 动作',
+    description: '指标行声明 link 时组件必须有 navigate 或 openDetail 动作',
     valid: ['composite-page'],
     cases: [
       {
@@ -2114,6 +2114,67 @@ export const invariants: InvariantDefinition[] = [
         mutate: (document) => {
           delete firstComponent(document, 0, 1).props.components[0].props.actions;
         }
+      }
+    ]
+  },
+  {
+    id: 'metric-card-select-tab',
+    description: '指标值只能切换当前页目标容器中已声明的页签',
+    valid: ['metric-card-select-tab'],
+    cases: [
+      {
+        case: 'metric-select-tab-missing-container',
+        base: 'metric-card-select-tab',
+        expect: /selectTab 必须引用当前页的 Tab 容器/,
+        mutate: document => { firstComponent(document).props.rows[0].action.selectTab.componentId = 'missing-tabs'; }
+      },
+      {
+        case: 'metric-select-tab-invalid-container-type',
+        base: 'metric-card-select-tab',
+        expect: /selectTab 必须引用当前页的 Tab 容器/,
+        mutate: document => { firstComponent(document).props.rows[0].action.selectTab.componentId = 'overdue-count'; }
+      },
+      {
+        case: 'metric-select-tab-unknown-tab',
+        base: 'metric-card-select-tab',
+        expect: /selectTab 引用的页签不属于目标 Tab 容器/,
+        mutate: document => { firstComponent(document).props.rows[0].action.selectTab.tabId = 'missing-tab'; }
+      },
+      {
+        case: 'metric-select-tab-link-conflict',
+        base: 'metric-card-select-tab',
+        expect: /指标行的 action 与 link: true 不能同时声明/,
+        mutate: document => { firstComponent(document).props.rows[0].link = true; }
+      },
+      {
+        case: 'metric-select-tab-secondary-link-conflict',
+        base: 'metric-card-select-tab',
+        expect: /指标行的 action 与 link: true 不能同时声明/,
+        mutate: document => { firstComponent(document).props.secondaryRows[0].link = true; }
+      },
+      {
+        case: 'metric-select-tab-card-level',
+        base: 'metric-card-select-tab',
+        expect: /存在未定义字段 selectTab/,
+        mutate: document => {
+          const props = firstComponent(document).props;
+          props.actions = [props.rows[0].action];
+          delete props.rows[0].action;
+        }
+      },
+      {
+        case: 'metric-select-tab-unsupported-row-action',
+        base: 'metric-card-select-tab',
+        expect: /缺少必填字段 selectTab/,
+        mutate: document => {
+          firstComponent(document).props.rows[0].action = { on: 'click', navigate: { href: '/orders' } };
+        }
+      },
+      {
+        case: 'metric-select-tab-version-floor',
+        base: 'metric-card-select-tab',
+        expect: /6\.126 引入/,
+        mutate: document => { document.schemaVersion = '6.125'; }
       }
     ]
   },

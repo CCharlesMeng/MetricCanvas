@@ -1,0 +1,2139 @@
+{
+  "schemaVersion": "6.126",
+  "id": "rep-office-execution-efficiency-tab-demo",
+  "meta": {
+    "title": "行权效率-代表处（联动演示）",
+    "description": "基于行权效率原页，使用 2026 年 11 月合成数据演示指标值切换同页明细。"
+  },
+  "layout": "dashboard",
+  "filters": [
+    {
+      "id": "period",
+      "type": "timeRange",
+      "display": "period",
+      "precision": "month",
+      "label": "统计期间",
+      "required": true,
+      "default": {
+        "mode": "month"
+      }
+    },
+    {
+      "id": "customer-category",
+      "type": "dimension",
+      "dimension": "customerCategory",
+      "label": "客户分类",
+      "display": "select",
+      "emptyLabel": "客户分类",
+      "selection": {
+        "mode": "multiple",
+        "allBehavior": "values"
+      },
+      "searchable": true,
+      "options": [
+        {
+          "label": "卓越NA",
+          "value": "卓越NA"
+        },
+        {
+          "label": "战略NA",
+          "value": "战略NA"
+        },
+        {
+          "label": "核心NA",
+          "value": "核心NA"
+        },
+        {
+          "label": "商业客户",
+          "value": "商业客户"
+        }
+      ]
+    }
+  ],
+  "params": {
+    "query": {
+      "dimensions": [
+        {
+          "id": "rep-office-name",
+          "dim_name": "代表处",
+          "required": false,
+          "label": "代表处"
+        }
+      ]
+    }
+  },
+  "dataSources": {
+    "kpi-summary": {
+      "fields": {
+        "sdtAvgDecisionDuration": {
+          "type": "number",
+          "role": "measure",
+          "label": "商务代表处SDT平均决策时长",
+          "unit": "天",
+          "queryField": "商审SDT平均决策时长"
+        },
+        "sdtAvgDecisionCount": {
+          "type": "number",
+          "role": "measure",
+          "label": "商务代表处SDT平均决策人数",
+          "unit": "人",
+          "queryField": "商审SDT平均决策人数"
+        },
+        "businessClosureRate": {
+          "type": "number",
+          "role": "measure",
+          "label": "商务决策代表处闭环率",
+          "queryField": "区域商审闭环率"
+        },
+        "contractClosureRate": {
+          "type": "number",
+          "role": "measure",
+          "label": "合同决策代表处闭环率",
+          "queryField": "销售合同决策代表处闭环率"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [],
+                "output_metrics": [
+                  "商审SDT平均决策时长",
+                  "商审SDT平均决策人数",
+                  "区域商审闭环率",
+                  "销售合同决策代表处闭环率"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": [],
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": true
+                  }
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "period": {
+              "target": "time"
+            },
+            "customer-category": {
+              "target": "dimension",
+              "queryField": "客户级别"
+            }
+          },
+          "paramBindings": {
+            "rep-office-name": {
+              "target": "dimension",
+              "queryField": "代表处"
+            }
+          }
+        }
+      }
+    },
+    "approval-duration": {
+      "fields": {
+        "biz-code": {
+          "type": "string",
+          "role": "dimension",
+          "label": "商务编号",
+          "queryField": "商务编号",
+          "nullable": false
+        },
+        "stage-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "阶段名称",
+          "queryField": "阶段名称",
+          "nullable": true
+        },
+        "dtime": {
+          "type": "string",
+          "role": "dimension",
+          "label": "账期",
+          "queryField": "账期(month)",
+          "nullable": true
+        },
+        "sdt-decision-duration": {
+          "type": "number",
+          "role": "measure",
+          "label": "代表处SDT决策时长",
+          "queryField": "商审决策时长",
+          "defaultFormat": "number-1",
+          "nullable": true
+        },
+        "rep-office-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "代表处",
+          "queryField": "代表处",
+          "nullable": true
+        },
+        "approval-headcount": {
+          "type": "number",
+          "role": "measure",
+          "label": "商审决策人数",
+          "queryField": "商审决策人数",
+          "nullable": true
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "代表处",
+                  "商务编号",
+                  "账期(month)",
+                  "阶段名称"
+                ],
+                "output_metrics": [
+                  "商审决策时长",
+                  "商审决策人数"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": [],
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": false
+                  }
+                },
+                "order": {
+                  "order_by_field": "商审决策时长",
+                  "type": "desc"
+                }
+              }
+            ]
+          },
+          "filterBindings": {
+            "period": {
+              "target": "time"
+            },
+            "customer-category": {
+              "target": "dimension",
+              "queryField": "客户类型"
+            }
+          },
+          "paramBindings": {
+            "rep-office-name": {
+              "target": "dimension",
+              "queryField": "代表处"
+            }
+          }
+        },
+        "resultScope": "complete"
+      }
+    },
+    "approval-basic": {
+      "fields": {
+        "biz-code": {
+          "type": "string",
+          "role": "dimension",
+          "label": "商务编号",
+          "queryField": "商务编号",
+          "nullable": false
+        },
+        "project-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "项目名称",
+          "queryField": "项目名称",
+          "nullable": true
+        },
+        "region-dept-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "地区部",
+          "queryField": "地区部",
+          "nullable": true
+        },
+        "rep-office-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "代表处",
+          "queryField": "代表处",
+          "nullable": true
+        },
+        "owner-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "责任人",
+          "queryField": "责任人名称",
+          "nullable": true
+        },
+        "cust-company-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "客户名称",
+          "queryField": "客户名称",
+          "nullable": true
+        },
+        "biz-type": {
+          "type": "number",
+          "role": "dimension",
+          "label": "商务类型",
+          "queryField": "商务类型",
+          "nullable": true
+        },
+        "emergency-switch": {
+          "type": "string",
+          "role": "dimension",
+          "label": "紧急决策开关",
+          "queryField": "紧急决策开关",
+          "nullable": true
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "query_type": "object",
+                "object_type": "Business/Basic Business Information",
+                "output_fields": [
+                  "商务编号",
+                  "项目名称",
+                  "地区部",
+                  "代表处",
+                  "责任人名称",
+                  "客户名称",
+                  "商务类型",
+                  "紧急决策开关"
+                ],
+                "filter": {
+                  "fields": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {},
+          "paramBindings": {
+            "rep-office-name": {
+              "target": "dimension",
+              "queryField": "代表处"
+            }
+          }
+        },
+        "resultScope": "complete"
+      }
+    },
+    "zb1111": {
+      "fields": {
+        "region-dept-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "地区部",
+          "queryField": "地区部",
+          "nullable": true
+        },
+        "rep-office-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "代表处",
+          "queryField": "代表处",
+          "nullable": true
+        },
+        "biz-code": {
+          "type": "string",
+          "role": "dimension",
+          "label": "商务编号",
+          "queryField": "商务编号",
+          "nullable": false
+        },
+        "project-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "项目名称",
+          "queryField": "项目名称",
+          "nullable": true
+        },
+        "biz-level-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "商务级别名称",
+          "queryField": "商务级别名称",
+          "nullable": true
+        },
+        "cust-company-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "客户名称",
+          "queryField": "客户名称",
+          "nullable": true
+        },
+        "dtime": {
+          "type": "string",
+          "role": "dimension",
+          "label": "账期",
+          "queryField": "账期",
+          "nullable": true
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "query_type": "object",
+                "object_type": "Region-Biz_Apply_Approved_Metric_Detail_Global",
+                "output_fields": [
+                  "地区部",
+                  "代表处",
+                  "商务编号",
+                  "项目名称",
+                  "商务级别名称",
+                  "客户名称",
+                  "账期"
+                ],
+                "filter": {
+                  "fields": []
+                },
+                "order": {
+                  "order_by_field": "商务编号",
+                  "type": "asc"
+                }
+              }
+            ]
+          },
+          "filterBindings": {
+            "period": {
+              "target": "time",
+              "queryField": "账期",
+              "valueFormat": "datetime"
+            },
+            "customer-category": {
+              "target": "dimension",
+              "queryField": "客户级别"
+            }
+          },
+          "paramBindings": {
+            "rep-office-name": {
+              "target": "dimension",
+              "queryField": "代表处"
+            }
+          }
+        },
+        "resultScope": "complete"
+      }
+    },
+    "biz-basic": {
+      "fields": {
+        "biz-code": {
+          "type": "string",
+          "role": "dimension",
+          "label": "商务编号",
+          "queryField": "商务编号",
+          "nullable": false
+        },
+        "owner-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "责任人名称",
+          "queryField": "责任人名称",
+          "nullable": true
+        },
+        "biz-type": {
+          "type": "number",
+          "role": "dimension",
+          "label": "商务类型",
+          "queryField": "商务类型",
+          "nullable": true
+        },
+        "biz-status": {
+          "type": "string",
+          "role": "dimension",
+          "label": "商务状态",
+          "queryField": "商务状态",
+          "nullable": true
+        },
+        "valid-time": {
+          "type": "string",
+          "role": "dimension",
+          "label": "生效时间",
+          "queryField": "生效时间",
+          "nullable": true
+        },
+        "customer-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "华为云账号",
+          "queryField": "华为云账号",
+          "nullable": true
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "query_type": "object",
+                "object_type": "Business/Basic Business Information",
+                "output_fields": [
+                  "商务编号",
+                  "责任人名称",
+                  "商务类型",
+                  "商务状态",
+                  "生效时间",
+                  "华为云账号"
+                ],
+                "filter": {
+                  "fields": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {},
+          "paramBindings": {
+            "rep-office-name": {
+              "target": "dimension",
+              "queryField": "代表处"
+            }
+          }
+        },
+        "resultScope": "complete"
+      }
+    },
+    "contract-closure-main": {
+      "fields": {
+        "contract-code": {
+          "type": "string",
+          "role": "dimension",
+          "label": "合同编码",
+          "queryField": "合同编码",
+          "nullable": false
+        },
+        "contract-id": {
+          "type": "string",
+          "role": "dimension",
+          "label": "合同ID",
+          "queryField": "合同ID",
+          "nullable": false
+        },
+        "region-dept-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "地区部",
+          "queryField": "地区部",
+          "nullable": true
+        },
+        "rep-office-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "代表处",
+          "queryField": "代表处",
+          "nullable": true
+        },
+        "version-no": {
+          "type": "string",
+          "role": "dimension",
+          "label": "版本号",
+          "queryField": "版本号",
+          "nullable": true
+        },
+        "contract-type": {
+          "type": "string",
+          "role": "dimension",
+          "label": "合同类型",
+          "queryField": "合同类型",
+          "nullable": true
+        },
+        "customer-category": {
+          "type": "string",
+          "role": "dimension",
+          "label": "客户级别",
+          "queryField": "客户级别",
+          "nullable": true
+        },
+        "dtime": {
+          "type": "string",
+          "role": "dimension",
+          "label": "账期",
+          "queryField": "账期",
+          "nullable": true
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "query_type": "object",
+                "object_type": "Contract-Rep_Contract_Decision_Closure_Metric_Detail",
+                "output_fields": [
+                  "合同编码",
+                  "合同ID",
+                  "地区部",
+                  "代表处",
+                  "版本号",
+                  "合同类型",
+                  "客户级别",
+                  "账期"
+                ],
+                "filter": {
+                  "fields": []
+                },
+                "order": {
+                  "order_by_field": "合同ID",
+                  "type": "asc"
+                }
+              }
+            ]
+          },
+          "filterBindings": {
+            "period": {
+              "target": "time",
+              "queryField": "账期",
+              "valueFormat": "datetime"
+            },
+            "customer-category": {
+              "target": "dimension",
+              "queryField": "客户级别"
+            }
+          },
+          "paramBindings": {
+            "rep-office-name": {
+              "target": "dimension",
+              "queryField": "代表处"
+            }
+          }
+        },
+        "resultScope": "complete"
+      }
+    },
+    "contract-closure-basic": {
+      "fields": {
+        "contract-id": {
+          "type": "string",
+          "role": "dimension",
+          "label": "合同ID",
+          "queryField": "合同ID",
+          "nullable": false
+        },
+        "project-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "项目名称",
+          "queryField": "项目名称",
+          "nullable": true
+        },
+        "contract-status-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "合同状态名称",
+          "queryField": "合同状态名称",
+          "nullable": true
+        },
+        "owner-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "责任人名称",
+          "queryField": "责任人名称",
+          "nullable": true
+        },
+        "eflow-create-time": {
+          "type": "string",
+          "role": "dimension",
+          "label": "合同电子流创建时间",
+          "queryField": "合同电子流创建时间",
+          "nullable": true
+        },
+        "active-time": {
+          "type": "string",
+          "role": "dimension",
+          "label": "合同激活时间",
+          "queryField": "合同激活时间",
+          "nullable": true
+        },
+        "actual-effect-time": {
+          "type": "string",
+          "role": "dimension",
+          "label": "实际生效时间",
+          "queryField": "实际生效时间",
+          "nullable": true
+        },
+        "actual-expire-time": {
+          "type": "string",
+          "role": "dimension",
+          "label": "实际失效时间",
+          "queryField": "实际失效时间",
+          "nullable": true
+        },
+        "effect-time": {
+          "type": "string",
+          "role": "dimension",
+          "label": "合同生效日期",
+          "queryField": "合同生效日期",
+          "nullable": true
+        },
+        "expire-time": {
+          "type": "string",
+          "role": "dimension",
+          "label": "合同失效日期",
+          "queryField": "合同失效日期",
+          "nullable": true
+        },
+        "customer-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "客户名称",
+          "queryField": "客户名称",
+          "nullable": true
+        },
+        "customer-account": {
+          "type": "string",
+          "role": "dimension",
+          "label": "华为云账号",
+          "queryField": "华为云账号",
+          "nullable": true
+        },
+        "contract-level": {
+          "type": "string",
+          "role": "dimension",
+          "label": "合同级别名称",
+          "queryField": "合同级别名称",
+          "nullable": true
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "query_type": "object",
+                "object_type": "Contract/Customer Contract Basic Information",
+                "output_fields": [
+                  "合同ID",
+                  "项目名称",
+                  "合同状态名称",
+                  "责任人名称",
+                  "合同电子流创建时间",
+                  "合同激活时间",
+                  "实际生效时间",
+                  "实际失效时间",
+                  "合同生效日期",
+                  "合同失效日期",
+                  "客户名称",
+                  "华为云账号",
+                  "合同级别名称"
+                ],
+                "filter": {
+                  "fields": []
+                },
+                "order": {
+                  "order_by_field": "合同电子流创建时间",
+                  "type": "desc"
+                }
+              }
+            ]
+          },
+          "filterBindings": {},
+          "paramBindings": {
+            "rep-office-name": {
+              "target": "dimension",
+              "queryField": "代表处"
+            }
+          }
+        },
+        "resultScope": "complete"
+      }
+    },
+    "contract-closure-joined": {
+      "fields": {
+        "contract-code": {
+          "type": "string",
+          "role": "dimension",
+          "label": "合同编码",
+          "nullable": false
+        },
+        "contract-id": {
+          "type": "string",
+          "role": "dimension",
+          "label": "合同ID",
+          "nullable": false
+        },
+        "region-dept-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "地区部",
+          "nullable": true
+        },
+        "rep-office-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "代表处",
+          "nullable": true
+        },
+        "version-no": {
+          "type": "string",
+          "role": "dimension",
+          "label": "版本号",
+          "nullable": true
+        },
+        "contract-type": {
+          "type": "string",
+          "role": "dimension",
+          "label": "合同类型",
+          "nullable": true
+        },
+        "customer-category": {
+          "type": "string",
+          "role": "dimension",
+          "label": "客户级别",
+          "nullable": true
+        },
+        "dtime": {
+          "type": "string",
+          "role": "dimension",
+          "label": "账期",
+          "nullable": true
+        },
+        "project-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "项目名称",
+          "nullable": true
+        },
+        "contract-status-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "合同状态名称",
+          "nullable": true
+        },
+        "owner-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "责任人名称",
+          "nullable": true
+        },
+        "eflow-create-time": {
+          "type": "string",
+          "role": "dimension",
+          "label": "合同电子流创建时间",
+          "nullable": true
+        },
+        "active-time": {
+          "type": "string",
+          "role": "dimension",
+          "label": "合同激活时间",
+          "nullable": true
+        },
+        "actual-effect-time": {
+          "type": "string",
+          "role": "dimension",
+          "label": "实际生效时间",
+          "nullable": true
+        },
+        "actual-expire-time": {
+          "type": "string",
+          "role": "dimension",
+          "label": "实际失效时间",
+          "nullable": true
+        },
+        "effect-time": {
+          "type": "string",
+          "role": "dimension",
+          "label": "合同生效日期",
+          "nullable": true
+        },
+        "expire-time": {
+          "type": "string",
+          "role": "dimension",
+          "label": "合同失效日期",
+          "nullable": true
+        },
+        "customer-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "客户名称",
+          "nullable": true
+        },
+        "customer-account": {
+          "type": "string",
+          "role": "dimension",
+          "label": "华为云账号",
+          "nullable": true
+        },
+        "contract-level": {
+          "type": "string",
+          "role": "dimension",
+          "label": "合同级别名称",
+          "nullable": true
+        }
+      },
+      "source": {
+        "type": "pagedJoin",
+        "rowKey": "contract-id",
+        "domainMember": "main",
+        "members": {
+          "main": {
+            "source": "contract-closure-main",
+            "key": {
+              "field": "contract-id",
+              "queryField": "合同ID"
+            },
+            "canSelectPage": false
+          },
+          "basic": {
+            "source": "contract-closure-basic",
+            "key": {
+              "field": "contract-id",
+              "queryField": "合同ID"
+            },
+            "canSelectPage": false,
+            "notApplicableFilters": [
+              "period",
+              "customer-category"
+            ]
+          }
+        },
+        "projection": {
+          "contract-code": {
+            "member": "main",
+            "field": "contract-code"
+          },
+          "contract-id": {
+            "member": "main",
+            "field": "contract-id"
+          },
+          "region-dept-name": {
+            "member": "main",
+            "field": "region-dept-name"
+          },
+          "rep-office-name": {
+            "member": "main",
+            "field": "rep-office-name"
+          },
+          "version-no": {
+            "member": "main",
+            "field": "version-no"
+          },
+          "contract-type": {
+            "member": "main",
+            "field": "contract-type"
+          },
+          "customer-category": {
+            "member": "main",
+            "field": "customer-category"
+          },
+          "dtime": {
+            "member": "main",
+            "field": "dtime"
+          },
+          "project-name": {
+            "member": "basic",
+            "field": "project-name"
+          },
+          "contract-status-name": {
+            "member": "basic",
+            "field": "contract-status-name"
+          },
+          "owner-name": {
+            "member": "basic",
+            "field": "owner-name"
+          },
+          "eflow-create-time": {
+            "member": "basic",
+            "field": "eflow-create-time"
+          },
+          "active-time": {
+            "member": "basic",
+            "field": "active-time"
+          },
+          "actual-effect-time": {
+            "member": "basic",
+            "field": "actual-effect-time"
+          },
+          "actual-expire-time": {
+            "member": "basic",
+            "field": "actual-expire-time"
+          },
+          "effect-time": {
+            "member": "basic",
+            "field": "effect-time"
+          },
+          "expire-time": {
+            "member": "basic",
+            "field": "expire-time"
+          },
+          "customer-name": {
+            "member": "basic",
+            "field": "customer-name"
+          },
+          "customer-account": {
+            "member": "basic",
+            "field": "customer-account"
+          },
+          "contract-level": {
+            "member": "basic",
+            "field": "contract-level"
+          }
+        },
+        "ordering": {
+          "default": [
+            {
+              "field": "eflow-create-time",
+              "direction": "desc"
+            }
+          ],
+          "sortableFields": [
+            "eflow-create-time",
+            "active-time",
+            "actual-effect-time",
+            "actual-expire-time",
+            "effect-time",
+            "expire-time"
+          ],
+          "nulls": "last"
+        },
+        "pagination": {
+          "pageSize": 10
+        },
+        "fallback": {
+          "maxRows": 1000
+        },
+        "records": {
+          "batchSize": 500,
+          "maxRows": 10000,
+          "maxBytes": 67108864,
+          "timeoutMs": 60000
+        },
+        "onMissing": "null"
+      }
+    },
+    "approval-detail-joined": {
+      "fields": {
+        "biz-code": {
+          "type": "string",
+          "role": "dimension",
+          "label": "商务编号",
+          "nullable": false
+        },
+        "stage-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "阶段名称",
+          "nullable": true
+        },
+        "dtime": {
+          "type": "string",
+          "role": "dimension",
+          "label": "账期",
+          "nullable": true
+        },
+        "sdt-decision-duration": {
+          "type": "number",
+          "role": "measure",
+          "label": "代表处SDT决策时长",
+          "defaultFormat": "number-1",
+          "nullable": true
+        },
+        "rep-office-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "代表处",
+          "nullable": true
+        },
+        "approval-headcount": {
+          "type": "number",
+          "role": "measure",
+          "label": "商审决策人数",
+          "nullable": true
+        },
+        "project-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "项目名称",
+          "nullable": true
+        },
+        "region-dept-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "地区部",
+          "nullable": true
+        },
+        "owner-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "责任人",
+          "nullable": true
+        },
+        "cust-company-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "客户名称",
+          "nullable": true
+        },
+        "biz-type": {
+          "type": "number",
+          "role": "dimension",
+          "label": "商务类型",
+          "nullable": true
+        },
+        "emergency-switch": {
+          "type": "string",
+          "role": "dimension",
+          "label": "紧急决策开关",
+          "nullable": true
+        },
+        "approval-row-id": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": false,
+          "label": "明细快照行标识"
+        }
+      },
+      "source": {
+        "type": "pagedJoin",
+        "rowKey": "approval-row-id",
+        "domainMember": "main",
+        "members": {
+          "main": {
+            "source": "approval-duration",
+            "key": {
+              "field": "biz-code",
+              "queryField": "商务编号"
+            },
+            "canSelectPage": false
+          },
+          "basic": {
+            "source": "approval-basic",
+            "key": {
+              "field": "biz-code",
+              "queryField": "商务编号"
+            },
+            "canSelectPage": false,
+            "notApplicableFilters": [
+              "period",
+              "customer-category"
+            ]
+          }
+        },
+        "projection": {
+          "biz-code": {
+            "member": "main",
+            "field": "biz-code"
+          },
+          "stage-name": {
+            "member": "main",
+            "field": "stage-name"
+          },
+          "dtime": {
+            "member": "main",
+            "field": "dtime"
+          },
+          "sdt-decision-duration": {
+            "member": "main",
+            "field": "sdt-decision-duration"
+          },
+          "rep-office-name": {
+            "member": "basic",
+            "field": "rep-office-name"
+          },
+          "approval-headcount": {
+            "member": "main",
+            "field": "approval-headcount"
+          },
+          "project-name": {
+            "member": "basic",
+            "field": "project-name"
+          },
+          "region-dept-name": {
+            "member": "basic",
+            "field": "region-dept-name"
+          },
+          "owner-name": {
+            "member": "basic",
+            "field": "owner-name"
+          },
+          "cust-company-name": {
+            "member": "basic",
+            "field": "cust-company-name"
+          },
+          "biz-type": {
+            "member": "basic",
+            "field": "biz-type"
+          },
+          "emergency-switch": {
+            "member": "basic",
+            "field": "emergency-switch"
+          }
+        },
+        "ordering": {
+          "default": [
+            {
+              "field": "sdt-decision-duration",
+              "direction": "desc"
+            }
+          ],
+          "sortableFields": [
+            "dtime",
+            "sdt-decision-duration"
+          ],
+          "nulls": "last"
+        },
+        "pagination": {
+          "pageSize": 10
+        },
+        "fallback": {
+          "maxRows": 1000
+        },
+        "records": {
+          "batchSize": 500,
+          "maxBytes": 67108864,
+          "timeoutMs": 180000
+        },
+        "onMissing": "null"
+      }
+    },
+    "decision-closure-joined": {
+      "fields": {
+        "region-dept-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "地区部",
+          "nullable": true
+        },
+        "rep-office-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "代表处",
+          "nullable": true
+        },
+        "biz-code": {
+          "type": "string",
+          "role": "dimension",
+          "label": "商务编号",
+          "nullable": false
+        },
+        "project-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "项目名称",
+          "nullable": true
+        },
+        "biz-level-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "商务级别名称",
+          "nullable": true
+        },
+        "cust-company-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "客户名称",
+          "nullable": true
+        },
+        "dtime": {
+          "type": "string",
+          "role": "dimension",
+          "label": "账期",
+          "nullable": true
+        },
+        "owner-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "责任人名称",
+          "nullable": true
+        },
+        "biz-type": {
+          "type": "number",
+          "role": "dimension",
+          "label": "商务类型",
+          "nullable": true
+        },
+        "biz-status": {
+          "type": "string",
+          "role": "dimension",
+          "label": "商务状态",
+          "nullable": true
+        },
+        "valid-time": {
+          "type": "string",
+          "role": "dimension",
+          "label": "生效时间",
+          "nullable": true
+        },
+        "customer-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "华为云账号",
+          "nullable": true
+        },
+        "decision-row-id": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": false,
+          "label": "明细快照行标识"
+        }
+      },
+      "source": {
+        "type": "pagedJoin",
+        "rowKey": "decision-row-id",
+        "domainMember": "main",
+        "members": {
+          "main": {
+            "source": "zb1111",
+            "key": {
+              "field": "biz-code",
+              "queryField": "商务编号"
+            },
+            "canSelectPage": false
+          },
+          "basic": {
+            "source": "biz-basic",
+            "key": {
+              "field": "biz-code",
+              "queryField": "商务编号"
+            },
+            "canSelectPage": false,
+            "notApplicableFilters": [
+              "period",
+              "customer-category"
+            ]
+          }
+        },
+        "projection": {
+          "region-dept-name": {
+            "member": "main",
+            "field": "region-dept-name"
+          },
+          "rep-office-name": {
+            "member": "main",
+            "field": "rep-office-name"
+          },
+          "biz-code": {
+            "member": "main",
+            "field": "biz-code"
+          },
+          "project-name": {
+            "member": "main",
+            "field": "project-name"
+          },
+          "biz-level-name": {
+            "member": "main",
+            "field": "biz-level-name"
+          },
+          "cust-company-name": {
+            "member": "main",
+            "field": "cust-company-name"
+          },
+          "dtime": {
+            "member": "main",
+            "field": "dtime"
+          },
+          "owner-name": {
+            "member": "basic",
+            "field": "owner-name"
+          },
+          "biz-type": {
+            "member": "basic",
+            "field": "biz-type"
+          },
+          "biz-status": {
+            "member": "basic",
+            "field": "biz-status"
+          },
+          "valid-time": {
+            "member": "basic",
+            "field": "valid-time"
+          },
+          "customer-name": {
+            "member": "basic",
+            "field": "customer-name"
+          }
+        },
+        "ordering": {
+          "default": [
+            {
+              "field": "biz-code",
+              "direction": "asc"
+            }
+          ],
+          "sortableFields": [
+            "dtime",
+            "valid-time"
+          ],
+          "nulls": "last"
+        },
+        "pagination": {
+          "pageSize": 10
+        },
+        "fallback": {
+          "maxRows": 1000
+        },
+        "records": {
+          "batchSize": 500,
+          "maxBytes": 67108864,
+          "timeoutMs": 180000
+        },
+        "onMissing": "null"
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "kpi-section",
+      "container": "plain",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "行权效率-代表处（联动演示）"
+            },
+            "filterIds": [
+              "period",
+              "customer-category"
+            ],
+            "presentation": {
+              "layout": "inline",
+              "density": "normal",
+              "collapse": "none"
+            },
+            "back": "auto"
+          }
+        },
+        {
+          "id": "sdt-duration-metric",
+          "type": "metricCard",
+          "layout": {
+            "span": 3
+          },
+          "data": {
+            "main": "kpi-summary"
+          },
+          "props": {
+            "variant": "compactStrip",
+            "rows": [
+              {
+                "label": "商务代表处SDT平均决策时长",
+                "unit": "天",
+                "valueField": {
+                  "data": "main",
+                  "field": "sdtAvgDecisionDuration",
+                  "format": "number-1"
+                },
+                "action": {
+                  "on": "click",
+                  "selectTab": {
+                    "componentId": "detail-tabs",
+                    "tabId": "approval-detail"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "sdt-count-metric",
+          "type": "metricCard",
+          "layout": {
+            "span": 3
+          },
+          "data": {
+            "main": "kpi-summary"
+          },
+          "props": {
+            "variant": "compactStrip",
+            "rows": [
+              {
+                "label": "商务代表处SDT平均决策人数",
+                "unit": "人",
+                "valueField": {
+                  "data": "main",
+                  "field": "sdtAvgDecisionCount",
+                  "format": "number-0"
+                },
+                "action": {
+                  "on": "click",
+                  "selectTab": {
+                    "componentId": "detail-tabs",
+                    "tabId": "approval-detail"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "business-closure-metric",
+          "type": "metricCard",
+          "layout": {
+            "span": 3
+          },
+          "data": {
+            "main": "kpi-summary"
+          },
+          "props": {
+            "variant": "compactStrip",
+            "rows": [
+              {
+                "label": "商务决策代表处闭环率",
+                "valueField": {
+                  "data": "main",
+                  "field": "businessClosureRate",
+                  "format": "percent-1"
+                },
+                "action": {
+                  "on": "click",
+                  "selectTab": {
+                    "componentId": "detail-tabs",
+                    "tabId": "decision-closure"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "contract-closure-metric",
+          "type": "metricCard",
+          "layout": {
+            "span": 3
+          },
+          "data": {
+            "main": "kpi-summary"
+          },
+          "props": {
+            "variant": "compactStrip",
+            "rows": [
+              {
+                "label": "合同决策代表处闭环率",
+                "valueField": {
+                  "data": "main",
+                  "field": "contractClosureRate",
+                  "format": "percent-1"
+                },
+                "action": {
+                  "on": "click",
+                  "selectTab": {
+                    "componentId": "detail-tabs",
+                    "tabId": "contract-closure"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "detail-section",
+      "container": "card",
+      "components": [
+        {
+          "id": "detail-tabs",
+          "type": "tabContainer",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "defaultTab": "approval-detail",
+            "tabs": [
+              {
+                "id": "approval-detail",
+                "label": "商务审批明细",
+                "component": {
+                  "id": "approval-detail-table",
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "approval-detail-joined"
+                  },
+                  "props": {
+                    "columns": [
+                      {
+                        "field": {
+                          "data": "main",
+                          "field": "project-name"
+                        },
+                        "title": "项目名称",
+                        "width": 160
+                      },
+                      {
+                        "field": {
+                          "data": "main",
+                          "field": "region-dept-name"
+                        },
+                        "title": "区域",
+                        "width": 80
+                      },
+                      {
+                        "field": {
+                          "data": "main",
+                          "field": "rep-office-name"
+                        },
+                        "title": "代表处",
+                        "width": 100
+                      },
+                      {
+                        "field": {
+                          "data": "main",
+                          "field": "owner-name"
+                        },
+                        "title": "责任人",
+                        "width": 100
+                      },
+                      {
+                        "field": {
+                          "data": "main",
+                          "field": "cust-company-name"
+                        },
+                        "title": "客户名称",
+                        "width": 160
+                      },
+                      {
+                        "field": "biz-code",
+                        "title": "商务编号",
+                        "width": 140
+                      },
+                      {
+                        "field": {
+                          "data": "main",
+                          "field": "biz-type"
+                        },
+                        "title": "商务类型",
+                        "width": 100,
+                        "enumValues": [
+                          {
+                            "value": 0,
+                            "label": "框架商务"
+                          },
+                          {
+                            "value": 1,
+                            "label": "标准销售商务"
+                          },
+                          {
+                            "value": 3,
+                            "label": "基础PO商务"
+                          }
+                        ],
+                        "filterable": {
+                          "mode": "select",
+                          "showSelectAll": true
+                        }
+                      },
+                      {
+                        "field": {
+                          "data": "main",
+                          "field": "emergency-switch"
+                        },
+                        "title": "需紧急决策",
+                        "width": 100,
+                        "enumValues": [
+                          {
+                            "value": "ON",
+                            "label": "是"
+                          },
+                          {
+                            "value": "OFF",
+                            "label": "否"
+                          }
+                        ],
+                        "filterable": {
+                          "mode": "select",
+                          "showSelectAll": true
+                        }
+                      },
+                      {
+                        "field": "dtime",
+                        "title": "商务审批通过时间",
+                        "width": 160,
+                        "sortable": true
+                      },
+                      {
+                        "field": "stage-name",
+                        "title": "决策阶段",
+                        "width": 100,
+                        "filterable": {
+                          "mode": "select",
+                          "showSelectAll": true
+                        },
+                        "enumValues": [
+                          {
+                            "value": "代表处SDT",
+                            "label": "代表处SDT"
+                          },
+                          {
+                            "value": "地区部SDT",
+                            "label": "地区部SDT"
+                          },
+                          {
+                            "value": "华为云计算SDT",
+                            "label": "华为云计算SDT"
+                          },
+                          {
+                            "value": "Huawei Cloud Computing SDT",
+                            "label": "Huawei Cloud Computing SDT"
+                          }
+                        ]
+                      },
+                      {
+                        "field": "sdt-decision-duration",
+                        "title": "代表处SDT决策时长",
+                        "width": 140,
+                        "sortable": true,
+                        "unit": "天"
+                      },
+                      {
+                        "field": "approval-headcount",
+                        "title": "商审决策人数",
+                        "unit": "人",
+                        "width": 120,
+                        "link": true,
+                        "navigate": {
+                          "href": "/manage-contract-business/rep-office-approval-detail",
+                          "query": {
+                            "rep-office-name": {
+                              "source": "row",
+                              "field": "rep-office-name"
+                            },
+                            "period": {
+                              "source": "filter",
+                              "id": "period"
+                            }
+                          }
+                        }
+                      }
+                    ],
+                    "toolbar": {
+                      "search": {
+                        "options": [
+                          {
+                            "value": "project-name",
+                            "label": "项目名称",
+                            "field": {
+                              "data": "main",
+                              "field": "project-name"
+                            },
+                            "placeholder": "输入完整项目名称搜索"
+                          },
+                          {
+                            "value": "owner-name",
+                            "label": "责任人",
+                            "field": {
+                              "data": "main",
+                              "field": "owner-name"
+                            },
+                            "placeholder": "输入完整责任人姓名搜索"
+                          },
+                          {
+                            "value": "cust-company-name",
+                            "label": "客户名称",
+                            "field": {
+                              "data": "main",
+                              "field": "cust-company-name"
+                            },
+                            "placeholder": "输入完整客户名称搜索"
+                          }
+                        ],
+                        "defaultValue": "project-name"
+                      },
+                      "export": {
+                        "format": "xlsx",
+                        "filename": "商务审批明细"
+                      }
+                    },
+                    "pagination": {
+                      "mode": "query"
+                    },
+                    "fit": "container",
+                    "rowKey": "approval-row-id",
+                    "rowNumber": {
+                      "title": "序号",
+                      "width": 60
+                    }
+                  }
+                }
+              },
+              {
+                "id": "decision-closure",
+                "label": "商务决策闭环率明细",
+                "component": {
+                  "id": "decision-closure-table",
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "decision-closure-joined"
+                  },
+                  "props": {
+                    "columns": [
+                      {
+                        "field": "region-dept-name",
+                        "title": "区域",
+                        "width": 80
+                      },
+                      {
+                        "field": "rep-office-name",
+                        "title": "代表处",
+                        "width": 100
+                      },
+                      {
+                        "field": "biz-code",
+                        "title": "商务编号",
+                        "width": 140
+                      },
+                      {
+                        "field": {
+                          "data": "main",
+                          "field": "owner-name"
+                        },
+                        "title": "商务责任人",
+                        "width": 100
+                      },
+                      {
+                        "field": "project-name",
+                        "title": "项目名称",
+                        "width": 160
+                      },
+                      {
+                        "field": {
+                          "data": "main",
+                          "field": "biz-type"
+                        },
+                        "title": "商务类型",
+                        "width": 100,
+                        "filterable": {
+                          "mode": "select",
+                          "showSelectAll": true
+                        },
+                        "enumValues": [
+                          {
+                            "value": 0,
+                            "label": "框架商务"
+                          },
+                          {
+                            "value": 1,
+                            "label": "标准销售商务"
+                          },
+                          {
+                            "value": 3,
+                            "label": "基础PO商务"
+                          }
+                        ]
+                      },
+                      {
+                        "title": "商务审批通过时间",
+                        "field": {
+                          "data": "main",
+                          "field": "dtime",
+                          "format": {
+                            "type": "time",
+                            "pattern": "YYYY-MM-DD HH:mm:ss"
+                          }
+                        },
+                        "width": 160,
+                        "sortable": true
+                      },
+                      {
+                        "field": {
+                          "data": "main",
+                          "field": "biz-status"
+                        },
+                        "title": "生命状态",
+                        "width": 100,
+                        "filterable": {
+                          "mode": "select",
+                          "showSelectAll": true
+                        },
+                        "enumValues": [
+                          {
+                            "value": "APPROVED",
+                            "label": "有效授权"
+                          },
+                          {
+                            "value": "PASSED",
+                            "label": "审批通过"
+                          },
+                          {
+                            "value": "EXPIRED",
+                            "label": "已过期"
+                          },
+                          {
+                            "value": "AUDITING",
+                            "label": "审批中"
+                          },
+                          {
+                            "value": "DRAFT",
+                            "label": "草稿"
+                          },
+                          {
+                            "value": "DISCARDED",
+                            "label": "废弃"
+                          },
+                          {
+                            "value": "SUBMIT_FAILED",
+                            "label": "提交失败"
+                          },
+                          {
+                            "value": "DEREGISTER_DRAFT",
+                            "label": "注销草稿"
+                          },
+                          {
+                            "value": "DEREGISTER_EXPIRED",
+                            "label": "注销_过期"
+                          },
+                          {
+                            "value": "ESTIMATING",
+                            "label": "估计"
+                          },
+                          {
+                            "value": "DEREGISTER_PASSED",
+                            "label": "注销_通过"
+                          },
+                          {
+                            "value": "DEREGISTER_SUBMIT_FAILED",
+                            "label": "注销提交失败"
+                          },
+                          {
+                            "value": "DEREGISTER_AUDITING",
+                            "label": "注销_审计"
+                          },
+                          {
+                            "value": "DEREGISTER_APPROVED",
+                            "label": "注销_已批准"
+                          },
+                          {
+                            "value": "SUBMITING",
+                            "label": "提交中"
+                          }
+                        ]
+                      },
+                      {
+                        "field": {
+                          "data": "main",
+                          "field": "valid-time"
+                        },
+                        "title": "商务生效时间",
+                        "width": 140,
+                        "sortable": true
+                      },
+                      {
+                        "field": "biz-level-name",
+                        "title": "商务定级",
+                        "width": 100,
+                        "filterable": {
+                          "mode": "select",
+                          "showSelectAll": true
+                        }
+                      },
+                      {
+                        "field": "cust-company-name",
+                        "title": "客户名称",
+                        "width": 160
+                      },
+                      {
+                        "field": {
+                          "data": "main",
+                          "field": "customer-name"
+                        },
+                        "title": "客户账号",
+                        "width": 120
+                      }
+                    ],
+                    "toolbar": {
+                      "search": {
+                        "fields": [
+                          "project-name"
+                        ],
+                        "placeholder": "输入项目名称搜索"
+                      },
+                      "export": {
+                        "format": "xlsx",
+                        "filename": "商务决策闭环率明细"
+                      }
+                    },
+                    "rowKey": "decision-row-id",
+                    "fit": "container",
+                    "rowNumber": {
+                      "title": "序号",
+                      "width": 60
+                    },
+                    "pagination": {
+                      "mode": "query"
+                    }
+                  }
+                }
+              },
+              {
+                "id": "contract-closure",
+                "label": "合同决策闭环率明细",
+                "component": {
+                  "id": "contract-closure-table",
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "contract-closure-joined"
+                  },
+                  "props": {
+                    "columns": [
+                      {
+                        "field": "region-dept-name",
+                        "title": "区域",
+                        "width": 100
+                      },
+                      {
+                        "field": "rep-office-name",
+                        "title": "代表处",
+                        "width": 120
+                      },
+                      {
+                        "field": "contract-code",
+                        "title": "合同编号",
+                        "width": 180
+                      },
+                      {
+                        "field": "project-name",
+                        "title": "项目名称",
+                        "width": 220
+                      },
+                      {
+                        "field": "contract-type",
+                        "title": "合同类型",
+                        "width": 120,
+                        "filterable": {
+                          "mode": "select",
+                          "showSelectAll": true
+                        }
+                      },
+                      {
+                        "field": "contract-status-name",
+                        "title": "生命状态",
+                        "width": 120,
+                        "filterable": {
+                          "mode": "select",
+                          "showSelectAll": true
+                        }
+                      },
+                      {
+                        "field": "owner-name",
+                        "title": "合同责任人",
+                        "width": 120
+                      },
+                      {
+                        "field": "eflow-create-time",
+                        "title": "合同电子流创建时间",
+                        "width": 220,
+                        "sortable": true
+                      },
+                      {
+                        "field": "active-time",
+                        "title": "合同激活时间",
+                        "width": 180,
+                        "sortable": true
+                      },
+                      {
+                        "field": "actual-effect-time",
+                        "title": "实际生效时间",
+                        "width": 170,
+                        "sortable": true
+                      },
+                      {
+                        "field": "actual-expire-time",
+                        "title": "实际失效时间",
+                        "width": 170,
+                        "sortable": true
+                      },
+                      {
+                        "field": "effect-time",
+                        "title": "合同生效日期",
+                        "width": 170,
+                        "sortable": true
+                      },
+                      {
+                        "field": "expire-time",
+                        "title": "合同失效日期",
+                        "width": 170,
+                        "sortable": true
+                      },
+                      {
+                        "field": "contract-level",
+                        "title": "合同层级",
+                        "width": 120,
+                        "filterable": {
+                          "mode": "select",
+                          "showSelectAll": true
+                        }
+                      },
+                      {
+                        "field": "customer-name",
+                        "title": "客户名称",
+                        "width": 200
+                      },
+                      {
+                        "field": "customer-account",
+                        "title": "客户账号",
+                        "width": 150
+                      },
+                      {
+                        "field": "customer-category",
+                        "title": "客户分类",
+                        "width": 120,
+                        "filterable": {
+                          "mode": "select",
+                          "showSelectAll": true
+                        }
+                      }
+                    ],
+                    "toolbar": {
+                      "search": {
+                        "fields": [
+                          "contract-code"
+                        ],
+                        "placeholder": "输入合同编号搜索"
+                      },
+                      "export": {
+                        "format": "xlsx",
+                        "filename": "合同决策闭环率明细"
+                      }
+                    },
+                    "pagination": {
+                      "mode": "query"
+                    },
+                    "rowKey": "contract-id",
+                    "fit": "container",
+                    "rowNumber": {
+                      "title": "序号",
+                      "width": 60
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

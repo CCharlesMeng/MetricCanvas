@@ -1,0 +1,31 @@
+{
+  "case": "metric-select-tab-link-conflict",
+  "invariant": "metric-card-select-tab",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "指标行的 action 与 link: true 不能同时声明",
+      "paths": [
+        "/sections/0/components/0/props/rows/0/link"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "rows": [
+                {
+                  "link": true
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

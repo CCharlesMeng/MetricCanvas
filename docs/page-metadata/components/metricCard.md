@@ -20,7 +20,9 @@
 
 与单面板 `compactStack` 混排时，该紧凑卡的外层及唯一面板共同拉伸，同一视觉行的卡面底边保持一致；各自的 variant、文字、字体、颜色、间距及内容在卡内的位置保持原样，仅在较短卡的底部留白。不需要新增高度字段或切换 variant。带次级面板或进度环的 `compactStack` 保留原有多块内容布局，不把每块面板强制等分高度。混排验收见 `/pages/metric-card-primary-detail` 的 `mixed-variants` 分区。
 
-只有显式声明 `row.link: true` 且有合法的 `navigate` / `openDetail` 动作，非空指标值才成为可聚焦、可点击的入口，其数值及单位显示下划线；未声明链接或缺失值显示为无下划线的普通文本。真实零值仍可作为链接。`valueField`、单位、格式、数据槽与筛选联动均复用现有绑定协议。`secondaryRows` 在其他形态中保持既有呈现。
+只有显式声明 `row.link: true` 且有合法的 `navigate` 或 `openDetail` 动作，非空指标值才成为可聚焦、可点击的入口，其数值及单位显示下划线；未声明链接或缺失值显示为无下划线的普通文本。真实零值仍可作为链接。`valueField`、单位、格式、数据槽与筛选联动均复用现有绑定协议。`secondaryRows` 在其他形态中保持既有呈现。
+
+6.126 起，主次指标行可声明 [`action.selectTab`](../actions-and-navigation.md#metric-select-tab)，每行独立决定目标页签。配置了行级动作的非空值可以直接点击。同一行的 `action` 与 `link: true` 互斥，其他行仍可使用卡片级导航或详情。
 
 验收入口：`/pages/metric-card-primary-detail`，完整页面为 `pages/capabilities/layout/metric-card-primary-detail.json`；仅内联合成数据，覆盖0/1/3/6行等高、长名称、零、缺失值与显式链接。该场景不证明真实DQE/Relay接入。
 
