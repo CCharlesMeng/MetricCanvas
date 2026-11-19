@@ -72,7 +72,7 @@
 {#if error}<span role="status">{error}</span>{/if}
 </div>
 <style>
-  .period-filter {display:flex;align-items:center;gap:12px;flex-wrap:wrap;min-width:0;max-width:100%;font-size:14px;color:#191919;}
+  .period-filter {display:flex;align-items:center;gap:var(--mc-period-filter-gap,12px);flex-wrap:wrap;min-width:0;max-width:100%;font-size:14px;color:#191919;}
   .label {display:var(--mc-filter-label-display,inline);color:#71717a;white-space:nowrap;}
   .segments {display:flex;max-width:100%;height:32px;border:1px solid #c2c2c2;border-radius:6px;background:#fff;}
   button {height:30px;min-width:42px;padding:0 12px;border:0;border-right:1px solid #e5e5e5;background:#fff;color:#595959;cursor:pointer;font:inherit;white-space:nowrap;}
@@ -80,5 +80,5 @@
   button:hover{color:#1476ff;}button[aria-pressed=true]{color:#1476ff;background:#deecff;}button:focus-visible{outline:2px solid #1476ff;outline-offset:2px;}
   button:disabled{color:#71717a;cursor:wait;}
   .range{display:inline-flex;align-items:center;min-height:32px;white-space:nowrap;}
-  .picker{max-width:100%;--mc-date-picker-width:220px;--mc-filter-label-display:none;}
+  .picker{max-width:100%;--mc-date-picker-width:var(--mc-period-picker-width,220px);--mc-filter-label-display:none;}
 </style>

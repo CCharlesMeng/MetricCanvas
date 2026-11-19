@@ -40,6 +40,7 @@ it('renders the supplied business page with selection policies and only the matc
   for(const [mode,value,label] of [['month','2026-09','月'],['quarter','2026-Q3','季'],['year','2026','年']] as const) {
    conditions.set('mtime',{type:'timeRange',...resolvePeriodSelection({mode,value},now,periodPrecision(page))});
    conditions.set('business-type',{type:'dimension',dimension:'sub-business-type',level:'sub-business-type',values:['SUB_SERVICE_TYPE_PUBLIC_REGION']});
+   conditions.set('cloud-service',{type:'dimension',dimension:'cloud-service',values:['合成组织']});
    requests.length=0;
    let snapshot:DataSnapshot|undefined;
    for await(const update of program.read({roots:['net-discount-trend'],conditions,freshness:'refresh'}))if(update.sourceId==='net-discount-trend')snapshot=update.snapshot;
@@ -48,9 +49,77 @@ it('renders the supplied business page with selection policies and only the matc
    expect(changes).toEqual([`净商务折扣（原价）${label}变化`]);
    for(const query of requests.filter(query=>query.body.dsl_list.some(item=>Array.isArray(item.output_metrics)&&item.output_metrics.length))){
     expect(query.filterValues).toContainEqual({target:'dimension',queryField:'子业务类型编码',values:['SUB_SERVICE_TYPE_PUBLIC_REGION']});
+    expect(query.filterValues).toContainEqual({target:'dimension',queryField:'云服务',values:['合成组织'],operator:'!='});
     expect(query.filterValues).not.toContainEqual(expect.objectContaining({queryField:'业务类型编码'}));
    }
   }
   expect(page).toEqual(before);
  }finally{program.dispose();}
+});
+
+const discountMetric = '净商务折扣（原价）';
+const tableSources = ['region-dept-metrics', 'rep-office-metrics'];
+const periodCases = [
+  { mode: 'month', value: '2026-09', label: '月' },
+  { mode: 'quarter', value: '2026-Q3', label: '季' },
+  { mode: 'year', value: '2026', label: '年' },
+] as const;
+
+function queryMetrics(query: EffectiveQuery): string[] {
+  const metrics = query.body.dsl_list[0].output_metrics;
+  return Array.isArray(metrics) ? metrics.filter((metric): metric is string => typeof metric === 'string') : [];
+}
+
+it.each(periodCases)('filters both tables’ current discount and $mode comparison independently of other metrics', async ({ mode, value, label }) => {
+  const parsed = parsePage(business);
+  if (!parsed.ok) throw Error(JSON.stringify(parsed.errors));
+  const { page } = parsed;
+  const conditions = conditionsFor(page);
+  const requests: EffectiveQuery[] = [];
+  const program = createSourceProgram(page, { gateway: syntheticGateway(requests), now });
+  const businessType = 'SUB_SERVICE_TYPE_PUBLIC_REGION';
+  const cloudService = '合成组织';
+  conditions.set('mtime', { type: 'timeRange', ...resolvePeriodSelection({ mode, value }, now, periodPrecision(page)) });
+  conditions.set('business-type', { type: 'dimension', dimension: 'sub-business-type', level: 'sub-business-type', values: [businessType] });
+  conditions.set('cloud-service', { type: 'dimension', dimension: 'cloud-service', values: [cloudService] });
+
+  try {
+    const snapshots = new Map<string, DataSnapshot>();
+    for await (const update of program.read({ roots: tableSources, presentation: page, conditions, freshness: 'refresh' })) {
+      snapshots.set(update.sourceId, update.snapshot);
+    }
+    for (const table of tableSources) {
+      expect(snapshots.get(table)).toMatchObject({ status: 'ready', rows: [{
+        'net-discount-rate': 10,
+        [`net-discount-${mode}-change`]: 10,
+        'framework-execution-rate': 10,
+        'major-contract-sign-rate': 10,
+      }] });
+    }
+
+    const discountQueries = requests.filter(query => queryMetrics(query).some(metric => metric.startsWith(discountMetric)));
+    const comparisonMetric = `${discountMetric}${label}变化`;
+    expect(discountQueries).toHaveLength(4);
+    for (const dimension of ['地区部', '代表处']) {
+      const group = discountQueries.filter(query => {
+        const dimensions = query.body.dsl_list[0].output_dims;
+        return Array.isArray(dimensions) && dimensions[0] === dimension;
+      });
+      expect(group.map(queryMetrics)).toEqual(expect.arrayContaining([[discountMetric], [comparisonMetric]]));
+    }
+    for (const query of discountQueries) {
+      expect(query.filterValues).toEqual(expect.arrayContaining([
+        { target: 'dimension', queryField: '子业务类型编码', values: [businessType] },
+        { target: 'dimension', queryField: '云服务', values: [cloudService], operator: '!=' },
+      ]));
+    }
+    const otherQueries = requests.filter(query => queryMetrics(query).length && !discountQueries.includes(query));
+    expect(otherQueries).toHaveLength(4);
+    for (const query of otherQueries) {
+      expect(query.filterValues).not.toContainEqual(expect.objectContaining({ queryField: '子业务类型编码' }));
+      expect(query.filterValues).not.toContainEqual(expect.objectContaining({ queryField: '云服务' }));
+    }
+  } finally {
+    program.dispose();
+  }
 });

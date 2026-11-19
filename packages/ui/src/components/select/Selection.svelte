@@ -150,7 +150,8 @@
     {/if}
   </div>
   <div bind:this={popup} aria-busy={loading} popover="auto" class="mc-ui-select-dropdown selection-popup" role="dialog" aria-label={`${label}候选`} tabindex="-1"
-    style:left="{left}px" style:top="{top}px" style:min-width="{Math.max(width, searchable || tree || multiple ? 240 : 0)}px"
+    style:left="{left}px" style:top="{top}px" style:--mc-selection-anchor-width="{width}px"
+    style:--mc-selection-default-min-width="{Math.max(width, searchable || tree || multiple ? 240 : 0)}px"
     ontoggle={event => {open = event.currentTarget.matches(':popover-open');}} onkeydown={popupKeys}>
     {#if searchable}<div class="mc-ui-input mc-ui-input-underline mc-ui-select-dropdown__search">
       <span class="mc-ui-input__prefix"><Icon name="search"/></span>
@@ -170,7 +171,7 @@
         </button>{/if}
         {#each visible as node (node.value)}<button type="button" class="mc-ui-option mc-ui-select-dropdown__item choice" class:selected={value.includes(node.value)} class:is-disabled={node.disabled}
           role="option" aria-selected={value.includes(node.value)} disabled={node.disabled} data-selection-choice data-value={node.value} title={node.value} onclick={() => choose(node)}>
-          {#if multiple}{@render checkbox(value.includes(node.value), false)}{/if}<span>{node.label}</span>
+          {#if multiple}{@render checkbox(value.includes(node.value), false)}{/if}<span title={node.label}>{node.label}</span>
         </button>{/each}
         {#if open && paging?.onmore}<div class="selection-more" aria-hidden="true" use:observeMore={paging.onmore}></div>{/if}
       </div>
@@ -217,7 +218,7 @@
   .tag-label{pointer-events:auto;appearance:none;border:0;padding:0;background:transparent;color:inherit;font:inherit;line-height:inherit;cursor:pointer;white-space:nowrap;text-align:left}
   .tag-label:focus-visible{outline:2px solid var(--tv-color-text-active,#1476ff);outline-offset:-2px}
   .mc-ui-tag__close{pointer-events:auto;display:inline-flex;border:0;padding:0;background:transparent;align-items:center;cursor:pointer;color:var(--tv-Tag-close-icon-color,#808080)}.mc-ui-tag__close:hover{color:var(--tv-Tag-close-icon-color-hover,#191919)}.mc-ui-tag__close:disabled{color:var(--tv-Tag-close-icon-color-disabled,#c2c2c2)}.mc-ui-tag__close:disabled,.tag-label:disabled{cursor:not-allowed}
-  .selection-popup.mc-ui-select-dropdown[popover]{position:fixed;inset:auto;margin:0;border:0;padding:var(--tv-SelectDropdown-padding,8px 0);max-width:calc(100vw - 16px);max-height:min(360px,70vh);overflow:hidden;font-size:var(--tv-SelectDropdown-font-size,14px)}
+  .selection-popup.mc-ui-select-dropdown[popover]{position:fixed;inset:auto;margin:0;border:0;padding:var(--tv-SelectDropdown-padding,8px 0);min-width:var(--mc-selection-popup-min-width,var(--mc-selection-default-min-width));max-width:calc(100vw - 16px);max-height:min(360px,70vh);overflow:hidden;font-size:var(--tv-SelectDropdown-font-size,14px)}
   .selection-popup[popover]:popover-open{display:flex;flex-direction:column}
   .selection-popup>.mc-ui-select-dropdown__search,.selection-status{flex:none}
   .selection-popup>[role="tree"],.selection-popup>[role="listbox"]{min-height:0;overflow:auto;flex:0 1 auto}

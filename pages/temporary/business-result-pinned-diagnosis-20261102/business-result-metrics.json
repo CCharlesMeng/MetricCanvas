@@ -4,7 +4,7 @@
   "layout": "dashboard",
   "meta": {
     "title": "业务结果指标情况",
-    "description": "地区部与代表处业务结果指标情况明细表。展示净商务折扣、净商务折扣同比变化、框架执行率、商务决策意见闭环率、合同决策意见闭环率、重大/高风险合同签署率与禁止类条款签署率。商务/合同决策意见闭环率来自契约 ZB0001419 决策闭环任务总体闭环率（dws_t_decision_closedloop_rate_compound_metric_global），按决策业务类型（商务/合同）透视后按地区部/代表处关联到主指标表。地区部表与代表处表分别消费两个粒度的决策闭环查询：代表处表消费 decision-closure-rate（output_dims 决策业务类型/地区部/代表处，pivot keyFields 地区部+代表处，按代表处关联）；地区部表消费 decision-closure-rate-region-dept（output_dims 决策业务类型/地区部，pivot keyFields 仅地区部，按地区部关联），避免 joinAggregate unique 在每个地区部匹配到多个代表处行时因取值歧义而失败。净商务折扣同比变化由两期 periodComparison 对比源（current/previousYear，fact net-discount-through）经 unionKeys→joinAggregate→delta 计算后 joinAggregate 补列进主表，仅绑 region+mtime，不绑站点筛选。内嵌初始行为合成演示数据（占位值），不来自真实系统，不得用于业务判断。"
+    "description": "地区部与代表处业务结果指标情况明细表。展示净商务折扣、净商务折扣同比变化、框架执行率、商务决策意见闭环率、合同决策意见闭环率、重大/高风险合同签署率与禁止类条款签署率。商务/合同决策意见闭环率来自契约 ZB0001419 决策闭环任务总体闭环率（dws_t_decision_closedloop_rate_compound_metric_global），按决策业务类型（商务/合同）透视后按地区部/代表处关联到主指标表。地区部表与代表处表分别消费两个粒度的决策闭环查询：代表处表消费 decision-closure-rate（output_dims 决策业务类型/地区部/代表处，pivot keyFields 地区部+代表处，按代表处关联）；地区部表消费 decision-closure-rate-region-dept（output_dims 决策业务类型/地区部，pivot keyFields 仅地区部，按地区部关联），避免 joinAggregate unique 在每个地区部匹配到多个代表处行时因取值歧义而失败。IOC 页头的业务类型和云服务排除项应用于净商务折扣图表及两张表的净商务折扣本期值和同比／环比。两张表按对应组织粒度关联补列，其他指标沿用原有查询条件。内嵌初始行为合成演示数据（占位值），不来自真实系统，不得用于业务判断。"
   },
   "filters": [
     {
@@ -331,7 +331,7 @@
           "role": "measure",
           "label": "净商务折扣",
           "defaultFormat": "percent-1",
-          "queryField": "净商务折扣（原价）"
+          "nullable": true
         },
         "net-discount-quarter-change": {
           "type": "number",
@@ -405,7 +405,6 @@
                   "地区部"
                 ],
                 "output_metrics": [
-                  "净商务折扣（原价）",
                   "框架执行率",
                   "重大高风险合同率",
                   "云计算BU禁止条款风险合同率"
@@ -460,6 +459,24 @@
             {
               "field": "contract-closure-rate",
               "output": "contract-closure-rate",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "joinAggregate",
+          "source": "net-discount-region-dept-current",
+          "keys": [
+            {
+              "local": "region-dept-name",
+              "foreign": "region-dept-name"
+            }
+          ],
+          "values": [
+            {
+              "field": "net-discount-rate",
+              "output": "net-discount-rate",
               "aggregate": "unique"
             }
           ],
@@ -1497,7 +1514,7 @@
           "role": "measure",
           "label": "净商务折扣",
           "defaultFormat": "percent-1",
-          "queryField": "净商务折扣（原价）"
+          "nullable": true
         },
         "net-discount-quarter-change": {
           "type": "number",
@@ -1571,7 +1588,6 @@
                   "代表处"
                 ],
                 "output_metrics": [
-                  "净商务折扣（原价）",
                   "框架执行率",
                   "重大高风险合同率",
                   "云计算BU禁止条款风险合同率"
@@ -1626,6 +1642,24 @@
             {
               "field": "contract-closure-rate",
               "output": "contract-closure-rate",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "joinAggregate",
+          "source": "net-discount-rep-office-current",
+          "keys": [
+            {
+              "local": "rep-office-name",
+              "foreign": "rep-office-name"
+            }
+          ],
+          "values": [
+            {
+              "field": "net-discount-rate",
+              "output": "net-discount-rate",
               "aggregate": "unique"
             }
           ],
@@ -1951,6 +1985,91 @@
         }
       ]
     },
+    "net-discount-region-dept-current": {
+      "fields": {
+        "region-dept-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "区域",
+          "queryField": "地区部"
+        },
+        "net-discount-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "净商务折扣",
+          "defaultFormat": "percent-1",
+          "queryField": "净商务折扣（原价）",
+          "nullable": true
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "地区部"
+                ],
+                "output_metrics": [
+                  "净商务折扣（原价）"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": [],
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": true
+                  }
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "geo": "geo_pc_code",
+                "region-dept": "地区部",
+                "office": "代表处"
+              }
+            },
+            "mtime": {
+              "target": "time"
+            },
+            "customer-class": {
+              "target": "dimension",
+              "queryField": "客户级别"
+            },
+            "business-type": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "business-type": "业务类型编码",
+                "sub-business-type": "子业务类型编码"
+              },
+              "when": {
+                "not": {
+                  "filter": "business-type",
+                  "part": "values",
+                  "op": "containsAny",
+                  "values": [
+                    "all"
+                  ]
+                }
+              }
+            },
+            "cloud-service": {
+              "target": "dimension",
+              "queryField": "云服务",
+              "operator": "!="
+            }
+          }
+        }
+      }
+    },
     "net-discount-region-dept-quarter-change": {
       "fields": {
         "region-dept-name": {
@@ -2015,6 +2134,28 @@
             "customer-class": {
               "target": "dimension",
               "queryField": "客户级别"
+            },
+            "business-type": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "business-type": "业务类型编码",
+                "sub-business-type": "子业务类型编码"
+              },
+              "when": {
+                "not": {
+                  "filter": "business-type",
+                  "part": "values",
+                  "op": "containsAny",
+                  "values": [
+                    "all"
+                  ]
+                }
+              }
+            },
+            "cloud-service": {
+              "target": "dimension",
+              "queryField": "云服务",
+              "operator": "!="
             }
           }
         }
@@ -2084,6 +2225,28 @@
             "customer-class": {
               "target": "dimension",
               "queryField": "客户级别"
+            },
+            "business-type": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "business-type": "业务类型编码",
+                "sub-business-type": "子业务类型编码"
+              },
+              "when": {
+                "not": {
+                  "filter": "business-type",
+                  "part": "values",
+                  "op": "containsAny",
+                  "values": [
+                    "all"
+                  ]
+                }
+              }
+            },
+            "cloud-service": {
+              "target": "dimension",
+              "queryField": "云服务",
+              "operator": "!="
             }
           }
         }
@@ -2153,6 +2316,113 @@
             "customer-class": {
               "target": "dimension",
               "queryField": "客户级别"
+            },
+            "business-type": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "business-type": "业务类型编码",
+                "sub-business-type": "子业务类型编码"
+              },
+              "when": {
+                "not": {
+                  "filter": "business-type",
+                  "part": "values",
+                  "op": "containsAny",
+                  "values": [
+                    "all"
+                  ]
+                }
+              }
+            },
+            "cloud-service": {
+              "target": "dimension",
+              "queryField": "云服务",
+              "operator": "!="
+            }
+          }
+        }
+      }
+    },
+    "net-discount-rep-office-current": {
+      "fields": {
+        "rep-office-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "代表处",
+          "queryField": "代表处"
+        },
+        "net-discount-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "净商务折扣",
+          "defaultFormat": "percent-1",
+          "queryField": "净商务折扣（原价）",
+          "nullable": true
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "代表处"
+                ],
+                "output_metrics": [
+                  "净商务折扣（原价）"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": [],
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": true
+                  }
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "geo": "geo_pc_code",
+                "region-dept": "地区部",
+                "office": "代表处"
+              }
+            },
+            "mtime": {
+              "target": "time"
+            },
+            "customer-class": {
+              "target": "dimension",
+              "queryField": "客户级别"
+            },
+            "business-type": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "business-type": "业务类型编码",
+                "sub-business-type": "子业务类型编码"
+              },
+              "when": {
+                "not": {
+                  "filter": "business-type",
+                  "part": "values",
+                  "op": "containsAny",
+                  "values": [
+                    "all"
+                  ]
+                }
+              }
+            },
+            "cloud-service": {
+              "target": "dimension",
+              "queryField": "云服务",
+              "operator": "!="
             }
           }
         }
@@ -2243,6 +2513,28 @@
             "customer-class": {
               "target": "dimension",
               "queryField": "客户级别"
+            },
+            "business-type": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "business-type": "业务类型编码",
+                "sub-business-type": "子业务类型编码"
+              },
+              "when": {
+                "not": {
+                  "filter": "business-type",
+                  "part": "values",
+                  "op": "containsAny",
+                  "values": [
+                    "all"
+                  ]
+                }
+              }
+            },
+            "cloud-service": {
+              "target": "dimension",
+              "queryField": "云服务",
+              "operator": "!="
             }
           }
         }
@@ -2333,6 +2625,28 @@
             "customer-class": {
               "target": "dimension",
               "queryField": "客户级别"
+            },
+            "business-type": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "business-type": "业务类型编码",
+                "sub-business-type": "子业务类型编码"
+              },
+              "when": {
+                "not": {
+                  "filter": "business-type",
+                  "part": "values",
+                  "op": "containsAny",
+                  "values": [
+                    "all"
+                  ]
+                }
+              }
+            },
+            "cloud-service": {
+              "target": "dimension",
+              "queryField": "云服务",
+              "operator": "!="
             }
           }
         }
@@ -2423,6 +2737,28 @@
             "customer-class": {
               "target": "dimension",
               "queryField": "客户级别"
+            },
+            "business-type": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "business-type": "业务类型编码",
+                "sub-business-type": "子业务类型编码"
+              },
+              "when": {
+                "not": {
+                  "filter": "business-type",
+                  "part": "values",
+                  "op": "containsAny",
+                  "values": [
+                    "all"
+                  ]
+                }
+              }
+            },
+            "cloud-service": {
+              "target": "dimension",
+              "queryField": "云服务",
+              "operator": "!="
             }
           }
         }
@@ -2448,7 +2784,7 @@
             "presentation": {
               "layout": "inline",
               "density": "normal",
-              "collapse": "none"
+              "collapse": "firstRow"
             },
             "components": [
               {
@@ -2503,6 +2839,20 @@
                 "type": "filterControl",
                 "props": {
                   "filterId": "customer-class"
+                }
+              },
+              {
+                "id": "header-business-type-control",
+                "type": "filterControl",
+                "props": {
+                  "filterId": "business-type"
+                }
+              },
+              {
+                "id": "header-cloud-service-control",
+                "type": "filterControl",
+                "props": {
+                  "filterId": "cloud-service"
                 }
               }
             ]
@@ -2900,30 +3250,6 @@
                       ]
                     }
                   ]
-                }
-              },
-              {
-                "id": "net-discount-business-type-filter",
-                "type": "filterGroup",
-                "layout": {
-                  "span": 6
-                },
-                "props": {
-                  "filterId": "business-type",
-                  "display": "select",
-                  "align": "right"
-                }
-              },
-              {
-                "id": "net-discount-cloud-service-filter",
-                "type": "filterGroup",
-                "layout": {
-                  "span": 6
-                },
-                "props": {
-                  "filterId": "cloud-service",
-                  "display": "select",
-                  "align": "right"
                 }
               },
               {
