@@ -58,3 +58,34 @@ for(const state of ['empty','error'] as const)test(`first load completes with ${
  await expect(table.getByText('正在加载…',{exact:true})).toHaveCount(0);
  await expect(table.getByText('暂无数据',{exact:true})).toBeVisible();
 });
+
+test('both global tables display the missing-value remark with their export controls', async ({ page }) => {
+ await responses(page);
+ await page.setViewportSize({ width: 1280, height: 900 });
+ await page.goto(target);
+ const header = page.locator('[data-ioc-header]');
+ await expect(header).toHaveCount(1);
+ await expect(header.getByRole('heading', { name: '行权规范情况' })).toBeVisible();
+ await expect(header.getByRole('button', { name: '区域', exact: true })).toContainText('全球');
+ const remark = '— 代表本周期没有合同单/商务单';
+ for (const [id, title, sample] of [
+  ['region-dept-norms-table', '地区部行权规范情况', '地区部示例 1'],
+  ['rep-office-norms-table', '代表处行权规范情况', '代表处示例 1']
+ ]) {
+  const table = page.locator(`[data-component$="/${id}"]`);
+  await expect(table.getByText(sample, { exact: true })).toBeVisible();
+  await expect(table.getByRole('button', { name: '导出', exact: true })).toBeEnabled();
+  const subtitle = table.getByText(remark, { exact: true });
+  await expect(subtitle).toHaveCSS('font-size', '12px');
+  const titleBox = (await table.getByRole('heading', { name: title }).boundingBox())!;
+  const remarkBox = (await subtitle.boundingBox())!;
+  expect(remarkBox.x - titleBox.x - titleBox.width).toBeCloseTo(16, 1);
+ }
+
+ await header.getByRole('button', { name: '区域', exact: true }).click();
+ const popup = page.getByRole('dialog', { name: '区域候选' });
+ await popup.getByRole('textbox', { name: '搜索区域' }).fill('上海代表处');
+ await popup.getByRole('button', { name: '上海代表处', exact: true }).click();
+ await expect(page.getByRole('heading', { name: '地区部行权规范情况' })).toHaveCount(0);
+ await expect(page.getByText(remark, { exact: true })).toHaveCount(1);
+});

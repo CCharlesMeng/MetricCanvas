@@ -9,7 +9,7 @@ import { numericScale } from './numeric-scale';
 export type ValuePolarity = 'positive' | 'negative' | 'neutral';
 type SignedNumberFormat = Extract<ValueFormat, `number${string}-signed`>;
 
-export const DEFAULT_NULL_TEXT = '--';
+export const DEFAULT_NULL_TEXT = '—';
 export interface ValueFormatContext { unit?: string; mobile?: boolean }
 
 /** 是否呈现真实值；0、false 和恰好等于缺省文案的文本均有效。 */

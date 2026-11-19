@@ -18,8 +18,8 @@ it.each([
   [500, '+500', '↑', 'green'], [-500, '-500', '↓', 'red'],
   [500.0001, '> 500', '↑', 'green'], [-500.0001, '> 500', '↓', 'red'],
   [499.9999, '+500', '↑', 'green'], [-499.9999, '-500', '↓', 'red'],
-  [0, '0', '', undefined], [-0, '0', '', undefined], [null, '--', '', undefined],
-  [undefined, '--', '', undefined], [Infinity, '--', '', undefined], [NaN, '--', '', undefined]
+  [0, '0', '', undefined], [-0, '0', '', undefined], [null, '—', '', undefined],
+  [undefined, '—', '', undefined], [Infinity, '—', '', undefined], [NaN, '—', '', undefined]
 ] as const)('raw magnitude %j controls text and preserves direction', (value, expected, arrow, color) => {
   expect(text(value)).toBe(expected);
   expect(alignedCellArrow(column, data, row(value))).toBe(arrow);

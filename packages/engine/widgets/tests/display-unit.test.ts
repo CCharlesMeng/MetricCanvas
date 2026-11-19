@@ -32,7 +32,7 @@ it('uses the explicit unit in every bar/line numeric presentation and the single
       expect(first.tooltip.valueFormatter(value)).toBe(text);
       if(first.markPoint)expect(first.markPoint.label.formatter({value})).toBe(text);
     }
-    expect(first.tooltip.valueFormatter(null)).toBe('--');
+    expect(first.tooltip.valueFormatter(null)).toBe('—');
   }
   expect(data).toEqual(before);
 });
@@ -52,7 +52,7 @@ it('preserves historical series names and values when unit is absent',()=>{
 });
 it('applies column units to aligned numeric cells and pinned rows, preserving enums and missing text',()=>{
   const rows=alignTableRows(data);
-  expect(rows.map(row=>alignedCellText('duration',data,row,undefined,'天'))).toEqual(['12.5 天','0 天','-2 天','--']);
+  expect(rows.map(row=>alignedCellText('duration',data,row,undefined,'天'))).toEqual(['12.5 天','0 天','-2 天','—']);
   expect(alignedCellText('category',data,rows[0],undefined,'天')).toBe('甲');
   expect(alignedCellText('duration',data,rows[0],[{value:12.5,label:'已完成'}],'天')).toBe('已完成');
   const summary={...data,summary:{fields:data.main.fields,snapshot:{status:'ready' as const,rows:[{duration:15}]}}};

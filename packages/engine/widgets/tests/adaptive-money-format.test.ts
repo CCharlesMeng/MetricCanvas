@@ -44,7 +44,7 @@ describe('explicit trimmed money formats', () => {
     ['usd-adaptive-km', '0$', '12.3K']
   ] as const)('%s preserves missing values, numeric strings and zero', (format, zero, numericString) => {
     for (const value of [0, -0, -0.4]) expect(formatValue(value, format)).toBe(zero);
-    for (const value of [null, undefined, NaN, Infinity, -Infinity]) expect(formatValue(value, format)).toBe('--');
+    for (const value of [null, undefined, NaN, Infinity, -Infinity]) expect(formatValue(value, format)).toBe('—');
     expect(formatValue('12345', format)).toBe(numericString);
     expect(formatValue('暂无', format)).toBe('暂无');
     expect(formatValue(null, format, '缺失')).toBe('缺失');

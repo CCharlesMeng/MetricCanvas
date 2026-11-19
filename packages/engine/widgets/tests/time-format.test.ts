@@ -36,7 +36,7 @@ describe('fixed UTC+8 time formatting', () => {
     const value = '2026-11-09T18:30:00Z';
     expect(formatValue(value, { type: 'time', pattern: 'YYYY/MM/DD HH:mm' })).toBe('2026/11/10 02:30');
     expect(formatValue(value, { type: 'time', pattern: 'YYYY年MM月DD日' })).toBe('2026年11月10日');
-    expect(formatValue(null, format)).toBe('--');
+    expect(formatValue(null, format)).toBe('—');
     expect(formatValue(undefined, format, '无')).toBe('无');
     expect(formatValue(value, 'date')).toBe('2026-11-09');
     expect(formatValue(12.5, 'number-2')).toBe('12.5');

@@ -29,7 +29,7 @@ async function expectPair(page: Page, office: string, current: number | null, me
   await expect(chart.getByText('当前值（次）', { exact: true })).toBeVisible();
   await expect(chart.getByText('均值（次）', { exact: true })).toBeVisible();
   for (const value of [current, mean]) {
-    const text = value === null ? '--' : `${value} 次`;
+    const text = value === null ? '—' : `${value} 次`;
     await expect(chart.getByText(text, { exact: true })).toBeVisible();
   }
 }

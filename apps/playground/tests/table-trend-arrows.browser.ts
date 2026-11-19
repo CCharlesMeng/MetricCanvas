@@ -14,7 +14,7 @@ test('table arrows share precision and units while staying independent of colors
   const rows = table.locator('tbody tr');
   const growth = rows.locator('[data-column-field="growth"]');
   const cost = rows.locator('[data-column-field="cost"]');
-  await expect(growth).toHaveText(['↑ +2.5 万元', '↓ -1.2 万元', '0 万元', '--', '0 万元', '0 万元', '↑ +0.1 万元', '↓ -0.1 万元']);
+  await expect(growth).toHaveText(['↑ +2.5 万元', '↓ -1.2 万元', '0 万元', '—', '0 万元', '0 万元', '↑ +0.1 万元', '↓ -0.1 万元']);
   await expect(cost.first()).toHaveText('+2.5 天 ↓');
   await expect(cost.nth(1)).toHaveText('-1.2 天 ↑');
   await expect(cost.first().getByLabel('下箭头')).toHaveText('↓');
@@ -33,7 +33,7 @@ test('table arrows share precision and units while staying independent of colors
   await expect(rate).toHaveText('-1.2% ↓');
   await expect(rows.locator('[data-column-field="rate"]').first()).toHaveText('+2.5% ↓');
   await expect(rows.locator('[data-column-field="rate"]').nth(2)).toHaveText('0% ↓');
-  await expect(rows.locator('[data-column-field="rate"]').nth(3)).toHaveText('--');
+  await expect(rows.locator('[data-column-field="rate"]').nth(3)).toHaveText('—');
   await expect(rows.locator('[data-column-field="tiny"]').nth(1)).toHaveText('↓ -1.2 天');
   await expect(rate).toHaveCSS('color', 'rgb(82, 196, 26)');
   await expect(page.locator('[data-component="variants/compact-trend-table"] .cell-trend-arrow')).toHaveCount(4);

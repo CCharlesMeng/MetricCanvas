@@ -15,7 +15,7 @@ test('defaults to grouping and explicitly opts out across table, metric, chart, 
     '正数', '12,345.6789012345', '12,345.6789012345', '12,346', '12,345.68', '12,345.6789',
     '12,345.679', '+12,345.68', '12345.6789012345', '12346', '12345.68', '12345.6789', '+12345.68', '12345.68'
   ]);
-  await expect(rows.nth(4).locator('td:not(:first-child)')).toHaveText(Array(13).fill('--'));
+  await expect(rows.nth(4).locator('td:not(:first-child)')).toHaveText(Array(13).fill('—'));
   await expect(page.locator('.metric-card .row-value')).toHaveText(['12,345.68', '12345.68', '12345.68']);
   const charts = page.locator('.bar-chart .echart');
   await expect(charts).toHaveCount(3);

@@ -13,7 +13,7 @@ test('number-0 rounds table values, field defaults, metrics and chart labels', a
   for (const [index, expected] of [
     [0, ['1,234.4', '1,234', '1,234']], [1, ['-1,234.5', '-1,235', '-1,235']],
     [2, ['1,234.5', '1,235', '1,235']], [6, ['0.4', '0', '0']],
-    [7, ['-0.4', '0', '0']], [13, ['--', '--', '--']]
+    [7, ['-0.4', '0', '0']], [13, ['—', '—', '—']]
   ] as const) {
     await expect(rows.nth(index).locator('td:nth-child(n+8)')).toHaveText([...expected]);
   }

@@ -274,7 +274,7 @@ for (const outcome of ['ready', 'empty', 'error'] as const) {
         await expect(card.locator('.row-value').first()).toContainText('72');
         await expect(card.locator('.unit')).toHaveCount(2);
       } else {
-        await expect(card.locator('.row-value').first()).toHaveText('--');
+        await expect(card.locator('.row-value').first()).toHaveText('—');
         await expect(card.locator('.trend-arrow, .unit, .change-unit')).toHaveCount(0);
       }
     }

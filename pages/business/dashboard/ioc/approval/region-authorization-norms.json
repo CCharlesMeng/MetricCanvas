@@ -765,6 +765,30 @@
       "container": "plain",
       "components": [
         {
+          "id": "page-header",
+          "type": "iocHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "identity": {
+              "title": "行权规范情况"
+            },
+            "filterIds": [
+              "key-national-only",
+              "mtime",
+              "region",
+              "customer-category"
+            ],
+            "note": "区域与统计期间筛选驱动全页查询",
+            "presentation": {
+              "layout": "inline",
+              "density": "normal",
+              "collapse": "none"
+            }
+          }
+        },
+        {
           "id": "data-scope-notice",
           "type": "text",
           "layout": {
@@ -782,8 +806,9 @@
       "container": "card",
       "visibleWhen": {
         "filter": "region",
-        "part": "values",
-        "op": "isEmpty"
+        "part": "level",
+        "op": "eq",
+        "value": "geo"
       },
       "components": [
         {
@@ -797,6 +822,7 @@
           },
           "props": {
             "title": "地区部行权规范情况",
+            "subtitle": "— 代表本周期没有合同单/商务单",
             "fit": "content",
             "toolbar": {
               "export": {
@@ -885,6 +911,7 @@
           },
           "props": {
             "title": "代表处行权规范情况",
+            "subtitle": "— 代表本周期没有合同单/商务单",
             "fit": "content",
             "toolbar": {
               "export": {
@@ -1295,22 +1322,5 @@
         }
       ]
     }
-  ],
-  "iocHeader": {
-    "identity": {
-      "title": "行权规范情况"
-    },
-    "filterIds": [
-      "key-national-only",
-      "mtime",
-      "region",
-      "customer-category"
-    ],
-    "note": "区域与统计期间筛选驱动全页查询",
-    "presentation": {
-      "layout": "inline",
-      "density": "normal",
-      "collapse": "none"
-    }
-  }
+  ]
 }

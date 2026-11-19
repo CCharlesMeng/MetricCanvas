@@ -12,7 +12,7 @@ it.each([
 ] as const)('%s keeps its precision and sign independently of grouping', (format, text) => {
   expect(formatValue(12345.6789012345, format)).toBe(text);
   expect(formatValue(-12345.6789012345, format)).toBe(`-${text.replace(/^\+/, '')}`);
-  expect(formatValue(null, format)).toBe('--');
+  expect(formatValue(null, format)).toBe('—');
   expect(formatValue(0, format)).toBe('0');
 });
 

@@ -57,7 +57,7 @@ for (const state of ['empty','error']) {
     await page.goto('/pages/partner-health?region-dept=全球');
     await expect(page.getByRole('tab',{name:'地区部',exact:true}).first()).toBeVisible();
     await expect(page.getByRole('tab',{name:'代表处',exact:true}).first()).toBeVisible();
-    await expect(page.locator('[data-component$="/total-score-card"]')).toContainText('--');
+    await expect(page.locator('[data-component$="/total-score-card"]')).toContainText('—');
     await expect(page.getByRole('table').first()).toContainText('暂无数据');
   });
 }

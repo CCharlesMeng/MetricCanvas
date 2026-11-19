@@ -4,7 +4,7 @@ import { tablePinnedSlots, tableLeafColumns, restoreCellFallbacks, rowCellFallba
 import type { NamedDataSlots } from '../../shared/component-data';
 import { resolveField } from '../../shared/component-data';
 import { reportTableFormats, formatTableCell, compatibleTableFormat } from './cell-presentation';
-import { finiteNumber, valuePolarity } from '../../shared/value-format';
+import { DEFAULT_NULL_TEXT, finiteNumber, valuePolarity } from '../../shared/value-format';
 import {tableEnumLabel} from './enum-values';
 
 export interface AlignedTableRow {
@@ -129,7 +129,7 @@ export function alignedCellText(binding: FieldBinding, data: NamedDataSlots, row
   const fallback = alignedFallback(binding, data, row);
   if (fallback) return typeof resolved.format === 'object' ? formatTableCell(fallback.raw, resolved.format) : String(fallback.raw);
   const value = alignedFieldValue(binding, data, row);
-  if (value == null && (data[resolved.data]?.sourceStatus === 'loading' || data[resolved.data]?.sourceStatus === 'error' || data[resolved.data]?.progress?.pendingFields.includes(resolved.field))) return '--';
+  if (value == null && (data[resolved.data]?.sourceStatus === 'loading' || data[resolved.data]?.sourceStatus === 'error' || data[resolved.data]?.progress?.pendingFields.includes(resolved.field))) return DEFAULT_NULL_TEXT;
   const enumLabel = tableEnumLabel(value, enumValues);
   if (enumLabel !== undefined) return enumLabel;
   const limited = absoluteDisplayText(value, absoluteDisplayLimit);

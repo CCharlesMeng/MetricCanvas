@@ -587,7 +587,7 @@ test('指标卡只从显式声明且非空的值发出导航', async ({ page }) 
     href: '#metric-row-target'
   })]);
   await expect(host.getByText('30', { exact: true })).not.toHaveAttribute('data-metric-row-link');
-  await expect(host.getByText('--', { exact: true })).not.toHaveAttribute('data-metric-row-link');
+  await expect(host.getByText('—', { exact: true })).not.toHaveAttribute('data-metric-row-link');
 });
 
 test('analysisStack 页签每个选中面板顺序渲染三张表', async ({ page }) => {
