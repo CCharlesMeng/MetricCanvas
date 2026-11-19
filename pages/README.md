@@ -1,5 +1,7 @@
 # 页面示例与验收场景
 
+左右两组主、次指标逐行开启问号的合成场景见[指标定义气泡](capabilities/layout/README.md#指标定义气泡)。
+
 指标卡与页签的页内联动见[指标值切换同页 Tab](capabilities/layout/README.md#指标值切换同页-tab)。
 
 - [默认千分位与显式关闭](capabilities/data/README.md#普通数值默认千分位6123)：`/pages/number-default-grouping`，默认、精度、符号、ungrouped、图表及导出对照；内联合成数据。

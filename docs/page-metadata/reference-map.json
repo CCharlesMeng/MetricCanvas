@@ -1462,6 +1462,7 @@
     }
   },
   "fieldNotes": {
+    "metricCode": "外部指标定义服务使用的顶层度量编码，指标行沿 valueField 读取。",
     "#/definitions/selectTabAction/properties/selectTab": "指标值点击后选中当前页面的指定页签，使用当前筛选状态。",
     "#/definitions/selectTabAction/properties/selectTab/properties/componentId": "当前页面中目标 tabContainer 组件的 ID。",
     "#/definitions/selectTabAction/properties/selectTab/properties/tabId": "目标容器 props.tabs 中已声明的页签 ID。",
@@ -2408,6 +2409,7 @@
     "number-5-ungrouped-signed": "6.123新增：显式不加千分位，保留同名 number 的精度、去尾零与符号规则。",
     "#/properties/schemaVersion=\"6.125\"": "可选动态排除条件独立加载候选并保留选择，候选状态不阻断指标查询。",
     "#/properties/schemaVersion=\"6.126\"": "指标卡的主次指标行使用 action.selectTab 在当前页面独立选中指定页签。",
+    "#/properties/schemaVersion=\"6.128\"": "顶层度量结果字段声明 metricCode，主次指标行通过 showDefinition 独立开启气泡。",
     "#/properties/schemaVersion=\"6.127\"": "指标卡可通过 tipCode 关联指标定义，显示位置为主标题或无主标题单行指标标签。"
   },
   "branchExceptions": {
@@ -3544,7 +3546,7 @@
       "查阅方式"
     ],
     "components/metricCard.md": [
-      "指标定义气泡 6.127",
+      "指标定义气泡",
       "主指标与多行次级指标 6.65",
       "前置连接文字 6.34",
       "查阅方式"

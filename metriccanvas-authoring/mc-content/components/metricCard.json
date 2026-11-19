@@ -33,7 +33,7 @@
   "knowledge": "metricCard.overview",
   "reference": "references/page-metadata/components/metricCard.md",
   "versionPolicy": "protocol/version-policy",
-  "currentWriter": "6.127",
+  "currentWriter": "6.128",
   "exampleVersionRequirements": [
     {
       "file": "references/page-metadata/examples/inline-report.json",
@@ -155,17 +155,42 @@
     },
     {
       "file": "references/page-metadata/examples/metric-card-definition-tip.json",
-      "requiredVersion": "6.127",
+      "requiredVersion": "6.128",
       "capabilities": [
+        {
+          "id": "metric-card-row-definition-tip",
+          "minor": 128,
+          "description": "结果字段指标编码与指标行定义气泡"
+        },
         {
           "id": "metric-card-definition-tip",
           "minor": 127,
           "description": "指标卡定义气泡"
         },
         {
+          "id": "field-binding-default-main",
+          "minor": 116,
+          "description": "对象字段绑定省略 data 时固定引用 main 数据槽"
+        },
+        {
+          "id": "metric-primary-details",
+          "minor": 65,
+          "description": "单一主指标与多行小字号次级指标，同排卡片等高"
+        },
+        {
           "id": "page-layout",
           "minor": 1,
           "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "composite-card-component",
+          "minor": 0,
+          "description": "组合卡:组件级分组容器(ADR-0053)"
+        },
+        {
+          "id": "composite-card-metric-grid",
+          "minor": 0,
+          "description": "组合卡的紧凑指标网格呈现档"
         }
       ],
       "scope": "complete example; actual used fields determine the floor, independently of readableVersions"

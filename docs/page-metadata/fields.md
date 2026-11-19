@@ -2,6 +2,8 @@
 
 页面字段id是dataSources.<id>.fields的键；queryField指向DQE输出，两者不可隐式当成同一个名字。dimension用于分类，measure用于数值计算，detail承载受控明细；字段类型、角色和nullable必须与真实结果匹配。
 
+Schema 6.128 起，顶层度量可声明 `metricCode`，填写指标定义服务使用的非空编码，编码中不能有空白。平铺字段写在 `fields.<field>.metricCode`，分组字段写在 `fields.measures.<field>.metricCode`。指标卡通过 `valueField` 读取此编码，各指标行独立控制问号。见[指标定义气泡](components/metricCard.md#metric-definition-tip)。
+
 <a id="dqe-output-measures"></a>
 
 ## DQE 直接输出的数值作为度量（6.56）

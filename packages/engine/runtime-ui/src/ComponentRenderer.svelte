@@ -256,18 +256,24 @@
     {#snippet ready(_readySnapshot)}
       {#if component.type === 'metricCard'}
         {@const tipCode = component.props.tipCode}
+        {@const canShowDefinition = !exportMode && !screen.retained && metricDefinitionTips?.available()}
         <MetricCard
           loading={snapshot.status === 'loading' && !screen.retained} data={metricData} animate={!exportMode}
           props={component.props} onlink={onmetriclink} linkHref={metricHref}
-          definitionTip={!exportMode && !screen.retained && tipCode && metricDefinitionTips?.available()
-            ? metricTitleAccessory : undefined}
+          definitionTip={canShowDefinition && tipCode ? metricTitleAccessory : undefined}
+          rowDefinitionTip={canShowDefinition ? metricDefinitionAccessory : undefined}
           onaction={!exportMode && tabSelection
             ? action => tabSelection.selectFromMetric(component.id, action.selectTab.componentId, action.selectTab.tabId)
             : undefined}
         />
         {#snippet metricTitleAccessory(title: string)}
-          {#if tipCode && metricDefinitionTips}
-            <MetricDefinitionTrigger {title} code={tipCode} tips={metricDefinitionTips} />
+          {#if tipCode}
+            {@render metricDefinitionAccessory(title, tipCode)}
+          {/if}
+        {/snippet}
+        {#snippet metricDefinitionAccessory(title: string, code: string)}
+          {#if metricDefinitionTips}
+            <MetricDefinitionTrigger {title} {code} tips={metricDefinitionTips} />
           {/if}
         {/snippet}
       {:else if component.type === 'barChart'}

@@ -1,0 +1,75 @@
+{
+  "case": "metric-row-definition-tip-invalid-code",
+  "invariant": "metric-card-row-definition-tip",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must match pattern \"^\\S+$\"",
+      "paths": [
+        "/dataSources/closure-and-contract/fields/totalClosure/metricCode",
+        "/dataSources/closure-and-contract/fields/totalClosure/metricCode"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 currency",
+      "paths": [
+        "/dataSources/closure-and-contract/fields/totalClosure/currency"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must be equal to constant",
+      "paths": [
+        "/dataSources/closure-and-contract/fields/totalClosure/type",
+        "/dataSources/closure-and-contract/fields/totalClosure/type",
+        "/dataSources/closure-and-contract/fields/totalClosure/role",
+        "/dataSources/closure-and-contract/fields/totalClosure/type",
+        "/dataSources/closure-and-contract/fields/totalClosure/role"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must match exactly one schema in oneOf",
+      "paths": [
+        "/dataSources/closure-and-contract/fields/totalClosure"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 items",
+      "paths": [
+        "/dataSources/closure-and-contract/fields/totalClosure/items"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 metricCode(拼写错误?)",
+      "paths": [
+        "/dataSources/closure-and-contract/fields/totalClosure/metricCode",
+        "/dataSources/closure-and-contract/fields/totalClosure/metricCode"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must match a schema in anyOf",
+      "paths": [
+        "/dataSources/closure-and-contract/fields/totalClosure"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "closure-and-contract": {
+        "fields": {
+          "totalClosure": {
+            "type": "number",
+            "role": "measure",
+            "metricCode": " "
+          }
+        }
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

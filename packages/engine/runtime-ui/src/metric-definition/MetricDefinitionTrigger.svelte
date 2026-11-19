@@ -1,11 +1,10 @@
 <svelte:options css="injected" />
 <script lang="ts">
-  import { metricDefinitionMessages } from './messages';
+  import { metricDefinitionMessages as text } from './messages';
   import type { MetricDefinitionTips } from './session';
 
   let { title, code, tips }: { title: string; code: string; tips: MetricDefinitionTips } = $props();
   let anchor = $state<HTMLButtonElement>();
-  const text = $derived(metricDefinitionMessages(anchor));
 
   $effect(() => {
     const target = anchor;

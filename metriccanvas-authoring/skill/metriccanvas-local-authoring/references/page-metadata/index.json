@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.127",
-  "schemaSha256": "d154b09e08d9b1788ca6cdf3eea65c6f2cc85287fdf20a59fb39c93e7a9b7b97",
+  "schemaVersion": "6.128",
+  "schemaSha256": "d7350fcd89783209e9e36a6dba0d822a87607bbc90f06b92fdf117f3388e5a59",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -1387,7 +1387,8 @@
         "6.124",
         "6.125",
         "6.126",
-        "6.127"
+        "6.127",
+        "6.128"
       ]
     },
     {
@@ -3517,6 +3518,12 @@
       "module": "fields.md"
     },
     {
+      "pointer": "#/definitions/scalarField/oneOf/0/properties/metricCode",
+      "path": "@scalarField · oneOf[0].metricCode",
+      "required": "本分支可选",
+      "module": "fields.md"
+    },
+    {
       "pointer": "#/definitions/scalarField/oneOf/0/properties/defaultFormat",
       "path": "@scalarField · oneOf[0].defaultFormat",
       "required": "本分支可选",
@@ -3633,6 +3640,12 @@
     {
       "pointer": "#/definitions/scalarField/oneOf/1/properties/collapsible",
       "path": "@scalarField · oneOf[1].collapsible",
+      "required": "本分支可选",
+      "module": "fields.md"
+    },
+    {
+      "pointer": "#/definitions/scalarField/oneOf/1/properties/metricCode",
+      "path": "@scalarField · oneOf[1].metricCode",
       "required": "本分支可选",
       "module": "fields.md"
     },
@@ -4747,6 +4760,12 @@
       "module": "fields.md"
     },
     {
+      "pointer": "#/definitions/queryScalarField/oneOf/0/properties/metricCode",
+      "path": "@queryScalarField · oneOf[0].metricCode",
+      "required": "本分支可选",
+      "module": "fields.md"
+    },
+    {
       "pointer": "#/definitions/queryScalarField/oneOf/0/properties/defaultFormat",
       "path": "@queryScalarField · oneOf[0].defaultFormat",
       "required": "本分支可选",
@@ -4869,6 +4888,12 @@
     {
       "pointer": "#/definitions/queryScalarField/oneOf/1/properties/collapsible",
       "path": "@queryScalarField · oneOf[1].collapsible",
+      "required": "本分支可选",
+      "module": "fields.md"
+    },
+    {
+      "pointer": "#/definitions/queryScalarField/oneOf/1/properties/metricCode",
+      "path": "@queryScalarField · oneOf[1].metricCode",
       "required": "本分支可选",
       "module": "fields.md"
     },
@@ -5366,6 +5391,12 @@
       ]
     },
     {
+      "pointer": "#/definitions/groupedMeasureQueryFieldGroup/additionalProperties/oneOf/0/properties/metricCode",
+      "path": "@groupedMeasureQueryFieldGroup{key} · oneOf[0].metricCode",
+      "required": "本分支可选",
+      "module": "fields.md"
+    },
+    {
       "pointer": "#/definitions/groupedMeasureQueryFieldGroup/additionalProperties/oneOf/1",
       "path": "@groupedMeasureQueryFieldGroup{key} · oneOf[1]",
       "required": "独立分支（不合并required）",
@@ -5483,6 +5514,12 @@
         "date-month-day",
         "period"
       ]
+    },
+    {
+      "pointer": "#/definitions/groupedMeasureQueryFieldGroup/additionalProperties/oneOf/1/properties/metricCode",
+      "path": "@groupedMeasureQueryFieldGroup{key} · oneOf[1].metricCode",
+      "required": "本分支可选",
+      "module": "fields.md"
     },
     {
       "pointer": "#/definitions/groupedMeasureQueryFieldGroup/propertyNames",
@@ -11376,6 +11413,12 @@
       "module": "field-bindings-and-formats.md"
     },
     {
+      "pointer": "#/definitions/metricCardComponent/properties/props/properties/rows/items/properties/showDefinition",
+      "path": "@metricCardComponent.props.rows[].showDefinition",
+      "required": "本分支可选",
+      "module": "components/metricCard.md"
+    },
+    {
       "pointer": "#/definitions/metricCardComponent/properties/props/properties/rows/items/properties/link",
       "path": "@metricCardComponent.props.rows[].link",
       "required": "本分支可选",
@@ -11603,6 +11646,12 @@
       "required": "本分支必填",
       "module": "components/metricCard.md",
       "ref": "#/definitions/fieldBinding"
+    },
+    {
+      "pointer": "#/definitions/metricCardComponent/properties/props/properties/secondaryRows/items/properties/showDefinition",
+      "path": "@metricCardComponent.props.secondaryRows[].showDefinition",
+      "required": "本分支可选",
+      "module": "components/metricCard.md"
     },
     {
       "pointer": "#/definitions/metricCardComponent/properties/props/properties/secondaryRows/items/properties/link",
@@ -23586,5 +23635,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "452c1c56e258779ec55148e5287ab4ccf4339b0be2897b513e220c8b2dd6f66b"
+  "semanticSourceDigest": "91ba8189c5096a226c7586ed1ab093fb48e2026bbb2c0247513670201d28e0b6"
 }

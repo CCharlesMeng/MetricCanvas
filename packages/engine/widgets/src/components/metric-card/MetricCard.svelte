@@ -18,6 +18,7 @@
     props: MetricCardProps;
     loading?: boolean;
     definitionTip?: Snippet<[string]>;
+    rowDefinitionTip?: Snippet<[title: string, code: string]>;
     animate?: boolean;
     /** 只由声明了 link 的非空值触发。 */
     onlink?: (row: Row, event: MouseEvent) => void;
@@ -25,10 +26,16 @@
     onaction?: (action: NonNullable<MetricCardRow['action']>) => void;
   }
 
-  let { data, props, loading = false, animate = true, definitionTip, onlink, linkHref, onaction }: Props = $props();
+  let { data, props, loading = false, animate = true, definitionTip, rowDefinitionTip, onlink, linkHref, onaction }: Props = $props();
   const tipAnchor = $derived(definitionTip ? metricCardTipAnchor(props) : undefined);
   const titleAccessory = $derived(tipAnchor === 'title' ? definitionTip : undefined);
   const rowAccessory = $derived(tipAnchor === 'row' ? definitionTip : undefined);
+
+  function definitionCode(row: MetricCardRow): string | undefined {
+    if (!rowDefinitionTip || row.showDefinition !== true || !row.label.trim()) return;
+    const field = resolveField(row.valueField, data).definition;
+    return field?.role === 'measure' ? field.metricCode : undefined;
+  }
 
   function fieldText(field: FieldBinding, unit?: string): string {
     const resolved = resolveField(field, data);
@@ -78,9 +85,14 @@
     {#each rows as row, index (`${row.label}:${index}`)}
       {@const rawValue = fieldValue(row.valueField, data)}
       {@const action = row.action}
+      {@const code = definitionCode(row)}
       <div class="metric-row">
-        <span class="row-label" class:with-title-accessory={accessory !== undefined}>
-          {row.label}{@render accessory?.(row.label)}
+        <span class="row-label" class:with-title-accessory={accessory !== undefined || code !== undefined}>
+          {#if code}
+            <span>{row.label}</span>{@render rowDefinitionTip?.(row.label, code)}
+          {:else}
+            {row.label}{@render accessory?.(row.label)}
+          {/if}
         </span>
         {#if !loading && rawValue != null && action && onaction}
           <button

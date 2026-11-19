@@ -4,6 +4,7 @@ import {
   componentIdZ,
   componentLayoutZ,
   fieldBindingZ,
+  metricCodeZ,
   metricDataZ,
   nonEmptyTextValueZ,
   textValueZ
@@ -28,6 +29,7 @@ const metricCardRowZ = z
     /** 与主值同排的短上下文，例如统计窗口“近60天”。 */
     context: textValueZ.optional(),
     valueField: fieldBindingZ,
+    showDefinition: z.boolean().optional().describe('开启后沿 valueField 读取 metricCode，并在该指标名称右侧显示问号。'),
     /** 显式将该行的非空主值声明为组件 actions 的触发入口。 */
     link: z.boolean().optional(),
     action: selectTabActionZ.optional().describe('该指标值独立执行的点击动作；与同一行的 link: true 互斥。'),
@@ -61,7 +63,7 @@ export const metricCardComponentZ = z
     props: z
       .object({
         title: textValueZ.optional(),
-        tipCode: z.string().regex(/^\S+$/).optional().describe('指标定义气泡使用的静态指标编码，展示于主标题或无主标题单行卡片的指标名称旁。'),
+        tipCode: metricCodeZ.optional().describe('指标定义气泡使用的静态指标编码，展示于主标题或无主标题单行卡片的指标名称旁。'),
         variant: z
           .enum([
             'summary',

@@ -1,7 +1,7 @@
 <svelte:options css="injected" />
 <script lang="ts">
   import { observePopover, popoverPosition } from '@metriccanvas/ui';
-  import { metricDefinitionMessages } from './messages';
+  import { metricDefinitionMessages as messages } from './messages';
   import { metricDefinitionHref, type MetricDefinitionTipState } from './session';
 
   interface Props {
@@ -16,7 +16,6 @@
   let { state, panelId, panel = $bindable(), onenter, onleave, onclose, onretry }: Props = $props();
   const anchor = $derived(state.anchor);
   const keyboard = $derived(state.keyboard);
-  const messages = $derived(metricDefinitionMessages(anchor));
   const definition = $derived(state.phase === 'loaded' ? state.definition : undefined);
   const href = $derived(metricDefinitionHref(definition?.url ?? null));
 

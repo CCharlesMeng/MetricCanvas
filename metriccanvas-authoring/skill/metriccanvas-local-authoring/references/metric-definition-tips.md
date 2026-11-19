@@ -1,6 +1,6 @@
 # 按指标说明补配气泡
 
-用于给一张或一批已有指标卡补配指标定义说明。填写 `props.tipCode`，展示位置遵循[指标卡协议](page-metadata/components/metricCard.md#metric-definition-tip)。
+用于批量给指标卡内实际使用的主、次指标补配问号。按指标说明目录匹配编码，给结果字段填写 `metricCode`，给对应指标行设置 `showDefinition: true`。见[指标卡协议](page-metadata/components/metricCard.md#metric-definition-tip)。
 
 ## 从资料形成指标说明目录
 
@@ -36,6 +36,8 @@ node "<skill-dir>/scripts/configure-metric-tips.mjs" --pages-dir "<pages-dir>" -
 
 目录模式递归读取 JSON 文件。用可重复的 `--page "<page.json>"` 可精确限定输入页。不提供 `--catalog` 时执行只读扫描，返回请求的指标名、数据源、字段及固定维度，便于补齐资料。批量范围与原件摘要写在输出中。
 
-逐卡检查 `cards`。工具沿主次指标行、变化值和进度值的字段绑定追到普通单项 DQE 请求。一个请求可以输出多个指标，只核对实际绑定的字段。所有绑定均精确匹配同一编码且有展示位置时标记 `ready`。已有 `tipCode` 标记 `existing` 并保留。组合源、查询模式及无法验证的计算或绑定在该流程中保留待核。所有候选通过页面校验后，才写入新目录，原件可按摘要核验。再次扫描候选时对应卡片应为 `existing`。
+查看 `cards[].rows[]` 的行路径、请求和匹配状态。工具沿主、次指标行的 `valueField` 识别普通单项 DQE 的 `output_metrics`；同比、环比和进度值继续沿用原页面。一个请求输出多个指标时，只核对当前行绑定的字段。行内各分支都匹配后标记 `ready`。共享结果字段只补配一次编码，每个匹配行独立开启问号。
 
-`upgrade-required` 表示原页版本低于能力下限。查阅[显式升级流程](page-upgrade.md)，确认本批允许升级后追加 `--upgrade`。脚本对确有补配项的旧页调用产品升级器，列出迁移差异并校验候选。候选页的实际气泡仍由接入环境提供指标定义端口。合成验收入口为 `/pages/metric-card-definition-tip`。
+已有 `showDefinition: true` 标记 `existing`，显示开关为 `false` 标记 `disabled`。旧 `tipCode` 卡片标记 `existing` 并沿用原配置。组合源、查询模式、无法验证的绑定、目录歧义和手工编码冲突保留待核。候选通过页面校验后写入新目录，原件可按摘要核验。再次扫描候选时，已开启的指标行为 `existing`。
+
+`upgrade-required` 表示原页版本低于 6.128。查阅[显式升级流程](page-upgrade.md)，确认本批允许升级后追加 `--upgrade`。脚本对确有补配项的旧页调用产品升级器，列出迁移差异并校验候选。候选页的实际气泡仍由接入环境提供指标定义端口。合成验收入口为 `/pages/metric-card-definition-tip`。

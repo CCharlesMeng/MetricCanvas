@@ -169,6 +169,7 @@ export const fieldRoleZ = z.enum(['dimension', 'measure', 'detail']);
  * 的可校验替代——比可加性弱，但让错误可见、可审计、可在评审时被质疑。
  */
 const collapsibleZ = z.boolean().optional();
+export const metricCodeZ = z.string().regex(/^\S+$/);
 
 const standardScalarFieldZ = z
   .object({
@@ -178,6 +179,7 @@ const standardScalarFieldZ = z
     unit: z.string().min(1).optional(),
     nullable: z.boolean().optional(),
     collapsible: collapsibleZ,
+    metricCode: metricCodeZ.optional().describe('外部指标定义服务使用的顶层度量编码。'),
     defaultFormat: valueFormatPresetZ.optional()
   })
   .strict();
@@ -191,6 +193,7 @@ const moneyFieldZ = z
     unit: z.string().min(1).optional(),
     nullable: z.boolean().optional(),
     collapsible: collapsibleZ,
+    metricCode: metricCodeZ.optional().describe('外部指标定义服务使用的顶层度量编码。'),
     defaultFormat: valueFormatPresetZ.optional()
   })
   .strict();

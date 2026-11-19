@@ -27,7 +27,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  */
 export const UNRESTRICTED_FILTER_CLEAR_MINOR = 124;
 export const INDEPENDENT_EXCLUSION_CANDIDATES_MINOR = 125;
-const CURRENT_MINOR = 127;
+const CURRENT_MINOR = 128;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -82,6 +82,15 @@ function bindingOperatorUsed(query:Record<string,unknown>|undefined):boolean {
 }
 
 export const pageCapabilities = {
+  'metric-card-row-definition-tip': {
+    minor: 128,
+    legacyReadable: false,
+    description: '结果字段指标编码与指标行定义气泡',
+    usedAt: document => [
+      ...resultFieldPropertyPaths(document, 'metricCode'),
+      ...metricCardRowPaths(document, row => has(row, 'showDefinition') ? '/showDefinition' : undefined)
+    ]
+  },
   'metric-card-definition-tip': {
     minor: 127,
     legacyReadable: false,
@@ -92,7 +101,8 @@ export const pageCapabilities = {
     minor: 126,
     legacyReadable: false,
     description: '指标值切换同页 Tab',
-    usedAt: metricCardSelectTabPaths
+    usedAt: document => metricCardRowPaths(document, row =>
+      has(record(row?.action), 'selectTab') ? '/action/selectTab' : undefined)
   },
   'number-ungrouped': { minor:123, legacyReadable:false, description:'普通数值默认千分位，ungrouped 显式关闭且保留精度和符号', usedAt:document=>namedFormatPaths(document,/^number(?:-[0-5])?-ungrouped(?:-signed)?$/) },
   'native-ioc-filter-preparation': {
@@ -639,7 +649,7 @@ export const pageCapabilities = {
   'collapsible-measure': {
     minor: 0,
     description: '结果字段契约上的可折叠度量声明(ADR-0046)',
-    usedAt: (document) => collapsibleFieldPaths(document)
+    usedAt: document => resultFieldPropertyPaths(document, 'collapsible')
   },
   'table-row-kind-field': {
     minor: 0,
@@ -1091,10 +1101,9 @@ function dataSourcePaths(
 }
 
 /**
- * `collapsible` 在扁平字段与按角色分组的局部显式字段下位置不同,
- * 因此在 `fields` 子树内按结构递归查找,而不是假定某一种形状。
+ * 扁平与分组结果字段的属性均沿原始 fields 子树定位。
  */
-function collapsibleFieldPaths(document: unknown): string[] {
+function resultFieldPropertyPaths(document: unknown, property: string): string[] {
   const dataSources = record(record(document)?.dataSources) ?? {};
   return Object.entries(dataSources).flatMap(([sourceId, candidate]) => {
     const fields = record(record(candidate)?.fields);
@@ -1104,10 +1113,7 @@ function collapsibleFieldPaths(document: unknown): string[] {
     return paths;
 
     function visit(node: Json, path: string): void {
-      if (has(node, 'collapsible')) {
-        paths.push(`${path}/collapsible`);
-        return;
-      }
+      if (typeof node.type === 'string' && has(node, property)) paths.push(`${path}/${property}`);
       for (const [key, child] of Object.entries(node)) {
         const nested = record(child);
         if (nested) visit(nested, `${path}/${escapePointer(key)}`);
@@ -1179,7 +1185,10 @@ function metricCardTipPaths(document: unknown): string[] {
   return paths;
 }
 
-function metricCardSelectTabPaths(document: unknown): string[] {
+function metricCardRowPaths(
+  document: unknown,
+  propertyPath: (row: Json | undefined) => string | undefined
+): string[] {
   const paths: string[] = [];
   walkDocumentComponents(document, (component, path) => {
     if (component.type !== 'metricCard') return;
@@ -1188,7 +1197,8 @@ function metricCardSelectTabPaths(document: unknown): string[] {
       const rows = metricProps?.[key];
       if (!Array.isArray(rows)) continue;
       rows.forEach((row, index) => {
-        if (has(record(record(row)?.action), 'selectTab')) paths.push(`${path}/props/${key}/${index}/action/selectTab`);
+        const suffix = propertyPath(record(row));
+        if (suffix) paths.push(`${path}/props/${key}/${index}${suffix}`);
       });
     }
   });

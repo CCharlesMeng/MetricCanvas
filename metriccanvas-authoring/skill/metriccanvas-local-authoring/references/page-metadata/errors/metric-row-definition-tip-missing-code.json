@@ -1,0 +1,38 @@
+{
+  "case": "metric-row-definition-tip-missing-code",
+  "invariant": "metric-card-row-definition-tip",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "showDefinition: true 要求 valueField 的每个结果字段声明 metricCode",
+      "paths": [
+        "/sections/1/components/0/props/components/0/props/rows/0/showDefinition"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      "…",
+      {
+        "components": [
+          {
+            "props": {
+              "components": [
+                {
+                  "props": {
+                    "rows": [
+                      {
+                        "showDefinition": true
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

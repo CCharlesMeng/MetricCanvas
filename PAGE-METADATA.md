@@ -1,6 +1,6 @@
 # MetricCanvas 页面元数据规范
 
-Schema 6.127 新增可选的 `metricCard.props.tipCode`。问号显示在主标题旁，无主标题的单行卡片显示在该行指标名称旁。集成应用提供指标定义查询端口后可查看定义、公式、解释人和管理链接。见[指标定义气泡](docs/page-metadata/components/metricCard.md#metric-definition-tip)与合成入口 `/pages/metric-card-definition-tip`。
+Schema 6.128 支持在指标卡的主、次指标行设置 `showDefinition: true`。该行沿 `valueField` 读取结果字段的 `metricCode`，在指标名称右侧显示问号。省略或设为 `false` 时隐藏。6.127 的 `metricCard.props.tipCode` 继续复用已有标题或无标题卡片的单行名称。气泡的固定文案统一使用中文，服务端返回的内容按原文显示。见[指标定义气泡](docs/page-metadata/components/metricCard.md#metric-definition-tip)与合成入口 `/pages/metric-card-definition-tip`。
 
 Schema 6.126 支持指标值切换同页 Tab。每个主、次指标行可声明 `action.selectTab` 并分别引用目标容器与页签。同一行的 `action` 和 `link: true` 互斥，其他行可以继续使用卡片级动作。切换沿用当前页面实例和筛选。见[指标值切换同页 Tab](docs/page-metadata/actions-and-navigation.md#metric-select-tab)与合成入口 `/pages/metric-card-select-tab`。
 

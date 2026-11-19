@@ -3978,6 +3978,26 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/invalid/metric-row-definition-tip-version-floor.json",
+      "target": "product-contracts/page/conformance/invalid/metric-row-definition-tip-version-floor.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/metric-row-definition-tip-missing-code.json",
+      "target": "product-contracts/page/conformance/invalid/metric-row-definition-tip-missing-code.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/metric-row-definition-tip-invalid-code.json",
+      "target": "product-contracts/page/conformance/invalid/metric-row-definition-tip-invalid-code.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/metric-row-definition-tip-mixed-card.json",
+      "target": "product-contracts/page/conformance/invalid/metric-row-definition-tip-mixed-card.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/invalid/metric-select-tab-missing-container.json",
       "target": "product-contracts/page/conformance/invalid/metric-select-tab-missing-container.json",
       "scope": "exact product contract"
@@ -7103,6 +7123,26 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/errors/metric-row-definition-tip-version-floor.json",
+      "target": "references/page-metadata/errors/metric-row-definition-tip-version-floor.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/metric-row-definition-tip-missing-code.json",
+      "target": "references/page-metadata/errors/metric-row-definition-tip-missing-code.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/metric-row-definition-tip-invalid-code.json",
+      "target": "references/page-metadata/errors/metric-row-definition-tip-invalid-code.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/metric-row-definition-tip-mixed-card.json",
+      "target": "references/page-metadata/errors/metric-row-definition-tip-mixed-card.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/errors/metric-select-tab-missing-container.json",
       "target": "references/page-metadata/errors/metric-select-tab-missing-container.json",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -8849,11 +8889,11 @@
     }
   ],
   "counts": {
-    "product": 1737,
+    "product": 1745,
     "authoring": 32,
     "modules": 36,
     "topics": 322,
-    "nodes": 2734,
+    "nodes": 2742,
     "tools": 9,
     "components": 20
   },
