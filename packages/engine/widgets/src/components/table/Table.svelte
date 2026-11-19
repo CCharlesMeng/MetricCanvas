@@ -121,6 +121,7 @@
     interactionGate, toolbarEnabled, linkHref
   }: Props = $props();
 
+  const subtitle = $derived(props.subtitle ?? (nested ? undefined : `${DEFAULT_NULL_TEXT} 代表本周期没有合同单/商务单`));
   const loading = $derived(data.main.sourceStatus === 'loading');
   const bodyLoading = $derived(loading && !data.main.progress && !staticExport);
   let previousPagination = $state.raw<TablePaginationState>();
@@ -413,7 +414,7 @@
   style:--table-content-min-width={`${columnWidthTotal}px`}
   style:--table-fit-min-width={`${fitMinWidth}px`}
 >
-  <TableHeading title={props.title} subtitle={props.subtitle} showTools={interactive && !staticExport && !!props.toolbar && leaves.length>0}>
+  <TableHeading title={props.title} {subtitle} showTools={interactive && !staticExport && !!props.toolbar && leaves.length>0}>
     {#snippet tools()}
       {#if interactive && !staticExport && props.toolbar}
         <TableToolbar toolbar={props.toolbar} searchEnabled={toolbarEnabled?.search??true} canExport={(toolbarEnabled?.export??true) && data.main.sourceStatus !== 'loading' && !data.main.progress} option={searchOption} onoption={onsearchoption} draft={searchDraft} busy={exporting} error={exportError}

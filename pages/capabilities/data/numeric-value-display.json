@@ -166,7 +166,6 @@
           },
           "props": {
             "title": "统一格式",
-            "subtitle": "灰色备注示例",
             "columns": [
               {
                 "field": "case",
@@ -212,7 +211,6 @@
             "main": "sample"
           },
           "props": {
-            "subtitle": "无标题时从左侧显示备注",
             "toolbar": {
               "search": {
                 "fields": [
@@ -228,6 +226,52 @@
               {
                 "field": "rate",
                 "title": "百分比"
+              }
+            ],
+            "pagination": {
+              "mode": "none"
+            }
+          }
+        },
+        {
+          "id": "custom-subtitle-table",
+          "type": "table",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "sample"
+          },
+          "props": {
+            "title": "自定义副标题",
+            "subtitle": "数值来自内联合成数据",
+            "columns": [
+              {
+                "field": "case",
+                "title": "场景"
+              }
+            ],
+            "pagination": {
+              "mode": "none"
+            }
+          }
+        },
+        {
+          "id": "hidden-subtitle-table",
+          "type": "table",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "sample"
+          },
+          "props": {
+            "title": "关闭副标题",
+            "subtitle": "",
+            "columns": [
+              {
+                "field": "case",
+                "title": "场景"
               }
             ],
             "pagination": {

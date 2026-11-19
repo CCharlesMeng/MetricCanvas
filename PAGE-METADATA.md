@@ -753,7 +753,7 @@ Tokens 百万选择、最终字段绑定检查及受控多槽表格装配见[创
 
 图表、表格、指标卡、进度环、仪表和期间占位共用单个长横线 `—`（U+2014）。既有业务自定义文案和真实字符串保持。无 Schema 字段增减，场景 `/pages/chart-table-unit`、`/pages/numeric-value-display` 和 `/pages/semantic-numeric-display`。
 
-表格备注使用既有 `props.subtitle`，以 12 px 灰字显示在标题右侧 16 px，无标题时左对齐。完整说明及合成场景见[表格标题与备注](docs/page-metadata/components/table.md#表格标题与备注)。
+外层明细表默认副标题为「— 代表本周期没有合同单/商务单」。通过既有 `props.subtitle` 自定义文案，或用空字符串隐藏。副标题以 12 px 灰字显示在标题右侧 16 px，无标题时左对齐。完整说明及合成场景见[表格标题与备注](docs/page-metadata/components/table.md#表格标题与备注)。
 
 维度绑定包含与排除（6.114）：`filterBindings` 的普通及层级 `dimension` 绑定支持可选 `operator:"=" | "!="`；省略维持原有包含，`!=` 排除整个所选集合，清空不生成条件。声明、静态条件归属和 DQE 编码见[维度绑定运算](docs/page-metadata/queries-and-bindings.md#dimension-binding-operator)，合成验收 `/pages/dimension-binding-operator`。
 
