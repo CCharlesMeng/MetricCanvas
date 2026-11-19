@@ -899,7 +899,7 @@
   .row-value {
     color: #0f1a4d;
     font-size: 1.625rem;
-    font-weight: 600;
+    font-weight: 400;
     line-height: 1.35;
     font-variant-numeric: tabular-nums;
   }
