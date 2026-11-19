@@ -309,10 +309,6 @@
     font-weight: 400;
     line-height: 17px;
   }
-  .primary-detail > .metric-panel .value-link .row-value,
-  .primary-detail > .metric-panel .value-link .unit {
-    text-decoration-line: underline;
-  }
   .metric-content {
     display: flex;
     min-width: 0;
@@ -874,9 +870,9 @@
     cursor: pointer;
     font: inherit;
     text-align: left;
+    text-decoration: none;
   }
-  .value-link[data-metric-row-action] .row-value,
-  .value-link[data-metric-row-action] .unit {
+  .value-link .row-value {
     text-decoration-line: underline;
   }
   .value-link:focus-visible {

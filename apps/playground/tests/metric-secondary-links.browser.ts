@@ -17,8 +17,10 @@ for (const width of [1440, 390]) {
     const missing = linkedCard.locator('.metric-row').filter({ hasText: '暂无数据（已配置链接）' });
     await expect(missing.locator('a, button')).toHaveCount(0);
     await expect(missing.locator('.row-value')).toHaveCSS('text-decoration-line', 'none');
-    for (const value of await links.locator('.row-value, .unit').all()) {
-      await expect(value).toHaveCSS('text-decoration-line', 'underline');
+    for (const link of await links.all()) {
+      await expect(link.locator('.row-value')).toHaveCSS('text-decoration-line', 'underline');
+      await expect(link.locator('.unit')).toHaveText('万元');
+      await expect(link.locator('.unit')).toHaveCSS('text-decoration-line', 'none', { timeout: 2000 });
     }
     const link = links.first();
     await link.press('Enter');

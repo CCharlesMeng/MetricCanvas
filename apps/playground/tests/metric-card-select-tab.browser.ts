@@ -96,6 +96,13 @@ test('metric value switches Tab in the JSON preview without an address adapter',
 test('the IOC page routes the configured metric values and keeps the applied header filters', async ({ page }) => {
   const url = new URLSearchParams({ period: 'month:2026-11', 'customer-category': '卓越NA' });
   await page.goto(`/pages/rep-office-execution-efficiency-tab-demo?${url}`);
+  const people = page.getByRole('button', { name: /商务代表处SDT平均决策人数/ });
+  await expect(people.locator('.row-value')).toHaveCSS('text-decoration-line', 'underline');
+  await expect(people.locator('.unit')).toHaveText('人');
+  await expect(people.locator('.unit')).toHaveCSS('text-decoration-line', 'none', { timeout: 2000 });
+  const closureRate = page.getByRole('button', { name: /合同决策代表处闭环率/ }).locator('.row-value');
+  await expect(closureRate).toHaveText(/\d%$/);
+  await expect(closureRate).toHaveCSS('text-decoration-line', 'underline');
   const routes = [
     [/合同决策代表处闭环率/, '合同决策闭环率明细'],
     [/商务代表处SDT平均决策时长/, '商务审批明细'],
