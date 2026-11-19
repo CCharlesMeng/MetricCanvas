@@ -24,7 +24,7 @@ import { sourceCandidateErrors } from './source-candidates';
 import { filterGroupErrors, obsoleteChartFilterErrors } from './filter-group';
 import {queryBindingWhenErrors} from './query-binding-when';
 import { metricBeforeErrors } from './metric-before';
-import { metricCardShapeErrors } from './metric-card';
+import { metricCardShapeErrors, metricCardSelectTabErrors } from './metric-card';
 import {ordinaryQuery} from './time-mode';
 import {timeExtensionErrors} from './time-extension-validation';
 import {pageSelectionVariants} from './selection-variants';
@@ -1537,11 +1537,11 @@ function componentErrors(
   function checkMetricCard(component: Extract<Component, { type: 'metricCard' }>): void {
     errors.push(...metricCardShapeErrors(component.props, componentPath));
     {
-      const hasNavigateAction = component.props.actions?.some(
+      const hasValueAction = component.props.actions?.some(
         (action) => 'navigate' in action || 'openDetail' in action
       ) ?? false;
       component.props.rows.forEach((row, rowIndex) => {
-        if (row.link === true && !hasNavigateAction) {
+        if (row.link === true && !row.action && !hasValueAction) {
           errors.push(
             schemaError(
               `${componentPath}/props/rows/${rowIndex}/link`,
@@ -1551,7 +1551,7 @@ function componentErrors(
         }
       });
       component.props.secondaryRows?.forEach((row, rowIndex) => {
-        if (row.link === true && !hasNavigateAction) {
+        if (row.link === true && !row.action && !hasValueAction) {
           errors.push(
             schemaError(
               `${componentPath}/props/secondaryRows/${rowIndex}/link`,
@@ -1563,7 +1563,9 @@ function componentErrors(
     }
     for (const rowsKey of ['rows', 'secondaryRows'] as const) {
       (component.props[rowsKey] ?? []).forEach((row, rowIndex) => {
-        check(row.valueField, `${componentPath}/props/${rowsKey}/${rowIndex}/valueField`, 'measure');
+        const rowPath = `${componentPath}/props/${rowsKey}/${rowIndex}`;
+        errors.push(...metricCardSelectTabErrors(page, row, rowPath));
+        check(row.valueField, `${rowPath}/valueField`, 'measure');
         (row.changes ?? []).forEach((change, changeIndex) => {
           check(
             change.field,

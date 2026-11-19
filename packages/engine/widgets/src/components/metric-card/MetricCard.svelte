@@ -1,6 +1,6 @@
 <svelte:options css="injected" />
 <script lang="ts">
-  import type { FieldBinding, MetricCardProps, Row } from '@metriccanvas/page/internal';
+  import type { FieldBinding, MetricCardProps, MetricCardRow, Row } from '@metriccanvas/page/internal';
   import type { MetricDataSlots } from '../../shared/component-data';
   import { fieldRow, fieldValue, resolveField } from '../../shared/component-data';
   import { DEFAULT_NULL_TEXT, hasDisplayValue, finiteNumber, isSignedNumberFormat, valuePolarity } from '../../shared/value-format';
@@ -16,9 +16,10 @@
     /** 只由声明了 link 的非空值触发。 */
     onlink?: (row: Row, event: MouseEvent) => void;
     linkHref?: (row: Row) => string | undefined;
+    onaction?: (action: NonNullable<MetricCardRow['action']>) => void;
   }
 
-  let { data, props, loading = false, onlink, linkHref }: Props = $props();
+  let { data, props, loading = false, onlink, linkHref, onaction }: Props = $props();
 
   function fieldText(field: FieldBinding, unit?: string): string {
     const resolved = resolveField(field, data);
@@ -57,9 +58,20 @@
   <div class="metric-values">
     {#each rows as row, index (`${row.label}:${index}`)}
       {@const rawValue = fieldValue(row.valueField, data)}
+      {@const action = row.action}
       <div class="metric-row">
         <span class="row-label">{row.label}</span>
-        {#if !loading && row.link === true && rawValue != null && linkHref}
+        {#if !loading && rawValue != null && action && onaction}
+          <button
+            type="button"
+            class="value-line value-link"
+            data-metric-row-action
+            aria-label={`${row.label} ${fieldText(row.valueField)}`}
+            onclick={() => onaction?.(action)}
+          >
+            {@render metricValue(row)}
+          </button>
+        {:else if !loading && row.link === true && rawValue != null && linkHref}
           <a
             href={linkHref?.(fieldRow(row.valueField, data) ?? {})}
             role={linkHref?.(fieldRow(row.valueField, data) ?? {}) ? undefined : 'button'}
@@ -815,6 +827,10 @@
     cursor: pointer;
     font: inherit;
     text-align: left;
+  }
+  .value-link[data-metric-row-action] .row-value,
+  .value-link[data-metric-row-action] .unit {
+    text-decoration-line: underline;
   }
   .value-link:focus-visible {
     outline: 2px solid var(--mc-color-primary, #08359e);

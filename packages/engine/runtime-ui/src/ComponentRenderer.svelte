@@ -252,7 +252,13 @@
   <WidgetHost {snapshot} retained={screen.retained} notices={component.type === 'table' && snapshot.status === 'error' ? [] : componentDataNotices(component, snapshot, pageSnapshots, table)}>
     {#snippet ready(_readySnapshot)}
       {#if component.type === 'metricCard'}
-        <MetricCard loading={snapshot.status === 'loading' && !screen.retained} data={metricData} props={component.props} onlink={onmetriclink} linkHref={metricHref} />
+        <MetricCard
+          loading={snapshot.status === 'loading' && !screen.retained} data={metricData}
+          props={component.props} onlink={onmetriclink} linkHref={metricHref}
+          onaction={!exportMode && tabSelection
+            ? action => tabSelection.selectFromMetric(component.id, action.selectTab.componentId, action.selectTab.tabId)
+            : undefined}
+        />
       {:else if component.type === 'barChart'}
         <BarChart
           diagnostic={ { componentId: component.id, componentType: component.type, path: optionPaths?.().get(component.id) ?? '/props/echartsOption' } }

@@ -1,7 +1,7 @@
 import { interactionShape } from './condition';
 import { navigationTargetZ, navigationBindingZ } from './navigation';
 import { z } from 'zod';
-import { fieldNameZ, fieldReferenceZ, idZ, valueFormatPresetZ } from './primitives';
+import { componentIdZ, fieldNameZ, fieldReferenceZ, idZ, valueFormatPresetZ } from './primitives';
 
 const detailTitleZ = z.union([z.string().min(1), z.object({
   parts: z.array(z.union([z.string(), z.object({
@@ -65,6 +65,11 @@ export const openDetailActionZ = z
       }).strict()])
   })
   .strict();
+
+export const selectTabActionZ = z.object({
+  on: z.literal('click'),
+  selectTab: z.object({ componentId: componentIdZ, tabId: idZ }).strict()
+}).strict().meta({ id: 'selectTabAction' });
 
 export const componentActionZ = z
   .union([writeFilterActionZ, navigateActionZ, openDetailActionZ])

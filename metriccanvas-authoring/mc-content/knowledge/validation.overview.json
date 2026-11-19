@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.125",
+  "schemaVersion": "6.126",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "validation.overview"
@@ -704,7 +704,7 @@
         },
         {
           "id": "metric-row-link-needs-navigate",
-          "description": "指标行声明 link 时组件必须至少有一个 navigate 动作",
+          "description": "指标行声明 link 时组件必须有 navigate 或 openDetail 动作",
           "valid": [
             "composite-page"
           ],

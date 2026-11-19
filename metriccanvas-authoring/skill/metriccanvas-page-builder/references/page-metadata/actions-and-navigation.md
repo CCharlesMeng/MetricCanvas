@@ -16,6 +16,31 @@
 
 `t11-evidence.md`记录两形态真实Chrome→createDqeGateway→本地HTTP，选择/清空raw_region、未绑定表格保留，以及真实anchor跳转携row/param/filter/fixed/hash。实际外部DQE、权限及目标业务页仍待独立联调。源码定位：`metriccanvas-authoring/tool/metriccanvas_authoring/pages/editing/interaction_editing.py`、`page_editing.py`，公开回归`test_content_interactions.py`。
 
+<a id="metric-select-tab"></a>
+
+## 指标值切换同页 Tab（6.126）
+
+在 `metricCard.props.rows[]` 或 `secondaryRows[]` 的指标行上声明单个 `action`：
+
+```json
+{
+  "label": "超期单数",
+  "valueField": { "data": "main", "field": "overdueCount" },
+  "action": {
+    "on": "click",
+    "selectTab": { "componentId": "order-detail-tabs", "tabId": "overdue" }
+  }
+}
+```
+
+`componentId` 引用同页的 `tabContainer.id`，`tabId` 引用该容器的 `props.tabs[].id`。每行独立指定目标。真实零值可点击，缺失值显示占位。首版行级 `action` 支持 `selectTab`。
+
+同一张卡可同时有行级动作和既有卡片级导航或详情。已有 `link: true` 的行继续执行卡片的 `props.actions`。同一行同时声明 `action` 和 `link: true` 时，在该行的 `link` 报错。卡片级 `props.actions` 继续接受已有动作。
+
+点击指标值与手动选择页签共用状态、查询激活、缓存和地址同步规则，使用当前已应用筛选与页面实例。目标不可见或已选中时保留当前页签状态。切换由引擎完成。URL 和 `tab-change` 沿用[现有活动页签规则](components/tabContainer.md)，页面参数仍按初始化输入读取。
+
+[完整合成示例](examples/metric-card-select-tab.json)同时演示两个指标绑定不同页签，以及同卡保留卡片级详情入口。Playground 入口 `/pages/metric-card-select-tab`。
+
 <a id="链接传参与目标页签"></a>
 
 ## 链接传参与目标页签
@@ -96,9 +121,63 @@ Angular 等路由框架应覆盖 `replaceSearch`，经自身 Router 更新 query
 6.106 起，列动作和组件动作的 `openDetail.title` 可声明固定标题或 `{parts:[固定文字,{field:当前行字段,format:可选格式},…]}`。快照与查询详情共用同一取值规则；旧 `titleField` 继续读取，与 `title` 互斥。完整声明、空值与版本边界见[详情组合标题](components/table.md#detail-composed-title)，合成场景 `/pages/partner-health-interactions` 包含组合标题的表格入口与固定标题的图表入口。
 
 
-页面协议 6.125。结构真源为本册[schema.json](schema.json)，SHA256 `85afa953d5f65aa71900f61cd016b77155ec12e622263151700f29cad7bb302d`。字段表自动生成；可选不等于有默认值。
+页面协议 6.126。结构真源为本册[schema.json](schema.json)，SHA256 `266c4792f1dd35514f6d2076dd81ab381d16cbb98bb2cee708b12e08a3056ebc`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
+
+<a id="schema-232f646566696e6974696f6e732f73656c656374546162416374696f6e"></a>
+
+### `@selectTabAction`
+
+Schema位置：`#/definitions/selectTabAction`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 类型/分支 | required=["on","selectTab"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f73656c656374546162416374696f6e2f70726f706572746965732f6f6e"></a>
+
+### `@selectTabAction.on`
+
+Schema位置：`#/definitions/selectTabAction/properties/on`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="click" | Schema未设默认；装配/运行时默认见语义说明 | 触发动作的受控事件。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "click" | 用于选择@selectTabAction.on分支；同分支其它约束同时成立。 |
+
+<a id="schema-232f646566696e6974696f6e732f73656c656374546162416374696f6e2f70726f706572746965732f73656c656374546162"></a>
+
+### `@selectTabAction.selectTab`
+
+Schema位置：`#/definitions/selectTabAction/properties/selectTab`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支必填 | required=["componentId","tabId"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 指标值点击后选中当前页面的指定页签，使用当前筛选状态。 |
+
+<a id="schema-232f646566696e6974696f6e732f73656c656374546162416374696f6e2f70726f706572746965732f73656c6563745461622f70726f706572746965732f636f6d706f6e656e744964"></a>
+
+### `@selectTabAction.selectTab.componentId`
+
+Schema位置：`#/definitions/selectTabAction/properties/selectTab/properties/componentId`。目标：[#/definitions/componentId](sections-and-layout.md#schema-232f646566696e6974696f6e732f636f6d706f6e656e744964)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/componentId | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 当前页面中目标 tabContainer 组件的 ID。 |
+
+<a id="schema-232f646566696e6974696f6e732f73656c656374546162416374696f6e2f70726f706572746965732f73656c6563745461622f70726f706572746965732f7461624964"></a>
+
+### `@selectTabAction.selectTab.tabId`
+
+Schema位置：`#/definitions/selectTabAction/properties/selectTab/properties/tabId`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 目标容器 props.tabs 中已声明的页签 ID。 |
 
 <a id="schema-232f646566696e6974696f6e732f616374696f6e73"></a>
 
@@ -1254,7 +1333,8 @@ Schema位置：`#/definitions/componentAction/anyOf/2/properties/openDetail/anyO
 ## 语义规则与反例（生成）
 
 - `url-navigation-source-contract`：URL 与来源绑定可校验，目标存在性与必填项由目标负责。反例：[ioc-title-row-source](errors/ioc-title-row-source.json)、[ioc-title-root-row-source](errors/ioc-title-root-row-source.json)、[ioc-title-unsafe-url](errors/ioc-title-unsafe-url.json)、[ioc-title-missing-title](errors/ioc-title-missing-title.json)、[navigation-invalid-authority](errors/navigation-invalid-authority.json)、[navigation-invalid-port](errors/navigation-invalid-port.json)、[navigation-scheme-without-authority](errors/navigation-scheme-without-authority.json)、[navigation-unsafe-url](errors/navigation-unsafe-url.json)、[navigation-missing-row-field](errors/navigation-missing-row-field.json)、[navigation-unknown-param](errors/navigation-unknown-param.json)、[navigation-wrong-filter-part](errors/navigation-wrong-filter-part.json)、[navigation-text-row-source](errors/navigation-text-row-source.json)、[navigation-text-unsafe-url](errors/navigation-text-unsafe-url.json)、[navigation-url-input-collision](errors/navigation-url-input-collision.json)、[navigation-url-input-wrong-part](errors/navigation-url-input-wrong-part.json)、[navigation-clicked-slot-missing-field](errors/navigation-clicked-slot-missing-field.json)、[navigation-legacy-target-rejected](errors/navigation-legacy-target-rejected.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
-- `metric-row-link-needs-navigate`：指标行声明 link 时组件必须至少有一个 navigate 动作。反例：[metric-row-link-without-navigate](errors/metric-row-link-without-navigate.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `metric-row-link-needs-navigate`：指标行声明 link 时组件必须有 navigate 或 openDetail 动作。反例：[metric-row-link-without-navigate](errors/metric-row-link-without-navigate.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `metric-card-select-tab`：指标值只能切换当前页目标容器中已声明的页签。反例：[metric-select-tab-missing-container](errors/metric-select-tab-missing-container.json)、[metric-select-tab-invalid-container-type](errors/metric-select-tab-invalid-container-type.json)、[metric-select-tab-unknown-tab](errors/metric-select-tab-unknown-tab.json)、[metric-select-tab-link-conflict](errors/metric-select-tab-link-conflict.json)、[metric-select-tab-secondary-link-conflict](errors/metric-select-tab-secondary-link-conflict.json)、[metric-select-tab-card-level](errors/metric-select-tab-card-level.json)、[metric-select-tab-unsupported-row-action](errors/metric-select-tab-unsupported-row-action.json)、[metric-select-tab-version-floor](errors/metric-select-tab-version-floor.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `actions-live-only`：旧版本writeFilter只允许query组件；6.35的本地入口必须有查询或显隐消费方。反例：[write-filter-on-inline-component](errors/write-filter-on-inline-component.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `write-filter-target`：回写目标是已声明的 dimension 筛选器。反例：[write-filter-undeclared](errors/write-filter-undeclared.json)、[write-filter-non-dimension](errors/write-filter-non-dimension.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `navigation-filter-source`：导航绑定只能引用已声明的筛选器。反例：[navigation-filter-undeclared](errors/navigation-filter-undeclared.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
@@ -1265,6 +1345,7 @@ Schema位置：`#/definitions/componentAction/anyOf/2/properties/openDetail/anyO
 - [url-navigation-page](examples/url-navigation-page.json)：完整合法页面；查询仅为静态契约证据。
 - [reference-export-detail-bindings](examples/reference-export-detail-bindings.json)：完整合法页面；查询仅为静态契约证据。
 - [tab-url-source](examples/tab-url-source.json)：完整合法页面；查询仅为静态契约证据。
+- [metric-card-select-tab](examples/metric-card-select-tab.json)：完整合法页面；查询仅为静态契约证据。
 - [time-modes-page](examples/time-modes-page.json)：完整合法页面；查询仅为静态契约证据。
 - [navigation-source-page](examples/navigation-source-page.json)：完整合法页面；查询仅为静态契约证据。
 - [navigation-list-page](examples/navigation-list-page.json)：完整合法页面；查询仅为静态契约证据。

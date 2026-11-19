@@ -33,7 +33,7 @@
   "knowledge": "metricCard.overview",
   "reference": "references/page-metadata/components/metricCard.md",
   "versionPolicy": "protocol/version-policy",
-  "currentWriter": "6.125",
+  "currentWriter": "6.126",
   "exampleVersionRequirements": [
     {
       "file": "references/page-metadata/examples/inline-report.json",
@@ -87,6 +87,63 @@
           "id": "page-layout",
           "minor": 1,
           "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "metric-row-link",
+          "minor": 0,
+          "description": "指标行的显式非空值导航入口"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/metric-card-select-tab.json",
+      "requiredVersion": "6.126",
+      "capabilities": [
+        {
+          "id": "metric-card-select-tab",
+          "minor": 126,
+          "description": "指标值切换同页 Tab"
+        },
+        {
+          "id": "detail-title",
+          "minor": 106,
+          "description": "详情标题拼接固定文字和当前行的多个字段"
+        },
+        {
+          "id": "tab-content-layout",
+          "minor": 49,
+          "description": "Tab 混合内容、显式栅格与按需呈现"
+        },
+        {
+          "id": "filter-group",
+          "minor": 45,
+          "description": "Dashboard 独立固定单选筛选按钮组及组合卡图表，可控制多个组件并复用统一显隐"
+        },
+        {
+          "id": "open-detail-action",
+          "minor": 10,
+          "description": "组件点击在页内打开详情浮层"
+        },
+        {
+          "id": "grouped-params",
+          "minor": 6,
+          "description": "分组参数、多个独立时间区间与查询原位引用"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "text-value-reference",
+          "minor": 0,
+          "description": "文本取值引用页面参数而不是写字面量(ADR-0047)"
+        },
+        {
+          "id": "tab-container-component",
+          "minor": 0,
+          "description": "Tab 容器组件"
         },
         {
           "id": "metric-row-link",

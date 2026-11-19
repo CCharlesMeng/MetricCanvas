@@ -1,0 +1,35 @@
+{
+  "case": "metric-select-tab-missing-container",
+  "invariant": "metric-card-select-tab",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "selectTab 必须引用当前页的 Tab 容器",
+      "paths": [
+        "/sections/0/components/0/props/rows/0/action/selectTab/componentId"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "rows": [
+                {
+                  "action": {
+                    "selectTab": {
+                      "componentId": "missing-tabs"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

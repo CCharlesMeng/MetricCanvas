@@ -1,0 +1,56 @@
+{
+  "case": "metric-select-tab-version-floor",
+  "invariant": "metric-card-select-tab",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "指标值切换同页 Tab 由 6.126 引入，文档声明的是 6.125",
+      "paths": [
+        "/sections/0/components/0/props/rows/0/action/selectTab",
+        "/sections/0/components/0/props/rows/1/action/selectTab",
+        "/sections/0/components/0/props/secondaryRows/0/action/selectTab"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "rows": [
+                {
+                  "action": {
+                    "selectTab": {
+                      "componentId": "order-detail-tabs",
+                      "tabId": "overdue"
+                    }
+                  }
+                },
+                {
+                  "action": {
+                    "selectTab": {
+                      "componentId": "order-detail-tabs",
+                      "tabId": "overdue"
+                    }
+                  }
+                }
+              ],
+              "secondaryRows": [
+                {
+                  "action": {
+                    "selectTab": {
+                      "componentId": "order-detail-tabs",
+                      "tabId": "overview"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

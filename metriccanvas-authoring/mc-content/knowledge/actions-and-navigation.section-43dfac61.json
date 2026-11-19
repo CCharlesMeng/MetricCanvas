@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.125",
+  "schemaVersion": "6.126",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "actions-and-navigation.section-43dfac61"
@@ -43,12 +43,29 @@
         },
         {
           "id": "metric-row-link-needs-navigate",
-          "description": "指标行声明 link 时组件必须至少有一个 navigate 动作",
+          "description": "指标行声明 link 时组件必须有 navigate 或 openDetail 动作",
           "valid": [
             "composite-page"
           ],
           "invalid": [
             "metric-row-link-without-navigate"
+          ]
+        },
+        {
+          "id": "metric-card-select-tab",
+          "description": "指标值只能切换当前页目标容器中已声明的页签",
+          "valid": [
+            "metric-card-select-tab"
+          ],
+          "invalid": [
+            "metric-select-tab-missing-container",
+            "metric-select-tab-invalid-container-type",
+            "metric-select-tab-unknown-tab",
+            "metric-select-tab-link-conflict",
+            "metric-select-tab-secondary-link-conflict",
+            "metric-select-tab-card-level",
+            "metric-select-tab-unsupported-row-action",
+            "metric-select-tab-version-floor"
           ]
         },
         {
@@ -94,6 +111,7 @@
         "references/page-metadata/examples/url-navigation-page.json",
         "references/page-metadata/examples/reference-export-detail-bindings.json",
         "references/page-metadata/examples/tab-url-source.json",
+        "references/page-metadata/examples/metric-card-select-tab.json",
         "references/page-metadata/examples/time-modes-page.json",
         "references/page-metadata/examples/navigation-source-page.json",
         "references/page-metadata/examples/navigation-list-page.json",

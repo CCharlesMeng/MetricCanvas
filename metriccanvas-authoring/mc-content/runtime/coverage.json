@@ -1178,6 +1178,11 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/metric-card-select-tab.json",
+      "target": "product-contracts/page/conformance/valid/metric-card-select-tab.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/valid/ioc-component-availability-page.json",
       "target": "product-contracts/page/conformance/valid/ioc-component-availability-page.json",
       "scope": "exact product contract"
@@ -3950,6 +3955,46 @@
     {
       "source": "product:page/conformance/invalid/metric-row-link-without-navigate.json",
       "target": "product-contracts/page/conformance/invalid/metric-row-link-without-navigate.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/metric-select-tab-missing-container.json",
+      "target": "product-contracts/page/conformance/invalid/metric-select-tab-missing-container.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/metric-select-tab-invalid-container-type.json",
+      "target": "product-contracts/page/conformance/invalid/metric-select-tab-invalid-container-type.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/metric-select-tab-unknown-tab.json",
+      "target": "product-contracts/page/conformance/invalid/metric-select-tab-unknown-tab.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/metric-select-tab-link-conflict.json",
+      "target": "product-contracts/page/conformance/invalid/metric-select-tab-link-conflict.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/metric-select-tab-secondary-link-conflict.json",
+      "target": "product-contracts/page/conformance/invalid/metric-select-tab-secondary-link-conflict.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/metric-select-tab-card-level.json",
+      "target": "product-contracts/page/conformance/invalid/metric-select-tab-card-level.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/metric-select-tab-unsupported-row-action.json",
+      "target": "product-contracts/page/conformance/invalid/metric-select-tab-unsupported-row-action.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/metric-select-tab-version-floor.json",
+      "target": "product-contracts/page/conformance/invalid/metric-select-tab-version-floor.json",
       "scope": "exact product contract"
     },
     {
@@ -7023,6 +7068,46 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/errors/metric-select-tab-missing-container.json",
+      "target": "references/page-metadata/errors/metric-select-tab-missing-container.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/metric-select-tab-invalid-container-type.json",
+      "target": "references/page-metadata/errors/metric-select-tab-invalid-container-type.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/metric-select-tab-unknown-tab.json",
+      "target": "references/page-metadata/errors/metric-select-tab-unknown-tab.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/metric-select-tab-link-conflict.json",
+      "target": "references/page-metadata/errors/metric-select-tab-link-conflict.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/metric-select-tab-secondary-link-conflict.json",
+      "target": "references/page-metadata/errors/metric-select-tab-secondary-link-conflict.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/metric-select-tab-card-level.json",
+      "target": "references/page-metadata/errors/metric-select-tab-card-level.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/metric-select-tab-unsupported-row-action.json",
+      "target": "references/page-metadata/errors/metric-select-tab-unsupported-row-action.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/metric-select-tab-version-floor.json",
+      "target": "references/page-metadata/errors/metric-select-tab-version-floor.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/errors/forecast-before-captured-month.json",
       "target": "references/page-metadata/errors/forecast-before-captured-month.json",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -7983,6 +8068,11 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/examples/metric-card-select-tab.json",
+      "target": "references/page-metadata/examples/metric-card-select-tab.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/examples/navigation-source-page.json",
       "target": "references/page-metadata/examples/navigation-source-page.json",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -8719,11 +8809,11 @@
     }
   ],
   "counts": {
-    "product": 1711,
+    "product": 1729,
     "authoring": 32,
     "modules": 36,
-    "topics": 318,
-    "nodes": 2724,
+    "topics": 319,
+    "nodes": 2733,
     "tools": 9,
     "components": 20
   },

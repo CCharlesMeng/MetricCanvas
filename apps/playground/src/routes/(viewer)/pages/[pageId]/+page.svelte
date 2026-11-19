@@ -5,6 +5,7 @@
   import {createFinalizationPreview} from '../../../../../fixtures/finalization';
   import {createMonthlyReportPreview} from '../../../../../fixtures/report-monthly';
   import {createPeriodAggregationPreview} from '../../../../../fixtures/period-aggregation';
+  import {createExecutionEfficiencyTabPreview} from '../../../../../fixtures/execution-efficiency-tab-demo';
   import {createIocHeaderControlsPreview} from "../../../../../fixtures/ioc-header-controls";
   import {createSourceCandidatesPreview} from '../../../../../fixtures/source-candidates';
   import {createRegionURLGateway} from '../../../../../fixtures/region-url';
@@ -158,6 +159,7 @@
   }
 
   function combinationTableGateway(input: ReturnType<typeof pageExternalInputs>): DataGateway | undefined {
+    if(input==='execution-efficiency-tabs')return createExecutionEfficiencyTabPreview();
     if(input==='contract-search')return createContractPreviewGateway();
     if(input==='query-join')return createPagedJoinPreview(80,page.url.searchParams.get('supplementKey')??'ready',page.url.searchParams.get('nulls')??'none').dataGateway;
   }

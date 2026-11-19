@@ -196,13 +196,16 @@
   let syncedTabSearch: (value: string) => string = value => value;
   setContext<TabSelectionContext>(TAB_SELECTION_CONTEXT, {
     selections: () => tabSelections,
-    select(id, value) {
-      if (tabSelections[id] === value) return;
-      tabSelections = { ...tabSelections, [id]: value };
-      stream?.setActiveTabs(tabSelections);
-      syncTabSearch(tabSelections);
-    }
+    select: selectTab,
+    selectFromMetric: selectTabFromMetric
   });
+
+  function selectTab(componentId: string, tabId: string) {
+    if (tabSelections[componentId] === tabId) return;
+    tabSelections = { ...tabSelections, [componentId]: tabId };
+    stream?.setActiveTabs(tabSelections);
+    syncTabSearch(tabSelections);
+  }
   const summaryCapture:SummaryCapture=new Map();
   setContext(SUMMARY_EXPORT_CAPTURE,summaryCapture);
   let tableExportStates = $state<Record<string, { busy: boolean; error?: string }>>({});
@@ -1566,11 +1569,22 @@
     if (
       component.type !== 'metricCard' ||
       !componentCapability(component)?.actions ||
-      !component.props.actions?.some((action) => 'navigate' in action || 'openDetail' in action)
-    ) {
-      return undefined;
-    }
-    return (row: Row, event: MouseEvent) => handleMetricLink(component, row, event);
+      !component.props.actions?.some(action => 'navigate' in action || 'openDetail' in action)
+    ) return undefined;
+    return (row, event) => handleMetricLink(component, row, event);
+  }
+
+  function selectTabFromMetric(sourceId: string, componentId: string, tabId: string) {
+    if (initializing || pageState.phase !== 'ready' || !presentation?.component(sourceId).enabled) return;
+    if (!presentation.component(componentId).enabled) return;
+    const sections = activePageSections(pageState.page, presentation.sections);
+    const target = sections.flatMap(section => section.components).find(component => component.id === componentId);
+    if (target?.type === 'tabContainer' && target.props.tabs.some(tab => tab.id === tabId)) selectTab(componentId, tabId);
+  }
+
+  function activePageSections(page: Page, sections: Page['sections']) {
+    const sectionGroups = page.sectionGroups?.filter(group => presentation?.groups.get(group.id)?.eligible !== false);
+    return visibleSections({ ...page, sections, sectionGroups }, selectedGroup);
   }
 
   function mapOverride(component: Component): 'china' | 'world' | undefined {
@@ -1644,8 +1658,8 @@
     {@const dashboardToolbar = usesIocRegion(readyPage)?'hidden':readyPage.dashboardToolbar??(header.model?'visible':'hidden')}
     {@const compatibleHeader = compatibilityHeaderSection(readyPage)}
     {@const leadingId = leadingHeaderSectionId(readyPage)}
-    {@const projectedSections = presentation?.sections??readyPage.sections}
-    {@const activeSections = visibleSections({...readyPage,sections:projectedSections,sectionGroups:readyPage.sectionGroups?.filter(group=>presentation?.groups.get(group.id)?.eligible!==false)},selectedGroup)}
+    {@const projectedSections = presentation?.sections ?? readyPage.sections}
+    {@const activeSections = activePageSections(readyPage, projectedSections)}
     <div
       class:layout-dashboard={layoutForm === 'dashboard'}
       class:with-report-date-toolbar={leadingDateToolbar}
