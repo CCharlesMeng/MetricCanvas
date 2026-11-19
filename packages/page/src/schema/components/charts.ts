@@ -14,7 +14,7 @@ import {
 } from '../primitives';
 import { actionsZ } from '../actions';
 import { componentCatalogRegistry } from '../registry';
-import { categoryLabelsZ } from '../presentation';
+import { categoryLabelsZ, markerColorRuleZ } from '../presentation';
 
 const chartOptionValueZ: z.ZodType<JsonValue> = z.lazy(() => z.union([z.string(), z.number(), z.boolean(), z.null(), z.array(chartOptionValueZ), z.record(z.string(), chartOptionValueZ)])).meta({ id: 'chartOptionValue' });
 export const chartOptionZ = z.record(z.string(), chartOptionValueZ).meta({ id: 'chartOption', description: '高级 ECharts 呈现 JSON；数据、结构和交互由引擎管理，不执行代码' });
@@ -40,6 +40,7 @@ const barSeriesShape = {
 };
 export const barChartSeriesZ = z.union([
   fieldSeriesSourceZ.extend({ ...barSeriesShape,
+    markerColorRule: markerColorRuleZ.optional().describe('仅字段折线系列可声明，按原始值选择圆点颜色'),
     aggregate: z.literal('avg').optional().meta({ description: '对当前图表全部有效字段值求算术平均，并在每个类别显示同一均值柱；0参与、空值跳过' })
   }).strict(),
   constantSeriesSourceZ.extend(barSeriesShape).strict()

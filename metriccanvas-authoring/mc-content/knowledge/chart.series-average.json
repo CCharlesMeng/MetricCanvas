@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.127",
+  "schemaVersion": "6.128",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "chart.series-average"
@@ -24,6 +24,18 @@
             "bar-average-category-removed",
             "bar-average-stacked",
             "bar-average-line"
+          ]
+        },
+        {
+          "id": "bar-line-marker-color",
+          "description": "柱线组合的字段折线圆点按原始数值正负着色",
+          "valid": [
+            "bar-line-marker-color"
+          ],
+          "invalid": [
+            "bar-line-marker-color-old-version",
+            "bar-line-marker-color-on-bar-series",
+            "bar-line-marker-color-unknown-color"
           ]
         },
         {
@@ -62,6 +74,7 @@
         "references/page-metadata/examples/chart-series-visibility.json",
         "references/page-metadata/examples/chart-table-unit.json",
         "references/page-metadata/examples/sdt-period-aggregation.json",
+        "references/page-metadata/examples/bar-line-marker-color.json",
         "references/page-metadata/examples/chart-customer-series.json",
         "references/page-metadata/examples/conditional-compute-demand.json"
       ]
@@ -84,7 +97,7 @@
           "sections"
         ],
         "title": "页面",
-        "$id": "https://metriccanvas/page/v6.127",
+        "$id": "https://metriccanvas/page/v6.128",
         "properties": {
           "schemaVersion": "#/properties/schemaVersion",
           "id": "#/properties/id",
@@ -141,6 +154,7 @@
           "axis": "#/definitions/barChartSeries/anyOf/0/properties/axis",
           "role": "#/definitions/barChartSeries/anyOf/0/properties/role",
           "stackOrder": "#/definitions/barChartSeries/anyOf/0/properties/stackOrder",
+          "markerColorRule": "#/definitions/barChartSeries/anyOf/0/properties/markerColorRule",
           "aggregate": "#/definitions/barChartSeries/anyOf/0/properties/aggregate"
         },
         "additionalProperties": false

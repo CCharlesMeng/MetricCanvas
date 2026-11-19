@@ -191,3 +191,28 @@ it('normalizes the supplied intranet ratio scales once while keeping already sca
     expect(value('region-dept-summary-comparison','net-discount-yoy')).toBeCloseTo(4.45943839588495);
   } finally {program.dispose();}
 });
+
+it('returns signed October changes and a single discount benchmark for the Europe preview', () => {
+  const currentMetric = '净商务折扣（原价）';
+  const changeMetric = currentMetric + '月变化';
+  const filter = {
+    time: { period: 'month', start: '2026-10', end: '2026-10' },
+    dims: [{ dim_name: 'geo_pc_code', dim_value_list: ['R05'] }],
+    metrics: []
+  };
+
+  expect(executeDqeItem({
+    output_dims: ['代表处'], output_metrics: [changeMetric], order: {},
+    filter: { ...filter, time: { ...filter.time, is_aggregate: true } }
+  })).toMatchObject({
+    code: 'SUCCESS',
+    data: [
+      { '代表处': '德国', [changeMetric]: -3 },
+      { '代表处': '法国', [changeMetric]: 0 },
+      { '代表处': '英国', [changeMetric]: 3 }
+    ]
+  });
+  expect(executeDqeItem({
+    output_dims: [], output_metrics: [currentMetric], order: {}, filter
+  })).toMatchObject({ code: 'SUCCESS', data: [{ [currentMetric]: expect.closeTo(0.273333) }] });
+});

@@ -74,6 +74,18 @@
       ]
     },
     {
+      "id": "bar-line-marker-color",
+      "description": "柱线组合的字段折线圆点按原始数值正负着色",
+      "valid": [
+        "bar-line-marker-color"
+      ],
+      "invalid": [
+        "bar-line-marker-color-old-version",
+        "bar-line-marker-color-on-bar-series",
+        "bar-line-marker-color-unknown-color"
+      ]
+    },
+    {
       "id": "ioc-header-controls",
       "description": "页头显式组合控件，RegionFilter 唯一拥有标准 region，旧排列仍可读",
       "valid": [

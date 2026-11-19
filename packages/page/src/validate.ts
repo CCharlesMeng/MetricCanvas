@@ -1601,9 +1601,13 @@ function componentErrors(
       if (component.props.showValueLabels && (component.props.showSegmentLabels || component.props.showStackTotalLabels)) errors.push(schemaError(`${componentPath}/props/showValueLabels`, 'showValueLabels 不得与旧柱状图标签同时启用'));
     }
     check(component.props.categoryField, `${componentPath}/props/categoryField`, 'dimension');
-    component.props.series.forEach((series, index) =>
-      checkValue(series, `${componentPath}/props/series/${index}`, 'field', 'measure')
-    );
+    component.props.series.forEach((series, index) => {
+      const seriesPath = `${componentPath}/props/series/${index}`;
+      checkValue(series, seriesPath, 'field', 'measure');
+      if ('markerColorRule' in series && series.markerColorRule && series.kind !== 'line') {
+        errors.push(schemaError(`${seriesPath}/markerColorRule`, '圆点颜色规则仅支持柱线组合中的字段折线系列'));
+      }
+    });
     if (component.props.series.some(series => series.kind !== undefined || series.axis !== undefined)) {
       const props = component.props;
       const path = `${componentPath}/props`;

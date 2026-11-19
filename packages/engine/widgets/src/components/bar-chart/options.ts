@@ -14,6 +14,7 @@ import { serialColor, type ColorList } from '../../shared/chart-palette';
 import { categoryLabelOption, pointValueLabel, valueLabelLayout } from '../../shared/chart-presentation';
 
 const DEFAULT_BAR_WIDTH = 16;
+const MARKER_COLORS = { red: '#f5222d', green: '#52c41a' } as const;
 const REPORT_COLORS = ['#1476ff', '#0cb8b2'] as const;
 const REPORT_FORECAST_COLORS = [
   'rgba(20, 118, 255, 0.2)',
@@ -320,11 +321,13 @@ function mixedOption(data: MainDataSlots, props: BarChartProps, palette?: ColorL
     yAxis: props.dualAxis ? [axis('primary'), alignedSecondaryAxis(axis('secondary'))] : axis('primary'),
     series: props.series.map((series, index) => {
       const field = resolveBarSeriesValue(series, data, props.emptyBehavior);
+      const markerColorRule = series.kind === 'line' && 'markerColorRule' in series ? series.markerColorRule : undefined;
       return {
         type: series.kind ?? 'bar', name: seriesDisplayName(series.label ?? field.label, series.unit),
         yAxisIndex: chartSeriesAxis(props, index),
         itemStyle: { color: chartSeriesColor(props, index, palette) },
         ...(series.kind === 'line' ? { connectNulls: false } : { barWidth: DEFAULT_BAR_WIDTH }),
+        ...(markerColorRule ? { symbol: 'circle', showSymbol: true, showAllSymbol: true } : {}),
         ...(props.showValueLabels ? {
           label: pointValueLabel(field.format, field.missingText, field.unit, series.unit), labelLayout: valueLabelLayout(rows.map(row => finiteNumber(field.read(row))), series.kind === 'line'),
           ...(series.kind === 'line' ? { showAllSymbol: true } : {})
@@ -333,6 +336,10 @@ function mixedOption(data: MainDataSlots, props: BarChartProps, palette?: ColorL
         data: rows.map(row => {
           const value = finiteNumber(field.read(row));
           if (value === undefined) return null;
+          if (markerColorRule) {
+            const color = markerColorRule[value < 0 ? 'negative' : 'nonNegative'];
+            return { value, itemStyle: { color: MARKER_COLORS[color] } };
+          }
           return props.showValueLabels && series.kind !== 'line'
             ? { value, label: { position: value < 0 ? 'bottom' as const : 'top' as const } } : value;
         })

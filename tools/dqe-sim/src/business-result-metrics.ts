@@ -6,9 +6,16 @@ type ObjectValue = Record<string, unknown>;
 type Organization = (typeof fixture.organizations)[number];
 type Row = Record<string, string | number>;
 const record = (value: unknown): value is ObjectValue => !!value && typeof value === 'object' && !Array.isArray(value);
-const mainMetrics = ['净商务折扣（原价）','框架执行率','重大高风险合同率','云计算BU禁止条款风险合同率'];
+const netDiscount = '净商务折扣（原价）';
+const detailMetrics = ['框架执行率','重大高风险合同率','云计算BU禁止条款风险合同率'];
+const mainMetrics = [netDiscount, ...detailMetrics];
+const discountComparisonPeriods = new Map<string, 'month' | 'year'>([
+  [netDiscount + '月变化', 'month'],
+  [netDiscount + '季变化', 'year'],
+  [netDiscount + '年变化', 'year']
+]);
 const closure = '决策闭环任务总体闭环率(投标-商务-合同)';
-const metricSets = [mainMetrics,['净商务折扣（原价）'],[closure],['净商务折扣','净商务折扣均值'],['净商务折扣'],['框架执行率','框架已达成金额','框架目标消费金额'],['已闭环任务数(投标-商务-合同)','决策闭环任务总数(投标-商务-合同)',closure],['风险合同率','风险合同数','合同总数']];
+const metricSets = [mainMetrics,detailMetrics,[netDiscount],...[...discountComparisonPeriods.keys()].map(metric => [metric]),[closure],['净商务折扣','净商务折扣均值'],['净商务折扣'],['框架执行率','框架已达成金额','框架目标消费金额'],['已闭环任务数(投标-商务-合同)','决策闭环任务总数(投标-商务-合同)',closure],['风险合同率','风险合同数','合同总数']];
 const signatures = new Set(metricSets.flatMap(metrics => dimensionsFor(metrics).map(dims => JSON.stringify([dims,metrics]))));
 const failure = (): DqeSimItemResult => ({code:'DQE_SIM_UNSUPPORTED_QUERY',data:[],total_count:0,retDesc:'业务结果合成场景不支持此查询、期间或谓词',dqe:{columns:[],orders:[],limit:-1,offset:-1,sql:null}});
 const cloudField = '云服务';
@@ -25,7 +32,8 @@ const cloudServices = fixture.organizations.flatMap((organization, index) =>
 function dimensionsFor(metrics: string[]): string[][] {
   if (metrics[0] === closure) return [[],['地区部'],['决策业务类型','地区部'],['决策业务类型','地区部','代表处']];
   if (metrics === mainMetrics) return [[],['地区部'],['代表处']];
-  if (metrics[0] === '净商务折扣（原价）') return [[],['地区部'],['代表处']];
+  if (metrics[0] === netDiscount) return [[],['地区部'],['代表处']];
+  if (metrics === detailMetrics || discountComparisonPeriods.has(metrics[0])) return [['地区部'],['代表处']];
   return [['代表处']];
 }
 
@@ -41,16 +49,27 @@ export function executeBusinessResultMetrics(input: unknown): DqeSimItemResult |
     if (!record(filter) || !record(filter.time) || !validTime(filter.time)) return failure();
     if (JSON.stringify(filter.metrics) !== '[]' || !Array.isArray(filter.dims)) return failure();
     const dims = input.output_dims as string[], metrics = input.output_metrics as string[];
-    if (!dims.length && filter.time.is_aggregate !== true) return failure();
+    if (!dims.length && !scalarResultSupported(metrics, filter.time)) return failure();
     const predicates = filter.dims;
     // Validate every predicate even when another predicate yields no organizations.
     predicates.forEach(validatePredicate);
-    const selected = fixture.organizations.filter(row => predicates.every(predicate => matches(row,predicate)));
+    const selected = businessOrganizations(predicates).filter(row => predicates.every(predicate => matches(row,predicate)));
     const business = predicates.find(predicate => (predicate as ObjectValue).dim_name === '决策业务类型') as ObjectValue | undefined;
     const categories = business ? business.dim_value_list as string[] : ['商务','合同'];
     const data = aggregateRows(selected,dims,metrics,filter.time,categories);
     return result(input,data,[...dims,...metrics]);
   } catch { return failure(); }
+}
+
+function scalarResultSupported(metrics: string[], time: ObjectValue): boolean {
+  return time.is_aggregate === true || (time.is_aggregate === undefined && metrics[0] === netDiscount);
+}
+
+function businessOrganizations(predicates: ObjectValue[]): Organization[] {
+  const europeSelected = predicates.some(predicate =>
+    predicate.dim_name === 'geo_pc_code' && (predicate.dim_value_list as string[]).includes('R05')
+  );
+  return europeSelected ? [...fixture.organizations, ...fixture.europePreviewOrganizations] : fixture.organizations;
 }
 
 function cloudCandidates(input:ObjectValue):DqeSimItemResult {
@@ -137,9 +156,18 @@ function project(group: Organization[], dims: string[], metrics: string[], time:
   return row;
 }
 
-function ratePeriod(time: ObjectValue): 'current' | 'previous' | 'yearAgo' {
-  if (String(time.start).startsWith('2024') || String(time.start).startsWith('2025')) return 'yearAgo';
-  return String(time.start).startsWith('2026-10') ? 'previous' : 'current';
+function ratePeriod(start: string): 'current' | 'previous' | 'september' | 'yearAgo' {
+  if (start.startsWith('2024') || start.startsWith('2025')) return 'yearAgo';
+  if (start.startsWith('2026-09')) return 'september';
+  return start.startsWith('2026-10') ? 'previous' : 'current';
+}
+
+function discountChange(group: Organization[], start: string, comparison: 'month' | 'year'): number {
+  const current = ratePeriod(start);
+  if (comparison === 'year') return weighted(group, current) - weighted(group, 'yearAgo');
+  const previous = new Date(`${start.slice(0, 7)}-01T00:00:00Z`);
+  previous.setUTCMonth(previous.getUTCMonth() - 1);
+  return weighted(group, current) - weighted(group, ratePeriod(previous.toISOString().slice(0, 7)));
 }
 
 function weighted(group: Organization[], field: keyof Organization): number {
@@ -148,7 +176,11 @@ function weighted(group: Organization[], field: keyof Organization): number {
 }
 
 function metricValue(group: Organization[], metric: string, time: ObjectValue, category: string): number {
-  const fields: Record<string,keyof Organization> = {'净商务折扣（原价）':ratePeriod(time),'净商务折扣':ratePeriod(time),'净商务折扣均值':ratePeriod(time),'框架执行率':'framework','重大高风险合同率':'major','云计算BU禁止条款风险合同率':'forbidden','风险合同率':'major',[closure]:category === '合同' ? 'contract' : 'commercial'};
+  const start = String(time.start);
+  const comparison = discountComparisonPeriods.get(metric);
+  if (comparison) return discountChange(group, start, comparison);
+  const period = ratePeriod(start);
+  const fields: Record<string,keyof Organization> = {[netDiscount]:period,'净商务折扣':period,'净商务折扣均值':period,'框架执行率':'framework','重大高风险合同率':'major','云计算BU禁止条款风险合同率':'forbidden','风险合同率':'major',[closure]:category === '合同' ? 'contract' : 'commercial'};
   if (fields[metric]) {
     const value = weighted(group,fields[metric]);
     return mainMetrics.includes(metric) ? value / 100 : value;

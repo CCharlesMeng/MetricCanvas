@@ -1,8 +1,13 @@
 {
   "major": 6,
-  "minor": 127,
-  "current": "6.127",
+  "minor": 128,
+  "current": "6.128",
   "capabilities": {
+    "bar-line-marker-color": {
+      "minor": 128,
+      "description": "柱线组合的字段折线圆点按原始数值正负着色",
+      "legacyReadable": false
+    },
     "metric-card-definition-tip": {
       "minor": 127,
       "description": "指标卡定义气泡",
@@ -1107,6 +1112,7 @@
     "6.124",
     "6.125",
     "6.126",
-    "6.127"
+    "6.127",
+    "6.128"
   ]
 }

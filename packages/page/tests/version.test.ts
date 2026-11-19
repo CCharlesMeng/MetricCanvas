@@ -8,6 +8,7 @@ const introducedAt: Record<string, number> = {
   'independent-exclusion-candidates':125,
   'metric-card-select-tab':126,
   'metric-card-definition-tip':127,
+  'bar-line-marker-color':128,
   'filter-source-candidate-levels':122,
   'native-ioc-filter-preparation':120,
   'table-absolute-display-limit':119,
