@@ -114,23 +114,12 @@
     --mc-filter-bar-gap: 0;
     --mc-filter-label-display: inline;
     --mc-filter-select-width: 160px;
+    --mc-selection-popup-width: max-content;
+    --mc-selection-popup-content-min-width: 0px;
+    --mc-selection-popup-search-width: 0px;
+    --mc-selection-option-overflow: hidden;
     --mc-period-picker-width: var(--mc-filter-select-width);
     --mc-period-filter-gap: 16px;
-  }
-  .filter :global(.mc-ui-select-dropdown[popover]) {
-    --mc-selection-popup-min-width: var(--mc-selection-anchor-width);
-    width: max-content;
-  }
-  .filter :global(.mc-ui-select-dropdown[popover] .mc-ui-select-dropdown__search) {
-    /* 候选决定弹层的内容宽度，搜索框再随弹层撑开。 */
-    width: 0;
-    min-width: var(--tv-SelectDropdown-search-width);
-  }
-  .filter :global(.mc-ui-select-dropdown[popover] .mc-ui-option > span:last-child),
-  .filter :global(.mc-ui-select-dropdown[popover] .mc-ui-tree-node__label) {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
 
   header.inline{display:flex;flex-wrap:wrap;align-items:center;gap:12px 0;background:var(--mc-color-surface,#fff);}
