@@ -48,8 +48,9 @@
     panelId
   });
 
+  $effect(() => tip.setFetch(fetchDefinitions));
+
   $effect(() => {
-    fetchDefinitions;
     tabs;
     return close;
   });

@@ -71,6 +71,11 @@ for (const mode of ['classic', 'esm'] as const) {
     await page.keyboard.press('Escape');
     await expect(panel).toHaveCount(0);
     await expect(second).toBeFocused();
+    await page.mouse.move(0, 0);
+    await second.hover();
+    await expect(panel).toContainText('当前定义（DEMO-REVENUE）');
+    expect(await page.evaluate(() => window.metricDefinitionCalls.map(call => call.code)))
+      .toEqual(['ZB0000377', 'DEMO-REVENUE']);
     await expect(page.getByRole('heading', { name: '闭环指标', exact: true })).toBeVisible();
     await page.locator('.row-label').getByRole('button', { name: '查看总闭环率的指标定义' }).hover();
     await expect(panel).toContainText('DEMO-TOTAL-CLOSURE');
@@ -87,5 +92,17 @@ for (const mode of ['classic', 'esm'] as const) {
     await page.evaluate(demo => window.runtime.update({ document: demo }), demo);
     await expect(page.locator('[data-metric-definition-trigger]')).toHaveCount(0);
     expect(await page.evaluate(() => window.metricDefinitionCalls.at(-1)?.signal?.aborted)).toBe(true);
+
+    await page.evaluate(demo => window.runtime.update({
+      document: demo,
+      dataGateway: {
+        async fetchData() { return { rows: [] }; },
+        async fetchMetricDefinitions([code]) {
+          return [{ code: code!, name: '新会话定义', definition: '定义', formula: '公式', manager: '解释人', latestUpdateTime: null, url: null }];
+        }
+      }
+    }), demo);
+    await second.hover();
+    await expect(panel).toContainText('新会话定义（DEMO-REVENUE）');
   });
 }

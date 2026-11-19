@@ -26,7 +26,9 @@ export interface MetricDefinitionTips {
 export const METRIC_DEFINITION_TIPS = Symbol('metric-definition-tips');
 
 export function createMetricDefinitionTip(publish: (next: MetricDefinitionTipState | undefined) => void) {
-  let active: { target: TipTarget; fetch: FetchDefinitions } | undefined;
+  const cache = new Map<string, MetricDefinition>();
+  let fetchDefinitions: FetchDefinitions | undefined;
+  let active: TipTarget | undefined;
   let request: AbortController | undefined;
   let state: MetricDefinitionTipState | undefined;
 
@@ -35,41 +37,61 @@ export function createMetricDefinitionTip(publish: (next: MetricDefinitionTipSta
     publish(next);
   }
 
+  function setFetch(fetch: FetchDefinitions | undefined) {
+    if (fetchDefinitions === fetch) return;
+    fetchDefinitions = fetch;
+    cache.clear();
+    close();
+  }
+
   function open(target: TipTarget, fetch: FetchDefinitions) {
+    setFetch(fetch);
     if (state?.anchor === target.anchor) {
       if (target.keyboard && !state.keyboard) update({ ...state, keyboard: true });
       return;
     }
-    active = { target, fetch };
-    void retry();
+    active = target;
+    const definition = cache.get(target.code);
+    if (!definition) {
+      void retry();
+      return;
+    }
+    cancelRequest();
+    update({ ...target, phase: 'loaded', definition });
   }
 
   async function retry() {
-    if (!active) return;
-    request?.abort();
+    const target = active;
+    const fetch = fetchDefinitions;
+    if (!target || !fetch) return;
+    cancelRequest();
     const controller = new AbortController();
     request = controller;
-    const { target, fetch } = active;
     const { signal } = controller;
     update({ ...target, keyboard: state?.anchor === target.anchor ? state.keyboard : target.keyboard, phase: 'loading' });
     try {
       const definitions = await fetch([target.code], { signal });
       if (signal.aborted || !state) return;
       const definition = definitions.find(item => item?.code === target.code && hasDefinitionText(item));
+      if (definition) cache.set(target.code, definition);
       update(definition ? { ...state, phase: 'loaded', definition } : { ...state, phase: 'error' });
     } catch {
       if (!signal.aborted && state) update({ ...state, phase: 'error' });
     }
   }
 
-  function close() {
+  function cancelRequest() {
     request?.abort();
     request = undefined;
+  }
+
+  function close() {
+    cancelRequest();
     active = undefined;
     if (state) update(undefined);
   }
 
-  return { open, retry, close };
+  return { open, retry, close, setFetch };
 }
 
 function hasDefinitionText(definition: MetricDefinition): boolean {

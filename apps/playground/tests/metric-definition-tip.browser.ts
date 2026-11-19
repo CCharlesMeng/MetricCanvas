@@ -26,6 +26,11 @@ test('英文宿主内的标题气泡使用中文文案', async ({ page }, testIn
   await expect(panel).toHaveCSS('width', '400px');
   await expect(panel).toHaveCSS('border-radius', '8px');
   await panel.screenshot({ path: testInfo.outputPath('metric-definition-loaded.png') });
+  await page.mouse.move(0, 0);
+  await expect(panel).toHaveCount(0);
+  await first.hover();
+  await expect(panel.getByRole('status')).toHaveCount(0);
+  await expect(latest).toBeVisible();
   const [target] = await Promise.all([page.waitForEvent('popup'), latest.click()]);
   await expect(target).toHaveURL(/\/pages\/metric-card-primary-detail/);
   await target.close();
