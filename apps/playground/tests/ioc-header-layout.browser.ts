@@ -60,6 +60,36 @@ test('ordinary overflow header has no reserved title column and pins the same co
   await expect(header.getByRole('combobox')).toHaveValue('2026-01');
 });
 
+test('integrating application dropdown covers the pinned header and IOC filters still open', async ({ page }) => {
+  await page.goto('/pages/ioc-header-section-sticky');
+  const header = page.locator('[data-ioc-header]');
+  await expect(header).toBeVisible();
+  await page.evaluate(() => window.scrollBy(0, 700));
+  const frame = page.locator('[data-ioc-floating]');
+  await expect(frame).toHaveCount(1);
+
+  const hostDropdown = page.getByRole('button', { name: '集成应用下拉选项' });
+  await frame.evaluate(node => {
+    const dropdown = document.createElement('button');
+    dropdown.textContent = '集成应用下拉选项';
+    const { left, top, width, height } = node.getBoundingClientRect();
+    dropdown.style.cssText = `position:fixed;left:${left}px;top:${top}px;width:${width}px;height:${height}px;z-index:4900`;
+    dropdown.addEventListener('click', () => dropdown.remove());
+    document.body.append(dropdown);
+  });
+  await hostDropdown.click({ timeout: 2000 });
+  await expect(hostDropdown).toHaveCount(0);
+  await expect(frame).not.toHaveAttribute('popover');
+
+  await header.getByRole('button', { name: '团队', exact: true }).click();
+  await expect(header.locator(':popover-open').getByRole('option', { name: '团队乙' })).toBeVisible();
+  await header.getByRole('option', { name: '团队乙' }).click();
+  await expect(header).toContainText('当前团队：B');
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expect(frame).toHaveCount(0);
+  await expect(header).toContainText('当前团队：B');
+});
+
 test('pinned header does not drift between a scroll event and the next animation frame', async ({ page }) => {
   await page.setViewportSize({ width: 1000, height: 500 });
   await page.goto('/pages/ioc-header-flow-sticky');
@@ -137,6 +167,32 @@ test('shadow-mounted header respects the mount scroll region below the public he
   await expectNoHeaderScrollbars(header);
   await region.evaluate(node => { node.scrollTop = 0; });
   await expect(page.locator('[data-ioc-floating]')).toHaveCount(0);
+});
+
+test('shadow-mounted header pins at the scaled scroll region edge without changing its size', async ({ page }) => {
+  await page.goto('/preview?prototype=ioc-header-component');
+  await page.getByLabel('验收模式').selectOption('mount-scroll');
+  const region = page.locator('[data-mount-scroll]');
+  const header = page.locator('[data-ioc-header]');
+  await expect(header).toBeVisible();
+  await region.evaluate(node => {
+    node.style.transform = 'scale(0.9, 0.75)';
+    node.style.transformOrigin = 'top left';
+    node.style.borderTopWidth = '12px';
+  });
+  const original = (await header.boundingBox())!;
+  const scrollportTop = (await region.boundingBox())!.y + 12 * 0.75;
+
+  await region.evaluate(node => { node.scrollTop = 650; });
+  await expect(page.locator('[data-ioc-floating]')).toHaveCount(1);
+  await expect.poll(async () => (await header.boundingBox())!.y).toBeCloseTo(scrollportTop, 0);
+  const pinned = (await header.boundingBox())!;
+  expect(pinned.x).toBeCloseTo(original.x, 0);
+  expect(pinned.width).toBeCloseTo(original.width, 0);
+  expect(pinned.height).toBeCloseTo(original.height, 0);
+  await region.evaluate(node => { node.scrollTop = 0; });
+  await expect(page.locator('[data-ioc-floating]')).toHaveCount(0);
+  await expect.poll(async () => (await header.boundingBox())!.y).toBeCloseTo(original.y, 0);
 });
 
 test('more filters stays inside the viewport when its trigger wraps onto another row', async ({ page }) => {

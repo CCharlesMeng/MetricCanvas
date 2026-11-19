@@ -14,4 +14,9 @@
 <div data-ioc-header-anchor bind:this={anchor}><div data-ioc-header-frame bind:this={content}>{#if visible}{@render children()}{/if}</div></div>
 <style>
   [data-ioc-header-anchor],[data-ioc-header-frame]{display:flow-root;min-width:0;}
+  [data-ioc-header-frame]:global([data-ioc-floating]) {
+    position: relative;
+    top: var(--mc-ioc-header-offset);
+    z-index: 66;
+  }
 </style>
