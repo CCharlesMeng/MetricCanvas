@@ -29,6 +29,9 @@ test('keyless query and inline children keep duplicates, paging, folds and compl
   expect([initial.worksheets[0]!.getCell('C4').value, initial.worksheets[0]!.getCell('C5').value]).toEqual([360, 999]);
   await parent.getByRole('button', { name: '展开子表格', exact: true }).first().click();
   const child = parent.getByRole('region', { name: '子表格', exact: true });
+  const defaultSubtitle = '— 代表本周期没有合同单/商务单';
+  await expect(parent.getByText(defaultSubtitle, { exact: true })).toHaveCount(1);
+  await expect(child.getByText(defaultSubtitle, { exact: true })).toHaveCount(0);
   await expect(child.getByRole('cell', { name: '上海', exact: true })).toHaveCount(2);
   await expect(child.getByRole('cell', { name: '999', exact: true })).toBeInViewport();
   await child.getByRole('button', { name: '下一页', exact: true }).click();
