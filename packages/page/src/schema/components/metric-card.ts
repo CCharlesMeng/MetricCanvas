@@ -61,6 +61,7 @@ export const metricCardComponentZ = z
     props: z
       .object({
         title: textValueZ.optional(),
+        tipCode: z.string().regex(/^\S+$/).optional().describe('指标定义气泡使用的静态指标编码，展示于主标题或无主标题单行卡片的指标名称旁。'),
         variant: z
           .enum([
             'summary',

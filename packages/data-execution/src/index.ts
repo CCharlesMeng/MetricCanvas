@@ -10,3 +10,4 @@ export type { ColumnCandidate, ColumnCandidatesPage, ColumnCandidatesQuery } fro
 export {withOperationMapRegion,type OperationMapRegionAdapter} from './operation-map-region';
 
 export type {FinalizationSourceDefinition} from './finalization';
+export type { MetricDefinition, MetricDefinitionsGateway } from './ports';

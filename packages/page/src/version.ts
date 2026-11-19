@@ -27,7 +27,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  */
 export const UNRESTRICTED_FILTER_CLEAR_MINOR = 124;
 export const INDEPENDENT_EXCLUSION_CANDIDATES_MINOR = 125;
-const CURRENT_MINOR = 126;
+const CURRENT_MINOR = 127;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -82,6 +82,12 @@ function bindingOperatorUsed(query:Record<string,unknown>|undefined):boolean {
 }
 
 export const pageCapabilities = {
+  'metric-card-definition-tip': {
+    minor: 127,
+    legacyReadable: false,
+    description: '指标卡定义气泡',
+    usedAt: metricCardTipPaths
+  },
   'metric-card-select-tab': {
     minor: 126,
     legacyReadable: false,
@@ -1161,6 +1167,16 @@ function sectionColumnTrackPaths(document: unknown): string[] {
       ? [`/sections/${index}/columnTracks`]
       : []
   );
+}
+
+function metricCardTipPaths(document: unknown): string[] {
+  const paths: string[] = [];
+  walkDocumentComponents(document, (component, path) => {
+    if (component.type === 'metricCard' && has(props(component), 'tipCode')) {
+      paths.push(`${path}/props/tipCode`);
+    }
+  });
+  return paths;
 }
 
 function metricCardSelectTabPaths(document: unknown): string[] {

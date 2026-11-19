@@ -11,3 +11,4 @@ export interface PageRepository {
   /** 已知页面清单(索引页/路由用),字段从原始页面文档尽力提取 */
   list(): Promise<Array<{ id: string; title: string; description?: string }>>;
 }
+export type { MetricDefinition, MetricDefinitionsGateway } from '@metriccanvas/data-execution';

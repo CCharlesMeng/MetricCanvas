@@ -2118,6 +2118,35 @@ export const invariants: InvariantDefinition[] = [
     ]
   },
   {
+    id: 'metric-card-definition-tip',
+    description: '指标定义气泡接受主标题或无主标题单行标签旁的静态编码',
+    valid: ['metric-card-definition-tip'],
+    cases: [
+      {
+        case: 'metric-definition-tip-version-floor',
+        base: 'metric-card-definition-tip',
+        expect: /6\.127 引入/,
+        mutate: document => { document.schemaVersion = '6.126'; }
+      },
+      {
+        case: 'metric-definition-tip-missing-title',
+        base: 'metric-card-definition-tip',
+        expect: /需要非空主标题，或仅有一个带标签的主指标行/,
+        mutate: document => {
+          const props = firstComponent(document).props;
+          delete props.title;
+          props.rows.push(structuredClone(props.rows[0]));
+        }
+      },
+      {
+        case: 'metric-definition-tip-empty-code',
+        base: 'metric-card-definition-tip',
+        expect: /tipCode/,
+        mutate: document => { firstComponent(document).props.tipCode = ' '; }
+      }
+    ]
+  },
+  {
     id: 'metric-card-select-tab',
     description: '指标值只能切换当前页目标容器中已声明的页签',
     valid: ['metric-card-select-tab'],

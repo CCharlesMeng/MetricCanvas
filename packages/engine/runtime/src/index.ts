@@ -4,6 +4,7 @@ export type {
   FilterCandidate, FilterCandidatesRequest, FilterCandidatesResult, FilterCandidatesGateway, DataGatewayResult,
   DimensionValueCandidate,
   DimensionValuesGateway,
+  MetricDefinition, MetricDefinitionsGateway,
   DimensionValuesResult,
   RuntimeDataGateway,
   QueryDiagnosticContext

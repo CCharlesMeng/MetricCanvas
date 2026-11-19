@@ -1,0 +1,797 @@
+{
+  "case": "metric-definition-tip-empty-code",
+  "invariant": "metric-card-definition-tip",
+  "input": {
+    "schemaVersion": "6.127",
+    "id": "metric-card-definition-tip",
+    "layout": "dashboard",
+    "meta": {
+      "title": "指标定义气泡（合成演示）"
+    },
+    "dataSources": {
+      "metrics": {
+        "fields": {
+          "grossProfitRate": {
+            "type": "number",
+            "role": "measure"
+          },
+          "revenue": {
+            "type": "number",
+            "role": "measure"
+          },
+          "executionRate": {
+            "type": "number",
+            "role": "measure"
+          },
+          "closureRate": {
+            "type": "number",
+            "role": "measure"
+          },
+          "comparisonCount": {
+            "type": "number",
+            "role": "measure"
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "grossProfitRate": 32.8,
+              "revenue": 8642,
+              "executionRate": 86.5,
+              "closureRate": 95,
+              "comparisonCount": 18
+            }
+          ]
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "operating-metrics",
+        "title": "核心经营指标",
+        "components": [
+          {
+            "id": "gross-profit-rate",
+            "type": "metricCard",
+            "layout": {
+              "span": 3
+            },
+            "data": {
+              "main": "metrics"
+            },
+            "props": {
+              "title": "销售毛利率",
+              "tipCode": " ",
+              "variant": "compactStack",
+              "rows": [
+                {
+                  "label": "本月",
+                  "valueField": {
+                    "data": "main",
+                    "field": "grossProfitRate",
+                    "format": "percent-1"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "id": "sales-revenue",
+            "type": "metricCard",
+            "layout": {
+              "span": 3
+            },
+            "data": {
+              "main": "metrics"
+            },
+            "props": {
+              "tipCode": "DEMO-REVENUE",
+              "rows": [
+                {
+                  "label": "销售收入",
+                  "valueField": "revenue",
+                  "unit": "万"
+                }
+              ]
+            }
+          },
+          {
+            "id": "execution-rate",
+            "type": "metricCard",
+            "layout": {
+              "span": 3
+            },
+            "data": {
+              "main": "metrics"
+            },
+            "props": {
+              "title": "框架执行率",
+              "tipCode": "DEMO-RETRY",
+              "rows": [
+                {
+                  "label": "本月",
+                  "valueField": {
+                    "data": "main",
+                    "field": "executionRate",
+                    "format": "percent-1"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "id": "closure-rate",
+            "type": "metricCard",
+            "layout": {
+              "span": 3
+            },
+            "data": {
+              "main": "metrics"
+            },
+            "props": {
+              "title": "闭环率",
+              "tipCode": "DEMO-NO-LINK",
+              "rows": [
+                {
+                  "label": "本月",
+                  "valueField": {
+                    "data": "main",
+                    "field": "closureRate",
+                    "format": "percent-1"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "id": "comparison-count",
+            "type": "metricCard",
+            "layout": {
+              "span": 3
+            },
+            "data": {
+              "main": "metrics"
+            },
+            "props": {
+              "title": "已跟进项目",
+              "rows": [
+                {
+                  "label": "本月",
+                  "valueField": "comparisonCount"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/data",
+      "message": "存在未定义字段 data(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/tipCode",
+      "message": "存在未定义字段 tipCode(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/rows",
+      "message": "存在未定义字段 rows(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/variant",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/tipCode",
+      "message": "must match pattern \"^\\S+$\""
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "缺少必填字段 categoryField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/series",
+      "message": "缺少必填字段 series"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/tipCode",
+      "message": "存在未定义字段 tipCode(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/rows",
+      "message": "存在未定义字段 rows(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/variant",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/xField",
+      "message": "缺少必填字段 xField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/series",
+      "message": "缺少必填字段 series"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/tipCode",
+      "message": "存在未定义字段 tipCode(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/variant",
+      "message": "存在未定义字段 variant(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/rows",
+      "message": "存在未定义字段 rows(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "缺少必填字段 valueField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "缺少必填字段 categoryField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/tipCode",
+      "message": "存在未定义字段 tipCode(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/rows",
+      "message": "存在未定义字段 rows(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/variant",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/value",
+      "message": "缺少必填字段 value"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "缺少必填字段 categoryField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/tipCode",
+      "message": "存在未定义字段 tipCode(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/rows",
+      "message": "存在未定义字段 rows(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/variant",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "缺少必填字段 columns"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/tipCode",
+      "message": "存在未定义字段 tipCode(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/rows",
+      "message": "存在未定义字段 rows(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/variant",
+      "message": "取值不在允许范围:[\"reportCompact\",\"embedded\",\"forecastMatrix\"]"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "缺少必填字段 valueField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/nameField",
+      "message": "缺少必填字段 nameField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/map",
+      "message": "缺少必填字段 map"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/tipCode",
+      "message": "存在未定义字段 tipCode(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/rows",
+      "message": "存在未定义字段 rows(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/variant",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/value",
+      "message": "缺少必填字段 value"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/nameField",
+      "message": "缺少必填字段 nameField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/map",
+      "message": "缺少必填字段 map"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/tipCode",
+      "message": "存在未定义字段 tipCode(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/rows",
+      "message": "存在未定义字段 rows(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/variant",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "缺少必填字段 valueField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/tipCode",
+      "message": "存在未定义字段 tipCode(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/rows",
+      "message": "存在未定义字段 rows(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/variant",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/value",
+      "message": "缺少必填字段 value"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/tipCode",
+      "message": "存在未定义字段 tipCode(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/rows",
+      "message": "存在未定义字段 rows(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/variant",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/data",
+      "message": "存在未定义字段 data(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/tabs",
+      "message": "缺少必填字段 tabs"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/tipCode",
+      "message": "存在未定义字段 tipCode(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/rows",
+      "message": "存在未定义字段 rows(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/variant",
+      "message": "取值不在允许范围:[\"compact\",\"analysisStack\"]"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/data",
+      "message": "存在未定义字段 data(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/components",
+      "message": "缺少必填字段 components"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/tipCode",
+      "message": "存在未定义字段 tipCode(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/rows",
+      "message": "存在未定义字段 rows(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/variant",
+      "message": "取值不在允许范围:[\"compact\",\"projectNorms\",\"metricGrid\"]"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/nameField",
+      "message": "缺少必填字段 nameField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "缺少必填字段 valueField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/tipCode",
+      "message": "存在未定义字段 tipCode(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/variant",
+      "message": "存在未定义字段 variant(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/rows",
+      "message": "存在未定义字段 rows(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/nameField",
+      "message": "缺少必填字段 nameField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "缺少必填字段 valueField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/tipCode",
+      "message": "存在未定义字段 tipCode(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/rows",
+      "message": "存在未定义字段 rows(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/variant",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/items",
+      "message": "缺少必填字段 items"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/tipCode",
+      "message": "存在未定义字段 tipCode(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/rows",
+      "message": "存在未定义字段 rows(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/variant",
+      "message": "取值不在允许范围:[\"counterStrip\",\"detailSummary\",\"detailNormMatrix\"]"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "缺少必填字段 categoryField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "缺少必填字段 columns"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/tipCode",
+      "message": "存在未定义字段 tipCode(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/rows",
+      "message": "存在未定义字段 rows(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/variant",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/field",
+      "message": "缺少必填字段 field"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/tipCode",
+      "message": "存在未定义字段 tipCode(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/rows",
+      "message": "存在未定义字段 rows(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/variant",
+      "message": "取值不在允许范围:[\"plain\",\"quote\",\"narrativeShort\",\"narrativeMeeting\",\"narrativeRisk\",\"narrativeProgress\"]"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/data",
+      "message": "存在未定义字段 data(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/tipCode",
+      "message": "存在未定义字段 tipCode(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/rows",
+      "message": "存在未定义字段 rows(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/variant",
+      "message": "取值不在允许范围:[\"plain\",\"heading\",\"insight\",\"reportInline\",\"riskNotice\"]"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/data",
+      "message": "存在未定义字段 data(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/tipCode",
+      "message": "存在未定义字段 tipCode(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/rows",
+      "message": "存在未定义字段 rows(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/variant",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/data",
+      "message": "存在未定义字段 data(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/label",
+      "message": "缺少必填字段 label"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/action",
+      "message": "缺少必填字段 action"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/title",
+      "message": "存在未定义字段 title(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/tipCode",
+      "message": "存在未定义字段 tipCode(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/variant",
+      "message": "存在未定义字段 variant(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/rows",
+      "message": "存在未定义字段 rows(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/data",
+      "message": "存在未定义字段 data(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterId",
+      "message": "缺少必填字段 filterId"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/title",
+      "message": "存在未定义字段 title(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/tipCode",
+      "message": "存在未定义字段 tipCode(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/variant",
+      "message": "存在未定义字段 variant(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/rows",
+      "message": "存在未定义字段 rows(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0",
+      "message": "must match exactly one schema in oneOf"
+    }
+  ]
+}

@@ -1,8 +1,13 @@
 {
   "major": 6,
-  "minor": 126,
-  "current": "6.126",
+  "minor": 127,
+  "current": "6.127",
   "capabilities": {
+    "metric-card-definition-tip": {
+      "minor": 127,
+      "description": "指标卡定义气泡",
+      "legacyReadable": false
+    },
     "metric-card-select-tab": {
       "minor": 126,
       "description": "指标值切换同页 Tab",
@@ -1101,6 +1106,7 @@
     "6.123",
     "6.124",
     "6.125",
-    "6.126"
+    "6.126",
+    "6.127"
   ]
 }

@@ -1,0 +1,45 @@
+{
+  "case": "metric-definition-tip-version-floor",
+  "invariant": "metric-card-definition-tip",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "指标卡定义气泡 由 6.127 引入，文档声明的是 6.126",
+      "paths": [
+        "/sections/0/components/0/props/tipCode",
+        "/sections/0/components/1/props/tipCode",
+        "/sections/0/components/2/props/tipCode",
+        "/sections/0/components/3/props/tipCode"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "tipCode": "ZB0000377"
+            }
+          },
+          {
+            "props": {
+              "tipCode": "DEMO-REVENUE"
+            }
+          },
+          {
+            "props": {
+              "tipCode": "DEMO-RETRY"
+            }
+          },
+          {
+            "props": {
+              "tipCode": "DEMO-NO-LINK"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

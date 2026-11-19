@@ -15,11 +15,17 @@ function canonicalRegionCandidates(candidates:FilterCandidate[]):FilterCandidate
 
 /** Standard Region routes use the host adapter; all other capabilities keep the base gateway. */
 export function withOperationMapRegion(base:RuntimeDataGateway,adapter:OperationMapRegionAdapter):RuntimeDataGateway {
-  return inheritMembershipCandidates({...base,async fetchFilterCandidates(request,options){
-    options.signal.throwIfAborted();
-    if(request.filterId!=='region'||!dimensions.has(request.dimension))return base.fetchFilterCandidates?.(request,options)??{kind:'unavailable'};
-    const result=await adapter.fetchRegionCandidates(request,options);
-    options.signal.throwIfAborted();
-    return result.kind==='values'?{kind:'values',candidates:canonicalRegionCandidates(result.candidates)}:result;
-  }},base);
+  return inheritMembershipCandidates({
+    ...base,
+    ...(base.fetchMetricDefinitions ? {fetchMetricDefinitions:base.fetchMetricDefinitions.bind(base)} : {}),
+    async fetchFilterCandidates(request, options) {
+      options.signal.throwIfAborted();
+      if (request.filterId !== 'region' || !dimensions.has(request.dimension)) {
+        return base.fetchFilterCandidates?.(request, options) ?? {kind:'unavailable'};
+      }
+      const result = await adapter.fetchRegionCandidates(request, options);
+      options.signal.throwIfAborted();
+      return result.kind === 'values' ? {kind:'values',candidates:canonicalRegionCandidates(result.candidates)} : result;
+    }
+  }, base);
 }

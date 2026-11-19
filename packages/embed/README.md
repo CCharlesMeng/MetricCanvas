@@ -172,6 +172,8 @@ Embed 的 `mount` 和完整 `update` 在省略 `initialSearch` 时自动读取�
 
 Embed 在 Shadow DOM 中渲染页面，以隔离集成应用样式。
 
+Schema 6.127 的指标卡可通过 `props.tipCode` 在主标题旁显示指标定义气泡。无主标题的单行卡片在该行指标名称旁显示。在传给 `mount` 的 `dataGateway` 上实现可选的 `fetchMetricDefinitions(metricCodes, { signal })` 即可启用，TypeScript 接入可导入 `MetricDefinitionsGateway` 和 `MetricDefinition`。集成应用负责调用并归一化自己的指标定义服务，响应项的 `code` 对应请求编码，`latestUpdateTime` 是已格式化的展示文字，`url` 是选定的绝对 HTTP(S) 链接。日期或链接缺席时返回 `null`。端口应将取消信号传到底层请求，失败时拒绝 Promise，匹配不到的编码从返回数组省略。指标定义查询的失败和重试留在气泡内。见[指标定义气泡](../../docs/page-metadata/components/metricCard.md#metric-definition-tip)。
+
 **集成应用必须交出宽度。** 页面外框几何由页面文档的 `layout` 决定：声明 `dashboard` 的页面按满宽看板渲染，挂载容器的可用宽度就是页面宽度，集成应用不得再加 `max-width` 或水平内边距；`report`（缺省）自己定宽居中，对容器宽度不敏感。给定宽容器（例如门户的 1440 内容区）会让看板页在里面被裁掉，运行时检测不到这件事。集成应用的完整义务见 [集成应用契约](../../docs/host-contract.md)。
 
 ## 事件
