@@ -24,7 +24,7 @@ import { sourceCandidateErrors } from './source-candidates';
 import { filterGroupErrors, obsoleteChartFilterErrors } from './filter-group';
 import {queryBindingWhenErrors} from './query-binding-when';
 import { metricBeforeErrors } from './metric-before';
-import { metricCardShapeErrors, metricCardSelectTabErrors } from './metric-card';
+import { metricCardShapeErrors, metricCardSelectTabErrors, metricCardTipTitleErrors } from './metric-card';
 import {ordinaryQuery} from './time-mode';
 import {timeExtensionErrors} from './time-extension-validation';
 import {pageSelectionVariants} from './selection-variants';
@@ -161,6 +161,7 @@ export function parsePage(
   const declarations = pageParamDeclarations(compatibleDocument);
   const documentErrors = [
     ...metricBeforeErrors(compatibleDocument),
+    ...metricCardTipTitleErrors(compatibleDocument as Page),
     ...((compatibleDocument as Page).strictURLInputs&&declarations.some(p=>!p.path&&(p.value!==undefined||p.type==='timeRange'))?[schemaError('/strictURLInputs','严格URL输入不支持旧数组固定参数，请使用分组参数')]:[]),
     ...emptyIocHeaderErrors(compatibleDocument),
     ...(typeof (compatibleDocument as PageDocument).params === 'object' && !Array.isArray((compatibleDocument as PageDocument).params) && declarations.length === 0 ? [schemaError('/params', '分组参数至少声明一个参数')] : []),

@@ -65,6 +65,11 @@ def _is_export_header(node):
             and any(key in props for key in ('pdfExport', 'pngExport', 'exportButtons')))
 
 
+def _is_metric_definition_card(node):
+    props = node.get('props')
+    return node.get('type') == 'metricCard' and isinstance(props, dict) and 'tipCode' in props
+
+
 def _is_business_filter(node):
     return node.get('type') in {'dimension', 'timePoint', 'timeRange', 'boolean', 'numberRange', 'search'} and any(
         key in node for key in ('selection', 'options', 'treeSelection', 'candidateContext', 'clearOnChangeOf', 'hint'))
@@ -83,7 +88,7 @@ def _uses_product_bridge(node):
         return False
     if any((_is_presentation_node(node), 'byFilter' in node, 'metricByFilter' in node, node.get('currency') == 'USD', node.get('format') == 'usd-adaptive', node.get('defaultFormat') == 'usd-adaptive', 'units' in node, 'constraints' in node, 'presets' in node, 'strictURLInputs' in node, 'validateTargetInputs' in node, 'timeModes' in node, 'candidateWindow' in node, 'availability' in node, 'blockedRanges' in node, (node.get('type') in {'timeRange','timePoint'} and 'max' in node), 'iocHeader' in node, node.get('type') == 'pagedJoin',
             _is_url_initialized_tab(node), _is_business_filter(node), _is_chart_filter(node), _is_period_filter(node), _is_bounded_time_point(node),
-            node.get('mode') == 'numberRange', _is_export_header(node))):
+            node.get('mode') == 'numberRange', _is_export_header(node), _is_metric_definition_card(node))):
         return True
     return any(_uses_product_bridge(value) for value in node.values())
 

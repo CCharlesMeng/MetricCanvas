@@ -4,6 +4,7 @@
 </script>
 <svelte:options css="injected" />
 <script lang="ts">
+  import MetricDefinitionLayer from './metric-definition/MetricDefinitionLayer.svelte';
   import {createAuthRequiredGateway, notifyAuthRequired, type AuthRequiredEvent} from './auth-required';
   import {invalidateAiSummaryPage} from './ai-summary/runtime/session';
   import {debugWarn,createFinalizationPreparation,inheritFinalizationCache,supportsMembershipCandidates} from '@metriccanvas/data-execution/runtime';
@@ -425,6 +426,7 @@
     Record<string, TableHeaderFilters>
   >({});
   let activeGateway: RuntimeDataGateway = inlineGateway;
+  let fetchMetricDefinitions = $state.raw<RuntimeDataGateway['fetchMetricDefinitions']>();
 
   let declarations = $state<FilterDeclaration[]>([]);
   let candidateClock=$state.raw(new Date());
@@ -470,6 +472,7 @@
 
   function dispose() {
     untrack(() => closeDetail(false));
+    fetchMetricDefinitions = undefined;
     reportExportGeneration++;
     reportExportMessage = '';
     reportExportError = undefined;
@@ -604,6 +607,7 @@
     const nextCandidateSession=createSourceCandidateSession(loaded,authGateway.gateway,{displayInputs:()=>displaySnapshot,filterRevision:()=>filterRevision,clock:()=>candidateClock});
     inheritFinalizationCache(nextCandidateSession.gateway,authGateway.gateway);
     candidateSession=nextCandidateSession;activeGateway=nextCandidateSession.gateway;
+    fetchMetricDefinitions = activeGateway.fetchMetricDefinitions;
     disposers.push(()=>{nextCandidateSession.dispose();if(candidateSession===nextCandidateSession)candidateSession=undefined;});
 
     const finalizationController = new AbortController();
@@ -849,7 +853,7 @@
     if (gatewayValue !== undefined && !isDataGateway(gatewayValue)) {
       return configurationError(
         'DATA_GATEWAY_INVALID',
-        '数据网关必须实现 fetchData;候选值端口 fetchDimensionValues 可选,声明了必须是函数。'
+        '数据网关必须实现 fetchData；候选值和指标定义端口可选，声明时必须为函数。'
       );
     }
     if (mode === 'inline') return null;
@@ -1613,6 +1617,7 @@
 </script>
 
 <div class="runtime-view" data-initializing={initializing&&pageState.phase==='ready'?'':undefined} data-runtime-navigation={navigation?.navigate ? true : undefined} bind:this={surfaceRoot}>
+<MetricDefinitionLayer fetchDefinitions={fetchMetricDefinitions} tabs={tabSelections}>
   {#if navigationMessage}<p role="alert" data-navigation-error>{navigationMessage}</p>{/if}
   {#if regionURLIssue}<p role="alert">{regionURLIssue}</p>{/if}
   {#if pageState.phase === 'loading'}
@@ -1799,6 +1804,7 @@
         {/if}
     </dialog>
   {/if}
+</MetricDefinitionLayer>
 </div>
 
 

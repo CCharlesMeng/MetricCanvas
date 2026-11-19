@@ -1,6 +1,8 @@
 <svelte:options css="injected" />
 <script lang="ts">
+  import type { Snippet } from 'svelte';
   import type { FieldBinding, MetricCardProps, MetricCardRow, Row } from '@metriccanvas/page/internal';
+  import { metricCardTipAnchor } from '@metriccanvas/page/internal';
   import type { MetricDataSlots } from '../../shared/component-data';
   import { fieldRow, fieldValue, resolveField } from '../../shared/component-data';
   import { DEFAULT_NULL_TEXT, hasDisplayValue, finiteNumber, isSignedNumberFormat, valuePolarity } from '../../shared/value-format';
@@ -15,6 +17,7 @@
     data: MetricDataSlots;
     props: MetricCardProps;
     loading?: boolean;
+    definitionTip?: Snippet<[string]>;
     animate?: boolean;
     /** 只由声明了 link 的非空值触发。 */
     onlink?: (row: Row, event: MouseEvent) => void;
@@ -22,7 +25,10 @@
     onaction?: (action: NonNullable<MetricCardRow['action']>) => void;
   }
 
-  let { data, props, loading = false, animate = true, onlink, linkHref, onaction }: Props = $props();
+  let { data, props, loading = false, animate = true, definitionTip, onlink, linkHref, onaction }: Props = $props();
+  const tipAnchor = $derived(definitionTip ? metricCardTipAnchor(props) : undefined);
+  const titleAccessory = $derived(tipAnchor === 'title' ? definitionTip : undefined);
+  const rowAccessory = $derived(tipAnchor === 'row' ? definitionTip : undefined);
 
   function fieldText(field: FieldBinding, unit?: string): string {
     const resolved = resolveField(field, data);
@@ -67,13 +73,15 @@
   {#if !loading && unit}<span class="unit">{unit}</span>{/if}
 {/snippet}
 
-{#snippet metricRows(rows: MetricCardProps['rows'])}
+{#snippet metricRows(rows: MetricCardProps['rows'], accessory?: Snippet<[string]>)}
   <div class="metric-values">
     {#each rows as row, index (`${row.label}:${index}`)}
       {@const rawValue = fieldValue(row.valueField, data)}
       {@const action = row.action}
       <div class="metric-row">
-        <span class="row-label">{row.label}</span>
+        <span class="row-label" class:with-title-accessory={accessory !== undefined}>
+          {row.label}{@render accessory?.(row.label)}
+        </span>
         {#if !loading && rawValue != null && action && onaction}
           <button
             type="button"
@@ -141,11 +149,21 @@
   </div>
 {/snippet}
 
-{#snippet metricPanel(title: string | undefined, rows: MetricCardProps['rows'] | undefined)}
+{#snippet heading(title: string | undefined, accessory?: Snippet<[string]>)}
+  {#if title}
+    {#if accessory && title.trim()}
+      <h3 class="with-title-accessory"><span>{title}</span>{@render accessory(title)}</h3>
+    {:else}
+      <h3>{title}</h3>
+    {/if}
+  {/if}
+{/snippet}
+
+{#snippet metricPanel(title: string | undefined, rows: MetricCardProps['rows'] | undefined, primary = false)}
   <section class="metric-panel">
-    {#if title}<h3>{title}</h3>{/if}
+    {@render heading(title, primary ? titleAccessory : undefined)}
     {#if rows}
-      {@render metricRows(rows)}
+      {@render metricRows(rows, primary ? rowAccessory : undefined)}
     {:else}
       <div class="metric-values placeholder-values" aria-label={`${title ?? '指标'}数据待补充`}>
         <div class="metric-row">
@@ -173,7 +191,7 @@
   class="metric-card"
 >
   {#if props.variant === 'compactSummary' || props.variant === 'dualSummary' || props.variant === 'compactStrip' || props.variant === 'compactStack'}
-    {@render metricPanel(props.title, props.rows)}
+    {@render metricPanel(props.title, props.rows, true)}
     {#if props.variant === 'dualSummary' || props.secondaryRows || props.secondaryTitle}
       {@render metricPanel(props.secondaryTitle, props.secondaryRows)}
     {/if}
@@ -183,9 +201,9 @@
       </div>
     {/if}
   {:else}
-    {#if props.title}<h3>{props.title}</h3>{/if}
+    {@render heading(props.title, titleAccessory)}
     <div class="metric-content">
-      {@render metricRows(props.rows)}
+      {@render metricRows(props.rows, rowAccessory)}
       {#if props.progress}
         <div class="progress-slot">
           <ProgressRing
@@ -207,6 +225,13 @@
 </div>
 
 <style>
+  .with-title-accessory {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+  .with-title-accessory span { min-width: 0; overflow-wrap: anywhere; }
+  .row-label.with-title-accessory { display: inline-flex; }
   .metric-card {
     box-sizing: border-box;
     display: flex;

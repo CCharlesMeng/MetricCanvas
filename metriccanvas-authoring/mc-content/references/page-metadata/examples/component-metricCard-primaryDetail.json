@@ -1,55 +1,40 @@
 {
-  "schemaVersion": "6.116",
-  "id": "number-precision-five",
+  "schemaVersion": "6.65",
+  "id": "metric-card-definition-tip",
   "layout": "dashboard",
   "dataSources": {
-    "binding-samples": {
+    "metrics": {
       "fields": {
-        "id": {
-          "type": "string",
-          "role": "dimension"
-        },
-        "name": {
-          "type": "string",
-          "role": "dimension"
-        },
-        "change": {
+        "grossProfitRate": {
           "type": "number",
-          "role": "measure",
-          "nullable": true
+          "role": "measure"
         },
-        "explicitChange": {
+        "revenue": {
           "type": "number",
-          "role": "measure",
-          "nullable": true
+          "role": "measure"
+        },
+        "executionRate": {
+          "type": "number",
+          "role": "measure"
+        },
+        "closureRate": {
+          "type": "number",
+          "role": "measure"
+        },
+        "comparisonCount": {
+          "type": "number",
+          "role": "measure"
         }
       },
       "source": {
         "type": "inline",
         "rows": [
           {
-            "id": "a",
-            "name": "正数",
-            "change": 1.234,
-            "explicitChange": 1.234
-          },
-          {
-            "id": "b",
-            "name": "负数",
-            "change": -1.234,
-            "explicitChange": -1.234
-          },
-          {
-            "id": "c",
-            "name": "舍入零",
-            "change": -0.004,
-            "explicitChange": -0.004
-          },
-          {
-            "id": "d",
-            "name": "缺失",
-            "change": null,
-            "explicitChange": null
+            "grossProfitRate": 32.8,
+            "revenue": 8642,
+            "executionRate": 86.5,
+            "closureRate": 95,
+            "comparisonCount": 18
           }
         ]
       }
@@ -60,27 +45,20 @@
       "id": "main",
       "components": [
         {
-          "id": "summary",
+          "id": "comparison-count",
           "type": "metricCard",
           "layout": {
-            "span": 6
+            "span": 3
           },
           "data": {
-            "main": "binding-samples"
+            "main": "metrics"
           },
           "props": {
-            "title": "指标卡共享默认槽",
+            "title": "已跟进项目",
             "rows": [
               {
-                "label": "正数变化",
-                "valueField": {
-                  "field": "change",
-                  "format": "number-2-signed",
-                  "match": {
-                    "field": "id",
-                    "equals": "a"
-                  }
-                }
+                "label": "本月",
+                "valueField": "comparisonCount"
               }
             ],
             "variant": "primaryDetail"

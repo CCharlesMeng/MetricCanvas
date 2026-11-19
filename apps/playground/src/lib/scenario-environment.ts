@@ -29,21 +29,20 @@ import { pageExternalInputs,rejectionPreviewRowCount,rejectionPreviewDelay } fro
 import { iocSelectionGateway } from '../../fixtures/selection-gateway';
 import { createDecisionOpinionPreview } from '../../fixtures/decision-opinion/preview';
 import { dataGateway } from './services';
+import { createMetricDefinitionPreview } from '../../fixtures/metric-definition-tip';
 
 /** Called only with an example ID resolved from the trusted scenario index, never from edited JSON. */
 export function scenarioEnvironment(exampleId: string, state = 'ready') {
   const kind = pageExternalInputs(exampleId);
-  const table=tablePreview(kind,state);
+  const table = simpleGatewayPreview(kind) ?? tablePreview(kind, state);
   if(table)return table;
   if (kind === 'organization-union') return createPartnerHealthUnionPreview(state);
   if (kind === 'table-recovery') return createTableRecoveryPreview(state);
   if (kind === 'ioc-region'||kind==='ioc-region-dept') return {dataGateway:withIocRegionCandidates(dataGateway,kind==='ioc-region')};
   if (kind === 'zero-total') return createZeroTotalPreview();
-  if(kind==='hierarchy')return {dataGateway:createHierarchyGateway()};
   if (kind === 'record-join') return createRejectionPreview({rows:rejectionPreviewRowCount(exampleId,'catalog'),delayMs:rejectionPreviewDelay(exampleId)});
   if (kind === 'ioc-header') return createIocHeaderPreview();
   if (kind === 'ioc-business') return createIocBusinessPreview(exampleId, state, 'catalog-preview');
-  if (kind === 'selection') return { dataGateway: iocSelectionGateway };
   if (kind === 'paged-union') return createUnionPreview();
   if (kind === 'decision-opinion') return createDecisionOpinionPreview({});
   if (kind === 'visibility') {
@@ -51,6 +50,15 @@ export function scenarioEnvironment(exampleId: string, state = 'ready') {
     return { dataGateway, displayInputs: visibility.source, setFact: visibility.publish };
   }
   return { dataGateway };
+}
+
+function simpleGatewayPreview(kind: string | undefined) {
+  switch (kind) {
+    case 'metric-definition-tip':
+      return { dataGateway: createMetricDefinitionPreview(globalThis.location?.origin ?? 'http://localhost') };
+    case 'hierarchy': return { dataGateway: createHierarchyGateway() };
+    case 'selection': return { dataGateway: iocSelectionGateway };
+  }
 }
 
 function tablePreview(kind:string|undefined,state:string){

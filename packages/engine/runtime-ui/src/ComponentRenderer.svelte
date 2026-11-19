@@ -18,6 +18,9 @@
    * (组合卡这次正是这么漏的)。
    */
   import { getContext, type Snippet } from 'svelte';
+  import MetricDefinitionTrigger from './metric-definition/MetricDefinitionTrigger.svelte';
+  import { METRIC_DEFINITION_TIPS, type MetricDefinitionTips } from './metric-definition/session';
+  const metricDefinitionTips = getContext<MetricDefinitionTips | undefined>(METRIC_DEFINITION_TIPS);
   import RuntimeSection from './RuntimeSection.svelte';
   import { TAB_SELECTION_CONTEXT, type TabSelectionContext } from './tab-selection';
   import { selectedTab, tabChildren, type TabContainerComponent } from '@metriccanvas/page/internal';
@@ -252,13 +255,21 @@
   <WidgetHost {snapshot} retained={screen.retained} notices={component.type === 'table' && snapshot.status === 'error' ? [] : componentDataNotices(component, snapshot, pageSnapshots, table)}>
     {#snippet ready(_readySnapshot)}
       {#if component.type === 'metricCard'}
+        {@const tipCode = component.props.tipCode}
         <MetricCard
           loading={snapshot.status === 'loading' && !screen.retained} data={metricData} animate={!exportMode}
           props={component.props} onlink={onmetriclink} linkHref={metricHref}
+          definitionTip={!exportMode && !screen.retained && tipCode && metricDefinitionTips?.available()
+            ? metricTitleAccessory : undefined}
           onaction={!exportMode && tabSelection
             ? action => tabSelection.selectFromMetric(component.id, action.selectTab.componentId, action.selectTab.tabId)
             : undefined}
         />
+        {#snippet metricTitleAccessory(title: string)}
+          {#if tipCode && metricDefinitionTips}
+            <MetricDefinitionTrigger {title} code={tipCode} tips={metricDefinitionTips} />
+          {/if}
+        {/snippet}
       {:else if component.type === 'barChart'}
         <BarChart
           diagnostic={ { componentId: component.id, componentType: component.type, path: optionPaths?.().get(component.id) ?? '/props/echartsOption' } }

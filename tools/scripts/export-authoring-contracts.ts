@@ -625,7 +625,7 @@ function generatedSkillFile(file:string,mode:string):boolean {
   if(mode!=='local-page-metadata') return false;
   return generatedSkillTrees.some(tree=>file.startsWith(tree+'/')) || [
     diagnosticHandoff,
-    'scripts/read-knowledge.mjs','scripts/analyze-data.mjs','scripts/upgrade-page.mjs','scripts/associate-data.mjs',
+    'scripts/read-knowledge.mjs','scripts/analyze-data.mjs','scripts/upgrade-page.mjs','scripts/associate-data.mjs','scripts/configure-metric-tips.mjs',
     'scripts/validate-page.mjs','scripts/THIRD-PARTY-LICENSES.md','references/knowledge.json','references/map-regions.json','assets/layouts/overview-map-led.json'
   ].includes(file);
 }
@@ -643,7 +643,7 @@ async function localSkillArtifacts(projected:OutputMap,productOutputs:OutputMap)
     if(file.startsWith('references/page-metadata/')) projected.set(file.slice('references/page-metadata/'.length),content);
     else generated.set(file,content);
   }
-  for(const [entry,output] of [['local-authoring-knowledge-reader','read-knowledge'],['local-authoring-data-cli','analyze-data'],['local-authoring-upgrade','upgrade-page'],['local-authoring-association','associate-data']]) {
+  for(const [entry,output] of [['local-authoring-knowledge-reader','read-knowledge'],['local-authoring-data-cli','analyze-data'],['local-authoring-upgrade','upgrade-page'],['local-authoring-association','associate-data'],['local-authoring-metric-tips-cli','configure-metric-tips']]) {
     for(const [file,content] of await localValidatorOutputs(repoRoot,`tools/scripts/${entry}.ts`,`scripts/${output}.mjs`)) if(file.endsWith('.mjs')) generated.set(file,content);
   }
   for(const [file,content] of await localPagePatternOutputs(repoRoot)) generated.set(file,content);

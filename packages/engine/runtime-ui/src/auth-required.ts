@@ -61,11 +61,16 @@ export function createAuthRequiredGateway(base: RuntimeDataGateway, observe: (ev
   const dimensions = base.fetchDimensionValues;
   const filters = base.fetchFilterCandidates;
   const columns = base.fetchColumnCandidates;
+  const definitions = base.fetchMetricDefinitions;
   const gateway: RuntimeDataGateway = {
     get finalizationSource() { return base.finalizationSource; },
     fetchData: (query, context, signal) => execute(next => base.fetchData(query, context, next), signal),
     ...(dimensions ? { fetchDimensionValues: ((dimension, options) => execute(next => dimensions.call(base, dimension, { ...options, signal: next }), options?.signal)) as NonNullable<RuntimeDataGateway['fetchDimensionValues']> } : {}),
     ...(filters ? { fetchFilterCandidates: ((request, options) => execute(next => filters.call(base, request, { signal: next }), options.signal)) as NonNullable<RuntimeDataGateway['fetchFilterCandidates']> } : {}),
+    ...(definitions ? { fetchMetricDefinitions: (codes, options) => {
+      const signal = AbortSignal.any(options?.signal ? [options.signal, lifetime.signal] : [lifetime.signal]);
+      return abortable(next => definitions.call(base, codes, { signal: next }), signal);
+    } } : {}),
     ...(columns ? { fetchColumnCandidates: ((request, context, signal) => execute(next => columns.call(base, request, context, next), signal)) as NonNullable<RuntimeDataGateway['fetchColumnCandidates']> } : {})
   };
   inheritFinalizationCache(gateway,base);

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { createMetricDefinitionPreview } from '../../../../../fixtures/metric-definition-tip';
   import {createAsyncPreparationPreview} from '../../../../../fixtures/async-preparation';
   import {createKeylessChildPreview} from '../../../../../fixtures/child-keyless';
   import {createIndependentRequestsPreview} from '../../../../../fixtures/independent-query-preview';
@@ -142,6 +143,8 @@
   }
 
   function queryTableGateway(input: ReturnType<typeof pageExternalInputs>): DataGateway | undefined {
+    if(input==='metric-definition-tip')return page.url.searchParams.get('tips') === 'off'
+      ? dataGateway : createMetricDefinitionPreview(page.url.origin);
     if(input==='independent-requests')return createIndependentRequestsPreview().dataGateway;
     if(input==='child-keyless')return createKeylessChildPreview().dataGateway;
     const state = page.url.searchParams.get('state') ?? 'ready';

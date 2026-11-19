@@ -1,0 +1,192 @@
+{
+  "case": "metric-definition-tip-version-floor",
+  "invariant": "metric-card-definition-tip",
+  "input": {
+    "schemaVersion": "6.126",
+    "id": "metric-card-definition-tip",
+    "layout": "dashboard",
+    "meta": {
+      "title": "指标定义气泡（合成演示）"
+    },
+    "dataSources": {
+      "metrics": {
+        "fields": {
+          "grossProfitRate": {
+            "type": "number",
+            "role": "measure"
+          },
+          "revenue": {
+            "type": "number",
+            "role": "measure"
+          },
+          "executionRate": {
+            "type": "number",
+            "role": "measure"
+          },
+          "closureRate": {
+            "type": "number",
+            "role": "measure"
+          },
+          "comparisonCount": {
+            "type": "number",
+            "role": "measure"
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "grossProfitRate": 32.8,
+              "revenue": 8642,
+              "executionRate": 86.5,
+              "closureRate": 95,
+              "comparisonCount": 18
+            }
+          ]
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "operating-metrics",
+        "title": "核心经营指标",
+        "components": [
+          {
+            "id": "gross-profit-rate",
+            "type": "metricCard",
+            "layout": {
+              "span": 3
+            },
+            "data": {
+              "main": "metrics"
+            },
+            "props": {
+              "title": "销售毛利率",
+              "tipCode": "ZB0000377",
+              "variant": "compactStack",
+              "rows": [
+                {
+                  "label": "本月",
+                  "valueField": {
+                    "data": "main",
+                    "field": "grossProfitRate",
+                    "format": "percent-1"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "id": "sales-revenue",
+            "type": "metricCard",
+            "layout": {
+              "span": 3
+            },
+            "data": {
+              "main": "metrics"
+            },
+            "props": {
+              "tipCode": "DEMO-REVENUE",
+              "rows": [
+                {
+                  "label": "销售收入",
+                  "valueField": "revenue",
+                  "unit": "万"
+                }
+              ]
+            }
+          },
+          {
+            "id": "execution-rate",
+            "type": "metricCard",
+            "layout": {
+              "span": 3
+            },
+            "data": {
+              "main": "metrics"
+            },
+            "props": {
+              "title": "框架执行率",
+              "tipCode": "DEMO-RETRY",
+              "rows": [
+                {
+                  "label": "本月",
+                  "valueField": {
+                    "data": "main",
+                    "field": "executionRate",
+                    "format": "percent-1"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "id": "closure-rate",
+            "type": "metricCard",
+            "layout": {
+              "span": 3
+            },
+            "data": {
+              "main": "metrics"
+            },
+            "props": {
+              "title": "闭环率",
+              "tipCode": "DEMO-NO-LINK",
+              "rows": [
+                {
+                  "label": "本月",
+                  "valueField": {
+                    "data": "main",
+                    "field": "closureRate",
+                    "format": "percent-1"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "id": "comparison-count",
+            "type": "metricCard",
+            "layout": {
+              "span": 3
+            },
+            "data": {
+              "main": "metrics"
+            },
+            "props": {
+              "title": "已跟进项目",
+              "rows": [
+                {
+                  "label": "本月",
+                  "valueField": "comparisonCount"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/tipCode",
+      "message": "指标卡定义气泡 由 6.127 引入，文档声明的是 6.126"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/tipCode",
+      "message": "指标卡定义气泡 由 6.127 引入，文档声明的是 6.126"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/2/props/tipCode",
+      "message": "指标卡定义气泡 由 6.127 引入，文档声明的是 6.126"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/tipCode",
+      "message": "指标卡定义气泡 由 6.127 引入，文档声明的是 6.126"
+    }
+  ]
+}

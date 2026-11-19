@@ -29,6 +29,7 @@ export type { TypedError } from '@metriccanvas/page';
 export type {
   DataGateway,
   DimensionValuesGateway,
+  MetricDefinition, MetricDefinitionsGateway,
   RuntimeDataGateway
 } from '@metriccanvas/engine';
 export type { AuthRequiredEvent, AiSummaryConfig, NavigationInputContract, RuntimeNavigation, RuntimeNavigationTarget } from '@metriccanvas/engine/ui';

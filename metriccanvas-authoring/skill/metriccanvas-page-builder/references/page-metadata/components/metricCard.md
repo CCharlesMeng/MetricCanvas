@@ -4,6 +4,30 @@
 
 数据槽和字段绑定声明取哪行哪列；不同variant改变摘要结构，不能把列清单当任意HTML模板。
 
+<a id="metric-definition-tip"></a>
+
+## 指标定义气泡 6.127
+
+在 `props.tipCode` 声明集成应用指标定义服务识别的静态编码，编码不能包含空白。主标题有非空文字时用主标题作为问号位置和气泡标题。主标题缺失或未解析出文字时，若全卡只有一个主指标行且行标签有文字，则复用该行标签。没有可用位置时隐藏问号。省略 `tipCode` 或集成应用未提供 `dataGateway.fetchMetricDefinitions` 时，也隐藏问号。页面校验要求配置了编码的卡片声明主标题或符合单行规则。
+
+```json
+{
+  "id": "gross-profit-rate",
+  "type": "metricCard",
+  "layout": { "span": 3 },
+  "data": { "main": "metrics" },
+  "props": {
+    "title": "销售毛利率",
+    "tipCode": "ZB0000377",
+    "rows": [{ "label": "本月", "valueField": "grossProfitRate" }]
+  }
+}
+```
+
+问号可悬停或通过键盘打开。气泡独立查询指标定义并显示名称和编码、定义、公式、解释人及可选更新说明。查询失败或缺少对应编码时可以重新加载。图标与气泡之间移动时保持打开，离开两者或切换页签时关闭并取消当前请求。可用的 HTTP(S) 链接以黑色粗体显示在右下方，新开标签页。更新时间非空时显示「查看最新指标定义」，否则显示「查看更多」。静态导出仅呈现标题与指标值。
+
+从 `/pages/metric-card-definition-tip` 可观察实际交互。[完整合成页面](../examples/metric-card-definition-tip.json)。
+
 **加载状态。**
 
 首次取数时，主数值、次级指标、变化值及完成率数字在原位置显示灰色骨架，共用表格从左向右循环扫光的效果，标题、指标名、变化标签和完成率环形容器保留。已有完整展示时，筛选重查期间保留旧数值与单位，旧值级链接暂时不可操作。本轮数据槽全部就绪后，连续两次取到的有限数值在原位过渡到新值，沿用字段格式。首次值和缺失值直接显示。系统启用减少动态效果时使用静态占位，并直接显示更新值。动画只用于屏幕呈现。空结果或查询失败恢复既有缺失值呈现。所有 variant 共用该行为，无需声明新字段或升级 Schema；缓存和失效边界见[加载时保留组件结构](../data-sources.md#screen-loading)。
@@ -51,7 +75,7 @@ Dashboard 的 plain/card 内容分区可以在顶层相邻指标卡的 `layout.b
 数值与单位遵循[统一语义格式](../field-bindings-and-formats.md#numeric-value-display)：组件显式格式优先，自动金额和数量不再重复追加旧的元/万等单位标签。比率变化项使用正负号，即使 `showTrendArrows: true` 也不显示箭头；绝对变化项保留既有箭头行为。进度环图形可裁到0–100%，文字仍按真实比率格式化，不把超过100%的真实值改成100%。缺失比率默认显示 `--%`，自定义缺失文字按原声明。合成场景 `/pages/semantic-numeric-display`。
 
 
-页面协议 6.126。结构真源为本册[schema.json](../schema.json)，SHA256 `266c4792f1dd35514f6d2076dd81ab381d16cbb98bb2cee708b12e08a3056ebc`。字段表自动生成；可选不等于有默认值。
+页面协议 6.127。结构真源为本册[schema.json](../schema.json)，SHA256 `d154b09e08d9b1788ca6cdf3eea65c6f2cc85287fdf20a59fb39c93e7a9b7b97`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -246,6 +270,16 @@ Schema位置：`#/definitions/metricCardComponent/properties/props/properties/ti
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | 引用 #/definitions/textValue | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f6d657472696343617264436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f746970436f6465"></a>
+
+### `@metricCardComponent.props.tipCode`
+
+Schema位置：`#/definitions/metricCardComponent/properties/props/properties/tipCode`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | pattern="^\\S+$" | Schema未设默认；装配/运行时默认见语义说明 | 指标定义气泡使用的静态指标编码，展示于主标题或无主标题单行卡片的指标名称旁。 |
 
 <a id="schema-232f646566696e6974696f6e732f6d657472696343617264436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f76617269616e74"></a>
 
@@ -821,6 +855,7 @@ Schema位置：`#/definitions/metricCardComponent/properties/props/properties/ac
 - [metric-card-equation](../examples/metric-card-equation.json)：完整合法页面；查询仅为静态契约证据。
 - [metric-card-primary-detail](../examples/metric-card-primary-detail.json)：完整合法页面；查询仅为静态契约证据。
 - [metric-card-select-tab](../examples/metric-card-select-tab.json)：完整合法页面；查询仅为静态契约证据。
+- [metric-card-definition-tip](../examples/metric-card-definition-tip.json)：完整合法页面；查询仅为静态契约证据。
 
 局部片段提取自[完整页面](../examples/component-metricCard.json)的`#/sections/0/components/0`；此片段依赖完整页面的数据源/字段，不能单独作为页面校验。
 

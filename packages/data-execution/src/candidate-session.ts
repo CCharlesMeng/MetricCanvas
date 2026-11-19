@@ -116,6 +116,7 @@ export function bindCandidateGateway(base: RuntimeDataGateway, fetch?: FilterCan
     fetchData: base.fetchData.bind(base),
     ...(base.fetchColumnCandidates ? {fetchColumnCandidates:base.fetchColumnCandidates.bind(base)} : {}),
     ...(base.fetchDimensionValues ? {fetchDimensionValues:base.fetchDimensionValues.bind(base)} : {}),
+    ...(base.fetchMetricDefinitions ? {fetchMetricDefinitions:base.fetchMetricDefinitions.bind(base)} : {}),
     ...(fetch ? {fetchFilterCandidates:fetch} : {})
   }, base);
 }

@@ -383,7 +383,7 @@ IOC 业务 Region 只允许 iocHeader 内的单个组织树，树内选择地区
 合成入口为 `/pages/finalization-default-time` 与 `/pages/finalization-default-time-detail`，`?state=error|missing|invalid|conflict|timeout` 验证回退。集成应用通过数据网关的finalizationSource提供固定DQE请求体、nameField与dateField映射，页面作者不填写端点、凭据或表结构。这些场景不证明真实截止表或生产DQE已接入。
 
 
-页面协议 6.126。结构真源为本册[schema.json](schema.json)，SHA256 `266c4792f1dd35514f6d2076dd81ab381d16cbb98bb2cee708b12e08a3056ebc`。字段表自动生成；可选不等于有默认值。
+页面协议 6.127。结构真源为本册[schema.json](schema.json)，SHA256 `d154b09e08d9b1788ca6cdf3eea65c6f2cc85287fdf20a59fb39c93e7a9b7b97`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

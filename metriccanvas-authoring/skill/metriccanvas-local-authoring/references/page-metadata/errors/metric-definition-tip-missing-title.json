@@ -1,0 +1,25 @@
+{
+  "case": "metric-definition-tip-missing-title",
+  "invariant": "metric-card-definition-tip",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "指标定义气泡需要非空主标题，或仅有一个带标签的主指标行",
+      "paths": [
+        "/sections/0/components/0/props/title"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {}
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

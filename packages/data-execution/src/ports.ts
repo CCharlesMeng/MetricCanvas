@@ -94,11 +94,26 @@ export interface DimensionValuesGateway {
 }
 
 /**
- * 应用壳注入统一运行时的数据网关形状:主查询执行必备,候选值能力可选。
+ * 应用壳注入统一运行时的数据网关形状:主查询执行必备，候选值和指标定义能力可选。
  */
-export type RuntimeDataGateway = DataGateway & Partial<DimensionValuesGateway & FilterCandidatesGateway> & {
+export type RuntimeDataGateway = DataGateway & Partial<DimensionValuesGateway & FilterCandidatesGateway & MetricDefinitionsGateway> & {
   finalizationSource?: import('./finalization').FinalizationSourceDefinition;
 };
+
+/** 集成应用归一化后的指标定义。code 与请求编码一致。 */
+export interface MetricDefinition {
+  code: string;
+  name: string;
+  definition: string;
+  formula: string;
+  manager: string;
+  latestUpdateTime: string | null;
+  url: string | null;
+}
+
+export interface MetricDefinitionsGateway {
+  fetchMetricDefinitions(metricCodes: string[], options?: { signal?: AbortSignal }): Promise<MetricDefinition[]>;
+}
 
 /** Optional complete filter candidates, owned by the injected Adapter. No HTTP or identity secrets. */
 export interface FilterCandidate extends DimensionValueCandidate {

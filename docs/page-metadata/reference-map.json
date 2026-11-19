@@ -757,7 +757,8 @@
         "inline-report",
         "metric-card-equation",
         "metric-card-primary-detail",
-        "metric-card-select-tab"
+        "metric-card-select-tab",
+        "metric-card-definition-tip"
       ],
       "sources": [
         "packages/page/src/schema/components/metric-card.ts",
@@ -2406,7 +2407,8 @@
     "number-4-ungrouped-signed": "6.123新增：显式不加千分位，保留同名 number 的精度、去尾零与符号规则。",
     "number-5-ungrouped-signed": "6.123新增：显式不加千分位，保留同名 number 的精度、去尾零与符号规则。",
     "#/properties/schemaVersion=\"6.125\"": "可选动态排除条件独立加载候选并保留选择，候选状态不阻断指标查询。",
-    "#/properties/schemaVersion=\"6.126\"": "指标卡的主次指标行使用 action.selectTab 在当前页面独立选中指定页签。"
+    "#/properties/schemaVersion=\"6.126\"": "指标卡的主次指标行使用 action.selectTab 在当前页面独立选中指定页签。",
+    "#/properties/schemaVersion=\"6.127\"": "指标卡可通过 tipCode 关联指标定义，显示位置为主标题或无主标题单行指标标签。"
   },
   "branchExceptions": {
     "#/properties/iocHeader/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/0": {
@@ -3531,6 +3533,7 @@
       "查阅方式"
     ],
     "components/metricCard.md": [
+      "指标定义气泡 6.127",
       "主指标与多行次级指标 6.65",
       "前置连接文字 6.34",
       "查阅方式"
