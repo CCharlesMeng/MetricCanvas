@@ -1137,6 +1137,17 @@
           }
         },
         {
+          "id": "efficiency-overview-text",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "行权效率概览",
+            "variant": "plain"
+          }
+        },
+        {
           "id": "sdt-duration-metric",
           "type": "metricCard",
           "layout": {
@@ -1228,6 +1239,23 @@
                 }
               }
             ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "efficiency-details-caption",
+      "container": "plain",
+      "components": [
+        {
+          "id": "efficiency-details-text",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "行权效率明细",
+            "variant": "plain"
           }
         }
       ]

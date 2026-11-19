@@ -296,6 +296,11 @@
     margin-left: calc(-1 * var(--mc-page-sections-padding-left, 0px));
     margin-right: calc(-1 * var(--mc-page-sections-padding-right, 0px));
   }
+  /* 看板页头后面还有同分区内容时，网格已提供行间距。 */
+  :global([data-page-layout-form='dashboard'] > [data-leading-header-section])
+    > .page-section > .section-grid > .ioc-header-cell:first-child:has(+ *) :global([data-ioc-header]) {
+    margin-bottom: 0;
+  }
   .header-cell,
   .filter-group-cell {
     min-height: 0;

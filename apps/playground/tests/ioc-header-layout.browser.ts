@@ -1,6 +1,33 @@
 import { expect, test, type Locator } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 
+for (const [pageId, expectedGap] of [
+  ['chart-axis-unit', 0],
+  ['table-child-keyless', 16]
+] as const) {
+  test(`${pageId} keeps one gap below the IOC header and the expected section spacing`, async ({ page }) => {
+    await page.goto(`/pages/${pageId}`);
+    const leading = page.locator('[data-leading-header-section]');
+    const header = leading.locator('[data-ioc-header]');
+    const content = page.locator('[data-leading-header-section] + .page-sections');
+    const firstBody = page.locator(
+      '[data-leading-header-section] .ioc-header-cell + *, [data-leading-header-section] + .page-sections'
+    ).first();
+    await expect(header).toBeVisible();
+    await expect(firstBody).toBeVisible();
+    await expect.poll(async () => {
+      const headerBox = (await header.boundingBox())!;
+      const leadingBox = (await leading.boundingBox())!;
+      const firstBodyBox = (await firstBody.boundingBox())!;
+      const contentBox = (await content.boundingBox())!;
+      return {
+        belowHeader: Math.round(firstBodyBox.y - headerBox.y - headerBox.height),
+        belowLeadingSection: Math.round(contentBox.y - leadingBox.y - leadingBox.height)
+      };
+    }).toEqual({ belowHeader: 16, belowLeadingSection: expectedGap });
+  });
+}
+
 async function expectNoHeaderScrollbars(header: Locator) {
   const scrollbars = await header.evaluate(node => Array.from(node.querySelectorAll('*')).concat(node).filter(element => {
     if (element.closest('[popover], [role="dialog"]') || !element.getClientRects().length) return false;

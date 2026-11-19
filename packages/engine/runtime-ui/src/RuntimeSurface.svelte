@@ -2055,9 +2055,14 @@
     gap: 16px;
     margin-top: var(--mc-page-sections-margin-top, 0);
   }
-  /* 报表的独立页头与正文之间保留分区间距；隐藏或空内容不占间距。 */
+  /* 报表页头及包含正文组件的看板首分区与后续正文之间保留分区间距。 */
   .page-content[data-page-layout-form='report']
     > .page-sections[data-leading-header-section]:has(> :global([data-section-id]:not([hidden])))
+    + .page-sections:has(> :global([data-section-id]:not([hidden]))),
+  .page-content.layout-dashboard
+    > .page-sections[data-leading-header-section]:has(
+      > :global([data-section-id]:not([hidden]) > .section-grid [data-component-type]:not([data-component-type='iocHeader']))
+    )
     + .page-sections:has(> :global([data-section-id]:not([hidden]))) {
     margin-top: 16px;
   }
