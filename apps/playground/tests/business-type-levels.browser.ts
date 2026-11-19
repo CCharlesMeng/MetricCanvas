@@ -26,8 +26,11 @@ function businessTypePredicates(request: QueryItem) {
   return request.filter.dims.filter(item => ['业务类型编码', '子业务类型编码'].includes(item.dim_name));
 }
 
+const longCloudService = '合成云服务12（跨区域智能网络与分布式数据治理企业级服务）';
+
 function cloudServiceWindow(item: QueryItem) {
   const values = Array.from({length:25}, (_, index) => `合成云服务${String(index + 1).padStart(2, '0')}`);
+  values[11] = longCloudService;
   const selection = item.filter.dims.find(predicate => predicate.dim_name === '云服务');
   const matches = selection ? values.filter(value => selection.dim_value_list.includes(value)) : values;
   const {offset=0,limit=matches.length} = item.order ?? {};
@@ -35,6 +38,7 @@ function cloudServiceWindow(item: QueryItem) {
 }
 
 test('业务类型按层下推并与分页的云服务排除一起作用', async ({ page }) => {
+  await page.setViewportSize({ width: 1600, height: 850 });
   const requests: QueryItem[] = [];
   const cloudPages: number[] = [];
   const cloudProbes: QueryItem[] = [];
@@ -62,7 +66,9 @@ test('业务类型按层下推并与分页的云服务排除一起作用', async
   await expect(page).toHaveURL(/business-result-metrics.*region-dept=/);
   await expect.poll(() => requests.some(item => item.output_metrics.includes('净商务折扣（原价）'))).toBe(true);
   expect(cloudProbes).toHaveLength(1);
-  const control = page.locator('[data-filter-group="business-type"]');
+  const header = page.locator('[data-ioc-header]');
+  const control = header.locator('[data-filter-id="business-type"]');
+  await expect(page.locator('[data-filter-group="business-type"], [data-filter-group="cloud-service"]')).toHaveCount(0);
   const parent = '华为公有云CORE';
   const child = '公网REGION';
 
@@ -90,19 +96,24 @@ test('业务类型按层下推并与分页的云服务排除一起作用', async
   await expect.poll(() => requests.map(businessTypePredicates)).toContainEqual([]);
 
   await selectBusinessType(control, child, parent);
-  const cloudControl = page.locator('[data-filter-group="cloud-service"]');
+  const cloudControl = header.locator('[data-filter-id="cloud-service"]');
   await cloudControl.getByRole('button', { name: '云服务排除项', exact: true }).click();
+  const cloudPopup = cloudControl.getByRole('dialog', { name: '云服务排除项候选' });
   const list = cloudControl.getByRole('listbox');
   await expect(list.getByRole('option', { name: '合成云服务10', exact: true })).toBeVisible();
+  await expect(cloudPopup).toHaveCSS('width', '160px');
   expect(cloudPages).toEqual([0]);
   await list.evaluate(element => { element.scrollTop = element.scrollHeight; });
-  const choice = list.getByRole('option', { name: '合成云服务12', exact: true });
+  const choice = list.getByRole('option', { name: longCloudService, exact: true });
   await expect(choice).toBeVisible();
   expect(cloudPages).toEqual([0, 10]);
+  await expect.poll(async () => (await cloudPopup.boundingBox())!.width).toBeGreaterThan(160);
+  const label = choice.getByText(longCloudService, { exact: true });
+  await expect.poll(() => label.evaluate(node => node.scrollWidth - node.clientWidth)).toBe(0);
   await choice.click();
   await expect.poll(() => requests.some(({filter}) =>
     filter.dims.some(predicate => predicate.dim_name === childPredicate.dim_name) &&
-    filter.dims.some(predicate => predicate.dim_name === '云服务' && predicate.is_exclude && predicate.dim_value_list.includes('合成云服务12'))
+    filter.dims.some(predicate => predicate.dim_name === '云服务' && predicate.is_exclude && predicate.dim_value_list.includes(longCloudService))
   )).toBe(true);
 });
 

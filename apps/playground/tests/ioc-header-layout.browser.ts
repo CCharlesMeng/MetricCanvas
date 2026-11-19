@@ -140,6 +140,45 @@ test('measured first-row collapse still expands naturally without internal scrol
   await expectNoHeaderScrollbars(header);
 });
 
+test('business result header aligns 160px inputs with 16px gaps and collapses on narrow screens', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 850 });
+  await page.goto('/pages/business-result-metrics');
+  const header = page.locator('[data-ioc-header]');
+  const fields = header.locator('[data-ioc-filter]').filter({
+    has: page.locator('button[aria-haspopup], input[role="combobox"]'),
+  });
+  await expect(fields).toHaveCount(5);
+  const dropdowns = fields.locator('button[aria-haspopup]');
+  const inputs = fields.locator('button[aria-haspopup], input[role="combobox"]');
+  await expect.poll(() => inputs.evaluateAll(nodes => nodes.map(node => node.getBoundingClientRect().width)))
+    .toEqual([160, 160, 160, 160, 160]);
+  await expect.poll(() => dropdowns.evaluateAll(nodes => nodes.slice(1).map((node, index) =>
+    node.getBoundingClientRect().left - nodes[index]!.getBoundingClientRect().right
+  ))).toEqual([16, 16, 16]);
+  expect(await dropdowns.evaluateAll(nodes => new Set(nodes.map(node => node.getBoundingClientRect().top)).size)).toBe(1);
+  await expect(header.getByRole('button', { name: '展开筛选' })).toHaveCount(0);
+
+  await page.setViewportSize({ width: 447, height: 850 });
+  await expect(header.getByRole('button', { name: '展开筛选' })).toBeVisible();
+  const cloudService = header.getByRole('button', { name: '云服务排除项', exact: true });
+  await expect(cloudService).toHaveCount(0);
+  await header.getByRole('button', { name: '展开筛选' }).click();
+  await expect(cloudService).toBeVisible();
+  await header.getByRole('button', { name: '业务类型', exact: true }).click();
+  const dropdown = header.getByRole('dialog', { name: '业务类型候选' });
+  const search = dropdown.getByRole('textbox', { name: '搜索业务类型' });
+  await search.fill('全部业务类型');
+  await expect(dropdown).toHaveCSS('width', '160px');
+  const box = (await dropdown.boundingBox())!;
+  expect(box.x).toBeGreaterThanOrEqual(0);
+  expect(box.x + box.width).toBeLessThanOrEqual(447);
+  await search.press('Escape');
+  await expectNoHeaderScrollbars(header);
+  await header.getByRole('button', { name: '收起筛选' }).click();
+  await expect(cloudService).toHaveCount(0);
+  await expectNoHeaderScrollbars(header);
+});
+
 test('nested header stays at the viewport top when the outer page also scrolls', async ({ page }) => {
   await page.setViewportSize({ width: 600, height: 360 });
   await page.goto('/preview?prototype=ioc-header-component');

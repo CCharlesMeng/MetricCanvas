@@ -150,7 +150,8 @@
     {/if}
   </div>
   <div bind:this={popup} aria-busy={loading} popover="auto" class="mc-ui-select-dropdown selection-popup" role="dialog" aria-label={`${label}候选`} tabindex="-1"
-    style:left="{left}px" style:top="{top}px" style:min-width="{Math.max(width, searchable || tree || multiple ? 240 : 0)}px"
+    style:left="{left}px" style:top="{top}px" style:--mc-selection-anchor-width="{width}px"
+    style:--mc-selection-default-content-min-width="{searchable || tree || multiple ? 240 : 0}px"
     ontoggle={event => {open = event.currentTarget.matches(':popover-open');}} onkeydown={popupKeys}>
     {#if searchable}<div class="mc-ui-input mc-ui-input-underline mc-ui-select-dropdown__search">
       <span class="mc-ui-input__prefix"><Icon name="search"/></span>
@@ -170,7 +171,7 @@
         </button>{/if}
         {#each visible as node (node.value)}<button type="button" class="mc-ui-option mc-ui-select-dropdown__item choice" class:selected={value.includes(node.value)} class:is-disabled={node.disabled}
           role="option" aria-selected={value.includes(node.value)} disabled={node.disabled} data-selection-choice data-value={node.value} title={node.value} onclick={() => choose(node)}>
-          {#if multiple}{@render checkbox(value.includes(node.value), false)}{/if}<span>{node.label}</span>
+          {#if multiple}{@render checkbox(value.includes(node.value), false)}{/if}<span title={node.label}>{node.label}</span>
         </button>{/each}
         {#if open && paging?.onmore}<div class="selection-more" aria-hidden="true" use:observeMore={paging.onmore}></div>{/if}
       </div>
@@ -217,9 +218,26 @@
   .tag-label{pointer-events:auto;appearance:none;border:0;padding:0;background:transparent;color:inherit;font:inherit;line-height:inherit;cursor:pointer;white-space:nowrap;text-align:left}
   .tag-label:focus-visible{outline:2px solid var(--tv-color-text-active,#1476ff);outline-offset:-2px}
   .mc-ui-tag__close{pointer-events:auto;display:inline-flex;border:0;padding:0;background:transparent;align-items:center;cursor:pointer;color:var(--tv-Tag-close-icon-color,#808080)}.mc-ui-tag__close:hover{color:var(--tv-Tag-close-icon-color-hover,#191919)}.mc-ui-tag__close:disabled{color:var(--tv-Tag-close-icon-color-disabled,#c2c2c2)}.mc-ui-tag__close:disabled,.tag-label:disabled{cursor:not-allowed}
-  .selection-popup.mc-ui-select-dropdown[popover]{position:fixed;inset:auto;margin:0;border:0;padding:var(--tv-SelectDropdown-padding,8px 0);max-width:calc(100vw - 16px);max-height:min(360px,70vh);overflow:hidden;font-size:var(--tv-SelectDropdown-font-size,14px)}
+  .selection-popup.mc-ui-select-dropdown[popover] {
+    position: fixed;
+    inset: auto;
+    margin: 0;
+    border: 0;
+    padding: var(--tv-SelectDropdown-padding, 8px 0);
+    width: var(--mc-selection-popup-width, auto);
+    min-width: max(var(--mc-selection-anchor-width), var(--mc-selection-popup-content-min-width, var(--mc-selection-default-content-min-width)));
+    max-width: calc(100vw - 16px);
+    max-height: min(360px, 70vh);
+    overflow: hidden;
+    font-size: var(--tv-SelectDropdown-font-size, 14px);
+  }
   .selection-popup[popover]:popover-open{display:flex;flex-direction:column}
   .selection-popup>.mc-ui-select-dropdown__search,.selection-status{flex:none}
+  .selection-popup.mc-ui-select-dropdown[popover] > .mc-ui-select-dropdown__search {
+    /* A zero preferred width lets the options size the panel before the search fills it. */
+    width: var(--mc-selection-popup-search-width, var(--tv-SelectDropdown-search-width));
+    min-width: var(--tv-SelectDropdown-search-width);
+  }
   .selection-popup>[role="tree"],.selection-popup>[role="listbox"]{min-height:0;overflow:auto;flex:0 1 auto}
   .selection-popup>[role="listbox"].paged{max-height:240px}
   .selection-more{height:1px}
@@ -227,6 +245,10 @@
   .selection-status{margin:0;padding:var(--tv-space-md,8px) var(--tv-space-xl,16px);color:var(--tv-color-text-weaken,#808080);font-size:var(--tv-font-size-default,14px)}
   .choice{font:inherit;border:0;background:transparent;text-align:left;cursor:pointer;display:flex;align-items:center;gap:var(--tv-space-md,8px);min-width:0}
   .selection-popup .choice.mc-ui-option{display:flex;align-items:center;gap:var(--tv-space-md,8px);box-sizing:border-box;width:100%;padding:var(--tv-Option-padding,0px 16px)}
+  .selection-popup .choice.mc-ui-option > span:last-child {
+    overflow: var(--mc-selection-option-overflow, visible);
+    text-overflow: ellipsis;
+  }
   .selection-popup .choice.mc-ui-option .selection-check :global(svg){margin-right:0}
   .choice:focus-visible{outline:2px solid var(--tv-color-text-active,#1476ff);outline-offset:-2px;background:var(--tv-color-bg-hover,#f5f5f5)}
   .selection-check{display:inline-flex;flex:none;color:var(--tv-color-border,#c2c2c2)}
