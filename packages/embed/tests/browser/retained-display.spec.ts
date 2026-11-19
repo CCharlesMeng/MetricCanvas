@@ -38,7 +38,7 @@ test('same-instance page returns keep old display until the new response, while 
 
   pending = new Promise<void>(resolve => { release = resolve; });
   await page.evaluate(document => window.runtime.update({ document, dataGateway: MetricCanvas.createDqeGateway({ endpoint: '/retained-display-dqe' }) }), document);
-  await expect(first).toHaveText('--');
+  await expect(first.locator('.skeleton')).toBeVisible();
   await expect(page.locator('[data-retained="true"]')).toHaveCount(0);
   release();
   await expect(first).toHaveText('144');

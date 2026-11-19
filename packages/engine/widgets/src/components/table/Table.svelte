@@ -590,10 +590,10 @@
         {#if bodyLoading}
           {#each Array(10) as _}
             <tr class="skeleton-row" aria-hidden="true">
-              {#if expandable}<td class="expand-column fixed" style="left:0"><Skeleton /></td>{/if}
-              {#if props.rowNumber}<td class:fixed={props.rowNumber.fixed === 'left'} style={rowNumberStyle}><Skeleton /></td>{/if}
+              {#if expandable}<td class="expand-column fixed" style="left:0"><Skeleton shimmer /></td>{/if}
+              {#if props.rowNumber}<td class:fixed={props.rowNumber.fixed === 'left'} style={rowNumberStyle}><Skeleton shimmer /></td>{/if}
               {#each leaves as column}
-                <td class:fixed={!!column.fixed} style={cellStyle(column)}><Skeleton width="72%" /></td>
+                <td class:fixed={!!column.fixed} style={cellStyle(column)}><Skeleton width="72%" shimmer /></td>
               {/each}
             </tr>
           {/each}
@@ -672,7 +672,7 @@
                   style:color={column.colorRule ? valueColorStyle(color) : undefined}
                 >
                   {#if !staticExport && alignedCellLoading(column.field, data, row)}
-                    <Skeleton width="72%" />
+                    <Skeleton width="72%" shimmer />
                   {:else if selectable}
                     <button
                       type="button"

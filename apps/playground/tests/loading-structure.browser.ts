@@ -46,6 +46,8 @@ test('native components stay mounted through initial loading, filtering, paginat
   const chart = orders.locator('.bar-chart');
   const table = orders.locator('.table-widget');
   await expect(table.locator('.skeleton-row')).toHaveCount(10);
+  const tableSkeleton = table.locator('.skeleton-row .skeleton').first();
+  await expect.poll(() => tableSkeleton.evaluate(node => getComputedStyle(node, '::after').animationName)).toMatch(/skeleton-sweep/);
   await expect(chart.locator('.echart-frame.loading')).toBeVisible();
   await expect(orders.locator('[aria-busy="true"]')).not.toHaveCount(0);
   await expect(metric).toBeVisible();
@@ -93,9 +95,22 @@ test('native components stay mounted through initial loading, filtering, paginat
   await expect(metric.locator('.loading-spinner')).toHaveCount(0);
   expect(await chartNode!.evaluate(node => node.isConnected)).toBe(true);
   expect(await headingNode!.evaluate(node => node.isConnected)).toBe(true);
+  const metricValue = metric.locator('.row-value').first();
+  const observations = await metricValue.evaluateHandle(node => {
+    const values: number[] = [];
+    const observer = new MutationObserver(() => values.push(Number(node.textContent)));
+    observer.observe(node, { childList: true, characterData: true, subtree: true });
+    return { values, observer };
+  });
   release();
   await expect(table).toContainText('合成类别1');
-  await expect(metric.locator('.row-value').first()).toHaveText('20');
+  await expect(metricValue).toHaveText('20');
+  const values = await observations.evaluate(({ values, observer }) => {
+    observer.disconnect();
+    return values;
+  });
+  await observations.dispose();
+  expect(values.some(value => value > 10 && value < 20)).toBe(true);
 
   hold();
   await table.getByRole('button', { name: '展开子表格', exact: true }).first().click();
@@ -158,7 +173,7 @@ test('all component families share a replayable loading review without replacing
     if (component.type === 'metricCard') {
       await expect(cell.locator('.loading-spinner')).toHaveCount(0);
       await expect(cell.locator('.loading-indicator')).toHaveCount(0);
-      await expect(cell.locator('.row-value').first()).toHaveText('--');
+      await expect(cell.locator('.row-value .skeleton').first()).toBeVisible();
     } else if (chartTypes.has(component.type)) {
       await expect(cell.locator('.echart-frame.loading, .gauge-plot.loading')).toBeVisible();
       await expect(cell.locator('.loading-spinner')).toHaveCount(0);
@@ -168,7 +183,7 @@ test('all component families share a replayable loading review without replacing
     }
     cells.push(await cell.elementHandle());
   }
-  // Every family, including AI summary and its replay, uses a static loading presentation.
+  // The gallery uses component-level placeholders through the first load and replay.
   await expect(dashboard.locator('.loading-spinner')).toHaveCount(0);
   await expect(report.locator('.ai-summary .loading-spinner')).toHaveCount(0);
   await expect(report.locator('.ai-summary .text-skeleton')).toBeVisible();
@@ -213,10 +228,10 @@ test('independent components render before a slower query returns', async ({ pag
   await expect(orders.locator('.metric-card .row-value').first()).toHaveText('10');
   await expect(orders.locator('.table-widget')).toContainText('合成类别1');
   const slowCard = page.locator('[data-component$="/gallery-metric"]');
-  await expect(slowCard.locator('.row-value').first()).toHaveText('--');
+  await expect(slowCard.locator('.row-value .skeleton').first()).toBeVisible();
   await expect(slowCard.locator('.widget-content')).toHaveAttribute('aria-busy', 'true');
   release();
-  await expect(slowCard.locator('.row-value').first()).not.toHaveText('--');
+  await expect(slowCard.locator('.row-value .skeleton')).toHaveCount(0);
 });
 
 for (const outcome of ['ready', 'empty', 'error'] as const) {
@@ -231,14 +246,19 @@ for (const outcome of ['ready', 'empty', 'error'] as const) {
       await route.fulfill(outcome === 'error' ? { status: 500, body: 'Synthetic query failure' }
         : { json: { retCode: 'CBC.0000', results } });
     });
+    const reducedMotion = outcome === 'empty';
+    await page.emulateMedia({ reducedMotion: reducedMotion ? 'reduce' : 'no-preference' });
     await page.goto(`/pages/${metricLoadingFixture.id}`);
     const cards = page.locator('.metric-card');
     await expect(cards).toHaveCount(8);
     for (const card of await cards.all()) {
       await expect(card.locator('.loading-spinner')).toHaveCount(0);
-      await expect(card.locator('.progress-ring .number')).toHaveText('--');
-      await expect(card.locator('.row-value')).toHaveText(['--', '--']);
-      await expect(card.locator('.change-value')).toHaveText(['--', '--']);
+      await expect(card.locator('.progress-ring .number .skeleton')).toBeVisible();
+      await expect(card.locator('.row-value .skeleton')).toHaveCount(2);
+      await expect(card.locator('.change-value .skeleton')).toHaveCount(2);
+      const skeleton = card.locator('.row-value .skeleton').first();
+      const animation = reducedMotion ? /^none$/ : /skeleton-sweep/;
+      await expect.poll(() => skeleton.evaluate(node => getComputedStyle(node, '::after').animationName)).toMatch(animation);
       await expect(card.locator('.trend-arrow, .unit, .change-unit')).toHaveCount(0);
     }
     await expect(page.locator('.loading-indicator')).toHaveCount(0);
