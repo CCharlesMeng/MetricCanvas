@@ -39,3 +39,25 @@ test('standard Region defaults to geo global and retains parent/child selection 
   await expect(page.getByRole('cell', { name: '中国区', exact: true })).toBeVisible();
   await expect(trigger).not.toContainText('全球');
 });
+
+test('an empty parent lookup uses the table empty state and a valid selection restores the rows', async ({ page }) => {
+  await page.goto('/pages/table-hierarchy-standard-region?rep-office=O-empty');
+  const table = page.locator('[data-component="hierarchy/region-office-table"]');
+  const child = table.getByRole('region', { name: '子表格', exact: true });
+  await expect(table.getByRole('columnheader', { name: '地区部', exact: true })).toBeVisible();
+  await expect(table.getByRole('cell', { name: '暂无数据', exact: true })).toBeVisible();
+  await expect(table).toContainText('总条数： 0');
+  await expect(table.getByRole('alert')).toHaveCount(0);
+  await expect(child).toHaveCount(0);
+
+  await chooseTree(page.locator('[data-filter-id="region"]'), '上海');
+  await expect(child.getByRole('cell', { name: '上海', exact: true })).toBeVisible();
+});
+
+test('ambiguous and failed parent lookups still show diagnostics', async ({ page }) => {
+  const table = page.locator('[data-component="hierarchy/region-office-table"]');
+  await page.goto('/pages/table-hierarchy-standard-region?rep-office=O-multi');
+  await expect(table.getByRole('alert')).toHaveText('所选子级的父级归属不唯一');
+  await page.goto('/pages/table-hierarchy-standard-region?rep-office=O-error');
+  await expect(table.getByRole('alert')).toHaveText('父级定位查询失败或无权限');
+});

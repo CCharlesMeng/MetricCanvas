@@ -422,7 +422,9 @@
 
 候选包含合成“全球”节点；选择全球保留全部4条父记录，页头与URL保留该选择，不执行归属定位。选华东为父1行子5行，选上海为1/1行；从两者切回全球均恢复父4行子17行的完整导出。全球或未选择时只展开华东、子表搜索上海再导出，Excel仍为同一个缩进父子工作表。父搜索和表头条件限定父域，父页与子局部状态不限制完整范围；不展开也可导出。浏览器回归 `apps/playground/tests/table-child-export.browser.ts` 覆盖上述全球切换与下载内容；数据仅为合成 DQE Sim，不代表真实服务验收。
 
-异常候选含“定位无结果”“归属不唯一”“定位失败”，均显示诊断，不展示全量、不发目标子查询。URL初值：`?region=O101&region.level=office&year=2026&product=all`。展开华东后在子表输入“上海”，默认数据网关为代表处名称追加 `contains`，子表只展示匹配记录。实际服务需提供候选与归属查询，真实 DQE/Relay/权限未由此场景证明。正式证据在 `docs/evidence/hierarchical-row-expansion/result.md`。
+选择“定位无结果（异常验收）”后，父表保留表头，显示“暂无数据”，总条数为 0。可从 `/pages/table-hierarchy-standard-region?rep-office=O-empty` 直接打开，改选上海可恢复父行及子表。选择“归属不唯一”或“定位失败”时显示对应诊断。三种情况均不展示全量或发出目标子查询。
+
+URL初值：`?region=O101&region.level=office&year=2026&product=all`。展开华东后在子表输入“上海”，默认数据网关为代表处名称追加 `contains`，子表只展示匹配记录。实际服务需提供候选与归属查询，真实 DQE/Relay/权限未由此场景证明。正式证据在 `docs/evidence/hierarchical-row-expansion/result.md`。
 
 ## 分页合并组合行键（6.72）
 

@@ -143,7 +143,9 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
           const selection=controller.hierarchy(table);
           if(!selection)return snapshot;
           if(selection.status==='pending')return {status:'loading' as const};
-          if(!['selected','unrestricted'].includes(selection.status))return {status:'error' as const,error:{code:'DQE_QUERY_REJECTED' as const,message:selection.message??'父级定位未完成'}};
+          if (['ambiguous', 'error'].includes(selection.status)) {
+            return { status: 'error' as const, error: { code: 'DQE_QUERY_REJECTED' as const, message: selection.message ?? '父级定位未完成' } };
+          }
           if(snapshot.status==='ready')try{
             // Screen reads retain zero-total rows; complete exports verify them separately.
             if(snapshot.totalCount!==undefined&&snapshot.totalCount!==0&&snapshot.totalCount!==snapshot.rows.length)throw new Error('父汇总结果不完整');
