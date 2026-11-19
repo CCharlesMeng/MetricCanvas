@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.129",
+  "schemaVersion": "6.130",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "filters.timeModes"
@@ -146,6 +146,19 @@
           ],
           "invalid": [
             "independent-exclusion-version-ahead"
+          ]
+        },
+        {
+          "id": "conditional-dimension-default",
+          "description": "6.130 可选动态多选排除项的联动默认值",
+          "valid": [
+            "filter-conditional-exclusion-default"
+          ],
+          "invalid": [
+            "conditional-default-version",
+            "conditional-default-driver",
+            "conditional-default-required-list",
+            "conditional-default-inclusion"
           ]
         },
         {
@@ -374,7 +387,8 @@
         "references/page-metadata/examples/finalization-date-defaults.json",
         "references/page-metadata/examples/ioc-async-preparation.json",
         "references/page-metadata/examples/ioc-legacy-key-office.json",
-        "references/page-metadata/examples/filter-exclusion-candidates.json"
+        "references/page-metadata/examples/filter-exclusion-candidates.json",
+        "references/page-metadata/examples/filter-conditional-exclusion-default.json"
       ]
     }
   ],
@@ -395,7 +409,7 @@
           "sections"
         ],
         "title": "页面",
-        "$id": "https://metriccanvas/page/v6.129",
+        "$id": "https://metriccanvas/page/v6.130",
         "properties": {
           "schemaVersion": "#/properties/schemaVersion",
           "id": "#/properties/id",

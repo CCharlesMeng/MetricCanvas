@@ -27,7 +27,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  */
 export const UNRESTRICTED_FILTER_CLEAR_MINOR = 124;
 export const INDEPENDENT_EXCLUSION_CANDIDATES_MINOR = 125;
-const CURRENT_MINOR = 129;
+const CURRENT_MINOR = 130;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -178,6 +178,12 @@ export const pageCapabilities = {
     minor: INDEPENDENT_EXCLUSION_CANDIDATES_MINOR,
     description: '可选动态排除条件保留选值，候选加载不阻断指标查询',
     usedAt: () => []
+  },
+  'conditional-dimension-default': {
+    minor: 130,
+    legacyReadable: false,
+    description: '可选动态排除筛选按单选维度应用和重置默认值',
+    usedAt: document => filterPaths(document, filter => has(filter, 'defaultWhen')).map(path => path + '/defaultWhen')
   },
   'unrestricted-filter-clear': {
     minor: UNRESTRICTED_FILTER_CLEAR_MINOR,

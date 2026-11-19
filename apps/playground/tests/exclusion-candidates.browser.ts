@@ -34,3 +34,27 @@ test('retains a missing exclusion in the standard selection control until the us
   await expect(group.getByRole('button',{name:'移除云服务排除项：甲云服务01'})).toHaveCount(0);
   expect(new URL(page.url()).searchParams.has('service')).toBe(false);
 });
+
+test('applies a conditional preset while the candidate window is pending',async({page})=>{
+  await page.goto('/pages/filter-conditional-exclusion-default?state=candidate-pending');
+  const chart=page.locator('article .widget-content').filter({has:page.locator('.echart')});
+  const group=page.locator('[data-filter-group="service"]');
+  const preset=group.getByRole('button',{name:'移除云服务排除项：预设专属服务'});
+  await expect(preset).toBeAttached();
+  await group.getByRole('button',{name:'打开云服务排除项：甲云服务01'}).click();
+  await expect(group.getByRole('dialog',{name:'云服务排除项候选'})).toHaveAttribute('aria-busy','true');
+  await expect(chart).toHaveAttribute('aria-busy','false');
+  await page.keyboard.press('Escape');
+  await group.getByRole('button',{name:'移除云服务排除项：甲云服务01'}).click();
+  await page.getByRole('button',{name:'范围',exact:true}).click();
+  await page.getByRole('option',{name:'乙',exact:true}).click();
+  await expect(group.getByRole('button',{name:'移除云服务排除项：甲云服务01'})).toBeAttached();
+  await expect(preset).toBeAttached();
+  await page.getByRole('button',{name:'范围',exact:true}).click();
+  await page.getByRole('option',{name:'丙',exact:true}).click();
+  await expect(preset).toHaveCount(0);
+  await expect(chart).toHaveAttribute('aria-busy','false');
+  await page.goto('/pages/filter-conditional-exclusion-default?service=');
+  await expect(page.getByRole('button',{name:'范围',exact:true})).toHaveText('甲');
+  await expect(preset).toHaveCount(0);
+});

@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.129",
-  "schemaSha256": "9f0d732d8bd9e97ff89108e1838b19c34b1f39cb13c7c3ad4ed42de17f65e25b",
+  "schemaVersion": "6.130",
+  "schemaSha256": "0216bef0ba2803fdd10928fc69948f0057f6995d0521ad7fac43a012814f9ab9",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -328,7 +328,8 @@
         "finalization-date-defaults",
         "ioc-async-preparation",
         "ioc-legacy-key-office",
-        "filter-exclusion-candidates"
+        "filter-exclusion-candidates",
+        "filter-conditional-exclusion-default"
       ],
       "rules": [
         "unrestricted-filter-clear",
@@ -354,7 +355,8 @@
         "independent-filter-candidates",
         "filter-source-candidate-levels",
         "currency-range-presets",
-        "independent-exclusion-candidates"
+        "independent-exclusion-candidates",
+        "conditional-dimension-default"
       ]
     },
     "sections-and-layout.md": {
@@ -1392,7 +1394,8 @@
         "6.126",
         "6.127",
         "6.128",
-        "6.129"
+        "6.129",
+        "6.130"
       ]
     },
     {
@@ -9019,6 +9022,44 @@
     {
       "pointer": "#/definitions/dimensionFilter/properties/default/items",
       "path": "@dimensionFilter.default[]",
+      "required": "每个数组项",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/defaultWhen",
+      "path": "@dimensionFilter.defaultWhen",
+      "required": "本分支可选",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/defaultWhen/properties/filter",
+      "path": "@dimensionFilter.defaultWhen.filter",
+      "required": "本分支必填",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/defaultWhen/properties/part",
+      "path": "@dimensionFilter.defaultWhen.part",
+      "required": "本分支必填",
+      "module": "filters.md",
+      "const": "values"
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/defaultWhen/properties/op",
+      "path": "@dimensionFilter.defaultWhen.op",
+      "required": "本分支必填",
+      "module": "filters.md",
+      "const": "containsAny"
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/defaultWhen/properties/values",
+      "path": "@dimensionFilter.defaultWhen.values",
+      "required": "本分支必填",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/defaultWhen/properties/values/items",
+      "path": "@dimensionFilter.defaultWhen.values[]",
       "required": "每个数组项",
       "module": "filters.md"
     },
@@ -23678,5 +23719,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "93fc754dc5ea2a13e2040d3278fe3dd4cdbcff8ba5a97b922a4e16db0595edd4"
+  "semanticSourceDigest": "296f8dfdfdacb7511f2579f0e218a80f4cb5e208137a7a2c93e414ddc7875fdf"
 }

@@ -33,6 +33,7 @@ import { isNumericMeasure } from './query-output-measures';
 import {amountErrors,moneyComputeErrors} from './amount-validation';
 import {fieldSelectionErrors} from './field-selection';
 import { filterExtensionErrors,filterScopeErrors } from './filter-dependencies';
+import { conditionalExclusionDefaultErrors } from './exclusion-filters';
 import { iocHeaderErrors, emptyIocHeaderErrors } from './ioc-header';
 import {filterOverrideErrors} from './filter-overrides';
 import { pagedJoinErrors } from './validate-paged-join';
@@ -354,6 +355,7 @@ function invariantErrors(page: Page, evaluation?: TemporalEvaluation): TypedErro
     errors.push(...filterDeclarationErrors(filter, index, `/filters/${index}`, evaluation));
   });
   errors.push(...filterDependsOnErrors(filters), ...filterExtensionErrors(filters), ...filterScopeErrors(page), ...filterOverrideErrors(page));
+  errors.push(...conditionalExclusionDefaultErrors(page));
   errors.push(...iocHeaderErrors(page));
   errors.push(...aiSummaryErrors(page), ...reportDateFilterErrors(page));
   errors.push(...crossSourceComputeErrors(page));

@@ -301,6 +301,30 @@ IOC 业务 Region 只允许 iocHeader 内的单个组织树，树内选择地区
 
 完整合成场景见仓库 `/pages/filter-exclusion-candidates`；`?state=candidate-pending`、`?state=candidate-error` 和 `?state=empty` 分别验证候选挂起、失败和空结果时业务图表独立显示。选择甲云服务后切换到乙，原排除选择及谓词保留，乙候选正常加载，用户通过标准移除按钮取消。
 
+<a id="conditional-exclusion-defaults"></a>
+
+## 排除项联动默认值（6.130）
+
+在已符合动态排除候选独立加载规则、显式声明 `selection.mode:"multiple"` 的页级可选维度上，可以为现有 `default` 名单配置 `defaultWhen`。条件只支持引用同页的独立显式单选维度，包括按层单选的树。比较对象是稳定值，`values` 须由非空且互不重复的值组成。
+
+```json
+{
+  "default": ["甲云服务01", "预设专属服务"],
+  "defaultWhen": {
+    "filter": "service-scope",
+    "part": "values",
+    "op": "containsAny",
+    "values": ["甲", "乙"]
+  }
+}
+```
+
+初始化使用单选维度实际生效的值，包括合法的 URL 覆盖。排除项的合法显式 URL 选值优先于联动默认值，`?service=` 表示显式清空。用户实际切换单选值或层级时，引擎在同一筛选更新内应用整份名单或清空；即使两个值都命中条件，也重新应用名单。同一选择下可手动编辑，重复选择当前值保留手动结果。
+
+默认值与手动选值共用原排除谓词规则。名单中的值即使不在候选中也参与查询，`defaultWhen` 不构成候选请求依赖。候选范围仍由候选来源和 `candidateContext` 决定。
+
+完整合成场景见[联动默认值页面](examples/filter-conditional-exclusion-default.json)。Playground 入口为 `/pages/filter-conditional-exclusion-default`，可依次切换「甲」「乙」「丙」检查名单的重置与清空，并用 `?state=candidate-pending` 检查候选挂起时的图表查询。
+
 <a id="source-candidates"></a>
 
 ## 页面数据源候选（6.90）

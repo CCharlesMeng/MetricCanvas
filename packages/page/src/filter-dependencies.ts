@@ -8,6 +8,16 @@ export function candidateDependencies(filter: FilterDeclaration): string[] {
 export function filterDependencies(filter: FilterDeclaration): string[] {
   return [...candidateDependencies(filter), ...(filter.clearOnChangeOf ?? [])];
 }
+/** A default rule depends on its controller for query execution, not for candidate loading. */
+export function filterExecutionDependencies(filter: FilterDeclaration): string[] {
+  const dependencies = filterDependencies(filter);
+  if (filter.type === 'dimension' && filter.defaultWhen) dependencies.push(filter.defaultWhen.filter);
+  return dependencies;
+}
+export function matchingDimensionDefault(filter: DimensionFilterDeclaration, selected: readonly string[] | undefined): string[] | undefined {
+  const condition = filter.defaultWhen;
+  if (condition && selected?.some(value => condition.values.includes(value))) return filter.default;
+}
 export function dimensionSelectionIssue(filter: DimensionFilterDeclaration, values: readonly string[]): string | undefined {
   // Legacy initialParam arrays may seed tabs with several applied values; the next tab click is single.
   // An explicit selection contract always takes precedence over this compatibility case.

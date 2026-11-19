@@ -301,6 +301,30 @@ IOC 业务 Region 只允许 iocHeader 内的单个组织树，树内选择地区
 
 完整合成场景见仓库 `/pages/filter-exclusion-candidates`；`?state=candidate-pending`、`?state=candidate-error` 和 `?state=empty` 分别验证候选挂起、失败和空结果时业务图表独立显示。选择甲云服务后切换到乙，原排除选择及谓词保留，乙候选正常加载，用户通过标准移除按钮取消。
 
+<a id="conditional-exclusion-defaults"></a>
+
+## 排除项联动默认值（6.130）
+
+在已符合动态排除候选独立加载规则、显式声明 `selection.mode:"multiple"` 的页级可选维度上，可以为现有 `default` 名单配置 `defaultWhen`。条件只支持引用同页的独立显式单选维度，包括按层单选的树。比较对象是稳定值，`values` 须由非空且互不重复的值组成。
+
+```json
+{
+  "default": ["甲云服务01", "预设专属服务"],
+  "defaultWhen": {
+    "filter": "service-scope",
+    "part": "values",
+    "op": "containsAny",
+    "values": ["甲", "乙"]
+  }
+}
+```
+
+初始化使用单选维度实际生效的值，包括合法的 URL 覆盖。排除项的合法显式 URL 选值优先于联动默认值，`?service=` 表示显式清空。用户实际切换单选值或层级时，引擎在同一筛选更新内应用整份名单或清空；即使两个值都命中条件，也重新应用名单。同一选择下可手动编辑，重复选择当前值保留手动结果。
+
+默认值与手动选值共用原排除谓词规则。名单中的值即使不在候选中也参与查询，`defaultWhen` 不构成候选请求依赖。候选范围仍由候选来源和 `candidateContext` 决定。
+
+完整合成场景见[联动默认值页面](examples/filter-conditional-exclusion-default.json)。Playground 入口为 `/pages/filter-conditional-exclusion-default`，可依次切换「甲」「乙」「丙」检查名单的重置与清空，并用 `?state=candidate-pending` 检查候选挂起时的图表查询。
+
 <a id="source-candidates"></a>
 
 ## 页面数据源候选（6.90）
@@ -383,7 +407,7 @@ IOC 业务 Region 只允许 iocHeader 内的单个组织树，树内选择地区
 合成入口为 `/pages/finalization-default-time` 与 `/pages/finalization-default-time-detail`，`?state=error|missing|invalid|conflict|timeout` 验证回退。集成应用通过数据网关的finalizationSource提供固定DQE请求体、nameField与dateField映射，页面作者不填写端点、凭据或表结构。这些场景不证明真实截止表或生产DQE已接入。
 
 
-页面协议 6.129。结构真源为本册[schema.json](schema.json)，SHA256 `9f0d732d8bd9e97ff89108e1838b19c34b1f39cb13c7c3ad4ed42de17f65e25b`。字段表自动生成；可选不等于有默认值。
+页面协议 6.130。结构真源为本册[schema.json](schema.json)，SHA256 `0216bef0ba2803fdd10928fc69948f0057f6995d0521ad7fac43a012814f9ab9`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -622,6 +646,74 @@ Schema位置：`#/definitions/dimensionFilter/properties/default/items`。
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 每个数组项 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f64696d656e73696f6e46696c7465722f70726f706572746965732f64656661756c745768656e"></a>
+
+### `@dimensionFilter.defaultWhen`
+
+Schema位置：`#/definitions/dimensionFilter/properties/defaultWhen`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支可选 | required=["filter","part","op","values"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 6.130 可选动态多选排除项的联动条件。按页级独立单选维度的稳定值匹配，初始化和实际切换时决定是否应用 default。 |
+
+<a id="schema-232f646566696e6974696f6e732f64696d656e73696f6e46696c7465722f70726f706572746965732f64656661756c745768656e2f70726f706572746965732f66696c746572"></a>
+
+### `@dimensionFilter.defaultWhen.filter`
+
+Schema位置：`#/definitions/dimensionFilter/properties/defaultWhen/properties/filter`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 页面已声明筛选器ID；part决定读取值或层级。 |
+
+<a id="schema-232f646566696e6974696f6e732f64696d656e73696f6e46696c7465722f70726f706572746965732f64656661756c745768656e2f70726f706572746965732f70617274"></a>
+
+### `@dimensionFilter.defaultWhen.part`
+
+Schema位置：`#/definitions/dimensionFilter/properties/defaultWhen/properties/part`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="values" | Schema未设默认；装配/运行时默认见语义说明 | 引用分量；导航支持value/from/to/level及modes的mode，期间事实只接受固定事实part并按kind校验。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "values" | 维度多选值集合。 |
+
+<a id="schema-232f646566696e6974696f6e732f64696d656e73696f6e46696c7465722f70726f706572746965732f64656661756c745768656e2f70726f706572746965732f6f70"></a>
+
+### `@dimensionFilter.defaultWhen.op`
+
+Schema位置：`#/definitions/dimensionFilter/properties/defaultWhen/properties/op`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="containsAny" | Schema未设默认；装配/运行时默认见语义说明 | 选择具名算子，不接受表达式。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "containsAny" | 来源集合至少包含一个给定值。 |
+
+<a id="schema-232f646566696e6974696f6e732f64696d656e73696f6e46696c7465722f70726f706572746965732f64656661756c745768656e2f70726f706572746965732f76616c756573"></a>
+
+### `@dimensionFilter.defaultWhen.values`
+
+Schema位置：`#/definitions/dimensionFilter/properties/defaultWhen/properties/values`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支必填 | minItems=1; maxItems=1000 | Schema未设默认；装配/运行时默认见语义说明 | 集合比较的同类型字面量，不能与单值value混用。 |
+
+<a id="schema-232f646566696e6974696f6e732f64696d656e73696f6e46696c7465722f70726f706572746965732f64656661756c745768656e2f70726f706572746965732f76616c7565732f6974656d73"></a>
+
+### `@dimensionFilter.defaultWhen.values[]`
+
+Schema位置：`#/definitions/dimensionFilter/properties/defaultWhen/properties/values/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 每个数组项 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f64696d656e73696f6e46696c7465722f70726f706572746965732f696e697469616c506172616d"></a>
 
@@ -3132,6 +3224,7 @@ Schema位置：`#/definitions/searchFilter/properties/default`。
 - `filter-source-candidate-levels`：6.122 内联候选行通过层级 ID 使用不同查询字段。反例：[source-candidate-level-version](errors/source-candidate-level-version.json)、[source-candidate-level-field](errors/source-candidate-level-field.json)、[source-candidate-level-shape](errors/source-candidate-level-shape.json)、[source-candidate-level-binding](errors/source-candidate-level-binding.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `currency-range-presets`：6.46单位case内的币种预设保持单一金额状态。反例：[currency-presets-version](errors/currency-presets-version.json)、[currency-presets-missing](errors/currency-presets-missing.json)、[currency-presets-shared](errors/currency-presets-shared.json)、[currency-presets-invalid](errors/currency-presets-invalid.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `independent-exclusion-candidates`：6.125 动态排除候选独立加载并保留选择。反例：[independent-exclusion-version-ahead](errors/independent-exclusion-version-ahead.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `conditional-dimension-default`：6.130 可选动态多选排除项的联动默认值。反例：[conditional-default-version](errors/conditional-default-version.json)、[conditional-default-driver](errors/conditional-default-driver.json)、[conditional-default-required-list](errors/conditional-default-required-list.json)、[conditional-default-inclusion](errors/conditional-default-inclusion.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 
@@ -3179,6 +3272,7 @@ Schema位置：`#/definitions/searchFilter/properties/default`。
 - [ioc-async-preparation](examples/ioc-async-preparation.json)：完整合法页面；查询仅为静态契约证据。
 - [ioc-legacy-key-office](examples/ioc-legacy-key-office.json)：完整合法页面；查询仅为静态契约证据。
 - [filter-exclusion-candidates](examples/filter-exclusion-candidates.json)：完整合法页面；查询仅为静态契约证据。
+- [filter-conditional-exclusion-default](examples/filter-conditional-exclusion-default.json)：完整合法页面；查询仅为静态契约证据。
 
 ## 联合分支见证（生成）
 

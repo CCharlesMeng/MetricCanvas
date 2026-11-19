@@ -413,3 +413,13 @@
 打开云服务排除下拉选择甲云服务01，再将范围切到乙。图表继续显示，甲云服务01 的标准选中项保持，可通过原移除按钮取消；下拉显示乙范围候选，没有新增范围状态标签或确认文案。访问 `?state=candidate-pending` 时候选持续加载，`?state=candidate-error` 显示标准重试交互，`?state=empty` 显示标准空列表；三种情况下图表均独立显示。候选查询仍消费范围条件，业务查询仍携带范围与已有排除集合。
 
 自动验收读取该页面：`pnpm --filter playground exec playwright test tests/exclusion-candidates.browser.ts`。旧版行为保留在 `/pages/filter-source-query-pagination`，包含式及混合消费不套用排除规则。真实权限、DQE 和部署需另验。
+
+## 排除项联动默认值
+
+启动 `pnpm dev:playground`，访问 `/pages/filter-conditional-exclusion-default`。此合成场景可复用 `service.defaultWhen` 与 `chart-data` 的排除绑定。上线页面应替换范围编码、名单和数据源。
+
+1. 初始范围为「甲」，已选「甲云服务01」和候选里没有的「预设专属服务」。移除任一项后切到「乙」，恢复完整名单。
+2. 切到「丙」，排除项清空。下拉仍显示同一来源的候选，滚动时每批读取 20 条。
+3. 用 `?state=candidate-pending` 或 `?state=candidate-error` 打开。候选挂起或失败时，图表仍完成查询。用 `?service=` 打开可核对显式清空。
+
+浏览器验收使用 `tests/exclusion-candidates.browser.ts`，合成 Adapter 不连接真实 DQE。

@@ -23,6 +23,7 @@ const exactInputs = new Map([
   ['filter-source-candidate-levels','source-candidates'],
   ['filter-source-query-pagination','source-candidates'],
   ['filter-exclusion-candidates','source-candidates'],
+  ['filter-conditional-exclusion-default','source-candidates'],
   ['chart-global-benchmark','global-benchmark'],
   ['table-row-expansion-cache','row-cache'],
   ['ioc-region-url-demo','region-url'],

@@ -1,0 +1,30 @@
+{
+  "case": "conditional-default-driver",
+  "invariant": "conditional-dimension-default",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "联动默认条件须引用一个独立的显式单选维度",
+      "paths": [
+        "/filters/1/defaultWhen"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      "…",
+      {
+        "defaultWhen": {
+          "filter": "missing",
+          "part": "values",
+          "op": "containsAny",
+          "values": [
+            "甲",
+            "乙"
+          ]
+        }
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/conditional-default-driver.json"
+}

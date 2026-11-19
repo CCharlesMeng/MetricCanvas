@@ -1,5 +1,5 @@
 import {independentExclusionFilterIds,requiresTimeValidation,timeAvailabilityIssue,timeFilterBoundaryError,type DisplayInputsSnapshot} from '@metriccanvas/page/internal';
-import { queryFilterIds,numberRangeIssue,rangeContextIssue,filterGroupOptions, candidateDependencies, filterDependencies, dimensionSelectionIssue, conditionSourceIds, canonicalizeJson, type Page, type FilterDeclaration } from '@metriccanvas/page/internal';
+import { queryFilterIds,numberRangeIssue,rangeContextIssue,filterGroupOptions, candidateDependencies, filterExecutionDependencies, dimensionSelectionIssue, conditionSourceIds, canonicalizeJson, type Page, type FilterDeclaration } from '@metriccanvas/page/internal';
 import type {RuntimeDataGateway,FilterCandidate} from './ports';
 import type {FilterValue,FilterValues} from './filter-values';
 import {candidateContextKey,filterCandidatesRequest,validFilterCandidates} from './filter-candidates';
@@ -13,7 +13,7 @@ export function createCandidateValidator(page:Page,gateway:RuntimeDataGateway,co
   function filterIds(sourceId:string,values?:FilterValues):string[] {
     const ids=new Set<string>();
     for(const source of conditionSourceIds(page,sourceId)){const definition=page.dataSources[source];if(definition?.source.type==='query')for(const id of queryFilterIds(definition.source.query,values))ids.add(id);}
-    const queue=[...ids];for(const id of queue){const filter=byId.get(id);if(filter)for(const parent of filterDependencies(filter))if(!ids.has(parent)){ids.add(parent);queue.push(parent);}}
+    const queue=[...ids];for(const id of queue){const filter=byId.get(id);if(filter)for(const parent of filterExecutionDependencies(filter))if(!ids.has(parent)){ids.add(parent);queue.push(parent);}}
     const overridden=overriddenFilterIds(declarations,values??new Map());
     return [...ids].filter(id=>!overridden.has(id));
   }

@@ -104,7 +104,7 @@ describe('IOC Region candidate diagnosis', () => {
     const output = JSON.parse(result.stdout);
     expect(output).toMatchObject({
       stage, state, schemaVersion: JSON.parse(readFileSync(businessResult, 'utf8')).schemaVersion,
-      declaresRegionDependency: true, filterId: 'region', dqeRequest: 'not-observed'
+      declaresRegionDependency: false, filterId: 'region', dqeRequest: 'not-observed'
     });
     expect(output.level).toBe(level);
     expect(result.stdout).not.toContain('安徽代表处');

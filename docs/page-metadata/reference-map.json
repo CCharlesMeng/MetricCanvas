@@ -386,7 +386,8 @@
         "finalization-date-defaults",
         "ioc-async-preparation",
         "ioc-legacy-key-office",
-        "filter-exclusion-candidates"
+        "filter-exclusion-candidates",
+        "filter-conditional-exclusion-default"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -440,7 +441,8 @@
         "independent-filter-candidates",
         "filter-source-candidate-levels",
         "currency-range-presets",
-        "independent-exclusion-candidates"
+        "independent-exclusion-candidates",
+        "conditional-dimension-default"
       ]
     },
     "sections-and-layout.md": {
@@ -1812,6 +1814,7 @@
     "#/properties/iocHeader/properties/presentation/properties/collapse": "保持全部筛选或按实测首行折叠；隐藏项退出焦点序列。",
     "#/properties/filters/items/properties/selection": "6.37：单/多选及必选基数；见filters.md业务筛选。",
     "#/definitions/dimensionFilter/properties/selection": "单/多选及必选基数；required恰好一个值。",
+    "#/definitions/dimensionFilter/properties/defaultWhen": "6.130 可选动态多选排除项的联动条件。按页级独立单选维度的稳定值匹配，初始化和实际切换时决定是否应用 default。",
     "#/definitions/dimensionFilter/properties/selection/properties/allBehavior": "全选保留实际选择；仅穷尽封闭多选枚举可省动态谓词。",
     "#/definitions/dimensionFilter/properties/options": "创作期确认的穷尽枚举；不请求候选网关，不作权限失败回退。",
     "#/definitions/dimensionFilter/properties/options/items/properties/disabled": "不可选且不能作为默认值，不计入全选集合。",
@@ -2414,7 +2417,8 @@
     "#/properties/schemaVersion=\"6.126\"": "指标卡的主次指标行使用 action.selectTab 在当前页面独立选中指定页签。",
     "#/properties/schemaVersion=\"6.127\"": "指标卡可通过 tipCode 关联指标定义，显示位置为主标题或无主标题单行指标标签。",
     "#/properties/schemaVersion=\"6.128\"": "柱线组合图的字段折线圆点可按原始数值小于零或大于等于零着色。",
-    "#/properties/schemaVersion=\"6.129\"": "顶层度量结果字段声明 metricCode，主次指标行通过 showDefinition 独立开启气泡。"
+    "#/properties/schemaVersion=\"6.129\"": "顶层度量结果字段声明 metricCode，主次指标行通过 showDefinition 独立开启气泡。",
+    "#/properties/schemaVersion=\"6.130\"": "可选动态多选排除项可用 defaultWhen 关联一个独立单选维度的实际取值。"
   },
   "branchExceptions": {
     "#/properties/iocHeader/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/0": {
@@ -3494,6 +3498,7 @@
       "布尔候选依赖与条件启用（6.75）",
       "期间筛选驱动同比环比（6.77）",
       "动态排除候选独立加载（6.125）",
+      "排除项联动默认值（6.130）",
       "页面数据源候选（6.90）",
       "内联层级候选（6.122）",
       "候选查询分页",

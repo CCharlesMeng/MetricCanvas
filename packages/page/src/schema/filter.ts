@@ -32,6 +32,12 @@ const dimensionFilterZ = z
     visible: z.boolean().optional(),
     ...visibilityShape,
     default: z.array(z.string()).optional(),
+    defaultWhen: z.object({
+      filter: idZ,
+      part: z.literal('values'),
+      op: z.literal('containsAny'),
+      values: z.array(z.string().min(1)).min(1).max(1000)
+    }).strict().optional(),
     initialParam: idZ.optional(),
     hierarchy: z.array(filterHierarchyLevelZ).min(2).optional(),
     defaultLevel: idZ.optional(),

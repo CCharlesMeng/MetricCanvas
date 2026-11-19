@@ -2,7 +2,8 @@ import {readFileSync} from 'node:fs';
 import {expect,it,vi} from 'vitest';
 import {parsePage} from '@metriccanvas/page';
 import type {Page} from '@metriccanvas/page/internal';
-import {createFilterState,initialFilterValues} from '../src/filter-state';
+import {createFilterState,initialFilterValues,parseFilterSearch} from '../src/filter-state';
+import {filterInputIssue} from '../src/navigation-inputs';
 import {orchestrate} from '../src/orchestrator';
 import type {RuntimeDataGateway} from '../src/ports';
 
@@ -70,5 +71,50 @@ it.each(['6.124','include'])('keeps the existing candidate gate for %s',version=
     expect(state.blocked()).toContain('service');
     state.write('service-scope',{type:'dimension',dimension:'scope',values:['乙']});
     expect(state.confirmation()).toContain('service');
+  }finally{stop();}
+});
+
+function conditionalFilters() {
+  const raw=JSON.parse(readFileSync('pages/capabilities/filters/filter-conditional-exclusion-default.json','utf8'));
+  const parsed=parsePage(raw);
+  if(!parsed.ok)throw Error(JSON.stringify(parsed.errors));
+  return parsed.page.filters!;
+}
+
+it.each([
+  ['', ['甲云服务01','预设专属服务']],
+  ['service-scope=丙', undefined],
+  ['service-scope=乙&service=手工添加', ['手工添加']],
+  ['service=', []],
+] as const)('initializes conditional exclusions with explicit input precedence (%s)',(search,expected)=>{
+  const filters=conditionalFilters();
+  expect(filterInputIssue(search,filters)).toBeUndefined();
+  const explicit=parseFilterSearch(search,filters);
+  const defaults=initialFilterValues(filters,new Date(),undefined,undefined,undefined,explicit);
+  const applied=new Map([...defaults,...explicit]).get('service');
+  expect(applied?.type==='dimension'?applied.values:undefined).toEqual(expected);
+});
+
+it('publishes the controller and conditional exclusion together and preserves manual edits for a repeated choice',()=>{
+  const filters=conditionalFilters();
+  const state=createFilterState(initialFilterValues(filters),filters);
+  const snapshots=vi.fn();
+  const stop=state.subscribe(snapshots);
+  try{
+    state.write('service',null);
+    expect(new URLSearchParams(state.toURL()).getAll('service')).toEqual(['']);
+    state.write('service-scope',{type:'dimension',dimension:'scope',values:['甲']});
+    expect(snapshots).toHaveBeenCalledTimes(2);
+    state.write('service-scope',{type:'dimension',dimension:'scope',values:['乙']});
+    expect(snapshots).toHaveBeenCalledTimes(3);
+    expect(snapshots.mock.lastCall?.[0]).toEqual(new Map([
+      ['service-scope',{type:'dimension',dimension:'scope',values:['乙']}],
+      ['service',{type:'dimension',dimension:'service',values:['甲云服务01','预设专属服务']}],
+    ]));
+    state.write('service-scope',{type:'dimension',dimension:'scope',values:['丙']});
+    expect(snapshots).toHaveBeenCalledTimes(4);
+    expect(snapshots.mock.lastCall?.[0].has('service')).toBe(false);
+    state.commit({type:'reset',baseline:'initial'});
+    expect(snapshots.mock.lastCall?.[0]).toEqual(snapshots.mock.calls[0]?.[0]);
   }finally{stop();}
 });

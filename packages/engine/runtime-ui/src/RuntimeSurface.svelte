@@ -636,7 +636,7 @@
       return;
     }
     let fromDeclarations:Map<string,FilterValue>;
-    try{fromDeclarations=initialFilterValues((loaded.filters??[]).filter(needsInitialFilterValue),candidateClock,displaySnapshot,0);}catch{failTimeInitialization(mySession,finalizationController.signal,emit);return;}
+    try{fromDeclarations=initialFilterValues((loaded.filters??[]).filter(needsInitialFilterValue),candidateClock,displaySnapshot,0,undefined,explicit);}catch{failTimeInitialization(mySession,finalizationController.signal,emit);return;}
     function needsInitialFilterValue(filter: FilterDeclaration): boolean {
       return !fromURL.has(filter.id) && !preparation.unresolved.has(filter.id) && !(pendingRegion && filter.id === 'region');
     }
@@ -1054,14 +1054,14 @@
     values: FilterValues,
     force=false
   ) {
-    if(declaration.options||preparationBlocksFilter(declaration,declarations,preparingFilters))return;
-    const context=cascadeContext(declaration,declarations,values,filterCandidateContext());
+    const input = filterCandidateContext();
+    if (!needsDimensionCandidates(declaration, input.page)) return;
+    const context=cascadeContext(declaration,declarations,values,input);
     const levels=declaration.hierarchy?.map(level=>level.id)??[undefined];
     for(const level of levels){
       if(declaration.candidates||declaration.candidateContext||declaration.treeSelection==='level'||declaration.candidateWindow){
         let request:ReturnType<typeof filterCandidatesRequest>;
         try {
-          const input = filterCandidateContext();
           request = withSourceCandidateSelection(input.page,declaration,values,filterCandidatesRequest(declaration,declarations,values,level,input));
         } catch {
           const dimension = declaration.hierarchy?.find(item=>item.id===level)?.dimension ?? declaration.dimension;
@@ -1073,10 +1073,17 @@
       }else{
         const dimension=declaration.hierarchy?.find(item=>item.id===level)?.dimension??declaration.dimension;
         const scope={filterId:declaration.id,level,context};
-        if(force)loader.reload(dimension,cascadeConstraints(declaration,declarations,values,filterCandidateContext().page),scope);
-        else loader.load(dimension,cascadeConstraints(declaration,declarations,values,filterCandidateContext().page),scope);
+        const constraints = cascadeConstraints(declaration,declarations,values,input.page);
+        if(force)loader.reload(dimension,constraints,scope);
+        else loader.load(dimension,constraints,scope);
       }
     }
+  }
+
+  function needsDimensionCandidates(declaration: Extract<FilterDeclaration, {type:'dimension'}>, page: Page | undefined): boolean {
+    if (declaration.options || preparationBlocksFilter(declaration,declarations,preparingFilters)) return false;
+    // Paged exclusions have display labels and require no selection membership receipt.
+    return !(declaration.defaultWhen && page && sourceCandidateWindow(page, declaration));
   }
 
   function retryCandidates(id:string) {

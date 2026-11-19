@@ -7,6 +7,12 @@ import type { TextValue } from './page-param';
 export interface TimeAvailability {fact:string;initial?:'latest'|'latestComplete';max:'latest'|'latestComplete';blockMissing?:true}
 
 export interface FilterInteractionExtension { hint?: TextValue; clearOnChangeOf?: string[]; }
+interface DimensionDefaultCondition {
+  filter: string;
+  part: 'values';
+  op: 'containsAny';
+  values: string[];
+}
 export interface DimensionSelectionExtension {
   selection?: {mode:'single'|'multiple';required?:boolean;allBehavior?:'values'|'unrestricted'};
   candidates?: {dataSource:string;valueField:string;labelField?:string;parentField?:string;levelField?:string};
@@ -65,6 +71,8 @@ export interface DimensionFilterDeclaration extends FilterInteractionExtension, 
   visibleWhen?: import('./schema/condition').Condition;
   /** 初始选中的维度值;缺省为不筛选 */
   default?: string[];
+  /** Apply the declared default on initialization and on a controlling selection change. */
+  defaultWhen?: DimensionDefaultCondition;
   /** 只在实例化时读取参数；与default互斥。 */
   initialParam?: string;
   /**

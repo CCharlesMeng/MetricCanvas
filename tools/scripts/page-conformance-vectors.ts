@@ -399,6 +399,12 @@ export const invariants: InvariantDefinition[] = [
   {id:'independent-exclusion-candidates',description:'6.125 动态排除候选独立加载并保留选择',valid:['filter-exclusion-candidates'],cases:[
     {case:'independent-exclusion-version-ahead',base:'filter-exclusion-candidates',expect:/高于运行时当前次版本/,mutate:d=>{d.schemaVersion=minorAheadOfCurrent;}}
   ]},
+  {id:'conditional-dimension-default',description:'6.130 可选动态多选排除项的联动默认值',valid:['filter-conditional-exclusion-default'],cases:[
+    {case:'conditional-default-version',base:'filter-conditional-exclusion-default',expect:/由 6.130 引入/,mutate:d=>{d.schemaVersion='6.129';}},
+    {case:'conditional-default-driver',base:'filter-conditional-exclusion-default',expect:/显式单选维度/,mutate:d=>{d.filters[1].defaultWhen.filter='missing';}},
+    {case:'conditional-default-required-list',base:'filter-conditional-exclusion-default',expect:/非空的 default 名单/,mutate:d=>{delete d.filters[1].default;}},
+    {case:'conditional-default-inclusion',base:'filter-conditional-exclusion-default',expect:/可选的动态多选排除条件/,mutate:d=>{d.dataSources['chart-data'].source.query.filterBindings.service.operator='=';}}
+  ]},
   {id:'unrestricted-filter-clear',description:'6.124 可选筛选原本不限时联动免确认',valid:['filter-source-query-pagination'],cases:[
     {case:'unrestricted-filter-clear-version-ahead',base:'filter-source-query-pagination',expect:/高于运行时当前次版本/,mutate:d=>{d.schemaVersion=minorAheadOfCurrent;}}
   ]},

@@ -74,7 +74,7 @@ export { reportExportScale } from './report-export';
 
 export * from './tab-state';
 export * from './chart-option';
-export { candidateDependencies, filterDependencies, dimensionSelectionIssue } from './filter-dependencies';
+export { candidateDependencies, filterDependencies, filterExecutionDependencies, matchingDimensionDefault, dimensionSelectionIssue } from './filter-dependencies';
 
 export * from './amount-filter';
 export * from './field-selection';

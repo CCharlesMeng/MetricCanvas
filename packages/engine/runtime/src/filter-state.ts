@@ -1,5 +1,5 @@
 import {independentExclusionFilterIds,type Page,timeAvailabilityIssue,modeRangeIssue,type DisplayInputsSnapshot} from '@metriccanvas/page/internal';
-import { numberRangeIssue,rangeContextIssue, filterDependencies, dimensionSelectionIssue, supportsUnrestrictedFilterClear } from '@metriccanvas/page/internal';
+import { numberRangeIssue,rangeContextIssue, filterDependencies, filterExecutionDependencies, dimensionSelectionIssue, matchingDimensionDefault, supportsUnrestrictedFilterClear } from '@metriccanvas/page/internal';
 import { resolvePeriodSelection, isPeriodSelection } from '@metriccanvas/page/internal';
 import { filterURLKeys, readLevelURLSelection } from '@metriccanvas/page/internal';
 import { rollingFinalizationName } from '@metriccanvas/page/internal';
@@ -176,6 +176,7 @@ export function createFilterState(initial?: FilterValues, declarations: readonly
     }> = [];
     const normalized = new Map<string, FilterValue | null>();
     normalizeChanges();
+    if (isEditIntent(intent)) applyLinkedDefaults(declarations, current, normalized);
     validateRangeContext();
     if (issues.length)
       return { ok: false, issues };
@@ -228,7 +229,8 @@ export function createFilterState(initial?: FilterValues, declarations: readonly
       for (const [id, value] of changes) {
         const declaration = byId.get(id);
         const invalid = declarations.length > 0 && !declaration || value && declaration && !matchesDeclaration(value, declaration);
-        const next = invalid ? undefined : normalize(value, declaration, now);
+        const edit = isEditIntent(intent) ? explicitDimensionClear(value, declaration) : value;
+        const next = invalid ? undefined : normalize(edit, declaration, now);
         const availability = next && declaration ? timeAvailabilityIssue(declaration, next, facts, revision) : undefined;
         if (!validCommitValue(id, next, availability, trusted, invalid)) {
           issues.push({ filterId: id, code: 'INVALID_FILTER_INTENT', message: '筛选写入不符合声明、边界或只读约束' });
@@ -340,10 +342,36 @@ export function createFilterState(initial?: FilterValues, declarations: readonly
       restoreMissingDates(next, declarations);
       restoreSingleSelections(next, declarations, search);
       restoreDimensionOptions(next);
+      for (const [id, value] of initialFilterValues(declarations.filter(isConditionalDimension), editing.now?.(), undefined, undefined, undefined, next))
+        next.set(id, value);
       commit({ type: 'restore', values: next });
     }
 
   };
+}
+
+function isEditIntent(intent: FilterIntent): boolean {
+  return intent.type === 'set' || intent.type === 'clear' || intent.type === 'applyDraft';
+}
+
+function isConditionalDimension(filter: FilterDeclaration | undefined): filter is Extract<FilterDeclaration, {type:'dimension'}> & {defaultWhen: NonNullable<Extract<FilterDeclaration, {type:'dimension'}>['defaultWhen']>} {
+  return filter?.type === 'dimension' && filter.defaultWhen !== undefined;
+}
+
+function explicitDimensionClear(value: FilterValue | null, declaration: FilterDeclaration | undefined): FilterValue | null {
+  if (value === null && isConditionalDimension(declaration)) return {type:'dimension', dimension:declaration.dimension, values:[]};
+  return value;
+}
+
+function applyLinkedDefaults(declarations: readonly FilterDeclaration[], current: FilterValues, normalized: Map<string, FilterValue | null>): void {
+  for (const declaration of declarations) {
+    if (!isConditionalDimension(declaration) || normalized.has(declaration.id)) continue;
+    const driver = declaration.defaultWhen.filter;
+    const next = normalized.get(driver);
+    if (next === undefined || sameValue(current.get(driver), next)) continue;
+    const defaults = matchingDimensionDefault(declaration, next?.type === 'dimension' ? next.values : undefined);
+    normalized.set(declaration.id, defaults ? {type:'dimension', dimension:declaration.dimension, values:[...defaults]} : null);
+  }
 }
 
 /** 兑现"subscribe/write 永不 throw":单个订阅方的异常不得中断写入与其余订阅方的通知 */
@@ -518,10 +546,16 @@ function readDimensionFilter(declaration: Extract<FilterDeclaration, { type: 'di
   const selected = readLevelURLSelection(keys, query);
   if (selected) return selected.value.trim() ? { type: 'dimension', values: [selected.value], level: selected.level, dimension: dimensionOfLevel(declaration, selected.level) } : undefined;
   const values = query.getAll(keys.value!).filter(v => v !== '');
-  if (!values.length && !(declaration.hierarchy && read('level'))) return;
+  if (!values.length && !(declaration.hierarchy && read('level')) && !hasExplicitDimensionClear(declaration, query, keys.value!)) return;
   const level = read('level') ?? declaration.defaultLevel ?? declaration.hierarchy?.[0]?.id;
   if (level && declaration.hierarchy && !declaration.hierarchy.some(l => l.id === level)) return;
   return { type: 'dimension', values, dimension: dimensionOfLevel(declaration, level), ...(level ? { level } : {}) };
+}
+
+export function hasExplicitDimensionClear(declaration: FilterDeclaration, query: URLSearchParams, key: string): boolean {
+  if (!isConditionalDimension(declaration)) return false;
+  const values = query.getAll(key);
+  return values.length === 1 && values[0] === '';
 }
 
 function readPointFilter(declaration: Extract<FilterDeclaration, { type: 'timePoint' }>, read: ReadURLPart, now: Date): FilterValue | undefined {
@@ -557,7 +591,7 @@ export function filterSearch(values: FilterValues, declarations: readonly Filter
       if (item !== undefined && keys[part]) query.append(keys[part]!, String(item));
     };
     if (value.type === 'dimension') {
-      appendDimensionURL(query, keys, value);
+      appendDimensionURL(query, keys, value, declaration);
     } else if(value.type==='timeRange'&&value.mode){query.set(`${id}.mode`,value.mode);query.set(keys.from!,value.from);query.set(keys.to!,value.to);
     } else if (value.type === 'timeRange' && value.selection && declaration?.type === 'timeRange' && declaration.display === 'period') {
       appendPeriodURL(value, put);
@@ -570,10 +604,11 @@ export function filterSearch(values: FilterValues, declarations: readonly Filter
 }
 
 
-function appendDimensionURL(query: URLSearchParams, keys: Record<string, string>, value: Extract<FilterValue, { type: 'dimension' }>): void {
+function appendDimensionURL(query: URLSearchParams, keys: Record<string, string>, value: Extract<FilterValue, { type: 'dimension' }>, declaration?: FilterDeclaration): void {
   const levelKey = value.level === undefined ? undefined : keys[`node/${value.level}`];
   const valueKey = levelKey ?? keys.value;
   if (valueKey) for (const item of value.values) query.append(valueKey, item);
+  if (valueKey && !value.values.length && isConditionalDimension(declaration)) query.append(valueKey, '');
   if ((!levelKey || value.values.length === 0) && value.level !== undefined && keys.level) query.append(keys.level, value.level);
 }
 
@@ -624,7 +659,7 @@ function normalizeDimension(value: Extract<FilterValue, { type: 'dimension' }>, 
     return { ...value, level, dimension: dimensionOfLevel(declaration, level) };
   }
   if (value.level !== undefined) return undefined;
-  return !value.values.length && declaration.treeSelection !== 'level' ? null : value;
+  return !value.values.length && declaration.treeSelection !== 'level' && !declaration.defaultWhen ? null : value;
 }
 function readModeFilter(declaration: Extract<FilterDeclaration, { type: 'timeRange' }>, query: URLSearchParams, keys: ReturnType<typeof filterURLKeys>, read: ReadURLPart): FilterValue | undefined {
   const mode = query.get(`${declaration.id}.mode`), from = read('from'), to = read('to');
@@ -660,7 +695,7 @@ function propagateBlockedFilters(blocked:ReadonlySet<string>,declarations:readon
   const result=new Set([...blocked].filter(id=>!overridden.has(id)));
   const queue=[...result];
   for(const parent of queue)for(const declaration of declarations){
-    if(overridden.has(declaration.id)||result.has(declaration.id)||!filterDependencies(declaration).includes(parent))continue;
+    if(overridden.has(declaration.id)||result.has(declaration.id)||!filterExecutionDependencies(declaration).includes(parent))continue;
     result.add(declaration.id);queue.push(declaration.id);
   }
   return result;

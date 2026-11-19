@@ -1,0 +1,30 @@
+{
+  "case": "conditional-default-required-list",
+  "invariant": "conditional-dimension-default",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "联动默认值需要非空的 default 名单",
+      "paths": [
+        "/filters/1/defaultWhen"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      "…",
+      {
+        "defaultWhen": {
+          "filter": "service-scope",
+          "part": "values",
+          "op": "containsAny",
+          "values": [
+            "甲",
+            "乙"
+          ]
+        }
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

@@ -1,0 +1,30 @@
+{
+  "case": "conditional-default-inclusion",
+  "invariant": "conditional-dimension-default",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "联动默认值仅用于可选的动态多选排除条件",
+      "paths": [
+        "/filters/1/defaultWhen"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      "…",
+      {
+        "defaultWhen": {
+          "filter": "service-scope",
+          "part": "values",
+          "op": "containsAny",
+          "values": [
+            "甲",
+            "乙"
+          ]
+        }
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/conditional-default-inclusion.json"
+}

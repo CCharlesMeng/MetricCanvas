@@ -2,7 +2,7 @@ import {finalizationFilterValue} from './finalization-filter-value';
 import {isFinalizationDefault} from '@metriccanvas/page/internal';
 import {isoWeekRange} from '@metriccanvas/page/internal';
 import {initialModeRange,availabilityInitial,type DisplayInputsSnapshot,type TimeMode} from '@metriccanvas/page/internal';
-import { numberRangeIssue, dimensionSelectionIssue } from '@metriccanvas/page/internal';
+import { numberRangeIssue, dimensionSelectionIssue, matchingDimensionDefault } from '@metriccanvas/page/internal';
 import { timeFilterBoundaryError, isPeriodSelection, resolvePeriodSelection, type AppliedPeriodSelection, validateTimePointValue, dimensionOfLevel, hierarchyLevelOf, isRelativeTimeExpression, resolveRelativeTime, type FilterDeclaration, type NumberRangeValue } from '@metriccanvas/page/internal';
 
 /**
@@ -68,7 +68,8 @@ export type FilterValues = ReadonlyMap<string, FilterValue>;
 export function initialFilterValues(
   declarations: FilterDeclaration[],
   now: Date = new Date(),
-  displayInputs?:DisplayInputsSnapshot,filterRevision?:number,finalizationDates?:ReadonlyMap<string,string>
+  displayInputs?:DisplayInputsSnapshot,filterRevision?:number,finalizationDates?:ReadonlyMap<string,string>,
+  explicit?: FilterValues
 ): Map<string, FilterValue> {
   const values = new Map<string, FilterValue>();
   for (const decl of declarations) {
@@ -82,7 +83,20 @@ export function initialFilterValues(
     }
     if (value) values.set(decl.id, value);
   }
+  applyConditionalDimensionDefaults(declarations, values, explicit);
   return values;
+}
+
+export function applyConditionalDimensionDefaults(
+  declarations: readonly FilterDeclaration[], values: Map<string, FilterValue>, explicit?: FilterValues
+): void {
+  for (const declaration of declarations) {
+    if (declaration.type !== 'dimension' || !declaration.defaultWhen || explicit?.has(declaration.id)) continue;
+    const driver = declaration.defaultWhen.filter;
+    const selected = explicit?.get(driver) ?? values.get(driver);
+    const defaults = matchingDimensionDefault(declaration, selected?.type === 'dimension' ? selected.values : undefined);
+    if (defaults) values.set(declaration.id, {type: 'dimension', dimension: declaration.dimension, values: [...defaults]});
+  }
 }
 
 function availabilityDeclaration(decl: FilterDeclaration, displayInputs?: DisplayInputsSnapshot, revision?: number): FilterDeclaration | undefined {
@@ -108,6 +122,7 @@ function initialValue(decl: FilterDeclaration, now: Date): FilterValue | undefin
 }
 
 function dimensionInitial(decl: Extract<FilterDeclaration, {type: 'dimension'}>): FilterValue | undefined {
+  if (decl.defaultWhen) return;
   if (decl.default && dimensionSelectionIssue(decl, decl.default)) throw new Error('筛选初值不符合已声明选择规则');
   if (!decl.default?.length) return;
   const level = hierarchyLevelOf(decl);

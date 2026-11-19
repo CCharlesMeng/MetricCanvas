@@ -1173,6 +1173,11 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/filter-conditional-exclusion-default.json",
+      "target": "product-contracts/page/conformance/valid/filter-conditional-exclusion-default.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/valid/filter-source-candidate-levels.json",
       "target": "product-contracts/page/conformance/valid/filter-source-candidate-levels.json",
       "scope": "exact product contract"
@@ -2665,6 +2670,26 @@
     {
       "source": "product:page/conformance/invalid/independent-exclusion-version-ahead.json",
       "target": "product-contracts/page/conformance/invalid/independent-exclusion-version-ahead.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/conditional-default-version.json",
+      "target": "product-contracts/page/conformance/invalid/conditional-default-version.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/conditional-default-driver.json",
+      "target": "product-contracts/page/conformance/invalid/conditional-default-driver.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/conditional-default-required-list.json",
+      "target": "product-contracts/page/conformance/invalid/conditional-default-required-list.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/conditional-default-inclusion.json",
+      "target": "product-contracts/page/conformance/invalid/conditional-default-inclusion.json",
       "scope": "exact product contract"
     },
     {
@@ -5828,6 +5853,26 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/errors/conditional-default-version.json",
+      "target": "references/page-metadata/errors/conditional-default-version.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/conditional-default-driver.json",
+      "target": "references/page-metadata/errors/conditional-default-driver.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/conditional-default-required-list.json",
+      "target": "references/page-metadata/errors/conditional-default-required-list.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/conditional-default-inclusion.json",
+      "target": "references/page-metadata/errors/conditional-default-inclusion.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/errors/unrestricted-filter-clear-version-ahead.json",
       "target": "references/page-metadata/errors/unrestricted-filter-clear-version-ahead.json",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -8068,6 +8113,11 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/examples/filter-conditional-exclusion-default.json",
+      "target": "references/page-metadata/examples/filter-conditional-exclusion-default.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/filters.md",
       "target": "references/page-metadata/filters.md",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -8929,11 +8979,11 @@
     }
   ],
   "counts": {
-    "product": 1753,
+    "product": 1763,
     "authoring": 32,
     "modules": 36,
-    "topics": 323,
-    "nodes": 2747,
+    "topics": 324,
+    "nodes": 2753,
     "tools": 9,
     "components": 20
   },

@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "e030808c5700cf109e09512b7305b222d5eae4e57826bc377afa60b1691ccf6c",
+  "sha256": "361621c9a8c1d2b5ea8d31ea6e3b29c5728e48a5037c28f3b15d40d7fa7bbfd4",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -136,7 +136,7 @@
     },
     {
       "file": "docs/page-metadata/filters.md",
-      "sha256": "400620036b36793cc622f0818d4d25e934f2f28d13f817152092e23601c3ee77"
+      "sha256": "7ca1ef1cd609485cf4f55624c460e2f3a4d437a5fed58062694eb7c1197bb51e"
     },
     {
       "file": "docs/page-metadata/layout-migration.md",
@@ -160,7 +160,7 @@
     },
     {
       "file": "docs/page-metadata/reference-map.json",
-      "sha256": "23086bf1b269e62b0e17e486b7da9d774eb92656919dc6d935a0093a3764b2cd"
+      "sha256": "84c047e926bc9a12dac9a1ee453e9435a68547321b8f1b2148ff666b493b9f61"
     },
     {
       "file": "docs/page-metadata/sections-and-layout.md",
@@ -1596,7 +1596,7 @@
     },
     {
       "file": "packages/page/src/exclusion-filters.ts",
-      "sha256": "7e18491654bae3f7c88d077a7a908ff7348fa748065789ebb23c2c009708cb56"
+      "sha256": "cbe0b336a1974c8afea7bd1bb574eda6b1a87355d09cb723a751ba23bf00056f"
     },
     {
       "file": "packages/page/src/extract-page-params.ts",
@@ -1632,7 +1632,7 @@
     },
     {
       "file": "packages/page/src/filter-dependencies.ts",
-      "sha256": "69c3e714029d76775f90f00566c88ff3b77958d6b9c4f50a28e0ee9c70068b1d"
+      "sha256": "6cdf179db6355fa368ad9a55eb9fcbf7954ed53f9b67ae99d3fe90c93fd03787"
     },
     {
       "file": "packages/page/src/filter-group.ts",
@@ -1644,7 +1644,7 @@
     },
     {
       "file": "packages/page/src/filter-text-value.ts",
-      "sha256": "4ef135db158f1cb301bb1eb2f8134abe26ecd491e903b179fb20b4e49d614bb6"
+      "sha256": "f25c0b6dd86427974169c2fb7f41f66f8d8646438fe6bd4a547f2fc69ca68880"
     },
     {
       "file": "packages/page/src/filter-url.ts",
@@ -1652,7 +1652,7 @@
     },
     {
       "file": "packages/page/src/filter.ts",
-      "sha256": "c5e93b6c51a98f9c6a0e86c021ea4b5ff79fa3775ccdc36b79bb6d91e350615c"
+      "sha256": "4b6b00f791a0ecaa0004b10ae395ed1fb2d5207b14dfca7df51e49229c25b6db"
     },
     {
       "file": "packages/page/src/finalization-default.ts",
@@ -1672,7 +1672,7 @@
     },
     {
       "file": "packages/page/src/internal.ts",
-      "sha256": "bec1e8d51a631a26e4af7f6c7ae2aaf7e647a2431fedf571ed9c23d67b5d076f"
+      "sha256": "c454f67ee62e12c561f8ef2ed21a0201364031f943fb790c03a7812e32562a8d"
     },
     {
       "file": "packages/page/src/ioc-header-controls.ts",
@@ -1996,7 +1996,7 @@
     },
     {
       "file": "packages/page/src/schema/filter.ts",
-      "sha256": "65d47b849fe42f16a9cc2ba5ef75282811e400c78f9ab1c1833b9874401fc55a"
+      "sha256": "a0cc1b95087cd7d68d990e0d6ff31bbb60a86cc9a1d01fd1ce64fcd0a2eb937b"
     },
     {
       "file": "packages/page/src/schema/index.ts",
@@ -2208,11 +2208,11 @@
     },
     {
       "file": "packages/page/src/validate.ts",
-      "sha256": "b95cddcca0aca7b1cb0756c2b03ce077a858797309b6f9b5dc3d833780588e2c"
+      "sha256": "464d8c064b894880f89f9b0cfe4514dd89bddfb6d5e99d6fb509c7d30e097512"
     },
     {
       "file": "packages/page/src/version.ts",
-      "sha256": "d9601bb3d6be6fc06b4c2854f7d085525a62843f14edb726843cef144b93eb70"
+      "sha256": "ae3df82d8998eede7d599133bbee2db3e03f0bcbb5fcc31c6eb594c5f65508c4"
     },
     {
       "file": "packages/page/src/write-version.ts",
@@ -2220,7 +2220,7 @@
     },
     {
       "file": "pages/README.md",
-      "sha256": "d16f65379f786144f76fbc2d10827a85e1194c0003f28fed35ee03ed9f89efe1"
+      "sha256": "e1528659f55ee859756d29adb99dd271de61c9a1448afc8e403a7cb99fca205a"
     },
     {
       "file": "pages/business-rejection-details.json",
@@ -2536,7 +2536,7 @@
     },
     {
       "file": "pages/capabilities/filters/README.md",
-      "sha256": "2f1ccd3129e15106595e882880474b1fbab1e517d831b15cfa6a46116ccd7441"
+      "sha256": "392bb012097d996a07f1795479b8194534631d4dd0b4636283bfcd9eaa76be08"
     },
     {
       "file": "pages/capabilities/filters/chart-include-exclude.json",
@@ -2553,6 +2553,10 @@
     {
       "file": "pages/capabilities/filters/filter-binding-when.json",
       "sha256": "5343393031ccbc192910ba95ee1aff418d411fc3cc33c189cee7e1d6d1c31b34"
+    },
+    {
+      "file": "pages/capabilities/filters/filter-conditional-exclusion-default.json",
+      "sha256": "f28818699dd77364f14ede41c128847131eb41d35a2e0d795879ee4d0150f6e3"
     },
     {
       "file": "pages/capabilities/filters/filter-exclusion-candidates.json",
@@ -2868,15 +2872,15 @@
     },
     {
       "file": "pages/capabilities/layout/mc-content-layout-demo.json",
-      "sha256": "92c793a6249da562b05d3392682d398b151e7f73de1d153ae880129f6970a1bd"
+      "sha256": "3dccf615cbf3b31ed55c34389e877232ef2dfa888fe01baddded54746ff24d76"
     },
     {
       "file": "pages/capabilities/layout/mc-layout-business-report.json",
-      "sha256": "c66d137494fcfefd0ffb52b32a6cf87a20b7a63f111e9f088f41fe127bfb7ed8"
+      "sha256": "7d63306bfb95f1ede265dac0d175255e68a0373beae54b9e1b32b8f5577124fc"
     },
     {
       "file": "pages/capabilities/layout/mc-layout-usage-report.json",
-      "sha256": "a1bc26127e33acb0404552577868a3e9c4225b406b0002ae09c5713910280eb1"
+      "sha256": "706b098b2e8fdd86dc0abd2a3b1a5624504aa8ee8f41aeb94b39df189fc43431"
     },
     {
       "file": "pages/capabilities/layout/metric-card-definition-tip.json",
@@ -2908,7 +2912,7 @@
     },
     {
       "file": "pages/capabilities/layout/schema-upgrade-demo.json",
-      "sha256": "b04cfb4019a9bc82e65a8756c20d1140e5b1b12f4d5cc7129ddea75b3de64c92"
+      "sha256": "15c9a1e89e50649308b5fc38746a8fe19fc688112929bed9a0ad4710e287babd"
     },
     {
       "file": "pages/capabilities/layout/tab-mixed-content-report.json",
@@ -3904,11 +3908,11 @@
     },
     {
       "file": "tools/scripts/page-conformance-sources.ts",
-      "sha256": "933ce6c6e914f6d0254e28cef69036a34fb0b540ea903a5644a52bbb18ab9828"
+      "sha256": "9ca137e3e459371cab8e9ff618289797e3b62b8cbf7718f9266434ff5ba822eb"
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "03a14879323d188924a8f1b1ec3f4e835beb5678ca22be37e2fb215a5e173042"
+      "sha256": "67d26b38ba784d5f5cfb0b1f9585172495e7f57335e7fc4f5b22de9250af43bc"
     },
     {
       "file": "tools/scripts/page-files.d.mts",

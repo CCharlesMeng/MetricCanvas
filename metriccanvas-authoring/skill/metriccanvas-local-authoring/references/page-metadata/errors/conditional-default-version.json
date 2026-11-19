@@ -1,0 +1,30 @@
+{
+  "case": "conditional-default-version",
+  "invariant": "conditional-dimension-default",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "可选动态排除筛选按单选维度应用和重置默认值 由 6.130 引入，文档声明的是 6.129",
+      "paths": [
+        "/filters/1/defaultWhen"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      "…",
+      {
+        "defaultWhen": {
+          "filter": "service-scope",
+          "part": "values",
+          "op": "containsAny",
+          "values": [
+            "甲",
+            "乙"
+          ]
+        }
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

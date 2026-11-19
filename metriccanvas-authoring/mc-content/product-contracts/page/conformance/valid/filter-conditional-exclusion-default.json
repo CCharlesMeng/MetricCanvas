@@ -1,0 +1,203 @@
+{
+  "schemaVersion": "6.130",
+  "id": "filter-conditional-exclusion-default",
+  "layout": "dashboard",
+  "meta": {
+    "title": "云服务排除项联动默认值（合成演示）"
+  },
+  "filters": [
+    {
+      "id": "service-scope",
+      "type": "dimension",
+      "dimension": "scope",
+      "label": "范围",
+      "default": [
+        "甲"
+      ],
+      "selection": {
+        "mode": "single",
+        "required": true
+      },
+      "options": [
+        {
+          "label": "甲",
+          "value": "甲"
+        },
+        {
+          "label": "乙",
+          "value": "乙"
+        },
+        {
+          "label": "丙",
+          "value": "丙"
+        }
+      ]
+    },
+    {
+      "id": "service",
+      "type": "dimension",
+      "dimension": "service",
+      "label": "云服务排除项",
+      "searchable": true,
+      "selection": {
+        "mode": "multiple",
+        "allBehavior": "values"
+      },
+      "candidates": {
+        "dataSource": "service-options",
+        "valueField": "service",
+        "labelField": "service"
+      },
+      "default": [
+        "甲云服务01",
+        "预设专属服务"
+      ],
+      "defaultWhen": {
+        "filter": "service-scope",
+        "part": "values",
+        "op": "containsAny",
+        "values": [
+          "甲",
+          "乙"
+        ]
+      }
+    }
+  ],
+  "dataSources": {
+    "service-options": {
+      "fields": {
+        "service": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "云服务"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "云服务"
+                ],
+                "output_metrics": [],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {
+                  "order_by_field": "云服务",
+                  "type": "asc",
+                  "offset": 0,
+                  "limit": 20
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "chart-data": {
+      "fields": {
+        "org": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "org"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "amount"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "filterBindings": {
+            "service": {
+              "target": "dimension",
+              "queryField": "云服务",
+              "operator": "!="
+            },
+            "service-scope": {
+              "target": "dimension",
+              "queryField": "范围"
+            }
+          },
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "org"
+                ],
+                "output_metrics": [
+                  "amount"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "filters-chart",
+      "components": [
+        {
+          "id": "candidate-card",
+          "type": "compositeCard",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "variant": "metricGrid",
+            "filterLayout": "toolbar",
+            "components": [
+              {
+                "id": "service-picker",
+                "type": "filterGroup",
+                "layout": {
+                  "span": 6
+                },
+                "props": {
+                  "filterId": "service",
+                  "display": "select",
+                  "align": "right"
+                }
+              },
+              {
+                "id": "service-chart",
+                "type": "barChart",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "chart-data"
+                },
+                "props": {
+                  "title": "云服务排除项影响的查询",
+                  "categoryField": "org",
+                  "series": [
+                    {
+                      "field": "amount",
+                      "label": "金额"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

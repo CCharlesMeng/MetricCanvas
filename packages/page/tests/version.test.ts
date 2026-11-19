@@ -10,6 +10,7 @@ const introducedAt: Record<string, number> = {
   'metric-card-definition-tip':127,
   'bar-line-marker-color':128,
   'metric-card-row-definition-tip':129,
+  'conditional-dimension-default':130,
   'filter-source-candidate-levels':122,
   'native-ioc-filter-preparation':120,
   'table-absolute-display-limit':119,

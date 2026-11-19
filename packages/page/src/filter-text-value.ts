@@ -1,6 +1,7 @@
 import { chartOptionScopes } from './chart-option';
 import type { TypedError } from './errors';
-import type { FilterDeclaration } from './filter';
+import type { DimensionFilterDeclaration, FilterDeclaration } from './filter';
+import { matchingDimensionDefault } from './filter-dependencies';
 import { isValueFormatPreset } from './field';
 import {
   formatSuitsParamType, textValueScope, isTextValueComposition,
@@ -18,29 +19,42 @@ export interface FilterTextValueUsage {
 export function initialFilterTextValues(declarations: readonly FilterDeclaration[]): ReadonlyMap<string, PageParamValue> {
   const values = new Map<string, PageParamValue>();
   for (const filter of declarations) {
-    const value = filter.default;
-    if (value === undefined) continue;
-    if (filter.type === 'timeRange') {
-      const range = filter.default;
-      if (range && typeof range === 'object' && 'from' in range && 'to' in range) {
-        values.set(filter.id, { start: range.from, end: range.to });
-      }
-    } else if (filter.type === 'numberRange') {
-      const range = filter.default!;
-      const text = range.from === undefined ? (range.to === undefined ? undefined : `≤ ${range.to}`) :
-        range.to === undefined ? `≥ ${range.from}` : `${range.from} 至 ${range.to}`;
-      if (text !== undefined) values.set(filter.id, text);
-    } else if (filter.type === 'boolean') {
-      if (filter.default === true) values.set(filter.id, true);
-    } else if (filter.type === 'dimension') {
-      if (filter.default?.length) values.set(filter.id, filter.default);
-    } else if (filter.type === 'timePoint' && typeof filter.default === 'string') {
-      values.set(filter.id, filter.default);
-    } else if (filter.type === 'search' && filter.default?.trim()) {
-      values.set(filter.id, filter.default);
-    }
+    const value = filter.default === undefined ? undefined : initialFilterTextValue(filter);
+    if (value !== undefined) values.set(filter.id, value);
   }
+  for (const filter of declarations) applyConditionalTextDefault(filter, values);
   return values;
+}
+
+function initialFilterTextValue(filter: FilterDeclaration): PageParamValue | undefined {
+  switch (filter.type) {
+    case 'timeRange': {
+      const range = filter.default;
+      if (range && typeof range === 'object' && 'from' in range && 'to' in range) return {start: range.from, end: range.to};
+      break;
+    }
+    case 'numberRange': return numberRangeTextDefault(filter.default!);
+    case 'boolean': return filter.default === true ? true : undefined;
+    case 'dimension': return plainDimensionTextDefault(filter);
+    case 'timePoint': return typeof filter.default === 'string' ? filter.default : undefined;
+    case 'search': return filter.default?.trim() ? filter.default : undefined;
+  }
+}
+
+function numberRangeTextDefault(range: NonNullable<Extract<FilterDeclaration, {type:'numberRange'}>['default']>): string | undefined {
+  if (range.from === undefined) return range.to === undefined ? undefined : `≤ ${range.to}`;
+  return range.to === undefined ? `≥ ${range.from}` : `${range.from} 至 ${range.to}`;
+}
+
+function plainDimensionTextDefault(filter: DimensionFilterDeclaration): string[] | undefined {
+  if (!filter.defaultWhen && filter.default?.length) return filter.default;
+}
+
+function applyConditionalTextDefault(filter: FilterDeclaration, values: Map<string, PageParamValue>): void {
+  if (filter.type !== 'dimension' || !filter.defaultWhen) return;
+  const driver = values.get(filter.defaultWhen.filter);
+  const selected = matchingDimensionDefault(filter, Array.isArray(driver) ? driver : undefined);
+  if (selected) values.set(filter.id, selected);
 }
 
 export function isFilterTextValueReference(value: unknown): value is FilterTextValueReference {

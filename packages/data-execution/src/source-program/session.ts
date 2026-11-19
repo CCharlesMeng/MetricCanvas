@@ -26,7 +26,7 @@ import {queryFilterIds} from '@metriccanvas/page/internal';
 import {IOC_KEY_OFFICE_FILTER_IDS,overriddenFilterIds,isUnrestrictedIocRegion} from '@metriccanvas/page/internal';
 import { createCandidateValidator } from '../candidate-validation';
 import { createColumnCandidatesReader, type ColumnCandidatesRead } from './column-candidates';
-import { initialFilterValues } from '../filter-values';
+import { applyConditionalDimensionDefaults, initialFilterValues } from '../filter-values';
 import { compilePagedJoin } from '../paged-join/plan';
 import {pagedJoinHasComparison} from '@metriccanvas/page/internal';
 import { executePagedJoin } from '../paged-join/execute';
@@ -98,6 +98,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
   const defaults = new Map<string, import('../filter-values').FilterValue>();
   const defaultNow = config.now ?? config.clock?.() ?? new Date(), defaultInputs = config.displayInputs?.(), defaultRevision = config.filterRevision?.();
   for (const filter of page.filters ?? []) try { for (const [id, value] of initialFilterValues([filter], defaultNow, defaultInputs, defaultRevision)) defaults.set(id, value); } catch {/* An unavailable dynamic default cannot override an explicit valid selection. */ }
+  applyConditionalDimensionDefaults(page.filters ?? [], defaults);
   function defaultConditions(id: string, values: FilterValues, reuse = true): boolean {
     if(reuse&&unsafeInitials.has(id))return false;
     if(reuse&&overridesSource(id,values))return false;

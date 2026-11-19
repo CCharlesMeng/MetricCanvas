@@ -759,6 +759,19 @@
       ]
     },
     {
+      "id": "conditional-dimension-default",
+      "description": "6.130 可选动态多选排除项的联动默认值",
+      "valid": [
+        "filter-conditional-exclusion-default"
+      ],
+      "invalid": [
+        "conditional-default-version",
+        "conditional-default-driver",
+        "conditional-default-required-list",
+        "conditional-default-inclusion"
+      ]
+    },
+    {
       "id": "unrestricted-filter-clear",
       "description": "6.124 可选筛选原本不限时联动免确认",
       "valid": [
