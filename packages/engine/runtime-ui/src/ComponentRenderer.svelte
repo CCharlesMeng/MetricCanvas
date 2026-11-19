@@ -253,7 +253,7 @@
     {#snippet ready(_readySnapshot)}
       {#if component.type === 'metricCard'}
         <MetricCard
-          loading={snapshot.status === 'loading' && !screen.retained} data={metricData}
+          loading={snapshot.status === 'loading' && !screen.retained} data={metricData} animate={!exportMode}
           props={component.props} onlink={onmetriclink} linkHref={metricHref}
           onaction={!exportMode && tabSelection
             ? action => tabSelection.selectFromMetric(component.id, action.selectTab.componentId, action.selectTab.tabId)

@@ -10,7 +10,7 @@ Schema 6.126 支持指标值切换同页 Tab。每个主、次指标行可声明
 
 6.121：来源页可用 `regionFilter.props.officeNavigate` 声明代表处下钻目标。页头选中代表处时从当前筛选状态直接下钻，返回保留原筛选。以代表处初始化时在概览渲染和查询前替换当前历史记录。引擎注入 `rep-office`，统计期间沿用显式导航参数。见 [代表处跨页下钻](docs/page-metadata/components/iocHeader.md#office-navigation)，合成入口 `/pages/ioc-office-drill-overview` 与 `/pages/ioc-office-drill-detail`。
 
-拿到合法页面 JSON 后，统一运行时立即挂载真实页头、筛选控件、内容分区和组件结构；外部默认条件、候选值及业务数据返回后原位填充，不显示独立整页骨架或“正在加载”文字。表格保留真实表头与工具栏，在表体内显示静态骨架行。图表保留真实绘图区，在组件内显示各自的静态加载形态。依赖未齐备的查询仍等待完整条件，无关查询独立执行。无需新增字段或 Schema 升版，见[屏幕加载](docs/page-metadata/data-sources.md#screen-loading)，合成场景 `/pages/loading-structure-demo` 与 `/pages/ioc-async-preparation`。
+拿到合法页面 JSON 后，统一运行时立即挂载真实页头、筛选控件、内容分区和组件结构；外部默认条件、候选值及业务数据返回后原位填充，不显示独立整页骨架或“正在加载”文字。表格保留真实表头与工具栏，在表体内显示从左向右扫光的骨架行。图表保留真实绘图区，在组件内显示各自的静态加载形态。依赖未齐备的查询仍等待完整条件，无关查询独立执行。无需新增字段或 Schema 升版，见[屏幕加载](docs/page-metadata/data-sources.md#screen-loading)，合成场景 `/pages/loading-structure-demo` 与 `/pages/ioc-async-preparation`。
 IOC 页头重点国代名单兼容旧版页面。集成应用提供现有名单候选端口时，引擎可异步补齐标准重点国代筛选缺失的查询绑定；页面 JSON 和集成调用无需修改。相关查询等到名单齐备后执行，已有显式布尔绑定保留。未勾选不取名单，业务私有 ID 不自动接管。6.120 的定稿默认值非阻塞初始化及成功结果会话缓存4小时继续按页面版本启用。见[异步条件准备](docs/page-metadata/filters.md#异步条件准备6120)，合成入口 `/pages/ioc-legacy-key-office`、`/pages/ioc-async-preparation`。
 
 运行时提供可选 `onAuthRequired` 接入：DQE HTTP 401、403、419 时终止当前页面请求并清理 MC 页面缓存，由集成应用跳登录；未传方法沿用既有错误处理。无需页面 JSON 字段或 Schema 升版。见[认证失败与页面失效](docs/page-metadata/validation.md#认证失败与页面失效)，本地仿真入口 `/auth-required-review`。
@@ -152,7 +152,7 @@ IOC Header 默认用 `region-dept=value` / `rep-office=value` 表达地区部或
 IOC Region 的旧链接只传 `region=value` 时，从各层完整授权候选中唯一匹配稳定值后应用层级。匹配完成前阻断依赖查询，跨层同值时提示补充层级。存量页面无需迁移，合成入口 `/pages/ioc-region-url-demo?region=上海代表处`。见[Region 默认 URL 输入](docs/page-metadata/filters.md#region-level-url)。
 6.80：表格列支持 `enumValues` 前端枚举，统一用于单元格、静态筛选选项和导出；原始编码仍参与条件与交互。见[表格列枚举](docs/page-metadata/components/table.md#前端列枚举680)。
 
-数据加载时保留真实组件结构。独立 DQE 查询分别发送请求并受控并发；表格首次加载显示静态“正在加载…”，指标卡数值显示 `--`，均不使用加载动画。筛选、翻页或同一引擎实例内返回页面时，保留上一份完整组件展示，当前结果就绪后整体替换；旧展示不进入查询、计算或导出。声明与边界见[加载时保留组件结构](docs/page-metadata/data-sources.md#screen-loading)，合成验收入口 `/pages/loading-structure-demo` 和 `/pages/metric-card-loading`。无需新增页面字段或升级 Schema。 级联表格在正确行集和顺序确定后，可通过独立展示通道渐进补列；失败列保留 `--`，正式查询及完整导出仍检查完整结果，见[级联表格渐进补列](docs/page-metadata/data-sources.md#progressive-table-columns)。
+数据加载时保留真实组件结构。独立 DQE 查询分别发送请求并受控并发；表格首次加载保留表头，表体和指标卡数值位置都显示从左向右扫光的灰色骨架。筛选、翻页或同一引擎实例内返回页面时可复用上一份完整组件展示，当前结果就绪后原位更新。指标卡在回包后将已显示数值过渡到新值，系统启用减少动态效果时直接更新。旧展示不进入查询、计算或导出。声明与边界见[加载时保留组件结构](docs/page-metadata/data-sources.md#screen-loading)，合成验收入口 `/pages/loading-structure-demo` 和 `/pages/metric-card-loading`。无需新增页面字段或升级 Schema。 级联表格在正确行集和顺序确定后，可通过独立展示通道渐进补列；失败列保留 `--`，正式查询及完整导出仍检查完整结果，见[级联表格渐进补列](docs/page-metadata/data-sources.md#progressive-table-columns)。
 
 6.78 支持期间比较按当前页业务键补查：复用 `pagedJoin.pagination.mode:query`，当期选页后补查上期/去年同期，组合源同层 `compute` 仅允许逐行 delta/ratio，投影字段可声明缺记录补零。主查询决定行域与总数，完整导出逐页补查；计算列不提供全局排序筛选。见[按页期间比较](docs/page-metadata/queries-and-bindings.md#period-comparison-query-page)，合成验收 `/pages/period-comparison-query-page`。
 

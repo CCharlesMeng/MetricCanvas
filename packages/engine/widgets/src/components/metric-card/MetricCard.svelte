@@ -6,32 +6,27 @@
   import { DEFAULT_NULL_TEXT, hasDisplayValue, finiteNumber, isSignedNumberFormat, valuePolarity } from '../../shared/value-format';
   import { fieldUnitText, formatChangeValue, formatFieldValue, isPercentFormat } from '../../shared/field-presentation';
   import { changeValueColor, valueColorStyle } from '../../shared/value-color';
+  import Skeleton from '../../shared/Skeleton.svelte';
   import ProgressRing from './ProgressRing.svelte';
+  import MetricValueMotion from './MetricValueMotion.svelte';
 
   interface Props {
     /** 已解析的 main/compare/target 命名槽。 */
     data: MetricDataSlots;
     props: MetricCardProps;
     loading?: boolean;
+    animate?: boolean;
     /** 只由声明了 link 的非空值触发。 */
     onlink?: (row: Row, event: MouseEvent) => void;
     linkHref?: (row: Row) => string | undefined;
     onaction?: (action: NonNullable<MetricCardRow['action']>) => void;
   }
 
-  let { data, props, loading = false, onlink, linkHref, onaction }: Props = $props();
+  let { data, props, loading = false, animate = true, onlink, linkHref, onaction }: Props = $props();
 
   function fieldText(field: FieldBinding, unit?: string): string {
     const resolved = resolveField(field, data);
     return formatFieldValue(fieldValue(field, data), resolved, unit);
-  }
-
-  function changeText(
-    field: FieldBinding,
-    tone: 'auto' | 'neutral' | 'positive' | 'danger' | undefined
-  ): string {
-    const raw = fieldValue(field, data);
-    return formatChangeValue(raw, resolveField(field, data), tone === 'positive');
   }
 
   const progressValue = $derived(
@@ -47,10 +42,28 @@
 
 </script>
 
+{#snippet loadingValue()}
+  <Skeleton width="2.25em" inline shimmer={animate} />
+{/snippet}
+
+{#snippet pendingOrMissing()}
+  {#if loading}{@render loadingValue()}{:else}{DEFAULT_NULL_TEXT}{/if}
+{/snippet}
+
 {#snippet metricValue(row: MetricCardProps['rows'][number])}
   {#if row.context}<span class="row-context">{row.context}</span>{/if}
-  <span class="row-value">{#if loading}{DEFAULT_NULL_TEXT}{:else}{fieldText(row.valueField, row.unit)}{/if}</span>
-  {@const unit = hasDisplayValue(fieldValue(row.valueField, data)) ? fieldUnitText(row.unit, resolveField(row.valueField, data).format) : undefined}
+  {@const raw = fieldValue(row.valueField, data)}
+  {@const field = resolveField(row.valueField, data)}
+  <span class="row-value">
+    {#if loading}
+      {@render loadingValue()}
+    {:else}
+      <MetricValueMotion value={raw} format={field.format} {animate}>
+        {#snippet children(value)}{formatFieldValue(value, field, row.unit)}{/snippet}
+      </MetricValueMotion>
+    {/if}
+  </span>
+  {@const unit = hasDisplayValue(raw) ? fieldUnitText(row.unit, field.format) : undefined}
   {#if !loading && unit}<span class="unit">{unit}</span>{/if}
 {/snippet}
 
@@ -95,23 +108,31 @@
           <div class="changes">
             {#each row.changes as change, changeIndex (`${change.label}:${changeIndex}`)}
               {@const raw = fieldValue(change.field, data)}
-              {@const format = resolveField(change.field, data).format}
-              {@const color = changeValueColor(raw, change, format)}
-              {@const direction = change.colorRule || isSignedNumberFormat(format) ? valuePolarity(raw, format) : color === 'green' ? 'positive' : color === 'red' ? 'negative' : 'neutral'}
-              <span class:positive={color === 'green'} class:negative={color === 'red'} class:explicit-color={change.colorRule !== undefined} style:color={change.colorRule ? valueColorStyle(color) : undefined} class="change">
-                <span class="change-label">{change.label}</span>
-                <span class="change-value">
-                  {#if !loading && props.showTrendArrows && direction !== 'neutral' && !isPercentFormat(format)}
-                    <span
-                      class:up={direction === 'positive'}
-                      class:down={direction === 'negative'}
-                      class="trend-arrow"
-                      aria-hidden="true"
-                    >{direction === 'positive' ? '↑' : '↓'}</span>
-                  {/if}
-                  {#if loading}{DEFAULT_NULL_TEXT}{:else}<span>{changeText(change.field, change.tone)}{#if hasDisplayValue(raw) && fieldUnitText(change.unit, format)}<span class="change-unit">{change.unit}</span>{/if}</span>{/if}
-                </span>
-              </span>
+              {@const field = resolveField(change.field, data)}
+              <MetricValueMotion value={loading ? undefined : raw} format={field.format} {animate}>
+                {#snippet children(value)}
+                  {@const color = changeValueColor(value, change, field.format)}
+                  {@const direction = change.colorRule || isSignedNumberFormat(field.format) ? valuePolarity(value, field.format) : color === 'green' ? 'positive' : color === 'red' ? 'negative' : 'neutral'}
+                  <span class:positive={color === 'green'} class:negative={color === 'red'} class:explicit-color={change.colorRule !== undefined} style:color={change.colorRule ? valueColorStyle(color) : undefined} class="change">
+                    <span class="change-label">{change.label}</span>
+                    <span class="change-value">
+                      {#if !loading && props.showTrendArrows && direction !== 'neutral' && !isPercentFormat(field.format)}
+                        <span
+                          class:up={direction === 'positive'}
+                          class:down={direction === 'negative'}
+                          class="trend-arrow"
+                          aria-hidden="true"
+                        >{direction === 'positive' ? '↑' : '↓'}</span>
+                      {/if}
+                      {#if loading}
+                        {@render loadingValue()}
+                      {:else}
+                        <span>{formatChangeValue(value, field, change.tone === 'positive')}{#if hasDisplayValue(value) && fieldUnitText(change.unit, field.format)}<span class="change-unit">{change.unit}</span>{/if}</span>
+                      {/if}
+                    </span>
+                  </span>
+                {/snippet}
+              </MetricValueMotion>
             {/each}
           </div>
         {/if}
@@ -128,12 +149,12 @@
     {:else}
       <div class="metric-values placeholder-values" aria-label={`${title ?? '指标'}数据待补充`}>
         <div class="metric-row">
-          <span class="row-label">年累计</span><span class="row-value">{#if loading}{DEFAULT_NULL_TEXT}{:else}{DEFAULT_NULL_TEXT}{/if}</span>
-          <span class="change"><span class="change-label">同比</span>{#if loading}{DEFAULT_NULL_TEXT}{:else}{DEFAULT_NULL_TEXT}{/if}</span>
+          <span class="row-label">年累计</span><span class="row-value">{@render pendingOrMissing()}</span>
+          <span class="change"><span class="change-label">同比</span>{@render pendingOrMissing()}</span>
         </div>
         <div class="metric-row">
-          <span class="row-label">本月</span><span class="row-value">{#if loading}{DEFAULT_NULL_TEXT}{:else}{DEFAULT_NULL_TEXT}{/if}</span>
-          <span class="change"><span class="change-label">环比</span>{#if loading}{DEFAULT_NULL_TEXT}{:else}{DEFAULT_NULL_TEXT}{/if}</span>
+          <span class="row-label">本月</span><span class="row-value">{@render pendingOrMissing()}</span>
+          <span class="change"><span class="change-label">环比</span>{@render pendingOrMissing()}</span>
         </div>
       </div>
     {/if}
@@ -158,7 +179,7 @@
     {/if}
     {#if props.progress}
       <div class="progress-slot">
-        <ProgressRing {loading} value={progressValue} format={progressFormat} missingText={progressMissingText} ringPercent={props.progress.ringPercent} label={props.progress.label ?? '完成率'} />
+        <ProgressRing {loading} {animate} value={progressValue} format={progressFormat} missingText={progressMissingText} ringPercent={props.progress.ringPercent} label={props.progress.label ?? '完成率'} />
       </div>
     {/if}
   {:else}
@@ -169,6 +190,7 @@
         <div class="progress-slot">
           <ProgressRing
             {loading}
+            {animate}
             format={progressFormat}
             value={progressValue}
             missingText={progressMissingText}
