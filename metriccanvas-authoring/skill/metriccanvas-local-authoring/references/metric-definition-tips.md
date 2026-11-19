@@ -40,4 +40,4 @@ node "<skill-dir>/scripts/configure-metric-tips.mjs" --pages-dir "<pages-dir>" -
 
 已有 `showDefinition: true` 标记 `existing`，显示开关为 `false` 标记 `disabled`。旧 `tipCode` 卡片标记 `existing` 并沿用原配置。组合源、查询模式、无法验证的绑定、目录歧义和手工编码冲突保留待核。候选通过页面校验后写入新目录，原件可按摘要核验。再次扫描候选时，已开启的指标行为 `existing`。
 
-`upgrade-required` 表示原页版本低于 6.128。查阅[显式升级流程](page-upgrade.md)，确认本批允许升级后追加 `--upgrade`。脚本对确有补配项的旧页调用产品升级器，列出迁移差异并校验候选。候选页的实际气泡仍由接入环境提供指标定义端口。合成验收入口为 `/pages/metric-card-definition-tip`。
+`upgrade-required` 表示原页版本低于 6.129。查阅[显式升级流程](page-upgrade.md)，确认本批允许升级后追加 `--upgrade`。脚本对确有补配项的旧页调用产品升级器，列出迁移差异并校验候选。候选页的实际气泡仍由接入环境提供指标定义端口。合成验收入口为 `/pages/metric-card-definition-tip`。

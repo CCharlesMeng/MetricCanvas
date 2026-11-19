@@ -2,6 +2,11 @@ import { z } from 'zod';
 
 const valueColorZ = z.enum(['red', 'green']);
 
+export const markerColorRuleZ = z.object({
+  negative: valueColorZ.describe('原始值小于零时的圆点颜色'),
+  nonNegative: valueColorZ.describe('原始值等于零或大于零时的圆点颜色')
+}).strict().meta({ id: 'markerColorRule', description: '折线圆点按原始数值小于零或大于等于零着色' });
+
 /** Local numeric presentation; neither field names nor ranking order choose colors. */
 export const colorRuleZ = z.discriminatedUnion('mode', [
   z.object({ mode: z.literal('fixed'), color: valueColorZ }).strict(),

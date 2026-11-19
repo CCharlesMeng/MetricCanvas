@@ -2,7 +2,7 @@
 
 页面字段id是dataSources.<id>.fields的键；queryField指向DQE输出，两者不可隐式当成同一个名字。dimension用于分类，measure用于数值计算，detail承载受控明细；字段类型、角色和nullable必须与真实结果匹配。
 
-Schema 6.128 起，顶层度量可声明 `metricCode`，填写指标定义服务使用的非空编码，编码中不能有空白。平铺字段写在 `fields.<field>.metricCode`，分组字段写在 `fields.measures.<field>.metricCode`。指标卡通过 `valueField` 读取此编码，各指标行独立控制问号。见[指标定义气泡](components/metricCard.md#metric-definition-tip)。
+Schema 6.129 起，顶层度量可声明 `metricCode`，填写指标定义服务使用的非空编码，编码中不能有空白。平铺字段写在 `fields.<field>.metricCode`，分组字段写在 `fields.measures.<field>.metricCode`。指标卡通过 `valueField` 读取此编码，各指标行独立控制问号。见[指标定义气泡](components/metricCard.md#metric-definition-tip)。
 
 <a id="dqe-output-measures"></a>
 
@@ -68,7 +68,7 @@ recordList使用显式items.fields约束每条嵌套记录，限制在已支持�
 ready 数据快照和数据网关结果可以附带 cellFallbacks，按当前快照行下标及稳定页面字段 id 记录 raw 与 reason。所有行投影和序列化同步重排证据，派生计算不会把输入原文变成输出值。普通 query 初始行保存原始查询标量，重新打开时归一化；pagedJoin 的已归一化 initial 可附带相同证据，且不改变业务字段字典。初始行、动态查询和 Excel 保持一致。该字段是结果的展示证据，不是页面表达式或展示策略开关。
 
 
-页面协议 6.128。结构真源为本册[schema.json](schema.json)，SHA256 `d7350fcd89783209e9e36a6dba0d822a87607bbc90f06b92fdf117f3388e5a59`。字段表自动生成；可选不等于有默认值。
+页面协议 6.129。结构真源为本册[schema.json](schema.json)，SHA256 `9f0d732d8bd9e97ff89108e1838b19c34b1f39cb13c7c3ad4ed42de17f65e25b`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

@@ -8,11 +8,11 @@
 
 ## 指标定义气泡
 
-6.128 起，在指标卡的 `props.rows[]` 或 `props.secondaryRows[]` 对应行设置 `showDefinition: true`。运行时沿该行的 `valueField` 读取顶层度量结果字段的 `metricCode`，在指标名称右侧显示问号。省略开关或设置为 `false` 时隐藏。共享字段的每个使用位置独立控制。卡片已有 `props.title` 时，逐行问号仍紧跟各自行的指标名称。
+6.129 起，在指标卡的 `props.rows[]` 或 `props.secondaryRows[]` 对应行设置 `showDefinition: true`。运行时沿该行的 `valueField` 读取顶层度量结果字段的 `metricCode`，在指标名称右侧显示问号。省略开关或设置为 `false` 时隐藏。共享字段的每个使用位置独立控制。卡片已有 `props.title` 时，逐行问号仍紧跟各自行的指标名称。
 
 ```json
 {
-  "schemaVersion": "6.128",
+  "schemaVersion": "6.129",
   "id": "closure-rate-tip",
   "layout": "dashboard",
   "dataSources": {
@@ -100,7 +100,7 @@ Dashboard 的 plain/card 内容分区可以在顶层相邻指标卡的 `layout.b
 数值与单位遵循[统一语义格式](../field-bindings-and-formats.md#numeric-value-display)：组件显式格式优先，自动金额和数量不再重复追加旧的元/万等单位标签。比率变化项使用正负号，即使 `showTrendArrows: true` 也不显示箭头；绝对变化项保留既有箭头行为。进度环图形可裁到0–100%，文字仍按真实比率格式化，不把超过100%的真实值改成100%。缺失比率默认显示 `—`，自定义缺失文字按原声明。合成场景 `/pages/semantic-numeric-display`。
 
 
-页面协议 6.128。结构真源为本册[schema.json](../schema.json)，SHA256 `d7350fcd89783209e9e36a6dba0d822a87607bbc90f06b92fdf117f3388e5a59`。字段表自动生成；可选不等于有默认值。
+页面协议 6.129。结构真源为本册[schema.json](../schema.json)，SHA256 `9f0d732d8bd9e97ff89108e1838b19c34b1f39cb13c7c3ad4ed42de17f65e25b`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

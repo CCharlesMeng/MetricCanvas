@@ -76,6 +76,22 @@ export const invariants: InvariantDefinition[] = [
   ]},
   periodAggregationInvariant,
   barAverageInvariant,
+  {
+    id: 'bar-line-marker-color',
+    description: '柱线组合的字段折线圆点按原始数值正负着色',
+    valid: ['bar-line-marker-color'],
+    cases: [
+      { case: 'bar-line-marker-color-old-version', base: 'bar-line-marker-color', expect: /由 6.128 引入/, mutate: document => {
+        document.schemaVersion = '6.127';
+      } },
+      { case: 'bar-line-marker-color-on-bar-series', base: 'bar-line-marker-color', expect: /圆点颜色规则仅支持/, mutate: document => {
+        firstComponent(document).props.series[1].kind = 'bar';
+      } },
+      { case: 'bar-line-marker-color-unknown-color', base: 'bar-line-marker-color', expect: /取值不在允许范围.*red.*green/, mutate: document => {
+        firstComponent(document).props.series[1].markerColorRule.nonNegative = 'blue';
+      } }
+    ]
+  },
   {id:'ioc-header-controls',description:'页头显式组合控件，RegionFilter 唯一拥有标准 region，旧排列仍可读',valid:['ioc-header-controls'],cases:[
     {case:'ioc-controls-root-filter',base:'ioc-header-controls',expect:/必须声明在首 section/,mutate:d=>{d.iocHeader={components:[firstComponent(d).props.components[0]]};d.sections[0].components.shift();}},
     {case:'ioc-controls-root-region',base:'ioc-header-controls',expect:/必须声明在首 section/,mutate:d=>{d.iocHeader={components:[firstComponent(d).props.components[1]]};d.sections[0].components.shift();}},
@@ -2154,8 +2170,8 @@ export const invariants: InvariantDefinition[] = [
       {
         case: 'metric-row-definition-tip-version-floor',
         base: 'metric-card-definition-tip',
-        expect: /6\.128 引入/,
-        mutate: document => { document.schemaVersion = '6.127'; }
+        expect: /6\.129 引入/,
+        mutate: document => { document.schemaVersion = '6.128'; }
       },
       {
         case: 'metric-row-definition-tip-missing-code',

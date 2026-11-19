@@ -33,7 +33,7 @@
   "knowledge": "metricCard.overview",
   "reference": "references/page-metadata/components/metricCard.md",
   "versionPolicy": "protocol/version-policy",
-  "currentWriter": "6.128",
+  "currentWriter": "6.129",
   "exampleVersionRequirements": [
     {
       "file": "references/page-metadata/examples/inline-report.json",
@@ -155,11 +155,11 @@
     },
     {
       "file": "references/page-metadata/examples/metric-card-definition-tip.json",
-      "requiredVersion": "6.128",
+      "requiredVersion": "6.129",
       "capabilities": [
         {
           "id": "metric-card-row-definition-tip",
-          "minor": 128,
+          "minor": 129,
           "description": "结果字段指标编码与指标行定义气泡"
         },
         {

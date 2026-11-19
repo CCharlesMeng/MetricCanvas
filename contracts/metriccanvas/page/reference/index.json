@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.128",
-  "schemaSha256": "d7350fcd89783209e9e36a6dba0d822a87607bbc90f06b92fdf117f3388e5a59",
+  "schemaVersion": "6.129",
+  "schemaSha256": "9f0d732d8bd9e97ff89108e1838b19c34b1f39cb13c7c3ad4ed42de17f65e25b",
   "semanticSources": [
     {
       "file": "metriccanvas-authoring/core/page/analysis-report.ts",
@@ -380,7 +380,7 @@
     },
     {
       "file": "packages/page/src/schema/components/charts.ts",
-      "sha256": "11045df6d6e4bcf0a5139c8857c41461b689af747ebd0c7bcf0e6ca004f07b10"
+      "sha256": "4dd5982f67487acc4695f0542ff340715ee7dcc17a6b5bb138502d328c1bbc2a"
     },
     {
       "file": "packages/page/src/schema/components/composite-card.ts",
@@ -472,7 +472,7 @@
     },
     {
       "file": "packages/page/src/schema/presentation.ts",
-      "sha256": "7a563f7e05175e57f5e043254903e6acf86c12d93e9534570aef71936c1e89cd"
+      "sha256": "705cc1ec5c7b9b664c3c03247f6a647091f731e1b2603f5eea2eeafc82370d27"
     },
     {
       "file": "packages/page/src/schema/primitives.ts",
@@ -572,11 +572,11 @@
     },
     {
       "file": "packages/page/src/validate.ts",
-      "sha256": "20cb8e6e3f8ae6171b7a414e45386ca0b552c33e09af1748b0b4a815227ff661"
+      "sha256": "b95cddcca0aca7b1cb0756c2b03ce077a858797309b6f9b5dc3d833780588e2c"
     },
     {
       "file": "packages/page/src/version.ts",
-      "sha256": "5a79c08ce6a3dcccea7af925541b5955c5285bbc7644e7247d840c172e0a16ae"
+      "sha256": "d9601bb3d6be6fc06b4c2854f7d085525a62843f14edb726843cef144b93eb70"
     },
     {
       "file": "packages/page/tests/ai-summary-regions.test.ts",
@@ -588,7 +588,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "0621b1c887e1b14fdc037bd817110782176c2a1770faf37ad62311d498ab1bec"
+      "sha256": "03a14879323d188924a8f1b1ec3f4e835beb5678ca22be37e2fb215a5e173042"
     }
   ],
   "modules": {
@@ -1372,7 +1372,8 @@
       "title": "柱状图 barChart",
       "definitions": [
         "barChartComponent",
-        "barChartSeries"
+        "barChartSeries",
+        "markerColorRule"
       ],
       "keywords": [
         "components/barChart",
@@ -1387,6 +1388,7 @@
         "chart-series-visibility",
         "chart-table-unit",
         "sdt-period-aggregation",
+        "bar-line-marker-color",
         "chart-customer-series",
         "conditional-compute-demand"
       ],
@@ -1401,7 +1403,8 @@
       "rules": [
         "bar-forecast-boundary",
         "query-dimension-measures",
-        "bar-series-average"
+        "bar-series-average",
+        "bar-line-marker-color"
       ]
     },
     "components/lineChart.md": {
@@ -2271,7 +2274,8 @@
         "6.125",
         "6.126",
         "6.127",
-        "6.128"
+        "6.128",
+        "6.129"
       ]
     },
     {
@@ -13770,6 +13774,45 @@
       "path": "@barChartSeries · anyOf[0].stackOrder",
       "required": "本分支可选",
       "module": "components/barChart.md"
+    },
+    {
+      "pointer": "#/definitions/barChartSeries/anyOf/0/properties/markerColorRule",
+      "path": "@barChartSeries · anyOf[0].markerColorRule",
+      "required": "本分支可选",
+      "module": "components/barChart.md"
+    },
+    {
+      "pointer": "#/definitions/barChartSeries/anyOf/0/properties/markerColorRule/allOf/0",
+      "path": "@barChartSeries · anyOf[0].markerColorRule · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/barChart.md",
+      "ref": "#/definitions/markerColorRule"
+    },
+    {
+      "pointer": "#/definitions/markerColorRule",
+      "path": "@markerColorRule",
+      "required": "类型/分支",
+      "module": "components/barChart.md"
+    },
+    {
+      "pointer": "#/definitions/markerColorRule/properties/negative",
+      "path": "@markerColorRule.negative",
+      "required": "本分支必填",
+      "module": "components/barChart.md",
+      "enum": [
+        "red",
+        "green"
+      ]
+    },
+    {
+      "pointer": "#/definitions/markerColorRule/properties/nonNegative",
+      "path": "@markerColorRule.nonNegative",
+      "required": "本分支必填",
+      "module": "components/barChart.md",
+      "enum": [
+        "red",
+        "green"
+      ]
     },
     {
       "pointer": "#/definitions/barChartSeries/anyOf/0/properties/aggregate",

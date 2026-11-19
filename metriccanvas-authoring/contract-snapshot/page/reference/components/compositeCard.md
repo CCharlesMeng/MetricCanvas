@@ -27,7 +27,7 @@ Dashboard中放入白底Tab或白底分区时，组合卡复用指标卡的1px�
 示例 `/pages/filter-group-parallel-selects` 的左侧指标按钮组和右侧区域、渠道下拉同在「经营趋势」标题下方。`/pages/business-result-metrics` 的「决策意见闭环率」按 Region 切换左侧按钮组的显隐，可以观察标题和工具栏在一行与两行之间切换。只读和导出复用原筛选组件的禁用与选中标签投影。
 
 
-页面协议 6.128。结构真源为本册[schema.json](../schema.json)，SHA256 `d7350fcd89783209e9e36a6dba0d822a87607bbc90f06b92fdf117f3388e5a59`。字段表自动生成；可选不等于有默认值。
+页面协议 6.129。结构真源为本册[schema.json](../schema.json)，SHA256 `9f0d732d8bd9e97ff89108e1838b19c34b1f39cb13c7c3ad4ed42de17f65e25b`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

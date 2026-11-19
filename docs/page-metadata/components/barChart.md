@@ -10,6 +10,26 @@
 
 该场景仅复用既有协议与计算阶段，不新增 Schema 或系列级查询配置。合成 Adapter 核对实际编码条件后返回分组数据；不代表真实 DQE 服务已验真。操作与预期见页面目录 README。
 
+<a id="bar-line-marker-color"></a>
+
+## 折线圆点按数值正负着色（6.128）
+
+柱线组合图 `barChart.props.series[]` 中，绑定字段且声明 `kind: "line"` 的系列可选配 `markerColorRule`。以下系列以 `change` 为数值字段，使用副轴。
+
+```json
+{
+  "field": "change",
+  "label": "环比",
+  "kind": "line",
+  "axis": "secondary",
+  "markerColorRule": { "negative": "red", "nonNegative": "green" }
+}
+```
+
+规则的两项必填，均可独立选 `red` 或 `green`。引擎在数值格式化前逐行比较原始值，小于零取 `negative`，零和正数取 `nonNegative`；缺失或非有限数值沿用折线缺口。启用规则时默认每个有效值显示圆点，折线和图例保留系列颜色。省略规则沿用既有系列呈现。
+
+合成入口 `/pages/bar-line-marker-color` 可对照负值、零、正值、空值和格式化后显示为零的负值。业务入口 `/pages/business-result-metrics` 的「净商务折扣执行情况」在月期间为环比系列启用此规则。
+
 <a id="bar-series-average"></a>
 
 ## 前端均值柱系列（6.103）

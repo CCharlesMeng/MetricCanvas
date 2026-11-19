@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.128",
-  "schemaSha256": "d7350fcd89783209e9e36a6dba0d822a87607bbc90f06b92fdf117f3388e5a59",
+  "schemaVersion": "6.129",
+  "schemaSha256": "9f0d732d8bd9e97ff89108e1838b19c34b1f39cb13c7c3ad4ed42de17f65e25b",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -632,7 +632,8 @@
       "title": "柱状图 barChart",
       "definitions": [
         "barChartComponent",
-        "barChartSeries"
+        "barChartSeries",
+        "markerColorRule"
       ],
       "keywords": [
         "components/barChart",
@@ -647,13 +648,15 @@
         "chart-series-visibility",
         "chart-table-unit",
         "sdt-period-aggregation",
+        "bar-line-marker-color",
         "chart-customer-series",
         "conditional-compute-demand"
       ],
       "rules": [
         "bar-forecast-boundary",
         "query-dimension-measures",
-        "bar-series-average"
+        "bar-series-average",
+        "bar-line-marker-color"
       ]
     },
     "components/lineChart.md": {
@@ -1388,7 +1391,8 @@
         "6.125",
         "6.126",
         "6.127",
-        "6.128"
+        "6.128",
+        "6.129"
       ]
     },
     {
@@ -12889,6 +12893,45 @@
       "module": "components/barChart.md"
     },
     {
+      "pointer": "#/definitions/barChartSeries/anyOf/0/properties/markerColorRule",
+      "path": "@barChartSeries · anyOf[0].markerColorRule",
+      "required": "本分支可选",
+      "module": "components/barChart.md"
+    },
+    {
+      "pointer": "#/definitions/barChartSeries/anyOf/0/properties/markerColorRule/allOf/0",
+      "path": "@barChartSeries · anyOf[0].markerColorRule · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/barChart.md",
+      "ref": "#/definitions/markerColorRule"
+    },
+    {
+      "pointer": "#/definitions/markerColorRule",
+      "path": "@markerColorRule",
+      "required": "类型/分支",
+      "module": "components/barChart.md"
+    },
+    {
+      "pointer": "#/definitions/markerColorRule/properties/negative",
+      "path": "@markerColorRule.negative",
+      "required": "本分支必填",
+      "module": "components/barChart.md",
+      "enum": [
+        "red",
+        "green"
+      ]
+    },
+    {
+      "pointer": "#/definitions/markerColorRule/properties/nonNegative",
+      "path": "@markerColorRule.nonNegative",
+      "required": "本分支必填",
+      "module": "components/barChart.md",
+      "enum": [
+        "red",
+        "green"
+      ]
+    },
+    {
       "pointer": "#/definitions/barChartSeries/anyOf/0/properties/aggregate",
       "path": "@barChartSeries · anyOf[0].aggregate",
       "required": "本分支可选",
@@ -23635,5 +23678,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "91ba8189c5096a226c7586ed1ab093fb48e2026bbb2c0247513670201d28e0b6"
+  "semanticSourceDigest": "93fc754dc5ea2a13e2040d3278fe3dd4cdbcff8ba5a97b922a4e16db0595edd4"
 }

@@ -1,0 +1,85 @@
+{
+  "schemaVersion": "6.129",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "barChart.section-76ebb1c0"
+  ],
+  "semantics": [
+    {
+      "module": "barChart",
+      "reference": "references/page-metadata/components/barChart.md",
+      "blocks": [
+        "# 柱状图 barChart\n\n比较离散类别之间的大小或展示分类分布。适用于区域/渠道/产品对比、分类分布、多指标类别比较。数据形状：一个 dimension 类别字段 + 一个或多个 metric 字段。",
+        "## 折线圆点按数值正负着色（6.128）\n\n柱线组合图 `barChart.props.series[]` 中，绑定字段且声明 `kind: \"line\"` 的系列可选配 `markerColorRule`。以下系列以 `change` 为数值字段，使用副轴。\n\n```json\n{\n  \"field\": \"change\",\n  \"label\": \"环比\",\n  \"kind\": \"line\",\n  \"axis\": \"secondary\",\n  \"markerColorRule\": { \"negative\": \"red\", \"nonNegative\": \"green\" }\n}\n```\n\n规则的两项必填，均可独立选 `red` 或 `green`。引擎在数值格式化前逐行比较原始值，小于零取 `negative`，零和正数取 `nonNegative`；缺失或非有限数值沿用折线缺口。启用规则时默认每个有效值显示圆点，折线和图例保留系列颜色。省略规则沿用既有系列呈现。\n\n合成入口 `/pages/bar-line-marker-color` 可对照负值、零、正值、空值和格式化后显示为零的负值。业务入口 `/pages/business-result-metrics` 的「净商务折扣执行情况」在月期间为环比系列启用此规则。\n\n<a id=\"bar-series-average\"></a>"
+      ],
+      "rules": [
+        {
+          "id": "bar-series-average",
+          "description": "同一图表的当前值和前端均值字段系列，保留原类别及版本边界",
+          "valid": [
+            "sdt-period-aggregation"
+          ],
+          "invalid": [
+            "bar-average-old-version",
+            "bar-average-category-removed",
+            "bar-average-stacked",
+            "bar-average-line"
+          ]
+        },
+        {
+          "id": "bar-line-marker-color",
+          "description": "柱线组合的字段折线圆点按原始数值正负着色",
+          "valid": [
+            "bar-line-marker-color"
+          ],
+          "invalid": [
+            "bar-line-marker-color-old-version",
+            "bar-line-marker-color-on-bar-series",
+            "bar-line-marker-color-unknown-color"
+          ]
+        },
+        {
+          "id": "query-dimension-measures",
+          "description": "6.56 DQE output_dims 中的现成数值显式作为页面度量，不改变查询与行粒度",
+          "valid": [
+            "stored-count-measures"
+          ],
+          "invalid": [
+            "dimension-measure-version",
+            "dimension-measure-legacy",
+            "dimension-measure-time-qualified-version",
+            "dimension-measure-nonnumeric",
+            "dimension-number-not-series",
+            "dimension-measure-not-collapsible"
+          ]
+        },
+        {
+          "id": "bar-forecast-boundary",
+          "description": "实际 / 预测系列不得跨越采集时间所在月",
+          "valid": [
+            "forecast-page"
+          ],
+          "invalid": [
+            "forecast-before-captured-month",
+            "actual-after-captured-month"
+          ]
+        }
+      ],
+      "examples": [
+        "references/page-metadata/examples/forecast-page.json",
+        "references/page-metadata/examples/stored-count-measures.json",
+        "references/page-metadata/examples/chart-constant-values-page.json",
+        "references/page-metadata/examples/chart-constant-branches.json",
+        "references/page-metadata/examples/dual-axis-alignment.json",
+        "references/page-metadata/examples/chart-series-visibility.json",
+        "references/page-metadata/examples/chart-table-unit.json",
+        "references/page-metadata/examples/sdt-period-aggregation.json",
+        "references/page-metadata/examples/bar-line-marker-color.json",
+        "references/page-metadata/examples/chart-customer-series.json",
+        "references/page-metadata/examples/conditional-compute-demand.json"
+      ]
+    }
+  ],
+  "nodes": [],
+  "unresolvedRefs": []
+}

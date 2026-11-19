@@ -21,7 +21,7 @@ describe('批量匹配指标定义气泡', () => {
 
   it('开启气泡的指标行引用未知数据源时返回校验错误', () => {
     const document = businessResult();
-    document.schemaVersion = '6.128';
+    document.schemaVersion = '6.129';
     const card = document.sections[2].components[2];
     card.data.main = 'missing-data-source';
     card.props.rows[0].showDefinition = true;
@@ -36,7 +36,7 @@ describe('批量匹配指标定义气泡', () => {
 
   it('每个主次指标单独匹配，保留查询和无关字段，重复执行保持幂等', () => {
     const document = businessResult();
-    document.schemaVersion = '6.128';
+    document.schemaVersion = '6.129';
     const catalog = indexMetricDirectory({ metrics: [
       catalogItem('DEMO-TENDER', scopedClosure, { 决策业务类型: ['投标'] }),
       catalogItem('DEMO-BUSINESS', scopedClosure, { 决策业务类型: ['商务'] }),
@@ -61,7 +61,7 @@ describe('批量匹配指标定义气泡', () => {
 
   it('同一字段写一次，逐行开启，并跳过显式关闭和已配置旧版气泡的卡片', () => {
     const document = businessResult();
-    document.schemaVersion = '6.128';
+    document.schemaVersion = '6.129';
     const cards = document.sections[2].components;
     cards[0].props.tipCode = 'MANUAL';
     const framework = cards[1];
@@ -86,7 +86,7 @@ describe('批量匹配指标定义气泡', () => {
 
   it('歧义或手工编码冲突留待确认，确定的匹配可写回分组声明', () => {
     const document = businessResult();
-    document.schemaVersion = '6.128';
+    document.schemaVersion = '6.129';
     const source = document.dataSources['framework-execution'];
     const { role: _role, ...measure } = source.fields.frameworkExecution;
     source.fields = { measures: { frameworkExecution: measure } };

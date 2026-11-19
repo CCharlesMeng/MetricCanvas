@@ -12,6 +12,10 @@
 
 在全球视图中可同时查看地区部和代表处两张表。用页头逐一切换业务类型、云服务排除项，再切换年、季、月检查相应列与图表。自动验收使用合成响应，可运行 `pnpm --filter playground test:ioc business-type-levels.browser.ts` 和 `pnpm test packages/engine/runtime-ui/tests/business-result-query.test.ts`。接入真实 DQE 后需核验两个筛选字段在各组织粒度的指标查询中均可用。
 
+## 环比圆点颜色
+
+将统计期间切到「月」，查看「净商务折扣执行情况」的环比折线。小于零的圆点为红色，零及正数的圆点为绿色，缺值处不画点。页面在该系列的 `markerColorRule` 中声明配色。内联合成对照见 [折线圆点按数值正负着色](../../capabilities/chart/README.md#bar-line-marker-color)。
+
 ## 图表标题和筛选工具栏
 
 用 `pnpm dev:dqe` 启动 Playground 和 DQE Sim，打开 `/pages/business-result-metrics?region=R99&region.level=geo`。Region 为「中国」时，「决策意见闭环率」标题和右侧「商务 / 合同」下拉同排，「框架执行情况」仅显示标题。清空区域以取消范围限制后，两张卡的标题各自独占第一行。「决策意见闭环率」第二行左侧显示「中国区 / 海外」，右侧显示「商务 / 合同」。「框架执行情况」第二行仅显示左侧切换。切回「中国」恢复初始行位。

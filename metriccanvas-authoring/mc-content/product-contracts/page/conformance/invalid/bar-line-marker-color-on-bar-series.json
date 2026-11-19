@@ -1,0 +1,112 @@
+{
+  "case": "bar-line-marker-color-on-bar-series",
+  "invariant": "bar-line-marker-color",
+  "input": {
+    "schemaVersion": "6.128",
+    "id": "bar-line-marker-color",
+    "layout": "dashboard",
+    "meta": {
+      "title": "折线圆点按数值正负着色"
+    },
+    "dataSources": {
+      "sample": {
+        "fields": {
+          "office": {
+            "type": "string",
+            "role": "dimension"
+          },
+          "discount": {
+            "type": "number",
+            "role": "measure",
+            "unit": "%"
+          },
+          "change": {
+            "type": "number",
+            "role": "measure",
+            "unit": "P",
+            "defaultFormat": "number-1-signed",
+            "nullable": true
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "office": "负值",
+              "discount": 24,
+              "change": -2
+            },
+            {
+              "office": "零",
+              "discount": 25,
+              "change": 0
+            },
+            {
+              "office": "正值",
+              "discount": 27,
+              "change": 2
+            },
+            {
+              "office": "缺失",
+              "discount": 23,
+              "change": null
+            },
+            {
+              "office": "微小负值",
+              "discount": 26,
+              "change": -0.004
+            }
+          ]
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "net-discount",
+        "container": "card",
+        "components": [
+          {
+            "id": "change-chart",
+            "type": "barChart",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "sample"
+            },
+            "props": {
+              "title": "净商务折扣执行情况",
+              "categoryField": "office",
+              "dualAxis": true,
+              "series": [
+                {
+                  "field": "discount",
+                  "label": "净商务折扣",
+                  "kind": "bar",
+                  "axis": "primary"
+                },
+                {
+                  "field": "change",
+                  "label": "环比",
+                  "kind": "bar",
+                  "axis": "secondary",
+                  "markerColorRule": {
+                    "negative": "red",
+                    "nonNegative": "green"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/series/1/markerColorRule",
+      "message": "圆点颜色规则仅支持柱线组合中的字段折线系列"
+    }
+  ]
+}

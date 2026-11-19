@@ -1,0 +1,35 @@
+{
+  "case": "bar-line-marker-color-on-bar-series",
+  "invariant": "bar-line-marker-color",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "圆点颜色规则仅支持柱线组合中的字段折线系列",
+      "paths": [
+        "/sections/0/components/0/props/series/1/markerColorRule"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "series": [
+                "…",
+                {
+                  "markerColorRule": {
+                    "negative": "red",
+                    "nonNegative": "green"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

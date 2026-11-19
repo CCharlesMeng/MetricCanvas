@@ -10,6 +10,26 @@
 
 该场景仅复用既有协议与计算阶段，不新增 Schema 或系列级查询配置。合成 Adapter 核对实际编码条件后返回分组数据；不代表真实 DQE 服务已验真。操作与预期见页面目录 README。
 
+<a id="bar-line-marker-color"></a>
+
+## 折线圆点按数值正负着色（6.128）
+
+柱线组合图 `barChart.props.series[]` 中，绑定字段且声明 `kind: "line"` 的系列可选配 `markerColorRule`。以下系列以 `change` 为数值字段，使用副轴。
+
+```json
+{
+  "field": "change",
+  "label": "环比",
+  "kind": "line",
+  "axis": "secondary",
+  "markerColorRule": { "negative": "red", "nonNegative": "green" }
+}
+```
+
+规则的两项必填，均可独立选 `red` 或 `green`。引擎在数值格式化前逐行比较原始值，小于零取 `negative`，零和正数取 `nonNegative`；缺失或非有限数值沿用折线缺口。启用规则时默认每个有效值显示圆点，折线和图例保留系列颜色。省略规则沿用既有系列呈现。
+
+合成入口 `/pages/bar-line-marker-color` 可对照负值、零、正值、空值和格式化后显示为零的负值。业务入口 `/pages/business-result-metrics` 的「净商务折扣执行情况」在月期间为环比系列启用此规则。
+
 <a id="bar-series-average"></a>
 
 ## 前端均值柱系列（6.103）
@@ -126,7 +146,7 @@ Dashboard 正文通过独立 [filterGroup](filterGroup.md) 组件声明筛选按
 `stacked: true` 配合 `showStackTotalLabels: true` 在每个类别显示当前系列的数值合计，包含负数扣分。标签锚定可见堆叠的外端，与柱体保持 8 CSS px 间距；正负混合时置于正值柱顶，显示值仍为含扣分的净合计；全负数置于负值外端，横向条形相应置于右侧或左侧。 用图例隐藏系列时，标签跟随当前可见柱段移动，合计仍使用该图表的全部有效系列（含负数扣分）；全部系列都隐藏时清除标签。无需声明额外的“总分”系列；未开启时不显示合计。`/pages/partner-health-interactions` 使用前端计算的合成得分，四类得分含负数风险扣分；业务 `/pages/partner-health` 的地区部和代表处图表均开启此配置。
 
 
-页面协议 6.128。结构真源为本册[schema.json](../schema.json)，SHA256 `d7350fcd89783209e9e36a6dba0d822a87607bbc90f06b92fdf117f3388e5a59`。字段表自动生成；可选不等于有默认值。
+页面协议 6.129。结构真源为本册[schema.json](../schema.json)，SHA256 `9f0d732d8bd9e97ff89108e1838b19c34b1f39cb13c7c3ad4ed42de17f65e25b`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -477,6 +497,66 @@ Schema位置：`#/definitions/barChartSeries/anyOf/0/properties/stackOrder`。
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "integer" | 本分支可选 | minimum=-9007199254740991; maximum=9007199254740991 | Schema未设默认；装配/运行时默认见语义说明 | 堆叠序列的受控顺序。 |
+
+<a id="schema-232f646566696e6974696f6e732f62617243686172745365726965732f616e794f662f302f70726f706572746965732f6d61726b6572436f6c6f7252756c65"></a>
+
+### `@barChartSeries · anyOf[0].markerColorRule`
+
+Schema位置：`#/definitions/barChartSeries/anyOf/0/properties/markerColorRule`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 仅字段折线系列可声明，按原始值选择圆点颜色 |
+
+<a id="schema-232f646566696e6974696f6e732f62617243686172745365726965732f616e794f662f302f70726f706572746965732f6d61726b6572436f6c6f7252756c652f616c6c4f662f30"></a>
+
+### `@barChartSeries · anyOf[0].markerColorRule · allOf[0]`
+
+Schema位置：`#/definitions/barChartSeries/anyOf/0/properties/markerColorRule/allOf/0`。目标：[#/definitions/markerColorRule](../components/barChart.md#schema-232f646566696e6974696f6e732f6d61726b6572436f6c6f7252756c65)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/markerColorRule | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f6d61726b6572436f6c6f7252756c65"></a>
+
+### `@markerColorRule`
+
+Schema位置：`#/definitions/markerColorRule`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 类型/分支 | required=["negative","nonNegative"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 折线圆点按原始数值小于零或大于等于零着色 |
+
+<a id="schema-232f646566696e6974696f6e732f6d61726b6572436f6c6f7252756c652f70726f706572746965732f6e65676174697665"></a>
+
+### `@markerColorRule.negative`
+
+Schema位置：`#/definitions/markerColorRule/properties/negative`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | enum=["red","green"] | Schema未设默认；装配/运行时默认见语义说明 | 原始值小于零时的圆点颜色 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "red" | 统一主题的红色，业务含义由当前声明确定。 |
+| "green" | 统一主题的绿色，业务含义由当前声明确定。 |
+
+<a id="schema-232f646566696e6974696f6e732f6d61726b6572436f6c6f7252756c652f70726f706572746965732f6e6f6e4e65676174697665"></a>
+
+### `@markerColorRule.nonNegative`
+
+Schema位置：`#/definitions/markerColorRule/properties/nonNegative`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | enum=["red","green"] | Schema未设默认；装配/运行时默认见语义说明 | 原始值等于零或大于零时的圆点颜色 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "red" | 统一主题的红色，业务含义由当前声明确定。 |
+| "green" | 统一主题的绿色，业务含义由当前声明确定。 |
 
 <a id="schema-232f646566696e6974696f6e732f62617243686172745365726965732f616e794f662f302f70726f706572746965732f616767726567617465"></a>
 
@@ -878,6 +958,7 @@ Schema位置：`#/definitions/barChartComponent/properties/props/properties/acti
 - `bar-forecast-boundary`：实际 / 预测系列不得跨越采集时间所在月。反例：[forecast-before-captured-month](../errors/forecast-before-captured-month.json)、[actual-after-captured-month](../errors/actual-after-captured-month.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `query-dimension-measures`：6.56 DQE output_dims 中的现成数值显式作为页面度量，不改变查询与行粒度。反例：[dimension-measure-version](../errors/dimension-measure-version.json)、[dimension-measure-legacy](../errors/dimension-measure-legacy.json)、[dimension-measure-time-qualified-version](../errors/dimension-measure-time-qualified-version.json)、[dimension-measure-nonnumeric](../errors/dimension-measure-nonnumeric.json)、[dimension-number-not-series](../errors/dimension-number-not-series.json)、[dimension-measure-not-collapsible](../errors/dimension-measure-not-collapsible.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `bar-series-average`：同一图表的当前值和前端均值字段系列，保留原类别及版本边界。反例：[bar-average-old-version](../errors/bar-average-old-version.json)、[bar-average-category-removed](../errors/bar-average-category-removed.json)、[bar-average-stacked](../errors/bar-average-stacked.json)、[bar-average-line](../errors/bar-average-line.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `bar-line-marker-color`：柱线组合的字段折线圆点按原始数值正负着色。反例：[bar-line-marker-color-old-version](../errors/bar-line-marker-color-old-version.json)、[bar-line-marker-color-on-bar-series](../errors/bar-line-marker-color-on-bar-series.json)、[bar-line-marker-color-unknown-color](../errors/bar-line-marker-color-unknown-color.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 
@@ -891,6 +972,7 @@ Schema位置：`#/definitions/barChartComponent/properties/props/properties/acti
 - [chart-series-visibility](../examples/chart-series-visibility.json)：完整合法页面；查询仅为静态契约证据。
 - [chart-table-unit](../examples/chart-table-unit.json)：完整合法页面；查询仅为静态契约证据。
 - [sdt-period-aggregation](../examples/sdt-period-aggregation.json)：完整合法页面；查询仅为静态契约证据。
+- [bar-line-marker-color](../examples/bar-line-marker-color.json)：完整合法页面；查询仅为静态契约证据。
 - [chart-customer-series](../examples/chart-customer-series.json)：完整合法页面；查询仅为静态契约证据。
 - [conditional-compute-demand](../examples/conditional-compute-demand.json)：完整合法页面；查询仅为静态契约证据。
 

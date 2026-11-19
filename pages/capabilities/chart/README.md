@@ -12,6 +12,18 @@
 
 可观察预期与环境：运行 `pnpm --filter playground dev --host 127.0.0.1 --port 5183`，打开 `/pages/chart-customer-series`。无需真实 DQE、鉴权或 Sim；页面与合成 Adapter 共用正式查询、计算和渲染路径。按华东、华南、华北、西部顺序，默认华为 NA 为 `[200,160,120,70]`、商业客户为 `[80,120,100,60]`；选择战略后华为 NA 为 `[40,30,20,0]`，商业客户全部 `—`；再选商业客户恢复商业柱值，华为 NA 仍为战略值；只选商业客户时华为 NA 全部 `--`；清空恢复默认。支持 URL `?customer-category=战略`，`?state=empty` 展示空结果，`?state=error` 注入查询失败。浏览器验证实际 ECharts 四个类别与两个系列、页头交互、编码请求、零与缺失及窄屏；合成执行回归覆盖卓越＋核心及失败，不代表真实服务、导出或线上部署已验收。
 
+<a id="bar-line-marker-color"></a>
+
+## 折线圆点按数值正负着色（6.128）
+
+<!-- example-guide: task=bar-line-marker-color; page=bar-line-marker-color; components=change-chart; verified=structure -->
+
+示例 `/pages/bar-line-marker-color` 使用内联合成数据。运行 `pnpm dev:playground` 后打开页面，无需 URL 参数或 DQE。
+
+参考 `change-chart.props.series[]` 的「环比」字段折线系列。负值与微小负值的圆点为红色，零与正值为绿色；缺失处折线断开且无圆点。悬浮「微小负值」，它格式化为零，圆点按原始值仍为红色。折线和柱不随圆点变色。两项颜色可以互换，适用于同类柱线组合的字段折线系列。
+
+将 `nonNegative` 改成 `blue`，或将规则移到柱系列，页面校验应报错。将版本改为 6.127，应提示该规则需要 6.128。
+
 ## 其他图表示例
 
 页面由 JSON 自动发现。本文件仅记录使用说明，不参与渲染或注册。

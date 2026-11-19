@@ -8,11 +8,11 @@
 
 ## 指标定义气泡
 
-6.128 起，在指标卡的 `props.rows[]` 或 `props.secondaryRows[]` 对应行设置 `showDefinition: true`。运行时沿该行的 `valueField` 读取顶层度量结果字段的 `metricCode`，在指标名称右侧显示问号。省略开关或设置为 `false` 时隐藏。共享字段的每个使用位置独立控制。卡片已有 `props.title` 时，逐行问号仍紧跟各自行的指标名称。
+6.129 起，在指标卡的 `props.rows[]` 或 `props.secondaryRows[]` 对应行设置 `showDefinition: true`。运行时沿该行的 `valueField` 读取顶层度量结果字段的 `metricCode`，在指标名称右侧显示问号。省略开关或设置为 `false` 时隐藏。共享字段的每个使用位置独立控制。卡片已有 `props.title` 时，逐行问号仍紧跟各自行的指标名称。
 
 ```json
 {
-  "schemaVersion": "6.128",
+  "schemaVersion": "6.129",
   "id": "closure-rate-tip",
   "layout": "dashboard",
   "dataSources": {
