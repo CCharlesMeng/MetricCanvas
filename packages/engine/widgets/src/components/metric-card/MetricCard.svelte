@@ -240,7 +240,7 @@
   .with-title-accessory {
     display: flex;
     align-items: center;
-    gap: 2px;
+    gap: 4px;
   }
   .with-title-accessory span { min-width: 0; overflow-wrap: anywhere; }
   .row-label.with-title-accessory { display: inline-flex; }

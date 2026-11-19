@@ -39,8 +39,8 @@
     display: inline-grid;
     place-items: center;
     flex: none;
-    width: 14px;
     min-height: 20px;
+    font: inherit;
     padding: 0;
     border: 0;
     background: transparent;
@@ -58,10 +58,11 @@
     box-sizing: border-box;
     display: grid;
     place-items: center;
-    width: 14px;
-    height: 14px;
-    border: 1px solid currentColor;
+    width: 1.3em;
+    height: 1.3em;
+    border: 2px solid currentColor;
     border-radius: 50%;
-    font: 600 10px/1 system-ui, sans-serif;
+    font-weight: 600;
+    line-height: 1;
   }
 </style>
