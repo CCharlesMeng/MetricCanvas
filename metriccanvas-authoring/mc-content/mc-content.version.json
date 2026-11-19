@@ -1,7 +1,7 @@
 {
   "interfaceVersion": "1.0",
-  "contentVersion": "1-0886247e359bd21b",
-  "contentSha256": "0886247e359bd21b7105a74dc06136568010161af6415c9267a87b6ed0cd5893",
+  "contentVersion": "1-a86a287f8de04f70",
+  "contentSha256": "a86a287f8de04f7042f5ebfaf0966f053c4cbb307428a9e49d0995f139b059a1",
   "files": [
     {
       "file": "authoring-contracts/authored/adapter-interface.md",
@@ -109,7 +109,7 @@
     },
     {
       "file": "authoring-contracts/authored/source-format.conformance.json",
-      "sha256": "1020f8a5999e5c1e8431bbd1044eeaa1c94b17db10452ab87b33ad47366d025d"
+      "sha256": "f8ea6fce86480cebe5a382bad3c6abc4557031f37b92ec206bde0f3fa6ed0194"
     },
     {
       "file": "authoring-contracts/exported/agent-conformance.json",
@@ -129,7 +129,7 @@
     },
     {
       "file": "authoring-contracts/manifest.json",
-      "sha256": "0210bf1ed48ecba0460afd72ec45d17f49d9c98fccb8a1865315745e974a7aa3"
+      "sha256": "63465a650166ce41ad9cdc43f585f11310ada7263384c57afe5af5ef393a8189"
     },
     {
       "file": "components/aiSummary.json",
@@ -10057,7 +10057,7 @@
     },
     {
       "file": "runtime/contract-alignment.json",
-      "sha256": "6985e0c3241c045a3184936bfd57bbfbc03613a00b943ccfb8cbccbbde4e80f3"
+      "sha256": "88226dc2ad7b02c1d2996e53dfd31e431ff4ff181b1473954cbd271c82e45467"
     },
     {
       "file": "runtime/coverage.json",
@@ -10105,7 +10105,7 @@
     },
     {
       "file": "runtime/source-identity.json",
-      "sha256": "0ca7f770a52ce619fc738b088e9b414f6ef69865ae6ad4eaa25056af8f69ad14"
+      "sha256": "3f9b39a41070f36a66ac33879fe5ddb765f34be696882f9e616da283e86d8848"
     },
     {
       "file": "runtime/tool-behavior.md",
@@ -10218,7 +10218,7 @@
     "productManifestSha256": "3edd89181ee4fe36978eeede47afadb2aa41f95fff1d00b196826873c7f77c49",
     "authoringContractVersion": "0.3.1",
     "authoringManifest": "contracts/manifest.json",
-    "authoringManifestSha256": "0210bf1ed48ecba0460afd72ec45d17f49d9c98fccb8a1865315745e974a7aa3",
+    "authoringManifestSha256": "63465a650166ce41ad9cdc43f585f11310ada7263384c57afe5af5ef393a8189",
     "pageSchemaVersion": "6.127",
     "platformProtocolVersion": "2.0"
   },
