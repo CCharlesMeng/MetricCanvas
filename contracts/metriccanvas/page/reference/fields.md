@@ -2,6 +2,8 @@
 
 页面字段id是dataSources.<id>.fields的键；queryField指向DQE输出，两者不可隐式当成同一个名字。dimension用于分类，measure用于数值计算，detail承载受控明细；字段类型、角色和nullable必须与真实结果匹配。
 
+Schema 6.129 起，顶层度量可声明 `metricCode`，填写指标定义服务使用的非空编码，编码中不能有空白。平铺字段写在 `fields.<field>.metricCode`，分组字段写在 `fields.measures.<field>.metricCode`。指标卡通过 `valueField` 读取此编码，各指标行独立控制问号。见[指标定义气泡](components/metricCard.md#metric-definition-tip)。
+
 <a id="dqe-output-measures"></a>
 
 ## DQE 直接输出的数值作为度量（6.56）
@@ -66,7 +68,7 @@ recordList使用显式items.fields约束每条嵌套记录，限制在已支持�
 ready 数据快照和数据网关结果可以附带 cellFallbacks，按当前快照行下标及稳定页面字段 id 记录 raw 与 reason。所有行投影和序列化同步重排证据，派生计算不会把输入原文变成输出值。普通 query 初始行保存原始查询标量，重新打开时归一化；pagedJoin 的已归一化 initial 可附带相同证据，且不改变业务字段字典。初始行、动态查询和 Excel 保持一致。该字段是结果的展示证据，不是页面表达式或展示策略开关。
 
 
-页面协议 6.128。结构真源为本册[schema.json](schema.json)，SHA256 `d5353fad5506b94193811ebac75f5e9533f7ac8b05fe26a62bd38ad8985defc4`。字段表自动生成；可选不等于有默认值。
+页面协议 6.129。结构真源为本册[schema.json](schema.json)，SHA256 `9f0d732d8bd9e97ff89108e1838b19c34b1f39cb13c7c3ad4ed42de17f65e25b`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -202,6 +204,16 @@ Schema位置：`#/definitions/scalarField/oneOf/0/properties/collapsible`。
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "boolean" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 显式允许折叠加总，不能从measure角色推断。 |
+
+<a id="schema-232f646566696e6974696f6e732f7363616c61724669656c642f6f6e654f662f302f70726f706572746965732f6d6574726963436f6465"></a>
+
+### `@scalarField · oneOf[0].metricCode`
+
+Schema位置：`#/definitions/scalarField/oneOf/0/properties/metricCode`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | pattern="^\\S+$" | Schema未设默认；装配/运行时默认见语义说明 | 外部指标定义服务使用的顶层度量编码。 |
 
 <a id="schema-232f646566696e6974696f6e732f7363616c61724669656c642f6f6e654f662f302f70726f706572746965732f64656661756c74466f726d6174"></a>
 
@@ -366,6 +378,16 @@ Schema位置：`#/definitions/scalarField/oneOf/1/properties/collapsible`。
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "boolean" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 显式允许折叠加总，不能从measure角色推断。 |
+
+<a id="schema-232f646566696e6974696f6e732f7363616c61724669656c642f6f6e654f662f312f70726f706572746965732f6d6574726963436f6465"></a>
+
+### `@scalarField · oneOf[1].metricCode`
+
+Schema位置：`#/definitions/scalarField/oneOf/1/properties/metricCode`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | pattern="^\\S+$" | Schema未设默认；装配/运行时默认见语义说明 | 外部指标定义服务使用的顶层度量编码。 |
 
 <a id="schema-232f646566696e6974696f6e732f7363616c61724669656c642f6f6e654f662f312f70726f706572746965732f64656661756c74466f726d6174"></a>
 
@@ -829,6 +851,16 @@ Schema位置：`#/definitions/queryScalarField/oneOf/0/properties/collapsible`�
 |---|---|---|---|---|
 | "boolean" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 显式允许折叠加总，不能从measure角色推断。 |
 
+<a id="schema-232f646566696e6974696f6e732f71756572795363616c61724669656c642f6f6e654f662f302f70726f706572746965732f6d6574726963436f6465"></a>
+
+### `@queryScalarField · oneOf[0].metricCode`
+
+Schema位置：`#/definitions/queryScalarField/oneOf/0/properties/metricCode`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | pattern="^\\S+$" | Schema未设默认；装配/运行时默认见语义说明 | 外部指标定义服务使用的顶层度量编码。 |
+
 <a id="schema-232f646566696e6974696f6e732f71756572795363616c61724669656c642f6f6e654f662f302f70726f706572746965732f64656661756c74466f726d6174"></a>
 
 ### `@queryScalarField · oneOf[0].defaultFormat`
@@ -1002,6 +1034,16 @@ Schema位置：`#/definitions/queryScalarField/oneOf/1/properties/collapsible`�
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "boolean" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 显式允许折叠加总，不能从measure角色推断。 |
+
+<a id="schema-232f646566696e6974696f6e732f71756572795363616c61724669656c642f6f6e654f662f312f70726f706572746965732f6d6574726963436f6465"></a>
+
+### `@queryScalarField · oneOf[1].metricCode`
+
+Schema位置：`#/definitions/queryScalarField/oneOf/1/properties/metricCode`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | pattern="^\\S+$" | Schema未设默认；装配/运行时默认见语义说明 | 外部指标定义服务使用的顶层度量编码。 |
 
 <a id="schema-232f646566696e6974696f6e732f71756572795363616c61724669656c642f6f6e654f662f312f70726f706572746965732f64656661756c74466f726d6174"></a>
 
@@ -1620,6 +1662,16 @@ Schema位置：`#/definitions/groupedMeasureQueryFieldGroup/additionalProperties
 | "date-month-day" | 只展示月日的日期格式。 |
 | "period" | 日期单点原值显示，范围“开始 至 结束”；同端点折叠，空筛选为全部期间。 |
 
+<a id="schema-232f646566696e6974696f6e732f67726f757065644d65617375726551756572794669656c6447726f75702f6164646974696f6e616c50726f706572746965732f6f6e654f662f302f70726f706572746965732f6d6574726963436f6465"></a>
+
+### `@groupedMeasureQueryFieldGroup{key} · oneOf[0].metricCode`
+
+Schema位置：`#/definitions/groupedMeasureQueryFieldGroup/additionalProperties/oneOf/0/properties/metricCode`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | pattern="^\\S+$" | Schema未设默认；装配/运行时默认见语义说明 | 外部指标定义服务使用的顶层度量编码，指标行沿 valueField 读取。 |
+
 <a id="schema-232f646566696e6974696f6e732f67726f757065644d65617375726551756572794669656c6447726f75702f6164646974696f6e616c50726f706572746965732f6f6e654f662f31"></a>
 
 ### `@groupedMeasureQueryFieldGroup{key} · oneOf[1]`
@@ -1779,6 +1831,16 @@ Schema位置：`#/definitions/groupedMeasureQueryFieldGroup/additionalProperties
 | "date" | 日期值或日期格式；timePoint中表示YYYY-MM-DD粒度。 |
 | "date-month-day" | 只展示月日的日期格式。 |
 | "period" | 日期单点原值显示，范围“开始 至 结束”；同端点折叠，空筛选为全部期间。 |
+
+<a id="schema-232f646566696e6974696f6e732f67726f757065644d65617375726551756572794669656c6447726f75702f6164646974696f6e616c50726f706572746965732f6f6e654f662f312f70726f706572746965732f6d6574726963436f6465"></a>
+
+### `@groupedMeasureQueryFieldGroup{key} · oneOf[1].metricCode`
+
+Schema位置：`#/definitions/groupedMeasureQueryFieldGroup/additionalProperties/oneOf/1/properties/metricCode`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | pattern="^\\S+$" | Schema未设默认；装配/运行时默认见语义说明 | 外部指标定义服务使用的顶层度量编码，指标行沿 valueField 读取。 |
 
 <a id="schema-232f646566696e6974696f6e732f67726f757065644d65617375726551756572794669656c6447726f75702f70726f70657274794e616d6573"></a>
 

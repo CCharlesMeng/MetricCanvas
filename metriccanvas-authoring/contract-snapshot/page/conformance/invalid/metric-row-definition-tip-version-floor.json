@@ -1,0 +1,419 @@
+{
+  "case": "metric-row-definition-tip-version-floor",
+  "invariant": "metric-card-row-definition-tip",
+  "input": {
+    "schemaVersion": "6.128",
+    "id": "metric-card-definition-tip",
+    "layout": "dashboard",
+    "meta": {
+      "title": "指标定义气泡（合成演示）"
+    },
+    "dataSources": {
+      "metrics": {
+        "fields": {
+          "grossProfitRate": {
+            "type": "number",
+            "role": "measure"
+          },
+          "revenue": {
+            "type": "number",
+            "role": "measure"
+          },
+          "executionRate": {
+            "type": "number",
+            "role": "measure"
+          },
+          "closureRate": {
+            "type": "number",
+            "role": "measure"
+          },
+          "comparisonCount": {
+            "type": "number",
+            "role": "measure"
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "grossProfitRate": 32.8,
+              "revenue": 8642,
+              "executionRate": 86.5,
+              "closureRate": 95,
+              "comparisonCount": 18
+            }
+          ]
+        }
+      },
+      "closure-and-contract": {
+        "fields": {
+          "totalClosure": {
+            "type": "number",
+            "role": "measure",
+            "metricCode": "DEMO-TOTAL-CLOSURE"
+          },
+          "businessDecisionClosure": {
+            "type": "number",
+            "role": "measure",
+            "metricCode": "DEMO-BUSINESS-DECISION-CLOSURE"
+          },
+          "contractDecisionClosure": {
+            "type": "number",
+            "role": "measure",
+            "metricCode": "DEMO-CONTRACT-DECISION-CLOSURE"
+          },
+          "highRiskContractSign": {
+            "type": "number",
+            "role": "measure",
+            "metricCode": "DEMO-HIGH-RISK-CONTRACT"
+          },
+          "prohibitedClauseSign": {
+            "type": "number",
+            "role": "measure",
+            "metricCode": "DEMO-PROHIBITED-CLAUSE"
+          },
+          "frameworkExecution": {
+            "type": "number",
+            "role": "measure",
+            "metricCode": "DEMO-FRAMEWORK-EXECUTION"
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "totalClosure": 95,
+              "businessDecisionClosure": 98.2,
+              "contractDecisionClosure": 92.4,
+              "highRiskContractSign": 1.2,
+              "prohibitedClauseSign": 0.3,
+              "frameworkExecution": 86.5
+            }
+          ]
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "operating-metrics",
+        "title": "核心经营指标",
+        "components": [
+          {
+            "id": "gross-profit-rate",
+            "type": "metricCard",
+            "layout": {
+              "span": 3
+            },
+            "data": {
+              "main": "metrics"
+            },
+            "props": {
+              "title": "销售毛利率",
+              "tipCode": "ZB0000377",
+              "variant": "compactStack",
+              "rows": [
+                {
+                  "label": "本月",
+                  "valueField": {
+                    "data": "main",
+                    "field": "grossProfitRate",
+                    "format": "percent-1"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "id": "sales-revenue",
+            "type": "metricCard",
+            "layout": {
+              "span": 3
+            },
+            "data": {
+              "main": "metrics"
+            },
+            "props": {
+              "tipCode": "DEMO-REVENUE",
+              "rows": [
+                {
+                  "label": "销售收入",
+                  "valueField": "revenue",
+                  "unit": "万"
+                }
+              ]
+            }
+          },
+          {
+            "id": "execution-rate",
+            "type": "metricCard",
+            "layout": {
+              "span": 3
+            },
+            "data": {
+              "main": "metrics"
+            },
+            "props": {
+              "title": "框架执行率",
+              "tipCode": "DEMO-RETRY",
+              "rows": [
+                {
+                  "label": "本月",
+                  "valueField": {
+                    "data": "main",
+                    "field": "executionRate",
+                    "format": "percent-1"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "id": "closure-rate",
+            "type": "metricCard",
+            "layout": {
+              "span": 3
+            },
+            "data": {
+              "main": "metrics"
+            },
+            "props": {
+              "title": "闭环率",
+              "tipCode": "DEMO-NO-LINK",
+              "rows": [
+                {
+                  "label": "本月",
+                  "valueField": {
+                    "data": "main",
+                    "field": "closureRate",
+                    "format": "percent-1"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "id": "comparison-count",
+            "type": "metricCard",
+            "layout": {
+              "span": 3
+            },
+            "data": {
+              "main": "metrics"
+            },
+            "props": {
+              "title": "已跟进项目",
+              "rows": [
+                {
+                  "label": "本月",
+                  "valueField": "comparisonCount"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "row-definition-metrics",
+        "title": "逐行指标定义",
+        "components": [
+          {
+            "id": "closure-and-contract-metrics",
+            "type": "compositeCard",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "variant": "metricGrid",
+              "dividers": true,
+              "components": [
+                {
+                  "id": "closure-metrics",
+                  "type": "metricCard",
+                  "layout": {
+                    "span": 6
+                  },
+                  "data": {
+                    "main": "closure-and-contract"
+                  },
+                  "props": {
+                    "title": "闭环指标",
+                    "variant": "primaryDetail",
+                    "rows": [
+                      {
+                        "label": "总闭环率",
+                        "valueField": {
+                          "field": "totalClosure",
+                          "format": "percent-1"
+                        },
+                        "showDefinition": true
+                      }
+                    ],
+                    "secondaryRows": [
+                      {
+                        "label": "商务决策意见闭环率",
+                        "valueField": {
+                          "field": "businessDecisionClosure",
+                          "format": "percent-1"
+                        },
+                        "showDefinition": true
+                      },
+                      {
+                        "label": "合同决策意见闭环率",
+                        "valueField": {
+                          "field": "contractDecisionClosure",
+                          "format": "percent-1"
+                        },
+                        "showDefinition": true
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id": "contract-metrics",
+                  "type": "metricCard",
+                  "layout": {
+                    "span": 6
+                  },
+                  "data": {
+                    "main": "closure-and-contract"
+                  },
+                  "props": {
+                    "title": "合同指标",
+                    "variant": "primaryDetail",
+                    "rows": [
+                      {
+                        "label": "重大/高风险合同签署率",
+                        "valueField": {
+                          "field": "highRiskContractSign",
+                          "format": "percent-1"
+                        },
+                        "showDefinition": true
+                      }
+                    ],
+                    "secondaryRows": [
+                      {
+                        "label": "禁止类条款签署率",
+                        "valueField": {
+                          "field": "prohibitedClauseSign",
+                          "format": "percent-1"
+                        },
+                        "showDefinition": true
+                      },
+                      {
+                        "label": "框架执行率",
+                        "valueField": {
+                          "field": "frameworkExecution",
+                          "format": "percent-1"
+                        },
+                        "showDefinition": true
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "id": "closure-rate-without-tips",
+            "type": "metricCard",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "closure-and-contract"
+            },
+            "props": {
+              "variant": "primaryDetail",
+              "rows": [
+                {
+                  "label": "总闭环率（未开启）",
+                  "valueField": {
+                    "field": "totalClosure",
+                    "format": "percent-1"
+                  }
+                }
+              ],
+              "secondaryRows": [
+                {
+                  "label": "总闭环率（显式关闭）",
+                  "valueField": {
+                    "field": "totalClosure",
+                    "format": "percent-1"
+                  },
+                  "showDefinition": false
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/closure-and-contract/fields/totalClosure/metricCode",
+      "message": "结果字段指标编码与指标行定义气泡 由 6.129 引入，文档声明的是 6.128"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/closure-and-contract/fields/businessDecisionClosure/metricCode",
+      "message": "结果字段指标编码与指标行定义气泡 由 6.129 引入，文档声明的是 6.128"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/closure-and-contract/fields/contractDecisionClosure/metricCode",
+      "message": "结果字段指标编码与指标行定义气泡 由 6.129 引入，文档声明的是 6.128"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/closure-and-contract/fields/highRiskContractSign/metricCode",
+      "message": "结果字段指标编码与指标行定义气泡 由 6.129 引入，文档声明的是 6.128"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/closure-and-contract/fields/prohibitedClauseSign/metricCode",
+      "message": "结果字段指标编码与指标行定义气泡 由 6.129 引入，文档声明的是 6.128"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/closure-and-contract/fields/frameworkExecution/metricCode",
+      "message": "结果字段指标编码与指标行定义气泡 由 6.129 引入，文档声明的是 6.128"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/1/components/0/props/components/0/props/rows/0/showDefinition",
+      "message": "结果字段指标编码与指标行定义气泡 由 6.129 引入，文档声明的是 6.128"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/1/components/0/props/components/0/props/secondaryRows/0/showDefinition",
+      "message": "结果字段指标编码与指标行定义气泡 由 6.129 引入，文档声明的是 6.128"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/1/components/0/props/components/0/props/secondaryRows/1/showDefinition",
+      "message": "结果字段指标编码与指标行定义气泡 由 6.129 引入，文档声明的是 6.128"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/1/components/0/props/components/1/props/rows/0/showDefinition",
+      "message": "结果字段指标编码与指标行定义气泡 由 6.129 引入，文档声明的是 6.128"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/1/components/0/props/components/1/props/secondaryRows/0/showDefinition",
+      "message": "结果字段指标编码与指标行定义气泡 由 6.129 引入，文档声明的是 6.128"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/1/components/0/props/components/1/props/secondaryRows/1/showDefinition",
+      "message": "结果字段指标编码与指标行定义气泡 由 6.129 引入，文档声明的是 6.128"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/1/components/1/props/secondaryRows/0/showDefinition",
+      "message": "结果字段指标编码与指标行定义气泡 由 6.129 引入，文档声明的是 6.128"
+    }
+  ]
+}

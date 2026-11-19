@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.127",
+  "schemaVersion": "6.129",
   "id": "metric-card-definition-tip",
   "layout": "dashboard",
   "meta": { "title": "指标定义气泡（合成演示）" },
@@ -18,6 +18,24 @@
         "executionRate": 86.5,
         "closureRate": 95,
         "comparisonCount": 18
+      }] }
+    },
+    "closure-and-contract": {
+      "fields": {
+        "totalClosure": { "type": "number", "role": "measure", "metricCode": "DEMO-TOTAL-CLOSURE" },
+        "businessDecisionClosure": { "type": "number", "role": "measure", "metricCode": "DEMO-BUSINESS-DECISION-CLOSURE" },
+        "contractDecisionClosure": { "type": "number", "role": "measure", "metricCode": "DEMO-CONTRACT-DECISION-CLOSURE" },
+        "highRiskContractSign": { "type": "number", "role": "measure", "metricCode": "DEMO-HIGH-RISK-CONTRACT" },
+        "prohibitedClauseSign": { "type": "number", "role": "measure", "metricCode": "DEMO-PROHIBITED-CLAUSE" },
+        "frameworkExecution": { "type": "number", "role": "measure", "metricCode": "DEMO-FRAMEWORK-EXECUTION" }
+      },
+      "source": { "type": "inline", "rows": [{
+        "totalClosure": 95,
+        "businessDecisionClosure": 98.2,
+        "contractDecisionClosure": 92.4,
+        "highRiskContractSign": 1.2,
+        "prohibitedClauseSign": 0.3,
+        "frameworkExecution": 86.5
       }] }
     }
   },
@@ -77,6 +95,71 @@
         "props": {
           "title": "已跟进项目",
           "rows": [{ "label": "本月", "valueField": "comparisonCount" }]
+        }
+      }
+    ]
+  }, {
+    "id": "row-definition-metrics",
+    "title": "逐行指标定义",
+    "components": [
+      {
+        "id": "closure-and-contract-metrics",
+        "type": "compositeCard",
+        "layout": { "span": 12 },
+        "props": {
+          "variant": "metricGrid",
+          "dividers": true,
+          "components": [
+            {
+              "id": "closure-metrics",
+              "type": "metricCard",
+              "layout": { "span": 6 },
+              "data": { "main": "closure-and-contract" },
+              "props": {
+                "title": "闭环指标",
+                "variant": "primaryDetail",
+                "rows": [
+                  { "label": "总闭环率", "valueField": { "field": "totalClosure", "format": "percent-1" }, "showDefinition": true }
+                ],
+                "secondaryRows": [
+                  { "label": "商务决策意见闭环率", "valueField": { "field": "businessDecisionClosure", "format": "percent-1" }, "showDefinition": true },
+                  { "label": "合同决策意见闭环率", "valueField": { "field": "contractDecisionClosure", "format": "percent-1" }, "showDefinition": true }
+                ]
+              }
+            },
+            {
+              "id": "contract-metrics",
+              "type": "metricCard",
+              "layout": { "span": 6 },
+              "data": { "main": "closure-and-contract" },
+              "props": {
+                "title": "合同指标",
+                "variant": "primaryDetail",
+                "rows": [
+                  { "label": "重大/高风险合同签署率", "valueField": { "field": "highRiskContractSign", "format": "percent-1" }, "showDefinition": true }
+                ],
+                "secondaryRows": [
+                  { "label": "禁止类条款签署率", "valueField": { "field": "prohibitedClauseSign", "format": "percent-1" }, "showDefinition": true },
+                  { "label": "框架执行率", "valueField": { "field": "frameworkExecution", "format": "percent-1" }, "showDefinition": true }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "closure-rate-without-tips",
+        "type": "metricCard",
+        "layout": { "span": 12 },
+        "data": { "main": "closure-and-contract" },
+        "props": {
+          "variant": "primaryDetail",
+          "rows": [
+            { "label": "总闭环率（未开启）", "valueField": { "field": "totalClosure", "format": "percent-1" } }
+          ],
+          "secondaryRows": [
+            { "label": "总闭环率（显式关闭）", "valueField": { "field": "totalClosure", "format": "percent-1" }, "showDefinition": false }
+          ]
         }
       }
     ]

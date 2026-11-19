@@ -1,0 +1,108 @@
+{
+  "case": "metric-row-definition-tip-version-floor",
+  "invariant": "metric-card-row-definition-tip",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "结果字段指标编码与指标行定义气泡 由 6.129 引入，文档声明的是 6.128",
+      "paths": [
+        "/dataSources/closure-and-contract/fields/totalClosure/metricCode",
+        "/dataSources/closure-and-contract/fields/businessDecisionClosure/metricCode",
+        "/dataSources/closure-and-contract/fields/contractDecisionClosure/metricCode",
+        "/dataSources/closure-and-contract/fields/highRiskContractSign/metricCode",
+        "/dataSources/closure-and-contract/fields/prohibitedClauseSign/metricCode",
+        "/dataSources/closure-and-contract/fields/frameworkExecution/metricCode",
+        "/sections/1/components/0/props/components/0/props/rows/0/showDefinition",
+        "/sections/1/components/0/props/components/0/props/secondaryRows/0/showDefinition",
+        "/sections/1/components/0/props/components/0/props/secondaryRows/1/showDefinition",
+        "/sections/1/components/0/props/components/1/props/rows/0/showDefinition",
+        "/sections/1/components/0/props/components/1/props/secondaryRows/0/showDefinition",
+        "/sections/1/components/0/props/components/1/props/secondaryRows/1/showDefinition",
+        "/sections/1/components/1/props/secondaryRows/0/showDefinition"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "closure-and-contract": {
+        "fields": {
+          "totalClosure": {
+            "metricCode": "DEMO-TOTAL-CLOSURE"
+          },
+          "businessDecisionClosure": {
+            "metricCode": "DEMO-BUSINESS-DECISION-CLOSURE"
+          },
+          "contractDecisionClosure": {
+            "metricCode": "DEMO-CONTRACT-DECISION-CLOSURE"
+          },
+          "highRiskContractSign": {
+            "metricCode": "DEMO-HIGH-RISK-CONTRACT"
+          },
+          "prohibitedClauseSign": {
+            "metricCode": "DEMO-PROHIBITED-CLAUSE"
+          },
+          "frameworkExecution": {
+            "metricCode": "DEMO-FRAMEWORK-EXECUTION"
+          }
+        }
+      }
+    },
+    "sections": [
+      "…",
+      {
+        "components": [
+          {
+            "props": {
+              "components": [
+                {
+                  "props": {
+                    "rows": [
+                      {
+                        "showDefinition": true
+                      }
+                    ],
+                    "secondaryRows": [
+                      {
+                        "showDefinition": true
+                      },
+                      {
+                        "showDefinition": true
+                      }
+                    ]
+                  }
+                },
+                {
+                  "props": {
+                    "rows": [
+                      {
+                        "showDefinition": true
+                      }
+                    ],
+                    "secondaryRows": [
+                      {
+                        "showDefinition": true
+                      },
+                      {
+                        "showDefinition": true
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "props": {
+              "secondaryRows": [
+                {
+                  "showDefinition": false
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

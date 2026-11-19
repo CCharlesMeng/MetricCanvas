@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.128",
-  "schemaSha256": "d5353fad5506b94193811ebac75f5e9533f7ac8b05fe26a62bd38ad8985defc4",
+  "schemaVersion": "6.129",
+  "schemaSha256": "9f0d732d8bd9e97ff89108e1838b19c34b1f39cb13c7c3ad4ed42de17f65e25b",
   "semanticSources": [
     {
       "file": "metriccanvas-authoring/core/page/analysis-report.ts",
@@ -412,7 +412,7 @@
     },
     {
       "file": "packages/page/src/schema/components/metric-card.ts",
-      "sha256": "cfc5bb6ce179515a19d9835e2b81713777f1e3f35a42dceb47a8313f28232b75"
+      "sha256": "bb432ad3f76d527946d739877fec3a233d128473cdf26cce353e17096418dd2b"
     },
     {
       "file": "packages/page/src/schema/components/ranking-card.ts",
@@ -448,7 +448,7 @@
     },
     {
       "file": "packages/page/src/schema/data-source.ts",
-      "sha256": "efe73f958c2647887b065b4e0815e0e29a7c045cd422ccc24048850b9aa63f11"
+      "sha256": "0ca3d051028bdb666f639b0a48d7ce1f89914326efb398c6fc6cb357391d0f79"
     },
     {
       "file": "packages/page/src/schema/filter.ts",
@@ -476,7 +476,7 @@
     },
     {
       "file": "packages/page/src/schema/primitives.ts",
-      "sha256": "f0e0ad17fc6beb7c9353cacd643f2609d12a387c0091e3907aed23153c4619d4"
+      "sha256": "e423d973c26eba6b7938d016f952d14e5ea0bfa13cc8e2d11f1a6c6301a0ba37"
     },
     {
       "file": "packages/page/src/semantic-format.ts",
@@ -572,11 +572,11 @@
     },
     {
       "file": "packages/page/src/validate.ts",
-      "sha256": "3693cc7e2f6e03dfb469737f74fca32bc0469b0ef6698098b0380ee54fe7eb35"
+      "sha256": "b95cddcca0aca7b1cb0756c2b03ce077a858797309b6f9b5dc3d833780588e2c"
     },
     {
       "file": "packages/page/src/version.ts",
-      "sha256": "c7abf59d58c5c8fbcc5f87af3d88a54024be2bb3ee18082156d4d7d401f1b802"
+      "sha256": "d9601bb3d6be6fc06b4c2854f7d085525a62843f14edb726843cef144b93eb70"
     },
     {
       "file": "packages/page/tests/ai-summary-regions.test.ts",
@@ -588,7 +588,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "7dafae151bd0e0068b3ee7a64947b58b63c0622703d06988242e74fd2996a4f3"
+      "sha256": "03a14879323d188924a8f1b1ec3f4e835beb5678ca22be37e2fb215a5e173042"
     }
   ],
   "modules": {
@@ -2274,7 +2274,8 @@
         "6.125",
         "6.126",
         "6.127",
-        "6.128"
+        "6.128",
+        "6.129"
       ]
     },
     {
@@ -4404,6 +4405,12 @@
       "module": "fields.md"
     },
     {
+      "pointer": "#/definitions/scalarField/oneOf/0/properties/metricCode",
+      "path": "@scalarField · oneOf[0].metricCode",
+      "required": "本分支可选",
+      "module": "fields.md"
+    },
+    {
       "pointer": "#/definitions/scalarField/oneOf/0/properties/defaultFormat",
       "path": "@scalarField · oneOf[0].defaultFormat",
       "required": "本分支可选",
@@ -4520,6 +4527,12 @@
     {
       "pointer": "#/definitions/scalarField/oneOf/1/properties/collapsible",
       "path": "@scalarField · oneOf[1].collapsible",
+      "required": "本分支可选",
+      "module": "fields.md"
+    },
+    {
+      "pointer": "#/definitions/scalarField/oneOf/1/properties/metricCode",
+      "path": "@scalarField · oneOf[1].metricCode",
       "required": "本分支可选",
       "module": "fields.md"
     },
@@ -5634,6 +5647,12 @@
       "module": "fields.md"
     },
     {
+      "pointer": "#/definitions/queryScalarField/oneOf/0/properties/metricCode",
+      "path": "@queryScalarField · oneOf[0].metricCode",
+      "required": "本分支可选",
+      "module": "fields.md"
+    },
+    {
       "pointer": "#/definitions/queryScalarField/oneOf/0/properties/defaultFormat",
       "path": "@queryScalarField · oneOf[0].defaultFormat",
       "required": "本分支可选",
@@ -5756,6 +5775,12 @@
     {
       "pointer": "#/definitions/queryScalarField/oneOf/1/properties/collapsible",
       "path": "@queryScalarField · oneOf[1].collapsible",
+      "required": "本分支可选",
+      "module": "fields.md"
+    },
+    {
+      "pointer": "#/definitions/queryScalarField/oneOf/1/properties/metricCode",
+      "path": "@queryScalarField · oneOf[1].metricCode",
       "required": "本分支可选",
       "module": "fields.md"
     },
@@ -6253,6 +6278,12 @@
       ]
     },
     {
+      "pointer": "#/definitions/groupedMeasureQueryFieldGroup/additionalProperties/oneOf/0/properties/metricCode",
+      "path": "@groupedMeasureQueryFieldGroup{key} · oneOf[0].metricCode",
+      "required": "本分支可选",
+      "module": "fields.md"
+    },
+    {
       "pointer": "#/definitions/groupedMeasureQueryFieldGroup/additionalProperties/oneOf/1",
       "path": "@groupedMeasureQueryFieldGroup{key} · oneOf[1]",
       "required": "独立分支（不合并required）",
@@ -6370,6 +6401,12 @@
         "date-month-day",
         "period"
       ]
+    },
+    {
+      "pointer": "#/definitions/groupedMeasureQueryFieldGroup/additionalProperties/oneOf/1/properties/metricCode",
+      "path": "@groupedMeasureQueryFieldGroup{key} · oneOf[1].metricCode",
+      "required": "本分支可选",
+      "module": "fields.md"
     },
     {
       "pointer": "#/definitions/groupedMeasureQueryFieldGroup/propertyNames",
@@ -12263,6 +12300,12 @@
       "module": "field-bindings-and-formats.md"
     },
     {
+      "pointer": "#/definitions/metricCardComponent/properties/props/properties/rows/items/properties/showDefinition",
+      "path": "@metricCardComponent.props.rows[].showDefinition",
+      "required": "本分支可选",
+      "module": "components/metricCard.md"
+    },
+    {
       "pointer": "#/definitions/metricCardComponent/properties/props/properties/rows/items/properties/link",
       "path": "@metricCardComponent.props.rows[].link",
       "required": "本分支可选",
@@ -12490,6 +12533,12 @@
       "required": "本分支必填",
       "module": "components/metricCard.md",
       "ref": "#/definitions/fieldBinding"
+    },
+    {
+      "pointer": "#/definitions/metricCardComponent/properties/props/properties/secondaryRows/items/properties/showDefinition",
+      "path": "@metricCardComponent.props.secondaryRows[].showDefinition",
+      "required": "本分支可选",
+      "module": "components/metricCard.md"
     },
     {
       "pointer": "#/definitions/metricCardComponent/properties/props/properties/secondaryRows/items/properties/link",

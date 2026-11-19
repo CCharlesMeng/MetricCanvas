@@ -124,6 +124,8 @@ interface FieldMetadata {
    */
   collapsible?: boolean;
   defaultFormat?: ValueFormatPreset;
+  /** 外部指标定义服务识别的静态编码。 */
+  metricCode?: string;
 }
 
 export interface StandardScalarFieldDefinition extends FieldMetadata {

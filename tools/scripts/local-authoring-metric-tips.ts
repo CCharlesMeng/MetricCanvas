@@ -1,7 +1,6 @@
 import { walkDocumentComponents } from '../../packages/page/src/component-walk';
-import { fieldBindingLeaves, type FieldBinding } from '../../packages/page/src/field';
-import { metricCardTipAnchor } from '../../packages/page/src/metric-card';
-import type { MetricCardProps } from '../../packages/page/src/page';
+import { fieldBindingLeaves, fieldName, fieldSlot } from '../../packages/page/src/field';
+import type { MetricCardProps, MetricCardRow } from '../../packages/page/src/page';
 
 type DocumentObject = Record<string, unknown>;
 type QueryKey = { queryField: string; schemaId?: string; dimensions?: Record<string, string[]> };
@@ -14,6 +13,7 @@ type MetricRequest = {
   schemaId?: string;
   dimensions: Record<string, string[]>;
 };
+type BoundMetric = { request: MetricRequest; contract: DocumentObject };
 
 function record(value: unknown): DocumentObject | undefined {
   return value && typeof value === 'object' && !Array.isArray(value) ? value as DocumentObject : undefined;
@@ -102,33 +102,44 @@ function dimensionValues(dimension: DocumentObject | undefined): string[] | unde
   if (Array.isArray(values) && values.length && values.every(value => typeof value === 'string')) return values;
 }
 
-function sourceMetricRequest(source: DocumentObject | undefined, dataSource: string, field: string): MetricRequest | undefined {
+function measureField(source: DocumentObject | undefined, field: string): DocumentObject | undefined {
+  const fields = record(source?.fields);
+  const flatField = record(fields?.[field]);
+  return flatField?.role === 'measure' ? flatField : record(record(fields?.measures)?.[field]);
+}
+
+function singleMetricQuery(source: DocumentObject | undefined) {
   const definition = record(source?.source);
   const query = record(definition?.query);
   if (definition?.type !== 'query' || query?.language !== 'dqe' || query.queryModes || query.timeModes) return;
-  const fields = record(source?.fields);
-  const flatField = record(fields?.[field]);
-  const measure = record(record(fields?.measures)?.[field]);
-  const queryField = flatField?.role === 'measure' ? flatField.queryField : measure?.queryField;
   const items = record(query.body)?.dsl_list;
-  if (!Array.isArray(items) || items.length !== 1 || typeof queryField !== 'string') return;
+  if (!Array.isArray(items) || items.length !== 1) return;
   const item = record(items[0]);
-  if (!item || !Array.isArray(item.output_metrics) || !item.output_metrics.includes(queryField)
-    || item.output_metrics.some(output => record(output)?.alias === queryField)) return;
-  if (item.schema_id !== undefined && typeof item.schema_id !== 'string') return;
-  return { dataSource, field, queryField, schemaId: item.schema_id, dimensions: fixedDimensions(item, query) };
+  if (!item || (item.schema_id !== undefined && typeof item.schema_id !== 'string')) return;
+  return { query, item, schemaId: item.schema_id };
 }
 
-function cardRequests(page: DocumentObject, card: DocumentObject, props: MetricCardProps) {
-  const rows = [...props.rows, ...(props.secondaryRows ?? [])];
-  const bindings: FieldBinding[] = rows.flatMap(row => [row.valueField, ...(row.changes ?? []).map(change => change.field)]);
-  if (props.progress) bindings.push(props.progress.valueField);
+function sourceMetricRequest(source: DocumentObject | undefined, dataSource: string, field: string): BoundMetric | undefined {
+  const contract = measureField(source, field);
+  if (!contract || typeof contract.queryField !== 'string') return;
+  const metric = singleMetricQuery(source);
+  if (!metric) return;
+  const { queryField } = contract;
+  const { item, query, schemaId } = metric;
+  const outputs = item.output_metrics;
+  if (!Array.isArray(outputs) || !outputs.includes(queryField) || outputs.some(output => record(output)?.alias === queryField)) return;
+  return {
+    request: { dataSource, field, queryField, schemaId, dimensions: fixedDimensions(item, query) },
+    contract
+  };
+}
+
+function rowRequests(page: DocumentObject, card: DocumentObject, row: MetricCardRow) {
   const sources = record(page.dataSources);
   const slots = record(card.data);
-  return bindings.flatMap(fieldBindingLeaves).map(binding => {
-    const { data, field } = typeof binding === 'string' ? { data: 'main', field: binding } : binding;
-    const dataSource = slots?.[data];
-    return typeof dataSource === 'string' ? sourceMetricRequest(record(sources?.[dataSource]), dataSource, field) : undefined;
+  return fieldBindingLeaves(row.valueField).map(binding => {
+    const sourceId = slots?.[fieldSlot(binding)];
+    return typeof sourceId === 'string' ? sourceMetricRequest(record(sources?.[sourceId]), sourceId, fieldName(binding)) : undefined;
   });
 }
 
@@ -153,26 +164,39 @@ function matchRequest(catalog: MetricCatalog, request: MetricRequest) {
   return { exact, possible };
 }
 
-function resolveRequests(requests: (MetricRequest | undefined)[], catalog: MetricCatalog | undefined) {
-  const resolved = requests.filter(request => request !== undefined);
-  if (!resolved.length || resolved.length !== requests.length) {
-    return { status: 'review' as const, reason: 'unsupported-binding', requests: resolved };
-  }
-  if (!catalog) return { status: 'review' as const, reason: 'catalog-required', requests: resolved };
-  const matches = resolved.map(request => matchRequest(catalog, request));
-  if (matches.some(match => match.possible.size > 1)) {
-    return { status: 'review' as const, reason: 'ambiguous-catalog', requests: resolved };
-  }
-  if (matches.some(match => !match.exact.length)) {
-    return { status: 'review' as const, reason: 'catalog-match-required', requests: resolved };
-  }
-  const entries = matches.flatMap(match => match.exact);
-  const codes = new Set(entries.map(entry => entry.code));
-  if (codes.size !== 1) return { status: 'review' as const, reason: 'multiple-metrics', requests: resolved };
-  return { status: 'ready' as const, code: entries[0].code, sources: [...new Set(entries.map(entry => entry.source))], requests: resolved };
+function matchBoundMetric(catalog: MetricCatalog, metric: BoundMetric) {
+  const { exact, possible } = matchRequest(catalog, metric.request);
+  if (possible.size > 1) return { reason: 'ambiguous-catalog' };
+  if (!exact.length) return { reason: 'catalog-match-required' };
+  const code = exact[0].code;
+  const existing = metric.contract.metricCode;
+  if (existing !== undefined && existing !== code) return { reason: 'metric-code-conflict', existing, code };
+  return { code, sources: [...new Set(exact.map(entry => entry.source))] };
 }
 
-/** Input has already passed the product page validator. Candidate writes change one property per card. */
+function planRow(page: DocumentObject, card: DocumentObject, row: MetricCardRow, path: string, catalog: MetricCatalog | undefined) {
+  const at = { path: `${path}/showDefinition` };
+  if (row.showDefinition !== undefined) {
+    return { ...at, status: row.showDefinition ? 'existing' : 'disabled' } as const;
+  }
+  const bindings = rowRequests(page, card, row);
+  const metrics = bindings.filter(metric => metric !== undefined);
+  const requests = metrics.map(metric => metric.request);
+  if (!metrics.length || metrics.length !== bindings.length) {
+    return { ...at, status: 'review', reason: 'unsupported-binding', requests } as const;
+  }
+  if (!catalog) return { ...at, status: 'review', reason: 'catalog-required', requests } as const;
+  const matches = metrics.map(metric => ({ metric, match: matchBoundMetric(catalog, metric) }));
+  const checks = matches.map(({ metric, match }) => ({ ...metric.request, ...match }));
+  if (matches.some(({ match }) => match.reason)) {
+    return { ...at, status: 'review', requests: checks } as const;
+  }
+  for (const { metric, match } of matches) metric.contract.metricCode ??= match.code;
+  row.showDefinition = true;
+  return { ...at, status: 'ready', requests: checks } as const;
+}
+
+/** Input has passed the product validator. Each row is written after all its bindings match. */
 export function planMetricTips(page: DocumentObject, catalog?: MetricCatalog) {
   const cards: unknown[] = [];
   let changes = 0;
@@ -180,18 +204,16 @@ export function planMetricTips(page: DocumentObject, catalog?: MetricCatalog) {
   walkDocumentComponents(candidate, (card, path) => {
     if (card.type !== 'metricCard') return;
     const props = card.props as MetricCardProps;
-    const at = { componentId: card.id, path: `${path}/props/tipCode` };
+    const at = { componentId: card.id, path: `${path}/props` };
     if (props.tipCode !== undefined) {
       cards.push({ ...at, status: 'existing', code: props.tipCode });
       return;
     }
-    const anchor = metricCardTipAnchor(props);
-    const result = resolveRequests(cardRequests(candidate, card, props), catalog);
-    if (anchor && result.status === 'ready') {
-      props.tipCode = result.code;
-      changes++;
-    }
-    cards.push({ ...at, ...result, ...(!anchor ? { status: 'review', reason: 'anchor-required' } : { anchor }) });
+    const rows = (['rows', 'secondaryRows'] as const).flatMap(key =>
+      (props[key] ?? []).map((row, index) => planRow(candidate, card, row, `${at.path}/${key}/${index}`, catalog))
+    );
+    changes += rows.filter(row => row.status === 'ready').length;
+    cards.push({ ...at, rows });
   });
   return { cards, changes, candidate };
 }

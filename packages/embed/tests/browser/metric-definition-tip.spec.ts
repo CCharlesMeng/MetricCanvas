@@ -14,10 +14,10 @@ declare global {
 }
 
 for (const mode of ['classic', 'esm'] as const) {
-  test(`${mode} 指标定义端口跨 ShadowRoot 和候选网关，并取消过期请求`, async ({ page }) => {
+  test(`${mode} 英文宿主的标题及指标行气泡使用中文并取消过期请求`, async ({ page }) => {
     await page.goto('/examples/inline.html');
     await page.evaluate(async ({ demo, mode }) => {
-      document.documentElement.lang = 'zh-CN';
+      document.documentElement.lang = 'en-US';
       window.runtime.destroy();
       const url = '/dist/metriccanvas-runtime.es.js';
       const api = mode === 'classic' ? MetricCanvas : await import(url);
@@ -34,7 +34,7 @@ for (const mode of ['classic', 'esm'] as const) {
           if (code === 'DEMO-NO-LINK') return [];
           return [{
             code, name: code === 'ZB0000377' ? '旧定义' : '当前定义',
-            definition: '合成定义', formula: '合成公式', manager: '合成解释人',
+            definition: 'Original gateway definition.', formula: 'Revenue / cost', manager: 'Operations team',
             latestUpdateTime: null, url: 'javascript:void(0)'
           }];
         }
@@ -49,13 +49,18 @@ for (const mode of ['classic', 'esm'] as const) {
     const first = page.getByRole('button', { name: '查看销售毛利率的指标定义' });
     const second = page.getByRole('button', { name: '查看销售收入的指标定义' });
     const panel = page.getByRole('dialog');
-    await expect(first).toBeVisible();
+    await expect(first.locator('..')).toHaveRole('heading');
+    await expect(first.locator('..')).toHaveText('销售毛利率?');
     expect(await page.evaluate(() => window.metricDefinitionCalls)).toHaveLength(0);
     await first.hover();
     await expect(panel.getByRole('status')).toContainText('正在加载');
     await second.hover();
     await expect(panel).toHaveCount(1);
     await expect(panel).toContainText('当前定义');
+    await expect(panel.locator('dt')).toHaveText(['指标名称（指标编码）', '指标定义', '计算公式', '指标解释人']);
+    await expect(panel.locator('dd')).toHaveText([
+      '当前定义（DEMO-REVENUE）', 'Original gateway definition.', 'Revenue / cost', 'Operations team'
+    ]);
     await expect(panel.getByRole('link')).toHaveCount(0);
     expect(await page.evaluate(() => window.metricDefinitionCalls.map(call => [call.code, call.signal?.aborted])))
       .toEqual([['ZB0000377', true], ['DEMO-REVENUE', false]]);
@@ -66,7 +71,12 @@ for (const mode of ['classic', 'esm'] as const) {
     await page.keyboard.press('Escape');
     await expect(panel).toHaveCount(0);
     await expect(second).toBeFocused();
-    await page.getByRole('button', { name: '查看框架执行率的指标定义' }).hover();
+    await expect(page.getByRole('heading', { name: '闭环指标', exact: true })).toBeVisible();
+    await page.locator('.row-label').getByRole('button', { name: '查看总闭环率的指标定义' }).hover();
+    await expect(panel).toContainText('DEMO-TOTAL-CLOSURE');
+    await page.locator('.row-label').getByRole('button', { name: '查看框架执行率的指标定义' }).hover();
+    await expect(panel).toContainText('DEMO-FRAMEWORK-EXECUTION');
+    await page.getByRole('heading', { name: '框架执行率', exact: false }).getByRole('button').hover();
     await expect(panel).toContainText('网络出小差了');
     await expect(first).toBeVisible();
     await page.getByRole('button', { name: '查看闭环率的指标定义' }).hover();

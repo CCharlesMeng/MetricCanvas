@@ -12,7 +12,7 @@ type PageInput = { path: string; directory: string };
 type Candidate = { path: string; document: Record<string, unknown> };
 type PageReport = { report: Record<string, unknown>; output?: Candidate };
 const hash = (bytes: Buffer) => createHash('sha256').update(bytes).digest('hex');
-const minimumMinor = pageCapabilities['metric-card-definition-tip'].minor;
+const minimumMinor = pageCapabilities['metric-card-row-definition-tip'].minor;
 
 function walkDirectory(root: string, directory = ''): PageInput[] {
   return readdirSync(join(root, directory), { withFileTypes: true })

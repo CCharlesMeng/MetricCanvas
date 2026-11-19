@@ -13,6 +13,7 @@ import {
   fieldsZ,
   fieldValueZ,
   idZ,
+  metricCodeZ,
   queryFieldsZ,
   standardFieldTypeZ,
   valueFormatPresetZ
@@ -208,8 +209,8 @@ const groupedMeasureQueryFieldGroupZ = z
   .record(
     fieldNameZ,
     z.discriminatedUnion('type', [
-      groupedStandardQueryFieldZ,
-      groupedMoneyQueryFieldZ
+      groupedStandardQueryFieldZ.extend({ metricCode: metricCodeZ.optional() }),
+      groupedMoneyQueryFieldZ.extend({ metricCode: metricCodeZ.optional() })
     ])
   )
   .meta({ id: 'groupedMeasureQueryFieldGroup', minProperties: 1 });

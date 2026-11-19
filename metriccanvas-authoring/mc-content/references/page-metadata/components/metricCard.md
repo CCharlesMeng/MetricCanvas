@@ -6,25 +6,48 @@
 
 <a id="metric-definition-tip"></a>
 
-## 指标定义气泡 6.127
+## 指标定义气泡
 
-在 `props.tipCode` 声明集成应用指标定义服务识别的静态编码，编码不能包含空白。主标题有非空文字时用主标题作为问号位置和气泡标题。主标题缺失或未解析出文字时，若全卡只有一个主指标行且行标签有文字，则复用该行标签。没有可用位置时隐藏问号。省略 `tipCode` 或集成应用未提供 `dataGateway.fetchMetricDefinitions` 时，也隐藏问号。页面校验要求配置了编码的卡片声明主标题或符合单行规则。
+6.129 起，在指标卡的 `props.rows[]` 或 `props.secondaryRows[]` 对应行设置 `showDefinition: true`。运行时沿该行的 `valueField` 读取顶层度量结果字段的 `metricCode`，在指标名称右侧显示问号。省略开关或设置为 `false` 时隐藏。共享字段的每个使用位置独立控制。卡片已有 `props.title` 时，逐行问号仍紧跟各自行的指标名称。
 
 ```json
 {
-  "id": "gross-profit-rate",
-  "type": "metricCard",
-  "layout": { "span": 3 },
-  "data": { "main": "metrics" },
-  "props": {
-    "title": "销售毛利率",
-    "tipCode": "ZB0000377",
-    "rows": [{ "label": "本月", "valueField": "grossProfitRate" }]
-  }
+  "schemaVersion": "6.129",
+  "id": "closure-rate-tip",
+  "layout": "dashboard",
+  "dataSources": {
+    "metrics": {
+      "fields": {
+        "closureRate": { "type": "number", "role": "measure", "metricCode": "DEMO-TOTAL-CLOSURE" }
+      },
+      "source": { "type": "inline", "rows": [{ "closureRate": 95 }] }
+    }
+  },
+  "sections": [{
+    "id": "metrics",
+    "components": [{
+      "id": "closure-rate",
+      "type": "metricCard",
+      "layout": { "span": 3 },
+      "data": { "main": "metrics" },
+      "props": {
+        "variant": "primaryDetail",
+        "rows": [{
+          "label": "总闭环率",
+          "valueField": { "field": "closureRate", "format": "percent-1" },
+          "showDefinition": true
+        }]
+      }
+    }]
+  }]
 }
 ```
 
-问号可悬停或通过键盘打开。气泡独立查询指标定义并显示名称和编码、定义、公式、解释人及可选更新说明。查询失败或缺少对应编码时可以重新加载。图标与气泡之间移动时保持打开，离开两者或切换页签时关闭并取消当前请求。可用的 HTTP(S) 链接以黑色粗体显示在右下方，新开标签页。更新时间非空时显示「查看最新指标定义」，否则显示「查看更多」。静态导出仅呈现标题与指标值。
+开启的指标行必须绑定带编码的度量。使用 `byFilter` 时，各分支字段须分别声明编码，运行时取当前生效分支的编码。集成应用提供 `dataGateway.fetchMetricDefinitions` 时显示问号。
+
+6.127 的 `props.tipCode` 继续用于旧页面。主标题有文字时问号显示在主标题旁。省略主标题且只有一个带标签的主指标行时，问号显示在该行名称旁。同一张指标卡的 `tipCode` 与行级 `showDefinition: true` 互斥。
+
+问号可悬停或通过键盘打开。问号的辅助名称和气泡的固定文案统一使用中文，服务端返回的指标内容按原文显示。气泡独立查询指标定义并显示名称和编码、定义、公式、解释人及可选更新说明。查询失败或缺少对应编码时可以重新加载。图标与气泡之间移动时保持打开，离开两者或切换页签时关闭并取消当前请求。可用的 HTTP(S) 链接以黑色粗体显示在右下方，新开标签页。更新时间非空时显示「查看最新指标定义」，否则显示「查看更多」。静态导出仅呈现标题与指标值。
 
 从 `/pages/metric-card-definition-tip` 可观察实际交互。[完整合成页面](../examples/metric-card-definition-tip.json)。
 
@@ -77,7 +100,7 @@ Dashboard 的 plain/card 内容分区可以在顶层相邻指标卡的 `layout.b
 数值与单位遵循[统一语义格式](../field-bindings-and-formats.md#numeric-value-display)：组件显式格式优先，自动金额和数量不再重复追加旧的元/万等单位标签。比率变化项使用正负号，即使 `showTrendArrows: true` 也不显示箭头；绝对变化项保留既有箭头行为。进度环图形可裁到0–100%，文字仍按真实比率格式化，不把超过100%的真实值改成100%。缺失比率默认显示 `—`，自定义缺失文字按原声明。合成场景 `/pages/semantic-numeric-display`。
 
 
-页面协议 6.128。结构真源为本册[schema.json](../schema.json)，SHA256 `d5353fad5506b94193811ebac75f5e9533f7ac8b05fe26a62bd38ad8985defc4`。字段表自动生成；可选不等于有默认值。
+页面协议 6.129。结构真源为本册[schema.json](../schema.json)，SHA256 `9f0d732d8bd9e97ff89108e1838b19c34b1f39cb13c7c3ad4ed42de17f65e25b`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -383,6 +406,16 @@ Schema位置：`#/definitions/metricCardComponent/properties/props/properties/ro
 |---|---|---|---|---|
 | 引用 #/definitions/fieldBinding | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 主要数值字段绑定。 |
 
+<a id="schema-232f646566696e6974696f6e732f6d657472696343617264436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f726f77732f6974656d732f70726f706572746965732f73686f77446566696e6974696f6e"></a>
+
+### `@metricCardComponent.props.rows[].showDefinition`
+
+Schema位置：`#/definitions/metricCardComponent/properties/props/properties/rows/items/properties/showDefinition`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "boolean" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 开启后沿 valueField 读取 metricCode，并在该指标名称右侧显示问号。 |
+
 <a id="schema-232f646566696e6974696f6e732f6d657472696343617264436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f726f77732f6974656d732f70726f706572746965732f6c696e6b"></a>
 
 ### `@metricCardComponent.props.rows[].link`
@@ -589,6 +622,16 @@ Schema位置：`#/definitions/metricCardComponent/properties/props/properties/se
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | 引用 #/definitions/fieldBinding | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 主要数值字段绑定。 |
+
+<a id="schema-232f646566696e6974696f6e732f6d657472696343617264436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f7365636f6e64617279526f77732f6974656d732f70726f706572746965732f73686f77446566696e6974696f6e"></a>
+
+### `@metricCardComponent.props.secondaryRows[].showDefinition`
+
+Schema位置：`#/definitions/metricCardComponent/properties/props/properties/secondaryRows/items/properties/showDefinition`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "boolean" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 开启后沿 valueField 读取 metricCode，并在该指标名称右侧显示问号。 |
 
 <a id="schema-232f646566696e6974696f6e732f6d657472696343617264436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f7365636f6e64617279526f77732f6974656d732f70726f706572746965732f6c696e6b"></a>
 

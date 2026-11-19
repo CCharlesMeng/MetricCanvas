@@ -40,7 +40,7 @@ type WithoutRole<Field> = Field extends QueryScalarFieldDefinition
   : never;
 
 export type GroupedDimensionQueryFieldDefinition =
-  WithoutRole<QueryStandardScalarFieldDefinition>;
+  Omit<WithoutRole<QueryStandardScalarFieldDefinition>, 'metricCode'>;
 export type GroupedMeasureQueryFieldDefinition =
   WithoutRole<QueryScalarFieldDefinition>;
 

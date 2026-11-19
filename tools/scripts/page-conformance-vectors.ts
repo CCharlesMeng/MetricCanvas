@@ -2163,6 +2163,41 @@ export const invariants: InvariantDefinition[] = [
     ]
   },
   {
+    id: 'metric-card-row-definition-tip',
+    description: '逐行气泡沿 valueField 读取结果字段指标编码，并检查版本和旧版气泡互斥',
+    valid: ['metric-card-definition-tip'],
+    cases: [
+      {
+        case: 'metric-row-definition-tip-version-floor',
+        base: 'metric-card-definition-tip',
+        expect: /6\.129 引入/,
+        mutate: document => { document.schemaVersion = '6.128'; }
+      },
+      {
+        case: 'metric-row-definition-tip-missing-code',
+        base: 'metric-card-definition-tip',
+        expect: /showDefinition: true 要求 valueField 的每个结果字段声明 metricCode/,
+        mutate: document => { delete document.dataSources['closure-and-contract'].fields.totalClosure.metricCode; }
+      },
+      {
+        case: 'metric-row-definition-tip-invalid-code',
+        base: 'metric-card-definition-tip',
+        expect: /metricCode/,
+        mutate: document => { document.dataSources['closure-and-contract'].fields.totalClosure.metricCode = ' '; }
+      },
+      {
+        case: 'metric-row-definition-tip-mixed-card',
+        base: 'metric-card-definition-tip',
+        expect: /tipCode 与 showDefinition: true 互斥/,
+        mutate: document => {
+          const props = firstComponent(document, 1).props.components[0].props;
+          props.title = '总闭环率';
+          props.tipCode = 'DEMO-TOTAL-CLOSURE';
+        }
+      }
+    ]
+  },
+  {
     id: 'metric-card-select-tab',
     description: '指标值只能切换当前页目标容器中已声明的页签',
     valid: ['metric-card-select-tab'],

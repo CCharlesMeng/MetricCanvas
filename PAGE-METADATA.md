@@ -1,5 +1,7 @@
 # MetricCanvas 页面元数据规范
 
+Schema 6.129 支持在指标卡的主、次指标行设置 `showDefinition: true`。该行沿 `valueField` 读取结果字段的 `metricCode`，在指标名称右侧显示问号。省略或设为 `false` 时隐藏。气泡的固定文案统一使用中文，服务端返回的内容按原文显示。见[指标定义气泡](docs/page-metadata/components/metricCard.md#metric-definition-tip)与合成入口 `/pages/metric-card-definition-tip`。
+
 Schema 6.128 为柱线组合图的字段折线系列增加可选 `markerColorRule`。圆点根据原始值小于零或大于等于零分别取色。规则、配置和合成场景见[折线圆点按数值正负着色](docs/page-metadata/components/barChart.md#bar-line-marker-color)。
 
 Schema 6.127 新增可选的 `metricCard.props.tipCode`。问号显示在主标题旁，无主标题的单行卡片显示在该行指标名称旁。集成应用提供指标定义查询端口后可查看定义、公式、解释人和管理链接。见[指标定义气泡](docs/page-metadata/components/metricCard.md#metric-definition-tip)与合成入口 `/pages/metric-card-definition-tip`。

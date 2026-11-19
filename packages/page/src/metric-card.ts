@@ -1,6 +1,65 @@
 import type { Component, MetricCardProps, MetricCardRow, Page } from './page';
 import type { TypedError } from './errors';
 import { walkPageComponents } from './component-walk';
+import { fieldBindingLeaves, fieldName, fieldSlot } from './field';
+
+export function metricDefinitionErrors(page: Page): TypedError[] {
+  return [...metricCodePlacementErrors(page), ...metricCardRowDefinitionErrors(page)];
+}
+
+function metricCodePlacementErrors(page: Page): TypedError[] {
+  const errors: TypedError[] = [];
+  for (const [sourceId, source] of Object.entries(page.dataSources)) {
+    for (const [fieldId, field] of Object.entries(source.fields)) {
+      const path = `/dataSources/${sourceId}/fields/${fieldId}`;
+      if (field.role === 'dimension' && field.metricCode !== undefined) {
+        errors.push({ type: 'SCHEMA_ERROR', path: `${path}/metricCode`, message: 'metricCode 只允许声明在顶层度量结果字段' });
+      }
+      if (field.type !== 'recordList') continue;
+      for (const [itemId, item] of Object.entries(field.items.fields)) {
+        if (item.metricCode === undefined) continue;
+        errors.push({
+          type: 'SCHEMA_ERROR',
+          path: `${path}/items/fields/${itemId}/metricCode`,
+          message: '嵌套明细字段不能声明 metricCode'
+        });
+      }
+    }
+  }
+  return errors;
+}
+
+function metricCardRowDefinitionErrors(page: Page): TypedError[] {
+  const errors: TypedError[] = [];
+  walkPageComponents(page, (component, path) => {
+    if (component.type !== 'metricCard') return;
+    for (const key of ['rows', 'secondaryRows'] as const) {
+      component.props[key]?.forEach((row, index) => {
+        if (row.showDefinition !== true) return;
+        const message = metricRowDefinitionIssue(page, component, row);
+        if (message) errors.push({
+          type: 'SCHEMA_ERROR', path: `${path}/props/${key}/${index}/showDefinition`, message
+        });
+      });
+    }
+  });
+  return errors;
+}
+
+function metricRowDefinitionIssue(
+  page: Page,
+  component: Extract<Component, { type: 'metricCard' }>,
+  row: MetricCardRow
+): string | undefined {
+  if (component.props.tipCode !== undefined) return '同一指标卡的 tipCode 与 showDefinition: true 互斥';
+  for (const binding of fieldBindingLeaves(row.valueField)) {
+    const sourceId = component.data[fieldSlot(binding) as keyof typeof component.data];
+    const field = sourceId ? page.dataSources[sourceId]?.fields?.[fieldName(binding)] : undefined;
+    if (field?.role !== 'measure' || !field.metricCode) {
+      return 'showDefinition: true 要求 valueField 的每个结果字段声明 metricCode';
+    }
+  }
+}
 
 /** A document can declare a text reference that only resolves at render time. */
 export function metricCardTipAnchor(props: Pick<MetricCardProps, 'title' | 'rows' | 'secondaryRows'>): 'title' | 'row' | undefined {
