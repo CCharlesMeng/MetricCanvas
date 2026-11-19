@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "48652f9a5d5a1231fa0842ad088cb0bac24dbc830c32ec94ad5476ae71e57ee2",
+  "sha256": "0b0c3a4debfa93abed71fe31719bd59d3c7b016d3830fcc6842ef466eafd2801",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -48,7 +48,7 @@
     },
     {
       "file": "docs/page-metadata/components/compositeCard.md",
-      "sha256": "90fb0925bf9b09b018d0b1dd650ebb00fd5c7220d9cb94a410a26b1339444dbe"
+      "sha256": "bc7d09f8fbd6d67b923026ab214639fa3b81f1d21a1090b405a6a08506af68fd"
     },
     {
       "file": "docs/page-metadata/components/fieldText.md",
@@ -56,7 +56,7 @@
     },
     {
       "file": "docs/page-metadata/components/filterGroup.md",
-      "sha256": "562ecb6ed8d605df07243ecc17f1a9380dae8ac6406eb225facef894d8abddb4"
+      "sha256": "8ce0002d2637006412527bda8d89f85f6a0610e81a7334ea755703ba72a62529"
     },
     {
       "file": "docs/page-metadata/components/gauge.md",
@@ -2532,7 +2532,7 @@
     },
     {
       "file": "pages/capabilities/filters/README.md",
-      "sha256": "e74a516659f4f84116c290843173dd7e8dc5ea67efe73952f13924efbdb27c0c"
+      "sha256": "2f1ccd3129e15106595e882880474b1fbab1e517d831b15cfa6a46116ccd7441"
     },
     {
       "file": "pages/capabilities/filters/chart-include-exclude.json",
@@ -3287,6 +3287,10 @@
       "sha256": "d4bd1b7896a251206ee76cb03eb82971dfdc837bd316cc21e4ef8bc4acbb2af4"
     },
     {
+      "file": "pages/output/business-result-chart-toolbar-comparison.json",
+      "sha256": "438cfae1e72d478f8267b330863f50b264772e587e9d9f8327f3991c1034c300"
+    },
+    {
       "file": "pages/partner-health.json",
       "sha256": "c21fbacabcbdb2a000a514941ee6a58330af485576be862a3ff8f130d46a9924"
     },
@@ -3328,7 +3332,7 @@
     },
     {
       "file": "pages/temporary/business-result-pinned-diagnosis-20261102/README.md",
-      "sha256": "00a80020cf0862cc21a754bcba0a067650018c4f61407e70cb3273d4057117fb"
+      "sha256": "4143b8b5ae0014ce9f8a2e9ecd0646d8047b9c2e81b5030e16ad1710386c4397"
     },
     {
       "file": "pages/temporary/business-result-pinned-diagnosis-20261102/business-result-metrics.json",

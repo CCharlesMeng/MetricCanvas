@@ -52,7 +52,7 @@
   class="composite-card"
 >
   {#if title || (toolbar && contentOffset > 0)}
-    <div class="composite-header">
+    <div class="composite-header" class:has-left-controls={Boolean(toolbar?.left.length)}>
       {#if title}<h3 class="mc-data-heading">
         {#if titleIcon}<img src={titleIcons[titleIcon]} alt="" aria-hidden="true" />{/if}
         <span>{title}</span>
@@ -89,6 +89,7 @@
 <style>
   .composite-header { display:flex; flex-wrap:wrap; align-items:center; gap:12px; min-width:0; }
   .composite-header > h3 { min-width:0; flex:0 1 auto; }
+  .composite-header.has-left-controls > .filter-toolbar { flex-basis:100%; }
   .filter-toolbar {
     --mc-filter-group-margin-bottom: 0px;
 

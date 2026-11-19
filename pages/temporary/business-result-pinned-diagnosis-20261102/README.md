@@ -8,6 +8,12 @@
 
 自动验收入口为 `pnpm --filter playground test:ioc business-type-levels.browser.ts source-candidate-window.browser.ts`，测试使用合成响应。接入真实 DQE 后需核验新字段在五个查询中的可用性及云服务分页的结果总数。
 
+## 图表标题和筛选工具栏
+
+用 `pnpm dev:dqe` 启动 Playground 和 DQE Sim，打开 `/pages/business-result-metrics?region=R99&region.level=geo`。Region 为「中国」时，「决策意见闭环率」标题和右侧「商务 / 合同」下拉同排，「框架执行情况」仅显示标题。清空区域以取消范围限制后，两张卡的标题各自独占第一行。「决策意见闭环率」第二行左侧显示「中国区 / 海外」，右侧显示「商务 / 合同」。「框架执行情况」第二行仅显示左侧切换。切回「中国」恢复初始行位。
+
+浏览器回归为 `pnpm --filter playground test:ioc composite-card-header.browser.ts`。场景使用业务页面原配置和本地仿真响应，验证标题与筛选控件的位置。
+
 ## 合计取数
 
 两表首行固定显示“合计”，不占明细数量。每个范围声明三条独立普通 complete query，所有 output_dims 均为空、time.is_aggregate=true，不使用 limit/offset：

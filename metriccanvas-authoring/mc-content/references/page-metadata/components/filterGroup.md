@@ -37,7 +37,7 @@ Dashboard 正文中的独立固定单选筛选组件，也可放入组合卡。�
 
 图表卡中的两个控件各占 `layout.span:6`，图表占 12；右侧使用 `{"filterId":"region","display":"select","align":"right","options":[{"label":"全部区域","value":"all"},{"label":"华东","value":"east"},{"label":"华南","value":"south"}]}`。两个筛选器分别绑定 queryField，组合条件由查询消费。示例的 `all` 是合成数据集显式提供的全区域汇总行，不代表通用的“不过滤”值，也不能把该业务值移植到真实查询。
 
-多个下拉需要与左侧按钮组形成同一条工具栏时，在组合卡声明 `props.filterLayout:"toolbar"`（6.63）。开头连续的 filterGroup 被排成一条独立工具栏；未声明 align 或 align:left 的控件进入左组，align:right 的控件进入右组。两组之间吸收剩余空间，右组内按内容宽度和固定 12px 间距排列，最后一个下拉贴齐卡内容右边界。空间不足时右组整体换行并继续居右，极窄时组内也可换行；不按各子项 span 比例分摊控件宽度。后续图表和指标仍走原 12 列栅格。
+多个下拉需要与左侧按钮组形成同一条工具栏时，在组合卡声明 `props.filterLayout:"toolbar"`（6.63）。开头连续的 filterGroup 被排成一条独立工具栏。未声明 align 或 align:left 的控件进入左组，align:right 的控件进入右组。标题和工具栏的行位取决于可见的筛选组，见[组合卡](compositeCard.md)。两组之间吸收剩余空间，右组内按内容宽度和固定 12px 间距排列，最后一个下拉贴齐卡内容右边界。空间不足时右组整体换行并继续居右，极窄时组内也可换行。工具栏内控件按内容分配宽度，后续图表和指标仍走原 12 列栅格。
 
 一个 filterGroup 仍只绑定一个 filterId，三个控件分别通过 filterBindings 影响查询。未启用工具栏的组合卡保持原栅格与 align 语义。完整示例 `/pages/filter-group-parallel-selects` 为左侧营业收入/订单量按钮、右侧区域和渠道两个下拉，趋势和合计同时消费三项条件，并保留 URL 恢复。渠道数据为独立合成夹具，不修改原按钮加单下拉示例的数据。
 
