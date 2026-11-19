@@ -28,7 +28,7 @@ export function attachHeaderFrame(anchor:HTMLElement,content:HTMLElement):()=>vo
   let frame=0,disposed=false;
   const restore = () => {
     delete content.dataset.iocFloating;
-    content.style.removeProperty('--mc-ioc-header-offset');
+    content.style.removeProperty('top');
   };
   const update = () => {
     frame = 0;
@@ -49,7 +49,7 @@ export function attachHeaderFrame(anchor:HTMLElement,content:HTMLElement):()=>vo
     const layoutHeight = parseFloat(getComputedStyle(anchor).height) || rect.height;
     const scaleY = rect.height / layoutHeight;
     const pinnedTop = Math.min(top, bottom - rect.height);
-    content.style.setProperty('--mc-ioc-header-offset', `${(pinnedTop - rect.top) / scaleY}px`);
+    content.style.top = `${(pinnedTop - rect.top) / scaleY}px`;
     content.dataset.iocFloating = 'true';
   };
   const schedule=()=>{if(!frame&&!disposed)frame=requestAnimationFrame(update);};

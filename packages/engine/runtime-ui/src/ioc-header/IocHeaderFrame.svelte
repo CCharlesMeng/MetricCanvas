@@ -16,7 +16,6 @@
   [data-ioc-header-anchor],[data-ioc-header-frame]{display:flow-root;min-width:0;}
   [data-ioc-header-frame]:global([data-ioc-floating]) {
     position: relative;
-    top: var(--mc-ioc-header-offset);
     z-index: 66;
   }
 </style>
