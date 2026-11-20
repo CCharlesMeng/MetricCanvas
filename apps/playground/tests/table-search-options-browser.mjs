@@ -22,7 +22,6 @@ async function select(target, label) {
 }
 async function submit(target, query) {
   await target.getByRole('searchbox').fill(query);
-  await target.getByRole('searchbox').press('Enter');
 }
 try {
   await page.goto(`${base}/pages/table-search-options-demo`);
@@ -101,7 +100,7 @@ try {
       expect(boundsOfControl.left).toBeGreaterThanOrEqual(-1);
       expect(boundsOfControl.right).toBeGreaterThanOrEqual(-1);
     }
-    await expect(local.getByRole('button', { name: '搜索', exact: true })).toBeInViewport();
+    await expect(local.getByRole('searchbox')).toBeInViewport();
     await page.screenshot({ path: path.join(output, `narrow-${width}.png`), fullPage: true });
   }
   await page.setViewportSize({ width: 1440, height: 1000 });

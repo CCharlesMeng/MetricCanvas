@@ -40,6 +40,5 @@ test('static search options respect the existing toolbar execution condition', a
   const table = page.locator('[data-component="main/local-table"]');
   await expect(table.getByRole('button', { name: '表格搜索字段' })).toBeDisabled();
   await expect(table.getByRole('searchbox')).toBeDisabled();
-  await expect(table.getByRole('button', { name: '搜索', exact: true })).toBeDisabled();
   await expect(table.locator('tbody tr')).toHaveCount(2);
 });

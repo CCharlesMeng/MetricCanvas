@@ -58,6 +58,7 @@
     isChartComponent,
     resolveDataSourceFields,
     flattenPageComponents,
+    candidateDependencies,
     type ChartComponent,
     type Component,
     type ComponentCapabilities,
@@ -377,6 +378,14 @@
     }
     return dimensionCandidates.get(candidateScopeKey(declaration.id,declaration.dimension,undefined,context)) ?? {status:'loading' as const};
   }
+  function candidatePreloadScopeReady(declaration:Extract<FilterDeclaration,{type:'dimension'}>) {
+    const dependencies = candidateDependencies(declaration);
+    return declarations.every(filter => {
+      if (!dependencies.includes(filter.id)) return true;
+      if (filter.id === 'region' || filter.type === 'timePoint' || filter.type === 'timeRange') return filterValues.has(filter.id);
+      return true;
+    });
+  }
   function sourceFilterPagination(declaration:Extract<FilterDeclaration,{type:'dimension'}>):CandidatePageReader|undefined {
     const context = filterCandidateContext();
     const window = context.page && sourceCandidateWindow(context.page,declaration);
@@ -384,8 +393,9 @@
     const gateway = activeGateway;
     const request = filterCandidatesRequest(declaration,declarations,filterValues,undefined,context);
     const blocked = preparationBlocksFilter(declaration,declarations,preparingFilters);
-    const key = JSON.stringify([session,window.limit,blocked,cascadeContext(declaration,declarations,filterValues,context)]);
-    return {key,filterId:declaration.id,sourceId:window.sourceId,limit:window.limit,read:(offset,search,signal)=>{
+    const preload = !!declaration.defaultWhen && !initializing && !blocked && !!gateway.fetchFilterCandidates && candidatePreloadScopeReady(declaration);
+    const key = JSON.stringify([session,window.limit,blocked,context.displayInputs?.permissionRevision,cascadeContext(declaration,declarations,filterValues,context)]);
+    return {key,filterId:declaration.id,sourceId:window.sourceId,limit:window.limit,preload,read:(offset,search,signal)=>{
       if (blocked || !gateway.fetchFilterCandidates) return Promise.resolve({kind:'unavailable'});
       return gateway.fetchFilterCandidates({...request,sourceRead:{kind:'page',offset,search}},{signal});
     }};
@@ -1743,7 +1753,7 @@
     {/if}
 
     {#if !sectionsContent&&leadingId}
-      <div class="page-sections" data-leading-header-section>
+      <div class="page-sections" data-leading-header-section data-ioc-dedicated-header={readyPage.sections[0]?.components.length === 1 && !readyPage.sections[0]?.title ? true : undefined}>
       {#each projectedSections.filter(section=>section.id===leadingId) as section (section.id)}
         <RuntimeSection {section} {componentContent} hidden={!activeSections.some(item=>item.id===section.id)}/>
       {/each}
@@ -2081,6 +2091,11 @@
     flex-direction: column;
     gap: 16px;
     margin-top: var(--mc-page-sections-margin-top, 0);
+  }
+  .page-sections:global([data-ioc-native-sticky]) {
+    position: sticky;
+    top: 0;
+    z-index: 66;
   }
   /* 报表页头及包含正文组件的看板首分区与后续正文之间保留分区间距。 */
   .page-content[data-page-layout-form='report']

@@ -216,3 +216,19 @@ it('returns signed October changes and a single discount benchmark for the Europ
     output_dims: [], output_metrics: [currentMetric], order: {}, filter
   })).toMatchObject({ code: 'SUCCESS', data: [{ [currentMetric]: expect.closeTo(0.273333) }] });
 });
+
+it('pages descending cloud candidates with the auxiliary net payment measure', () => {
+  const item = {
+    output_dims:['云服务'], output_metrics:['净付费金额'],
+    filter:{time:{period:'month',start:'2026-10',end:'2026-10'},dims:[{dim_name:'geo_pc_code',dim_value_list:['R99']}],metrics:[]},
+    order:{order_by_field:'云服务',type:'desc',offset:0,limit:20}
+  };
+  const first = executeDqeItem(item);
+  const next = executeDqeItem({...item,order:{...item.order,offset:20}});
+  expect(first).toMatchObject({code:'SUCCESS',total_count:40,dqe:{offset:0,limit:20}});
+  expect(next).toMatchObject({code:'SUCCESS',total_count:40,dqe:{offset:20,limit:20}});
+  expect(first.data).toHaveLength(20);
+  expect(next.data).toHaveLength(20);
+  expect(first.data[0]).toEqual({'云服务':'模拟云服务 40','净付费金额':100});
+  expect(next.data[0]).toEqual({'云服务':'模拟云服务 20','净付费金额':100});
+});

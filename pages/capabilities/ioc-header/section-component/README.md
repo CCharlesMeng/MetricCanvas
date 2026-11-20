@@ -4,7 +4,7 @@
 
 - `/pages/ioc-header-section-placement`：首section含Header和正文；团队选乙后关闭“显示首分区”，两者一起消失；再打开，动态标题仍为B且URL保留team=B。
 - `/pages/ioc-header-section-groups`：点“明细”隐藏含页头的概览分区；页级导航仍在，可切回；筛选不重置。
-- `/pages/ioc-header-flow-sticky`：仅标题与期间的普通页头，没有重点国代控件。标题后不保留固定列；向下滚动后固定在页面顶部。吸顶后连续小幅往返滚动，页头应始终位于顶部，不等待滚动停止才回正；修改期间后回顶仍保留选值。
+- `/pages/ioc-header-flow-sticky`：仅标题与期间的普通页头，没有重点国代控件。标题后不保留固定列；向下滚动后固定在页面顶部。独立页头分区使用原生吸顶，连续往返滚动时页头始终位于顶部，正文照常滚动；修改期间后回顶仍保留选值。
 - `/pages/ioc-header-section-sticky`：紧凑 Header 与正文混排；窄屏多控件自然换行，主体无横向或纵向滚动条。向下滚动后持续吸顶，筛选可用；回顶恢复原位，无第二份控件。嵌套滚动、ShadowRoot 与静态导出沿原组件验收入口覆盖。
 - `/preview?prototype=ioc-header-component` 选择“公共页头与 Mount 滚动区域”：复用 `ioc-header-section-sticky` 完整合成页面，经 ShadowRoot 挂载到公共页头下方的滚动区域。向下滚动后 IOC 页头应停在 Mount 滚动区域顶部，公共页头保持可见；回滚后恢复原位。真实 `MetricCanvas.mount`、外层 ShadowRoot 及区域尺寸变化由 `packages/embed/tests/browser/ioc-header-mount.spec.ts` 回归。此场景验证既有嵌套滚动语义的边界识别修复，不新增页面声明，也不证明真实集成应用接线。
 

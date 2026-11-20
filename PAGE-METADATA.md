@@ -1,6 +1,8 @@
 # MetricCanvas 页面元数据规范
 
-Schema 6.130 支持可选动态多选排除项使用 `defaultWhen`。页面初始化及关联单选维度切换时，引擎按实际选值应用 `default` 名单或清空排除条件。见[排除项联动默认值](docs/page-metadata/filters.md#conditional-exclusion-defaults)与合成入口 `/pages/filter-conditional-exclusion-default`。
+页面搜索筛选、远程下拉候选、表头动态候选和表格工具栏搜索统一在停输 300 毫秒后自动生效。中文输入法组词期间等待确认。静态候选即时筛选。页面声明无需调整。见[下拉搜索](docs/page-metadata/filters.md#下拉搜索与普通树643)和[表格搜索](docs/page-metadata/components/table.md#表格工具栏与搜索621)。
+
+Schema 6.130 支持可选动态多选排除项使用 `defaultWhen`。页面初始化及关联单选维度切换时，引擎按实际选值应用 `default` 名单或清空排除条件。符合分页条件时后台预加载首批候选，每批沿用查询的 `limit`。控件右侧固定用于展开，「清空」位于下拉面板内；候选加载时显示状态，已选项可逐项取消。见[排除项联动默认值](docs/page-metadata/filters.md#conditional-exclusion-defaults)与合成入口 `/pages/filter-conditional-exclusion-default`。
 
 Schema 6.129 支持在指标卡的主、次指标行设置 `showDefinition: true`。该行沿 `valueField` 读取结果字段的 `metricCode`，在指标名称右侧显示问号。省略或设为 `false` 时隐藏。气泡的固定文案统一使用中文，服务端返回的内容按原文显示。同一页面会话内，成功获取的定义按指标编码复用。气泡随内容收缩，长内容可在气泡内滚动。见[指标定义气泡](docs/page-metadata/components/metricCard.md#metric-definition-tip)与合成入口 `/pages/metric-card-definition-tip`。
 
@@ -760,5 +762,7 @@ Tokens 百万选择、最终字段绑定检查及受控多槽表格装配见[创
 维度绑定包含与排除（6.114）：`filterBindings` 的普通及层级 `dimension` 绑定支持可选 `operator:"=" | "!="`；省略维持原有包含，`!=` 排除整个所选集合，清空不生成条件。声明、静态条件归属和 DQE 编码见[维度绑定运算](docs/page-metadata/queries-and-bindings.md#dimension-binding-operator)，合成验收 `/pages/dimension-binding-operator`。
 
 Schema 6.125 的可选动态排除条件从既有 `operator:"!="` 推导候选独立加载与选值保留，不增加字段。仅排除消费时，候选请求不再阻断业务查询；混合消费、必选、层级及显式清空策略保持原规则。详见[动态排除候选独立加载](docs/page-metadata/filters.md#independent-exclusion-candidates)。
+
+单维度候选查询可以随候选值返回已映射的指标，仍按候选维度排序和分页。见[候选查询分页](docs/page-metadata/filters.md#source-candidate-query-pagination)。
 
 从 6.130 起，这类筛选器可用 `defaultWhen` 为 `default` 指定联动条件。详见[排除项联动默认值](docs/page-metadata/filters.md#conditional-exclusion-defaults)。

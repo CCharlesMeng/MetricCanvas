@@ -48,6 +48,12 @@
         "valueField": "service",
         "labelField": "service"
       },
+      "candidateContext": {
+        "filterIds": [
+          "service-scope"
+        ],
+        "reconcile": "clear"
+      },
       "default": [
         "甲云服务01",
         "预设专属服务"
@@ -70,26 +76,40 @@
           "type": "string",
           "role": "dimension",
           "queryField": "云服务"
+        },
+        "net-payment": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "净付费金额",
+          "nullable": true
         }
       },
       "source": {
         "type": "query",
         "query": {
           "language": "dqe",
+          "filterBindings": {
+            "service-scope": {
+              "target": "dimension",
+              "queryField": "范围"
+            }
+          },
           "body": {
             "dsl_list": [
               {
                 "output_dims": [
                   "云服务"
                 ],
-                "output_metrics": [],
+                "output_metrics": [
+                  "净付费金额"
+                ],
                 "filter": {
                   "dims": [],
                   "metrics": []
                 },
                 "order": {
                   "order_by_field": "云服务",
-                  "type": "asc",
+                  "type": "desc",
                   "offset": 0,
                   "limit": 20
                 }

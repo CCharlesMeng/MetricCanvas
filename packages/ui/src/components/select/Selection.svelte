@@ -4,15 +4,16 @@
   import { tick } from 'svelte';
   import Theme from '../../shared/Theme.svelte';
   import { observePopover, popoverPosition } from '../../shared/popover';
+  import { createSearchInput } from '../../shared/search-input';
   import type { UiTreeOption } from '../../types';
   import Icon from './SelectionIcon.svelte';
-  import { selectionNodes, flattenNodes, filterNodes, selectionState, toggleSelection, type SelectionNode, type TreeSelection } from './selection';
+  import { selectionNodes, flattenNodes, filterNodes, selectionState, toggleSelection, withSelectedOptions, type SelectionNode, type TreeSelection } from './selection';
 
   let {options, value = [], label, multiple = true, tree = false, searchable = true,
-    treeSelection = 'independent', clearable = false, disabled = false, loading = false, placeholder = '请选择', allSelectedLabel, statusText, statusError = false, required = false, onretry, onchange, paging}:
+    treeSelection = 'independent', clearable = false, disabled = false, loading = false, placeholder = '请选择', allSelectedLabel, statusText, statusError = false, required = false, showExclusions = false, onretry, onchange, paging}:
     {options: UiTreeOption[]; value?: string[]; label: string; multiple?: boolean; tree?: boolean;
      loading?: boolean; searchable?: boolean; treeSelection?: TreeSelection; disabled?: boolean; placeholder?: string; allSelectedLabel?: string;
-     statusText?: string; statusError?: boolean; clearable?: boolean; required?: boolean; onretry?:()=>void; onchange?: (value: string[]) => void;
+     statusText?: string; statusError?: boolean; clearable?: boolean; required?: boolean; showExclusions?: boolean; onretry?:()=>void; onchange?: (value: string[]) => void;
      paging?: {onopen:(open:boolean)=>void; onsearch:(term:string)=>void; onmore?:()=>void; complete:boolean; loadingMore:boolean; failed:boolean}} = $props();
 
   let trigger: HTMLButtonElement;
@@ -26,14 +27,18 @@
   let left = $state(0), top = $state(0), width = $state(0);
   const nodes = $derived(selectionNodes(options));
   const flat = $derived(flattenNodes(nodes));
-  const visible = $derived(paging ? nodes : filterNodes(nodes, keyword));
+  const matching = $derived(paging ? nodes : filterNodes(nodes, keyword));
+  const visible = $derived(showExclusions ? withSelectedOptions(matching, value, keyword) : matching);
+  const candidatesReady = $derived(!loading && !statusText);
   const labels = $derived(new Map(flat.map(node => [node.value, node])));
   const policy = $derived(tree ? treeSelection : 'independent');
   const selectable = $derived(flat.filter(node => !node.disabled && node.selectable !== false && (policy !== 'leaf' || !node.children?.length)));
   const allSelected = $derived(selectable.length > 0 && selectable.every(node => value.includes(node.value)));
   const allSelectedText = $derived(!open && multiple && allSelected ? allSelectedLabel : undefined);
   const someSelected = $derived(selectable.some(node => value.includes(node.value)));
+  const canClear = $derived(clearable && !required && value.length > 0);
   const searchActive = $derived(searchable && keyword.trim().length > 0);
+  const search = createSearchInput(term => paging?.onsearch(term));
   $effect(() => { if (!searchable) keyword = ''; });
   $effect(() => { if (disabled && open) close(false); });
   $effect(() => { if (open) return observePopover(trigger, place, popup); });
@@ -87,7 +92,7 @@
   function choose(node: SelectionNode) {
     if (disabled || node.disabled) return;
     if ((!multiple || policy === 'independent') && node.selectable === false || policy === 'leaf' && node.children?.length && !multiple) { expand(node); return; }
-    const original = flat.find(candidate => candidate.value === node.value) ?? node;
+    const original = tree ? flat.find(candidate => candidate.value === node.value) ?? node : node;
     const next = toggleSelection(value, original, multiple, policy);
     if (required && next.length === 0) return;
     if (next.join('\0') !== value.join('\0')) onchange?.(next);
@@ -98,13 +103,25 @@
     onchange?.(value.filter(item => item !== candidate));
     tick().then(() => trigger?.focus());
   }
+  function clearExclusions() {
+    onchange?.([]);
+    (searchInput ?? popup).focus({preventScroll:true});
+  }
   function scrollTags(event: WheelEvent) {
     if (!tagStrip || tagStrip.scrollWidth <= tagStrip.clientWidth) return;
     event.preventDefault(); tagStrip.scrollLeft += event.deltaX || event.deltaY;
   }
+  function handlePopupTab(event: KeyboardEvent) {
+    if (event.key !== 'Tab') return false;
+    if (!showExclusions) close();
+    return true;
+  }
+  function closeExclusionsOnBlur(event: FocusEvent) {
+    if (showExclusions && event.relatedTarget instanceof Node && !popup.contains(event.relatedTarget)) close(false);
+  }
   function popupKeys(event: KeyboardEvent) {
     if (event.key === 'Escape') { event.preventDefault(); close(); return; }
-    if (event.key === 'Tab') { close(); return; }
+    if (handlePopupTab(event)) return;
     const target = event.target as HTMLElement;
     const choices = [...popup.querySelectorAll<HTMLButtonElement>('[data-selection-choice]:not(:disabled)')];
     const index = choices.indexOf(target as HTMLButtonElement);
@@ -127,7 +144,7 @@
 </script>
 
 <Theme>
-  <div class="mc-selection mc-ui-select" class:is-disabled={disabled} class:has-clear={clearable && !required && value.length > 0} class:is-open={open} onwheel={scrollTags}>
+  <div class="mc-selection mc-ui-select" class:is-disabled={disabled} class:has-clear={canClear && !showExclusions} class:is-open={open} onwheel={scrollTags}>
     <div class="mc-ui-input selection-input" class:is-disabled={disabled}>
       <button bind:this={trigger} type="button" class="mc-ui-input__inner selection-trigger" {disabled}
         aria-label={label}
@@ -137,7 +154,7 @@
       </button>
       <span class="mc-ui-input__suffix selection-arrow"><span class="mc-ui-input__suffix-inner"><Icon name="chevron-down"/></span></span>
     </div>
-    {#if clearable && !required && value.length}<button type="button" class="selection-clear" aria-label={`清空${label}`} {disabled} onclick={() => {if (!disabled) onchange?.([]);}}><Icon name="close"/></button>{/if}
+    {#if canClear && !showExclusions}<button type="button" class="selection-clear" aria-label={`清空${label}`} {disabled} onclick={() => {if (!disabled) onchange?.([]);}}><Icon name="close"/></button>{/if}
     {#if multiple && value.length && !allSelectedText}
       <div bind:this={tagStrip} class="selection-tags mc-ui-select__tags" role="group" aria-label={`${label}已选标签`}>
         <span class="tag-track">{#each value as candidate (candidate)}<span class="tag-item">
@@ -152,29 +169,44 @@
   <div bind:this={popup} aria-busy={loading} popover="auto" class="mc-ui-select-dropdown selection-popup" role="dialog" aria-label={`${label}候选`} tabindex="-1"
     style:left="{left}px" style:top="{top}px" style:--mc-selection-anchor-width="{width}px"
     style:--mc-selection-default-content-min-width="{searchable || tree || multiple ? 240 : 0}px"
-    ontoggle={event => {open = event.currentTarget.matches(':popover-open');}} onkeydown={popupKeys}>
+    ontoggle={event => {open = event.currentTarget.matches(':popover-open');}} onkeydown={popupKeys} onfocusout={closeExclusionsOnBlur}>
     {#if searchable}<div class="mc-ui-input mc-ui-input-underline mc-ui-select-dropdown__search">
       <span class="mc-ui-input__prefix"><Icon name="search"/></span>
-      <input bind:this={searchInput} class="mc-ui-input__inner" type="text" aria-label={`搜索${label}`} placeholder="输入关键字搜索" bind:value={keyword} oninput={event=>paging?.onsearch(event.currentTarget.value)}/>
+      <input bind:this={searchInput} class="mc-ui-input__inner" type="text" aria-label={`搜索${label}`} placeholder="输入关键字搜索" bind:value={keyword} use:search.attach={!!paging && !disabled}/>
     </div>{/if}
-    {#if loading}<LoadingPlaceholder />
+    {#if showExclusions}
+      <div class="selection-heading">
+        <p class="selection-status">{label}</p>
+        {#if canClear}<button type="button" class="clear-exclusions" aria-label={`清空${label}`} {disabled} onclick={clearExclusions}>清空</button>{/if}
+      </div>
+    {/if}
+    {#if loading}
+      {#if showExclusions}
+        <p class="selection-status" role="status">{value.length ? '候选项加载中，已选项可先调整' : '候选项加载中…'}</p>
+      {:else}
+        <LoadingPlaceholder />
+      {/if}
     {:else if statusText}<p class="selection-status" role={statusError ? 'alert' : 'status'}>{statusText}</p>{#if statusError && onretry}<button type="button" class="mc-ui-option mc-ui-select-dropdown__item choice" onclick={onretry}>重试</button>{/if}
-    {:else if !visible.length}<p class="selection-status" role="status">{searchActive ? '无匹配候选项' : '无候选项'}</p>
-    {:else if tree}
-      <div class="mc-ui-tree mc-ui-tree--show-line selection-tree" role="tree" aria-label={`${label}选项`} aria-multiselectable={multiple}>
-        {#each visible as node (node.value)}{@render treeRow(node, 1)}{/each}
-      </div>
-    {:else}
-      <div role="listbox" class:paged={!!paging} aria-label={`${label}选项`} aria-multiselectable={multiple}>
-        {#if multiple && !required && !searchActive && (!paging || paging.complete)}<button type="button" class="mc-ui-option mc-ui-select-dropdown__item choice" role="option" aria-selected={allSelected} data-selection-choice onclick={() => onchange?.(allSelected ? value.filter(item => !selectable.some(node => node.value === item)) : [...new Set([...value, ...selectable.map(node => node.value)])])}>
-          {@render checkbox(allSelected, someSelected && !allSelected)}<span>全选</span>
-        </button>{/if}
-        {#each visible as node (node.value)}<button type="button" class="mc-ui-option mc-ui-select-dropdown__item choice" class:selected={value.includes(node.value)} class:is-disabled={node.disabled}
-          role="option" aria-selected={value.includes(node.value)} disabled={node.disabled} data-selection-choice data-value={node.value} title={node.value} onclick={() => choose(node)}>
-          {#if multiple}{@render checkbox(value.includes(node.value), false)}{/if}<span title={node.label}>{node.label}</span>
-        </button>{/each}
-        {#if open && paging?.onmore}<div class="selection-more" aria-hidden="true" use:observeMore={paging.onmore}></div>{/if}
-      </div>
+    {:else if !visible.length || showExclusions && !matching.length}
+      <p class="selection-status" role="status">{searchActive ? '无匹配候选项' : showExclusions ? '暂无可添加的候选项' : '无候选项'}</p>
+    {/if}
+    {#if visible.length && (candidatesReady || showExclusions)}
+      {#if tree}
+        <div class="mc-ui-tree mc-ui-tree--show-line selection-tree" role="tree" aria-label={`${label}选项`} aria-multiselectable={multiple}>
+          {#each visible as node (node.value)}{@render treeRow(node, 1)}{/each}
+        </div>
+      {:else}
+        <div role="listbox" class:paged={!!paging} aria-label={`${label}选项`} aria-multiselectable={multiple}>
+          {#if candidatesReady && matching.length && multiple && !required && !searchActive && (!paging || paging.complete)}<button type="button" class="mc-ui-option mc-ui-select-dropdown__item choice" role="option" aria-selected={allSelected} data-selection-choice onclick={() => onchange?.(allSelected ? value.filter(item => !selectable.some(node => node.value === item)) : [...new Set([...value, ...selectable.map(node => node.value)])])}>
+            {@render checkbox(allSelected, someSelected && !allSelected)}<span>全选</span>
+          </button>{/if}
+          {#each visible as node (node.value)}<button type="button" class="mc-ui-option mc-ui-select-dropdown__item choice" class:selected={value.includes(node.value)} class:is-disabled={node.disabled}
+            role="option" aria-selected={value.includes(node.value)} disabled={node.disabled} data-selection-choice data-value={node.value} title={node.value} onclick={() => choose(node)}>
+            {#if multiple}{@render checkbox(value.includes(node.value), false)}{/if}<span title={node.label}>{node.label}</span>
+          </button>{/each}
+          {#if open && paging?.onmore}<div class="selection-more" aria-hidden="true" use:observeMore={paging.onmore}></div>{/if}
+        </div>
+      {/if}
     {/if}
     {#if paging?.loadingMore}<p class="selection-status" role="status">正在加载更多</p>{/if}
     {#if paging?.failed}<p class="selection-status" role="alert">后续候选项加载失败</p><button type="button" class="mc-ui-option mc-ui-select-dropdown__item choice" onclick={onretry}>重试</button>{/if}
@@ -232,7 +264,10 @@
     font-size: var(--tv-SelectDropdown-font-size, 14px);
   }
   .selection-popup[popover]:popover-open{display:flex;flex-direction:column}
-  .selection-popup>.mc-ui-select-dropdown__search,.selection-status{flex:none}
+  .selection-popup>.mc-ui-select-dropdown__search,.selection-status,.selection-heading{flex:none}
+  .selection-heading{display:flex;align-items:center;justify-content:space-between}
+  .clear-exclusions{margin-inline-end:8px;padding:6px 8px;border:0;background:none;color:var(--tv-color-text-weaken,#808080);font:inherit;cursor:pointer}
+  .clear-exclusions:hover{color:var(--tv-color-text,#191919)}
   .selection-popup.mc-ui-select-dropdown[popover] > .mc-ui-select-dropdown__search {
     /* A zero preferred width lets the options size the panel before the search fills it. */
     width: var(--mc-selection-popup-search-width, var(--tv-SelectDropdown-search-width));

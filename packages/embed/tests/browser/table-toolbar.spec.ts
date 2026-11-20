@@ -14,11 +14,11 @@ test('table-local search finds a later row and downloads all matches while anoth
   const table = page.locator('[data-component="main/records-table"]');
   const other = page.locator('[data-component="main/other-table"]');
   await table.getByRole('searchbox', { name: '表格搜索' }).fill('客户25');
-  await table.getByRole('button', { name: '搜索', exact: true }).click();
   await expect(table.getByRole('cell', { name: '客户25', exact: true })).toBeVisible();
   await expect(table.locator('tbody tr')).toHaveCount(1); await expect(other.locator('tbody tr')).toHaveCount(10);
   await table.getByRole('button', { name: '清空表格搜索' }).click();
-  await table.getByRole('searchbox').fill('客户2'); await table.getByRole('searchbox').press('Enter');
+  await table.getByRole('searchbox').fill('客户2');
+  await expect(table.getByRole('cell', { name: '客户20', exact: true })).toBeVisible();
   const downloaded = page.waitForEvent('download'); await table.getByRole('button', { name: '导出' }).click();
   const file = await downloaded; expect(file.suggestedFilename()).toBe('客户明细.xlsx');
   const workbook = new ExcelJS.Workbook(); await workbook.xlsx.readFile((await file.path())!);
@@ -44,9 +44,9 @@ test('query search forwards mapped fields and full export traverses every matchi
       return { rows: rows.slice(offset, offset + limit), totalCount: rows.length };
     } } });
   }, document);
-  await page.getByRole('searchbox').fill('客户35'); await page.getByRole('searchbox').press('Enter');
+  await page.getByRole('searchbox').fill('客户35');
   await expect(page.getByRole('cell', { name: '客户35', exact: true })).toBeVisible();
-  await page.getByRole('searchbox').fill('客户2'); await page.getByRole('searchbox').press('Enter');
+  await page.getByRole('searchbox').fill('客户2');
   await expect(page.getByRole('cell', { name: '客户2', exact: true })).toBeVisible();
   const downloaded = page.waitForEvent('download'); await page.getByRole('button', { name: '导出' }).click();
   const workbook = new ExcelJS.Workbook(); await workbook.xlsx.readFile((await (await downloaded).path())!);
@@ -66,7 +66,7 @@ test('unsupported query search remains clearable after failure', async ({ page }
     } } });
   }, document);
   await expect(page.getByRole('cell', { name: '正常记录' })).toBeVisible();
-  await page.getByRole('searchbox').fill('客户'); await page.getByRole('searchbox').press('Enter');
+  await page.getByRole('searchbox').fill('客户');
   await expect(page.locator('table tbody')).toHaveText('暂无数据');
   await expect(page.getByText('搜索能力未配置')).toHaveCount(0);
   await page.getByRole('button', { name: '清空表格搜索' }).click();
@@ -81,7 +81,7 @@ test('variants and Tab tables retain individual search on narrow screens without
   document.sections[0].components = [{ id: 'tabs', type: 'tabContainer', layout: { span: 12 }, props: { tabs: [{ id: 'a', label: '第一表', component: a }, { id: 'b', label: '第二表', component: b }] } }];
   await page.setViewportSize({ width: 390, height: 900 }); await page.goto('/examples/inline.html');
   await page.evaluate(document => { window.runtime.destroy(); window.runtime = MetricCanvas.mount('#dashboard', { document }); }, document);
-  await page.getByRole('searchbox').fill('客户25'); await page.getByRole('searchbox').press('Enter');
+  await page.getByRole('searchbox').fill('客户25');
   await expect(page.getByRole('cell', { name: '客户25' })).toBeVisible();
   await page.getByRole('tab', { name: '第二表' }).click(); await expect(page.getByRole('tabpanel').locator('tbody tr')).toHaveCount(10);
   await page.getByRole('tab', { name: '第一表' }).click(); await expect(page.getByRole('searchbox')).toHaveValue('客户25');
@@ -127,8 +127,9 @@ test('detail tables search and export only their scoped complete result', async 
   }, document);
   await page.getByRole('button', { name: '客户01', exact: true }).click();
   const search = page.getByRole('searchbox', { name: '表格搜索' });
-  await search.fill('2026-02'); await search.press('Enter');
+  await search.fill('2026-02');
   await expect(page.getByRole('cell', { name: '2026-02', exact: true })).toBeVisible();
+  await expect(page.getByRole('cell', { name: '2026-01', exact: true })).toHaveCount(0);
   const downloaded = page.waitForEvent('download'); await page.getByRole('button', { name: '导出' }).click();
   const workbook = new ExcelJS.Workbook(); await workbook.xlsx.readFile((await (await downloaded).path())!);
   expect(workbook.worksheets[0].rowCount).toBe(2);

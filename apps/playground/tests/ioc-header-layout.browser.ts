@@ -32,7 +32,8 @@ async function expectNoHeaderScrollbars(header: Locator) {
   const scrollbars = await header.evaluate(node => Array.from(node.querySelectorAll('*')).concat(node).filter(element => {
     if (element.closest('[popover], [role="dialog"]') || !element.getClientRects().length) return false;
     const style = getComputedStyle(element);
-    return /auto|scroll/.test(style.overflowX) && element.scrollWidth > element.clientWidth + 1
+    const hiddenTagScrollbar = element.classList.contains('selection-tags') && style.scrollbarWidth === 'none';
+    return !hiddenTagScrollbar && /auto|scroll/.test(style.overflowX) && element.scrollWidth > element.clientWidth + 1
       || /auto|scroll/.test(style.overflowY) && element.scrollHeight > element.clientHeight + 1;
   }).map(element => element.className));
   expect(scrollbars).toEqual([]);
@@ -111,6 +112,35 @@ test('pinned header does not drift between a scroll event and the next animation
   await expect.poll(async () => (await page.locator('[data-ioc-scroll-samples]').textContent())!.length).toBeGreaterThan(0);
   const samples = (await page.locator('[data-ioc-scroll-samples]').textContent())!.split(',').filter(Boolean).map(Number);
   expect(Math.max(...samples.map(Math.abs))).toBeLessThanOrEqual(1);
+});
+
+test('dedicated IOC header stays pinned as the scroll position changes before any event', async ({ page }) => {
+  await page.setViewportSize({ width: 1100, height: 650 });
+  await page.goto('/pages/ioc-header-flow-sticky');
+  await expect(page.locator('[data-ioc-header]')).toBeVisible();
+  await page.evaluate(() => window.scrollTo(0, 400));
+  await expect(page.locator('[data-ioc-floating]')).toHaveCount(1);
+
+  const samples = await page.evaluate(() => {
+    const header = document.querySelector('[data-ioc-header]')!;
+    const body = document.querySelector('[data-leading-header-section] + .page-sections')!;
+    const position = () => ({
+      scroll: scrollY,
+      header: header.getBoundingClientRect().top,
+      height: header.getBoundingClientRect().height,
+      body: body.getBoundingClientRect().top,
+    });
+    const initial = position();
+    window.scrollBy(0, 60);
+    const down = position();
+    window.scrollBy(0, -25);
+    return [initial, down, position()];
+  });
+
+  expect(samples.map(sample => sample.scroll)).toEqual([400, 460, 435]);
+  expect(samples.map(sample => sample.header)).toEqual([0, 0, 0]);
+  expect(samples.map(sample => sample.height)).toEqual(Array(3).fill(samples[0].height));
+  expect(samples.map(sample => sample.body + sample.scroll)).toEqual(Array(3).fill(samples[0].body + samples[0].scroll));
 });
 
 test('compact header wraps every control without either scrollbar and still pins', async ({ page }) => {

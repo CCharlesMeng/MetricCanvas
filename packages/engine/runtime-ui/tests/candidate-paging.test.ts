@@ -38,3 +38,36 @@ it('ignores late candidate pages after a search or dependency change and dedupli
   paging.dispose();
   expect(second.requests[1].signal.aborted).toBe(true);
 });
+
+it('preloads only the first page and reuses the in-flight read when the menu opens', async () => {
+  const {reader,requests} = requestWindow('region-a');
+  const publish = vi.fn<(page:CandidatePages)=>void>();
+  const idle: Array<() => void> = [];
+  const paging = candidatePaging(publish, work => {
+    idle.push(work);
+    return () => { const index = idle.indexOf(work); if (index >= 0) idle.splice(index,1); };
+  });
+  paging.configure({...reader,preload:true});
+  expect(requests).toHaveLength(0);
+  idle.shift()!();
+  expect(requests[0]).toMatchObject({offset:0,search:''});
+  paging.setOpen(true);
+  paging.more();
+  expect(requests).toHaveLength(1);
+  requests[0].finish('a1');
+  await Promise.resolve();
+  expect(publish.mock.lastCall?.[0].candidates).toEqual([{value:'a1',label:'a1'}]);
+  paging.more();
+  expect(requests[1]).toMatchObject({offset:1,search:''});
+  paging.setOpen(false);
+  const next = requestWindow('region-b');
+  paging.configure({...next.reader,preload:true});
+  expect(requests[1].signal.aborted).toBe(true);
+  idle.shift()!();
+  expect(next.requests[0]).toMatchObject({offset:0,search:''});
+  requests[1].finish('a2');
+  await Promise.resolve();
+  expect(publish.mock.lastCall?.[0].candidates).toEqual([]);
+  paging.dispose();
+  expect(next.requests[0].signal.aborted).toBe(true);
+});

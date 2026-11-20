@@ -17,7 +17,32 @@ function scrollportTop(boundary: HTMLElement | undefined): number {
   if (!boundary) return 0;
   const rect = boundary.getBoundingClientRect();
   const scaleY = boundary.offsetHeight ? rect.height / boundary.offsetHeight : 1;
-  return Math.max(0, rect.top + boundary.clientTop * scaleY);
+  return rect.top + boundary.clientTop * scaleY;
+}
+
+function nativeStickySection(anchor: HTMLElement, boundary: HTMLElement | undefined): HTMLElement | undefined {
+  const section = anchor.closest<HTMLElement>('[data-ioc-dedicated-header]');
+  if (!section || scrollBoundary(section) !== boundary) return;
+  // A hidden overflow box is a CSS scroll container even when it cannot follow the host scroll.
+  for (let node = composedParent(section); node && node !== boundary; node = composedParent(node)) {
+    if (getComputedStyle(node).overflowY === 'hidden') return;
+  }
+  return section;
+}
+
+function updateNativeHeader(section: HTMLElement, content: HTMLElement, top: number, scrollTop: number): boolean {
+  const canPin = top >= 0;
+  if (section.hasAttribute('data-ioc-native-sticky') !== canPin) {
+    section.toggleAttribute('data-ioc-native-sticky', canPin);
+    content.style.removeProperty('top');
+  }
+  if (!canPin) return false;
+
+  // CSS owns the position. The scroll handler only publishes the pinned state.
+  const rect = section.getBoundingClientRect();
+  if (scrollTop > 0 && rect.top <= top + 0.5 && rect.bottom > top) content.dataset.iocFloating = 'true';
+  else delete content.dataset.iocFloating;
+  return true;
 }
 
 export function attachHeaderFrame(anchor:HTMLElement,content:HTMLElement):()=>void {
@@ -25,6 +50,7 @@ export function attachHeaderFrame(anchor:HTMLElement,content:HTMLElement):()=>vo
   if(!root)return ()=>{};
   const boundary = scrollBoundary(anchor);
   const win = anchor.ownerDocument.defaultView;
+  const nativeSection = nativeStickySection(anchor, boundary);
   let frame=0,disposed=false;
   const restore = () => {
     delete content.dataset.iocFloating;
@@ -38,9 +64,12 @@ export function attachHeaderFrame(anchor:HTMLElement,content:HTMLElement):()=>vo
       closePopovers(content);
       return;
     }
+    const edge = scrollportTop(boundary);
+    if (nativeSection && updateNativeHeader(nativeSection, content, edge, boundary?.scrollTop ?? win?.scrollY ?? 0)) return;
+
     const rect = anchor.getBoundingClientRect();
     const bottom = root.getBoundingClientRect().bottom;
-    const top = scrollportTop(boundary);
+    const top = Math.max(0, edge);
     if (rect.top >= top || bottom <= top || rect.height === 0) {
       restore();
       return;
@@ -67,6 +96,7 @@ export function attachHeaderFrame(anchor:HTMLElement,content:HTMLElement):()=>vo
     win?.removeEventListener('scroll', onscroll, true);
     win?.removeEventListener('resize', schedule);
     boundary?.removeEventListener('scroll',onscroll);
+    if (nativeSection) delete nativeSection.dataset.iocNativeSticky;
     restore();closePopovers(content);
   };
 }

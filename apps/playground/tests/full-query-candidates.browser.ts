@@ -44,6 +44,7 @@ test('opening another column preempts a hung preload and leaves the rendered tab
 });
 
 test('remote candidates read across 200-row batches and keep alternatives after selecting their own column', async ({ page }) => {
+  const requests = await observeRequests(page);
   await page.goto('/pages/table-column-candidates-query');
   const table = page.locator('.runtime-view .table-widget');
   await expect(table).toContainText('总条数： 620');
@@ -51,8 +52,14 @@ test('remote candidates read across 200-row batches and keep alternatives after 
   await offices.locator('summary').click();
   await expect(offices.getByRole('checkbox')).toHaveCount(50);
   await expect(offices.getByRole('button', { name: /加载更多/ })).toHaveCount(0);
-  await offices.getByRole('searchbox').fill('办事处80');
+  const start = (await requests()).length;
+  const search = offices.getByRole('searchbox');
+  await search.fill('办');
+  await search.fill('办事处8');
+  await search.fill('办事处80');
   await expect(offices.getByRole('checkbox')).toHaveCount(1);
+  expect((await requests()).slice(start).filter(event => event.kind === 'candidate' && event.phase === 'start')
+    .map(event => event.offset)).toEqual([0, 200, 400, 600]);
   await offices.getByRole('checkbox', { name: '办事处80', exact: true }).click();
   await expect(table).toContainText('总条数： 1');
   await openFilter(offices);

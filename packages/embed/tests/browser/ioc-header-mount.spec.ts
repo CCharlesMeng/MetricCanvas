@@ -29,6 +29,10 @@ for (const shadowContainer of [false, true]) {
     await expect(header.getByRole('combobox')).toHaveValue('2026-01');
     await page.locator('#dashboard').evaluate(node => { node.style.top = '120px'; });
     await expect.poll(async () => (await header.boundingBox())!.y).toBeCloseTo(122, 0);
+    await page.locator('#dashboard').evaluate(node => { node.style.top = '-50px'; });
+    await expect.poll(async () => (await header.boundingBox())!.y).toBeCloseTo(0, 0);
+    await page.locator('#dashboard').evaluate(node => { node.style.top = '120px'; });
+    await expect.poll(async () => (await header.boundingBox())!.y).toBeCloseTo(122, 0);
     await page.locator('#dashboard').evaluate(node => { node.scrollTop = 0; });
     await expect(page.locator('[data-ioc-floating]')).toHaveCount(0);
     await expect(header.getByRole('combobox')).toHaveValue('2026-01');

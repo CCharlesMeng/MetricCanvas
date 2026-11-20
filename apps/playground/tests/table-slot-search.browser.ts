@@ -70,7 +70,6 @@ test('business approval detail searches owner and customer across all pages and 
   await page.getByRole('option', { name: '责任人', exact: true }).click();
   const beforeSearch = requests.length;
   await table.getByRole('searchbox').fill('责任人乙');
-  await table.getByRole('searchbox').press('Enter');
   await expect(table.getByRole('cell', { name: 'B012', exact: true })).toBeVisible();
   await expect(table.getByRole('cell', { name: 'B024', exact: true })).toBeVisible();
   await expect(table).toContainText('总条数： 2');
@@ -93,7 +92,6 @@ test('business approval detail searches owner and customer across all pages and 
   await expect(table.getByRole('cell', { name: 'B022', exact: true })).toBeVisible();
   await expect(table).toContainText('总条数： 2');
   await table.getByRole('searchbox').fill('不存在的客户');
-  await table.getByRole('searchbox').press('Enter');
   await expect(table.getByText('暂无数据', { exact: true })).toBeVisible();
   await table.getByRole('button', { name: '清空表格搜索' }).click();
   await expect(table.getByRole('cell', { name: 'B001', exact: true })).toBeVisible();
@@ -110,8 +108,10 @@ test('an over-budget lookup reports its error and does not issue a filtered main
   await expect(table.getByRole('button', { name: '导出', exact: true })).toBeEnabled();
   const beforeSearch = requests.length;
   await table.getByRole('searchbox').fill('责任人乙');
-  await table.getByRole('searchbox').press('Enter');
   await expect.poll(() => errors.some(message => message.includes('DQE_QUERY_REJECTED'))).toBe(true);
   await expect(table.getByText('暂无数据', { exact: true })).toBeVisible();
-  expect(requests.slice(beforeSearch).filter(item => item.output_metrics?.includes('商审决策时长'))).toHaveLength(0);
+  const searchRequests = requests.slice(beforeSearch);
+  expect(searchRequests.some(item => item.filter?.fields?.some(rule => rule.field_name === '责任人名称'))).toBe(true);
+  expect(searchRequests.filter(item => item.output_metrics?.includes('商审决策时长')
+    && item.filter?.dims?.some(rule => rule.dim_name === '商务编号'))).toHaveLength(0);
 });

@@ -2,15 +2,19 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
 
 type WindowRequest = { kind:'page'|'selection'; offset:number; limit:number };
 
-async function openMenu(page:Page, state='ready') {
+async function observeWindows(page:Page) {
   await page.addInitScript(() => {
     const requests:WindowRequest[] = [];
     Object.assign(window, {candidateWindows:requests});
     window.addEventListener('metriccanvas:source-candidate-window', event => requests.push((event as CustomEvent<WindowRequest>).detail));
   });
-  await page.goto(`/pages/filter-source-query-pagination?state=${state}`);
-  const requestWindows = () => page.evaluate(() => (window as unknown as {candidateWindows:WindowRequest[]}).candidateWindows
+  return () => page.evaluate(() => (window as unknown as {candidateWindows:WindowRequest[]}).candidateWindows
     .filter(request => request.kind === 'page').map(({offset,limit}) => [offset,limit]));
+}
+
+async function openMenu(page:Page, state='ready') {
+  const requestWindows = await observeWindows(page);
+  await page.goto(`/pages/filter-source-query-pagination?state=${state}`);
   const group = page.locator('[data-filter-group="service"]');
   const trigger = group.getByRole('button',{name:'云服务排除项',exact:true});
   await expect(trigger).toBeVisible();
@@ -23,6 +27,51 @@ async function openMenu(page:Page, state='ready') {
 async function scrollToEnd(list:Locator) {
   await list.evaluate(element => { element.scrollTop = element.scrollHeight; });
 }
+
+test('preloads the first 20 exclusions while closed and loads one more batch on scroll', async ({page}) => {
+  const requestWindows = await observeWindows(page);
+  await page.goto('/pages/filter-conditional-exclusion-default');
+  const group = page.locator('[data-filter-group="service"]');
+  const trigger = group.getByRole('button',{name:'云服务排除项',exact:true});
+  const dialog = group.getByRole('dialog',{name:'云服务排除项候选'});
+  await expect(trigger).toHaveAttribute('aria-expanded','false');
+  await expect.poll(requestWindows).toEqual([[0,20]]);
+  await trigger.press('ArrowDown');
+  await expect(dialog.getByRole('option',{name:'甲云服务25',exact:true})).toBeVisible();
+  expect(await requestWindows()).toEqual([[0,20]]);
+  await scrollToEnd(dialog.getByRole('listbox'));
+  await expect(dialog.getByRole('option',{name:'甲云服务05',exact:true})).toBeVisible();
+  expect(await requestWindows()).toEqual([[0,20],[20,20]]);
+  await page.keyboard.press('Escape');
+  await switchScope(page,'乙');
+  await expect(trigger).toHaveAttribute('aria-expanded','false');
+  await expect.poll(requestWindows).toEqual([[0,20],[20,20],[0,20]]);
+  await trigger.press('ArrowDown');
+  await expect(dialog.getByRole('option',{name:'乙云服务12',exact:true})).toBeVisible();
+  await expect(dialog.getByRole('option',{name:'甲云服务25',exact:true})).toHaveCount(0);
+});
+
+test('debounces remote candidates, waits for IME and discards a search when the menu closes', async ({page}) => {
+  const {menu,list,requestWindows} = await openMenu(page);
+  await expect(list.getByRole('option',{name:'甲云服务10',exact:true})).toBeVisible();
+  await page.clock.install();
+  const search = menu.getByRole('textbox');
+  await search.fill('2');
+  await search.dispatchEvent('compositionstart');
+  await search.fill('甲云服');
+  await page.clock.runFor(400);
+  expect(await requestWindows()).toEqual([[0,10]]);
+  await search.dispatchEvent('compositionend');
+  await search.fill('25');
+  await expect(list.getByRole('option',{name:'甲云服务25',exact:true})).toBeVisible();
+  expect(await requestWindows()).toEqual([[0,10],[0,10]]);
+
+  await search.fill('26');
+  await search.press('Escape');
+  await expect(menu).toBeHidden();
+  await page.clock.runFor(400);
+  expect(await requestWindows()).toEqual([[0,10],[0,10]]);
+});
 
 test('requests one candidate window, loads more on scroll and keeps exclusions across search',async({page})=>{
   const {group,menu,list,requestWindows} = await openMenu(page);

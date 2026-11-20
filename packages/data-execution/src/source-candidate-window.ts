@@ -49,7 +49,7 @@ export function withSourceCandidateSelection(page: Page | undefined, filter: Dim
 
 function singleDimension(item: Record<string, unknown>, field: string): boolean {
   const {output_dims: dimensions, output_metrics: metrics, order} = item;
-  if (!Array.isArray(dimensions) || dimensions.length !== 1 || dimensions[0] !== field || !Array.isArray(metrics) || metrics.length) return false;
+  if (!Array.isArray(dimensions) || dimensions.length !== 1 || dimensions[0] !== field || !Array.isArray(metrics)) return false;
   if (!order || typeof order !== 'object' || Array.isArray(order)) return false;
   const window = order as Record<string, unknown>;
   return window.offset === 0 && window.order_by_field === field && /^(asc|desc)$/i.test(String(window.type));

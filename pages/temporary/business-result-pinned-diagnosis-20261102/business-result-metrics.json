@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.128",
+  "schemaVersion": "6.130",
   "id": "business-result-metrics",
   "layout": "dashboard",
   "meta": {
@@ -121,7 +121,7 @@
       },
       "searchable": true,
       "default": [
-        "all"
+        "SUB_SERVICE_TYPE_PUBLIC_REGION"
       ],
       "candidates": {
         "dataSource": "business-type-options",
@@ -142,7 +142,7 @@
           "label": "子业务类型"
         }
       ],
-      "defaultLevel": "business-type"
+      "defaultLevel": "sub-business-type"
     },
     {
       "id": "cloud-service",
@@ -167,6 +167,57 @@
           "mtime"
         ],
         "reconcile": "clear"
+      },
+      "default": [
+        "ModelArts",
+        "Anti-DDoS流量清洗_全线专属",
+        "MapReduce服务_全线专属",
+        "NAT网关_全线专属",
+        "VPC终端节点_全线专属",
+        "Web应用防火墙_全线专属",
+        "云专线_全线专属",
+        "云堡垒机_全线专属",
+        "云备份_全线专属",
+        "云审计服务_全线专属",
+        "云容灾引擎_全线专属",
+        "云桌面服务_全线专属",
+        "云数据库 GaussDB_全线专属",
+        "云数据库 RDS for MySQL_全线专属",
+        "云硬盘_全线专属",
+        "云解析服务_全线专属",
+        "云防火墙_全线专属",
+        "企业主机安全_全线专属",
+        "企业路由器_全线专属",
+        "全栈专属服务",
+        "分布式数据库中间件_全线专属",
+        "分布式消息服务_全线专属",
+        "分布式缓存服务_全线专属",
+        "安全云脑_全线专属",
+        "对象存储服务_全线专属",
+        "应用运维管理_全线专属",
+        "弹性计算服务_全线专属",
+        "数据仓库服务_全线专属",
+        "数据湖服务_全线专属",
+        "数据复制服务_全线专属",
+        "数据安全中心_全线专属",
+        "数据库安全服务_全线专属",
+        "数据治理中心_全线专属",
+        "数据管理服务_全线专属",
+        "交换数据采集服务_全线专属",
+        "智能数据洞察_全线专属",
+        "离线管理服务_全线专属",
+        "弹性服务管理_全线专属",
+        "流体检测软件支持服务_全线专属",
+        "媒体处理"
+      ],
+      "defaultWhen": {
+        "filter": "business-type",
+        "part": "values",
+        "op": "containsAny",
+        "values": [
+          "SUB_SERVICE_TYPE_PUBLIC_REGION",
+          "SERVICE_TYPE_HUAWEI_PUBLIC_CLOUD_CORE"
+        ]
       }
     }
   ],
@@ -268,6 +319,12 @@
           "type": "string",
           "role": "dimension",
           "queryField": "云服务"
+        },
+        "net-payment": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "净付费金额",
+          "nullable": true
         }
       },
       "source": {
@@ -297,7 +354,9 @@
                 "output_dims": [
                   "云服务"
                 ],
-                "output_metrics": [],
+                "output_metrics": [
+                  "净付费金额"
+                ],
                 "filter": {
                   "dims": [],
                   "metrics": [],
@@ -308,9 +367,9 @@
                 },
                 "order": {
                   "order_by_field": "云服务",
-                  "type": "asc",
+                  "type": "desc",
                   "offset": 0,
-                  "limit": 10
+                  "limit": 20
                 }
               }
             ]

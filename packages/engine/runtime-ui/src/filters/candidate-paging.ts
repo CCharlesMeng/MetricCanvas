@@ -1,11 +1,13 @@
 import type { FilterCandidate, FilterCandidatesResult } from '@metriccanvas/data-execution';
 import { debugWarn, preservedQueryError } from '@metriccanvas/data-execution/runtime';
+import { scheduleCandidateIdle, type IdleSchedule } from '../../../runtime/src/table/candidate-preload';
 
 export interface CandidatePageReader {
   key: string;
   filterId:string;
   sourceId:string;
   limit:number;
+  preload?:boolean;
   read(offset:number, search:string, signal:AbortSignal):Promise<FilterCandidatesResult>;
 }
 
@@ -18,23 +20,40 @@ export interface CandidatePages {
 
 const empty = (): CandidatePages => ({candidates:[], loading:false, error:false});
 
-/** One open menu, one dependency context and at most one live window request. */
-export function candidatePaging(publish:(page:CandidatePages)=>void) {
+/** One dependency context and at most one live window request. */
+export function candidatePaging(publish:(page:CandidatePages)=>void, schedule:IdleSchedule = scheduleCandidateIdle) {
   let reader:CandidatePageReader|undefined;
   let snapshot = empty();
   let open = false, search = '';
   let inflight:AbortController|undefined;
+  let scheduled:(() => void)|undefined;
 
   function update(next:CandidatePages) {
     snapshot = next;
     publish(next);
   }
 
-  function reset() {
+  function cancelScheduled() {
+    scheduled?.();
+    scheduled = undefined;
+  }
+
+  function cancel() {
+    cancelScheduled();
     inflight?.abort();
     inflight = undefined;
+  }
+
+  function reset() {
+    cancel();
     update(empty());
     if (open) more();
+    else if (reader?.preload) {
+      scheduled = schedule(() => {
+        scheduled = undefined;
+        start(0);
+      });
+    }
   }
 
   function merge(result:FilterCandidatesResult, current:CandidatePageReader, offset:number):void {
@@ -73,7 +92,12 @@ export function candidatePaging(publish:(page:CandidatePages)=>void) {
 
   function more() {
     const offset = snapshot.candidates.length;
-    if (!reader || !open || inflight || offset >= (snapshot.total ?? Infinity)) return;
+    if (!open || offset >= (snapshot.total ?? Infinity)) return;
+    start(offset);
+  }
+
+  function start(offset:number) {
+    if (!reader || inflight) return;
     inflight = new AbortController();
     update({...snapshot, loading:true, error:false});
     void load(reader, inflight, offset);
@@ -81,15 +105,20 @@ export function candidatePaging(publish:(page:CandidatePages)=>void) {
 
   return {
     configure(next:CandidatePageReader|undefined) {
-      const changed = reader?.key !== next?.key;
+      const changed = reader?.key !== next?.key || reader?.preload !== next?.preload;
       reader = next;
       if (changed) reset();
     },
     setOpen(next:boolean) {
       if (next === open) return;
       open = next;
-      search = '';
-      reset();
+      if (!reader?.preload || search) {
+        search = '';
+        reset();
+        return;
+      }
+      cancelScheduled();
+      if (open && snapshot.total === undefined) more();
     },
     search(term:string) {
       const next = term.trim();
@@ -98,6 +127,6 @@ export function candidatePaging(publish:(page:CandidatePages)=>void) {
       reset();
     },
     more,
-    dispose() { inflight?.abort(); inflight = undefined; }
+    dispose:cancel
   };
 }

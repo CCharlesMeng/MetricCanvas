@@ -20,13 +20,26 @@ const signatures = new Set(metricSets.flatMap(metrics => dimensionsFor(metrics).
 const failure = (): DqeSimItemResult => ({code:'DQE_SIM_UNSUPPORTED_QUERY',data:[],total_count:0,retDesc:'业务结果合成场景不支持此查询、期间或谓词',dqe:{columns:[],orders:[],limit:-1,offset:-1,sql:null}});
 const cloudField = '云服务';
 const cloudSignature = JSON.stringify([[cloudField],[]]);
+const netPayment = '净付费金额';
+const cloudPaymentSignature = JSON.stringify([[cloudField],[netPayment]]);
 const customerClasses = ['卓越NA','战略NA','核心NA'];
+const cloudTypeValues: Record<string,string> = {
+  业务类型编码: 'SERVICE_TYPE_HUAWEI_PUBLIC_CLOUD_CORE',
+  子业务类型编码: 'SUB_SERVICE_TYPE_PUBLIC_REGION'
+};
+const businessCloudService = new Map(fixture.organizations.map((organization,index) =>
+  [organization, cloudServiceName(index * 5)] as const
+));
+
+function cloudServiceName(index: number): string {
+  return `模拟云服务 ${String(index + 1).padStart(2,'0')}`;
+}
 
 /** 给每个模拟组织提供多批候选，重叠服务可验证去重和匹配总数。 */
 const cloudServices = fixture.organizations.flatMap((organization, index) =>
   Array.from({length:25}, (_, item) => {
     const number = index * 5 + item;
-    return { ...organization, [cloudField]:`模拟云服务 ${String(number + 1).padStart(2,'0')}`, 客户级别:customerClasses[number % customerClasses.length] };
+    return { ...organization, [cloudField]:cloudServiceName(number), 客户级别:customerClasses[number % customerClasses.length] };
   }));
 
 function dimensionsFor(metrics: string[]): string[][] {
@@ -41,7 +54,7 @@ function dimensionsFor(metrics: string[]): string[][] {
 export function executeBusinessResultMetrics(input: unknown): DqeSimItemResult | undefined {
   if (!record(input)) return;
   const signature = JSON.stringify([input.output_dims,input.output_metrics]);
-  if (signature === cloudSignature) return cloudCandidates(input);
+  if (signature === cloudSignature || signature === cloudPaymentSignature) return cloudCandidates(input, signature === cloudPaymentSignature);
   if (!signatures.has(signature)) return;
   try {
     if (input.query_type !== undefined) return failure();
@@ -72,7 +85,7 @@ function businessOrganizations(predicates: ObjectValue[]): Organization[] {
   return europeSelected ? [...fixture.organizations, ...fixture.europePreviewOrganizations] : fixture.organizations;
 }
 
-function cloudCandidates(input:ObjectValue):DqeSimItemResult {
+function cloudCandidates(input:ObjectValue, includePayment:boolean):DqeSimItemResult {
   const filter = input.filter, order = input.order;
   if (input.query_type !== undefined || !record(filter) || !validCloudFilter(filter)) return failure();
   if (!record(order) || order.order_by_field !== cloudField) return failure();
@@ -80,10 +93,17 @@ function cloudCandidates(input:ObjectValue):DqeSimItemResult {
   if (!wholeNumber(offset,0) || !wholeNumber(limit,1)) return failure();
   const predicates = (filter.dims as ObjectValue[]);
   const values = new Set(cloudServices.filter(row => predicates.every(predicate => matchesCloud(row,predicate))).map(row => row[cloudField]));
-  const rows = sortDqeRows([...values].map(value => ({[cloudField]:value})), order, [cloudField]);
+  const candidates = [...values].map(value => {
+    const row: Row = {[cloudField]:value};
+    if (includePayment) row[netPayment] = 100;
+    return row;
+  });
+  const rows = sortDqeRows(candidates, order, [cloudField]);
   if (!rows) return failure();
+  const columns: DqeSimItemResult['dqe']['columns'] = [{id:cloudField,caption:cloudField,type:'dimension',data_type:'STRING'}];
+  if (includePayment) columns.push({id:netPayment,caption:netPayment,type:'metric',data_type:'NUMBER'});
   return {code:'SUCCESS',data:rows.slice(offset,offset + limit),total_count:rows.length,
-    dqe:{columns:[{id:cloudField,caption:cloudField,type:'dimension',data_type:'STRING'}],orders:[],offset,limit,sql:null}};
+    dqe:{columns,orders:[],offset,limit,sql:null}};
 }
 
 function wholeNumber(value:unknown, minimum:number):value is number {
@@ -122,17 +142,21 @@ function validTime(time: ObjectValue): boolean {
 
 function validatePredicate(predicate: unknown): asserts predicate is ObjectValue {
   if (!record(predicate)) throw Error('predicate');
-  const allowed = ['geo_pc_code','region_dept_code','rep_office_code','地区部','代表处','国内或海外','决策业务类型'];
-  if (!allowed.includes(String(predicate.dim_name)) || !Array.isArray(predicate.dim_value_list)) throw Error('dimension');
-  if ((predicate.operator ?? '=') !== '=' || predicate.is_exclude === true) throw Error('operator');
-  if (predicate.dim_value_list.some(value => typeof value !== 'string')) throw Error('value');
-  if (predicate.dim_name === '决策业务类型' && predicate.dim_value_list.some(value => !['商务','合同'].includes(String(value)))) throw Error('business type');
+  const dimension = String(predicate.dim_name), values = predicate.dim_value_list;
+  const allowed = ['geo_pc_code','region_dept_code','rep_office_code','地区部','代表处','国内或海外','决策业务类型',cloudField,...Object.keys(cloudTypeValues)];
+  if (!allowed.includes(dimension) || !Array.isArray(values)) throw Error('dimension');
+  if ((predicate.operator ?? '=') !== '=' || (predicate.is_exclude === true) !== (dimension === cloudField)) throw Error('operator');
+  if (values.some(value => typeof value !== 'string')) throw Error('value');
+  if (dimension === '决策业务类型' && values.some(value => !['商务','合同'].includes(String(value)))) throw Error('business type');
 }
 
 function matches(row: Organization, predicate: unknown): boolean {
   const p = predicate as ObjectValue;
-  if (p.dim_name === '决策业务类型') return true;
-  return (p.dim_value_list as unknown[]).includes(row[p.dim_name as keyof Organization]);
+  const field = String(p.dim_name), values = p.dim_value_list as unknown[];
+  if (field === '决策业务类型') return true;
+  if (field === cloudField) return !values.includes(businessCloudService.get(row));
+  if (Object.hasOwn(cloudTypeValues,field)) return values.includes(cloudTypeValues[field]);
+  return values.includes(row[field as keyof Organization]);
 }
 
 function aggregateRows(organizations: Organization[], dims: string[], metrics: string[], time: ObjectValue, categories: string[]): Row[] {

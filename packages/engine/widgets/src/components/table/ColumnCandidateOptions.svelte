@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { createSearchInput } from '@metriccanvas/ui';
   import TextSkeleton from '../../shared/TextSkeleton.svelte';
   import SelectAllOptions from './SelectAllOptions.svelte';
   import { placeholderOptionsLast } from './candidate-order';
@@ -21,6 +22,14 @@
     ...(snapshot?.candidates ?? []).map(candidate => ({ ...candidate, missing: false }))
   ], candidate => candidate.label));
   const limited = $derived(snapshot?.status === 'error' && snapshot.error?.code === 'DQE_CANDIDATE_LIMIT_EXCEEDED');
+  let searchDraft = $state<string>();
+  const search = createSearchInput(query => {
+    onsearch?.(field, query);
+    searchDraft = undefined;
+  }, query => { searchDraft = query; }, () => {
+    searchDraft = undefined;
+    return snapshot?.search ?? '';
+  });
   function continueCandidates(event: Event) {
     if (snapshot?.status !== 'ready' || snapshot.candidates.length >= (snapshot.totalCount ?? 0)) return;
     const list = event.currentTarget as HTMLDivElement;
@@ -30,9 +39,9 @@
 <div class="candidates">
   {#if showSearch}
     <input type="search" aria-label="搜索筛选候选值" placeholder="搜索选项" disabled={limited}
-      value={snapshot?.search ?? ''} oninput={event => onsearch?.(field, event.currentTarget.value)} />
+      value={searchDraft ?? snapshot?.search ?? ''} use:search.attach={!limited} />
   {/if}
-  {#if showSelectAll && !snapshot?.search}
+  {#if showSelectAll && !snapshot?.search && !searchDraft?.trim()}
     <SelectAllOptions values={snapshot?.candidates.map(candidate => candidate.value) ?? []} {selected} {all}
       disabled={!complete && !all} onchange={onselectall} />
   {/if}

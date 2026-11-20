@@ -223,7 +223,7 @@
     {:else if declaration.type === 'dimension'}
       {@const source = sourceFilters?.(declaration.id)}
       <DimensionFilter explicitParents={!!declaration.candidates} searchable={declaration.searchable??true} treeSelection={declaration.candidates?'independent':declaration.treeSelection==='level'?undefined:declaration.treeSelection} selection={declaration.selection??(declaration.options?{mode:'multiple'}:undefined)}
-        pagination={source?.pagination}
+        pagination={source?.pagination} showExclusions={!!declaration.defaultWhen}
         onretry={onretry?()=>onretry(declaration.id):undefined}
         label={declaration.label}
         emptyLabel={emptyText}

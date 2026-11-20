@@ -1,5 +1,6 @@
 <svelte:options css="injected" />
 <script lang="ts">
+  import { createSearchInput } from '@metriccanvas/ui';
   /**
    * 搜索筛选器(纯渲染):自由文本,跨字段模糊匹配属于查询谓词,
    * 控件本身只上抛当前字符串。
@@ -11,6 +12,8 @@
   }
 
   let { label, value, onchange }: Props = $props();
+  const search = createSearchInput(query => { if (query !== value) onchange(query); });
+  $effect(() => { value; search.cancel(); });
 </script>
 
 <div class="filter">
@@ -19,7 +22,7 @@
     type="search"
     value={value}
     placeholder={label ?? '搜索'}
-    oninput={(e) => onchange(e.currentTarget.value)}
+    use:search.attach
   />
 </div>
 

@@ -119,7 +119,11 @@ test('project/customer/contract contains search, zero results, clearing and full
   const { table } = await openResult(page, 'contract');
   await expect(table).toContainText('总条数： 2410');
   await resultSort(table, 'activationTime', 'desc');
+  await expect(table.locator('.table-widget')).toHaveAttribute('aria-busy', 'false');
+  await page.clock.install();
   await resultSearch(table, '目标项目');
+  await page.clock.runFor(350);
+  await expect(table.locator('.table-widget')).toHaveAttribute('aria-busy', 'false');
   await expect(table).toContainText('总条数： 2410');
   const sheet = await downloadedWorkbook(page, () => table.getByRole('button', { name: '导出', exact: true }).click());
   expect(sheet.rowCount).toBe(2411);

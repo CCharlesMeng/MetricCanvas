@@ -113,12 +113,13 @@ export async function openResult(page: Page, tab: 'business' | 'contract', optio
 }
 export async function resultSearch(table: Locator, value: string) {
   await table.getByRole('searchbox').fill(value);
-  await table.getByRole('searchbox').press('Enter');
 }
 export async function chooseSearch(page: Page, table: Locator, label: string, value: string) {
-  await table.getByRole('searchbox').fill(value);
   await table.getByRole('button', { name: '表格搜索字段', exact: true }).click();
   await page.getByRole('option', { name: label, exact: true }).click();
+  const search = table.getByRole('searchbox');
+  await search.click();
+  await search.fill(value);
 }
 export async function selectResult(table: Locator, field: string, label: string) {
   const heading = table.locator(`th[data-column-field="${field}"]`);

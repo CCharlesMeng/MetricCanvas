@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { expect, it, vi } from 'vitest';
-import { parsePage, resolvePeriodSelection, type DimensionFilterDeclaration, type EffectiveQuery, type Page } from '@metriccanvas/page/internal';
+import { parsePage, resolvePeriodSelection, type DimensionFilterDeclaration, type EffectiveQuery, type Page, type Row } from '@metriccanvas/page/internal';
 import { effectiveDqeItem } from '../src/dqe/dqe';
 import { createSourceCandidateSession, sourceCandidatesGateway } from '../src/source-candidates';
 import { createSourceProgram } from '../src/source-program/session';
@@ -20,8 +20,8 @@ function loadPage(file:URL) {
   return result.page;
 }
 
-function setup(state?:string) {
-  const page = document();
+function setup(state?:string, pageName?:string) {
+  const page = document(pageName);
   const filter = page.filters!.find(item => item.id === 'service') as DimensionFilterDeclaration;
   const preview = createSourceCandidatesPreview(state);
   const gateway = sourceCandidatesGateway(page, preview.dataGateway);
@@ -44,6 +44,25 @@ it('reads exactly one bounded window, then applies server search before paginati
     order:{offset:0,limit:10,order_by_field:'云服务',type:'asc'},
     filter:{dims:expect.arrayContaining([{dim_name:'云服务',dim_value_list:['25'],operator:'contains'}])}
   });
+});
+
+it('pages by the cloud service dimension and does not expose returned measure values',async()=>{
+  const {page, filter, gateway, request, preview} = setup(undefined, 'filter-conditional-exclusion-default');
+  const options = {signal:new AbortController().signal};
+  expect(sourceCandidateWindow(page,filter)).toMatchObject({sourceId:'service-options', limit:20});
+  const first = await gateway.fetchFilterCandidates!({...request,sourceRead:{kind:'page',offset:0,search:''}},options);
+  expect(first).toMatchObject({kind:'values',totalCount:25});
+  expect(first.kind === 'values' && first.candidates).toHaveLength(20);
+  expect(first.kind === 'values' && first.candidates[0]).toEqual({value:'甲云服务25',label:'甲云服务25'});
+  const next = await gateway.fetchFilterCandidates!({...request,sourceRead:{kind:'page',offset:20,search:''}},options);
+  expect(next.kind === 'values' && next.candidates.map(candidate=>candidate.value))
+    .toEqual(['甲云服务05','甲云服务04','甲云服务03','甲云服务02','甲云服务01']);
+  const searched = await gateway.fetchFilterCandidates!({...request,sourceRead:{kind:'page',offset:0,search:'01'}},options);
+  expect(searched).toEqual({kind:'values',totalCount:1,candidates:[{value:'甲云服务01',label:'甲云服务01'}]});
+  const sent = preview.requests.map(effectiveDqeItem);
+  expect(sent.map(item=>item.order)).toEqual([0,20,0].map(offset=>({order_by_field:'云服务',type:'desc',offset,limit:20})));
+  expect(sent.map(item=>item.output_metrics)).toEqual([['净付费金额'],['净付费金额'],['净付费金额']]);
+  expect(sent[2]?.filter).toMatchObject({dims:expect.arrayContaining([{dim_name:'云服务',dim_value_list:['01'],operator:'contains'}])});
 });
 
 it('reuses a passed upstream check within the same page context and rechecks scope or permission changes',async()=>{
@@ -113,7 +132,7 @@ it('recognizes only explicit single-dimension windows and rejects invalid page t
   expect(sourceCandidateWindow(complete,complete.filters![1] as DimensionFilterDeclaration)).toBeUndefined();
   const business = loadPage(new URL('../../../pages/temporary/business-result-pinned-diagnosis-20261102/business-result-metrics.json',import.meta.url));
   const services = business.filters!.find(item => item.id === 'cloud-service') as DimensionFilterDeclaration;
-  expect(sourceCandidateWindow(business,services)).toMatchObject({sourceId:'cloud-service-options', limit:10});
+  expect(sourceCandidateWindow(business,services)).toMatchObject({sourceId:'cloud-service-options'});
   const fetchData = vi.fn(async (_query:EffectiveQuery) => ({rows:[{service:'甲云服务01'}]}));
   const gateway = sourceCandidatesGateway(page,{fetchData});
   await expect(gateway.fetchFilterCandidates!({...request,sourceRead:{kind:'page',offset:0,search:''}},{signal:new AbortController().signal}))
@@ -141,7 +160,11 @@ it.each([
 ] as const)('applies the authorized key-office scope to candidate read %j', async sourceRead => {
   const page = keyOfficeBusinessPage();
   const filter = page.filters!.find(item => item.id === 'cloud-service') as DimensionFilterDeclaration;
-  const fetchData = vi.fn(async (_query:EffectiveQuery) => ({rows:[{service:'重点云服务'}],totalCount:1}));
+  const fetchData = vi.fn(async (query:EffectiveQuery) => {
+    const row: Row = {service:'重点云服务'};
+    if (Object.hasOwn(query.fieldMappings, 'net-payment')) row['net-payment'] = 100;
+    return {rows:[row],totalCount:1};
+  });
   const gateway = sourceCandidatesGateway(page, {
     fetchData,
     async fetchFilterCandidates(request) {

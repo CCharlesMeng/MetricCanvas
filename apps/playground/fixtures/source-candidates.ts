@@ -1,5 +1,5 @@
 import type {RuntimeDataGateway} from '@metriccanvas/engine';
-import type {EffectiveQuery} from '@metriccanvas/page/internal';
+import type {EffectiveQuery, Row} from '@metriccanvas/page/internal';
 type QueryDiagnosticContext = NonNullable<Parameters<RuntimeDataGateway['fetchData']>[1]>;
 const candidateRows=[{code:'direct',name:'直营',weight:1},{code:'direct',name:'直营',weight:2},{code:'partner',name:'伙伴',weight:1},{code:'online',name:'线上',weight:1},{code:'partner',name:'伙伴',weight:2}];
 const organizations=[['north',100],['shanghai',40],['beijing',60],['south',80],['shenzhen',30]] as const;
@@ -51,9 +51,16 @@ function serviceWindow(query:EffectiveQuery, context:QueryDiagnosticContext, sta
   const values = Array.from({length:size}, (_, index) => `${scope}云服务${String(index + 1).padStart(2,'0')}`);
   const members = query.tableFilters?.find(value => value.target === 'dimension' && value.queryField === '云服务');
   const match = query.search?.query ?? '';
+  const order = query.body.dsl_list[0]?.order as {type?: string} | undefined;
+  if (order?.type === 'desc') values.reverse();
+  const includesPayment = Object.hasOwn(query.fieldMappings, 'net-payment');
   const rows = values
     .filter(value => value.includes(match) && (members?.target !== 'dimension' || members.values.includes(value)))
-    .map(service => ({service}));
+    .map(service => {
+      const row: Row = {service};
+      if (includesPayment) row['net-payment'] = 100;
+      return row;
+    });
   const totalCount = rows.length + Number(state === 'incomplete' && context.sourceCandidates?.kind === 'page' && offset > 0);
   return {rows:rows.slice(offset,offset + limit),totalCount};
 }

@@ -1,7 +1,7 @@
 <svelte:options css="injected" />
 <script lang="ts">
   import { tableSearchOption, type TableProps } from '@metriccanvas/page/internal';
-  import { Button, Select } from '@metriccanvas/ui';
+  import { Button, Select, createSearchInput } from '@metriccanvas/ui';
   import TableControlIcon from './TableControlIcon.svelte';
   let { toolbar, draft = '', option, busy = false, canExport = true, searchEnabled = true, error, ondraft, onsearch, onoption, onexport, oncancel }: {
     toolbar: TableProps['toolbar']; draft?: string; busy?: boolean; canExport?: boolean; searchEnabled?: boolean; error?: string;
@@ -13,6 +13,7 @@
   const searchOptions = $derived(toolbar?.search && 'options' in toolbar.search ? toolbar.search.options : []);
   const showOptionSelector = $derived(searchOptions.length > 1);
   const placeholder = $derived(selected?.placeholder ?? (toolbar?.search && 'fields' in toolbar.search ? toolbar.search.placeholder : undefined) ?? '搜索表格');
+  const search = createSearchInput(query => onsearch?.(query), query => ondraft?.(query));
 </script>
 
 <div class="tools" data-table-toolbar>
@@ -21,14 +22,14 @@
     {#if showOptionSelector}
       <div class="search-option"><Select disabled={!searchEnabled} label="表格搜索字段" value={selected?.value}
         options={searchOptions.map(item => ({ value: item.value, label: item.label }))}
-        onchange={onoption} /></div>
+        onchange={value => { search.cancel(); onoption?.(value); }} /></div>
     {/if}
-    <form class="search" onsubmit={event => { event.preventDefault(); onsearch?.(draft); }}>
+    <div class="search">
       <input disabled={!searchEnabled} type="search" aria-label="表格搜索" {placeholder}
-        value={draft} oninput={event => ondraft?.(event.currentTarget.value)} />
-      {#if draft}<button disabled={!searchEnabled} class="clear" type="button" aria-label="清空表格搜索" title="清空" onclick={() => { ondraft?.(''); onsearch?.(''); }}><TableControlIcon name="clear" /></button>{/if}
-      <button disabled={!searchEnabled} class="submit" type="submit" aria-label="搜索" title="搜索"><TableControlIcon name="search" /></button>
-    </form>
+        value={draft} use:search.attach={searchEnabled} />
+      {#if draft}<button disabled={!searchEnabled} class="clear" type="button" aria-label="清空表格搜索" title="清空" onclick={() => search.set('')}><TableControlIcon name="clear" /></button>{/if}
+      <span class="search-icon" aria-hidden="true"><TableControlIcon name="search" /></span>
+    </div>
     </div>
   {/if}
   {#if toolbar?.export}
@@ -52,7 +53,7 @@
   .search button { position:relative; display:flex; align-items:center; justify-content:center; flex:none; box-sizing:border-box; height:30px; width:28px; padding:0; border:0; background:transparent; color:#808080; cursor:pointer; }
   .search button:hover { color:#191919; }
   .search button:focus-visible { outline:1px solid #191919; outline-offset:-2px; border-radius:4px; }
-  .search .submit { justify-content:flex-start; padding-right:12px; }
+  .search-icon { display:flex; align-items:center; flex:none; width:28px; color:#808080; }
   .search .clear { margin-right:-3px; }
   .clear::after { content:''; position:absolute; right:7px; top:50%; transform:translateY(-50%); height:16px; width:1px; background:#dbdbdb; }
   .clear :global(svg) { position:absolute; right:12px; }

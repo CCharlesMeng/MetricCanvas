@@ -23,6 +23,19 @@ export function filterNodes(nodes: readonly SelectionNode[], keyword: string): S
     return children.length ? [{...node, children}] : [];
   });
 }
+/** Keep selected exclusions editable independently of the current candidate window. */
+export function withSelectedOptions(nodes: readonly SelectionNode[], values: readonly string[], keyword: string): SelectionNode[] {
+  const candidates = new Map(nodes.map(node => [node.value, node]));
+  const selected = new Set(values);
+  const applied = [...selected].flatMap(value => {
+    const candidate = candidates.get(value);
+    if (candidate) return [{ ...candidate, disabled: false }];
+    const fallback = { value, label: value, path: value };
+    return matchesNode(fallback, keyword) ? [fallback] : [];
+  });
+  return [...applied, ...nodes.filter(node => !selected.has(node.value))];
+}
+
 export function selectableValues(node: SelectionNode, policy: TreeSelection): string[] {
   const own = !node.disabled && node.selectable !== false && (policy !== 'leaf' || !node.children?.length) ? [node.value] : [];
   return [...own, ...flattenNodes(node.children ?? []).filter(child => !child.disabled && child.selectable !== false && (policy !== 'leaf' || !child.children?.length)).map(child => child.value)];

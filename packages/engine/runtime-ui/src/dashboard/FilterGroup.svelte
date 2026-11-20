@@ -36,7 +36,7 @@
     <DimensionFilter {label} {disabled} candidates={source.candidates} value={source.values}
       display={source.declaration.display==='tree'?'tree':'select'} selection={source.declaration.selection}
       explicitParents treeSelection="independent" searchable={source.declaration.searchable ?? true}
-      emptyLabel={source.declaration.emptyLabel} pagination={source.pagination} onchange={source.onchange} onretry={source.onretry}/>
+      emptyLabel={source.declaration.emptyLabel} pagination={source.pagination} showExclusions={!!source.declaration.defaultWhen} onchange={source.onchange} onretry={source.onretry}/>
   {:else if control.display === 'select'}
     <DimensionFilter {label} {disabled} candidates={{status:'ready',candidates:control.options ?? []}} value={value ? [value] : []}
       selection={{mode:'single',required:true}} searchable={false} onchange={values=>{if(values[0] && values[0]!==value)onchange(values[0]);}}/>
