@@ -2,6 +2,7 @@
 
 ## .
 ColumnCandidate
+ColumnCandidateProgress
 ColumnCandidatesPage
 ColumnCandidatesQuery
 DataGateway
@@ -101,6 +102,7 @@ resolveQueryResultInputs
 reusableInitialSnapshot
 runtimeWarningsEnabled
 searchTableRows
+sortColumnCandidates
 sortTableRows
 sourceCandidateWindow
 sourceCandidatesGateway
