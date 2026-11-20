@@ -59,6 +59,7 @@ it('renders the supplied business page with selection policies and only the matc
 
 const discountMetric = '净商务折扣（原价）';
 const tableSources = ['region-dept-metrics', 'rep-office-metrics'];
+const summarySources = ['business-results-summary', 'business-commercial-summary', 'business-contract-summary'];
 const periodCases = [
   { mode: 'month', value: '2026-09', label: '月' },
   { mode: 'quarter', value: '2026-Q3', label: '季' },
@@ -122,4 +123,40 @@ it.each(periodCases)('filters both tables’ current discount and $mode comparis
   } finally {
     program.dispose();
   }
+});
+
+it.each(periodCases)('shares $mode aggregate rows between both tables and only binds the applied time', async ({mode,value,label}) => {
+  const parsed = parsePage(business);
+  if (!parsed.ok) throw Error(JSON.stringify(parsed.errors));
+  const {page} = parsed;
+  const conditions = conditionsFor(page);
+  conditions.set('region',{type:'dimension',dimension:'geo-pc-code',level:'geo',values:['R99']});
+  conditions.set('customer-class',{type:'dimension',dimension:'customer-class',values:['核心NA']});
+  conditions.set('cloud-service',{type:'dimension',dimension:'cloud-service',values:['ModelArts']});
+  conditions.set('mtime',{type:'timeRange',...resolvePeriodSelection({mode,value},now,periodPrecision(page))});
+  const requests: EffectiveQuery[] = [];
+  const program = createSourceProgram(page,{gateway:syntheticGateway(requests),now});
+  const summaries = new Map<string,DataSnapshot>();
+  try {
+    for (const component of page.sections.flatMap(section => section.components)) {
+      if (component.type !== 'table') continue;
+      expect([component.data.summary, component.data.commercial, component.data.contract]).toEqual(summarySources);
+      expect(component.props.pinnedTop).toEqual({data:'summary',additionalData:['commercial','contract']});
+    }
+    for await (const update of program.read({ roots:summarySources, presentation:page, conditions, freshness:'refresh' })) {
+      summaries.set(update.sourceId,update.snapshot);
+    }
+    expect(summaries.get(summarySources[0])).toMatchObject({status:'ready',rows:[{
+      'net-discount-rate':10,[`net-discount-${mode}-change`]:10
+    }]});
+    expect(requests).toHaveLength(4);
+    expect(requests.flatMap(queryMetrics).filter(metric => metric.includes('变化'))).toEqual([`净商务折扣（原价）${label}变化`]);
+    for (const query of requests) {
+      expect(query.filterValues).toEqual([expect.objectContaining({target:'time'})]);
+      const item = query.body.dsl_list[0];
+      expect(item.output_dims).toEqual([]);
+      expect(item.order).toEqual({});
+      expect(item.filter).toMatchObject({time:{is_aggregate:true}});
+    }
+  } finally {program.dispose();}
 });

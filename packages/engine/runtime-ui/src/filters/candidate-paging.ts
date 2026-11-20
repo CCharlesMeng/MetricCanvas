@@ -8,6 +8,7 @@ export interface CandidatePageReader {
   sourceId:string;
   limit:number;
   preload?:boolean;
+  waiting?:boolean;
   read(offset:number, search:string, signal:AbortSignal):Promise<FilterCandidatesResult>;
 }
 
@@ -97,7 +98,7 @@ export function candidatePaging(publish:(page:CandidatePages)=>void, schedule:Id
   }
 
   function start(offset:number) {
-    if (!reader || inflight) return;
+    if (!reader || reader.waiting || inflight) return;
     inflight = new AbortController();
     update({...snapshot, loading:true, error:false});
     void load(reader, inflight, offset);

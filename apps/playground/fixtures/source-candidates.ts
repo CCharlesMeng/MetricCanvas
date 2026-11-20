@@ -7,6 +7,12 @@ function selected(query:EffectiveQuery,field:string):readonly string[]|undefined
   const item=query.filterValues.find(value=>value.target==='dimension'&&value.queryField===field);
   return item?.target==='dimension'?item.values.map(String):undefined;
 }
+
+function isSecondCandidateWindow(query: EffectiveQuery): boolean {
+  const pagination = query.pagination;
+  return pagination !== undefined && pagination.offset === pagination.limit;
+}
+
 /** Complete pagination and failures are synthetic; no production DQE or dictionary endpoint. */
 export function createSourceCandidatesPreview(state='ready') {
   const requests:EffectiveQuery[]=[];
@@ -17,7 +23,7 @@ export function createSourceCandidatesPreview(state='ready') {
       if (state === 'candidate-pending') await untilCancelled(signal);
       if (state === 'candidate-error') throw Object.assign(new Error('合成候选请求失败'), {code:'DQE_UPSTREAM_ERROR'});
       if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('metriccanvas:source-candidate-window',{detail:context.sourceCandidates}));
-      if (state === 'page-failure' && query.pagination?.offset === 10 && !pageFailed) {
+      if (state === 'page-failure' && isSecondCandidateWindow(query) && !pageFailed) {
         pageFailed = true;
         throw Object.assign(new Error('合成续页失败'), {code:'DQE_UPSTREAM_ERROR'});
       }

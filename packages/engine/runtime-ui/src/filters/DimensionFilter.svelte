@@ -20,8 +20,8 @@
   const hasRows = $derived(pages.candidates.length > 0);
   const complete = $derived(pages.total === pages.candidates.length);
   const paging = $derived(pagination ? {
-    onopen:browser.setOpen, onsearch:browser.search, complete,
-    onmore:(!pages.loading && !pages.error && !complete) ? browser.more : undefined,
+    onopen:browser.setOpen, onsearch:browser.search, complete, waiting:pagination.waiting,
+    onmore:(pages.total !== undefined && !pages.loading && !pages.error && !complete) ? browser.more : undefined,
     loadingMore:hasRows && pages.loading, failed:hasRows && pages.error
   } : undefined);
   const options = $derived(pagination ? pages.candidates : candidates.status === 'ready' ? candidates.candidates : []);

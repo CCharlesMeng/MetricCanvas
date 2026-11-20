@@ -49,6 +49,7 @@ test('applies a conditional preset while the candidate window is pending',async(
   const dialog = group.getByRole('dialog',{name:'云服务排除项候选'});
   await expect(dialog).toHaveAttribute('aria-busy','true');
   await expect(dialog.getByRole('status')).toHaveText('候选项加载中，已选项可先调整');
+  await expect(dialog.getByRole('status')).toHaveCSS('clip-path','inset(50%)');
   await expect(chart).toHaveAttribute('aria-busy','false');
   await expect(dialog.getByText('云服务排除项',{exact:true})).toBeVisible();
   await expect(dialog.getByRole('option',{name:'预设专属服务',exact:true,selected:true})).toBeVisible();
@@ -79,6 +80,8 @@ test('an empty candidate response leaves configured exclusions selected and clea
   await group.getByRole('button',{name:'云服务排除项',exact:true}).press('ArrowDown');
   const dialog = group.getByRole('dialog',{name:'云服务排除项候选'});
   await expect(dialog.getByRole('status')).toHaveText('暂无可添加的候选项');
+  await expect(dialog.getByRole('status')).toHaveCSS('clip-path','inset(50%)');
+  await expect(dialog.getByRole('textbox')).toHaveAttribute('placeholder','搜索');
   await expect(dialog.getByRole('option',{selected:true})).toHaveCount(2);
   await expect(dialog.getByRole('option',{name:'预设专属服务',exact:true})).toHaveAttribute('aria-selected','true');
   await dialog.getByRole('textbox').press('Tab');
@@ -88,6 +91,21 @@ test('an empty candidate response leaves configured exclusions selected and clea
   await expect(dialog.getByRole('option',{selected:true})).toHaveCount(0);
   await expect(dialog.getByRole('textbox')).toBeFocused();
   expect(new URL(page.url()).searchParams.get('service')).toBe('');
+});
+
+test('a failed continuation offers icon-only retry while keeping the error offscreen',async ({page}) => {
+  await page.goto('/pages/filter-conditional-exclusion-default?state=page-failure');
+  await page.getByRole('button',{name:'云服务排除项',exact:true}).press('ArrowDown');
+  const dialog = page.getByRole('dialog',{name:'云服务排除项候选'});
+  const list = dialog.getByRole('listbox');
+  await expect(list.getByRole('option',{name:'甲云服务25',exact:true})).toBeVisible();
+  await list.evaluate(element => { element.scrollTop = element.scrollHeight; });
+  await expect(dialog.getByRole('alert')).toHaveCSS('clip-path','inset(50%)');
+  const retry = dialog.getByRole('button',{name:'重试',exact:true});
+  await expect(retry).toHaveText('↻');
+  await retry.click();
+  await expect(list.getByRole('option',{name:'甲云服务05',exact:true})).toBeVisible();
+  await expect(dialog.getByRole('alert')).toHaveCount(0);
 });
 
 test('shows each selected exclusion once when the candidates arrive',async({page})=>{

@@ -14,7 +14,7 @@
     {options: UiTreeOption[]; value?: string[]; label: string; multiple?: boolean; tree?: boolean;
      loading?: boolean; searchable?: boolean; treeSelection?: TreeSelection; disabled?: boolean; placeholder?: string; allSelectedLabel?: string;
      statusText?: string; statusError?: boolean; clearable?: boolean; required?: boolean; showExclusions?: boolean; onretry?:()=>void; onchange?: (value: string[]) => void;
-     paging?: {onopen:(open:boolean)=>void; onsearch:(term:string)=>void; onmore?:()=>void; complete:boolean; loadingMore:boolean; failed:boolean}} = $props();
+     paging?: {onopen:(open:boolean)=>void; onsearch:(term:string)=>void; onmore?:()=>void; complete:boolean; loadingMore:boolean; failed:boolean; waiting?:boolean}} = $props();
 
   let trigger: HTMLButtonElement;
   let popup: HTMLDivElement;
@@ -172,23 +172,28 @@
     ontoggle={event => {open = event.currentTarget.matches(':popover-open');}} onkeydown={popupKeys} onfocusout={closeExclusionsOnBlur}>
     {#if searchable}<div class="mc-ui-input mc-ui-input-underline mc-ui-select-dropdown__search">
       <span class="mc-ui-input__prefix"><Icon name="search"/></span>
-      <input bind:this={searchInput} class="mc-ui-input__inner" type="text" aria-label={`搜索${label}`} placeholder="输入关键字搜索" bind:value={keyword} use:search.attach={!!paging && !disabled}/>
+      <input bind:this={searchInput} class="mc-ui-input__inner" type="text" aria-label={`搜索${label}`} placeholder={showExclusions ? '搜索' : '输入关键字搜索'} bind:value={keyword} use:search.attach={!!paging && !disabled}/>
     </div>{/if}
     {#if showExclusions}
       <div class="selection-heading">
         <p class="selection-status">{label}</p>
-        {#if canClear}<button type="button" class="clear-exclusions" aria-label={`清空${label}`} {disabled} onclick={clearExclusions}>清空</button>{/if}
+        <div class="selection-actions">
+          {#if onretry && (statusError || paging?.failed)}
+            <button type="button" class="clear-exclusions retry-exclusions" aria-label="重试" {disabled} onclick={onretry}><span aria-hidden="true">↻</span></button>
+          {/if}
+          {#if canClear}<button type="button" class="clear-exclusions" aria-label={`清空${label}`} {disabled} onclick={clearExclusions}>清空</button>{/if}
+        </div>
       </div>
     {/if}
     {#if loading}
       {#if showExclusions}
-        <p class="selection-status" role="status">{value.length ? '候选项加载中，已选项可先调整' : '候选项加载中…'}</p>
+        <p class="selection-status selection-visually-hidden" role="status">{value.length ? '候选项加载中，已选项可先调整' : '候选项加载中…'}</p>
       {:else}
         <LoadingPlaceholder />
       {/if}
-    {:else if statusText}<p class="selection-status" role={statusError ? 'alert' : 'status'}>{statusText}</p>{#if statusError && onretry}<button type="button" class="mc-ui-option mc-ui-select-dropdown__item choice" onclick={onretry}>重试</button>{/if}
-    {:else if !visible.length || showExclusions && !matching.length}
-      <p class="selection-status" role="status">{searchActive ? '无匹配候选项' : showExclusions ? '暂无可添加的候选项' : '无候选项'}</p>
+    {:else if statusText}<p class="selection-status" class:selection-visually-hidden={showExclusions} role={statusError ? 'alert' : 'status'}>{statusText}</p>{#if !showExclusions && statusError && onretry}<button type="button" class="mc-ui-option mc-ui-select-dropdown__item choice" onclick={onretry}>重试</button>{/if}
+    {:else if !paging?.waiting && (!paging || paging.complete || matching.length > 0) && (!visible.length || showExclusions && !matching.length)}
+      <p class="selection-status" class:selection-visually-hidden={showExclusions} role="status">{searchActive ? '无匹配候选项' : showExclusions ? '暂无可添加的候选项' : '无候选项'}</p>
     {/if}
     {#if visible.length && (candidatesReady || showExclusions)}
       {#if tree}
@@ -198,18 +203,18 @@
       {:else}
         <div role="listbox" class:paged={!!paging} aria-label={`${label}选项`} aria-multiselectable={multiple}>
           {#if candidatesReady && matching.length && multiple && !required && !searchActive && (!paging || paging.complete)}<button type="button" class="mc-ui-option mc-ui-select-dropdown__item choice" role="option" aria-selected={allSelected} data-selection-choice onclick={() => onchange?.(allSelected ? value.filter(item => !selectable.some(node => node.value === item)) : [...new Set([...value, ...selectable.map(node => node.value)])])}>
-            {@render checkbox(allSelected, someSelected && !allSelected)}<span>全选</span>
+            {@render checkbox(allSelected, someSelected && !allSelected)}<span class:selection-visually-hidden={showExclusions}>全选</span>
           </button>{/if}
           {#each visible as node (node.value)}<button type="button" class="mc-ui-option mc-ui-select-dropdown__item choice" class:selected={value.includes(node.value)} class:is-disabled={node.disabled}
             role="option" aria-selected={value.includes(node.value)} disabled={node.disabled} data-selection-choice data-value={node.value} title={node.value} onclick={() => choose(node)}>
             {#if multiple}{@render checkbox(value.includes(node.value), false)}{/if}<span title={node.label}>{node.label}</span>
           </button>{/each}
           {#if open && paging?.onmore}<div class="selection-more" aria-hidden="true" use:observeMore={paging.onmore}></div>{/if}
+          {#if paging?.loadingMore}<div class="selection-status" class:selection-visually-hidden={showExclusions} role="status">正在加载更多</div>{/if}
         </div>
       {/if}
     {/if}
-    {#if paging?.loadingMore}<p class="selection-status" role="status">正在加载更多</p>{/if}
-    {#if paging?.failed}<p class="selection-status" role="alert">后续候选项加载失败</p><button type="button" class="mc-ui-option mc-ui-select-dropdown__item choice" onclick={onretry}>重试</button>{/if}
+    {#if paging?.failed}<p class="selection-status" class:selection-visually-hidden={showExclusions} role="alert">后续候选项加载失败</p>{#if !showExclusions}<button type="button" class="mc-ui-option mc-ui-select-dropdown__item choice" onclick={onretry}>重试</button>{/if}{/if}
   </div>
 </Theme>
 
@@ -266,8 +271,10 @@
   .selection-popup[popover]:popover-open{display:flex;flex-direction:column}
   .selection-popup>.mc-ui-select-dropdown__search,.selection-status,.selection-heading{flex:none}
   .selection-heading{display:flex;align-items:center;justify-content:space-between}
+  .selection-actions{display:flex;align-items:center}
   .clear-exclusions{margin-inline-end:8px;padding:6px 8px;border:0;background:none;color:var(--tv-color-text-weaken,#808080);font:inherit;cursor:pointer}
   .clear-exclusions:hover{color:var(--tv-color-text,#191919)}
+  .retry-exclusions{font-size:var(--tv-icon-size,16px)}
   .selection-popup.mc-ui-select-dropdown[popover] > .mc-ui-select-dropdown__search {
     /* A zero preferred width lets the options size the panel before the search fills it. */
     width: var(--mc-selection-popup-search-width, var(--tv-SelectDropdown-search-width));
@@ -278,6 +285,7 @@
   .selection-more{height:1px}
   .mc-ui-input__prefix{position:absolute;left:0;top:0;height:var(--tv-Select-height,32px);display:flex;align-items:center;color:var(--tv-color-icon,#808080)}
   .selection-status{margin:0;padding:var(--tv-space-md,8px) var(--tv-space-xl,16px);color:var(--tv-color-text-weaken,#808080);font-size:var(--tv-font-size-default,14px)}
+  .selection-visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
   .choice{font:inherit;border:0;background:transparent;text-align:left;cursor:pointer;display:flex;align-items:center;gap:var(--tv-space-md,8px);min-width:0}
   .selection-popup .choice.mc-ui-option{display:flex;align-items:center;gap:var(--tv-space-md,8px);box-sizing:border-box;width:100%;padding:var(--tv-Option-padding,0px 16px)}
   .selection-popup .choice.mc-ui-option > span:last-child {

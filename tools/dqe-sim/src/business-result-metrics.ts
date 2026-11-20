@@ -35,18 +35,26 @@ function cloudServiceName(index: number): string {
   return `模拟云服务 ${String(index + 1).padStart(2,'0')}`;
 }
 
-/** 给每个模拟组织提供多批候选，重叠服务可验证去重和匹配总数。 */
-const cloudServices = fixture.organizations.flatMap((organization, index) =>
-  Array.from({length:25}, (_, item) => {
-    const number = index * 5 + item;
-    return { ...organization, [cloudField]:cloudServiceName(number), 客户级别:customerClasses[number % customerClasses.length] };
-  }));
+/** 各组织组共用模拟服务目录，相邻组织的候选有重叠。 */
+function organizationCloudServices(organizations: readonly Organization[]) {
+  return organizations.flatMap((organization, index) =>
+    Array.from({length:25}, (_, item) => {
+      const number = index * 5 + item;
+      return { ...organization, [cloudField]:cloudServiceName(number), 客户级别:customerClasses[number % customerClasses.length] };
+    }));
+}
+
+const cloudServices = [
+  ...organizationCloudServices(fixture.organizations),
+  ...organizationCloudServices(fixture.europePreviewOrganizations)
+];
 
 function dimensionsFor(metrics: string[]): string[][] {
   if (metrics[0] === closure) return [[],['地区部'],['决策业务类型','地区部'],['决策业务类型','地区部','代表处']];
   if (metrics === mainMetrics) return [[],['地区部'],['代表处']];
   if (metrics[0] === netDiscount) return [[],['地区部'],['代表处']];
-  if (metrics === detailMetrics || discountComparisonPeriods.has(metrics[0])) return [['地区部'],['代表处']];
+  if (metrics === detailMetrics) return [['地区部'],['代表处']];
+  if (discountComparisonPeriods.has(metrics[0])) return [[],['地区部'],['代表处']];
   return [['代表处']];
 }
 

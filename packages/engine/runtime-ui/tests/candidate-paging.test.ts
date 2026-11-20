@@ -71,3 +71,15 @@ it('preloads only the first page and reuses the in-flight read when the menu ope
   paging.dispose();
   expect(next.requests[0].signal.aborted).toBe(true);
 });
+
+it('keeps an open menu idle until its dependencies are ready', () => {
+  const {reader,requests} = requestWindow('ready');
+  const paging = candidatePaging(() => {});
+  paging.configure({...reader,key:'waiting',waiting:true});
+  paging.setOpen(true);
+  paging.search('model');
+  expect(requests).toHaveLength(0);
+  paging.configure(reader);
+  expect(requests[0]).toMatchObject({offset:0,search:'model'});
+  paging.dispose();
+});

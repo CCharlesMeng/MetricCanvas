@@ -153,6 +153,18 @@ function businessMonth(page:Page) {
   return resolvePeriodSelection({mode:'month',value:'2026-10'},new Date('2026-11-17T04:00:00Z'),period.precision);
 }
 
+it('does not send the time-bound cloud service window before its required period is applied', async () => {
+  const page = keyOfficeBusinessPage();
+  const filter = page.filters!.find(item => item.id === 'cloud-service') as DimensionFilterDeclaration;
+  const fetchData = vi.fn(async () => ({rows:[],totalCount:0}));
+  const gateway = sourceCandidatesGateway(page, {fetchData});
+  const request = filterCandidatesRequest(filter,page.filters!,new Map(),undefined,{page});
+  const window = {...request,sourceRead:{kind:'page' as const,offset:0,search:''}};
+  await expect(gateway.fetchFilterCandidates!(window,{signal:new AbortController().signal}))
+    .rejects.toMatchObject({code:'DQE_QUERY_REJECTED'});
+  expect(fetchData).not.toHaveBeenCalled();
+});
+
 it.each([
   undefined,
   {kind:'page', offset:0, search:''},

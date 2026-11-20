@@ -28,7 +28,7 @@
 
 规则的两项必填，均可独立选 `red` 或 `green`。引擎在数值格式化前逐行比较原始值，小于零取 `negative`，零和正数取 `nonNegative`；缺失或非有限数值沿用折线缺口。启用规则时默认每个有效值显示圆点，折线和图例保留系列颜色。省略规则沿用既有系列呈现。
 
-合成入口 `/pages/bar-line-marker-color` 可对照负值、零、正值、空值和格式化后显示为零的负值。业务入口 `/pages/business-result-metrics` 的「净商务折扣执行情况」在月期间为环比系列启用此规则。
+合成入口 `/pages/bar-line-marker-color` 可对照负值、零、正值、空值和格式化后显示为零的负值。
 
 <a id="bar-series-average"></a>
 

@@ -382,7 +382,12 @@
     const dependencies = candidateDependencies(declaration);
     return declarations.every(filter => {
       if (!dependencies.includes(filter.id)) return true;
-      if (filter.id === 'region' || filter.type === 'timePoint' || filter.type === 'timeRange') return filterValues.has(filter.id);
+      if (filterValues.has(filter.id)) return true;
+      if (filter.id === 'region') {
+        const key = filterURLKeys(filter, !!declarationPage && usesIocRegion(declarationPage)).value;
+        return new URLSearchParams(appliedInput?.initialSearch).get(key) === '';
+      }
+      if (filter.type === 'timePoint' || filter.type === 'timeRange') return false;
       return true;
     });
   }
@@ -392,11 +397,11 @@
     if (!window) return;
     const gateway = activeGateway;
     const request = filterCandidatesRequest(declaration,declarations,filterValues,undefined,context);
-    const blocked = preparationBlocksFilter(declaration,declarations,preparingFilters);
-    const preload = !!declaration.defaultWhen && !initializing && !blocked && !!gateway.fetchFilterCandidates && candidatePreloadScopeReady(declaration);
-    const key = JSON.stringify([session,window.limit,blocked,context.displayInputs?.permissionRevision,cascadeContext(declaration,declarations,filterValues,context)]);
-    return {key,filterId:declaration.id,sourceId:window.sourceId,limit:window.limit,preload,read:(offset,search,signal)=>{
-      if (blocked || !gateway.fetchFilterCandidates) return Promise.resolve({kind:'unavailable'});
+    const waiting = initializing || preparationBlocksFilter(declaration,declarations,preparingFilters);
+    const preload = !!declaration.defaultWhen && !waiting && !!gateway.fetchFilterCandidates && candidatePreloadScopeReady(declaration);
+    const key = JSON.stringify([session,window.limit,waiting,context.displayInputs?.permissionRevision,cascadeContext(declaration,declarations,filterValues,context)]);
+    return {key,filterId:declaration.id,sourceId:window.sourceId,limit:window.limit,preload,waiting,read:(offset,search,signal)=>{
+      if (!gateway.fetchFilterCandidates) return Promise.resolve({kind:'unavailable'});
       return gateway.fetchFilterCandidates({...request,sourceRead:{kind:'page',offset,search}},{signal});
     }};
   }
