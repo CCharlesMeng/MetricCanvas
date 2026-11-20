@@ -30,11 +30,12 @@
     searchDraft = undefined;
     return snapshot?.search ?? '';
   });
-  function continueCandidates(event: Event) {
-    if (snapshot?.status !== 'ready' || snapshot.candidates.length >= (snapshot.totalCount ?? 0)) return;
-    const list = event.currentTarget as HTMLDivElement;
+  let list = $state<HTMLDivElement>();
+  function continueCandidates() {
+    if (!list || snapshot?.status !== 'ready' || snapshot.candidates.length >= (snapshot.totalCount ?? 0)) return;
     if (list.scrollTop > 0 && list.scrollHeight - list.clientHeight - list.scrollTop <= 1) onmore?.(field);
   }
+  $effect(continueCandidates);
 </script>
 <div class="candidates">
   {#if showSearch}
@@ -46,7 +47,7 @@
       disabled={!complete && !all} onchange={onselectall} />
   {/if}
   {#key snapshot?.search}
-  <div class="list" onscroll={continueCandidates}>
+  <div class="list" bind:this={list} onscroll={continueCandidates}>
     {#each options as candidate (key(candidate.value))}
       <label class="candidate candidate-option" class:selected={candidate.missing}>
         <input type="checkbox" checked={candidate.missing || all || selected.includes(candidate.value)} disabled={all && !complete} onchange={() => onchange(candidate.value)} />
@@ -56,14 +57,18 @@
   </div>
   {/key}
   {#if snapshot?.status === 'loading'}
-    <TextSkeleton />
+    {#if snapshot.candidates.length}
+      <span role="status">正在加载更多选项</span>
+    {:else}
+      <TextSkeleton />
+    {/if}
   {:else if snapshot?.status === 'unavailable'}
     <span role="status">候选值能力不可用</span>
   {:else if snapshot?.status === 'error'}
     {#if limited}
       <span role="status">{snapshot.error?.message}</span>
     {:else}
-      <span role="status">候选项加载失败</span>
+      <span role="status">{snapshot.candidates.length ? '候选加载未完成' : '候选项加载失败'}</span>
       <button type="button" onclick={() => onretry?.(field)}>重试</button>
     {/if}
   {:else if snapshot?.status === 'empty'}

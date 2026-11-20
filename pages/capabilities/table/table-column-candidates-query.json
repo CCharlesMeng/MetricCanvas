@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.74",
+  "schemaVersion": "6.98",
   "id": "table-column-candidates-query",
   "layout": "dashboard",
   "meta": { "title": "表头候选全量读取（合成 DQE 响应）" },
@@ -37,7 +37,7 @@
         "rowKey": "id",
         "columns": [
           { "field": "id", "title": "编号" },
-          { "field": "region", "title": "区域", "filterable": { "mode": "select" } },
+          { "field": "region", "title": "区域", "filterable": { "mode": "select", "showSelectAll": true } },
           { "field": "office", "title": "代表处", "filterable": { "mode": "select" } },
           { "field": "amount", "title": "收入", "filterable": { "mode": "numberRange" } }
         ],

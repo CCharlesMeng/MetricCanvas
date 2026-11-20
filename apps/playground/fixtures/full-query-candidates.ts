@@ -1,5 +1,6 @@
 import { createInjectedDqeGateway } from '@metriccanvas/application-runtime';
-import { dqeRecord, type JsonObject, type Row } from '@metriccanvas/page/internal';
+import { dqeRecord, type JsonObject } from '@metriccanvas/page/internal';
+import { candidateEnvelope, candidateHttpRoot } from './full-query-candidate-data';
 
 function trace(phase: 'start' | 'abort', items: readonly JsonObject[]) {
   if (typeof globalThis.dispatchEvent !== 'function') return;
@@ -19,56 +20,78 @@ function blockedCandidate(signal: AbortSignal | null | undefined, items: readonl
   });
 }
 
-/** 620 synthetic rows: offices 61–80 appear only after the first three 200-row batches. */
-const rows: Row[] = Array.from({ length: 620 }, (_, index) => ({
-  编号: index + 1,
-  区域: index < 600 ? '华北' : '华南',
-  代表处: `办事处${String(index < 600 ? index % 60 + 1 : index - 539).padStart(2, '0')}`,
-  收入: 1000 + index
-}));
-const overLimitRows = [...rows, ...Array.from({ length: 381 }, (_, index) => ({
-  编号: 621 + index, 区域: '华北', 代表处: `办事处${String(index % 80 + 1).padStart(2, '0')}`, 收入: 1620 + index
-}))];
-
-function matches(row: Row, item: JsonObject): boolean {
-  const filter = dqeRecord(item.filter);
-  const dims = Array.isArray(filter.dims) ? filter.dims : [];
-  const metrics = Array.isArray(filter.metrics) ? filter.metrics : [];
-  return dims.every(value => {
-    const entry = dqeRecord(value);
-    return Array.isArray(entry.dim_value_list) && entry.dim_value_list.includes(row[String(entry.dim_name)] as string);
-  }) && metrics.every(value => {
-    const entry = dqeRecord(value), amount = Number(row[String(entry.metric_name)]);
-    const bound = Number(Array.isArray(entry.metric_value_list) ? entry.metric_value_list[0] : entry.value);
-    return entry.operator === '>=' ? amount >= bound : amount <= bound;
+function waitForCandidateRelease(signal: AbortSignal | null | undefined, items: readonly JsonObject[]): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const type = 'metriccanvas:synthetic-column-continue';
+    const finish = () => {
+      clearTimeout(timer);
+      globalThis.removeEventListener(type, finish);
+      signal?.removeEventListener('abort', abort);
+      resolve();
+    };
+    const abort = () => {
+      clearTimeout(timer);
+      globalThis.removeEventListener(type, finish);
+      trace('abort', items);
+      reject(signal?.reason);
+    };
+    const timer = setTimeout(finish, 8000);
+    globalThis.addEventListener(type, finish, { once: true });
+    signal?.addEventListener('abort', abort, { once: true });
   });
 }
 
-function receipt(item: JsonObject, state: string): JsonObject {
-  if (!Array.isArray(item.output_metrics) || !item.output_metrics.length) throw Error('模拟 DQE 要求至少一个 output_metrics');
-  const order = dqeRecord(item.order), offset = Number(order.offset ?? 0), limit = Number(order.limit ?? 20);
-  const source = state === 'over-limit' || state === 'raised-limit' ? overLimitRows : rows;
-  const selected = source.filter(row => matches(row, item));
-  const data = selected.slice(offset, offset + limit);
-  if (state === 'truncated' && limit > 20) data.pop();
-  return { code: 'SUCCESS', data, total_count: selected.length };
-}
+type CandidateHttpFetch = (items: readonly JsonObject[], url: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
 
 /** Exercise the registered application gateway through native DQE envelopes, without a real service. */
-export function createFullQueryCandidatesPreview(state = 'ready') {
+export function createFullQueryCandidatesPreview(state = 'ready', httpFetch?: CandidateHttpFetch) {
   const requests: JsonObject[] = [];
-  const fetchImpl: typeof fetch = async (_url, init) => {
+  let held = false;
+  const fetchImpl: typeof fetch = async (url, init) => {
     init?.signal?.throwIfAborted();
     const body = JSON.parse(String(init?.body)) as { dsl_list: JsonObject[] };
     requests.push(...structuredClone(body.dsl_list));
     trace('start', body.dsl_list);
+    if (httpFetch) return httpFetch(body.dsl_list, url, init);
     if (state === 'blocked-candidates' && body.dsl_list.some(item => Number(dqeRecord(item.order).limit) > 20)) await blockedCandidate(init?.signal, body.dsl_list);
-    return Response.json({ retCode: 'CBC.0000', results: body.dsl_list.map(item => receipt(item, state)) });
+    const delayed = ['progressive-candidates', 'late-truncated', 'candidate-retry'].includes(state);
+    if (delayed && !held && body.dsl_list.some(item => Number(dqeRecord(item.order).offset) === 200)) {
+      held = true;
+      await waitForCandidateRelease(init?.signal, body.dsl_list);
+      if (state === 'candidate-retry') throw new TypeError('synthetic network failure');
+    }
+    return Response.json(candidateEnvelope(body.dsl_list, state));
   };
   const dataGateway = createInjectedDqeGateway(fetchImpl, undefined, () => ({
-    dqeEndpoint: '/synthetic-dqe', pageMetadataBaseUrl: '/synthetic-pages',
+    dqeEndpoint: httpFetch ? `${candidateHttpRoot}/execute` : '/synthetic-dqe', pageMetadataBaseUrl: '/synthetic-pages',
     authToken: 'synthetic', operatorId: 'synthetic', workspaceId: 'synthetic',
     ...(state === 'raised-limit' ? { columnCandidatesMaxRows: 1200 } : {})
   }));
   return { dataGateway, requests };
+}
+
+/** Hold only the first second-batch request for this Playground page instance. */
+export function createHttpCandidatePreview() {
+  const run = Array.from(crypto.getRandomValues(new Uint32Array(4)), part => part.toString(16).padStart(8, '0')).join('');
+  let held = false;
+  let released = false;
+  const transport: CandidateHttpFetch = async (items, url, init) => {
+    if (released || held || !items.some(item => Number(dqeRecord(item.order).offset) === 200)) return fetch(url, init);
+    held = true;
+    const signal = init?.signal;
+    const onAbort = () => trace('abort', items);
+    signal?.addEventListener('abort', onAbort, { once: true });
+    try {
+      return await fetch(`${url}?hold=${run}`, init);
+    } finally {
+      signal?.removeEventListener('abort', onAbort);
+    }
+  };
+  return {
+    ...createFullQueryCandidatesPreview('ready', transport),
+    async release() {
+      released = true;
+      if (held) await fetch(`${candidateHttpRoot}/release?hold=${run}`, { method: 'POST' });
+    }
+  };
 }

@@ -277,9 +277,9 @@ Report页头通过`pdfExport: {label?, filename?}`启用引擎内置PDF下载，
 
 ## 表格列候选值网关注入
 
-表格列候选与页面维度取值域分开。DataGateway 可实现 fetchColumnCandidates(request, diagnosticContext?, signal?)；request 包含保留原查询定义及业务条件的生效查询、目标页面字段和查询字段、独立候选 search/offset/limit。返回 unavailable 或 candidates/totalCount；totalCount 必须是当前候选搜索范围的去重数量，单页长度与总数须一致，稳定值保留 string/number 类型，label 独立。
+表格列候选与页面维度取值域分开。DataGateway 可实现 `fetchColumnCandidates(request, diagnosticContext?, signal?, onProgress?)`；request 包含保留原查询定义及业务条件的生效查询、目标页面字段和查询字段、独立候选 search/offset/limit。返回 unavailable 或 candidates/totalCount；totalCount 必须是当前候选搜索范围的去重数量，单页长度与总数须一致，稳定值保留 string/number 类型，label 独立。对 offset 为0的读取，适配器可通过第四个参数交付已校验的累计去重候选，按发现顺序追加并保留前缀和显示名。该回调不能证明完整性。若已发布进度且最终成功，最后一次进度应覆盖全部匹配值，最终回执仍按规范排序提供该页和准确总数。只有最终回执进入共享结果缓存。旧适配器可沿用原签名。
 
-平台和 Playground 的 `createInjectedDqeGateway` 已注册 `columnCandidates: {mode: 'fullQuery'}`。独立集成应用可在 `createDqeGateway` 使用同一配置，`batchSize` 可选、默认200；`maxRows` 可选、默认1000（最多5批）。两者必须为正安全整数，批次不超过剩余扫描预算。平台注入源（门户 `readConfig()` 或独立入口 `__METRICCANVAS__`）可通过 `columnCandidatesMaxRows: 2000` 显式提高上限，每次候选读取现读；独立网关使用 `columnCandidates: {mode: "fullQuery", maxRows: 2000}`。该配置只控制候选，既有表格分页不变。每批调用同一网关的 fetchData，复用原查询编码、端点、身份头、并发、取消和诊断；保留全部输出指标和维度，前端按目标页面字段去重。原始结果 total_count 与去重候选 totalCount 分别计算；首批拿到准确总数后，实际候选原始行域（保留业务 TopN）若超出上限，返回 `DQE_CANDIDATE_LIMIT_EXCEEDED`，停止后续批次并提示缩小筛选范围或显式提高上限，不返回部分候选；只有原始批次完整性通过后才提供候选搜索和分页。此方式按完整结果传输数据，未命中候选页缓存时重新读取，不要求 DQE 支持 DISTINCT，也不宣称跨批事务快照。
+平台和 Playground 的 `createInjectedDqeGateway` 已注册 `columnCandidates: {mode: 'fullQuery'}`。独立集成应用可在 `createDqeGateway` 使用同一配置，`batchSize` 可选、默认200；`maxRows` 可选、默认1000（最多5批）。两者必须为正安全整数，批次不超过剩余扫描预算。平台注入源（门户 `readConfig()` 或独立入口 `__METRICCANVAS__`）可通过 `columnCandidatesMaxRows: 2000` 显式提高上限，每次候选读取现读；独立网关使用 `columnCandidates: {mode: "fullQuery", maxRows: 2000}`。该配置只控制候选，既有表格分页不变。每批调用同一网关的 fetchData，复用原查询编码、端点、身份头、并发、取消和诊断；保留全部输出指标和维度，前端按目标页面字段去重。原始结果 total_count 与去重候选 totalCount 分别计算；首批拿到准确总数后，实际候选原始行域（保留业务 TopN）若超出上限，返回 `DQE_CANDIDATE_LIMIT_EXCEEDED`，停止后续批次并提示缩小筛选范围或显式提高上限，不返回部分候选；校验通过的批次可先发布去重进度，验证完整性后发布准确总数及最终候选分页。超时和传输错误可在当前菜单暂留已验证的单项，权限和完整性错误会撤回暂存结果。此方式按完整结果传输数据，未命中候选页缓存时重新读取，不要求 DQE 支持 DISTINCT，也不宣称跨批事务快照。
 
 预加载由运行时按可见性、完成绘制和空闲时机触发，执行优先级不写入页面JSON或DQE业务条件。后台读取串行，主查询及显式菜单请求优先；主查询可取消在途候选并释放执行位置，取消信号传给同一网关。候选快照与主数据快照分开，候选等待/失败不参与整表loading门禁。只复用同一生效作用域的候选页或在途请求；身份与权限约束仍沿用原集成会话。
 

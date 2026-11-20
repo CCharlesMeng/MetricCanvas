@@ -5,7 +5,7 @@ export type {
   DimensionValuesResult, DimensionValuesRequest, DimensionValuesGateway, RuntimeDataGateway
 } from './ports';
 
-export type { ColumnCandidate, ColumnCandidatesPage, ColumnCandidatesQuery } from './ports';
+export type { ColumnCandidate, ColumnCandidateProgress, ColumnCandidatesPage, ColumnCandidatesQuery } from './ports';
 
 export {withOperationMapRegion,type OperationMapRegionAdapter} from './operation-map-region';
 

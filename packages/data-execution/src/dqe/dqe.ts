@@ -515,7 +515,7 @@ export function createDqeGateway(
         }
       });
     },
-    async fetchColumnCandidates(request, context, signal) {
+    async fetchColumnCandidates(request, context, signal, onProgress) {
       if (signal?.aborted) throw new DqeGatewayError('DQE_CANCELLED', '候选值请求已被取消');
       if (!config.encodeColumnCandidates) {
         if (isObjectDqeItem(request.query.body.dsl_list[0])) {
@@ -524,7 +524,7 @@ export function createDqeGateway(
         }
         const candidatesConfig = config.columnCandidates;
         if (!candidatesConfig) return { kind: 'unavailable' };
-        return fullQueryColumnCandidates(request, gateway.fetchData, candidatesConfig, context, signal);
+        return fullQueryColumnCandidates(request, gateway.fetchData, candidatesConfig, context, signal, onProgress);
       }
       const encoded = config.encodeColumnCandidates(structuredClone(request));
       let result: DataGatewayResult;

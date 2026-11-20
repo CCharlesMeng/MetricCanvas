@@ -1,5 +1,6 @@
-import { expect,it } from 'vitest';
+import { expect,it,vi } from 'vitest';
 import { createQueryRunner } from '../src/query-runner';
+import type { ColumnCandidateProgress, ColumnCandidatesPage } from '../src/ports';
 import type { EffectiveQuery } from '@metriccanvas/page/internal';
 const query=(id=1):EffectiveQuery=>({language:'dqe',body:{dsl_list:[{id}]},fieldMappings:{},filterValues:[]});
 it('dispatches all fifteen independent foreground reads without waiting for a slot by default',async()=>{
@@ -39,4 +40,36 @@ it('normalizes typed dimension sets for request identity without changing ordere
  const first={...query(),filterValues:[{target:'dimension' as const,queryField:'code',values:['B','A']}]};
  const second={...query(),filterValues:[{target:'dimension' as const,queryField:'code',values:['A','B']}]};
  const a=runner.run(first,{},'session'),b=runner.run(second,{},'session');expect(calls).toBe(1);resolve({rows:[],totalCount:0});await Promise.all([a,b]);runner.dispose();
+});
+
+it('replays candidate progress to a late consumer, detaches cancelled observers and caches only the final page', async () => {
+ const candidate = {query: query(),field:'name',queryField:'name',search:'',offset:0,limit:1};
+ let publish: ColumnCandidateProgress | undefined;
+ let finish!: (page: ColumnCandidatesPage) => void;
+ const fetchColumnCandidates = vi.fn((_request, _diagnostics, _signal, progress?: ColumnCandidateProgress) => {
+  publish = progress;
+  return new Promise<ColumnCandidatesPage>(resolve => { finish = resolve; });
+ });
+ const runner = createQueryRunner({gateway:{async fetchData(){return {rows:[]};},fetchColumnCandidates}});
+ const controller = new AbortController();
+ const early = vi.fn(), late = vi.fn();
+ const initial = runner.runCandidates(candidate,{},'scope',controller.signal,true,early);
+ const cancelled = expect(initial).rejects.toMatchObject({code:'DQE_CANCELLED'});
+ const a = {value:'A',label:'A'}, b = {value:'B',label:'B'};
+ publish!([b]);
+ const joined = runner.runCandidates(candidate,{},'scope',undefined,false,late);
+ expect(late).toHaveBeenLastCalledWith([b]);
+ controller.abort();
+ await cancelled;
+ publish!([b,a]);
+ expect(early).toHaveBeenCalledTimes(1);
+ expect(late).toHaveBeenLastCalledWith([b,a]);
+ const result = {kind:'values' as const,candidates:[a],totalCount:2};
+ finish(result);
+ expect(await joined).toEqual(result);
+ const cached = vi.fn();
+ expect(await runner.runCandidates(candidate,{},'scope',undefined,false,cached)).toEqual(result);
+ expect(cached).not.toHaveBeenCalled();
+ expect(fetchColumnCandidates).toHaveBeenCalledTimes(1);
+ runner.dispose();
 });

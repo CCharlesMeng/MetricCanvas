@@ -20,6 +20,10 @@ export function validateCandidatePage(page: ColumnCandidatesPage, offset: number
   }
   return page;
 }
+export function sortColumnCandidates(candidates: ColumnCandidate[]): ColumnCandidate[] {
+  return candidates.sort((a, b) => canonicalizeJson(a.value).localeCompare(canonicalizeJson(b.value), 'en'));
+}
+
 export function localColumnCandidates(rows: readonly Row[], field: string, view: TableQueryView, search: string, offset: number, limit: number): ColumnCandidatesPage {
   const values = new Map<string, ColumnCandidate>();
   for (const row of evaluateTableView(rows, candidateView(view, field), true).rows) {
@@ -29,7 +33,6 @@ export function localColumnCandidates(rows: readonly Row[], field: string, view:
     values.set(candidateKey(value), { value, label: String(value) });
   }
   const term = search.toLowerCase();
-  const candidates = [...values.values()].filter(c => c.label.toLowerCase().includes(term))
-    .sort((a, b) => canonicalizeJson(a.value).localeCompare(canonicalizeJson(b.value), 'en'));
+  const candidates = sortColumnCandidates([...values.values()].filter(c => c.label.toLowerCase().includes(term)));
   return { kind: 'values', candidates: candidates.slice(offset, offset + limit), totalCount: candidates.length };
 }
