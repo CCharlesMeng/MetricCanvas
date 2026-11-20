@@ -8,7 +8,7 @@ import type { RuntimeDataGateway } from '../ports';
 import { compilePagedJoin } from '../paged-join/plan';
 import { executePagedJoin } from '../paged-join/execute';
 import { hasQueryFieldMapping, tableHeaders, type Page, type TableQueryView, type DataSnapshot, type EffectiveQuery, type QueryDataSource, type PagedJoinDataSource } from '@metriccanvas/page/internal';
-import type { ColumnCandidatesPage } from '../ports';
+import type { ColumnCandidateProgress, ColumnCandidatesPage } from '../ports';
 import type { FilterValues } from '../filter-values';
 import type { QueryRunner } from '../query-runner';
 import type { SourceRead, SourceUpdate } from './session';
@@ -29,6 +29,7 @@ function appliedInputSources(page:Page,source:QueryDataSource,conditions:FilterV
 export interface ColumnCandidatesRead {
   /** Idle speculative work; ordinary reads and explicit menu requests take precedence. */
   preload?: boolean;
+  onProgress?: ColumnCandidateProgress;
   displayInputs?: DisplayInputsSnapshot; filterRevision?: number; now?: Date;
   sourceId: string; field: string; conditions: FilterValues; view: TableQueryView;
   views?: ReadonlyMap<string, TableQueryView>; seeds?: ReadonlyMap<string, DataSnapshot>;
@@ -38,7 +39,7 @@ type Read = (request: SourceRead) => AsyncGenerator<SourceUpdate>;
 type CandidateContext={gateway:RuntimeDataGateway;slotSearch?:TableSlotSearchReader;displayInputs?:()=>DisplayInputsSnapshot|undefined;filterRevision?:()=>number;now?:Date;clock?:()=>Date};
 
 function freezeCandidateRequest(input:ColumnCandidatesRead,context:CandidateContext):ColumnCandidatesRead{
-  return structuredClone({...input,signal:undefined,now:input.now??context.now??context.clock?.()??new Date(),
+  return structuredClone({...input,signal:undefined,onProgress:undefined,now:input.now??context.now??context.clock?.()??new Date(),
     displayInputs:input.displayInputs??context.displayInputs?.(),filterRevision:input.filterRevision??context.filterRevision?.()});
 }
 function candidateSource(page:Page,request:ColumnCandidatesRead){
@@ -58,6 +59,7 @@ export function createColumnCandidatesReader(page: Page, runner: QueryRunner, re
   return async (input: ColumnCandidatesRead): Promise<ColumnCandidatesPage> => {
     const request = freezeCandidateRequest(input,context);
     const signal = input.signal;
+    request.onProgress = input.onProgress;
     const execution = candidateQueryRunner(runner, request.preload);
     signal?.throwIfAborted();
     const source = candidateSource(page,request);
@@ -103,7 +105,7 @@ async function ordinaryCandidates(page:Page,source:QueryDataSource,request:Colum
       const materialized = await searchCandidates(page, request, view, query, runner, scope, signal, slotSearch);
       if (materialized) return materialized;
       return runner.runCandidates({ query, field: request.field, queryField: mappedField.queryField, search: request.candidateSearch ?? '', offset, limit },
-        { pageId: page.id, dataSourceIds: [request.sourceId] }, scope, signal);
+        { pageId: page.id, dataSourceIds: [request.sourceId] }, scope, signal, false, request.onProgress);
 }
 
 async function searchCandidates(page: Page, request: ColumnCandidatesRead, view: TableQueryView, query: EffectiveQuery, runner: QueryRunner, scope: string, signal?: AbortSignal, reader?: TableSlotSearchReader): Promise<ColumnCandidatesPage | undefined> {

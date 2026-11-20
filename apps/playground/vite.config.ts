@@ -2,6 +2,7 @@ import { sveltekit } from '@sveltejs/kit/vite';
 import basicSsl from '@vitejs/plugin-basic-ssl';
 import { defineConfig, type Plugin } from 'vite';
 import { fileURLToPath } from 'node:url';
+import { candidateHttpPreview } from './fixtures/full-query-candidate-http';
 import { CLOUDIOC_DEV_DOMAIN, createCloudIocDevProxy, createDqeDevProxy, readCloudIocDevConfig } from '../../tools/dev-server';
 
 const pagesDir = fileURLToPath(new URL('../../pages', import.meta.url));
@@ -37,7 +38,7 @@ export default defineConfig((config) => {
   }
   return {
     ...(cloudIoc ? {define: {'import.meta.env.PLAYGROUND_CLOUDIOC_CFTK': JSON.stringify(cloudIoc.cftk)}} : {}),
-    plugins: [sveltekit(), watchPageAssets(pagesDir), ...(cloudIoc ? [basicSsl({ domains: [CLOUDIOC_DEV_DOMAIN] })] : [])],
+    plugins: [candidateHttpPreview(), sveltekit(), watchPageAssets(pagesDir), ...(cloudIoc ? [basicSsl({ domains: [CLOUDIOC_DEV_DOMAIN] })] : [])],
     resolve: {
       alias: {
         // 页面资产目录固定别名,避免源码内的多级相对路径

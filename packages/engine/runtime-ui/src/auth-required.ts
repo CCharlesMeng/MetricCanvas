@@ -71,7 +71,7 @@ export function createAuthRequiredGateway(base: RuntimeDataGateway, observe: (ev
       const signal = AbortSignal.any(options?.signal ? [options.signal, lifetime.signal] : [lifetime.signal]);
       return abortable(next => definitions.call(base, codes, { signal: next }), signal);
     } } : {}),
-    ...(columns ? { fetchColumnCandidates: ((request, context, signal) => execute(next => columns.call(base, request, context, next), signal)) as NonNullable<RuntimeDataGateway['fetchColumnCandidates']> } : {})
+    ...(columns ? { fetchColumnCandidates: ((request, context, signal, onProgress) => execute(next => columns.call(base, request, context, next, onProgress), signal)) as NonNullable<RuntimeDataGateway['fetchColumnCandidates']> } : {})
   };
   inheritFinalizationCache(gateway,base);
   return { gateway:inheritMembershipCandidates(gateway,base), dispose() { lifetime.abort(); } };

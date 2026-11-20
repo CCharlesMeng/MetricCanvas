@@ -32,7 +32,7 @@ export { intersectQueryFilters } from './intersect-filters';
 export { candidateContextKey, filterCandidatesRequest, validFilterCandidates } from './filter-candidates';
 export { createCandidateGatewaySession } from './candidate-session';
 export { createCandidateCache } from './candidate-cache';
-export { candidateView, candidateKey, localColumnCandidates } from './column-candidates';
+export { candidateView, candidateKey, localColumnCandidates, sortColumnCandidates } from './column-candidates';
 export type { ColumnCandidatesRead } from './source-program/column-candidates';
 
 export { createCandidateValidator } from './candidate-validation';

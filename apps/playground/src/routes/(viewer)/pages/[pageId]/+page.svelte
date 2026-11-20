@@ -28,7 +28,7 @@
     }
   });
   const comparisonPreview = $derived(createPeriodComparisonPreview(page.url.searchParams.get("state") ?? "ready"));
-  import { createFullQueryCandidatesPreview } from '../../../../../fixtures/full-query-candidates';
+  import { createFullQueryCandidatesPreview, createHttpCandidatePreview } from '../../../../../fixtures/full-query-candidates';
   import {createTableRecoveryPreview} from '../../../../../fixtures/table-recovery';
   import {withIocRegionCandidates} from '$lib/ioc-region-preview';
   import {createKeyOfficeGateway,createKeyOfficePriorityGateway} from '../../../../../fixtures/key-office-filter/gateway';
@@ -142,6 +142,22 @@
     if(input==='ioc-region'||input==='ioc-region-dept')return withIocRegionCandidates(dataGateway,input==='ioc-region');
   }
 
+  const manualCandidatePreview = $derived(import.meta.env.DEV && page.params.pageId === 'table-column-candidates-query' &&
+    page.url.searchParams.get('state') === 'progressive-candidates');
+  let httpCandidatePreview: ReturnType<typeof createHttpCandidatePreview> | undefined;
+
+  function fullQueryCandidatesGateway(state: string): DataGateway {
+    if (!manualCandidatePreview) return createFullQueryCandidatesPreview(state).dataGateway;
+    httpCandidatePreview = createHttpCandidatePreview();
+    return httpCandidatePreview.dataGateway;
+  }
+
+  function releaseCandidateBatch(event: KeyboardEvent) {
+    if (!manualCandidatePreview || !event.altKey || event.key !== 'Enter') return;
+    event.preventDefault();
+    void httpCandidatePreview?.release().catch(() => {});
+  }
+
   function queryTableGateway(input: ReturnType<typeof pageExternalInputs>): DataGateway | undefined {
     if(input==='metric-definition-tip')return page.url.searchParams.get('tips') === 'off'
       ? dataGateway : createMetricDefinitionPreview(page.url.origin);
@@ -157,7 +173,7 @@
     const regional=regionQueryGateway(input);
     if(regional)return regional;
     if(input==='row-cache')return createRowCachePreview().dataGateway;
-    if(input==='full-query-candidates')return createFullQueryCandidatesPreview(state).dataGateway;
+    if(input==='full-query-candidates')return fullQueryCandidatesGateway(state);
     return combinationTableGateway(input);
   }
 
@@ -221,6 +237,8 @@
   }
 </script>
 
+<svelte:window onkeydown={releaseCandidateBatch} />
+
 {#if pageState.phase === 'ready' && !framed}
   <PageDocument pageId={page.params.pageId!} document={pageState.document} />
 {/if}
@@ -251,6 +269,9 @@
         <button onclick={()=>visibilityInstance++}>重新初始化</button>
       </div>
     {/if}
+    {#if manualCandidatePreview}
+      <p class="candidate-preview-instructions">合成 DQE · 打开「区域」列筛选，在 Network 查看 <code>execute</code>，按 <kbd>Alt</kbd> + <kbd>Enter</kbd> 放行第二批。</p>
+    {/if}
     {#key visibilityInstance}
     <RuntimeView
       displayInputs={activeDisplayInputs}
@@ -280,6 +301,11 @@
     max-width: none;
     padding: 0;
     margin: 0;
+  }
+  .candidate-preview-instructions {
+    margin: 0;
+    padding: 10px 24px;
+    font-size: 13px;
   }
   .error-page h1 {
     font-size: 20px;

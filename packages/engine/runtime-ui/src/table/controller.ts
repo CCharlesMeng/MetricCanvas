@@ -103,13 +103,13 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
     function candidateSession(table: TableComponent) {
         let session = candidates.get(table.id);
         if (!session) {
-            session = createColumnCandidatesSession(async (field, search, offset, signal, preload) => {
+            session = createColumnCandidatesSession(async (field, search, offset, signal, preload, onProgress) => {
                 if(pausedFields(table).includes(field))return {kind:'unavailable'};
                 const current = stream(), program = current?.getSourceProgram();
                 if (!current || !program)
                     return { kind: 'unavailable' };
                 return program.readColumnCandidates({ ...candidateContext(), sourceId: table.data.main, field, conditions: conditions(), view: candidateViewFor(table,field),
-                    views: current.captureViews(), seeds: current.captureRawSnapshots(), candidateSearch: search, offset, pageSize: 50, currentYear: current.captureComputeYear(), signal, preload });
+                    views: current.captureViews(), seeds: current.captureRawSnapshots(), candidateSearch: search, offset, pageSize: 50, currentYear: current.captureComputeYear(), signal, preload, onProgress });
             }, field => {
                 const current = candidateViewFor(table,field), ids = conditionSourceIds(page, table.data.main), raw = stream()?.captureRawSnapshots();
                 const filterIds = new Set([...ids].flatMap(id => {

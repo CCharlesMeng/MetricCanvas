@@ -1,6 +1,6 @@
 import { dqeRecord, type EffectiveQuery, type Row } from '@metriccanvas/page/internal';
-import { candidateKey, localColumnCandidates } from '../column-candidates';
-import type { ColumnCandidatesPage, ColumnCandidatesQuery, DataGateway, DataGatewayResult, QueryDiagnosticContext } from '../ports';
+import { candidateKey, sortColumnCandidates } from '../column-candidates';
+import type { ColumnCandidate, ColumnCandidateProgress, ColumnCandidatesPage, ColumnCandidatesQuery, DataGateway, DataGatewayResult, QueryDiagnosticContext } from '../ports';
 
 export interface FullQueryCandidatesConfig {
   mode: 'fullQuery';
@@ -32,12 +32,13 @@ function checkedTotal(result: DataGatewayResult, expected: number | undefined, o
   return total;
 }
 
-function collectValues(values: Map<string, Row>, rows: readonly Row[], field: string): void {
+function collectValues(values: Map<string, ColumnCandidate>, rows: readonly Row[], field: string, search: string): void {
   for (const row of rows) {
     const value = row[field];
     if (typeof value !== 'string' && typeof value !== 'number') continue;
     if (typeof value === 'number' && !Number.isFinite(value)) continue;
-    values.set(candidateKey(value), { [field]: value });
+    const label = String(value);
+    if (label.toLowerCase().includes(search)) values.set(candidateKey(value), { value, label });
   }
 }
 
@@ -52,18 +53,20 @@ function assertWithinBudget(total: number, top: number | undefined, maxRows: num
     { code: 'DQE_CANDIDATE_LIMIT_EXCEEDED' });
 }
 
-/** Preserve the original projection and grain; deduplicate only after reading its full range. */
+/** Preserve the original projection and grain; publish the final count only after reading its full range. */
 export async function fullQueryColumnCandidates(
   request: ColumnCandidatesQuery,
   fetchData: DataGateway['fetchData'],
   config: FullQueryCandidatesConfig,
   context?: QueryDiagnosticContext,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  onProgress?: ColumnCandidateProgress
 ): Promise<ColumnCandidatesPage> {
   const batchSize = positiveSize(config.batchSize ?? 200, '批量大小');
   const maxRows = positiveSize(config.maxRows ?? 1000, '查询上限');
   const query = structuredClone(request.query), top = businessLimit(query);
-  const values = new Map<string, Row>();
+  const values = new Map<string, ColumnCandidate>();
+  const search = request.search.toLowerCase();
   let offset = 0, total: number | undefined;
   do {
     assertActive(signal);
@@ -72,11 +75,13 @@ export async function fullQueryColumnCandidates(
     assertActive(signal);
     total = checkedTotal(result, total, offset, limit);
     assertWithinBudget(total, top, maxRows);
-    collectValues(values, result.rows, request.field);
+    const previousSize = values.size;
+    collectValues(values, result.rows, request.field, search);
+    if (onProgress && request.offset === 0 && values.size > previousSize) onProgress([...values.values()]);
     offset += result.rows.length;
     // A fast transport must still give input/paint tasks a turn between source batches.
     if (offset < Math.min(total, top ?? total)) await new Promise<void>(resolve => setTimeout(resolve, 0));
   } while (offset < Math.min(total, top ?? total));
-  return localColumnCandidates([...values.values()], request.field,
-    { pageIndex: 0, pageSize: request.limit, sort: [], predicates: [] }, request.search, request.offset, request.limit);
+  const candidates = sortColumnCandidates([...values.values()]);
+  return { kind: 'values', candidates: candidates.slice(request.offset, request.offset + request.limit), totalCount: candidates.length };
 }

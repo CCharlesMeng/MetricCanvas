@@ -6,7 +6,8 @@ export function candidateQueryRunner(runner: QueryRunner, background = false): Q
   if (!background) return runner;
   return { ...runner,
     run: (query, diagnostics, scope, signal) => runner.run(query, diagnostics, scope, signal, true),
-    runCandidates: (request, diagnostics, scope, signal) => runner.runCandidates(request, diagnostics, scope, signal, true)
+    runCandidates: (request, diagnostics, scope, signal, _background, onProgress) =>
+      runner.runCandidates(request, diagnostics, scope, signal, true, onProgress)
   };
 }
 

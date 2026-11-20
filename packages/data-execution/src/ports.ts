@@ -32,7 +32,7 @@ export interface QueryDiagnosticContext {
  */
 export interface DataGateway {
   /** Optional verified projection of the original query result; never a dimension dictionary. */
-  fetchColumnCandidates?(request: ColumnCandidatesQuery, diagnosticContext?: QueryDiagnosticContext, signal?: AbortSignal): Promise<ColumnCandidatesPage>;
+  fetchColumnCandidates?(request: ColumnCandidatesQuery, diagnosticContext?: QueryDiagnosticContext, signal?: AbortSignal, onProgress?: ColumnCandidateProgress): Promise<ColumnCandidatesPage>;
   /**
    * 执行失败时,拒绝原因应携带稳定查询错误分类:错误对象的 `code`
    * 属性取 @metriccanvas/page 的 QueryErrorCode 封闭集(issue #51)。
@@ -147,6 +147,11 @@ export interface FilterCandidatesGateway {
 
 /** Table result candidates preserve stable scalar types; page dimension dictionaries stay separate. */
 export interface ColumnCandidate { value: string | number; label: string; }
+/** Cumulative, deduplicated prefix in discovery order for an offset-zero read.
+ * A progressive read delivers every matching value before its successful final page.
+ * The final page alone proves completeness and retains the canonical candidate sort.
+ */
+export type ColumnCandidateProgress = (candidates: readonly ColumnCandidate[]) => void;
 export type ColumnCandidatesPage =
   | { kind: 'values'; candidates: ColumnCandidate[]; totalCount: number }
   | { kind: 'unavailable' };

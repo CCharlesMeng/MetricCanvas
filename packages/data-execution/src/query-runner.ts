@@ -1,13 +1,41 @@
 import { canonicalizeJson, type DataSnapshot, type EffectiveQuery } from '@metriccanvas/page/internal';
-import type { DataGateway, QueryDiagnosticContext, ColumnCandidatesQuery, ColumnCandidatesPage } from './ports';
+import type { DataGateway, QueryDiagnosticContext, ColumnCandidate, ColumnCandidateProgress, ColumnCandidatesQuery, ColumnCandidatesPage } from './ports';
 import { executeQuery } from './effective-query';
-import { validateCandidatePage } from './column-candidates';
+import { candidateKey, validateCandidatePage } from './column-candidates';
 
 type Result = DataSnapshot | ColumnCandidatesPage;
-type Consumer = { resolve(value: Result): void; reject(cause: unknown): void; detach(): void };
+type Consumer = { resolve(value: Result): void; reject(cause: unknown): void; onProgress?: ColumnCandidateProgress; detach(): void };
 type Request = { key: string; query: EffectiveQuery; candidates?: ColumnCandidatesQuery; diagnostics: QueryDiagnosticContext;
-  controller: AbortController; consumers: Set<Consumer>; background: boolean };
+  controller: AbortController; consumers: Set<Consumer>; background: boolean; progress?: readonly ColumnCandidate[] };
 const cancelled = (): DataSnapshot => ({ status: 'error', error: { code: 'DQE_CANCELLED', message: '查询已取消' } });
+
+function notifyProgress(consumer: Consumer, candidates?: readonly ColumnCandidate[]): void {
+  if (!candidates) return;
+  try { consumer.onProgress?.(candidates); }
+  catch { /* A consumer must not interrupt another consumer's read. */ }
+}
+
+function publishProgress(request: Request, candidates: readonly ColumnCandidate[]): void {
+  if (request.controller.signal.aborted) return;
+  const values = candidates.map(candidate => ({ ...candidate }));
+  validateCandidatePage({ kind: 'values', candidates: values, totalCount: values.length }, 0, values.length);
+  const previous = request.progress ?? [];
+  if (values.length < previous.length || previous.some((item, index) =>
+    candidateKey(item.value) !== candidateKey(values[index].value) || item.label !== values[index].label)) {
+    throw Object.assign(new Error('候选读取进度与已返回值不一致'), { code: 'DQE_ROW_CONTRACT_ERROR' });
+  }
+  request.progress = values;
+  for (const consumer of request.consumers) notifyProgress(consumer, values);
+}
+
+function validateFinalProgress(progress: readonly ColumnCandidate[] | undefined, page: ColumnCandidatesPage): void {
+  if (!progress) return;
+  const values = new Map(progress.map(item => [candidateKey(item.value), item.label]));
+  if (page.kind !== 'values' || page.totalCount !== values.size ||
+      page.candidates.some(item => values.get(candidateKey(item.value)) !== item.label)) {
+    throw Object.assign(new Error('候选读取进度与完整结果不一致'), { code: 'DQE_ROW_CONTRACT_ERROR' });
+  }
+}
 
 /** Ready foreground reads dispatch immediately by default; explicit limits and idle preloads remain supported. */
 export function createQueryRunner({ gateway, maxConcurrent = Infinity }: { gateway: DataGateway; maxConcurrent?: number }) {
@@ -17,8 +45,13 @@ export function createQueryRunner({ gateway, maxConcurrent = Infinity }: { gatew
   async function execute(request: Request): Promise<Result> {
     if(request.query.matchNone)return request.candidates?{kind:'values',candidates:[],totalCount:0}:{status:'empty',totalCount:0};
     if (!request.candidates) return executeQuery(request.query, gateway, request.diagnostics, request.controller.signal);
-    const page = await gateway.fetchColumnCandidates?.(request.candidates, request.diagnostics, request.controller.signal) ?? { kind: 'unavailable' as const };
-    return validateCandidatePage(page, request.candidates.offset, request.candidates.limit);
+    const { candidates, diagnostics, controller } = request;
+    const progressive = candidates.offset === 0 && [...request.consumers].some(consumer => consumer.onProgress);
+    const onProgress = progressive ? (values: readonly ColumnCandidate[]) => publishProgress(request, values) : undefined;
+    const page = await gateway.fetchColumnCandidates?.(candidates, diagnostics, controller.signal, onProgress) ?? { kind: 'unavailable' as const };
+    const validated = validateCandidatePage(page, candidates.offset, candidates.limit);
+    validateFinalProgress(request.progress, validated);
+    return validated;
   }
   function remember(key: string, result: Result): void {
     cache.delete(key); cache.set(key, result);
@@ -53,7 +86,7 @@ export function createQueryRunner({ gateway, maxConcurrent = Infinity }: { gatew
       for (const consumer of [...request.consumers]) { consumer.detach(); consumer.resolve(cancelled()); }
     }
   }
-  function run(query: EffectiveQuery, diagnostics: QueryDiagnosticContext, scope: string, signal?: AbortSignal, candidates?: ColumnCandidatesQuery, background = false): Promise<Result> {
+  function run(query: EffectiveQuery, diagnostics: QueryDiagnosticContext, scope: string, signal?: AbortSignal, candidates?: ColumnCandidatesQuery, background = false, onProgress?: ColumnCandidateProgress): Promise<Result> {
     if (disposed || signal?.aborted) return Promise.resolve(cancelled());
     const normalize = (values: EffectiveQuery['filterValues']) => values.map(value => value.target === 'dimension' ? { ...value, values: [...new Map(value.values.map(item => [JSON.stringify([typeof item, item]), item])).entries()].sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0).map(([, item]) => item) } : value);
     const normalized = { ...query, filterValues: normalize(query.filterValues), ...(query.bindingValues ? { bindingValues: normalize(query.bindingValues) } : {}), ...(query.tableFilters ? { tableFilters: normalize(query.tableFilters) } : {}) };
@@ -72,12 +105,15 @@ export function createQueryRunner({ gateway, maxConcurrent = Infinity }: { gatew
     request.diagnostics.dataSourceIds = [...new Set([...(request.diagnostics.dataSourceIds ?? []), ...(diagnostics.dataSourceIds ?? [])])];
     const current = request;
     return new Promise((resolve, reject) => {
-      const consumer: Consumer = { resolve, reject, detach() { signal?.removeEventListener('abort', abort); current.consumers.delete(consumer); } };
+      const consumer: Consumer = { resolve, reject, onProgress, detach() { signal?.removeEventListener('abort', abort); current.consumers.delete(consumer); } };
       const abort = () => {
         consumer.detach(); resolve(cancelled());
         if (!current.consumers.size) { current.controller.abort(); if (pending.get(key) === current) pending.delete(key); }
       };
-      current.consumers.add(consumer); signal?.addEventListener('abort', abort, { once: true }); pump();
+      current.consumers.add(consumer);
+      signal?.addEventListener('abort', abort, { once: true });
+      notifyProgress(consumer, current.progress);
+      pump();
     });
   }
   return {
@@ -86,8 +122,8 @@ export function createQueryRunner({ gateway, maxConcurrent = Infinity }: { gatew
       if ('status' in result) return result;
       throw new Error('查询结果类型不匹配');
     },
-    async runCandidates(request: ColumnCandidatesQuery, diagnostics: QueryDiagnosticContext, scope: string, signal?: AbortSignal, background = false): Promise<ColumnCandidatesPage> {
-      const result = await run(request.query, diagnostics, scope, signal, request, background);
+    async runCandidates(request: ColumnCandidatesQuery, diagnostics: QueryDiagnosticContext, scope: string, signal?: AbortSignal, background = false, onProgress?: ColumnCandidateProgress): Promise<ColumnCandidatesPage> {
+      const result = await run(request.query, diagnostics, scope, signal, request, background, onProgress);
       if ('kind' in result) return result;
       throw Object.assign(new Error('候选读取已取消'), { code: 'DQE_CANCELLED' });
     },
