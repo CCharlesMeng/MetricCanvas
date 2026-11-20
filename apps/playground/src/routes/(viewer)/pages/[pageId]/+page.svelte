@@ -142,7 +142,7 @@
     if(input==='ioc-region'||input==='ioc-region-dept')return withIocRegionCandidates(dataGateway,input==='ioc-region');
   }
 
-  const manualCandidatePreview = $derived(import.meta.env.DEV && page.params.pageId === 'table-column-candidates-query' &&
+  const manualCandidatePreview = $derived(import.meta.env.DEV && pageExternalInputs(page.params.pageId) === 'full-query-candidates' &&
     page.url.searchParams.get('state') === 'progressive-candidates');
   let httpCandidatePreview: ReturnType<typeof createHttpCandidatePreview> | undefined;
 
