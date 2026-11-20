@@ -23,7 +23,7 @@ test('英文宿主内的标题气泡使用中文文案', async ({ page }, testIn
   await expect(latest).toHaveCSS('color', 'rgb(25, 25, 25)');
   await expect(latest).toHaveCSS('font-weight', '700');
   await expect(latest).toHaveCSS('text-decoration-line', 'none');
-  await expect(panel).toHaveCSS('width', '400px');
+  expect((await panel.boundingBox())!.width).toBeLessThan(400);
   await expect(panel).toHaveCSS('border-radius', '8px');
   await panel.screenshot({ path: testInfo.outputPath('metric-definition-loaded.png') });
   await page.mouse.move(0, 0);
@@ -51,6 +51,33 @@ test('英文宿主内的标题气泡使用中文文案', async ({ page }, testIn
   await page.goto('/pages/metric-card-definition-tip?tips=off');
   await expect(page.getByText('32.8%', { exact: true })).toBeVisible();
   await expect(page.locator('[data-metric-definition-trigger]')).toHaveCount(0);
+});
+
+test('长指标定义的气泡在桌面和窄屏内可滚动', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1600 });
+  await page.goto('/pages/metric-card-definition-tip');
+  const trigger = page.getByRole('button', { name: '查看销售收入的指标定义' });
+  const panel = page.getByRole('dialog');
+  const more = panel.getByRole('link', { name: '查看更多', exact: true });
+
+  await trigger.press('Enter');
+  await expect(more).toBeVisible();
+  await expect(panel).toHaveCSS('width', '400px');
+  await expect(panel).toHaveCSS('height', '400px');
+  await more.scrollIntoViewIfNeeded();
+  expect(await panel.evaluate(element => element.scrollTop)).toBeGreaterThan(0);
+  await expect(more).toBeInViewport();
+
+  await page.keyboard.press('Escape');
+  await expect(panel).toHaveCount(0);
+  await page.setViewportSize({ width: 320, height: 480 });
+  await trigger.press('Enter');
+  await expect(more).toBeVisible();
+  await expect(panel).toHaveCSS('width', '304px');
+  await expect(panel).toBeInViewport({ ratio: 1 });
+  await more.scrollIntoViewIfNeeded();
+  expect(await panel.evaluate(element => element.scrollTop)).toBeGreaterThan(0);
+  await expect(more).toBeInViewport();
 });
 
 test('左右两组主次指标各自开启问号，共享结果字段仍按行控制', async ({ page }, testInfo) => {

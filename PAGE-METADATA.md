@@ -2,7 +2,7 @@
 
 Schema 6.130 支持可选动态多选排除项使用 `defaultWhen`。页面初始化及关联单选维度切换时，引擎按实际选值应用 `default` 名单或清空排除条件。见[排除项联动默认值](docs/page-metadata/filters.md#conditional-exclusion-defaults)与合成入口 `/pages/filter-conditional-exclusion-default`。
 
-Schema 6.129 支持在指标卡的主、次指标行设置 `showDefinition: true`。该行沿 `valueField` 读取结果字段的 `metricCode`，在指标名称右侧显示问号。省略或设为 `false` 时隐藏。气泡的固定文案统一使用中文，服务端返回的内容按原文显示。同一页面会话内，成功获取的定义按指标编码复用。见[指标定义气泡](docs/page-metadata/components/metricCard.md#metric-definition-tip)与合成入口 `/pages/metric-card-definition-tip`。
+Schema 6.129 支持在指标卡的主、次指标行设置 `showDefinition: true`。该行沿 `valueField` 读取结果字段的 `metricCode`，在指标名称右侧显示问号。省略或设为 `false` 时隐藏。气泡的固定文案统一使用中文，服务端返回的内容按原文显示。同一页面会话内，成功获取的定义按指标编码复用。气泡随内容收缩，长内容可在气泡内滚动。见[指标定义气泡](docs/page-metadata/components/metricCard.md#metric-definition-tip)与合成入口 `/pages/metric-card-definition-tip`。
 
 Schema 6.128 为柱线组合图的字段折线系列增加可选 `markerColorRule`。圆点根据原始值小于零或大于等于零分别取色。规则、配置和合成场景见[折线圆点按数值正负着色](docs/page-metadata/components/barChart.md#bar-line-marker-color)。
 

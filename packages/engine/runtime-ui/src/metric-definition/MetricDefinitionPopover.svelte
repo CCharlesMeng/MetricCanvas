@@ -115,8 +115,10 @@
   .metric-definition-panel {
     position: fixed;
     inset: auto;
-    width: min(400px, calc(100vw - 24px));
-    max-height: min(660px, calc(100dvh - 24px));
+    box-sizing: border-box;
+    width: max-content;
+    max-width: min(400px, calc(100vw - 16px));
+    max-height: min(400px, calc(100dvh - 24px));
     margin: 0;
     overflow: auto;
     padding: 16px;
@@ -132,6 +134,7 @@
     font-size: 16px;
     font-weight: 600;
     line-height: 20px;
+    overflow-wrap: anywhere;
   }
   dt { font-size: 14px; font-weight: 600; line-height: 20px; }
   dd, p { color: #595959; font-size: 12px; line-height: 18px; overflow-wrap: anywhere; }
