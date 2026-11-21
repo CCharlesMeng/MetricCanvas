@@ -25,7 +25,7 @@ test('numeric consumers omit integer fractions and share the em dash placeholder
   expect(errors).toEqual([]);
 });
 
-test('table remarks sit 16px after the title or align left when untitled', async ({ page }) => {
+test('table remarks bottom-align with the title or align left when untitled', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto(`/pages/${fixture.id}`);
 
@@ -38,7 +38,7 @@ test('table remarks sit 16px after the title or align left when untitled', async
   const titleBox = (await title.boundingBox())!;
   const remarkBox = (await remark.boundingBox())!;
   expect(remarkBox.x - titleBox.x - titleBox.width).toBeCloseTo(16, 1);
-  expect(remarkBox.y + remarkBox.height / 2).toBeCloseTo(titleBox.y + titleBox.height / 2, 1);
+  expect(remarkBox.y + remarkBox.height).toBeCloseTo(titleBox.y + titleBox.height, 1);
 
   const untitled = page.locator('[data-component$="/untitled-table"] .table-heading');
   const untitledRemark = untitled.getByText(defaultSubtitle, { exact: true });

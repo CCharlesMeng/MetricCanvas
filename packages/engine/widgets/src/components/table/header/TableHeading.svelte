@@ -27,7 +27,7 @@
   .heading-copy {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
+    align-items: flex-end;
     gap: 4px 16px;
     min-width: 0;
     overflow-wrap: anywhere;
