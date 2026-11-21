@@ -127,4 +127,22 @@ describe('pie table legend', () => {
     expect(pieOption(data, { categoryField: 'band', valueField: 'count' }).series)
       .toMatchObject([{ label: { show: true } }]);
   });
+
+  it('draws a 16px ring with an 8px hover inset at each legend edge', () => {
+    const config: PieChartProps = { ...props, ring: '46%' };
+    const plot = { width: 400, height: 300 };
+    expect(pieOption(data, config, undefined, { ...plot, legendEdge: 'right' }).series)
+      .toMatchObject([{ radius: ['46%', 85], center: [307, 150] }]);
+    expect(pieOption(data, config, undefined, { ...plot, legendEdge: 'left' }).series)
+      .toMatchObject([{ radius: ['46%', 85], center: [93, 150] }]);
+    expect(pieOption(data, config, undefined, { ...plot, legendEdge: 'bottom' }).series)
+      .toMatchObject([{ radius: ['46%', 85], center: [200, 207] }]);
+    expect(pieOption(data, config).series).toMatchObject([{ radius: ['46%', '72%'] }]);
+    expect(pieOption(data, props, undefined, { ...plot, legendEdge: 'right' }).series)
+      .toMatchObject([{ radius: 108 }]);
+    expect(pieOption(data, { ...config, ring: '70%' }, undefined, { ...plot, legendEdge: 'bottom' }).series)
+      .toMatchObject([{ radius: ['70%', 108] }]);
+    expect(pieOption(data, { ...config, ring: '99%' }, undefined, { ...plot, legendEdge: 'bottom' }).series)
+      .toMatchObject([{ radius: ['99%', 108], center: [200, 150] }]);
+  });
 });

@@ -129,7 +129,7 @@
     padding-top: 2px;
   }
   .category {
-    width: 100%;
+    width: var(--mc-category-label-width, 100%);
   }
   thead th {
     color: var(--mc-color-report-description, #595959);
@@ -169,7 +169,7 @@
      时那一格是空 td,列距不该因此消失。 */
   .measure + .measure,
   .category + .measure {
-    padding-left: 24px;
+    padding-inline-start: var(--mc-category-column-gap, 24px);
   }
   tbody td.measure {
     color: var(--mc-color-report-text, #191919);

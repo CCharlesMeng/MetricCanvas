@@ -97,7 +97,6 @@ type MissingVariants = {
 const allSchemaVariantsAreRegistered: MissingVariants extends never ? true : never = true;
 
 export const responsiveQueryContracts = [
-  'pie-table-legend-flow',
   'composite-project-norms-height',
   'key-value-detail-norm-three-columns',
   'key-value-detail-norm-two-columns',

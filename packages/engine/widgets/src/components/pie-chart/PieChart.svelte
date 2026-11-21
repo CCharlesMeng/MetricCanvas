@@ -6,7 +6,7 @@
   import CategoryBreakdown from '../category-breakdown/CategoryBreakdown.svelte';
   import { chartSource, type ChartDiagnostic } from '../../shared/chart-option-extension';
   import { CATEGORICAL_PALETTE_PROPERTY, readColorList } from '../../shared/chart-palette';
-  import { pieOption, pieRows } from './options';
+  import { PIE_PLOT_EDGE_INSET, pieOption, pieRows } from './options';
   import { pieCategoryDomain, pieLegendData } from './presentation';
 
   /** 饼图(纯渲染,ECharts):数据快照进、事件出 */
@@ -28,27 +28,46 @@
     (props.legend ? ['#5b72ea', '#3cc6c1', '#fec72a', '#4ba0f7'] : undefined));
   const legend = $derived(props.legend ? pieLegendData(data, props) : undefined);
   const domain = $derived(pieCategoryDomain(data, props));
-  const source = $derived(chartSource(() => pieOption(data, props, palette), props, diagnostic ?? { componentId: 'direct-pie-chart', componentType: 'pieChart', path: '/props/echartsOption' }));
+  let layoutSize = $state<DOMRectReadOnly>();
+  let plotSize = $state<DOMRectReadOnly>();
+  let legendSize = $state<DOMRectReadOnly>();
+  const tightPlot = $derived(!!legend && !props.labelLine && !props.echartsOption);
+  const layoutGap = $derived(tightPlot ? 16 - PIE_PLOT_EDGE_INSET : 16);
+  // Flex wraps based on the space used by both items. Allow for fractional layout rounding.
+  const stacked = $derived(layoutSize && plotSize && legendSize
+    && plotSize.width + legendSize.width + layoutGap > layoutSize.width + 0.5);
+  const legendEdge = $derived<'left' | 'right' | 'bottom'>(stacked ? 'bottom' : props.legend?.position ?? 'right');
+  const plot = $derived(tightPlot && plotSize && plotSize.width > 0 && plotSize.height > 0
+    ? { width: Math.round(plotSize.width), height: Math.round(plotSize.height), legendEdge }
+    : undefined);
+  const source = $derived(chartSource(() => pieOption(data, props, palette, plot), props, diagnostic ?? { componentId: 'direct-pie-chart', componentType: 'pieChart', path: '/props/echartsOption' }));
 </script>
 
 <div class:compact-ring={props.variant === 'compactRing'} class:has-table-legend={!!legend} class="pie-chart">
   {#if props.title}<h3 class="mc-data-heading">{props.title}</h3>{/if}
-  <div class="pie-layout" class:loading={data.main.sourceStatus === 'loading'} class:legend-left={props.legend?.position === 'left'}>
-  <div class="pie-plot">
-  <EChart
-    loading={data.main.sourceStatus === 'loading'}
-    {source}
-    bind:container={chartContainer}
-    onitemclick={onsliceclick
-      ? (dataIndex) => onsliceclick({ row: pieRows(data, props)[dataIndex]! })
-      : undefined}
-  />
-  </div>
-  {#if legend}
-    <div class="pie-legend" aria-label="表格式图例">
-      <CategoryBreakdown data={legend.data} props={legend.props} paletteOverride={palette} swatchDomain={domain} columnPresentation={legend.columnPresentation} />
+  <div
+    class="pie-layout"
+    class:loading={data.main.sourceStatus === 'loading'}
+    class:legend-left={props.legend?.position === 'left'}
+    class:tight-plot={tightPlot}
+    style:--pie-layout-gap={`${layoutGap}px`}
+    bind:contentRect={layoutSize}
+  >
+    <div class="pie-plot" bind:contentRect={plotSize}>
+      <EChart
+        loading={data.main.sourceStatus === 'loading'}
+        {source}
+        bind:container={chartContainer}
+        onitemclick={onsliceclick
+          ? (dataIndex) => onsliceclick({ row: pieRows(data, props)[dataIndex]! })
+          : undefined}
+      />
     </div>
-  {/if}
+    {#if legend}
+      <div class="pie-legend" aria-label="表格式图例" bind:contentRect={legendSize}>
+        <CategoryBreakdown data={legend.data} props={legend.props} paletteOverride={palette} swatchDomain={domain} columnPresentation={legend.columnPresentation} />
+      </div>
+    {/if}
   </div>
 </div>
 
@@ -74,25 +93,33 @@
   .pie-layout, .pie-plot { display: flex; flex: 1; min-width: 0; min-height: 0; }
   .has-table-legend { container-type: inline-size; }
   .has-table-legend .pie-layout {
-    display: grid;
-    grid-template-columns: minmax(240px, 1fr) minmax(260px, max-content);
-    gap: 24px;
-    align-items: stretch;
+    flex-wrap: wrap;
+    gap: var(--pie-layout-gap);
+    justify-content: center;
+    align-content: flex-start;
     width: 100%;
     max-width: 850px;
     margin-inline: auto;
   }
-  .has-table-legend .pie-plot { min-height: 320px; }
-  .pie-legend { display: flex; align-items: center; min-width: 0; }
-  .has-table-legend .pie-layout.legend-left { grid-template-columns: minmax(260px, max-content) minmax(240px, 1fr); }
-  .legend-left .pie-plot { order: 1; }
-  .legend-left .pie-legend { order: 0; }
-  /* responsive-contract: pie-table-legend-flow */
-  @container (max-width: 620px) {
-    .has-table-legend .pie-layout { display: flex; flex-direction: column; gap: 12px; }
-    .has-table-legend .pie-plot { order: 0; flex: none; width: 100%; min-height: 320px; }
-    .has-table-legend .pie-legend { order: 1; align-self: center; max-width: 100%; padding-bottom: 8px; }
+  .has-table-legend .pie-plot {
+    flex: 1 0 min(240px, 100%);
+    min-height: 320px;
   }
+  .has-table-legend .tight-plot .pie-plot {
+    max-width: 320px;
+    min-height: min(320px, 100cqw);
+  }
+  .pie-legend {
+    display: flex;
+    flex: none;
+    align-items: center;
+    min-width: 0;
+    width: max-content;
+    max-width: 100%;
+    --mc-category-label-width: auto;
+    --mc-category-column-gap: 16px;
+  }
+  .has-table-legend .pie-layout.legend-left { flex-direction: row-reverse; }
   h3 {
     margin: 0;
     color: var(--mc-card-title-color, #18181b);
