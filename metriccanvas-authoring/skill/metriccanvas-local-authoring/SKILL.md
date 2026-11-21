@@ -2,7 +2,7 @@
 name: metriccanvas-local-authoring
 description: 解答 MetricCanvas 看板、报表和 IOC 的功能与配置问题，在本地新建、接数、调试或调整页面，包括按指标说明批量补配指标定义气泡。附协议知识、数据分析、升级与校验工具。
 metadata:
-  version: "1.87.8"
+  version: "1.88.0"
 ---
 
 # 本地页面创作
@@ -42,6 +42,8 @@ node "<skill-dir>/scripts/analyze-data.mjs" scan --page "<target.json>" --at "<�
 改变IOC页头、来源/查询体、关联逻辑、期间策略、删除依赖、Report布局或定位运行错误，读[专项路由](references/task-routing.md)对应行；旧IOC页头先盘点功能、默认行为和依赖再迁移。保留已有查询不触发查询创作；URL/导航参数按实际Schema上下文识别，已有同型绑定只核对新字段和差异。新增口径/换源先有数据依据；新增/改绑数值、改变刻度或单位冲突才做[有效绑定检查](references/authoring-presentation.md#numeric-binding)。
 
 ## 新建与结构调整
+
+新建或重组指标卡时，默认使用 `primaryDetail`，`rows` 放一个主指标，其下逐行展示的同比、环比和其他次级指标统一放入 `secondaryRows`。多个同级主指标默认各自成卡。明确要求同卡多主时，再选择相应的指标卡形态，需要让变化值跟随各自主指标时使用该行的 `changes`。遇到明确的正负配色或趋势箭头要求，先按[指标卡契约](references/page-metadata/components/metricCard.md)核对所选位置的能力，保留已确认的展示行为。
 
 新建/跨页复用找匹配合法示例并保留结构；只查实际差异。形态不明或冲突时读[形态识别](references/page-form.md)，重新组织内容才选[看板](references/dashboard-patterns.md)或[报表](references/report-patterns.md)范式。新页面显式layout；省略默认report，局部任务保留原形态。
 
