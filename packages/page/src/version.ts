@@ -27,7 +27,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  */
 export const UNRESTRICTED_FILTER_CLEAR_MINOR = 124;
 export const INDEPENDENT_EXCLUSION_CANDIDATES_MINOR = 125;
-const CURRENT_MINOR = 131;
+const CURRENT_MINOR = 132;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -178,6 +178,12 @@ export const pageCapabilities = {
     minor: INDEPENDENT_EXCLUSION_CANDIDATES_MINOR,
     description: '可选动态排除条件保留选值，候选加载不阻断指标查询',
     usedAt: () => []
+  },
+  'bar-category-order': {
+    minor: 132,
+    legacyReadable: false,
+    description: '柱状图按 main 数据槽的结果字段和方向在前端排序类别',
+    usedAt: document => componentPaths(document, component => component.type === 'barChart' && has(props(component), 'order')).map(path => `${path}/props/order`)
   },
   'dimension-filter-url-opt-out': {
     minor: 131,

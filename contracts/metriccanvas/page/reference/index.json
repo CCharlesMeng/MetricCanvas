@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.131",
-  "schemaSha256": "fd98f24ca42df43f645e67405018492f98c1ed6ef3a1c386c6d74d0d5d30d8d5",
+  "schemaVersion": "6.132",
+  "schemaSha256": "07ee79be6c82f479408234becba0169d33ee5d52643ab928ce8be6a9779fe60f",
   "semanticSources": [
     {
       "file": "metriccanvas-authoring/core/page/analysis-report.ts",
@@ -380,7 +380,7 @@
     },
     {
       "file": "packages/page/src/schema/components/charts.ts",
-      "sha256": "4dd5982f67487acc4695f0542ff340715ee7dcc17a6b5bb138502d328c1bbc2a"
+      "sha256": "2f6314ed1ac263c7878c7a01d3db1f1eb9634837058f2f30a1c3eb74cf384109"
     },
     {
       "file": "packages/page/src/schema/components/composite-card.ts",
@@ -572,11 +572,11 @@
     },
     {
       "file": "packages/page/src/validate.ts",
-      "sha256": "464d8c064b894880f89f9b0cfe4514dd89bddfb6d5e99d6fb509c7d30e097512"
+      "sha256": "1efced3b5294dc57cf1425840ffb13b7cdf679cc64c9d5d28af5dee8ab88be42"
     },
     {
       "file": "packages/page/src/version.ts",
-      "sha256": "0bf7b12a52c457701e4b6f74dc991b48d32be32c39cbe3b01af14099ba7d748a"
+      "sha256": "c8a6382f2a8a60500a5b0f653f0b924b37aa80c3455ba89ac4691f736ce9dc41"
     },
     {
       "file": "packages/page/tests/ai-summary-regions.test.ts",
@@ -588,7 +588,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "b470896084038ede5f3df77297b97c186b77b6b0f6f47a59370cf8b323ebc8b6"
+      "sha256": "9c59b80c938a2e21dab0944ccc97ac512022c6b022bc4a74a0fd330c1fa96ef1"
     }
   ],
   "modules": {
@@ -1393,6 +1393,7 @@
         "chart-table-unit",
         "sdt-period-aggregation",
         "bar-line-marker-color",
+        "bar-category-order",
         "chart-customer-series",
         "conditional-compute-demand"
       ],
@@ -1408,7 +1409,8 @@
         "bar-forecast-boundary",
         "query-dimension-measures",
         "bar-series-average",
-        "bar-line-marker-color"
+        "bar-line-marker-color",
+        "bar-category-order"
       ]
     },
     "components/lineChart.md": {
@@ -2281,7 +2283,8 @@
         "6.128",
         "6.129",
         "6.130",
-        "6.131"
+        "6.131",
+        "6.132"
       ]
     },
     {
@@ -13712,6 +13715,28 @@
       "required": "本分支必填",
       "module": "components/barChart.md",
       "ref": "#/definitions/fieldBinding"
+    },
+    {
+      "pointer": "#/definitions/barChartComponent/properties/props/properties/order",
+      "path": "@barChartComponent.props.order",
+      "required": "本分支可选",
+      "module": "components/barChart.md"
+    },
+    {
+      "pointer": "#/definitions/barChartComponent/properties/props/properties/order/properties/field",
+      "path": "@barChartComponent.props.order.field",
+      "required": "本分支必填",
+      "module": "components/barChart.md"
+    },
+    {
+      "pointer": "#/definitions/barChartComponent/properties/props/properties/order/properties/direction",
+      "path": "@barChartComponent.props.order.direction",
+      "required": "本分支必填",
+      "module": "components/barChart.md",
+      "enum": [
+        "asc",
+        "desc"
+      ]
     },
     {
       "pointer": "#/definitions/barChartComponent/properties/props/properties/series",

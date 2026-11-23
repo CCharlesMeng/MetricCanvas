@@ -801,6 +801,7 @@
         "chart-table-unit",
         "sdt-period-aggregation",
         "bar-line-marker-color",
+        "bar-category-order",
         "chart-customer-series",
         "conditional-compute-demand"
       ],
@@ -816,7 +817,8 @@
         "bar-forecast-boundary",
         "query-dimension-measures",
         "bar-series-average",
-        "bar-line-marker-color"
+        "bar-line-marker-color",
+        "bar-category-order"
       ]
     },
     "components/lineChart.md": {
@@ -1988,6 +1990,7 @@
     "#/definitions/staticFieldBinding/anyOf/1/properties/format/anyOf/1/properties/pattern": "时间格式串；固定 UTC+8。",
     "finalizationName": "按名称查询默认日期；失败用当前日期，用户可改。",
     "#/definitions/tableComponent/properties/props/properties/defaultSort": "6.108：完整本地结果按最终静态 main 列字段声明初始排序；先计算、再排序和分页，不覆盖后续会话选择。",
+    "#/definitions/barChartComponent/properties/props/properties/order/properties/direction": "类别次序，asc 升序，desc 降序，空值均排末尾。",
     "#/definitions/tableComponent/properties/props/properties/defaultSort/items/properties/direction": "默认排序方向：asc 升序，desc 降序；null 均排末尾。",
     "#/definitions/tableColumn/properties/filterable/anyOf/0/properties/showSearch": "6.112：true 显示候选搜索，false 或省略隐藏；静态枚举与动态候选均支持。旧版本动态搜索保留，显式升级写入 true。",
     "#/definitions/pagedJoinSource/properties/pagination": "仅 pageSize 保持历史路径；query 显式查询分页并沿用最后操作成员；6.118 auto 在 records 下自动选择基准查询分页或保留条件的完整关联。"
@@ -2422,7 +2425,8 @@
     "#/properties/schemaVersion=\"6.128\"": "柱线组合图的字段折线圆点可按原始数值小于零或大于等于零着色。",
     "#/properties/schemaVersion=\"6.129\"": "顶层度量结果字段声明 metricCode，主次指标行通过 showDefinition 独立开启气泡。",
     "#/properties/schemaVersion=\"6.130\"": "可选动态多选排除项可用 defaultWhen 关联一个独立单选维度的实际取值。",
-    "#/properties/schemaVersion=\"6.131\"": "维度筛选器可用 urlParams: false 关闭本页 URL 读写。"
+    "#/properties/schemaVersion=\"6.131\"": "维度筛选器可用 urlParams: false 关闭本页 URL 读写。",
+    "#/properties/schemaVersion=\"6.132\"": "柱状图可声明 order，在前端按结果字段和方向排序类别。"
   },
   "branchExceptions": {
     "#/properties/iocHeader/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/0": {
@@ -3576,7 +3580,8 @@
       "数值格式",
       "系列条件显隐（6.89）",
       "自定义展示单位",
-      "堆叠合计标签"
+      "堆叠合计标签",
+      "柱图按字段排序（6.132）"
     ],
     "components/lineChart.md": [
       "双轴刻度与网格线",

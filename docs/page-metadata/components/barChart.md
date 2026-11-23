@@ -91,7 +91,7 @@ Dashboard 正文通过独立 [filterGroup](filterGroup.md) 组件声明筛选按
 
 ## 常量取值（6.59）
 
-`series[].field` 与 `series[].value` 是互斥来源分支；固定基线可使用 `{"value":2,"kind":"line","axis":"secondary","unit":"天"}`。常量分支不要求 field，支持 unit。类别和指标系列共同沿用数据源行序，常量不会触发按类别重排；排序仍在该数据源的 DQE `body.dsl_list[0].order.order_by_field/type` 声明，使用原查询字段名，不对常量配置排序。示例 `/pages/query-sort-baseline` 同时展示 2 天与 5 人基线及查询降序。
+`series[].field` 与 `series[].value` 是互斥来源分支。固定基线可使用 `{"value":2,"kind":"line","axis":"secondary","unit":"天"}`。常量分支不要求 field，支持 unit。常量沿类别行集重复取值。类别和指标系列默认沿用数据源行序。普通柱图可按 [结果字段排序](#bar-category-order)。如需在 DQE 查询阶段排序，在 `body.dsl_list[0].order` 声明原查询字段名 `order_by_field` 和方向 `type`。示例 `/pages/query-sort-baseline` 同时展示 2 天与 5 人基线及查询降序。
 
 本组件的数据配置项支持字段或常量来源，声明互斥、格式单位、空态和限制见[组件取值](../field-bindings-and-formats.md#chart-constant-values)。示例路由为 `/pages/chart-constant-values-page`。常量沿本组件原有行集或单值语义使用，不新增查询结果或业务身份。
 
@@ -144,3 +144,13 @@ Dashboard 正文通过独立 [filterGroup](filterGroup.md) 组件声明筛选按
 ## 堆叠合计标签
 
 `stacked: true` 配合 `showStackTotalLabels: true` 在每个类别显示当前系列的数值合计，包含负数扣分。标签锚定可见堆叠的外端，与柱体保持 8 CSS px 间距；正负混合时置于正值柱顶，显示值仍为含扣分的净合计；全负数置于负值外端，横向条形相应置于右侧或左侧。 用图例隐藏系列时，标签跟随当前可见柱段移动，合计仍使用该图表的全部有效系列（含负数扣分）；全部系列都隐藏时清除标签。无需声明额外的“总分”系列；未开启时不显示合计。`/pages/partner-health-interactions` 使用前端计算的合成得分，四类得分含负数风险扣分；业务 `/pages/partner-health` 的地区部和代表处图表均开启此配置。
+
+<a id="bar-category-order"></a>
+
+## 柱图按字段排序（6.132）
+
+普通柱图（含并列、堆叠、横向）可选配 `props.order`。两个属性同时声明，例如 `"order": { "field": "totalCount", "direction": "desc" }`。 `field` 是 `data.main` 结果字段契约中的标量字段 ID，可引用维度、度量或计算产出的字段，允许仅用于排序。`direction` 取 `asc` 或 `desc`。预测变体和显式柱线组合不使用该属性。旧版本或无效字段在 `props.order` 对应位置报错。
+
+运行时在前端对供图表使用的结果行排序，再应用类别缩放窗口。排序使用原始字段值，空值始终排末尾，同值保持数据源行序。纵向从左到右、横向从上到下读取排序结果。省略 `order` 时按数据源行序绘制。共享数据源的其他组件可各自展示自己的行序。若数据源只返回部分结果，排序范围为已返回且供图表使用的行。
+
+按堆叠总数排序时，让查询返回总数字段，或用 [`sumFields`](../compute.md) 在前端计算总数，图表的 `series` 继续声明各段字段。新数据到达后按指定字段重排，图例显隐时排序仍取同一字段。类别轴、系列、标签、点击动作及 PDF/PNG 使用同一行序。合成入口 `/pages/bar-category-order` 并排展示总数降序、维度升序和数据源行序。

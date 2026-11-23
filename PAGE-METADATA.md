@@ -2,6 +2,8 @@
 
 页面搜索筛选、远程下拉候选、表头动态候选和表格工具栏搜索统一在停输 300 毫秒后自动生效。中文输入法组词期间等待确认。静态候选即时筛选。分页候选在依赖条件就绪后开始取数。见[下拉搜索](docs/page-metadata/filters.md#下拉搜索与普通树643)和[表格搜索](docs/page-metadata/components/table.md#表格工具栏与搜索621)。
 
+Schema 6.132 支持普通柱状图在 `props.order` 声明排序字段和方向。按 `data.main` 结果字段在前端排序，支持计算字段，类别、系列、点击和图片导出使用相同顺序。见[柱图按字段排序](docs/page-metadata/components/barChart.md#bar-category-order)与合成入口 `/pages/bar-category-order`。
+
 Schema 6.131 支持维度筛选器设置 `urlParams: false`，关闭本页 URL 读取和写回。筛选状态继续参与现有查询，旧链接中的对应键在成功初始化后清理。见[维度筛选器关闭 URL 同步](docs/page-metadata/filters.md#dimension-filter-url-opt-out)和 Playground 的 `/pages/business-result-metrics`。
 
 Schema 6.130 支持可选动态多选排除项使用 `defaultWhen`。页面初始化及关联单选维度切换时，引擎按实际选值应用 `default` 名单或清空排除条件。符合分页条件时，候选依赖就绪后后台预加载首批，每批沿用查询的 `limit`。控件右侧固定用于展开，「清空」位于下拉面板内，已选项可逐项取消。下拉状态供辅助技术读取，失败时可通过图标重试。见[排除项联动默认值](docs/page-metadata/filters.md#conditional-exclusion-defaults)与合成入口 `/pages/filter-conditional-exclusion-default`。

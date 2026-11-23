@@ -1,0 +1,202 @@
+{
+  "case": "bar-category-order-on-forecast",
+  "invariant": "bar-category-order",
+  "input": {
+    "schemaVersion": "6.132",
+    "id": "bar-category-order",
+    "layout": "dashboard",
+    "meta": {
+      "title": "柱图按结果字段排序"
+    },
+    "dataSources": {
+      "contracts": {
+        "fields": {
+          "region": {
+            "type": "string",
+            "role": "dimension"
+          },
+          "signedCount": {
+            "type": "number",
+            "role": "measure",
+            "nullable": true
+          },
+          "pendingCount": {
+            "type": "number",
+            "role": "measure",
+            "nullable": true
+          },
+          "totalCount": {
+            "type": "number",
+            "role": "measure",
+            "nullable": true
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "region": "C 区",
+              "signedCount": 3,
+              "pendingCount": 4
+            },
+            {
+              "region": "B 区",
+              "signedCount": 9,
+              "pendingCount": 2
+            },
+            {
+              "region": "D 区",
+              "signedCount": null,
+              "pendingCount": null
+            },
+            {
+              "region": "A 区",
+              "signedCount": 6,
+              "pendingCount": 5
+            },
+            {
+              "region": "E 区",
+              "signedCount": 0,
+              "pendingCount": 0
+            }
+          ]
+        },
+        "compute": [
+          {
+            "op": "sumFields",
+            "fields": [
+              "signedCount",
+              "pendingCount"
+            ],
+            "output": "totalCount",
+            "onMissing": "ignore"
+          }
+        ]
+      }
+    },
+    "sections": [
+      {
+        "id": "main",
+        "components": [
+          {
+            "id": "by-total",
+            "type": "barChart",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "contracts"
+            },
+            "props": {
+              "title": "按合同总数降序",
+              "categoryField": "region",
+              "series": [
+                {
+                  "field": "signedCount",
+                  "label": "已签"
+                },
+                {
+                  "field": "pendingCount",
+                  "label": "待签"
+                }
+              ],
+              "stacked": true,
+              "showStackTotalLabels": true,
+              "order": {
+                "field": "totalCount",
+                "direction": "desc"
+              },
+              "actions": [
+                {
+                  "on": "click",
+                  "openDetail": {
+                    "surface": "drawer",
+                    "title": {
+                      "parts": [
+                        {
+                          "field": "region"
+                        },
+                        "合同明细"
+                      ]
+                    },
+                    "fields": [
+                      {
+                        "field": "region",
+                        "label": "地区"
+                      },
+                      {
+                        "field": "totalCount",
+                        "label": "总数"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "variant": "reportForecast"
+            }
+          },
+          {
+            "id": "by-region",
+            "type": "barChart",
+            "layout": {
+              "span": 6
+            },
+            "data": {
+              "main": "contracts"
+            },
+            "props": {
+              "title": "按地区升序",
+              "categoryField": "region",
+              "series": [
+                {
+                  "field": "signedCount",
+                  "label": "已签"
+                },
+                {
+                  "field": "pendingCount",
+                  "label": "待签"
+                }
+              ],
+              "horizontal": true,
+              "order": {
+                "field": "region",
+                "direction": "asc"
+              }
+            }
+          },
+          {
+            "id": "source-order",
+            "type": "barChart",
+            "layout": {
+              "span": 6
+            },
+            "data": {
+              "main": "contracts"
+            },
+            "props": {
+              "title": "数据源行序",
+              "categoryField": "region",
+              "series": [
+                {
+                  "field": "signedCount",
+                  "label": "已签"
+                },
+                {
+                  "field": "pendingCount",
+                  "label": "待签"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/order",
+      "message": "类别排序仅支持普通柱图"
+    }
+  ]
+}

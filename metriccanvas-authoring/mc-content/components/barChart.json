@@ -35,7 +35,7 @@
   "knowledge": "barChart.overview",
   "reference": "references/page-metadata/components/barChart.md",
   "versionPolicy": "protocol/version-policy",
-  "currentWriter": "6.131",
+  "currentWriter": "6.132",
   "exampleVersionRequirements": [
     {
       "file": "references/page-metadata/examples/forecast-page.json",
@@ -371,6 +371,43 @@
           "id": "page-layout",
           "minor": 1,
           "description": "顶层 layout:页面布局形态的规范字段"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/bar-category-order.json",
+      "requiredVersion": "6.132",
+      "capabilities": [
+        {
+          "id": "detail-title",
+          "minor": 106,
+          "description": "详情标题拼接固定文字和当前行的多个字段"
+        },
+        {
+          "id": "bar-category-order",
+          "minor": 132,
+          "description": "柱状图按 main 数据槽的结果字段和方向在前端排序类别"
+        },
+        {
+          "id": "cross-source-computation",
+          "minor": 12,
+          "description": "跨源关联、字段合计和复合增长率具名算子"
+        },
+        {
+          "id": "open-detail-action",
+          "minor": 10,
+          "description": "组件点击在页内打开详情浮层"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        },
+        {
+          "id": "data-source-computation",
+          "minor": 0,
+          "description": "页面数据源的受控计算阶段与具名算子(ADR-0046)"
         }
       ],
       "scope": "complete example; actual used fields determine the floor, independently of readableVersions"

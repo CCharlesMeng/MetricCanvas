@@ -74,6 +74,19 @@
       ]
     },
     {
+      "id": "bar-category-order",
+      "description": "普通柱图按结果字段和方向排序类别，兼容省略 order 的页面",
+      "valid": [
+        "bar-category-order"
+      ],
+      "invalid": [
+        "bar-category-order-old-version",
+        "bar-category-order-unknown-field",
+        "bar-category-order-invalid-direction",
+        "bar-category-order-on-forecast"
+      ]
+    },
+    {
       "id": "bar-line-marker-color",
       "description": "柱线组合的字段折线圆点按原始数值正负着色",
       "valid": [

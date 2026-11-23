@@ -1,0 +1,39 @@
+{
+  "case": "bar-category-order-old-version",
+  "invariant": "bar-category-order",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "柱状图按 main 数据槽的结果字段和方向在前端排序类别 由 6.132 引入，文档声明的是 6.131",
+      "paths": [
+        "/sections/0/components/0/props/order",
+        "/sections/0/components/1/props/order"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "order": {
+                "field": "totalCount",
+                "direction": "desc"
+              }
+            }
+          },
+          {
+            "props": {
+              "order": {
+                "field": "region",
+                "direction": "asc"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/bar-category-order-old-version.json"
+}

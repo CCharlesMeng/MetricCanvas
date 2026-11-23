@@ -1598,9 +1598,18 @@ function componentErrors(
 
   function checkBarChart(component: Extract<Component, { type: 'barChart' }>): void {
     checkBarLabels();
+    checkBarOrder();
     checkBarAverage(component.props, `${componentPath}/props`, errors);
     function checkBarLabels(): void {
       if (component.props.showValueLabels && (component.props.showSegmentLabels || component.props.showStackTotalLabels)) errors.push(schemaError(`${componentPath}/props/showValueLabels`, 'showValueLabels 不得与旧柱状图标签同时启用'));
+    }
+    function checkBarOrder(): void {
+      const { order, series, variant } = component.props;
+      if (!order) return;
+      check(order.field, `${componentPath}/props/order/field`);
+      if (variant || series.some(item => item.kind !== undefined || item.axis !== undefined)) {
+        errors.push(schemaError(`${componentPath}/props/order`, '类别排序仅支持普通柱图'));
+      }
     }
     check(component.props.categoryField, `${componentPath}/props/categoryField`, 'dimension');
     component.props.series.forEach((series, index) => {

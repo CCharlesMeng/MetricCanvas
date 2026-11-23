@@ -1203,6 +1203,11 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/bar-category-order.json",
+      "target": "product-contracts/page/conformance/valid/bar-category-order.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/valid/ioc-component-availability-page.json",
       "target": "product-contracts/page/conformance/valid/ioc-component-availability-page.json",
       "scope": "exact product contract"
@@ -1565,6 +1570,26 @@
     {
       "source": "product:page/conformance/invalid/bar-average-line.json",
       "target": "product-contracts/page/conformance/invalid/bar-average-line.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/bar-category-order-old-version.json",
+      "target": "product-contracts/page/conformance/invalid/bar-category-order-old-version.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/bar-category-order-unknown-field.json",
+      "target": "product-contracts/page/conformance/invalid/bar-category-order-unknown-field.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/bar-category-order-invalid-direction.json",
+      "target": "product-contracts/page/conformance/invalid/bar-category-order-invalid-direction.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/bar-category-order-on-forecast.json",
+      "target": "product-contracts/page/conformance/invalid/bar-category-order-on-forecast.json",
       "scope": "exact product contract"
     },
     {
@@ -4755,6 +4780,26 @@
     {
       "source": "product:page/reference/errors/bar-average-line.json",
       "target": "references/page-metadata/errors/bar-average-line.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/bar-category-order-old-version.json",
+      "target": "references/page-metadata/errors/bar-category-order-old-version.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/bar-category-order-unknown-field.json",
+      "target": "references/page-metadata/errors/bar-category-order-unknown-field.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/bar-category-order-invalid-direction.json",
+      "target": "references/page-metadata/errors/bar-category-order-invalid-direction.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/bar-category-order-on-forecast.json",
+      "target": "references/page-metadata/errors/bar-category-order-on-forecast.json",
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
@@ -8363,6 +8408,11 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/examples/bar-category-order.json",
+      "target": "references/page-metadata/examples/bar-category-order.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/examples/chart-customer-series.json",
       "target": "references/page-metadata/examples/chart-customer-series.json",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -9009,11 +9059,11 @@
     }
   ],
   "counts": {
-    "product": 1769,
+    "product": 1779,
     "authoring": 32,
     "modules": 36,
-    "topics": 325,
-    "nodes": 2755,
+    "topics": 326,
+    "nodes": 2758,
     "tools": 9,
     "components": 20
   },
