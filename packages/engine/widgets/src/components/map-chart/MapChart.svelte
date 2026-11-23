@@ -225,45 +225,26 @@
         )}
         onitemclick={onregionclick ? handleClick : undefined}
       />
-      {#if props.variant === 'regionalOverview'}
+      {#if props.variant === 'regionalOverview' && pinnedSummary}
         <div class="regional-overview-frame" style={regionalFrameStyle}>
-          {#if pinnedSummary}
-            <div
-              class="regional-annotations"
-              data-map-region-annotations
-              data-map-region-summary={pinnedSummary ? '' : undefined}
-            >
-              <div class="pinned-summary">
-                <strong>{pinnedSummary.title}</strong>
-                <dl>
-                  {#each pinnedSummary.fields as field, fieldIndex (fieldIndex)}
-                    <div><dt>{field.label}</dt><dd>{field.value}</dd></div>
-                  {/each}
-                </dl>
-              </div>
-            </div>
-          {/if}
-          {#if legendLevels}
-            <div class="map-legend regional-legend" data-map-legend>
-              {#if props.legend?.title}
-                <div class="legend-title">{props.legend.title}</div>
-              {/if}
-              <ul>
-                {#each legendLevels as level, levelIndex (levelIndex)}
-                  <li>
-                    <span
-                      class="legend-dot"
-                      style={level.color ? `background:${level.color};` : undefined}
-                    ></span>
-                    <span class="legend-label">{level.label}</span>
-                  </li>
+          <div class="regional-annotations" data-map-region-annotations data-map-region-summary>
+            <div class="pinned-summary">
+              <strong>{pinnedSummary.title}</strong>
+              <dl>
+                {#each pinnedSummary.fields as field, fieldIndex (fieldIndex)}
+                  <div><dt>{field.label}</dt><dd>{field.value}</dd></div>
                 {/each}
-              </ul>
+              </dl>
             </div>
-          {/if}
+          </div>
         </div>
-      {:else if legendLevels}
-        <div class="legend-frame" style={mapLegendFrameStyle(projection)}>
+      {/if}
+      {#if legendLevels}
+        <div
+          class="legend-frame"
+          class:regional-legend-frame={props.variant === 'regionalOverview'}
+          style={props.variant === 'regionalOverview' ? undefined : mapLegendFrameStyle(projection)}
+        >
           <div class="map-legend" data-map-legend>
             {#if props.legend?.title}
               <div class="legend-title">{props.legend.title}</div>
@@ -386,10 +367,12 @@
   .pinned-summary dd {
     color: var(--mc-color-report-text, #191919);
   }
-  .regional-legend {
-    top: 300px;
-    bottom: auto;
-    left: 0;
+  .regional-legend-frame {
+    z-index: 2;
+  }
+  .regional-legend-frame .map-legend {
+    bottom: 12px;
+    left: 12px;
   }
   .legend-title {
     color: var(--mc-color-report-text, #191919);
@@ -428,14 +411,14 @@
   /* 273px 左偏移 + 650px 注释带 + 安全余量决定切换点。 */
   /* responsive-contract: map-regional-annotations-flow */
   @container mc-component-box (max-width: 960px) {
-    .legend-frame {
+    .legend-frame:not(.regional-legend-frame) {
       position: static;
       inset: auto !important;
       width: auto !important;
       height: auto !important;
       margin-top: 8px;
     }
-    .map-legend {
+    .legend-frame:not(.regional-legend-frame) .map-legend {
       position: static;
     }
   }
