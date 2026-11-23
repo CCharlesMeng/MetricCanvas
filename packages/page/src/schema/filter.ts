@@ -20,7 +20,7 @@ const dimensionFilterZ = z
   .object({
     ...interaction,
     id: idZ,
-    urlParams: z.object({ value: z.string().min(1).optional(), from: z.string().min(1).optional(), to: z.string().min(1).optional(), level: z.string().min(1).optional() }).strict().optional(),
+    urlParams: z.union([z.object({ value: z.string().min(1).optional(), from: z.string().min(1).optional(), to: z.string().min(1).optional(), level: z.string().min(1).optional() }).strict(), z.literal(false)]).optional(),
     type: z.literal('dimension'),
     dimension: fieldNameZ,
     label: z.string().optional(),

@@ -85,7 +85,7 @@ Dashboard 的年、季、月按所选自然期间判断：当前年／当前季�
 
 维度display选择select、tabs或tree；层级维度显式声明层级和初始层；6.11起层级维度与timePoint筛选器也可用initialParam取页面参数作初值。时间范围支持绝对from/to和受控相对时间；timePoint限定month/date粒度。numberRange允许单边界，两边空视为无条件；search为普通文本。
 
-urlParams仅映射该类允许的value/from/to/level键，不能与本页其它参数或筛选输入冲突。候选值来自受控数据能力，业务维度值不是协议枚举。
+urlParams 的对象形式映射该类允许的 value/from/to/level 键，不能与本页其它参数或筛选输入冲突。6.131 起维度筛选器还接受 false，见[维度筛选器关闭 URL 同步](#dimension-filter-url-opt-out)。候选值来自受控数据能力，业务维度值不是协议枚举。
 
 6.13 的 timeRange.precision=month 使用 YYYY-MM 两端；date 使用 YYYY-MM-DD，datetime 保留 YYYY-MM-DDTHH:mm。timeRange.initialParam 与 default 互斥，接受精度匹配的必需 times 参数；timePoint 仅接受单点 times。required 日期筛选器保留已应用值，完整合法的输入才提交；页头引用只改变位置。
 
@@ -356,6 +356,27 @@ IOC 业务 Region 只允许 iocHeader 内的单个组织树，树内选择地区
 完整合成场景：`/pages/filter-source-candidates`，包含 JSON 内联组织树、跨三个查询分页的渠道去重，以及共同消费两项筛选的图表。`?state=error`、`?state=incomplete`、`?state=empty` 分别演示失败、不完整和空候选；操作及证据边界见页面目录 README。仅验证本地合成 Adapter，未验证真实 DQE、Relay 或组织权限服务。
 
 <a id="source-candidate-levels"></a>
+
+<a id="dimension-filter-url-opt-out"></a>
+
+## 维度筛选器关闭 URL 同步（6.131）
+
+在 `filters[]` 中给 `type: "dimension"` 的筛选器设置 `"urlParams": false`。省略时继续按筛选器 ID 派生参数名，对象形式继续映射参数名。
+
+```json
+{
+  "id": "cloud-service",
+  "type": "dimension",
+  "dimension": "cloud-service",
+  "label": "云服务排除项",
+  "selection": { "mode": "multiple", "allBehavior": "values" },
+  "urlParams": false
+}
+```
+
+打开页面时采用原有筛选初值规则。旧链接里的同名筛选键不参与初始化，页面成功初始化后从地址清理。页内选择继续更新筛选状态、联动和查询，刷新或分享链接按初值规则重新初始化。其他筛选器、页面参数和已声明页签按各自的 URL 契约处理。该字段控制本页筛选 URL，显式跨页导航的 query 仍由导航目标声明决定。
+
+Playground 入口 `/pages/business-result-metrics?region=&mtime=month:2026-10&cloud-service=旧链接服务`。地址清理后保留期间，云服务排除继续使用页面的联动默认值。勾选一项服务可在本地合成 DQE 请求中观察排除条件变化。用支持 6.131 的引擎部署该页面。
 
 ## 内联层级候选（6.122）
 

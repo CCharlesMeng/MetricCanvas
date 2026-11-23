@@ -36,8 +36,8 @@ export function pendingIocRegionURL(page: Page, search: string) {
   if (declaration?.type !== 'dimension' || declaration.treeSelection !== 'level' || !declaration.hierarchy) return;
   const keys = filterURLKeys(declaration, true);
   const query = new URLSearchParams(search);
-  if (query.has(keys.level!) || readLevelURLSelection(keys, query)) return;
-  const values = query.getAll(keys.value!).filter(value => value !== '');
+  if (!keys.value || query.has(keys.level!) || readLevelURLSelection(keys, query)) return;
+  const values = query.getAll(keys.value).filter(value => value !== '');
   if (values.length === 1 && values[0]?.trim()) return { declaration, value: values[0] };
 }
 

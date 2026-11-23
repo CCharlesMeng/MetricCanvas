@@ -405,6 +405,10 @@ export const invariants: InvariantDefinition[] = [
     {case:'conditional-default-required-list',base:'filter-conditional-exclusion-default',expect:/非空的 default 名单/,mutate:d=>{delete d.filters[1].default;}},
     {case:'conditional-default-inclusion',base:'filter-conditional-exclusion-default',expect:/可选的动态多选排除条件/,mutate:d=>{d.dataSources['chart-data'].source.query.filterBindings.service.operator='=';}}
   ]},
+  {id:'dimension-filter-url-opt-out',description:'6.131 维度筛选器关闭本页 URL 读写',valid:['business-result-metrics'],cases:[
+    {case:'dimension-filter-url-opt-out-version',base:'business-result-metrics',expect:/由 6.131 引入/,mutate:d=>{d.schemaVersion='6.130';}},
+    {case:'dimension-filter-url-opt-out-true',base:'business-result-metrics',expect:/./,mutate:d=>{d.filters.find((filter: {id: string})=>filter.id==='cloud-service').urlParams=true;}}
+  ]},
   {id:'unrestricted-filter-clear',description:'6.124 可选筛选原本不限时联动免确认',valid:['filter-source-query-pagination'],cases:[
     {case:'unrestricted-filter-clear-version-ahead',base:'filter-source-query-pagination',expect:/高于运行时当前次版本/,mutate:d=>{d.schemaVersion=minorAheadOfCurrent;}}
   ]},

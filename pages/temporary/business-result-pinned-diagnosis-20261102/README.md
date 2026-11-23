@@ -12,6 +12,12 @@
 
 在全球视图中可同时查看地区部和代表处两张表。用页头逐一切换业务类型、云服务排除项，再切换年、季、月检查相应列与图表。自动验收使用合成响应，可运行 `pnpm --filter playground test:ioc business-type-levels.browser.ts` 和 `pnpm test packages/engine/runtime-ui/tests/business-result-query.test.ts`。接入真实 DQE 后需核验两个筛选字段在各组织粒度的指标查询中均可用。
 
+## 云服务排除项只在页内生效
+
+用 `pnpm dev:dqe` 启动 Playground 和 DQE Sim，打开 `/pages/business-result-metrics?region=&mtime=month:2026-10&cloud-service=旧链接服务`。地址保留期间并清理 `cloud-service`，下拉仍按当前业务类型应用联动默认值。新增一项排除后，在开发者工具的合成 DQE 请求中查看云服务排除条件，地址始终不包含该筛选值。刷新后按默认规则重新初始化。
+
+自动验收可运行 `pnpm --filter playground test:ioc business-result-summary-time.browser.ts -g "云服务排除项关闭 URL 同步"`，使用可控合成 DQE 回执。
+
 ## 均值线与期间比较线
 
 「净商务折扣（原价）均值」显示为左轴上的水平线，读取后端返回的整体均值。将统计期间切到「月」，可同时查看右轴上的黄色环比折线，每个有效值使用同色实心圆点。切到「季」或「年」时，右轴的同比折线使用相同的黄色。

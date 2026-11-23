@@ -87,7 +87,7 @@ RegionFilter 固定提供可搜索、可清空的单选组织树，层级为 `ge
 统计期间使用当前已应用值。近一年显式映射模式值及起止范围，以便目标页恢复同一窗口。目标 URL 键由其实际筛选声明决定。合成入口 `/pages/ioc-office-drill-overview` 与 `/pages/ioc-office-drill-detail`，操作见 `pages/capabilities/ioc-header/controls/README.md`。
 
 
-页面协议 6.130。结构真源为本册[schema.json](../schema.json)，SHA256 `0216bef0ba2803fdd10928fc69948f0057f6995d0521ad7fac43a012814f9ab9`。字段表自动生成；可选不等于有默认值。
+页面协议 6.131。结构真源为本册[schema.json](../schema.json)，SHA256 `fd98f24ca42df43f645e67405018492f98c1ed6ef3a1c386c6d74d0d5d30d8d5`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -1121,8 +1121,8 @@ Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/pre
 - `#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/facts/items/properties/value/anyOf/1`：[合法完整页面](../examples/ioc-component-availability-page.json)，JSON Pointer `#/sections/0/components/0/props/identity/facts/1/value`。
 - `#/definitions/iocHeaderComponent/properties/props/properties/back/anyOf/0`：[合法完整页面](../examples/ioc-header-title-link-target.json)，JSON Pointer `#/sections/0/components/0/props/back`。
 - `#/definitions/iocHeaderComponent/properties/props/properties/back/anyOf/1`：[合法完整页面](../examples/ioc-auto-back-page.json)，JSON Pointer `#/sections/0/components/0/props/back`。
-- `#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/0`：[合法完整页面](../examples/chart-customer-series.json)，JSON Pointer `#/sections/0/components/0/props/components/0`。
-- `#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1`：[合法完整页面](../examples/ioc-header-controls.json)，JSON Pointer `#/sections/0/components/0/props/components/1`。
+- `#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/0`：[合法完整页面](../examples/business-result-metrics.json)，JSON Pointer `#/sections/0/components/0/props/components/0`。
+- `#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1`：[合法完整页面](../examples/business-result-metrics.json)，JSON Pointer `#/sections/0/components/0/props/components/2`。
 - `#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/0`：[语义拒绝反例](../errors/ioc-office-navigation-no-row.json)：Region 控件没有行上下文，row 分支由导航语义拒绝。（规则 `ioc-region-office-navigation`）。此项不计入合法示例覆盖。
 - `#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/1`：[合法完整页面](../examples/ioc-office-navigation-page-param.json)，JSON Pointer `#/sections/0/components/0/props/components/0/props/officeNavigate/query/view`。
-- `#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/2`：[合法完整页面](../examples/ioc-office-drill-overview.json)，JSON Pointer `#/sections/0/components/0/props/components/1/props/officeNavigate/query/period`。
+- `#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/2`：[合法完整页面](../examples/business-result-metrics.json)，JSON Pointer `#/sections/0/components/0/props/components/2/props/officeNavigate/query/rep-office-name`。

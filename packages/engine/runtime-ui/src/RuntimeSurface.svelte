@@ -385,7 +385,7 @@
       if (filterValues.has(filter.id)) return true;
       if (filter.id === 'region') {
         const key = filterURLKeys(filter, !!declarationPage && usesIocRegion(declarationPage)).value;
-        return new URLSearchParams(appliedInput?.initialSearch).get(key) === '';
+        return key !== undefined && new URLSearchParams(appliedInput?.initialSearch).get(key) === '';
       }
       if (filter.type === 'timePoint' || filter.type === 'timeRange') return false;
       return true;

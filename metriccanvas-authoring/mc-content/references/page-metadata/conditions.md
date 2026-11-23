@@ -39,7 +39,7 @@ PDF/PNG导出捕获当前条件和筛选，展开所有允许的分区/Tab，不
 可观察页：`pages/platform/platform-interaction-audit.json`；在 Playground 观察已有规则及页面内容，在 Platform 验证摘要、新增、取消、非法输入和保存流程。操作与环境说明见 `pages/platform/README.md`。
 
 
-页面协议 6.130。结构真源为本册[schema.json](schema.json)，SHA256 `0216bef0ba2803fdd10928fc69948f0057f6995d0521ad7fac43a012814f9ab9`。字段表自动生成；可选不等于有默认值。
+页面协议 6.131。结构真源为本册[schema.json](schema.json)，SHA256 `fd98f24ca42df43f645e67405018492f98c1ed6ef3a1c386c6d74d0d5d30d8d5`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -982,19 +982,19 @@ Schema位置：`#/definitions/condition/anyOf/15/properties/op`。
 ## 联合分支见证（生成）
 
 - `#/definitions/condition/anyOf/0`：[合法完整页面](examples/chart-series-visibility.json)，JSON Pointer `#/sections/1/components/0/props/series/2/visibleWhen`。
-- `#/definitions/condition/anyOf/1`：[合法完整页面](examples/page-visibility-region-linkage.json)，JSON Pointer `#/sections/3/components/0/props/rowVisibleWhen`。
-- `#/definitions/condition/anyOf/2`：[合法完整页面](examples/reference-conditions-page.json)，JSON Pointer `#/filters/0/visibleWhen`。
+- `#/definitions/condition/anyOf/1`：[合法完整页面](examples/business-result-metrics.json)，JSON Pointer `#/dataSources/net-discount-trend/source/query/filterBindings/net-discount-site/when`。
+- `#/definitions/condition/anyOf/2`：[合法完整页面](examples/business-result-metrics.json)，JSON Pointer `#/dataSources/net-discount-trend/source/query/filterBindings/business-type/when`。
 - `#/definitions/condition/anyOf/3`：[合法完整页面](examples/page-visibility-inputs.json)，JSON Pointer `#/sections/1/visibleWhen`。
 - `#/definitions/condition/anyOf/4`：[合法完整页面](examples/ioc-header-title-link.json)，JSON Pointer `#/sections/0/components/0/props/identity/titleNavigate/visibleWhen`。
 - `#/definitions/condition/anyOf/4/properties/value/anyOf/0`：[合法完整页面](examples/filter-binding-when.json)，JSON Pointer `#/dataSources/offices/source/query/filterBindings/site/when/value`。
 - `#/definitions/condition/anyOf/4/properties/value/anyOf/1`：[合法完整页面](examples/reference-conditions-page.json)，JSON Pointer `#/sections/0/components/1/props/rowVisibleWhen/all/4/value`。
 - `#/definitions/condition/anyOf/4/properties/value/anyOf/2`：[合法完整页面](examples/ioc-header-title-link.json)，JSON Pointer `#/sections/0/components/0/props/identity/titleNavigate/visibleWhen/value`。
-- `#/definitions/condition/anyOf/5`：[合法完整页面](examples/chart-series-visibility.json)，JSON Pointer `#/sections/1/components/0/props/series/2/visibleWhen/all/0`。
-- `#/definitions/condition/anyOf/5/properties/values/items/anyOf/0`：[合法完整页面](examples/chart-series-visibility.json)，JSON Pointer `#/sections/1/components/0/props/series/2/visibleWhen/all/0/values/0`。
+- `#/definitions/condition/anyOf/5`：[合法完整页面](examples/business-result-metrics.json)，JSON Pointer `#/dataSources/net-discount-trend/source/query/filterBindings/net-discount-site/when/any/1`。
+- `#/definitions/condition/anyOf/5/properties/values/items/anyOf/0`：[合法完整页面](examples/business-result-metrics.json)，JSON Pointer `#/dataSources/net-discount-trend/source/query/filterBindings/net-discount-site/when/any/1/values/0`。
 - `#/definitions/condition/anyOf/5/properties/values/items/anyOf/1`：[合法完整页面](examples/reference-conditions-page.json)，JSON Pointer `#/sections/0/components/1/props/rowVisibleWhen/all/5/values/0`。
 - `#/definitions/condition/anyOf/5/properties/values/items/anyOf/2`：[合法完整页面](examples/reference-conditions-page.json)，JSON Pointer `#/sections/0/components/1/props/rowVisibleWhen/all/7/values/0`。
 - `#/definitions/condition/anyOf/6`：[合法完整页面](examples/reference-conditions-page.json)，JSON Pointer `#/sections/0/components/1/props/rowVisibleWhen/all/8`。
-- `#/definitions/condition/anyOf/7`：[合法完整页面](examples/reference-conditions-page.json)，JSON Pointer `#/sections/0/components/1/props/rowVisibleWhen/all/9`。
+- `#/definitions/condition/anyOf/7`：[合法完整页面](examples/business-result-metrics.json)，JSON Pointer `#/dataSources/net-discount-trend/source/query/filterBindings/net-discount-site/when/any/0`。
 - `#/definitions/condition/anyOf/8`：[合法完整页面](examples/availability-page.json)，JSON Pointer `#/sections/1/components/0/visibleWhen`。
 - `#/definitions/condition/anyOf/8/properties/value/anyOf/0`：[合法完整页面](examples/reference-conditions-page.json)，JSON Pointer `#/sections/0/components/1/props/rowVisibleWhen/all/11/value`。
 - `#/definitions/condition/anyOf/8/properties/value/anyOf/1`：[合法完整页面](examples/reference-conditions-page.json)，JSON Pointer `#/sections/0/components/1/props/rowVisibleWhen/all/13/value`。

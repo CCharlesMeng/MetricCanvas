@@ -387,7 +387,8 @@
         "ioc-async-preparation",
         "ioc-legacy-key-office",
         "filter-exclusion-candidates",
-        "filter-conditional-exclusion-default"
+        "filter-conditional-exclusion-default",
+        "business-result-metrics"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -442,7 +443,8 @@
         "filter-source-candidate-levels",
         "currency-range-presets",
         "independent-exclusion-candidates",
-        "conditional-dimension-default"
+        "conditional-dimension-default",
+        "dimension-filter-url-opt-out"
       ]
     },
     "sections-and-layout.md": {
@@ -1814,6 +1816,7 @@
     "#/properties/iocHeader/properties/presentation/properties/collapse": "保持全部筛选或按实测首行折叠；隐藏项退出焦点序列。",
     "#/properties/filters/items/properties/selection": "6.37：单/多选及必选基数；见filters.md业务筛选。",
     "#/definitions/dimensionFilter/properties/selection": "单/多选及必选基数；required恰好一个值。",
+    "#/definitions/dimensionFilter/properties/urlParams": "6.131 起 false 关闭维度筛选器的本页 URL 读写。对象映射 URL 键，省略按筛选器 ID 派生。",
     "#/definitions/dimensionFilter/properties/defaultWhen": "6.130 可选动态多选排除项的联动条件。按页级独立单选维度的稳定值匹配，初始化和实际切换时决定是否应用 default。",
     "#/definitions/dimensionFilter/properties/selection/properties/allBehavior": "全选保留实际选择；仅穷尽封闭多选枚举可省动态谓词。",
     "#/definitions/dimensionFilter/properties/options": "创作期确认的穷尽枚举；不请求候选网关，不作权限失败回退。",
@@ -2418,7 +2421,8 @@
     "#/properties/schemaVersion=\"6.127\"": "指标卡可通过 tipCode 关联指标定义，显示位置为主标题或无主标题单行指标标签。",
     "#/properties/schemaVersion=\"6.128\"": "柱线组合图的字段折线圆点可按原始数值小于零或大于等于零着色。",
     "#/properties/schemaVersion=\"6.129\"": "顶层度量结果字段声明 metricCode，主次指标行通过 showDefinition 独立开启气泡。",
-    "#/properties/schemaVersion=\"6.130\"": "可选动态多选排除项可用 defaultWhen 关联一个独立单选维度的实际取值。"
+    "#/properties/schemaVersion=\"6.130\"": "可选动态多选排除项可用 defaultWhen 关联一个独立单选维度的实际取值。",
+    "#/properties/schemaVersion=\"6.131\"": "维度筛选器可用 urlParams: false 关闭本页 URL 读写。"
   },
   "branchExceptions": {
     "#/properties/iocHeader/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/0": {
@@ -3500,6 +3504,7 @@
       "动态排除候选独立加载（6.125）",
       "排除项联动默认值（6.130）",
       "页面数据源候选（6.90）",
+      "维度筛选器关闭 URL 同步（6.131）",
       "内联层级候选（6.122）",
       "候选查询分页",
       "定稿日期默认值（6.104）"

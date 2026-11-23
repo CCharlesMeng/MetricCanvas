@@ -49,8 +49,8 @@ export interface FilterHierarchyLevel {
 /** 维度筛选器:约束某个维度的取值集合 */
 export interface DimensionFilterDeclaration extends FilterInteractionExtension, DimensionSelectionExtension {
   id: string;
-  /** 显式 URL 参数名；缺省按筛选器 id 派生。 */
-  urlParams?: { value?: string; from?: string; to?: string; level?: string };
+  /** false 关闭本页 URL 读写；省略时按筛选器 id 派生参数名。 */
+  urlParams?: false | { value?: string; from?: string; to?: string; level?: string };
   type: 'dimension';
   /** 约束的维度 code,引用数据服务定义的维度;候选值由运行时经数据网关查询 */
   dimension: string;

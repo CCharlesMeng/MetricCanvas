@@ -11,6 +11,7 @@ const introducedAt: Record<string, number> = {
   'bar-line-marker-color':128,
   'metric-card-row-definition-tip':129,
   'conditional-dimension-default':130,
+  'dimension-filter-url-opt-out':131,
   'filter-source-candidate-levels':122,
   'native-ioc-filter-preparation':120,
   'table-absolute-display-limit':119,

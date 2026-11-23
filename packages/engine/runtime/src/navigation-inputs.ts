@@ -17,7 +17,7 @@ export function projectNavigationInputs(document:unknown):NavigationInputContrac
   if(!result.ok)throw Error('目标页面输入契约无效');
   const privateIds=new Set((result.page.detailViews??[]).flatMap(view=>view.filters??[]));
   const fixed=(result.page.params??[]).some(p=>!p.path&&(p.value!==undefined||p.type==='timeRange'));
-  return {pageId:result.page.id,...(usesIocRegion(result.page)?{iocRegion:true as const}:{}),params:structuredClone((result.page.params??[]).filter(p=>p.path||p.value===undefined&&p.type!=='timeRange')),filters:structuredClone(fixed?[]:(result.page.filters??[]).filter(filter=>!privateIds.has(filter.id)))};
+  return {pageId:result.page.id,...(usesIocRegion(result.page)?{iocRegion:true as const}:{}),params:structuredClone((result.page.params??[]).filter(p=>p.path||p.value===undefined&&p.type!=='timeRange')),filters:structuredClone(fixed?[]:(result.page.filters??[]).filter(filter=>filter.urlParams!==false&&!privateIds.has(filter.id)))};
 }
 export function navigationInputIssue(href:string,contract:NavigationInputContract,now=new Date()):string|undefined {
   const query=new URL(href,'https://metriccanvas.invalid/').searchParams;

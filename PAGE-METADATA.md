@@ -2,6 +2,8 @@
 
 页面搜索筛选、远程下拉候选、表头动态候选和表格工具栏搜索统一在停输 300 毫秒后自动生效。中文输入法组词期间等待确认。静态候选即时筛选。分页候选在依赖条件就绪后开始取数。见[下拉搜索](docs/page-metadata/filters.md#下拉搜索与普通树643)和[表格搜索](docs/page-metadata/components/table.md#表格工具栏与搜索621)。
 
+Schema 6.131 支持维度筛选器设置 `urlParams: false`，关闭本页 URL 读取和写回。筛选状态继续参与现有查询，旧链接中的对应键在成功初始化后清理。见[维度筛选器关闭 URL 同步](docs/page-metadata/filters.md#dimension-filter-url-opt-out)和 Playground 的 `/pages/business-result-metrics`。
+
 Schema 6.130 支持可选动态多选排除项使用 `defaultWhen`。页面初始化及关联单选维度切换时，引擎按实际选值应用 `default` 名单或清空排除条件。符合分页条件时，候选依赖就绪后后台预加载首批，每批沿用查询的 `limit`。控件右侧固定用于展开，「清空」位于下拉面板内，已选项可逐项取消。下拉状态供辅助技术读取，失败时可通过图标重试。见[排除项联动默认值](docs/page-metadata/filters.md#conditional-exclusion-defaults)与合成入口 `/pages/filter-conditional-exclusion-default`。
 
 Schema 6.129 支持在指标卡的主、次指标行设置 `showDefinition: true`。该行沿 `valueField` 读取结果字段的 `metricCode`，在指标名称右侧显示问号。省略或设为 `false` 时隐藏。气泡的固定文案统一使用中文，服务端返回的内容按原文显示。同一页面会话内，成功获取的定义按指标编码复用。气泡随内容收缩，长内容可在气泡内滚动。见[指标定义气泡](docs/page-metadata/components/metricCard.md#metric-definition-tip)与合成入口 `/pages/metric-card-definition-tip`。

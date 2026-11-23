@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.130",
+  "schemaVersion": "6.131",
   "id": "business-result-metrics",
   "layout": "dashboard",
   "meta": {
@@ -146,6 +146,7 @@
     },
     {
       "id": "cloud-service",
+      "urlParams": false,
       "type": "dimension",
       "dimension": "cloud-service",
       "label": "云服务排除项",

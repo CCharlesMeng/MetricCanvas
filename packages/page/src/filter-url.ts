@@ -2,16 +2,17 @@ import type { FilterDeclaration } from './filter';
 
 /** IOC Header owns the fixed organization URL names; ordinary filters keep their existing keys. */
 export function filterURLKeys(filter: FilterDeclaration, iocRegion = false): Record<string, string> {
-  const names = filter.urlParams ?? {};
-  const value = names.value ?? filter.id;
+  const names = filter.urlParams;
+  if (names === false) return {};
+  const value = names?.value ?? filter.id;
   if (filter.type === 'timeRange' || filter.type === 'numberRange') {
-    const range = { from: names.from ?? `${filter.id}.from`, to: names.to ?? `${filter.id}.to` };
+    const range = { from: names?.from ?? `${filter.id}.from`, to: names?.to ?? `${filter.id}.to` };
     if (filter.type === 'timeRange' && filter.display === 'period') return { value, ...range };
     if (filter.type === 'timeRange' && filter.display === 'modes') return { mode: `${filter.id}.mode`, ...range };
     return range;
   }
   if (filter.type !== 'dimension' || !filter.hierarchy) return { value };
-  return { value, level: names.level ?? `${filter.id}.level`, ...(iocRegion ? iocRegionLevelKeys(filter) : {}) };
+  return { value, level: names?.level ?? `${filter.id}.level`, ...(iocRegion ? iocRegionLevelKeys(filter) : {}) };
 }
 
 /** department is an existing IOC level ID; new pages use region-dept. */

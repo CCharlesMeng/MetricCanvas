@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.130",
+  "schemaVersion": "6.131",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "filters.section-e50ee65a"
@@ -159,6 +159,17 @@
             "conditional-default-driver",
             "conditional-default-required-list",
             "conditional-default-inclusion"
+          ]
+        },
+        {
+          "id": "dimension-filter-url-opt-out",
+          "description": "6.131 维度筛选器关闭本页 URL 读写",
+          "valid": [
+            "business-result-metrics"
+          ],
+          "invalid": [
+            "dimension-filter-url-opt-out-version",
+            "dimension-filter-url-opt-out-true"
           ]
         },
         {
@@ -388,7 +399,8 @@
         "references/page-metadata/examples/ioc-async-preparation.json",
         "references/page-metadata/examples/ioc-legacy-key-office.json",
         "references/page-metadata/examples/filter-exclusion-candidates.json",
-        "references/page-metadata/examples/filter-conditional-exclusion-default.json"
+        "references/page-metadata/examples/filter-conditional-exclusion-default.json",
+        "references/page-metadata/examples/business-result-metrics.json"
       ]
     }
   ],

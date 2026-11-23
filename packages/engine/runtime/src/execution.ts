@@ -98,7 +98,9 @@ function executionFilters(page: ExecutionPage, actual: Record<string, unknown>):
     if (!declaration || !record(value) || value.type !== declaration.type) fail('实际筛选未声明或类型不符');
     const candidate = new Map([[id, value as unknown as FilterValue]]);
     try {
-      const roundTrip = parseFilterSearch(createFilterState(candidate).toURL([declaration]), [declaration]);
+      // Reuse the shape check for trusted execution values, independently of browser URL exposure.
+      const codec = declaration.urlParams === false ? { ...declaration, urlParams: undefined } : declaration;
+      const roundTrip = parseFilterSearch(createFilterState(candidate).toURL([codec]), [codec]);
       if (canonicalizeJson(roundTrip.get(id)) !== canonicalizeJson(value)) fail('实际筛选形状或维度不符');
     } catch { fail('实际筛选形状或维度不符'); }
     filters.set(id, structuredClone(value) as unknown as FilterValue);

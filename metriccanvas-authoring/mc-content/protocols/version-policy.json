@@ -1,7 +1,7 @@
 {
   "major": 6,
-  "minor": 130,
-  "current": "6.130",
+  "minor": 131,
+  "current": "6.131",
   "capabilities": {
     "metric-card-row-definition-tip": {
       "minor": 129,
@@ -197,6 +197,11 @@
       "minor": 125,
       "description": "可选动态排除条件保留选值，候选加载不阻断指标查询",
       "legacyReadable": true
+    },
+    "dimension-filter-url-opt-out": {
+      "minor": 131,
+      "description": "维度筛选器可关闭本页 URL 输入和同步",
+      "legacyReadable": false
     },
     "conditional-dimension-default": {
       "minor": 130,
@@ -1125,6 +1130,7 @@
     "6.127",
     "6.128",
     "6.129",
-    "6.130"
+    "6.130",
+    "6.131"
   ]
 }

@@ -36,6 +36,16 @@ describe('page URL input cleanup', () => {
     expect(pageURLSearch(page, 'region-dept=A&rep-office=B&account=A')).toBe('account=A');
   });
 
+  it('removes opted-out dimension keys while preserving keys owned by other declarations', () => {
+    const region = structuredClone(parsed(regionFixture));
+    const organization = region.filters?.find(filter => filter.id === 'region');
+    if (organization?.type !== 'dimension') throw Error('Missing fixture region');
+    organization.urlParams = false;
+    region.filters?.push({ id: 'other', type: 'dimension', dimension: 'other', urlParams: { value: 'rep-office' } });
+    const search = 'region=A&region.level=office&region-dept=B&rep-office=C&tenant=x';
+    expect(pageURLSearch(region, search, ['region', 'region-dept', 'tenant'])).toBe('rep-office=C&tenant=x');
+  });
+
   it('does not silently repair invalid values or duplicate single-value inputs', () => {
     expect(pageURLSearch(page, 'account=&account=B&active=invalid&view=missing&extra=x'))
       .toBe('account=&account=B&active=invalid&view=missing');

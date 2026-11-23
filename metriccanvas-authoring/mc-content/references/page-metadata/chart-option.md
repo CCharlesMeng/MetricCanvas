@@ -33,7 +33,7 @@
 货币字段选择同样只消费页面协议拥有的字段绑定；不透明`echartsOption`内部的`byFilter`等同名键不声明IOC能力、不参与选择器依赖，也不被运行时货币投影改写。
 
 
-页面协议 6.130。结构真源为本册[schema.json](schema.json)，SHA256 `0216bef0ba2803fdd10928fc69948f0057f6995d0521ad7fac43a012814f9ab9`。字段表自动生成；可选不等于有默认值。
+页面协议 6.131。结构真源为本册[schema.json](schema.json)，SHA256 `fd98f24ca42df43f645e67405018492f98c1ed6ef3a1c386c6d74d0d5d30d8d5`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -177,9 +177,9 @@ Schema位置：`#/definitions/chartOption/propertyNames`。
 
 ## 联合分支见证（生成）
 
-- `#/definitions/chartOptionValue/anyOf/0`：[合法完整页面](examples/dual-axis-alignment.json)，JSON Pointer `#/sections/0/components/1/props/echartsOption/xAxis/name`。
-- `#/definitions/chartOptionValue/anyOf/1`：[合法完整页面](examples/chart-series-visibility.json)，JSON Pointer `#/sections/1/components/0/props/echartsOption/series/2/lineStyle/width`。
-- `#/definitions/chartOptionValue/anyOf/2`：[合法完整页面](examples/chart-series-visibility.json)，JSON Pointer `#/sections/1/components/0/props/echartsOption/animation`。
-- `#/definitions/chartOptionValue/anyOf/3`：[合法完整页面](examples/rep-business-result.json)，JSON Pointer `#/sections/3/components/0/props/tabs/1/components/2/props/echartsOption/backgroundColor`。
-- `#/definitions/chartOptionValue/anyOf/4`：[合法完整页面](examples/chart-series-visibility.json)，JSON Pointer `#/sections/1/components/0/props/echartsOption/series`。
-- `#/definitions/chartOptionValue/anyOf/5`：[合法完整页面](examples/dual-axis-alignment.json)，JSON Pointer `#/sections/0/components/1/props/echartsOption/xAxis`。
+- `#/definitions/chartOptionValue/anyOf/0`：[合法完整页面](examples/business-result-metrics.json)，JSON Pointer `#/sections/4/components/0/props/components/1/props/echartsOption/legend/left`。
+- `#/definitions/chartOptionValue/anyOf/1`：[合法完整页面](examples/business-result-metrics.json)，JSON Pointer `#/sections/4/components/0/props/components/1/props/echartsOption/grid/bottom`。
+- `#/definitions/chartOptionValue/anyOf/2`：[合法完整页面](examples/business-result-metrics.json)，JSON Pointer `#/sections/4/components/0/props/components/1/props/echartsOption/series/1/showSymbol`。
+- `#/definitions/chartOptionValue/anyOf/3`：[合法完整页面](examples/business-result-metrics.json)，JSON Pointer `#/sections/4/components/0/props/components/1/props/echartsOption/legend/top`。
+- `#/definitions/chartOptionValue/anyOf/4`：[合法完整页面](examples/business-result-metrics.json)，JSON Pointer `#/sections/4/components/0/props/components/1/props/echartsOption/series`。
+- `#/definitions/chartOptionValue/anyOf/5`：[合法完整页面](examples/business-result-metrics.json)，JSON Pointer `#/sections/4/components/0/props/components/1/props/echartsOption/grid`。

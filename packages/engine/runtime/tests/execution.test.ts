@@ -160,3 +160,16 @@ it.each(['condition','view'])('changing a gated execution %s discards the pendin
  else {state.write('region-filter',{type:'dimension',dimension:'region',values:['APAC']});state.write('region-filter',{type:'dimension',dimension:'region',values:['NA']});}
  state.candidate('region-filter','ready',['NA','APAC']);await flush();expect(gateway.fetchData).toHaveBeenCalledTimes(1);expect(latest.get('sales').rows[0].region).toBe('fresh');stop();
 });
+
+it('validates trusted execution values for dimensions with URL synchronization disabled', () => {
+  const {request, response} = scenario('execute-success');
+  response.document.schemaVersion = '6.131';
+  response.document.filters = [
+    {id: 'service', type: 'dimension', dimension: 'service', urlParams: false}
+  ];
+  const local = {type: 'dimension', dimension: 'service', values: ['selected-service']};
+  response.filterValues = {service: local};
+  expect(prepareExecution(request, response).filters.get('service')).toEqual(local);
+  response.filterValues.service = {...local, dimension: 'other'};
+  expect(() => prepareExecution(request, response)).toThrow(expect.objectContaining({code: 'RESPONSE_MISMATCH'}));
+});

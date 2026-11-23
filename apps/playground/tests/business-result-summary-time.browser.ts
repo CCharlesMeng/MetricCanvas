@@ -4,7 +4,7 @@ import { expect, test } from '@playwright/test';
 type Query = {
   output_dims: string[];
   output_metrics: string[];
-  filter: { dims: {dim_name: string; dim_value_list: string[]}[]; time: {
+  filter: { dims: {dim_name: string; dim_value_list: string[]; is_exclude?: boolean}[]; time: {
     period: string; start?: string; end?: string; is_aggregate?: boolean;
   } };
   order: Record<string, unknown>;
@@ -191,4 +191,47 @@ test('the initial Playground Region loads another cloud-service page when the us
   await page.mouse.wheel(0,3500);
   await expect.poll(() => offsets).toEqual([0,20]);
   await expect(options).toHaveCount(35);
+});
+
+test('云服务排除项关闭 URL 同步，默认值和手动排除继续下推', async ({page}) => {
+  const requests: Query[] = [];
+  const service = '模拟新增排除项';
+  const legacy = '旧链接排除项';
+  await page.setViewportSize({width: 1600, height: 850});
+  await page.route('**/dsl/execute', async route => {
+    const items: Query[] = route.request().postDataJSON().dsl_list;
+    requests.push(...items);
+    const results = items.map(item => item.output_dims[0] === '云服务'
+      ? {code: 'SUCCESS', data: [{云服务: service, 净付费金额: 100}], total_count: 1}
+      : {code: 'SUCCESS', data: [], total_count: 0});
+    await route.fulfill({json: {retCode: 'CBC.0000', results}});
+  });
+
+  const period = 'month:2026-10';
+  const search = new URLSearchParams([['region', ''], ['mtime', period], ['cloud-service', ''], ['cloud-service', legacy]]);
+  await page.goto(`/pages/business-result-metrics?${search}`);
+  await expect(page).toHaveURL(url => !url.searchParams.has('cloud-service') && url.searchParams.get('mtime') === period);
+
+  const trigger = page.getByRole('button', {name: '云服务排除项', exact: true});
+  const menu = page.getByRole('dialog', {name: '云服务排除项候选'});
+  const defaultChoice = menu.getByRole('option', {name: 'ModelArts', exact: true, selected: true});
+  const newChoice = menu.getByRole('option', {name: service, exact: true});
+  await trigger.press('ArrowDown');
+  await expect(defaultChoice).toBeVisible();
+  await expect(menu.getByRole('option', {name: legacy, exact: true})).toHaveCount(0);
+  await expect(newChoice).toHaveAttribute('aria-selected', 'false');
+
+  const discountExclusions = () => requests.filter(item => item.output_metrics.includes('净商务折扣（原价）'))
+    .flatMap(item => item.filter.dims.filter(predicate => predicate.dim_name === '云服务' && predicate.is_exclude === true))
+    .flatMap(predicate => predicate.dim_value_list);
+  await expect.poll(discountExclusions).toContain('ModelArts');
+  expect(discountExclusions()).not.toContain(legacy);
+  await newChoice.click();
+  await expect.poll(discountExclusions).toContain(service);
+  await expect(page).toHaveURL(url => !url.searchParams.has('cloud-service') && url.searchParams.get('mtime') === period);
+
+  await page.reload();
+  await trigger.press('ArrowDown');
+  await expect(defaultChoice).toBeVisible();
+  await expect(newChoice).toHaveAttribute('aria-selected', 'false');
 });

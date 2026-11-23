@@ -85,7 +85,7 @@ Dashboard 的年、季、月按所选自然期间判断：当前年／当前季�
 
 维度display选择select、tabs或tree；层级维度显式声明层级和初始层；6.11起层级维度与timePoint筛选器也可用initialParam取页面参数作初值。时间范围支持绝对from/to和受控相对时间；timePoint限定month/date粒度。numberRange允许单边界，两边空视为无条件；search为普通文本。
 
-urlParams仅映射该类允许的value/from/to/level键，不能与本页其它参数或筛选输入冲突。候选值来自受控数据能力，业务维度值不是协议枚举。
+urlParams 的对象形式映射该类允许的 value/from/to/level 键，不能与本页其它参数或筛选输入冲突。6.131 起维度筛选器还接受 false，见[维度筛选器关闭 URL 同步](#dimension-filter-url-opt-out)。候选值来自受控数据能力，业务维度值不是协议枚举。
 
 6.13 的 timeRange.precision=month 使用 YYYY-MM 两端；date 使用 YYYY-MM-DD，datetime 保留 YYYY-MM-DDTHH:mm。timeRange.initialParam 与 default 互斥，接受精度匹配的必需 times 参数；timePoint 仅接受单点 times。required 日期筛选器保留已应用值，完整合法的输入才提交；页头引用只改变位置。
 
@@ -357,6 +357,27 @@ IOC 业务 Region 只允许 iocHeader 内的单个组织树，树内选择地区
 
 <a id="source-candidate-levels"></a>
 
+<a id="dimension-filter-url-opt-out"></a>
+
+## 维度筛选器关闭 URL 同步（6.131）
+
+在 `filters[]` 中给 `type: "dimension"` 的筛选器设置 `"urlParams": false`。省略时继续按筛选器 ID 派生参数名，对象形式继续映射参数名。
+
+```json
+{
+  "id": "cloud-service",
+  "type": "dimension",
+  "dimension": "cloud-service",
+  "label": "云服务排除项",
+  "selection": { "mode": "multiple", "allBehavior": "values" },
+  "urlParams": false
+}
+```
+
+打开页面时采用原有筛选初值规则。旧链接里的同名筛选键不参与初始化，页面成功初始化后从地址清理。页内选择继续更新筛选状态、联动和查询，刷新或分享链接按初值规则重新初始化。其他筛选器、页面参数和已声明页签按各自的 URL 契约处理。该字段控制本页筛选 URL，显式跨页导航的 query 仍由导航目标声明决定。
+
+Playground 入口 `/pages/business-result-metrics?region=&mtime=month:2026-10&cloud-service=旧链接服务`。地址清理后保留期间，云服务排除继续使用页面的联动默认值。勾选一项服务可在本地合成 DQE 请求中观察排除条件变化。用支持 6.131 的引擎部署该页面。
+
 ## 内联层级候选（6.122）
 
 单选结构树可在 `candidates` 增加 `levelField`，引用内联候选数据源的字符串输出字段。筛选器声明 `hierarchy`、`display:"tree"`、`treeSelection:"level"`、`selection.mode:"single"` 和 `candidates.parentField`，省略 `hierarchyPicker`。例如候选行 `{"code":"beijing","name":"北京","level":"office","parent":"north"}` 的 `level` 必须等于某个 `hierarchy[].id`。首层的父值为空；其他层通过 `parentField` 指向紧邻上一层的业务值。
@@ -411,7 +432,7 @@ IOC 业务 Region 只允许 iocHeader 内的单个组织树，树内选择地区
 合成入口为 `/pages/finalization-default-time` 与 `/pages/finalization-default-time-detail`，`?state=error|missing|invalid|conflict|timeout` 验证回退。集成应用通过数据网关的finalizationSource提供固定DQE请求体、nameField与dateField映射，页面作者不填写端点、凭据或表结构。这些场景不证明真实截止表或生产DQE已接入。
 
 
-页面协议 6.130。结构真源为本册[schema.json](schema.json)，SHA256 `0216bef0ba2803fdd10928fc69948f0057f6995d0521ad7fac43a012814f9ab9`。字段表自动生成；可选不等于有默认值。
+页面协议 6.131。结构真源为本册[schema.json](schema.json)，SHA256 `fd98f24ca42df43f645e67405018492f98c1ed6ef3a1c386c6d74d0d5d30d8d5`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -483,47 +504,71 @@ Schema位置：`#/definitions/dimensionFilter/properties/urlParams`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "object" | 本分支可选 | additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 页面参数/筛选输入对应的公开URL键映射。 |
+| anyOf联合 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 6.131 起 false 关闭维度筛选器的本页 URL 读写。对象映射 URL 键，省略按筛选器 ID 派生。 |
 
-<a id="schema-232f646566696e6974696f6e732f64696d656e73696f6e46696c7465722f70726f706572746965732f75726c506172616d732f70726f706572746965732f76616c7565"></a>
+<a id="schema-232f646566696e6974696f6e732f64696d656e73696f6e46696c7465722f70726f706572746965732f75726c506172616d732f616e794f662f30"></a>
 
-### `@dimensionFilter.urlParams.value`
+### `@dimensionFilter.urlParams · anyOf[0]`
 
-Schema位置：`#/definitions/dimensionFilter/properties/urlParams/properties/value`。
+Schema位置：`#/definitions/dimensionFilter/properties/urlParams/anyOf/0`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f64696d656e73696f6e46696c7465722f70726f706572746965732f75726c506172616d732f616e794f662f302f70726f706572746965732f76616c7565"></a>
+
+### `@dimensionFilter.urlParams · anyOf[0].value`
+
+Schema位置：`#/definitions/dimensionFilter/properties/urlParams/anyOf/0/properties/value`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 本分支可选 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 当前分支的固定值或绑定取值。 |
 
-<a id="schema-232f646566696e6974696f6e732f64696d656e73696f6e46696c7465722f70726f706572746965732f75726c506172616d732f70726f706572746965732f66726f6d"></a>
+<a id="schema-232f646566696e6974696f6e732f64696d656e73696f6e46696c7465722f70726f706572746965732f75726c506172616d732f616e794f662f302f70726f706572746965732f66726f6d"></a>
 
-### `@dimensionFilter.urlParams.from`
+### `@dimensionFilter.urlParams · anyOf[0].from`
 
-Schema位置：`#/definitions/dimensionFilter/properties/urlParams/properties/from`。
+Schema位置：`#/definitions/dimensionFilter/properties/urlParams/anyOf/0/properties/from`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 本分支可选 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 范围起点；与to的顺序和精度须匹配。 |
 
-<a id="schema-232f646566696e6974696f6e732f64696d656e73696f6e46696c7465722f70726f706572746965732f75726c506172616d732f70726f706572746965732f746f"></a>
+<a id="schema-232f646566696e6974696f6e732f64696d656e73696f6e46696c7465722f70726f706572746965732f75726c506172616d732f616e794f662f302f70726f706572746965732f746f"></a>
 
-### `@dimensionFilter.urlParams.to`
+### `@dimensionFilter.urlParams · anyOf[0].to`
 
-Schema位置：`#/definitions/dimensionFilter/properties/urlParams/properties/to`。
+Schema位置：`#/definitions/dimensionFilter/properties/urlParams/anyOf/0/properties/to`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 本分支可选 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 范围终点；与from的顺序和精度须匹配。 |
 
-<a id="schema-232f646566696e6974696f6e732f64696d656e73696f6e46696c7465722f70726f706572746965732f75726c506172616d732f70726f706572746965732f6c6576656c"></a>
+<a id="schema-232f646566696e6974696f6e732f64696d656e73696f6e46696c7465722f70726f706572746965732f75726c506172616d732f616e794f662f302f70726f706572746965732f6c6576656c"></a>
 
-### `@dimensionFilter.urlParams.level`
+### `@dimensionFilter.urlParams · anyOf[0].level`
 
-Schema位置：`#/definitions/dimensionFilter/properties/urlParams/properties/level`。
+Schema位置：`#/definitions/dimensionFilter/properties/urlParams/anyOf/0/properties/level`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 本分支可选 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 当前层级或层级绑定部分。 |
+
+<a id="schema-232f646566696e6974696f6e732f64696d656e73696f6e46696c7465722f70726f706572746965732f75726c506172616d732f616e794f662f31"></a>
+
+### `@dimensionFilter.urlParams · anyOf[1]`
+
+Schema位置：`#/definitions/dimensionFilter/properties/urlParams/anyOf/1`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "boolean" | 独立分支（不合并required） | const=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| false | 用于选择@dimensionFilter.urlParams · anyOf[1]分支；同分支其它约束同时成立。 |
 
 <a id="schema-232f646566696e6974696f6e732f64696d656e73696f6e46696c7465722f70726f706572746965732f74797065"></a>
 
@@ -3229,6 +3274,7 @@ Schema位置：`#/definitions/searchFilter/properties/default`。
 - `currency-range-presets`：6.46单位case内的币种预设保持单一金额状态。反例：[currency-presets-version](errors/currency-presets-version.json)、[currency-presets-missing](errors/currency-presets-missing.json)、[currency-presets-shared](errors/currency-presets-shared.json)、[currency-presets-invalid](errors/currency-presets-invalid.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `independent-exclusion-candidates`：6.125 动态排除候选独立加载并保留选择。反例：[independent-exclusion-version-ahead](errors/independent-exclusion-version-ahead.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `conditional-dimension-default`：6.130 可选动态多选排除项的联动默认值。反例：[conditional-default-version](errors/conditional-default-version.json)、[conditional-default-driver](errors/conditional-default-driver.json)、[conditional-default-required-list](errors/conditional-default-required-list.json)、[conditional-default-inclusion](errors/conditional-default-inclusion.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `dimension-filter-url-opt-out`：6.131 维度筛选器关闭本页 URL 读写。反例：[dimension-filter-url-opt-out-version](errors/dimension-filter-url-opt-out-version.json)、[dimension-filter-url-opt-out-true](errors/dimension-filter-url-opt-out-true.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 
@@ -3277,6 +3323,7 @@ Schema位置：`#/definitions/searchFilter/properties/default`。
 - [ioc-legacy-key-office](examples/ioc-legacy-key-office.json)：完整合法页面；查询仅为静态契约证据。
 - [filter-exclusion-candidates](examples/filter-exclusion-candidates.json)：完整合法页面；查询仅为静态契约证据。
 - [filter-conditional-exclusion-default](examples/filter-conditional-exclusion-default.json)：完整合法页面；查询仅为静态契约证据。
+- [business-result-metrics](examples/business-result-metrics.json)：完整合法页面；查询仅为静态契约证据。
 - 源码/验证定位：`packages/page/src/validate.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/schema/filter.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`tools/scripts/page-conformance-vectors.ts`（仓库路径，非分发依赖）。
@@ -3306,6 +3353,8 @@ Schema位置：`#/definitions/searchFilter/properties/default`。
 
 ## 联合分支见证（生成）
 
+- `#/definitions/dimensionFilter/properties/urlParams/anyOf/0`：[合法完整页面](examples/ioc-header-business.json)，JSON Pointer `#/filters/0/urlParams`。
+- `#/definitions/dimensionFilter/properties/urlParams/anyOf/1`：[合法完整页面](examples/business-result-metrics.json)，JSON Pointer `#/filters/9/urlParams`。
 - `#/definitions/timeRangeFilter/properties/modes/items/properties/default/anyOf/0`：[合法完整页面](examples/time-modes-page.json)，JSON Pointer `#/filters/0/modes/1/default`。
 - `#/definitions/timeRangeFilter/properties/modes/items/properties/default/anyOf/1`：[合法完整页面](examples/time-modes-page.json)，JSON Pointer `#/filters/0/modes/0/default`。
 - `#/definitions/relativeTimeExpression/properties/range/oneOf/0`：[合法完整页面](examples/time-modes-page.json)，JSON Pointer `#/filters/0/modes/0/default/range`。

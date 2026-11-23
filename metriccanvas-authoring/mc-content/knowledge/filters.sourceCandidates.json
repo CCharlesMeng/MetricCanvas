@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.130",
+  "schemaVersion": "6.131",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "filters.sourceCandidates"
@@ -10,7 +10,7 @@
       "reference": "references/page-metadata/filters.md",
       "blocks": [
         "# 筛选声明与运行状态",
-        "## 页面数据源候选（6.90）\n\n维度筛选可通过 `candidates` 引用页面数据源的结果字段；静态候选使用 `inline`，动态候选使用 `query`。它与固定 `options`、`dependsOn`、`candidateWindow` 互斥。与 `hierarchy` 同用时须按下文声明内联层级候选。筛选生效范围由业务查询的 `filterBindings` 决定。\n\n```json\n{\n  \"id\": \"organization\", \"type\": \"dimension\", \"dimension\": \"organization\",\n  \"label\": \"组织\", \"display\": \"tree\", \"treeSelection\": \"independent\",\n  \"selection\": { \"mode\": \"multiple\" },\n  \"candidates\": {\n    \"dataSource\": \"organization-options\", \"valueField\": \"code\",\n    \"labelField\": \"name\", \"parentField\": \"parent\"\n  }\n}\n```\n\n`dataSource` 引用 `page.dataSources` 的键；`valueField`、`labelField`、`parentField` 引用已声明的标量输出字段 ID，不引用原始 DQE 字段。`valueField` 必填，`labelField` 省略时显示稳定值。`parentField` 仅用于 `display:\"tree\"` 且树展示必须提供；根节点父值为 null、缺失或空字符串。树节点都拥有自身稳定值，父节点和子节点独立选择；省略 `treeSelection` 或显式 `independent` 均按独立值选择，不自动展开后代，不从业务值中的 `/` 推导层级。单多选、必选、默认值与搜索继续使用既有 `selection`、`default`、`searchable`；IOC Region 的专属组织树规则保持。\n\n引擎先读取完整结果，再按稳定值去重，顺序取第一次出现的顺序。字符串、有限数字和 boolean 归一为筛选使用的字符串；null、缺失及空字符串值不进入候选。同值的显示名或父关系冲突、找不到父节点、循环父关系均报候选错误，不任取一条。完整取数复用已有查询、结果映射与受控计算；查询分页会读齐所有页，业务 TopN 仍属于查询本身的范围。不能把当前屏幕页、query.initial 的初始行或失败前取得的部分行当作完整候选。完整读取沿用10,000行及5分钟预算，DQE 单次请求与引擎读取超时至少180秒；总数缺失且未声明完整结果、总数变化、超限、失败和取消均不发布部分候选。\n\n候选查询不能直接或通过结果依赖消费自身筛选，防止选择后候选越筛越少。若候选来源受其他筛选影响，必须在 `candidateContext.filterIds` 显式声明这些筛选，依赖循环继续拒绝；条件变化使用现有候选失效、clear/intersection、取消和迟到回执规则。无依赖来源不因自身选择变化重取。候选错误、加载中、空结果、重试、只读及查询门禁保持可观察状态。\n\n图表卡内用省略 `props.options` 的 `filterGroup` 引用此筛选器，并显式声明 `props.display:\"select\"`。页面通用筛选栏也消费同一声明。静态导出冻结已选稳定值及其显示名，不查询或建立交互控件。既有固定 options 按钮及下拉保持原必选单选语义。\n\n完整合成场景：`/pages/filter-source-candidates`，包含 JSON 内联组织树、跨三个查询分页的渠道去重，以及共同消费两项筛选的图表。`?state=error`、`?state=incomplete`、`?state=empty` 分别演示失败、不完整和空候选；操作及证据边界见页面目录 README。仅验证本地合成 Adapter，未验证真实 DQE、Relay 或组织权限服务。\n\n<a id=\"source-candidate-levels\"></a>",
+        "## 页面数据源候选（6.90）\n\n维度筛选可通过 `candidates` 引用页面数据源的结果字段；静态候选使用 `inline`，动态候选使用 `query`。它与固定 `options`、`dependsOn`、`candidateWindow` 互斥。与 `hierarchy` 同用时须按下文声明内联层级候选。筛选生效范围由业务查询的 `filterBindings` 决定。\n\n```json\n{\n  \"id\": \"organization\", \"type\": \"dimension\", \"dimension\": \"organization\",\n  \"label\": \"组织\", \"display\": \"tree\", \"treeSelection\": \"independent\",\n  \"selection\": { \"mode\": \"multiple\" },\n  \"candidates\": {\n    \"dataSource\": \"organization-options\", \"valueField\": \"code\",\n    \"labelField\": \"name\", \"parentField\": \"parent\"\n  }\n}\n```\n\n`dataSource` 引用 `page.dataSources` 的键；`valueField`、`labelField`、`parentField` 引用已声明的标量输出字段 ID，不引用原始 DQE 字段。`valueField` 必填，`labelField` 省略时显示稳定值。`parentField` 仅用于 `display:\"tree\"` 且树展示必须提供；根节点父值为 null、缺失或空字符串。树节点都拥有自身稳定值，父节点和子节点独立选择；省略 `treeSelection` 或显式 `independent` 均按独立值选择，不自动展开后代，不从业务值中的 `/` 推导层级。单多选、必选、默认值与搜索继续使用既有 `selection`、`default`、`searchable`；IOC Region 的专属组织树规则保持。\n\n引擎先读取完整结果，再按稳定值去重，顺序取第一次出现的顺序。字符串、有限数字和 boolean 归一为筛选使用的字符串；null、缺失及空字符串值不进入候选。同值的显示名或父关系冲突、找不到父节点、循环父关系均报候选错误，不任取一条。完整取数复用已有查询、结果映射与受控计算；查询分页会读齐所有页，业务 TopN 仍属于查询本身的范围。不能把当前屏幕页、query.initial 的初始行或失败前取得的部分行当作完整候选。完整读取沿用10,000行及5分钟预算，DQE 单次请求与引擎读取超时至少180秒；总数缺失且未声明完整结果、总数变化、超限、失败和取消均不发布部分候选。\n\n候选查询不能直接或通过结果依赖消费自身筛选，防止选择后候选越筛越少。若候选来源受其他筛选影响，必须在 `candidateContext.filterIds` 显式声明这些筛选，依赖循环继续拒绝；条件变化使用现有候选失效、clear/intersection、取消和迟到回执规则。无依赖来源不因自身选择变化重取。候选错误、加载中、空结果、重试、只读及查询门禁保持可观察状态。\n\n图表卡内用省略 `props.options` 的 `filterGroup` 引用此筛选器，并显式声明 `props.display:\"select\"`。页面通用筛选栏也消费同一声明。静态导出冻结已选稳定值及其显示名，不查询或建立交互控件。既有固定 options 按钮及下拉保持原必选单选语义。\n\n完整合成场景：`/pages/filter-source-candidates`，包含 JSON 内联组织树、跨三个查询分页的渠道去重，以及共同消费两项筛选的图表。`?state=error`、`?state=incomplete`、`?state=empty` 分别演示失败、不完整和空候选；操作及证据边界见页面目录 README。仅验证本地合成 Adapter，未验证真实 DQE、Relay 或组织权限服务。\n\n<a id=\"source-candidate-levels\"></a>\n\n<a id=\"dimension-filter-url-opt-out\"></a>",
         "## 内联层级候选（6.122）\n\n单选结构树可在 `candidates` 增加 `levelField`，引用内联候选数据源的字符串输出字段。筛选器声明 `hierarchy`、`display:\"tree\"`、`treeSelection:\"level\"`、`selection.mode:\"single\"` 和 `candidates.parentField`，省略 `hierarchyPicker`。例如候选行 `{\"code\":\"beijing\",\"name\":\"北京\",\"level\":\"office\",\"parent\":\"north\"}` 的 `level` 必须等于某个 `hierarchy[].id`。首层的父值为空；其他层通过 `parentField` 指向紧邻上一层的业务值。\n\n引擎完整读取候选，按层级和值组成节点身份。同值可出现在不同层；未知层级、缺失父节点、错误归属或同层同值的冲突行使整批候选失败。树内搜索按显示名、编码和祖先路径查找节点，选择时提交该节点的层级和原始业务值。每个消费查询使用现有的 `levelQueryFields` 声明各层目标字段。工具栏沿用 `filterGroup.props:{filterId,display:\"select\",align:\"right\"}`，静态导出按选中层级解析显示名。\n\n合成入口 `/pages/filter-source-candidate-levels` 显示区域和城市分别使用不同查询字段。业务入口 `/pages/business-result-metrics` 的「净商务折扣执行情况」使用 `业务类型编码` 与 `子业务类型编码`。右侧「云服务排除项」沿用平面候选滚动分页。\n\n<a id=\"source-candidate-query-pagination\"></a>",
         "## 候选查询分页\n\n平面维度下拉继续用 `candidates.dataSource` 引用普通 DQE 查询。按需加载使用查询项已有的 `order`，例如 `{\"order_by_field\":\"云服务\",\"type\":\"asc\",\"offset\":0,\"limit\":10}`。每批条数由 `limit` 决定，示例用 10。页面 Schema 字段和版本不变。\n\n引擎只对平面下拉的单字符串维度查询启用按需加载。唯一输出维度必须是候选稳定值对应的 `queryField`，显示名省略或使用同一字段，按该字段升序或降序，并显式声明 `offset:0` 和正整数 `limit`。`output_metrics` 可为空，也可声明额外返回的指标，每个指标须在 `fields` 中显式映射。下拉只消费候选维度，指标不参与候选展示、去重或排序。完整结果、计算、查询分支、期间聚合、结果绑定、树形候选和交集校准走原完整读取路径。只声明 `limit` 的业务 TopN 仍按原查询范围处理。\n\n打开下拉时读取首批，滚动列表到底后加载下一批。使用 `defaultWhen` 的分页排除下拉在候选依赖就绪后利用浏览器空闲时间预加载首批，沿用查询的 `limit`。下拉打开时复用进行中的请求或已有结果。候选范围或权限变更时重新按当前范围读取，业务查询独立执行。排除项下拉的加载、空结果和错误状态供辅助技术读取，失败时提供重试图标，已选项仍可编辑。业务结果指标页每批 20 条，请求使用集成方提供并已生效的 Region 及统计期间的 `period/start/end`。URL 显式清空 Region（`region=`）时同样预加载首批，候选请求省略 Region 条件。\n\n搜索由 DQE 在分页前执行，从 offset 0 开始。已选值走原有候选核验规则，业务查询和导出共用该核验；独立排除不增加核验门禁。相关筛选变化时沿用 `candidateContext` 的清空行为。空选若仍受候选门禁约束，最多用一条结果确认候选可用。未搜索且所有候选值已返回后才显示全选控件，排除项下拉以复选框呈现，名称供辅助技术读取。\n\n同一页面运行实例在筛选条件和权限上下文相同时复用候选读取与已通过的上游筛选核验。完整候选、分页和已选值核验共享执行准备，应用重点国代授权名单和 Region 等来源条件。名单为空时返回空范围，失败时保留门禁。不同搜索和窗口各自复用，分页结果用于对应窗口。筛选或权限变化后重新核验，失败或取消的核验不能供后续请求复用。\n\n每批必须返回匹配候选的准确总数，且同一稳定值只出现一次。失败、总数矛盾或稳定值重复时保留前面成功的候选，重试同一窗口。查询诊断以页面数据源 ID、筛选器 ID、读取原因、offset、limit、返回条数及匹配总数定位批次。稳定排序无法给实时数据提供跨请求快照。上线前应核验实际 DQE 在当前权限和条件下的去重、排序、总数及单字段包含搜索。合成入口为 `/pages/filter-source-query-pagination`；查询额外返回指标的降序场景见 `/pages/filter-conditional-exclusion-default`。"
       ],
@@ -161,6 +161,17 @@
             "conditional-default-driver",
             "conditional-default-required-list",
             "conditional-default-inclusion"
+          ]
+        },
+        {
+          "id": "dimension-filter-url-opt-out",
+          "description": "6.131 维度筛选器关闭本页 URL 读写",
+          "valid": [
+            "business-result-metrics"
+          ],
+          "invalid": [
+            "dimension-filter-url-opt-out-version",
+            "dimension-filter-url-opt-out-true"
           ]
         },
         {
@@ -390,7 +401,8 @@
         "references/page-metadata/examples/ioc-async-preparation.json",
         "references/page-metadata/examples/ioc-legacy-key-office.json",
         "references/page-metadata/examples/filter-exclusion-candidates.json",
-        "references/page-metadata/examples/filter-conditional-exclusion-default.json"
+        "references/page-metadata/examples/filter-conditional-exclusion-default.json",
+        "references/page-metadata/examples/business-result-metrics.json"
       ]
     }
   ],
@@ -411,7 +423,7 @@
           "sections"
         ],
         "title": "页面",
-        "$id": "https://metriccanvas/page/v6.130",
+        "$id": "https://metriccanvas/page/v6.131",
         "properties": {
           "schemaVersion": "#/properties/schemaVersion",
           "id": "#/properties/id",

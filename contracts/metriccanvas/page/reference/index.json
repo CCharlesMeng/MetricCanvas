@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.130",
-  "schemaSha256": "0216bef0ba2803fdd10928fc69948f0057f6995d0521ad7fac43a012814f9ab9",
+  "schemaVersion": "6.131",
+  "schemaSha256": "fd98f24ca42df43f645e67405018492f98c1ed6ef3a1c386c6d74d0d5d30d8d5",
   "semanticSources": [
     {
       "file": "metriccanvas-authoring/core/page/analysis-report.ts",
@@ -124,7 +124,7 @@
     },
     {
       "file": "packages/engine/runtime-ui/src/url-search.ts",
-      "sha256": "32d93d576663e7092c3a4451b0ada14fafaf82ee98efe6fc3c898922b1bf8a83"
+      "sha256": "679fb58f22b1ce88d6ee67714d237ba7e9b7922c3ee2edab123dbcf446e3237b"
     },
     {
       "file": "packages/engine/runtime-ui/tests/ai-summary-input.test.ts",
@@ -140,7 +140,7 @@
     },
     {
       "file": "packages/engine/runtime/src/filter-state.ts",
-      "sha256": "02da8cf9d8f3ec61b3bfb9c7d38a2361424af3ac67c6578a754c02b38a176b6a"
+      "sha256": "464d69360660dc7ad32b3fad8326602bca215df60c5a13a085bbb22ffb19debf"
     },
     {
       "file": "packages/engine/runtime/src/navigate.ts",
@@ -148,7 +148,7 @@
     },
     {
       "file": "packages/engine/runtime/src/navigation-inputs.ts",
-      "sha256": "6bc02053caba14b1c3957d45783985c48b65aab56d224716aef42a8290d1a3f5"
+      "sha256": "71ca80026990b43239879c4e3976e41a4214a74d18c78e3d13226d28de5e2560"
     },
     {
       "file": "packages/engine/runtime/src/presentation.ts",
@@ -272,7 +272,7 @@
     },
     {
       "file": "packages/page/src/filter-url.ts",
-      "sha256": "284d8785f61a682ed1066240508f9a06d19740f29cf89839471b3a44e4b90951"
+      "sha256": "4de8010e780f64fab1619eba81e71678631605394ec23bd52551c94019948d11"
     },
     {
       "file": "packages/page/src/finalization-default.ts",
@@ -452,7 +452,7 @@
     },
     {
       "file": "packages/page/src/schema/filter.ts",
-      "sha256": "a0cc1b95087cd7d68d990e0d6ff31bbb60a86cc9a1d01fd1ce64fcd0a2eb937b"
+      "sha256": "a2c8bc0baa0a8baa10f1583507a8b304b1ced687252dd64c173f3216b8029c22"
     },
     {
       "file": "packages/page/src/schema/ioc-header.ts",
@@ -576,7 +576,7 @@
     },
     {
       "file": "packages/page/src/version.ts",
-      "sha256": "ae3df82d8998eede7d599133bbee2db3e03f0bcbb5fcc31c6eb594c5f65508c4"
+      "sha256": "0bf7b12a52c457701e4b6f74dc991b48d32be32c39cbe3b01af14099ba7d748a"
     },
     {
       "file": "packages/page/tests/ai-summary-regions.test.ts",
@@ -588,7 +588,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "67d26b38ba784d5f5cfb0b1f9585172495e7f57335e7fc4f5b22de9250af43bc"
+      "sha256": "b470896084038ede5f3df77297b97c186b77b6b0f6f47a59370cf8b323ebc8b6"
     }
   ],
   "modules": {
@@ -979,7 +979,8 @@
         "ioc-async-preparation",
         "ioc-legacy-key-office",
         "filter-exclusion-candidates",
-        "filter-conditional-exclusion-default"
+        "filter-conditional-exclusion-default",
+        "business-result-metrics"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -1034,7 +1035,8 @@
         "filter-source-candidate-levels",
         "currency-range-presets",
         "independent-exclusion-candidates",
-        "conditional-dimension-default"
+        "conditional-dimension-default",
+        "dimension-filter-url-opt-out"
       ]
     },
     "sections-and-layout.md": {
@@ -2278,7 +2280,8 @@
         "6.127",
         "6.128",
         "6.129",
-        "6.130"
+        "6.130",
+        "6.131"
       ]
     },
     {
@@ -9807,28 +9810,41 @@
       "module": "filters.md"
     },
     {
-      "pointer": "#/definitions/dimensionFilter/properties/urlParams/properties/value",
-      "path": "@dimensionFilter.urlParams.value",
+      "pointer": "#/definitions/dimensionFilter/properties/urlParams/anyOf/0",
+      "path": "@dimensionFilter.urlParams · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/urlParams/anyOf/0/properties/value",
+      "path": "@dimensionFilter.urlParams · anyOf[0].value",
       "required": "本分支可选",
       "module": "filters.md"
     },
     {
-      "pointer": "#/definitions/dimensionFilter/properties/urlParams/properties/from",
-      "path": "@dimensionFilter.urlParams.from",
+      "pointer": "#/definitions/dimensionFilter/properties/urlParams/anyOf/0/properties/from",
+      "path": "@dimensionFilter.urlParams · anyOf[0].from",
       "required": "本分支可选",
       "module": "filters.md"
     },
     {
-      "pointer": "#/definitions/dimensionFilter/properties/urlParams/properties/to",
-      "path": "@dimensionFilter.urlParams.to",
+      "pointer": "#/definitions/dimensionFilter/properties/urlParams/anyOf/0/properties/to",
+      "path": "@dimensionFilter.urlParams · anyOf[0].to",
       "required": "本分支可选",
       "module": "filters.md"
     },
     {
-      "pointer": "#/definitions/dimensionFilter/properties/urlParams/properties/level",
-      "path": "@dimensionFilter.urlParams.level",
+      "pointer": "#/definitions/dimensionFilter/properties/urlParams/anyOf/0/properties/level",
+      "path": "@dimensionFilter.urlParams · anyOf[0].level",
       "required": "本分支可选",
       "module": "filters.md"
+    },
+    {
+      "pointer": "#/definitions/dimensionFilter/properties/urlParams/anyOf/1",
+      "path": "@dimensionFilter.urlParams · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "filters.md",
+      "const": false
     },
     {
       "pointer": "#/definitions/dimensionFilter/properties/type",
@@ -22108,14 +22124,14 @@
     {
       "schemaPointer": "#/definitions/condition/anyOf/1",
       "module": "conditions.md",
-      "file": "examples/page-visibility-region-linkage.json",
-      "pointer": "#/sections/3/components/0/props/rowVisibleWhen"
+      "file": "examples/business-result-metrics.json",
+      "pointer": "#/dataSources/net-discount-trend/source/query/filterBindings/net-discount-site/when"
     },
     {
       "schemaPointer": "#/definitions/condition/anyOf/2",
       "module": "conditions.md",
-      "file": "examples/reference-conditions-page.json",
-      "pointer": "#/filters/0/visibleWhen"
+      "file": "examples/business-result-metrics.json",
+      "pointer": "#/dataSources/net-discount-trend/source/query/filterBindings/business-type/when"
     },
     {
       "schemaPointer": "#/definitions/condition/anyOf/3",
@@ -22150,14 +22166,14 @@
     {
       "schemaPointer": "#/definitions/condition/anyOf/5",
       "module": "conditions.md",
-      "file": "examples/chart-series-visibility.json",
-      "pointer": "#/sections/1/components/0/props/series/2/visibleWhen/all/0"
+      "file": "examples/business-result-metrics.json",
+      "pointer": "#/dataSources/net-discount-trend/source/query/filterBindings/net-discount-site/when/any/1"
     },
     {
       "schemaPointer": "#/definitions/condition/anyOf/5/properties/values/items/anyOf/0",
       "module": "conditions.md",
-      "file": "examples/chart-series-visibility.json",
-      "pointer": "#/sections/1/components/0/props/series/2/visibleWhen/all/0/values/0"
+      "file": "examples/business-result-metrics.json",
+      "pointer": "#/dataSources/net-discount-trend/source/query/filterBindings/net-discount-site/when/any/1/values/0"
     },
     {
       "schemaPointer": "#/definitions/condition/anyOf/5/properties/values/items/anyOf/1",
@@ -22180,8 +22196,8 @@
     {
       "schemaPointer": "#/definitions/condition/anyOf/7",
       "module": "conditions.md",
-      "file": "examples/reference-conditions-page.json",
-      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/9"
+      "file": "examples/business-result-metrics.json",
+      "pointer": "#/dataSources/net-discount-trend/source/query/filterBindings/net-discount-site/when/any/0"
     },
     {
       "schemaPointer": "#/definitions/condition/anyOf/8",
@@ -23336,6 +23352,18 @@
       "pointer": "#/sections/0/components/1/props/body"
     },
     {
+      "schemaPointer": "#/definitions/dimensionFilter/properties/urlParams/anyOf/0",
+      "module": "filters.md",
+      "file": "examples/ioc-header-business.json",
+      "pointer": "#/filters/0/urlParams"
+    },
+    {
+      "schemaPointer": "#/definitions/dimensionFilter/properties/urlParams/anyOf/1",
+      "module": "filters.md",
+      "file": "examples/business-result-metrics.json",
+      "pointer": "#/filters/9/urlParams"
+    },
+    {
       "schemaPointer": "#/properties/filters/items/oneOf/1",
       "module": "page.md",
       "file": "examples/reference-branches-page.json",
@@ -23658,38 +23686,38 @@
     {
       "schemaPointer": "#/definitions/chartOptionValue/anyOf/0",
       "module": "chart-option.md",
-      "file": "examples/dual-axis-alignment.json",
-      "pointer": "#/sections/0/components/1/props/echartsOption/xAxis/name"
+      "file": "examples/business-result-metrics.json",
+      "pointer": "#/sections/4/components/0/props/components/1/props/echartsOption/legend/left"
     },
     {
       "schemaPointer": "#/definitions/chartOptionValue/anyOf/1",
       "module": "chart-option.md",
-      "file": "examples/chart-series-visibility.json",
-      "pointer": "#/sections/1/components/0/props/echartsOption/series/2/lineStyle/width"
+      "file": "examples/business-result-metrics.json",
+      "pointer": "#/sections/4/components/0/props/components/1/props/echartsOption/grid/bottom"
     },
     {
       "schemaPointer": "#/definitions/chartOptionValue/anyOf/2",
       "module": "chart-option.md",
-      "file": "examples/chart-series-visibility.json",
-      "pointer": "#/sections/1/components/0/props/echartsOption/animation"
+      "file": "examples/business-result-metrics.json",
+      "pointer": "#/sections/4/components/0/props/components/1/props/echartsOption/series/1/showSymbol"
     },
     {
       "schemaPointer": "#/definitions/chartOptionValue/anyOf/3",
       "module": "chart-option.md",
-      "file": "examples/rep-business-result.json",
-      "pointer": "#/sections/3/components/0/props/tabs/1/components/2/props/echartsOption/backgroundColor"
+      "file": "examples/business-result-metrics.json",
+      "pointer": "#/sections/4/components/0/props/components/1/props/echartsOption/legend/top"
     },
     {
       "schemaPointer": "#/definitions/chartOptionValue/anyOf/4",
       "module": "chart-option.md",
-      "file": "examples/chart-series-visibility.json",
-      "pointer": "#/sections/1/components/0/props/echartsOption/series"
+      "file": "examples/business-result-metrics.json",
+      "pointer": "#/sections/4/components/0/props/components/1/props/echartsOption/series"
     },
     {
       "schemaPointer": "#/definitions/chartOptionValue/anyOf/5",
       "module": "chart-option.md",
-      "file": "examples/dual-axis-alignment.json",
-      "pointer": "#/sections/0/components/1/props/echartsOption/xAxis"
+      "file": "examples/business-result-metrics.json",
+      "pointer": "#/sections/4/components/0/props/components/1/props/echartsOption/grid"
     },
     {
       "schemaPointer": "#/definitions/barChartSeries/anyOf/0",
@@ -23814,14 +23842,14 @@
     {
       "schemaPointer": "#/definitions/tableColumn/properties/pinnedTop/anyOf/0",
       "module": "components/table.md",
-      "file": "examples/chart-table-unit.json",
-      "pointer": "#/sections/0/components/5/props/columns/1/children/0/pinnedTop"
+      "file": "examples/business-result-metrics.json",
+      "pointer": "#/sections/2/components/0/props/columns/1/pinnedTop"
     },
     {
       "schemaPointer": "#/definitions/tableColumn/properties/pinnedTop/anyOf/1",
       "module": "components/table.md",
-      "file": "examples/chart-table-unit.json",
-      "pointer": "#/sections/0/components/5/props/columns/0/pinnedTop"
+      "file": "examples/business-result-metrics.json",
+      "pointer": "#/sections/2/components/0/props/columns/0/pinnedTop"
     },
     {
       "schemaPointer": "#/definitions/tableColumn/properties/enumValues/items/properties/value/anyOf/0",
@@ -23904,8 +23932,8 @@
     {
       "schemaPointer": "#/definitions/tableColumn/properties/navigate/properties/query/additionalProperties/oneOf/0",
       "module": "components/table.md",
-      "file": "examples/tab-url-source.json",
-      "pointer": "#/sections/0/components/1/props/columns/0/navigate/query/sales-tab"
+      "file": "examples/business-result-metrics.json",
+      "pointer": "#/sections/3/components/0/props/columns/0/navigate/query/rep-office"
     },
     {
       "schemaPointer": "#/definitions/tableColumn/properties/navigate/properties/query/additionalProperties/oneOf/1",
@@ -23916,8 +23944,8 @@
     {
       "schemaPointer": "#/definitions/tableColumn/properties/navigate/properties/query/additionalProperties/oneOf/2",
       "module": "components/table.md",
-      "file": "examples/reference-export-column-actions.json",
-      "pointer": "#/sections/10/components/0/props/columns/0/navigate/query/customer"
+      "file": "examples/business-result-metrics.json",
+      "pointer": "#/sections/3/components/0/props/columns/0/navigate/query/mtime"
     },
     {
       "schemaPointer": "#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/query/additionalProperties/oneOf/0",
@@ -24536,14 +24564,14 @@
     {
       "schemaPointer": "#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/0",
       "module": "components/iocHeader.md",
-      "file": "examples/chart-customer-series.json",
+      "file": "examples/business-result-metrics.json",
       "pointer": "#/sections/0/components/0/props/components/0"
     },
     {
       "schemaPointer": "#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1",
       "module": "components/iocHeader.md",
-      "file": "examples/ioc-header-controls.json",
-      "pointer": "#/sections/0/components/0/props/components/1"
+      "file": "examples/business-result-metrics.json",
+      "pointer": "#/sections/0/components/0/props/components/2"
     },
     {
       "schemaPointer": "#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/0",
@@ -24564,8 +24592,8 @@
     {
       "schemaPointer": "#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/2",
       "module": "components/iocHeader.md",
-      "file": "examples/ioc-office-drill-overview.json",
-      "pointer": "#/sections/0/components/0/props/components/1/props/officeNavigate/query/period"
+      "file": "examples/business-result-metrics.json",
+      "pointer": "#/sections/0/components/0/props/components/2/props/officeNavigate/query/rep-office-name"
     },
     {
       "schemaPointer": "#/definitions/section/properties/components/items/oneOf/0",

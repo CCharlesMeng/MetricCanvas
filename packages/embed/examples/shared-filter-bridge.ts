@@ -11,14 +11,15 @@ function signature(filter:FilterDeclaration):string {
   return filter.type;
 }
 function keys(filter:FilterDeclaration):Record<string,string> {
+  const params = filter.urlParams || undefined;
   return filter.type==='dimension'
-    ? {value:filter.urlParams?.value??filter.id,level:filter.urlParams?.level??`${filter.id}.level`}
-    : {value:filter.urlParams?.value??filter.id};
+    ? {value:params?.value??filter.id,level:params?.level??`${filter.id}.level`}
+    : {value:params?.value??filter.id};
 }
 function publicBindings(filters:readonly FilterDeclaration[],bindings:SharedFilterBindings) {
   return Object.entries(bindings).flatMap(([shared,id])=>{
     const filter=filters.find(item=>item.id===id);
-    if(!filter||!['boolean','dimension','timePoint'].includes(filter.type))return [];
+    if(!filter||filter.urlParams===false||!['boolean','dimension','timePoint'].includes(filter.type))return [];
     return [{shared,filter}];
   });
 }

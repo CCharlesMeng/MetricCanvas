@@ -598,7 +598,7 @@ sign 模式的零、负零及缺失不显示箭头；fixed 模式与固定颜色
 `/pages/numeric-value-display` 用内联合成数据验收有标题、无标题、显式关闭和自定义四种情况。
 
 
-页面协议 6.130。结构真源为本册[schema.json](../schema.json)，SHA256 `0216bef0ba2803fdd10928fc69948f0057f6995d0521ad7fac43a012814f9ab9`。字段表自动生成；可选不等于有默认值。
+页面协议 6.131。结构真源为本册[schema.json](../schema.json)，SHA256 `fd98f24ca42df43f645e67405018492f98c1ed6ef3a1c386c6d74d0d5d30d8d5`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -4319,8 +4319,8 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/actions
 - `#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/0`：[合法完整页面](../examples/tab-mixed-content.json)，JSON Pointer `#/sections/0/components/0/props/tabs/1/components/2/props/toolbar/search`。
 - `#/definitions/tableComponent/properties/props/properties/toolbar/properties/search/anyOf/1`：[合法完整页面](../examples/table-search-options-page.json)，JSON Pointer `#/sections/0/components/0/props/toolbar/search`。
 - `#/definitions/tableColumnNode/anyOf/0`：[合法完整页面](../examples/component-table.json)，JSON Pointer `#/sections/0/components/0/props/columns/0`。
-- `#/definitions/tableColumn/properties/pinnedTop/anyOf/0`：[合法完整页面](../examples/chart-table-unit.json)，JSON Pointer `#/sections/0/components/5/props/columns/1/children/0/pinnedTop`。
-- `#/definitions/tableColumn/properties/pinnedTop/anyOf/1`：[合法完整页面](../examples/chart-table-unit.json)，JSON Pointer `#/sections/0/components/5/props/columns/0/pinnedTop`。
+- `#/definitions/tableColumn/properties/pinnedTop/anyOf/0`：[合法完整页面](../examples/business-result-metrics.json)，JSON Pointer `#/sections/2/components/0/props/columns/1/pinnedTop`。
+- `#/definitions/tableColumn/properties/pinnedTop/anyOf/1`：[合法完整页面](../examples/business-result-metrics.json)，JSON Pointer `#/sections/2/components/0/props/columns/0/pinnedTop`。
 - `#/definitions/tableColumn/properties/enumValues/items/properties/value/anyOf/0`：[合法完整页面](../examples/table-column-enums.json)，JSON Pointer `#/sections/0/components/0/props/columns/1/enumValues/0/value`。
 - `#/definitions/tableColumn/properties/enumValues/items/properties/value/anyOf/1`：[合法完整页面](../examples/table-trend-arrows.json)，JSON Pointer `#/sections/0/components/0/props/columns/6/enumValues/0/value`。
 - `#/definitions/tableColumn/properties/selection/properties/writes/additionalProperties/anyOf/0`：[合法完整页面](../examples/filters-page.json)，JSON Pointer `#/sections/0/components/0/props/columns/0/selection/writes/region`。
@@ -4334,9 +4334,9 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/actions
 - `#/definitions/tableColumn/properties/openDetail/anyOf/1/properties/bindings/additionalProperties/oneOf/0`：[合法完整页面](../examples/reference-export-column-actions.json)，JSON Pointer `#/sections/4/components/0/props/columns/0/openDetail/bindings/detail-customer`。
 - `#/definitions/tableColumn/properties/openDetail/anyOf/1/properties/bindings/additionalProperties/oneOf/1`：[合法完整页面](../examples/reference-export-column-actions.json)，JSON Pointer `#/sections/5/components/0/props/columns/0/openDetail/bindings/detail-customer`。
 - `#/definitions/tableColumn/properties/openDetail/anyOf/1/properties/bindings/additionalProperties/oneOf/2`：[合法完整页面](../examples/reference-export-column-actions.json)，JSON Pointer `#/sections/6/components/0/props/columns/0/openDetail/bindings/detail-customer`。
-- `#/definitions/tableColumn/properties/navigate/properties/query/additionalProperties/oneOf/0`：[合法完整页面](../examples/tab-url-source.json)，JSON Pointer `#/sections/0/components/1/props/columns/0/navigate/query/sales-tab`。
+- `#/definitions/tableColumn/properties/navigate/properties/query/additionalProperties/oneOf/0`：[合法完整页面](../examples/business-result-metrics.json)，JSON Pointer `#/sections/3/components/0/props/columns/0/navigate/query/rep-office`。
 - `#/definitions/tableColumn/properties/navigate/properties/query/additionalProperties/oneOf/1`：[合法完整页面](../examples/reference-export-column-actions.json)，JSON Pointer `#/sections/9/components/0/props/columns/0/navigate/query/customer`。
-- `#/definitions/tableColumn/properties/navigate/properties/query/additionalProperties/oneOf/2`：[合法完整页面](../examples/reference-export-column-actions.json)，JSON Pointer `#/sections/10/components/0/props/columns/0/navigate/query/customer`。
+- `#/definitions/tableColumn/properties/navigate/properties/query/additionalProperties/oneOf/2`：[合法完整页面](../examples/business-result-metrics.json)，JSON Pointer `#/sections/3/components/0/props/columns/0/navigate/query/mtime`。
 - `#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/query/additionalProperties/oneOf/0`：[合法完整页面](../examples/paged-union-page.json)，JSON Pointer `#/sections/0/components/0/props/columns/0/navigateBySource/cases/contract/query/record-id`。
 - `#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/query/additionalProperties/oneOf/1`：[合法完整页面](../examples/paged-union-branches.json)，JSON Pointer `#/sections/0/components/0/props/columns/0/navigateBySource/cases/contract/query/route-label`。
 - `#/definitions/tableColumn/properties/navigateBySource/properties/cases/additionalProperties/properties/query/additionalProperties/oneOf/2`：[合法完整页面](../examples/paged-union-branches.json)，JSON Pointer `#/sections/0/components/0/props/columns/0/navigateBySource/cases/contract/query/from`。

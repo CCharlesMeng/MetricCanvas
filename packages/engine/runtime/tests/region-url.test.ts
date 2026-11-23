@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import document from '../../../../pages/capabilities/filters/ioc-region-url-demo.json';
 import { parsePage } from '@metriccanvas/page';
 import { filterURLKeys } from '@metriccanvas/page/internal';
@@ -101,4 +101,27 @@ describe('Region URL 参数名表示层级', () => {
     const explicit = bridge.initialSearch(contract, 'rep-office=北京代表处', bindings);
     expect([...new URLSearchParams(explicit)]).toEqual([['rep-office', '北京代表处']]);
   });
+});
+
+it('disabled dimensions are omitted from URL state and destination inputs', () => {
+  const original = filters.find(filter => filter.id === 'region');
+  if (original?.type !== 'dimension') throw Error('Missing fixture region');
+  const local = { ...original, urlParams: false as const };
+  const raw = { ...document, schemaVersion: '6.131', filters: [local] };
+  const destination = projectNavigationInputs(raw);
+  expect(destination.filters.some(filter => filter.id === 'region')).toBe(false);
+  expect(navigationInputIssue('/test?rep-office=上海代表处', destination)).toMatch(/目标未声明URL输入/);
+
+  const search = 'rep-office=上海代表处&region=其他&undefined=甲&undefined=乙';
+  const values = new Map<string, FilterValue>([['region', {
+    type: 'dimension', dimension: 'demo_office', level: 'office', values: ['本地选择'],
+  }]]);
+  const state = createFilterState(values, [local], undefined, { iocRegion: true });
+  expect(parseFilterSearch(search, [local], undefined, true).size).toBe(0);
+  expect(state.toURL()).toBe('');
+  state.fromURL(search, [local]);
+  const receive = vi.fn();
+  const stop = state.subscribe(receive);
+  expect(receive).toHaveBeenLastCalledWith(values);
+  stop();
 });

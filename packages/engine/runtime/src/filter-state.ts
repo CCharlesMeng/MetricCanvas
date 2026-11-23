@@ -280,8 +280,9 @@ export function createFilterState(initial?: FilterValues, declarations: readonly
     const query = new URLSearchParams(stripQuestionMark(search));
     for (const declaration of declarations) {
       if (declaration.type !== 'dimension' || declaration.selection?.mode !== 'single') continue;
-      if (readLevelURLSelection(filterURLKeys(declaration, editing.iocRegion), query)) continue;
-      if (query.getAll(filterURLKeys(declaration).value!).filter(Boolean).length <= 1) continue;
+      const keys = filterURLKeys(declaration, editing.iocRegion);
+      if (!keys.value || readLevelURLSelection(keys, query)) continue;
+      if (query.getAll(keys.value).filter(Boolean).length <= 1) continue;
       const fallback = current.get(declaration.id) ?? initialFilterValues([declaration]).get(declaration.id);
       if (fallback) next.set(declaration.id, fallback);
     }
@@ -339,6 +340,10 @@ export function createFilterState(initial?: FilterValues, declarations: readonly
     fromURL(search, declarations) {
       for (const declaration of declarations) byId.set(declaration.id, declaration);
       const next = new Map(parseFilterSearch(search, declarations, undefined, editing.iocRegion));
+      for (const declaration of declarations) {
+        const local = current.get(declaration.id);
+        if (declaration.urlParams === false && local) next.set(declaration.id, local);
+      }
       restoreMissingDates(next, declarations);
       restoreSingleSelections(next, declarations, search);
       restoreDimensionOptions(next);
@@ -545,8 +550,10 @@ function readFilterValue(declaration: FilterDeclaration, query: URLSearchParams,
 function readDimensionFilter(declaration: Extract<FilterDeclaration, { type: 'dimension' }>, query: URLSearchParams, keys: ReturnType<typeof filterURLKeys>, read: ReadURLPart): FilterValue | undefined {
   const selected = readLevelURLSelection(keys, query);
   if (selected) return selected.value.trim() ? { type: 'dimension', values: [selected.value], level: selected.level, dimension: dimensionOfLevel(declaration, selected.level) } : undefined;
-  const values = query.getAll(keys.value!).filter(v => v !== '');
-  if (!values.length && !(declaration.hierarchy && read('level')) && !hasExplicitDimensionClear(declaration, query, keys.value!)) return;
+  const valueKey = keys.value;
+  if (!valueKey) return;
+  const values = query.getAll(valueKey).filter(v => v !== '');
+  if (!values.length && !(declaration.hierarchy && read('level')) && !hasExplicitDimensionClear(declaration, query, valueKey)) return;
   const level = read('level') ?? declaration.defaultLevel ?? declaration.hierarchy?.[0]?.id;
   if (level && declaration.hierarchy && !declaration.hierarchy.some(l => l.id === level)) return;
   return { type: 'dimension', values, dimension: dimensionOfLevel(declaration, level), ...(level ? { level } : {}) };

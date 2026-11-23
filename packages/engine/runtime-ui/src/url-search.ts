@@ -4,11 +4,18 @@ import type { RuntimeNavigation } from './types';
 
 /** Keep declared inputs verbatim: validation, including invalid values, belongs to initialization. */
 export function pageURLSearch(page: Page, search: string, preserve: readonly string[] = []): string {
-  const keys = new Set(preserve);
+  const keys = new Set<string>();
+  const disabledKeys = new Set<string>();
+  const iocRegion = usesIocRegion(page);
   for (const parameter of page.params ?? []) keys.add(parameter.id);
   for (const filter of page.filters ?? []) {
-    for (const key of Object.values(filterURLKeys(filter, usesIocRegion(page)))) keys.add(key);
+    if (filter.urlParams === false) {
+      for (const key of Object.values(filterURLKeys({ ...filter, urlParams: undefined }, iocRegion))) disabledKeys.add(key);
+    } else {
+      for (const key of Object.values(filterURLKeys(filter, iocRegion))) keys.add(key);
+    }
   }
+  for (const key of preserve) if (!disabledKeys.has(key)) keys.add(key);
   walkPageComponents(page, component => {
     if (component.type !== 'tabContainer') return;
     keys.add(`tab.${component.id}`);

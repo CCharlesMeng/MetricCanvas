@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "230514f6fd9dc4913fa44a08e5c81cd86016d4aee3d7efbd4cc667b0401d55ad",
+  "sha256": "5f8cd77a4a3a76f57564afce4795895940bdb8125bc8345c6608fbb9a2ac3722",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -12,7 +12,7 @@
     },
     {
       "file": "docs/page-metadata/actions-and-navigation.md",
-      "sha256": "3077206276b06d1c4bc48a50db563938bbe843f4c8bad96223701be352eed11e"
+      "sha256": "2375ec9fd3d957c254b8e032e27f1e53edad666d7939bc41861f07597bf59575"
     },
     {
       "file": "docs/page-metadata/authoring-analysis-rebind.md",
@@ -136,7 +136,7 @@
     },
     {
       "file": "docs/page-metadata/filters.md",
-      "sha256": "264eddab7a2dcdc86617ab3348fbd86cb077c71d93b89eac64bb9e1151cb18a1"
+      "sha256": "e339228694e9821a1e99da1d337f4ac69fa1df31a18f8e22590a021610941b5c"
     },
     {
       "file": "docs/page-metadata/layout-migration.md",
@@ -160,7 +160,7 @@
     },
     {
       "file": "docs/page-metadata/reference-map.json",
-      "sha256": "84c047e926bc9a12dac9a1ee453e9435a68547321b8f1b2148ff666b493b9f61"
+      "sha256": "8d5fa8bd1bf57ef221e2067126ec2728174a9f2efe50c59d0a40b1591086619a"
     },
     {
       "file": "docs/page-metadata/sections-and-layout.md",
@@ -1648,11 +1648,11 @@
     },
     {
       "file": "packages/page/src/filter-url.ts",
-      "sha256": "284d8785f61a682ed1066240508f9a06d19740f29cf89839471b3a44e4b90951"
+      "sha256": "4de8010e780f64fab1619eba81e71678631605394ec23bd52551c94019948d11"
     },
     {
       "file": "packages/page/src/filter.ts",
-      "sha256": "4b6b00f791a0ecaa0004b10ae395ed1fb2d5207b14dfca7df51e49229c25b6db"
+      "sha256": "98cddb8cf09ce864dc53ee8f0843027befb345bc7ad38f23b532ea79156b1975"
     },
     {
       "file": "packages/page/src/finalization-default.ts",
@@ -1996,7 +1996,7 @@
     },
     {
       "file": "packages/page/src/schema/filter.ts",
-      "sha256": "a0cc1b95087cd7d68d990e0d6ff31bbb60a86cc9a1d01fd1ce64fcd0a2eb937b"
+      "sha256": "a2c8bc0baa0a8baa10f1583507a8b304b1ced687252dd64c173f3216b8029c22"
     },
     {
       "file": "packages/page/src/schema/index.ts",
@@ -2212,7 +2212,7 @@
     },
     {
       "file": "packages/page/src/version.ts",
-      "sha256": "ae3df82d8998eede7d599133bbee2db3e03f0bcbb5fcc31c6eb594c5f65508c4"
+      "sha256": "0bf7b12a52c457701e4b6f74dc991b48d32be32c39cbe3b01af14099ba7d748a"
     },
     {
       "file": "packages/page/src/write-version.ts",
@@ -2220,7 +2220,7 @@
     },
     {
       "file": "pages/README.md",
-      "sha256": "e2549ad86161e862a93a0849639ad7c4cf54dccbf0fcabeb539705715c15f1be"
+      "sha256": "254c2219e25efdba43ee21096c080ba44d316c887ab2f83c3c92722195420c3d"
     },
     {
       "file": "pages/business-rejection-details.json",
@@ -2872,15 +2872,15 @@
     },
     {
       "file": "pages/capabilities/layout/mc-content-layout-demo.json",
-      "sha256": "3dccf615cbf3b31ed55c34389e877232ef2dfa888fe01baddded54746ff24d76"
+      "sha256": "2a70c9e3ed5ff52a848a6050640fd6ec4733a172cf72ecc9526e8aefd1f04d2e"
     },
     {
       "file": "pages/capabilities/layout/mc-layout-business-report.json",
-      "sha256": "7d63306bfb95f1ede265dac0d175255e68a0373beae54b9e1b32b8f5577124fc"
+      "sha256": "ddae1d61bd079c3290826112d02013c72691f7dab9011644bec36abf8bc75615"
     },
     {
       "file": "pages/capabilities/layout/mc-layout-usage-report.json",
-      "sha256": "706b098b2e8fdd86dc0abd2a3b1a5624504aa8ee8f41aeb94b39df189fc43431"
+      "sha256": "059d4bbb2425d4cd8eccab36ae7d343d546983f1e6535674a695e3ef26a1193e"
     },
     {
       "file": "pages/capabilities/layout/metric-card-definition-tip.json",
@@ -2912,7 +2912,7 @@
     },
     {
       "file": "pages/capabilities/layout/schema-upgrade-demo.json",
-      "sha256": "15c9a1e89e50649308b5fc38746a8fe19fc688112929bed9a0ad4710e287babd"
+      "sha256": "c491943f5af0e5b4c86bdd5497c269ef29b9a00efe903c6792a2afac9b4a40e3"
     },
     {
       "file": "pages/capabilities/layout/tab-mixed-content-report.json",
@@ -3336,11 +3336,11 @@
     },
     {
       "file": "pages/temporary/business-result-pinned-diagnosis-20261102/README.md",
-      "sha256": "655f28bc5eae21171f25a3aa3c46bc31aa2d3f29998acf2e99469dc9f3e90589"
+      "sha256": "b5bdc85dd12249894883c1009eb55efbbdad4acdb3e57044e6cb9f4371834b06"
     },
     {
       "file": "pages/temporary/business-result-pinned-diagnosis-20261102/business-result-metrics.json",
-      "sha256": "31bf38eb3959eb0926ebede41f18cbe79d97a8ff69df5b4e50f64e31a49462c3"
+      "sha256": "8e6b7cc3e31081793292ff53c3eff86f0a42c15000963cb84acec71d4ea8e415"
     },
     {
       "file": "pages/temporary/contract-maturity-linkage-20261027/README.md",
@@ -3908,11 +3908,11 @@
     },
     {
       "file": "tools/scripts/page-conformance-sources.ts",
-      "sha256": "9ca137e3e459371cab8e9ff618289797e3b62b8cbf7718f9266434ff5ba822eb"
+      "sha256": "5db1e9dbe23da51c8caf4894554175d013d7023e1e53567d4b0ef8ed3da85e33"
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "67d26b38ba784d5f5cfb0b1f9585172495e7f57335e7fc4f5b22de9250af43bc"
+      "sha256": "b470896084038ede5f3df77297b97c186b77b6b0f6f47a59370cf8b323ebc8b6"
     },
     {
       "file": "tools/scripts/page-files.d.mts",

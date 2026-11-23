@@ -772,6 +772,17 @@
       ]
     },
     {
+      "id": "dimension-filter-url-opt-out",
+      "description": "6.131 维度筛选器关闭本页 URL 读写",
+      "valid": [
+        "business-result-metrics"
+      ],
+      "invalid": [
+        "dimension-filter-url-opt-out-version",
+        "dimension-filter-url-opt-out-true"
+      ]
+    },
+    {
       "id": "unrestricted-filter-clear",
       "description": "6.124 可选筛选原本不限时联动免确认",
       "valid": [

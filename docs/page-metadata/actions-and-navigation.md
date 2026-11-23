@@ -114,6 +114,8 @@
 
 Angular 等路由框架应覆盖 `replaceSearch`，经自身 Router 更新 query 并替换当前记录；仅改浏览器 history 不能保证 Router 的内部状态同步。集成应用的 Angular 适配器使用 `Router.parseUrl` / `navigateByUrl(...,{replaceUrl:true})` 并保留重复键、路径和 fragment。路由订阅只在页面身份变化时调用 mount/update；清理或页内筛选导致的 query 变化不回灌完整 update。Router 的导航事件、守卫、取消与实际 Operation Map 生命周期由宿主验证，核心引擎不依赖 Angular。
 
+Schema 6.131 起，`urlParams: false` 的维度筛选器没有本页 URL 输入。引擎清理旧链接中由该筛选器 ID 派生的键，并保留其他声明实际使用的同名键。见[维度筛选器关闭 URL 同步](filters.md#dimension-filter-url-opt-out)。
+
 完整合成页面 `/pages/url-input-cleanup?account=合成账号&active=true&view=detail&unused=删除` 展示账号、筛选及页签初始化，地址应移除 `unused`；`active=invalid` 展示输入错误并保留原地址。此页面只有合成内联数据；真实宿主路由与服务接入另验。
 
 ## 详情标题的当前行取值
