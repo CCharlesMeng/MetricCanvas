@@ -77,6 +77,25 @@ export const invariants: InvariantDefinition[] = [
   periodAggregationInvariant,
   barAverageInvariant,
   {
+    id: 'bar-category-order',
+    description: '普通柱图按结果字段和方向排序类别，兼容省略 order 的页面',
+    valid: ['bar-category-order'],
+    cases: [
+      { case: 'bar-category-order-old-version', base: 'bar-category-order', expect: /由 6.132 引入/, mutate: document => {
+        document.schemaVersion = '6.131';
+      } },
+      { case: 'bar-category-order-unknown-field', base: 'bar-category-order', expect: /missing-total/, mutate: document => {
+        firstComponent(document).props.order.field = 'missing-total';
+      } },
+      { case: 'bar-category-order-invalid-direction', base: 'bar-category-order', expect: /asc.*desc/, mutate: document => {
+        firstComponent(document).props.order.direction = 'descending';
+      } },
+      { case: 'bar-category-order-on-forecast', base: 'bar-category-order', expect: /类别排序仅支持普通柱图/, mutate: document => {
+        firstComponent(document).props.variant = 'reportForecast';
+      } }
+    ]
+  },
+  {
     id: 'bar-line-marker-color',
     description: '柱线组合的字段折线圆点按原始数值正负着色',
     valid: ['bar-line-marker-color'],

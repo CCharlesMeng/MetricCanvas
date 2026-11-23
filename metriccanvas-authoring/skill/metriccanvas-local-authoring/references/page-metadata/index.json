@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.131",
-  "schemaSha256": "fd98f24ca42df43f645e67405018492f98c1ed6ef3a1c386c6d74d0d5d30d8d5",
+  "schemaVersion": "6.132",
+  "schemaSha256": "07ee79be6c82f479408234becba0169d33ee5d52643ab928ce8be6a9779fe60f",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -653,6 +653,7 @@
         "chart-table-unit",
         "sdt-period-aggregation",
         "bar-line-marker-color",
+        "bar-category-order",
         "chart-customer-series",
         "conditional-compute-demand"
       ],
@@ -660,7 +661,8 @@
         "bar-forecast-boundary",
         "query-dimension-measures",
         "bar-series-average",
-        "bar-line-marker-color"
+        "bar-line-marker-color",
+        "bar-category-order"
       ]
     },
     "components/lineChart.md": {
@@ -1398,7 +1400,8 @@
         "6.128",
         "6.129",
         "6.130",
-        "6.131"
+        "6.131",
+        "6.132"
       ]
     },
     {
@@ -12831,6 +12834,28 @@
       "ref": "#/definitions/fieldBinding"
     },
     {
+      "pointer": "#/definitions/barChartComponent/properties/props/properties/order",
+      "path": "@barChartComponent.props.order",
+      "required": "本分支可选",
+      "module": "components/barChart.md"
+    },
+    {
+      "pointer": "#/definitions/barChartComponent/properties/props/properties/order/properties/field",
+      "path": "@barChartComponent.props.order.field",
+      "required": "本分支必填",
+      "module": "components/barChart.md"
+    },
+    {
+      "pointer": "#/definitions/barChartComponent/properties/props/properties/order/properties/direction",
+      "path": "@barChartComponent.props.order.direction",
+      "required": "本分支必填",
+      "module": "components/barChart.md",
+      "enum": [
+        "asc",
+        "desc"
+      ]
+    },
+    {
       "pointer": "#/definitions/barChartComponent/properties/props/properties/series",
       "path": "@barChartComponent.props.series",
       "required": "本分支必填",
@@ -23747,5 +23772,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "d32da54967b3da7325a7be43324ad20379bc85da2885d90368ffe89a06299aaf"
+  "semanticSourceDigest": "420a8e3875bda0f1e6a99d50b75dca10a6ae6df78b81af04a1f002c8f7ae16cb"
 }

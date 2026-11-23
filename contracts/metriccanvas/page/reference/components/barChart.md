@@ -91,7 +91,7 @@ Dashboard 正文通过独立 [filterGroup](filterGroup.md) 组件声明筛选按
 
 ## 常量取值（6.59）
 
-`series[].field` 与 `series[].value` 是互斥来源分支；固定基线可使用 `{"value":2,"kind":"line","axis":"secondary","unit":"天"}`。常量分支不要求 field，支持 unit。类别和指标系列共同沿用数据源行序，常量不会触发按类别重排；排序仍在该数据源的 DQE `body.dsl_list[0].order.order_by_field/type` 声明，使用原查询字段名，不对常量配置排序。示例 `/pages/query-sort-baseline` 同时展示 2 天与 5 人基线及查询降序。
+`series[].field` 与 `series[].value` 是互斥来源分支。固定基线可使用 `{"value":2,"kind":"line","axis":"secondary","unit":"天"}`。常量分支不要求 field，支持 unit。常量沿类别行集重复取值。类别和指标系列默认沿用数据源行序。普通柱图可按 [结果字段排序](#bar-category-order)。如需在 DQE 查询阶段排序，在 `body.dsl_list[0].order` 声明原查询字段名 `order_by_field` 和方向 `type`。示例 `/pages/query-sort-baseline` 同时展示 2 天与 5 人基线及查询降序。
 
 本组件的数据配置项支持字段或常量来源，声明互斥、格式单位、空态和限制见[组件取值](../field-bindings-and-formats.md#chart-constant-values)。示例路由为 `/pages/chart-constant-values-page`。常量沿本组件原有行集或单值语义使用，不新增查询结果或业务身份。
 
@@ -145,8 +145,18 @@ Dashboard 正文通过独立 [filterGroup](filterGroup.md) 组件声明筛选按
 
 `stacked: true` 配合 `showStackTotalLabels: true` 在每个类别显示当前系列的数值合计，包含负数扣分。标签锚定可见堆叠的外端，与柱体保持 8 CSS px 间距；正负混合时置于正值柱顶，显示值仍为含扣分的净合计；全负数置于负值外端，横向条形相应置于右侧或左侧。 用图例隐藏系列时，标签跟随当前可见柱段移动，合计仍使用该图表的全部有效系列（含负数扣分）；全部系列都隐藏时清除标签。无需声明额外的“总分”系列；未开启时不显示合计。`/pages/partner-health-interactions` 使用前端计算的合成得分，四类得分含负数风险扣分；业务 `/pages/partner-health` 的地区部和代表处图表均开启此配置。
 
+<a id="bar-category-order"></a>
 
-页面协议 6.131。结构真源为本册[schema.json](../schema.json)，SHA256 `fd98f24ca42df43f645e67405018492f98c1ed6ef3a1c386c6d74d0d5d30d8d5`。字段表自动生成；可选不等于有默认值。
+## 柱图按字段排序（6.132）
+
+普通柱图（含并列、堆叠、横向）可选配 `props.order`。两个属性同时声明，例如 `"order": { "field": "totalCount", "direction": "desc" }`。 `field` 是 `data.main` 结果字段契约中的标量字段 ID，可引用维度、度量或计算产出的字段，允许仅用于排序。`direction` 取 `asc` 或 `desc`。预测变体和显式柱线组合不使用该属性。旧版本或无效字段在 `props.order` 对应位置报错。
+
+运行时在前端对供图表使用的结果行排序，再应用类别缩放窗口。排序使用原始字段值，空值始终排末尾，同值保持数据源行序。纵向从左到右、横向从上到下读取排序结果。省略 `order` 时按数据源行序绘制。共享数据源的其他组件可各自展示自己的行序。若数据源只返回部分结果，排序范围为已返回且供图表使用的行。
+
+按堆叠总数排序时，让查询返回总数字段，或用 [`sumFields`](../compute.md) 在前端计算总数，图表的 `series` 继续声明各段字段。新数据到达后按指定字段重排，图例显隐时排序仍取同一字段。类别轴、系列、标签、点击动作及 PDF/PNG 使用同一行序。合成入口 `/pages/bar-category-order` 并排展示总数降序、维度升序和数据源行序。
+
+
+页面协议 6.132。结构真源为本册[schema.json](../schema.json)，SHA256 `07ee79be6c82f479408234becba0169d33ee5d52643ab928ce8be6a9779fe60f`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -312,6 +322,41 @@ Schema位置：`#/definitions/barChartComponent/properties/props/properties/cate
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | 引用 #/definitions/fieldBinding | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 类别维度字段绑定。 |
+
+<a id="schema-232f646566696e6974696f6e732f6261724368617274436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f6f72646572"></a>
+
+### `@barChartComponent.props.order`
+
+Schema位置：`#/definitions/barChartComponent/properties/props/properties/order`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支可选 | required=["field","direction"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 按 main 数据槽的结果字段排序类别，省略时沿用数据源行序 |
+
+<a id="schema-232f646566696e6974696f6e732f6261724368617274436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f6f726465722f70726f706572746965732f6669656c64"></a>
+
+### `@barChartComponent.props.order.field`
+
+Schema位置：`#/definitions/barChartComponent/properties/props/properties/order/properties/field`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[A-Za-z_][A-Za-z0-9_-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 页面字段引用或字段绑定。 |
+
+<a id="schema-232f646566696e6974696f6e732f6261724368617274436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f6f726465722f70726f706572746965732f646972656374696f6e"></a>
+
+### `@barChartComponent.props.order.direction`
+
+Schema位置：`#/definitions/barChartComponent/properties/props/properties/order/properties/direction`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | enum=["asc","desc"] | Schema未设默认；装配/运行时默认见语义说明 | 类别次序，asc 升序，desc 降序，空值均排末尾。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "asc" | 按原始可比较值升序，缺值仍排尾。 |
+| "desc" | 按原始可比较值降序，缺值仍排尾。 |
 
 <a id="schema-232f646566696e6974696f6e732f6261724368617274436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f736572696573"></a>
 
@@ -959,6 +1004,7 @@ Schema位置：`#/definitions/barChartComponent/properties/props/properties/acti
 - `query-dimension-measures`：6.56 DQE output_dims 中的现成数值显式作为页面度量，不改变查询与行粒度。反例：[dimension-measure-version](../errors/dimension-measure-version.json)、[dimension-measure-legacy](../errors/dimension-measure-legacy.json)、[dimension-measure-time-qualified-version](../errors/dimension-measure-time-qualified-version.json)、[dimension-measure-nonnumeric](../errors/dimension-measure-nonnumeric.json)、[dimension-number-not-series](../errors/dimension-number-not-series.json)、[dimension-measure-not-collapsible](../errors/dimension-measure-not-collapsible.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `bar-series-average`：同一图表的当前值和前端均值字段系列，保留原类别及版本边界。反例：[bar-average-old-version](../errors/bar-average-old-version.json)、[bar-average-category-removed](../errors/bar-average-category-removed.json)、[bar-average-stacked](../errors/bar-average-stacked.json)、[bar-average-line](../errors/bar-average-line.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `bar-line-marker-color`：柱线组合的字段折线圆点按原始数值正负着色。反例：[bar-line-marker-color-old-version](../errors/bar-line-marker-color-old-version.json)、[bar-line-marker-color-on-bar-series](../errors/bar-line-marker-color-on-bar-series.json)、[bar-line-marker-color-unknown-color](../errors/bar-line-marker-color-unknown-color.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `bar-category-order`：普通柱图按结果字段和方向排序类别，兼容省略 order 的页面。反例：[bar-category-order-old-version](../errors/bar-category-order-old-version.json)、[bar-category-order-unknown-field](../errors/bar-category-order-unknown-field.json)、[bar-category-order-invalid-direction](../errors/bar-category-order-invalid-direction.json)、[bar-category-order-on-forecast](../errors/bar-category-order-on-forecast.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 
@@ -973,6 +1019,7 @@ Schema位置：`#/definitions/barChartComponent/properties/props/properties/acti
 - [chart-table-unit](../examples/chart-table-unit.json)：完整合法页面；查询仅为静态契约证据。
 - [sdt-period-aggregation](../examples/sdt-period-aggregation.json)：完整合法页面；查询仅为静态契约证据。
 - [bar-line-marker-color](../examples/bar-line-marker-color.json)：完整合法页面；查询仅为静态契约证据。
+- [bar-category-order](../examples/bar-category-order.json)：完整合法页面；查询仅为静态契约证据。
 - [chart-customer-series](../examples/chart-customer-series.json)：完整合法页面；查询仅为静态契约证据。
 - [conditional-compute-demand](../examples/conditional-compute-demand.json)：完整合法页面；查询仅为静态契约证据。
 

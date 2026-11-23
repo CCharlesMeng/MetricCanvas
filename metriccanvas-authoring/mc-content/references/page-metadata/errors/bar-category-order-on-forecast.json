@@ -1,0 +1,30 @@
+{
+  "case": "bar-category-order-on-forecast",
+  "invariant": "bar-category-order",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "类别排序仅支持普通柱图",
+      "paths": [
+        "/sections/0/components/0/props/order"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "order": {
+                "field": "totalCount",
+                "direction": "desc"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

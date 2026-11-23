@@ -3,7 +3,8 @@ import { chartDeclaration, chartSeriesAxis, chartSeriesIndex, chartRoleIndex, ch
 import { chartSeriesColor } from '../../shared/chart-series-presentation';
 import { resolveBarSeriesValue } from './series-value';
 import { resolveComponentValue } from '../../shared/component-value';
-import type { BarChartProps, ValueFormat } from '@metriccanvas/page/internal';
+import type { BarChartProps, Row, ValueFormat } from '@metriccanvas/page/internal';
+import { sortTableRows } from '@metriccanvas/data-execution/runtime';
 import type { BarSeriesOption, EChartsOption, LabelLayoutOptionCallbackParams } from 'echarts';
 import type { MainDataSlots } from '../../shared/component-data';
 import { resolveField } from '../../shared/component-data';
@@ -22,6 +23,13 @@ const REPORT_FORECAST_COLORS = [
 ] as const;
 const FLOATING_LABEL_MIN_LENGTH = 7;
 
+type LegendSelection = Readonly<Record<string, boolean>>;
+
+export function barDisplayRows(data: MainDataSlots, order: BarChartProps['order']): readonly Row[] {
+  const rows = data.main.snapshot.rows;
+  return order ? sortTableRows(rows, [order]) : rows;
+}
+
 /**
  * 已解析命名数据槽 + 柱状图 props → ECharts option 的纯翻译。
  * 标签继承字段契约;最终格式由组件字段绑定覆盖 defaultFormat 展示建议。
@@ -30,16 +38,14 @@ const FLOATING_LABEL_MIN_LENGTH = 7;
  * 它同时接管 role 档位色与未显式着色系列的取色。`reportForecast` 变体的
  * 实测/预测双色是该变体自己的语义色,不受形态色板影响。
  */
-type LegendSelection = Readonly<Record<string, boolean>>;
-
 export function barOption(
   data: MainDataSlots,
   props: BarChartProps,
-  palette?: ColorList
+  palette?: ColorList,
+  rows: readonly Row[] = barDisplayRows(data, props.order)
 ): EChartsOption {
   if (explicitChartAxes(props)) return mixedOption(data, props, palette);
-  const rows = data.main.snapshot.rows;
-  const categories = barCategories(data, props);
+  const categories = barCategories(data, props, rows);
   const categoryAxis = { type: 'category' as const, data: categories,
     ...(props.horizontal ? { inverse: true } : {}),
     ...categoryLabelOption(props.categoryLabels, props.showValueLabels) };
@@ -58,7 +64,7 @@ export function barOption(
     topEntryByGroup.set(entry.series.role ?? 'default', entry);
   }
   const legendData = barSeriesNames(data, props);
-  const stackLabels = barStackLabels(data, props, categories, legendData);
+  const stackLabels = barStackLabels(data, props, rows, categories, legendData);
   return {
     ...(palette ? { color: [...palette] } : {}),
     ...(props.categoryLabels?.mode === 'all' ? {} : categoryWindow(rows.length, props.horizontal)),
@@ -165,9 +171,9 @@ export function barOption(
   };
 }
 
-function barCategories(data: MainDataSlots, props: BarChartProps): string[] {
+function barCategories(data: MainDataSlots, props: BarChartProps, rows: readonly Row[]): string[] {
   const category = resolveField(props.categoryField, data);
-  return data.main.snapshot.rows.map(row => formatValue(row[category.field], category.format, category.missingText));
+  return rows.map(row => formatValue(row[category.field], category.format, category.missingText));
 }
 
 function barSeriesNames(data: MainDataSlots, props: BarChartProps): string[] {
@@ -189,14 +195,15 @@ export function barLegendProjection(
   option: EChartsOption,
   data: MainDataSlots,
   props: BarChartProps,
-  selection?: LegendSelection
+  selection: LegendSelection | undefined,
+  rows: readonly Row[]
 ): EChartsOption {
   const legend = option.legend;
   if (!legend || Array.isArray(legend) || !Array.isArray(option.series)) return option;
   const selected = selection ?? legend.selected;
   if (!selected) return option;
   const order = barSeriesOrder(props);
-  const labels = barStackLabels(data, props, barCategories(data, props), barSeriesNames(data, props), selected);
+  const labels = barStackLabels(data, props, rows, barCategories(data, props, rows), barSeriesNames(data, props), selected);
   return { ...option, legend: { ...legend, selected }, series: option.series.map((series, index) => ({
     ...series, markPoint: labels.get(order[index]!)?.markPoint
   })) };
@@ -205,7 +212,7 @@ export function barLegendProjection(
 type StackLabel = Required<Pick<BarSeriesOption, 'markPoint'>>;
 
 function barStackLabels(
-  data: MainDataSlots, props: BarChartProps, categories: string[], names: string[], selected?: LegendSelection
+  data: MainDataSlots, props: BarChartProps, rows: readonly Row[], categories: string[], names: string[], selected?: LegendSelection
 ): Map<number, StackLabel> {
   const labels = new Map<number, StackLabel>();
   if (!props.showStackTotalLabels) return labels;
@@ -214,7 +221,6 @@ function barStackLabels(
   const groups = stackLabelGroups(props, shown);
   const fields = props.series.map(series => resolveComponentValue(series, data, props.emptyBehavior));
   const displayed = props.series.map(series => resolveBarSeriesValue(series, data, props.emptyBehavior));
-  const rows = data.main.snapshot.rows;
   const totals = rows.map(row => fields.reduce((total, field) => total + (finiteNumber(field.read(row)) ?? 0), 0));
   for (const group of groups) {
     const owner = group.at(-1)!;

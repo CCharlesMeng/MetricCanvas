@@ -432,7 +432,7 @@ Playground 入口 `/pages/business-result-metrics?region=&mtime=month:2026-10&cl
 合成入口为 `/pages/finalization-default-time` 与 `/pages/finalization-default-time-detail`，`?state=error|missing|invalid|conflict|timeout` 验证回退。集成应用通过数据网关的finalizationSource提供固定DQE请求体、nameField与dateField映射，页面作者不填写端点、凭据或表结构。这些场景不证明真实截止表或生产DQE已接入。
 
 
-页面协议 6.131。结构真源为本册[schema.json](schema.json)，SHA256 `fd98f24ca42df43f645e67405018492f98c1ed6ef3a1c386c6d74d0d5d30d8d5`。字段表自动生成；可选不等于有默认值。
+页面协议 6.132。结构真源为本册[schema.json](schema.json)，SHA256 `07ee79be6c82f479408234becba0169d33ee5d52643ab928ce8be6a9779fe60f`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

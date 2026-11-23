@@ -14,6 +14,7 @@ import {
 } from '../primitives';
 import { actionsZ } from '../actions';
 import { componentCatalogRegistry } from '../registry';
+import { tableSortZ } from '../../table/query-view';
 import { categoryLabelsZ, markerColorRuleZ } from '../presentation';
 
 const chartOptionValueZ: z.ZodType<JsonValue> = z.lazy(() => z.union([z.string(), z.number(), z.boolean(), z.null(), z.array(chartOptionValueZ), z.record(z.string(), chartOptionValueZ)])).meta({ id: 'chartOptionValue' });
@@ -60,6 +61,7 @@ export const barChartComponentZ = z
         echartsOption: chartOptionZ.optional(),
         variant: z.literal('reportForecast').optional(),
         categoryField: fieldBindingZ,
+        order: tableSortZ.optional().describe('按 main 数据槽的结果字段排序类别，省略时沿用数据源行序'),
         series: z.array(barChartSeriesZ).min(1),
         stacked: z.boolean().optional(),
         rounded: z.boolean().optional(),

@@ -1,0 +1,99 @@
+{
+  "schemaVersion": "6.132",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "barChart.section-a7eb1105"
+  ],
+  "semantics": [
+    {
+      "module": "barChart",
+      "reference": "references/page-metadata/components/barChart.md",
+      "blocks": [
+        "# 柱状图 barChart\n\n比较离散类别之间的大小或展示分类分布。适用于区域/渠道/产品对比、分类分布、多指标类别比较。数据形状：一个 dimension 类别字段 + 一个或多个 metric 字段。",
+        "## 柱图按字段排序（6.132）\n\n普通柱图（含并列、堆叠、横向）可选配 `props.order`。两个属性同时声明，例如 `\"order\": { \"field\": \"totalCount\", \"direction\": \"desc\" }`。 `field` 是 `data.main` 结果字段契约中的标量字段 ID，可引用维度、度量或计算产出的字段，允许仅用于排序。`direction` 取 `asc` 或 `desc`。预测变体和显式柱线组合不使用该属性。旧版本或无效字段在 `props.order` 对应位置报错。\n\n运行时在前端对供图表使用的结果行排序，再应用类别缩放窗口。排序使用原始字段值，空值始终排末尾，同值保持数据源行序。纵向从左到右、横向从上到下读取排序结果。省略 `order` 时按数据源行序绘制。共享数据源的其他组件可各自展示自己的行序。若数据源只返回部分结果，排序范围为已返回且供图表使用的行。\n\n按堆叠总数排序时，让查询返回总数字段，或用 [`sumFields`](../compute.md) 在前端计算总数，图表的 `series` 继续声明各段字段。新数据到达后按指定字段重排，图例显隐时排序仍取同一字段。类别轴、系列、标签、点击动作及 PDF/PNG 使用同一行序。合成入口 `/pages/bar-category-order` 并排展示总数降序、维度升序和数据源行序。"
+      ],
+      "rules": [
+        {
+          "id": "bar-series-average",
+          "description": "同一图表的当前值和前端均值字段系列，保留原类别及版本边界",
+          "valid": [
+            "sdt-period-aggregation"
+          ],
+          "invalid": [
+            "bar-average-old-version",
+            "bar-average-category-removed",
+            "bar-average-stacked",
+            "bar-average-line"
+          ]
+        },
+        {
+          "id": "bar-category-order",
+          "description": "普通柱图按结果字段和方向排序类别，兼容省略 order 的页面",
+          "valid": [
+            "bar-category-order"
+          ],
+          "invalid": [
+            "bar-category-order-old-version",
+            "bar-category-order-unknown-field",
+            "bar-category-order-invalid-direction",
+            "bar-category-order-on-forecast"
+          ]
+        },
+        {
+          "id": "bar-line-marker-color",
+          "description": "柱线组合的字段折线圆点按原始数值正负着色",
+          "valid": [
+            "bar-line-marker-color"
+          ],
+          "invalid": [
+            "bar-line-marker-color-old-version",
+            "bar-line-marker-color-on-bar-series",
+            "bar-line-marker-color-unknown-color"
+          ]
+        },
+        {
+          "id": "query-dimension-measures",
+          "description": "6.56 DQE output_dims 中的现成数值显式作为页面度量，不改变查询与行粒度",
+          "valid": [
+            "stored-count-measures"
+          ],
+          "invalid": [
+            "dimension-measure-version",
+            "dimension-measure-legacy",
+            "dimension-measure-time-qualified-version",
+            "dimension-measure-nonnumeric",
+            "dimension-number-not-series",
+            "dimension-measure-not-collapsible"
+          ]
+        },
+        {
+          "id": "bar-forecast-boundary",
+          "description": "实际 / 预测系列不得跨越采集时间所在月",
+          "valid": [
+            "forecast-page"
+          ],
+          "invalid": [
+            "forecast-before-captured-month",
+            "actual-after-captured-month"
+          ]
+        }
+      ],
+      "examples": [
+        "references/page-metadata/examples/forecast-page.json",
+        "references/page-metadata/examples/stored-count-measures.json",
+        "references/page-metadata/examples/chart-constant-values-page.json",
+        "references/page-metadata/examples/chart-constant-branches.json",
+        "references/page-metadata/examples/dual-axis-alignment.json",
+        "references/page-metadata/examples/chart-series-visibility.json",
+        "references/page-metadata/examples/chart-table-unit.json",
+        "references/page-metadata/examples/sdt-period-aggregation.json",
+        "references/page-metadata/examples/bar-line-marker-color.json",
+        "references/page-metadata/examples/bar-category-order.json",
+        "references/page-metadata/examples/chart-customer-series.json",
+        "references/page-metadata/examples/conditional-compute-demand.json"
+      ]
+    }
+  ],
+  "nodes": [],
+  "unresolvedRefs": []
+}

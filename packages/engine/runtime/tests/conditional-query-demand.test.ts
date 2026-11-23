@@ -73,6 +73,19 @@ it('unions shared consumers and keeps business ordering and calculation dependen
   expect(activeSourceIds(page,{},input).has('details')).toBe(true);
 });
 
+it('retains a chart order field even when its series is hidden', () => {
+  const page = fixture();
+  const chart = page.sections[0].components[1];
+  if (chart.type !== 'barChart') throw Error('chart expected');
+  chart.props.order = { field: 'rate', direction: 'desc' };
+  const input = context(state(false), page);
+  const trend = presentationQuerySources(page, input).get('trend');
+  expect(trend).toMatchObject({
+    fields: { rate: { queryField: 'rate' } },
+    source: { query: { body: { dsl_list: [expect.objectContaining({ output_metrics: expect.arrayContaining(['rate']) })] } } }
+  });
+});
+
 it('stops an all-hidden table but preserves chart category queries and visible constants', async () => {
   const page = fixture(), filters = state(false), requests: EffectiveQuery[] = [];
   const table = page.sections[0].components[0];
