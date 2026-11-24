@@ -1,6 +1,4 @@
-import { usesIocRegion } from '@metriccanvas/page/internal';
-import {parsePage} from '@metriccanvas/page';
-import {filterURLKeys,readLevelURLSelection,matchesParamDeclaration,type PageParamDeclaration,type FilterDeclaration} from '@metriccanvas/page/internal';
+import {filterURLKeys,readLevelURLSelection,matchesParamDeclaration,parseRuntimePage,usesIocRegion,type PageParamDeclaration,type FilterDeclaration} from '@metriccanvas/page/internal';
 import {resolvePageParams} from './page-params';
 import {parseFilterSearch,createFilterState,hasExplicitDimensionClear,initialFilterValues,requestsRollingFinalization,type FilterValues} from './filter-state';
 
@@ -13,7 +11,7 @@ export interface NavigationInputContract {
   iocRegion?:true;
 }
 export function projectNavigationInputs(document:unknown):NavigationInputContract {
-  const result=parsePage(document);
+  const result=parseRuntimePage(document);
   if(!result.ok)throw Error('目标页面输入契约无效');
   const privateIds=new Set((result.page.detailViews??[]).flatMap(view=>view.filters??[]));
   const fixed=(result.page.params??[]).some(p=>!p.path&&(p.value!==undefined||p.type==='timeRange'));

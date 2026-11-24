@@ -41,13 +41,13 @@
   import { initialSectionGroup, selectedSectionGroup, sectionGroupFor, visibleSections } from './section-navigation';
   import { initializeRenderablePage } from './page-inputs';
   import {
-    parsePage,
     canonicalizeJson,
     type Page,
     type TypedError
   } from '@metriccanvas/page';
   import {
     declaredNavigationTargets,
+    parseRuntimePage,
     type NavigationTarget,
     filterGroupOptions,
     conditionSourceIds,
@@ -570,7 +570,8 @@
 
     // 页面参数不可变:先按声明解析一次 URL 输入,再用它们把文本取值引用
     // 整值替换掉。首次解析只为读到 params 声明,替换后的文档才是渲染依据。
-    const declared = parsePage(raw);
+    const declared = parseRuntimePage(raw, undefined, diagnostics =>
+      debugWarn('[MetricCanvas][PAGE_SCHEMA_CAPABILITY_FLOOR] 页面声明版本低于使用能力的引入版本', diagnostics));
     if (!declared.ok) {
       pageState = { phase: 'invalid', errors: visibleValidationErrors(declared.errors) };
       emit?.({ type: 'invalid', errors: declared.errors });
@@ -583,7 +584,7 @@
     const parsed =
       paramDeclarations.length === 0
         ? declared
-        : parsePage(raw, { textValues: { values: params.values, missingParams: new Set(params.missing), format: (value, format) => Array.isArray(value) ? value.join('、') : typeof value === 'object' ? formatPeriod(value) : formatValue(value, format) } });
+        : parseRuntimePage(raw, { textValues: { values: params.values, missingParams: new Set(params.missing), format: (value, format) => Array.isArray(value) ? value.join('、') : typeof value === 'object' ? formatPeriod(value) : formatValue(value, format) } });
     if (!parsed.ok) {
       pageState = { phase: 'invalid', errors: visibleValidationErrors(parsed.errors) };
       emit?.({ type: 'invalid', errors: parsed.errors });

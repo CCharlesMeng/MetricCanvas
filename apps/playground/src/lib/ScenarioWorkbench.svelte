@@ -86,7 +86,7 @@
       {:catch error}<p role="alert">演示加载失败：{String(error)}</p>{/await}
     {:else}<iframe bind:this={frame} title={`交互演示：${entry.title}`} src={frameHref} onload={trackFrame}></iframe>{/if}
   {:else}
-    <div class="draft-tools"><Button onclick={resetDraft}>恢复当前示例</Button><span role="status">{result.status === 'valid' ? '契约有效' : '需要修复'}</span></div>
+    <div class="draft-tools"><Button onclick={resetDraft}>恢复当前示例</Button><span role="status">{result.status === 'valid' ? '契约有效' : result.status === 'runtime-compatible' ? '可预览，发布前需修复' : '需要修复'}</span></div>
     {#if 'setFact' in environment}
       <div class="draft-tools" aria-label="模拟事实输入">
         <Button onclick={() => environment.setFact?.('allow')}>允许</Button>
@@ -98,7 +98,7 @@
     <div class="draft-workspace">
       <div class="editor"><Textarea label="当前场景 JSON" value={source} oninput={value => source = value} rows={20} /></div>
       <div class="draft-preview">
-        {#if result.status === 'valid'}
+        {#if result.status === 'valid' || result.status === 'runtime-compatible'}
           {#key revision}<RuntimeView document={result.document} dataGateway={environment.dataGateway}
             displayInputs={'displayInputs' in environment ? environment.displayInputs : undefined}
             initialSearch={runtimeSearch ?? pageSearchInputs[entry.id] ?? ''} {aiSummary} />{/key}

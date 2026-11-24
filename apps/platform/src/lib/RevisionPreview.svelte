@@ -1,6 +1,7 @@
 <script lang="ts">
   import { aiSummary } from '@metriccanvas/engine/ui/ai-summary/yunbao-assistant';
   import { canonicalizeJson, normalizePageDocument } from '@metriccanvas/page';
+  import { parseRuntimePage } from '@metriccanvas/page/internal';
   import type { ExecutionBootstrap } from '@metriccanvas/engine';
   import { RuntimeView,type RuntimeNavigation } from '@metriccanvas/engine/ui';
   import type { PageRevision } from './page-assets/contract';
@@ -18,6 +19,14 @@
   let error = $state('');
   let retry = $state(0);
 
+  function comparableRevisionDocument(document: unknown) {
+    const normalized = normalizePageDocument(document);
+    if (normalized.ok) return normalized;
+    let hasCapabilityDiagnostics = false;
+    const parsed = parseRuntimePage(document, {}, () => { hasCapabilityDiagnostics = true; });
+    if (!parsed.ok) return parsed;
+    return hasCapabilityDiagnostics ? { ok: true as const, document } : normalized;
+  }
 
   $effect(() => {
     void retry;
@@ -34,17 +43,18 @@
         if (controller.signal.aborted) return;
         if (loaded.pageId !== expectedPageId || loaded.revisionId !== expectedRevisionId) throw new Error('精确预览读取了不匹配的修订');
         // 固定可信已读内容；执行器只能补实际取值/快照，不能换掉修订正文。
-        // 平台预览在读取边界统一进入兼容规范化：5.x 可读，但传给统一运行时
-        // 的始终是唯一的 6.x 文档形状；历史修订正文本身不被改写。
-        const baseline = normalizePageDocument(loaded.document);
-        if (!baseline.ok) throw new Error('精确预览修订文档未通过校验');
+        const baseline = comparableRevisionDocument(loaded.document);
+        if (!baseline.ok) {
+          const issue = baseline.errors[0];
+          throw new Error(`精确预览修订文档未通过校验（${issue.path}）：${issue.message}`);
+        }
         const result = executor ? await executor(structuredClone(loaded), controller.signal) : undefined;
         if (controller.signal.aborted) return;
         if (result && (result.target.kind !== 'draft' || result.target.ref.pageId !== loaded.pageId || result.target.ref.revisionId !== loaded.revisionId || !loaded.resourceId || result.target.ref.resourceId !== loaded.resourceId)) throw new Error('执行预览与已读精确修订不匹配');
         if (result) {
-          const returned = normalizePageDocument(result.document);
+          const returned = comparableRevisionDocument(result.document);
           if (!returned.ok || canonicalizeJson(returned.document) !== canonicalizeJson(baseline.document)) throw new Error('执行预览文档与已读精确修订不匹配');
-          renderedDocument = returned.document;
+          renderedDocument = result.document;
         } else {
           renderedDocument = baseline.document;
         }

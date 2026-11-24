@@ -1,5 +1,7 @@
 # MetricCanvas 页面元数据规范
 
+对当前引擎支持的 6.x 页面，实际配置可执行时，能力引入版本高于页面声明仅作为调试诊断。独立校验、保存和发布继续严格检查能力下限。本次沿用现有页面字段与 Schema 版本。见[运行时兼容读取](docs/page-metadata/validation.md#runtime-capability-floor)与合成入口 `/pages/bar-category-order`。
+
 Schema 6.137 支持正文分区的顶层表格声明 `props.expand: true`。点击表格右上角按钮可展开至整行并收起同行组件，再点还原。见[表格展开](docs/page-metadata/components/table.md#table-expand)与合成入口 `/pages/table-expand`。
 
 页面搜索筛选、远程下拉候选、表头动态候选和表格工具栏搜索统一在停输 300 毫秒后自动生效。中文输入法组词期间等待确认。静态候选即时筛选。分页候选在依赖条件就绪后开始取数。见[下拉搜索](docs/page-metadata/filters.md#下拉搜索与普通树643)和[表格搜索](docs/page-metadata/components/table.md#表格工具栏与搜索621)。

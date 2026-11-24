@@ -9,7 +9,7 @@
       "module": "validation",
       "reference": "references/page-metadata/validation.md",
       "blocks": [
-        "# 校验、错误与修复\n\n先验证JSON结构和版本，再验证引用/角色/映射/绑定等页面语义。错误使用稳定type与JSON Pointer定位，message只用于解释。修复原始文档后重新完整校验，不能吞掉错误字段来强行渲染。\n\nSCHEMA_ERROR对应结构和页面语义；FIELD_CONTRACT_ERROR对应结果字段契约；QUERY_MAPPING_ERROR对应查询输出映射；FILTER_BINDING_ERROR对应筛选绑定。查询执行错误是运行期证据，不能由静态例子证明。\n\n本册example是完整页面，短JSON片段必须注明插入路径与依赖；生成器会核对完整例子。实际受控工具是否支持、外部服务是否接通分别查Authoring及集成证据。",
+        "# 校验、错误与修复\n\n先验证JSON结构和版本，再验证引用/角色/映射/绑定等页面语义。错误使用稳定type与JSON Pointer定位，message只用于解释。修复原始文档后重新完整校验，不能吞掉错误字段来强行渲染。\n\nSCHEMA_ERROR对应结构和页面语义；FIELD_CONTRACT_ERROR对应结果字段契约；QUERY_MAPPING_ERROR对应查询输出映射；FILTER_BINDING_ERROR对应筛选绑定。查询执行错误是运行期证据，不能由静态例子证明。\n\n本册example是完整页面，短JSON片段必须注明插入路径与依赖；生成器会核对完整例子。实际受控工具是否支持、外部服务是否接通分别查Authoring及集成证据。\n\n<a id=\"runtime-capability-floor\"></a>",
         "## 认证失败与页面失效\n\n集成应用在运行时输入上提供 `onAuthRequired` 时，DQE HTTP 401、403、419 会使当前页面实例作废：MC 停止请求、丢弃迟到结果并清理页面查询、候选、子表、导出、呈现及本页 AI 总结缓存，再通知和调用集成应用的方法。MC 不等待重登、不重试原请求；登录后创建新页面实例重新请求。403 仍表示无权限，本次退出策略不改变查询错误分类。\n\n未传方法时继续原有查询错误处理，其他 HTTP 状态、超时和取消不触发该处理。此能力属于集成接入，不在页面 JSON 内新增登录、凭据或重试字段，也不要求升级页面 Schema。可观察入口 `/auth-required-review` 使用既有 `dqe-request-timeout` 页面与本地 HTTP 仿真，不能证明真实登录跳转或 DQE 已联通。"
       ],
       "rules": [

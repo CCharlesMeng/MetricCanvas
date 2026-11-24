@@ -1,7 +1,7 @@
 import {numberRangeIssue,rangeContextIssue} from '@metriccanvas/page/internal';
 import {dimensionSelectionIssue} from '@metriccanvas/page/internal';
-import { canonicalizeJson, parsePage, type PageDocument } from '@metriccanvas/page';
-import { flattenPageComponents, hasQueryFieldMapping, isQueryErrorCode, matchesParamDeclaration, normalizeQueryRows, type DataSnapshot, type QueryDataSourceFieldDefinition } from '@metriccanvas/page/internal';
+import { canonicalizeJson, type PageDocument } from '@metriccanvas/page';
+import { flattenPageComponents, hasQueryFieldMapping, isQueryErrorCode, matchesParamDeclaration, normalizeQueryRows, parseRuntimePage, type DataSnapshot, type QueryDataSourceFieldDefinition } from '@metriccanvas/page/internal';
 import { createFilterState, parseFilterSearch, type FilterValue, type FilterValues } from './filter-state';
 import { initializePageParams, type PageParamValues } from './page-params';
 
@@ -49,7 +49,7 @@ function fail(message: string): never { throw new ExecutionError('RESPONSE_MISMA
 /** 校验关联与完整结果后才返回可渲染bootstrap；拒绝结果不能降级成无条件查数。 */
 export function prepareExecution(request: ExecutionRequest, response: unknown, recordFilters?: (values: FilterValues) => void): ExecutionBootstrap {
   assertResponseContext(request, response);
-  const parsed = parsePage(response.document);
+  const parsed = parseRuntimePage(response.document);
   if (!parsed.ok) fail('执行文档未通过页面校验');
   const page = parsed.page;
   if (page.id !== (request.target.kind === 'draft' ? request.target.ref.pageId : request.target.ref.source.pageId)) fail('执行文档页面与目标不一致');

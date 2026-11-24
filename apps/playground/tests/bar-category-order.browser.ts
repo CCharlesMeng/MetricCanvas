@@ -47,6 +47,30 @@ test('sorts each chart independently and drills into the displayed row', async (
   await expect.poll(() => chartState(stacked)).toMatchObject({ categories: descending, totals, selected: { '已签': false } });
 });
 
+test('previews a supported capability under an older declaration and reports actual field errors', async ({ page }) => {
+  await page.goto('/preview', { waitUntil: 'domcontentloaded' });
+  const input = { ...structuredClone(example), schemaVersion: '6.131' };
+  const editor = page.getByRole('textbox', { name: 'Page JSON 编辑器' });
+  await expect(editor).toBeVisible();
+  const diagnostic = page.waitForEvent('console', {
+    predicate: message => message.type() === 'warning' && message.text().includes('PAGE_SCHEMA_CAPABILITY_FLOOR')
+  });
+  await editor.fill(JSON.stringify(input));
+  await expect(page.getByText('可预览，发布前需修复')).toBeVisible();
+  await expect(page.getByRole('alert')).toContainText('文档声明的是 6.131');
+  const stacked = page.locator('[data-component="main/by-total"] [_echarts_instance_]');
+  await expect(stacked).toBeVisible();
+  await expect.poll(() => chartState(stacked)).toMatchObject({ categories: descending });
+  await diagnostic;
+  await expect(editor).toHaveValue(JSON.stringify(input));
+
+  Object.assign(input.sections[0].components[0]!.props, { order: { field: 'missing-field', direction: 'desc' } });
+  await editor.fill(JSON.stringify(input));
+  await expect(page.getByRole('alert')).toContainText('/sections/0/components/0/props/order/field');
+  await expect(page.getByText('暂时无法渲染')).toBeVisible();
+  await expect(stacked).toHaveCount(0);
+});
+
 test('uses the sorted chart in PDF and PNG downloads', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto('/pages/bar-category-order');

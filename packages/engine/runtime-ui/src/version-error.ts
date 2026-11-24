@@ -2,7 +2,7 @@ import { supportedVersions, versionPolicy } from '@metriccanvas/page';
 import { versionErrors } from '@metriccanvas/page/internal';
 import type { RuntimeViewEvent } from './types';
 
-/** 能力检查先于文档解析；缺失或格式错误的版本仍由页面协议校验。 */
+/** 先检查运行时支持的版本范围。缺失或格式错误的版本仍由文档校验定位。 */
 export function runtimeVersionError(
   document: unknown
 ): Extract<RuntimeViewEvent, { type: 'version-error' }> | undefined {

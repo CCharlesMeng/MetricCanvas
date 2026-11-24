@@ -15,7 +15,7 @@
   import PublicationReview from './workbench/PublicationReview.svelte';
   import InlineParameterReview from './workbench/InlineParameterReview.svelte';
   import {canonicalizeJson} from '@metriccanvas/page';
-  import {parsePage,pageListEntry} from '@metriccanvas/page/internal';
+  import {parseRuntimePage,pageListEntry} from '@metriccanvas/page/internal';
   import {createInlineParameterPublication,type ParameterSourcePort} from './workbench/inline-parameter-publication';
   import {previewParameterPage} from './workbench/preview-parameter-page';
   import { RuntimeView } from '@metriccanvas/engine/ui';
@@ -117,7 +117,7 @@
     const ref=previewRef;
     if(!ref||ref.pageId!==pageId||ref.revisionId!==revisionId)throw Error('预览目标已变化。');
     const revision=await coordinator.preview(ref,signal);
-    if(!signal?.aborted&&previewRef===ref){const parsed=parsePage(revision.document);savedPreviewTitle=parsed.ok?pageListEntry(parsed.page).title:pageId;savedPreviewNumber=revision.revisionNumber;savedPreviewStatus=revision.isDraft===false?'已发布':revision.isDraft===true?'草稿':'状态待核实';}
+    if(!signal?.aborted&&previewRef===ref){const parsed=parseRuntimePage(revision.document);savedPreviewTitle=parsed.ok?pageListEntry(parsed.page).title:pageId;savedPreviewNumber=revision.revisionNumber;savedPreviewStatus=revision.isDraft===false?'已发布':revision.isDraft===true?'草稿':'状态待核实';}
     return revision;
   }
   let metadataEntryEl: HTMLButtonElement | null = $state(null);
