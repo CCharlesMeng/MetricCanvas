@@ -84,8 +84,11 @@ it('uses a mode-only rolling input as the pending selection',async()=>{
 it('older pages still wait for the existing initialization query',async()=>{
   const receipt=deferred<DataGatewayResult>(),base=gateway(receipt.promise);
   const preparation=createFinalizationPreparation(page('6.119'),base,new Map(),now,new AbortController().signal);
-  const pending=preparation.initialDates();expect(base.fetchData).toHaveBeenCalledTimes(1);
-  expect(preparation.pending.size).toBe(0);receipt.resolve(result);expect((await pending).get('合成经营数据')).toBe('2026-04-18');
+  const pending=preparation.initialDates();
+  expect(base.fetchData).toHaveBeenCalledTimes(1);
+  expect(preparation.pending.size).toBe(0);
+  receipt.resolve(result);
+  expect((await pending)?.get('合成经营数据')).toBe('2026-04-18');
 });
 it('a user selection made while the default is loading wins over a late result',async()=>{
   const state=createFilterState(new Map(),page().filters);state.preparing('mtime',true);
