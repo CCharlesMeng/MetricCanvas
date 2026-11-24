@@ -27,7 +27,8 @@ function cutoffResult(state: string): Promise<{rows: Array<{name: string; date: 
   if (state === 'error') throw new Error('合成定稿查询失败');
   if (state === 'timeout') return new Promise(() => {});
   if (state === 'missing') return {rows: []};
-  const rows = [{name: '经营数据', date: state === 'invalid' ? '2026-02-30' : '2026-10-18'}];
+  const date = state === 'invalid' ? '2026-02-30' : state === 'november' ? '2026-11-08' : '2026-10-18';
+  const rows = [{name: '经营数据', date}];
   if (state === 'conflict') rows.push({name: '经营数据', date: '2026-09-30'});
   return {rows};
 }

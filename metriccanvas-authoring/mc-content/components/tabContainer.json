@@ -214,6 +214,11 @@
           "description": "详情标题拼接固定文字和当前行的多个字段"
         },
         {
+          "id": "metric-primary-details",
+          "minor": 65,
+          "description": "单一主指标与多行小字号次级指标，同排卡片等高"
+        },
+        {
           "id": "tab-content-layout",
           "minor": 49,
           "description": "Tab 混合内容、显式栅格与按需呈现"
@@ -252,6 +257,11 @@
           "id": "metric-row-link",
           "minor": 0,
           "description": "指标行的显式非空值导航入口"
+        },
+        {
+          "id": "conditional-presentation",
+          "minor": 35,
+          "description": "统一条件显隐、按钮与正文片段"
         }
       ],
       "scope": "complete example; actual used fields determine the floor, independently of readableVersions"

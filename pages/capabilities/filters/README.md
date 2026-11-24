@@ -369,6 +369,8 @@
 
 浏览器自动验收：`pnpm --filter playground exec playwright test tests/finalization-default.browser.ts`。场景仅证明协议与引擎，不证明真实截止表、DQE、Relay或生产权限接入。
 
+在来源页选「近一年」，点「按详情页定稿月查看近一年」。合成详情页定稿月为 11 月，查询变为 2025 年 12 月至 2026 年 11 月。再点「按总览页定稿月查看近一年」，回到 10 月定稿月，查询范围为 2025 年 11 月至 2026 年 10 月。两个按钮只传期间值。
+
 ## 维度绑定包含与排除
 
 <!-- example:dimension-binding-operator -->

@@ -504,6 +504,10 @@ URL键就是参数 `id`。例如：`?report-month=2026-03`。
 
 6.33 起，Tab 容器可通过 `props.initialTabUrlParam` 声明打开时读取的 URL 参数名，用目标 Tab id 决定初始页签。这是呈现输入，无需添加 `params.display` 声明；名称与本页页面参数和筛选器的 URL 名称互斥。来源页面可通过已有超链接的 `href` 或 `query` 传递该值。完整规则见 [Tab 容器](docs/page-metadata/components/tabContainer.md#url-初始化页签633)，配置示例见[链接传参与目标页签](docs/page-metadata/actions-and-navigation.md#链接传参与目标页签)。
 
+同一张指标卡的不同导航条件可以对应不同目标页及其公开参数。已匹配的规则从当前筛选或页面参数读取值，再按该规则的 `href` 和 `query` 传递。见[指标值条件导航](docs/page-metadata/actions-and-navigation.md#metric-conditional-navigation)。
+
+「近一年」跟随目标页定稿月时，只绑定期间筛选的 `value`，URL 传入 `last12Months`。固定查询窗口使用显式起止值。
+
 ### IOC身份与独立详情月份（6.36）
 
 IOC Header组件props.identity（旧文档为根iocHeader.identity）的title/code/description/tags/facts消费同一TextValue引用与一层parts；参数不反向读取筛选草稿。显式标题缺值显示“未命名”，可选身份项缺值整体省略，不生成当前刷新时间。详情用timePoint.initialParam取得单月初值，后续修改只改变FilterState；完整例见[详情单月](pages/capabilities/ioc-header/scenarios/ioc-header-detail-demo.json)，行为与限制由[页面模块](docs/page-metadata/page.md#ioc-公共页头632)拥有。

@@ -517,6 +517,8 @@ DQE 数据网关请求及引擎内置读取超时默认且最少为180秒，页�
 
 7.4 `metricCard` → [模块参考](contracts/metriccanvas/page/reference/components/metricCard.md)。
 
+指标卡生成链接与点击时均按声明顺序选择首条满足条件的卡片级导航。每条导航可独立配置目标地址及查询参数。见[指标值条件导航](docs/page-metadata/actions-and-navigation.md#metric-conditional-navigation)与合成入口 `/pages/metric-card-select-tab`。
+
 6.65 新增 `variant: "primaryDetail"`：`rows` 恰好一个主指标，`secondaryRows` 为零到多行14px次级指标（指标名＋指标值，每行上方8px）；仅显式配置 `row.link: true` 及合法跳转或明细动作的非空数值和单位显示下划线，普通文本和缺失值不显示。同一栅格视觉行内卡面随最高内容等高，窄屏逐卡自然高度。字段和点击行为复用原有协议，见[指标卡语义](docs/page-metadata/components/metricCard.md)与[主次指标示例](pages/capabilities/layout/metric-card-primary-detail.json)。
 
 单面板 `compactStack` 与 `primaryDetail` 混排时，卡面同样按所在视觉行等高；保留各自的内部排版，只在短卡底部留白。无需高度字段或修改 variant；次级面板及进度环的既有布局保持，见上述示例的 `mixed-variants` 分区。

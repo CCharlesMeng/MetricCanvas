@@ -1,4 +1,14 @@
-# 商务决策明细：审批人下钻筛选
+# 合同商务看板
+
+## 合同商务总览
+
+入口 `/pages/contract-business-overview`。[页面 JSON](contract-business-overview.json)。选择全球时检查地区部指标明细，选择地区部时检查所属代表处，选择代表处时检查所选代表处。表格使用 DQE 返回的组织行。普通 Playground 需要接入业务 DQE 和 IOC Region 候选；本地合同总览预览可以使用合成候选与 DQE Sim。
+
+点击五张指标卡的主指标检查目标地址与统计期间。全球和地区部使用既有业务结果指标、行权效率和行权规范入口。代表处的净商务折扣、框架执行率、决策意见闭环率和重大／高风险合同率进入 `/pages/rep-business-result`，并通过 `business-result-tab` 定位对应页签；SDT 决策时长进入 `/pages/rep-office-execution-efficiency`。测算销毛与核算销毛偏差只展示数值。普通点击与新标签页应携带相同参数。模拟结果只用于检查本地交互。
+
+统计期间链接只传期间值。「近一年」由目标页按自己的定稿月计算；目标页缺少可用定稿日期时按当前月计算。明确选择的年、季、月以期间值传入，目标页应用自己的时间边界。
+
+## 商务决策明细：审批人下钻筛选
 
 页面：`business-decision-all-details.json`，沿用户提供的业务 JSON 局部修改。主目标是 URL 查询参数 `approver-name` 经主表的 `paramBindings` 下推到 DQE 字段 `审批人姓名`；它不是维度候选筛选器，商务基本信息补列不消费它。标题继续读取同一个参数。
 

@@ -153,6 +153,22 @@
               }
             }
           }
+        },
+        {
+          "id": "open-november-cutoff",
+          "type": "button",
+          "layout": { "span": 12 },
+          "props": {
+            "label": "按详情页定稿月查看近一年",
+            "action": {
+              "on": "click",
+              "enabledWhen": { "filter": "period-filter", "part": "mode", "op": "eq", "value": "last12Months" },
+              "navigate": {
+                "href": "/pages/finalization-default-time-detail?state=november",
+                "query": { "period-filter": { "source": "filter", "id": "period-filter", "part": "value" } }
+              }
+            }
+          }
         }
       ]
     }

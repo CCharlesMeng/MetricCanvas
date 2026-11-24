@@ -1120,10 +1120,16 @@
   function actionAllowed(component:Component,action:import('@metriccanvas/page/internal').PolicyNode,row?:Row):boolean {
     return !initializing&&presentation?.gate(action,row,presentation.component(component.id)).enabled===true;
   }
-  function componentHref(component: Component, row: Row): string | undefined {
+  function componentNavigation(component: Component, row: Row): NavigationTarget | undefined {
     if (!componentCapability(component)?.actions || !('actions' in component.props)) return undefined;
-    const action = component.props.actions?.find(a => 'navigate' in a && actionAllowed(component,a,row) && actionAllowed(component,a.navigate,row));
-    return action && 'navigate' in action ? targetHref(action.navigate,row) : undefined;
+    const action = component.props.actions?.find(candidate =>
+      'navigate' in candidate && actionAllowed(component, candidate, row) && actionAllowed(component, candidate.navigate, row)
+    );
+    return action && 'navigate' in action ? action.navigate : undefined;
+  }
+  function componentHref(component: Component, row: Row): string | undefined {
+    const target = componentNavigation(component, row);
+    return target ? targetHref(target, row) : undefined;
   }
 
   function handleTableLink(component: TableComponent, row: Row, event: MouseEvent, column?: TableColumn) {
@@ -1154,12 +1160,14 @@
   }
 
   function handleMetricLink(component: Component, row: Row, event: MouseEvent) {
-    const action = 'actions' in component.props ? component.props.actions?.find(a=>'navigate' in a) : undefined;
-    if(action&&'navigate' in action)navigateTarget(action.navigate,row,event);
-    else {
-      const detail = componentOpenDetail(component);
-      if (detail) { event.preventDefault(); openDetailFor(component, detail, row, event.currentTarget as HTMLElement); }
+    const target = componentNavigation(component, row);
+    if (target) {
+      navigateTarget(target, row, event);
+      return;
     }
+    event.preventDefault();
+    const detail = componentOpenDetail(component);
+    if (detail) openDetailFor(component, detail, row, event.currentTarget as HTMLElement);
   }
 
   function componentOpenDetail(component: Component): OpenDetailAction | undefined {

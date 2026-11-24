@@ -40,6 +40,18 @@
 
 [完整合成示例](examples/metric-card-select-tab.json)同时演示两个指标绑定不同页签，以及同卡保留卡片级详情入口。Playground 入口 `/pages/metric-card-select-tab`。
 
+<a id="metric-conditional-navigation"></a>
+
+## 指标值条件导航
+
+指标行的 `link: true` 使用卡片级 `props.actions`。引擎按声明顺序选择第一条满足动作和 `navigate` 自身条件的导航。普通点击、键盘激活和在新标签页打开共用该选择规则。选择依据是当前已应用的筛选状态。每条导航可独立配置 `href` 和显式的 `query`，例如分别用 IOC Region 的 `part: "level"` 匹配全球、地区部和代表处。
+
+推荐让分支条件互斥。没有匹配导航时不生成跨页链接，有配置页内详情时沿用详情入口。匹配的导航仍按目标 URL 和传参契约执行。已有单目标无条件导航继续使用原目标。指标卡行级 `action.selectTab` 沿用原有规则。
+
+统计期间使用 `display: "period"` 时，导航可只绑定筛选的 `value`。进入目标页后，年、季、月使用链接中的明确选值，「近一年」使用目标页的定稿月。目标页缺少可用定稿日期时按当前月计算。见[默认期间与定稿日期](filters.md)。
+
+Playground 入口 `/pages/metric-card-select-tab`。切换订单区域为中国区或海外，再点击「区域超期单数」，分别进入 `/pages/ioc-header-title-link-target` 或 `/pages/playground-route-target`。选择其他区域时没有可用跨页地址。
+
 <a id="链接传参与目标页签"></a>
 
 ## 链接传参与目标页签
