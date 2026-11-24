@@ -91,26 +91,14 @@ test('native components stay mounted through initial loading, filtering, paginat
   await expect(table).toHaveAttribute('aria-busy', 'true');
   await expect(table.locator('.skeleton-row')).toHaveCount(10);
   await expect(chart.locator('.echart-frame.loading')).toBeVisible();
-  await expect(metric.locator('.row-value').first()).toHaveText('10');
+  const metricValue = metric.locator('.row-value').first();
+  await expect(metricValue.locator('.skeleton')).toBeVisible();
   await expect(metric.locator('.loading-spinner')).toHaveCount(0);
   expect(await chartNode!.evaluate(node => node.isConnected)).toBe(true);
   expect(await headingNode!.evaluate(node => node.isConnected)).toBe(true);
-  const metricValue = metric.locator('.row-value').first();
-  const observations = await metricValue.evaluateHandle(node => {
-    const values: number[] = [];
-    const observer = new MutationObserver(() => values.push(Number(node.textContent)));
-    observer.observe(node, { childList: true, characterData: true, subtree: true });
-    return { values, observer };
-  });
   release();
   await expect(table).toContainText('合成类别1');
   await expect(metricValue).toHaveText('20');
-  const values = await observations.evaluate(({ values, observer }) => {
-    observer.disconnect();
-    return values;
-  });
-  await observations.dispose();
-  expect(values.some(value => value > 10 && value < 20)).toBe(true);
 
   hold();
   await table.getByRole('button', { name: '展开子表格', exact: true }).first().click();
@@ -213,6 +201,52 @@ test('all component families share a replayable loading review without replacing
 });
 
 const metricLoadingFixture = JSON.parse(readFileSync(new URL('../../../pages/capabilities/layout/metric-card-loading.json', import.meta.url), 'utf8'));
+
+test('every metric card shows the same skeleton on refresh and commits each number once', async ({ page }) => {
+  let release: () => void = () => {};
+  const refreshed = new Promise<void>(resolve => { release = resolve; });
+  await page.route('**/dsl/execute', async route => {
+    const request = route.request().postDataJSON();
+    const item: DemoItem = request.dsl_list[0];
+    const result = simulatedReceipt(item);
+    if (item.filter.dims.some(dimension => dimension.dim_value_list.includes('OVERSEAS'))) {
+      await refreshed;
+      // Exercise a small change in the main value, the change value and the completion rate.
+      Object.assign(result.data[0], { preview_value: 73, preview_change: 3.2, preview_progress: 73 });
+    }
+    await route.fulfill({ json: { retCode: 'CBC.0000', results: [result] } });
+  });
+  await page.goto(`/pages/${metricLoadingFixture.id}`);
+  const cards = page.locator('.metric-card');
+  const values = cards.locator('.row-value');
+  await expect(values).toHaveText(Array(16).fill('72'));
+  await page.getByRole('button', { name: '海外', exact: true }).click();
+  const numbers = cards.locator('.row-value, .change-value, .progress-ring .number');
+  await expect(numbers.locator('.skeleton.shimmer')).toHaveCount(40);
+  await expect(numbers).toHaveText(Array(40).fill(''));
+  await expect(cards.locator('.unit, .change-unit, .trend-arrow')).toHaveCount(0);
+
+  const observations = await page.locator('body').evaluateHandle(container => {
+    const fields = container.querySelectorAll('.row-value, .change-value, .progress-ring .number');
+    return Array.from(fields, node => {
+      const history: string[] = [];
+      const observer = new MutationObserver(() => history.push(node.textContent!.replace(/\s+/g, '')));
+      observer.observe(node, { childList: true, characterData: true, subtree: true });
+      return { observer, history, node };
+    });
+  });
+  release();
+  await expect(values).toHaveText(Array(16).fill('73'));
+  await expect(cards.locator('.change-value')).toHaveText(Array(16).fill('+3.2%'));
+  await expect(cards.locator('.progress-ring .number')).toHaveText(Array(8).fill(/^73\s*%$/));
+  const histories = await observations.evaluate(entries => entries.map(({ observer, history, node }) => {
+    observer.disconnect();
+    return { history, final: node.textContent!.replace(/\s+/g, '') };
+  }));
+  await observations.dispose();
+  expect(histories).toHaveLength(40);
+  for (const { history, final } of histories) expect(history).toEqual([final]);
+});
 
 test('independent components render before a slower query returns', async ({ page }) => {
   let release: () => void = () => {};

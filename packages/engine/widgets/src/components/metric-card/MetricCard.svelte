@@ -10,7 +10,6 @@
   import { changeValueColor, valueColorStyle } from '../../shared/value-color';
   import Skeleton from '../../shared/Skeleton.svelte';
   import ProgressRing from './ProgressRing.svelte';
-  import MetricValueMotion from './MetricValueMotion.svelte';
 
   interface Props {
     /** 已解析的 main/compare/target 命名槽。 */
@@ -19,6 +18,7 @@
     loading?: boolean;
     definitionTip?: Snippet<[string]>;
     rowDefinitionTip?: Snippet<[title: string, code: string]>;
+    /** 屏幕呈现时启用加载骨架扫光。 */
     animate?: boolean;
     /** 只由声明了 link 的非空值触发。 */
     onlink?: (row: Row, event: MouseEvent) => void;
@@ -26,7 +26,7 @@
     onaction?: (action: NonNullable<MetricCardRow['action']>) => void;
   }
 
-  let { data, props, loading = false, animate = true, definitionTip, rowDefinitionTip, onlink, linkHref, onaction }: Props = $props();
+  let { data, props, loading = false, animate: shimmer = true, definitionTip, rowDefinitionTip, onlink, linkHref, onaction }: Props = $props();
   const tipAnchor = $derived(definitionTip ? metricCardTipAnchor(props) : undefined);
   const titleAccessory = $derived(tipAnchor === 'title' ? definitionTip : undefined);
   const rowAccessory = $derived(tipAnchor === 'row' ? definitionTip : undefined);
@@ -56,7 +56,7 @@
 </script>
 
 {#snippet loadingValue()}
-  <Skeleton width="2.25em" inline shimmer={animate} />
+  <Skeleton width="2.25em" inline {shimmer} />
 {/snippet}
 
 {#snippet pendingOrMissing()}
@@ -71,9 +71,7 @@
     {#if loading}
       {@render loadingValue()}
     {:else}
-      <MetricValueMotion value={raw} format={field.format} {animate}>
-        {#snippet children(value)}{formatFieldValue(value, field, row.unit)}{/snippet}
-      </MetricValueMotion>
+      {formatFieldValue(raw, field, row.unit)}
     {/if}
   </span>
   {@const unit = hasDisplayValue(raw) ? fieldUnitText(row.unit, field.format) : undefined}
@@ -127,32 +125,28 @@
         {#if row.changes?.length}
           <div class="changes">
             {#each row.changes as change, changeIndex (`${change.label}:${changeIndex}`)}
-              {@const raw = fieldValue(change.field, data)}
+              {@const value = loading ? undefined : fieldValue(change.field, data)}
               {@const field = resolveField(change.field, data)}
-              <MetricValueMotion value={loading ? undefined : raw} format={field.format} {animate}>
-                {#snippet children(value)}
-                  {@const color = changeValueColor(value, change, field.format)}
-                  {@const direction = change.colorRule || isSignedNumberFormat(field.format) ? valuePolarity(value, field.format) : color === 'green' ? 'positive' : color === 'red' ? 'negative' : 'neutral'}
-                  <span class:positive={color === 'green'} class:negative={color === 'red'} class:explicit-color={change.colorRule !== undefined} style:color={change.colorRule ? valueColorStyle(color) : undefined} class="change">
-                    <span class="change-label">{change.label}</span>
-                    <span class="change-value">
-                      {#if !loading && props.showTrendArrows && direction !== 'neutral' && !isPercentFormat(field.format)}
-                        <span
-                          class:up={direction === 'positive'}
-                          class:down={direction === 'negative'}
-                          class="trend-arrow"
-                          aria-hidden="true"
-                        >{direction === 'positive' ? '↑' : '↓'}</span>
-                      {/if}
-                      {#if loading}
-                        {@render loadingValue()}
-                      {:else}
-                        <span>{formatChangeValue(value, field, change.tone === 'positive')}{#if hasDisplayValue(value) && fieldUnitText(change.unit, field.format)}<span class="change-unit">{change.unit}</span>{/if}</span>
-                      {/if}
-                    </span>
-                  </span>
-                {/snippet}
-              </MetricValueMotion>
+              {@const color = changeValueColor(value, change, field.format)}
+              {@const direction = change.colorRule || isSignedNumberFormat(field.format) ? valuePolarity(value, field.format) : color === 'green' ? 'positive' : color === 'red' ? 'negative' : 'neutral'}
+              <span class:positive={color === 'green'} class:negative={color === 'red'} class:explicit-color={change.colorRule !== undefined} style:color={change.colorRule ? valueColorStyle(color) : undefined} class="change">
+                <span class="change-label">{change.label}</span>
+                <span class="change-value">
+                  {#if !loading && props.showTrendArrows && direction !== 'neutral' && !isPercentFormat(field.format)}
+                    <span
+                      class:up={direction === 'positive'}
+                      class:down={direction === 'negative'}
+                      class="trend-arrow"
+                      aria-hidden="true"
+                    >{direction === 'positive' ? '↑' : '↓'}</span>
+                  {/if}
+                  {#if loading}
+                    {@render loadingValue()}
+                  {:else}
+                    <span>{formatChangeValue(value, field, change.tone === 'positive')}{#if hasDisplayValue(value) && fieldUnitText(change.unit, field.format)}<span class="change-unit">{change.unit}</span>{/if}</span>
+                  {/if}
+                </span>
+              </span>
             {/each}
           </div>
         {/if}
@@ -209,7 +203,7 @@
     {/if}
     {#if props.progress}
       <div class="progress-slot">
-        <ProgressRing {loading} {animate} value={progressValue} format={progressFormat} missingText={progressMissingText} ringPercent={props.progress.ringPercent} label={props.progress.label ?? '完成率'} />
+        <ProgressRing {loading} {shimmer} value={progressValue} format={progressFormat} missingText={progressMissingText} ringPercent={props.progress.ringPercent} label={props.progress.label ?? '完成率'} />
       </div>
     {/if}
   {:else}
@@ -220,7 +214,7 @@
         <div class="progress-slot">
           <ProgressRing
             {loading}
-            {animate}
+            {shimmer}
             format={progressFormat}
             value={progressValue}
             missingText={progressMissingText}

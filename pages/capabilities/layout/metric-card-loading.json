@@ -2,6 +2,15 @@
   "schemaVersion": "6.81",
   "id": "metric-card-loading",
   "layout": "dashboard",
+  "filters": [
+    {
+      "id": "demo-region",
+      "type": "dimension",
+      "dimension": "chart_demo_region",
+      "label": "区域",
+      "default": ["CN"]
+    }
+  ],
   "dataSources": {
     "gallery": {
       "fields": {
@@ -85,6 +94,9 @@
                 "order": {}
               }
             ]
+          },
+          "filterBindings": {
+            "demo-region": { "target": "dimension", "queryField": "chart_demo_region" }
           }
         }
       }
@@ -94,6 +106,18 @@
     {
       "id": "metric-loading-variants",
       "components": [
+        {
+          "id": "metric-loading-region",
+          "type": "filterGroup",
+          "layout": { "span": 12 },
+          "props": {
+            "filterId": "demo-region",
+            "options": [
+              { "value": "CN", "label": "中国区" },
+              { "value": "OVERSEAS", "label": "海外" }
+            ]
+          }
+        },
         {
           "id": "metric-loading-0",
           "type": "metricCard",

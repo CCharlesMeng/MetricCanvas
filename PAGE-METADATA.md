@@ -174,7 +174,7 @@ IOC Header 默认用 `region-dept=value` / `rep-office=value` 表达地区部或
 IOC Region 的旧链接只传 `region=value` 时，从各层完整授权候选中唯一匹配稳定值后应用层级。匹配完成前阻断依赖查询，跨层同值时提示补充层级。存量页面无需迁移，合成入口 `/pages/ioc-region-url-demo?region=上海代表处`。见[Region 默认 URL 输入](docs/page-metadata/filters.md#region-level-url)。
 6.80：表格列支持 `enumValues` 前端枚举，统一用于单元格、静态筛选选项和导出；原始编码仍参与条件与交互。见[表格列枚举](docs/page-metadata/components/table.md#前端列枚举680)。
 
-数据加载时保留真实组件结构。独立 DQE 查询分别发送请求并受控并发；表格首次加载保留表头，表体和指标卡数值位置都显示从左向右扫光的灰色骨架。筛选、翻页或同一引擎实例内返回页面时可复用上一份完整组件展示，当前结果就绪后原位更新。指标卡在回包后将已显示数值过渡到新值，系统启用减少动态效果时直接更新。旧展示不进入查询、计算或导出。声明与边界见[加载时保留组件结构](docs/page-metadata/data-sources.md#screen-loading)，合成验收入口 `/pages/loading-structure-demo` 和 `/pages/metric-card-loading`。无需新增页面字段或升级 Schema。 级联表格在正确行集和顺序确定后，可通过独立展示通道渐进补列；失败列保留 `--`，正式查询及完整导出仍检查完整结果，见[级联表格渐进补列](docs/page-metadata/data-sources.md#progressive-table-columns)。
+数据加载时保留真实组件结构。独立 DQE 查询分别发送请求并受控并发；表格首次加载保留表头，表体和指标卡数值位置都显示从左向右扫光的灰色骨架。筛选、翻页或同一引擎实例内返回页面时，支持展示回执的组件可复用上一份完整展示，当前结果就绪后原位更新。指标卡首次取数和重查等待均显示灰色扫光骨架，当前结果就绪后直接显示最终值。系统启用减少动态效果时显示静态骨架。旧展示不进入查询、计算或导出。声明与边界见[加载时保留组件结构](docs/page-metadata/data-sources.md#screen-loading)，合成验收入口 `/pages/loading-structure-demo` 和 `/pages/metric-card-loading`。无需新增页面字段或升级 Schema。 级联表格在正确行集和顺序确定后，可通过独立展示通道渐进补列；失败列保留 `--`，正式查询及完整导出仍检查完整结果，见[级联表格渐进补列](docs/page-metadata/data-sources.md#progressive-table-columns)。
 
 6.78 支持期间比较按当前页业务键补查：复用 `pagedJoin.pagination.mode:query`，当期选页后补查上期/去年同期，组合源同层 `compute` 仅允许逐行 delta/ratio，投影字段可声明缺记录补零。主查询决定行域与总数，完整导出逐页补查；计算列不提供全局排序筛选。见[按页期间比较](docs/page-metadata/queries-and-bindings.md#period-comparison-query-page)，合成验收 `/pages/period-comparison-query-page`。
 

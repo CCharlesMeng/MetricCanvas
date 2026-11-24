@@ -5,8 +5,7 @@ import {
 } from '../src/components/metric-card/ring-options';
 
 interface TestedProgressRingOption {
-  animationDuration: number;
-  animationDurationUpdate: number;
+  animation: boolean;
   series: Array<{
     id: string;
     type: string;
@@ -22,8 +21,7 @@ describe('progressRingOption', () => {
     const option = progressRingOption(98.2, 75) as TestedProgressRingOption;
     const [track, progress] = option.series;
 
-    expect(option.animationDuration).toBeGreaterThan(0);
-    expect(option.animationDurationUpdate).toBeGreaterThan(0);
+    expect(option.animation).toBe(false);
     expect(track).toMatchObject({
       id: 'progress-ring-track',
       type: 'pie',

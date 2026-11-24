@@ -24,10 +24,7 @@ export function progressRingOption(value: number, ringPercent = 100): EChartsOpt
   const filledPercent = normalizedRingPercent * (normalizedValue / 100);
 
   return {
-    animationDuration: 500,
-    animationDurationUpdate: 420,
-    animationEasing: 'cubicOut',
-    animationEasingUpdate: 'cubicOut',
+    animation: false,
     series: [
       {
         id: 'progress-ring-track',
@@ -39,7 +36,6 @@ export function progressRingOption(value: number, ringPercent = 100): EChartsOpt
         radius: PROGRESS_RING_RADIUS,
         label: { show: false },
         emphasis: { disabled: true },
-        animation: false,
         data: [
           {
             value: 1,

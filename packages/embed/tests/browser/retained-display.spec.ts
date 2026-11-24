@@ -4,7 +4,7 @@ import { expect, test } from '@playwright/test';
 const document = JSON.parse(readFileSync(new URL('../../../../pages/capabilities/layout/metric-card-loading.json', import.meta.url), 'utf8'));
 const rows: Record<string, unknown>[] = JSON.parse(readFileSync(new URL('../../../../tools/dqe-sim/fixtures/loading-structure-gallery.json', import.meta.url), 'utf8'));
 
-test('same-instance page returns keep old display until the new response, while a new gateway clears it', async ({ page }) => {
+test('metric cards show skeletons on page return and gateway changes', async ({ page }) => {
   let release: () => void = () => {};
   let pending = Promise.resolve();
   let multiplier = 1;
@@ -29,7 +29,8 @@ test('same-instance page returns keep old display until the new response, while 
   multiplier = 2;
   await page.evaluate(document => window.runtime.update({ document, dataGateway: window.__iocGateway }), document);
   await expect(page.locator('[data-retained="true"]')).toHaveCount(8);
-  await expect(first).toHaveText('72');
+  await expect(first.locator('.skeleton.shimmer')).toBeVisible();
+  await expect(first).toHaveText('');
   await expect(page.locator('.loading-spinner')).toHaveCount(0);
   await expect(page.locator('.widget-content').first()).toHaveAttribute('inert', '');
   release();
