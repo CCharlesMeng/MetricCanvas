@@ -1,0 +1,221 @@
+{
+  "case": "metric-card-value-color-version",
+  "invariant": "metric-card-value-color-rule",
+  "input": {
+    "schemaVersion": "6.137",
+    "id": "metric-card-value-color",
+    "layout": "dashboard",
+    "meta": {
+      "title": "指标卡主值着色"
+    },
+    "dataSources": {
+      "values": {
+        "fields": {
+          "gain": {
+            "type": "number",
+            "role": "measure"
+          },
+          "loss": {
+            "type": "number",
+            "role": "measure"
+          },
+          "flat": {
+            "type": "number",
+            "role": "measure"
+          },
+          "missing": {
+            "type": "number",
+            "role": "measure",
+            "nullable": true
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "gain": 2.4,
+              "loss": -1.2,
+              "flat": 0,
+              "missing": null
+            }
+          ]
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "metrics",
+        "components": [
+          {
+            "id": "gain",
+            "type": "metricCard",
+            "layout": {
+              "span": 2
+            },
+            "data": {
+              "main": "values"
+            },
+            "props": {
+              "variant": "primaryDetail",
+              "rows": [
+                {
+                  "label": "正值",
+                  "valueField": {
+                    "field": "gain",
+                    "format": "points-1-signed"
+                  },
+                  "colorRule": {
+                    "mode": "sign",
+                    "positive": "green",
+                    "negative": "red"
+                  },
+                  "changes": [
+                    {
+                      "label": "同比",
+                      "field": {
+                        "field": "gain",
+                        "format": "points-1-signed"
+                      }
+                    },
+                    {
+                      "label": "环比",
+                      "field": {
+                        "field": "loss",
+                        "format": "points-1-signed"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "loss",
+            "type": "metricCard",
+            "layout": {
+              "span": 2
+            },
+            "data": {
+              "main": "values"
+            },
+            "props": {
+              "variant": "primaryDetail",
+              "rows": [
+                {
+                  "label": "负值",
+                  "valueField": {
+                    "field": "loss",
+                    "format": "points-1-signed"
+                  },
+                  "colorRule": {
+                    "mode": "sign",
+                    "positive": "green",
+                    "negative": "red"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "id": "flat",
+            "type": "metricCard",
+            "layout": {
+              "span": 2
+            },
+            "data": {
+              "main": "values"
+            },
+            "props": {
+              "variant": "primaryDetail",
+              "rows": [
+                {
+                  "label": "零值",
+                  "valueField": {
+                    "field": "flat",
+                    "format": "points-1-signed"
+                  },
+                  "colorRule": {
+                    "mode": "sign",
+                    "positive": "green",
+                    "negative": "red"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "id": "missing",
+            "type": "metricCard",
+            "layout": {
+              "span": 2
+            },
+            "data": {
+              "main": "values"
+            },
+            "props": {
+              "variant": "primaryDetail",
+              "rows": [
+                {
+                  "label": "缺失值",
+                  "valueField": {
+                    "field": "missing",
+                    "format": "points-1-signed"
+                  },
+                  "colorRule": {
+                    "mode": "sign",
+                    "positive": "green",
+                    "negative": "red"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "id": "default",
+            "type": "metricCard",
+            "layout": {
+              "span": 2
+            },
+            "data": {
+              "main": "values"
+            },
+            "props": {
+              "variant": "primaryDetail",
+              "rows": [
+                {
+                  "label": "原有主值",
+                  "valueField": {
+                    "field": "gain",
+                    "format": "points-1-signed"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/rows/0/colorRule",
+      "message": "指标卡主值支持 colorRule 着色 由 6.138 引入，文档声明的是 6.137"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/rows/0/colorRule",
+      "message": "指标卡主值支持 colorRule 着色 由 6.138 引入，文档声明的是 6.137"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/2/props/rows/0/colorRule",
+      "message": "指标卡主值支持 colorRule 着色 由 6.138 引入，文档声明的是 6.137"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/3/props/rows/0/colorRule",
+      "message": "指标卡主值支持 colorRule 着色 由 6.138 引入，文档声明的是 6.137"
+    }
+  ]
+}

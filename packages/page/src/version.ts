@@ -27,7 +27,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  */
 export const UNRESTRICTED_FILTER_CLEAR_MINOR = 124;
 export const INDEPENDENT_EXCLUSION_CANDIDATES_MINOR = 125;
-const CURRENT_MINOR = 137;
+const CURRENT_MINOR = 138;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -82,6 +82,12 @@ function bindingOperatorUsed(query:Record<string,unknown>|undefined):boolean {
 }
 
 export const pageCapabilities = {
+  'metric-card-value-color-rule': {
+    minor: 138,
+    legacyReadable: false,
+    description: '指标卡主值支持 colorRule 着色',
+    usedAt: document => metricCardRowPaths(document, row => has(row, 'colorRule') ? ['/colorRule'] : [], ['rows'])
+  },
   'table-expand': {
     minor: 137,
     legacyReadable: false,
@@ -1246,13 +1252,14 @@ function metricCardTipPaths(document: unknown): string[] {
 
 function metricCardRowPaths(
   document: unknown,
-  propertyPaths: (row: Json | undefined) => string[]
+  propertyPaths: (row: Json | undefined) => string[],
+  groups: readonly ('rows' | 'secondaryRows')[] = ['rows', 'secondaryRows']
 ): string[] {
   const paths: string[] = [];
   walkDocumentComponents(document, (component, path) => {
     if (component.type !== 'metricCard') return;
     const metricProps = props(component);
-    for (const key of ['rows', 'secondaryRows']) {
+    for (const key of groups) {
       const rows = metricProps?.[key];
       if (!Array.isArray(rows)) continue;
       rows.forEach((row, index) => {

@@ -22,6 +22,8 @@
 
 条件为假、等待或出错时隐藏对应变化项。卡内指标行、主值及其他构件继续呈现，可见变化项沿用声明顺序和原字段绑定。页面、详情与 PDF/PNG 导出共用展示投影，取数继续使用已声明的数据槽。
 
+变化项的 `colorRule`、`tone` 和默认正负规则对数值、单位和趋势箭头着色，标签沿用卡片的中性文字颜色。例如「环比 +3%」可将 `+3%` 显示为红色，「环比」仍为灰色。
+
 完整场景见 [指标卡变化项显隐](../examples/metric-card-change-visibility.json)，Playground 入口为 `/pages/metric-card-change-visibility`。
 
 <a id="metric-definition-tip"></a>
@@ -79,9 +81,25 @@
 
 `/pages/metric-card-loading` 使用 DQE Sim 合成数据。切换区域可观察全部指标卡形态的加载与数值更新，覆盖主数值、次级指标、变化值、完成率及宽窄屏。
 
+<a id="metric-card-value-color"></a>
+
+## 主值着色 6.138
+
+在 `props.rows[].colorRule` 声明已有的正负或固定颜色规则，给主指标数值着色。正负模式使用字段格式对应的正负判定，零值和缺失值沿用原有呈现。规则应用在数值本身，指标名称、独立单位、次级指标和点击动作沿用原样。省略时继续使用卡片默认主值颜色。
+
+```json
+{
+  "label": "利润偏差",
+  "valueField": { "field": "margin-gap", "format": "points-1-signed" },
+  "colorRule": { "mode": "sign", "positive": "green", "negative": "red" }
+}
+```
+
+配置示例见 [指标卡主值着色](../examples/metric-card-value-color.json)，Playground 入口为 `/pages/metric-card-value-color`。
+
 ## 主指标与多行次级指标 6.65
 
-`props.variant: "primaryDetail"` 表达一张卡内的一个主指标和零到多行次级指标。`rows` 必须恰好一行，名称在上、大数值在下；`secondaryRows` 按声明顺序在其下逐行呈现，每行是指标名及指标值，不设数量上限。不需要次级指标时省略 `secondaryRows`，不能写空数组。它们是独立字段绑定，不能把次级指标塞进表示变化信息的 `changes`。
+`props.variant: "primaryDetail"` 表达一张卡内的一个主指标和零到多行次级指标。`rows` 必须恰好一行，名称在上、大数值在下；`secondaryRows` 按声明顺序在其下逐行呈现，每行是指标名及指标值，不设数量上限。不需要次级指标时省略 `secondaryRows`，不能写空数组。它们是独立字段绑定，不能把次级指标塞进表示变化信息的 `changes`。主指标的多条变化项在主值下默认纵排，每条的标签和数值同行。
 
 每一行次级指标的上方间距为8 CSS px（首行距主指标8px，其后行距上一行8px），水平名称与数值间距8px。字体为 `"PingFang SC", sans-serif`、normal、400、14px、字距0、左对齐；指标名为 `rgba(0,0,0,0.5)`、行高20px，指标值及单位为 `rgba(0,0,0,0.8)`、行高17px。长名称允许换行，零值和缺失值继续沿用字段格式及缺失占位规则。
 
@@ -122,7 +140,7 @@ Dashboard 的 plain/card 内容分区可以在顶层相邻指标卡的 `layout.b
 数值与单位遵循[统一语义格式](../field-bindings-and-formats.md#numeric-value-display)：组件显式格式优先，自动金额和数量不再重复追加旧的元/万等单位标签。比率变化项使用正负号，即使 `showTrendArrows: true` 也不显示箭头；绝对变化项保留既有箭头行为。进度环图形可裁到0–100%，文字仍按真实比率格式化，不把超过100%的真实值改成100%。缺失比率默认显示 `—`，自定义缺失文字按原声明。合成场景 `/pages/semantic-numeric-display`。
 
 
-页面协议 6.137。结构真源为本册[schema.json](../schema.json)，SHA256 `45ce0c52efa0f945cae978f9511fd8bf6d2bb6e3745b4471d7a31943915391b3`。字段表自动生成；可选不等于有默认值。
+页面协议 6.138。结构真源为本册[schema.json](../schema.json)，SHA256 `985ad212d3c3da553ae05fba9f8c73f262cc550749766715659afd0a6bfb3ddc`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -605,6 +623,26 @@ Schema位置：`#/definitions/metricCardComponent/properties/props/properties/ro
 |---|---|---|---|---|
 | 引用 #/definitions/condition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
+<a id="schema-232f646566696e6974696f6e732f6d657472696343617264436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f726f77732f6974656d732f70726f706572746965732f636f6c6f7252756c65"></a>
+
+### `@metricCardComponent.props.rows[].colorRule`
+
+Schema位置：`#/definitions/metricCardComponent/properties/props/properties/rows/items/properties/colorRule`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 主指标数值的着色规则 |
+
+<a id="schema-232f646566696e6974696f6e732f6d657472696343617264436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f726f77732f6974656d732f70726f706572746965732f636f6c6f7252756c652f616c6c4f662f30"></a>
+
+### `@metricCardComponent.props.rows[].colorRule · allOf[0]`
+
+Schema位置：`#/definitions/metricCardComponent/properties/props/properties/rows/items/properties/colorRule/allOf/0`。目标：[#/definitions/colorRule](../field-bindings-and-formats.md#schema-232f646566696e6974696f6e732f636f6c6f7252756c65)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/colorRule | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
 <a id="schema-232f646566696e6974696f6e732f6d657472696343617264436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f7365636f6e64617279526f7773"></a>
 
 ### `@metricCardComponent.props.secondaryRows`
@@ -948,6 +986,7 @@ Schema位置：`#/definitions/metricCardComponent/properties/props/properties/ac
 - `metric-card-primary-detail`：主次指标卡有且仅有一个主指标，次级字段和链接复用既有契约。反例：[metric-primary-multiple](../errors/metric-primary-multiple.json)、[metric-primary-version](../errors/metric-primary-version.json)、[metric-secondary-field](../errors/metric-secondary-field.json)、[metric-secondary-link](../errors/metric-secondary-link.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `metric-card-select-tab`：指标值只能切换当前页目标容器中已声明的页签。反例：[metric-select-tab-missing-container](../errors/metric-select-tab-missing-container.json)、[metric-select-tab-invalid-container-type](../errors/metric-select-tab-invalid-container-type.json)、[metric-select-tab-unknown-tab](../errors/metric-select-tab-unknown-tab.json)、[metric-select-tab-link-conflict](../errors/metric-select-tab-link-conflict.json)、[metric-select-tab-secondary-link-conflict](../errors/metric-select-tab-secondary-link-conflict.json)、[metric-select-tab-card-level](../errors/metric-select-tab-card-level.json)、[metric-select-tab-unsupported-row-action](../errors/metric-select-tab-unsupported-row-action.json)、[metric-select-tab-version-floor](../errors/metric-select-tab-version-floor.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `metric-card-change-visibility`：6.136 指标卡主、次指标行的变化项使用统一展示条件。反例：[metric-change-visibility-version](../errors/metric-change-visibility-version.json)、[metric-change-visibility-filter](../errors/metric-change-visibility-filter.json)、[metric-change-visibility-period](../errors/metric-change-visibility-period.json)、[metric-change-visibility-row](../errors/metric-change-visibility-row.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `metric-card-value-color-rule`：6.138 指标卡主值使用 colorRule。反例：[metric-card-value-color-version](../errors/metric-card-value-color-version.json)、[metric-card-value-color-secondary](../errors/metric-card-value-color-secondary.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 
@@ -965,6 +1004,7 @@ Schema位置：`#/definitions/metricCardComponent/properties/props/properties/ac
 - [metric-card-select-tab](../examples/metric-card-select-tab.json)：完整合法页面；查询仅为静态契约证据。
 - [metric-card-definition-tip](../examples/metric-card-definition-tip.json)：完整合法页面；查询仅为静态契约证据。
 - [metric-card-change-visibility](../examples/metric-card-change-visibility.json)：完整合法页面；查询仅为静态契约证据。
+- [metric-card-value-color](../examples/metric-card-value-color.json)：完整合法页面；查询仅为静态契约证据。
 
 局部片段提取自[完整页面](../examples/component-metricCard.json)的`#/sections/0/components/0`；此片段依赖完整页面的数据源/字段，不能单独作为页面校验。
 

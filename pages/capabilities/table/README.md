@@ -4,7 +4,7 @@
 
 ## 右上角展开表格
 
-运行 `pnpm dev:playground` 后打开 `/pages/table-expand`，使用内联合成数据。表格 `details` 通过 `props.expand: true` 显示右上角放大按钮，初始宽度由分区列轨和 `layout.span` 决定。先按金额排序，再放大表格。同行说明收起，前后两行保留，左上方排序后的行顺序一致。还原后可继续排序。移植时使用目标表格自己的字段与查询。
+运行 `pnpm dev:playground` 后打开 `/pages/table-expand`，使用内联合成数据。表格 `details` 通过 `props.expand: true` 显示右上角放大按钮，初始宽度由分区列轨和 `layout.span` 决定。表格横向滚动在自身边缘停止。先按金额排序，再放大表格。同行说明收起，前后两行保留，左上方排序后的行顺序一致。还原后可继续排序。移植时使用目标表格自己的字段与查询。
 
 ## 组合查询成员搜索
 

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.137",
+  "schemaVersion": "6.138",
   "id": "contract-business-overview",
   "layout": "dashboard",
   "meta": {
@@ -1208,6 +1208,11 @@
                   "field": "margin-gap",
                   "format": "points-1-signed",
                   "missingText": "--"
+                },
+                "colorRule": {
+                  "mode": "sign",
+                  "positive": "green",
+                  "negative": "red"
                 }
               }
             ]
@@ -2110,6 +2115,11 @@
                   "field": "margin-gap",
                   "format": "points-1-signed",
                   "missingText": "--"
+                },
+                "colorRule": {
+                  "mode": "sign",
+                  "positive": "green",
+                  "negative": "red"
                 }
               }
             ]
@@ -3005,6 +3015,11 @@
                   "field": "margin-gap",
                   "format": "points-1-signed",
                   "missingText": "--"
+                },
+                "colorRule": {
+                  "mode": "sign",
+                  "positive": "green",
+                  "negative": "red"
                 }
               }
             ]

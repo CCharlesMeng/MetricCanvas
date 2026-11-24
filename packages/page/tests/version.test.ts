@@ -18,6 +18,7 @@ const introducedAt: Record<string, number> = {
   'ioc-header-filter-rows':135,
   'metric-card-change-visibility':136,
   'table-expand':137,
+  'metric-card-value-color-rule':138,
   'filter-source-candidate-levels':122,
   'native-ioc-filter-preparation':120,
   'table-absolute-display-limit':119,

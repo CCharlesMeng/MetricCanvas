@@ -68,7 +68,7 @@ recordList使用显式items.fields约束每条嵌套记录，限制在已支持�
 ready 数据快照和数据网关结果可以附带 cellFallbacks，按当前快照行下标及稳定页面字段 id 记录 raw 与 reason。所有行投影和序列化同步重排证据，派生计算不会把输入原文变成输出值。普通 query 初始行保存原始查询标量，重新打开时归一化；pagedJoin 的已归一化 initial 可附带相同证据，且不改变业务字段字典。初始行、动态查询和 Excel 保持一致。该字段是结果的展示证据，不是页面表达式或展示策略开关。
 
 
-页面协议 6.137。结构真源为本册[schema.json](schema.json)，SHA256 `45ce0c52efa0f945cae978f9511fd8bf6d2bb6e3745b4471d7a31943915391b3`。字段表自动生成；可选不等于有默认值。
+页面协议 6.138。结构真源为本册[schema.json](schema.json)，SHA256 `985ad212d3c3da553ae05fba9f8c73f262cc550749766715659afd0a6bfb3ddc`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -2007,7 +2007,7 @@ Schema位置：`#/definitions/cellFallbacks/propertyNames`。
 - `#/definitions/scalar/anyOf/0`：[合法完整页面](examples/component-barChart.json)，JSON Pointer `#/dataSources/usage/source/rows/0/month`。
 - `#/definitions/scalar/anyOf/1`：[合法完整页面](examples/component-metricCard.json)，JSON Pointer `#/dataSources/metrics/source/rows/0/amount`。
 - `#/definitions/scalar/anyOf/2`：[合法完整页面](examples/component-fieldText.json)，JSON Pointer `#/dataSources/notes/source/rows/0/flag`。
-- `#/definitions/scalar/anyOf/3`：[合法完整页面](examples/component-fieldText.json)，JSON Pointer `#/dataSources/notes/source/rows/0/at`。
+- `#/definitions/scalar/anyOf/3`：[合法完整页面](examples/component-metricCard-primaryDetail.json)，JSON Pointer `#/dataSources/values/source/rows/0/missing`。
 - `#/definitions/fieldValue/anyOf/1`：[合法完整页面](examples/component-fieldText.json)，JSON Pointer `#/dataSources/notes/source/rows/0/items`。
 - `#/definitions/queryField/anyOf/0`：[合法完整页面](examples/component-rankingDetailCard.json)，JSON Pointer `#/dataSources/customers/fields/name`。
 - `#/definitions/queryScalarField/oneOf/0`：[合法完整页面](examples/component-rankingDetailCard.json)，JSON Pointer `#/dataSources/customers/fields/name`。

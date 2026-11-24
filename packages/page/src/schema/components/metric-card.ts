@@ -39,6 +39,10 @@ const metricCardRowZ = z
   })
   .strict();
 
+const metricCardPrimaryRowZ = metricCardRowZ.extend({
+  colorRule: colorRuleZ.optional().describe('主指标数值的着色规则')
+});
+
 const metricCardProgressZ = z
   .object({
     valueField: fieldBindingZ,
@@ -77,7 +81,7 @@ export const metricCardComponentZ = z
           ])
           .optional(),
         secondaryTitle: nonEmptyTextValueZ.optional(),
-        rows: z.array(metricCardRowZ).min(1),
+        rows: z.array(metricCardPrimaryRowZ).min(1),
         secondaryRows: z.array(metricCardRowZ).min(1).optional(),
         panelLayout: z.enum(['stacked', 'twoColumn']).optional(),
         showTrendArrows: z.boolean().optional(),

@@ -310,7 +310,7 @@ value:0 是有效常量；null 遵循该图表的缺失行为。常量可同级�
 `/pages/chart-table-unit` 的 inline 合成场景覆盖柱线混合图、饼图图例、分组列、汇总、缩放、百分号、零、负值及缺失；不代表真实 DQE/Relay。
 
 
-页面协议 6.137。结构真源为本册[schema.json](schema.json)，SHA256 `45ce0c52efa0f945cae978f9511fd8bf6d2bb6e3745b4471d7a31943915391b3`。字段表自动生成；可选不等于有默认值。
+页面协议 6.138。结构真源为本册[schema.json](schema.json)，SHA256 `985ad212d3c3da553ae05fba9f8c73f262cc550749766715659afd0a6bfb3ddc`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -931,8 +931,8 @@ Schema位置：`#/definitions/tableData/propertyNames`。
 
 - `#/definitions/fieldBinding/anyOf/0`：[合法完整页面](examples/component-metricCard.json)，JSON Pointer `#/sections/0/components/0/props/rows/0/valueField`。
 - `#/definitions/staticFieldBinding/anyOf/0`：[合法完整页面](examples/component-metricCard.json)，JSON Pointer `#/sections/0/components/0/props/rows/0/valueField`。
-- `#/definitions/staticFieldBinding/anyOf/1`：[合法完整页面](examples/inline-report.json)，JSON Pointer `#/sections/0/components/1/props/rows/0/valueField`。
-- `#/definitions/staticFieldBinding/anyOf/1/properties/format/anyOf/0`：[合法完整页面](examples/inline-report.json)，JSON Pointer `#/sections/0/components/1/props/rows/0/valueField/format`。
+- `#/definitions/staticFieldBinding/anyOf/1`：[合法完整页面](examples/component-metricCard-primaryDetail.json)，JSON Pointer `#/sections/0/components/0/props/rows/0/valueField`。
+- `#/definitions/staticFieldBinding/anyOf/1/properties/format/anyOf/0`：[合法完整页面](examples/component-metricCard-primaryDetail.json)，JSON Pointer `#/sections/0/components/0/props/rows/0/valueField/format`。
 - `#/definitions/staticFieldBinding/anyOf/1/properties/format/anyOf/1`：[合法完整页面](examples/table-time-format.json)，JSON Pointer `#/sections/0/components/0/props/columns/1/field/format`。
 - `#/definitions/fieldBinding/anyOf/1`：[合法完整页面](examples/time-binding-branches-page.json)，JSON Pointer `#/sections/0/components/0/props/rows/0/valueField`。
 - `#/definitions/colorRule/oneOf/0`：[合法完整页面](examples/explicit-presentation-page.json)，JSON Pointer `#/sections/0/components/0/props/columns/2/colorRule`。

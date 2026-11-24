@@ -66,11 +66,13 @@
                   {
                     "label": "同比",
                     "field": { "data": "main", "field": "yoy", "format": "percent-0" },
+                    "colorRule": { "mode": "sign", "positive": "red", "negative": "green" },
                     "visibleWhen": { "filter": "period", "part": "mode", "op": "in", "values": ["year", "quarter"] }
                   },
                   {
                     "label": "环比",
                     "field": { "data": "main", "field": "mom", "format": "percent-0" },
+                    "colorRule": { "mode": "sign", "positive": "red", "negative": "green" },
                     "visibleWhen": { "filter": "period", "part": "mode", "op": "eq", "value": "month" }
                   }
                 ]
