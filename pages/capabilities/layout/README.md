@@ -27,6 +27,8 @@
 
 入口 `/pages/metric-card-select-tab`。[页面 JSON](metric-card-select-tab.json)。
 
+同页「区域超期单数」使用卡片级条件导航。选择中国区时进入 `/pages/ioc-header-title-link-target?project=P001`，选择海外时进入 `/pages/playground-route-target?project-id=ORDERS`，选择其他区域时无跨页地址。主指标的普通点击、键盘与新标签页打开从相同状态解析地址。合成数据内联，检查链接无需连接 DQE。
+
 启动 `pnpm dev:dqe`，或分别运行 `pnpm dev:playground` 与 `pnpm sim:dqe`。可用 `?demo-context=订单监控` 覆盖卡片标题。数值和明细为合成演示，明细查询通过本地 DQE Sim 执行。
 
 1. 默认显示订单概览。切换「订单区域」到「海外」。超期明细首次激活前不发明细请求。

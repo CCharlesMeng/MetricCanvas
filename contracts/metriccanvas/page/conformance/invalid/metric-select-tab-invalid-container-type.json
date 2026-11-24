@@ -205,6 +205,63 @@
                 {
                   "label": "海外",
                   "value": "OVERSEAS"
+                },
+                {
+                  "label": "其他区域",
+                  "value": "OTHER"
+                }
+              ]
+            }
+          },
+          {
+            "id": "order-region-navigation",
+            "type": "metricCard",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "order-metrics"
+            },
+            "props": {
+              "variant": "primaryDetail",
+              "rows": [
+                {
+                  "label": "区域超期单数",
+                  "valueField": {
+                    "data": "main",
+                    "field": "overdueCount"
+                  },
+                  "link": true
+                }
+              ],
+              "actions": [
+                {
+                  "on": "click",
+                  "enabledWhen": {
+                    "filter": "orders-region",
+                    "part": "values",
+                    "op": "containsAny",
+                    "values": [
+                      "CN"
+                    ]
+                  },
+                  "navigate": {
+                    "href": "/pages/ioc-header-title-link-target?project=P001"
+                  }
+                },
+                {
+                  "on": "click",
+                  "navigate": {
+                    "visibleWhen": {
+                      "filter": "orders-region",
+                      "part": "values",
+                      "op": "containsAny",
+                      "values": [
+                        "OVERSEAS"
+                      ]
+                    },
+                    "href": "/pages/playground-route-target?project-id=ORDERS"
+                  }
                 }
               ]
             }

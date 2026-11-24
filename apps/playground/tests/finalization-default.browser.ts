@@ -65,3 +65,15 @@ test('still executes the schema lookup when a navigation period is supplied', as
   await expect(page.locator('[data-period-filter]').getByRole('combobox')).toHaveValue('2026-08');
   await expect(page.getByText('2026-08 至 2026-08；定稿查询 1 次', {exact: true})).toBeVisible();
 });
+
+test('a mode-only drill-through reapplies each destination cutoff in both directions', async ({page}) => {
+  await page.goto('/pages/finalization-default-time?period-filter=last12Months');
+  const october = page.getByText('2025-11 至 2026-10；定稿查询 1 次', {exact: true});
+  await expect(october).toBeVisible();
+  await page.getByRole('button', {name: '按详情页定稿月查看近一年'}).click();
+  await expect(page).toHaveURL(/finalization-default-time-detail/);
+  await expect(page.getByText('2025-12 至 2026-11；定稿查询 1 次', {exact: true})).toBeVisible();
+  await page.getByRole('button', {name: '按总览页定稿月查看近一年'}).click();
+  await expect(page).toHaveURL(/\/pages\/finalization-default-time\?/);
+  await expect(october).toBeVisible();
+});
