@@ -160,7 +160,15 @@
   .inline.with-rows .header-main{display:flex;flex-wrap:wrap;align-items:center;gap:12px 0;}
   .inline.with-rows .filter-region{flex-basis:240px;}
   .filter-row{display:flex;flex-wrap:wrap;justify-content:flex-end;align-items:center;gap:8px 16px;min-width:0;}
-  .filter-row-title{max-width:100%;font-size:14px;font-weight:600;overflow-wrap:anywhere;}
+  .filter-row-title {
+    max-width: 100%;
+    color: #595959;
+    font-family: Helvetica, Arial, PingFangSC-Regular, 'Hiragino Sans GB', 'Microsoft YaHei', 微软雅黑, 'Microsoft JhengHei';
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 22px;
+    overflow-wrap: anywhere;
+  }
   .filter-row .row-controls{flex:0 1 auto;justify-content:flex-end;align-items:center;}
   .filter-overflow{position:relative;z-index:70;flex:none;margin-left:auto;}
   .filter-overflow summary{display:inline-flex;box-sizing:border-box;height:var(--mc-filter-control-height,34px);align-items:center;gap:6px;padding:0 12px;color:#191919;background:#fff;border:1px solid var(--mc-filter-control-border-color,#c2c2c2);border-radius:var(--mc-filter-control-radius,6px);cursor:pointer;font-size:var(--mc-filter-font-size,14px);list-style:none;white-space:nowrap;}
