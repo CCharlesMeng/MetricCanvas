@@ -1,7 +1,7 @@
 {
   "interfaceVersion": "1.0",
-  "contentVersion": "1-ad9e6d809eda28bb",
-  "contentSha256": "ad9e6d809eda28bbd744ea132ab2f61b1165d334b79de81b1fdf2e0af4e2c1e2",
+  "contentVersion": "1-e35c7b65a5f51649",
+  "contentSha256": "e35c7b65a5f51649de05eb3f5c0be6fa100760be1ac6cca56746867152a59a29",
   "files": [
     {
       "file": "authoring-contracts/authored/adapter-interface.md",
@@ -3045,7 +3045,7 @@
     },
     {
       "file": "product-contracts/manifest.json",
-      "sha256": "122c4358a2fbd61966de47818dbbe17268681ea7b06d711ac46a9397e966dd30"
+      "sha256": "ac7816ec4a7f4b7b73bddd97cf312d643b1f1f013dcb37d7513d5001a4239410"
     },
     {
       "file": "product-contracts/page/component-catalog.json",
@@ -3585,11 +3585,11 @@
     },
     {
       "file": "product-contracts/page/conformance/invalid/dimension-filter-url-opt-out-true.json",
-      "sha256": "8069cab11b91708d1271782e5827414fcf3ee865e8e76a7ee573ab2b1e26c64b"
+      "sha256": "d5d51acf21a81cc681a3eead51fba206c7336cf926ffc33587af3cf760f1f613"
     },
     {
       "file": "product-contracts/page/conformance/invalid/dimension-filter-url-opt-out-version.json",
-      "sha256": "cf72a2e63bd44c2ade8938446b24ce273f748a5375bc11cc8435281677532182"
+      "sha256": "c1f5028e77d08ce6fdaaa7a5014e8a9b685f357fe1a64fc9cee115db4d4495e6"
     },
     {
       "file": "product-contracts/page/conformance/invalid/dimension-measure-legacy.json",
@@ -5469,7 +5469,7 @@
     },
     {
       "file": "product-contracts/page/conformance/valid/business-result-metrics.json",
-      "sha256": "8f838cc91e8434d097d63197fa8e2b55b5d3489cb019f5a0589def2ece19657c"
+      "sha256": "faad4a4003fb2e6de84b7c1c6d635eda7f20cfd9244bd9797a9f91c93c75731b"
     },
     {
       "file": "product-contracts/page/conformance/valid/calendar-window-page.json",
@@ -6613,7 +6613,7 @@
     },
     {
       "file": "references/authoring-knowledge/model.json",
-      "sha256": "f3dadc41b34370dafc2e562e6217091adbcfa4f1b2ee8fa053f4e77f95b0b898"
+      "sha256": "c0c0f728783ba46f5086e5a1bd73490aa1ef4867b0088f359b816fe6142d6da8"
     },
     {
       "file": "references/example-guides/bar-category-order/bar-category-order.md",
@@ -9165,7 +9165,7 @@
     },
     {
       "file": "references/page-metadata/examples/business-result-metrics.json",
-      "sha256": "8f838cc91e8434d097d63197fa8e2b55b5d3489cb019f5a0589def2ece19657c"
+      "sha256": "faad4a4003fb2e6de84b7c1c6d635eda7f20cfd9244bd9797a9f91c93c75731b"
     },
     {
       "file": "references/page-metadata/examples/calendar-window-page.json",
@@ -10301,7 +10301,7 @@
     },
     {
       "file": "runtime/contract-alignment.json",
-      "sha256": "aaa974ebc9bdebc235dc4d4f3f45d520f6f56c127da7dbe4aa8b40dcb014634f"
+      "sha256": "21a6e7e6e241719782e4fdc8c0ecebc762bc98d7f54f6b281faf337542dd7235"
     },
     {
       "file": "runtime/coverage.json",
@@ -10349,7 +10349,7 @@
     },
     {
       "file": "runtime/source-identity.json",
-      "sha256": "04f8f35e73cdd07d9f6e7387fbe10fbcea217cdcbf4ef2759f9fa57ca3fe70b1"
+      "sha256": "3750c39189679e60b64caeefc6c7d77198ce4c5c7815a34e0c79e15181d5d5ed"
     },
     {
       "file": "runtime/tool-behavior.md",
@@ -10459,7 +10459,7 @@
   "alignedWith": {
     "productContractVersion": "1.0.0-rc.4",
     "productManifest": "contract-snapshot/manifest.json",
-    "productManifestSha256": "122c4358a2fbd61966de47818dbbe17268681ea7b06d711ac46a9397e966dd30",
+    "productManifestSha256": "ac7816ec4a7f4b7b73bddd97cf312d643b1f1f013dcb37d7513d5001a4239410",
     "authoringContractVersion": "0.3.1",
     "authoringManifest": "contracts/manifest.json",
     "authoringManifestSha256": "dafe34e2255d325867c374df2a609b233bae97ee112f2c0b4be81003f2383cfa",

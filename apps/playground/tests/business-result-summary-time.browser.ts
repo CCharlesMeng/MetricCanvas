@@ -10,6 +10,17 @@ type Query = {
   order: Record<string, unknown>;
 };
 
+const discountMetric = '净商务折扣（原价）';
+const closureMetric = '决策闭环任务总体闭环率(投标-商务-合同)';
+
+function aggregateQueries(requests: Query[]): Query[] {
+  return requests.filter(query => query.output_dims.length === 0 && query.filter.time?.is_aggregate === true);
+}
+
+function isDiscountAggregate(query: Query): boolean {
+  return query.output_metrics.length === 1 && query.output_metrics[0]!.startsWith(discountMetric);
+}
+
 const chartSelector = '[data-component="net-discount-chart/net-discount-card"] .bar-chart .echart';
 const chartRuntime = `/@fs${fileURLToPath(new URL('../../../packages/engine/widgets/src/shared/echarts-runtime.ts', import.meta.url))}`;
 
@@ -27,9 +38,14 @@ test('both tables share the backend aggregate and the chart shows a horizontal m
     await expect(row.getByRole('cell',{name:'合计',exact:true})).toBeVisible();
     await expect(row).not.toContainText('—');
   }
-  const aggregate = requests.filter(query => query.output_dims.length === 0 && query.filter.time?.is_aggregate === true);
-  expect(aggregate).toHaveLength(4);
-  const closureMetric = '决策闭环任务总体闭环率(投标-商务-合同)';
+  const aggregate = aggregateQueries(requests);
+  expect(aggregate).toHaveLength(5);
+  const discount = aggregate.filter(isDiscountAggregate);
+  expect(discount.map(query => query.output_metrics[0])).toEqual(expect.arrayContaining([discountMetric, discountMetric + '月变化']));
+  for (const query of discount) expect(query.filter.dims).toEqual(expect.arrayContaining([
+    expect.objectContaining({dim_name:'子业务类型编码',dim_value_list:['SUB_SERVICE_TYPE_PUBLIC_REGION']}),
+    expect.objectContaining({dim_name:'云服务',is_exclude:true,dim_value_list:expect.arrayContaining(['ModelArts'])}),
+  ]));
   expect(aggregate.filter(query => query.output_metrics.includes(closureMetric))
     .flatMap(query => query.filter.dims)).toEqual(expect.arrayContaining([
     expect.objectContaining({dim_name:'决策业务类型',dim_value_list:['商务']}),
@@ -37,7 +53,8 @@ test('both tables share the backend aggregate and the chart shows a horizontal m
   ]));
   for (const query of aggregate) {
     expect(query.filter.time).toEqual({period:'month',start:'2026-10',end:'2026-10',is_aggregate:true});
-    expect(query.filter.dims.map(dim => dim.dim_name)).toEqual(query.output_metrics.includes(closureMetric) ? ['决策业务类型'] : []);
+    if (query.output_metrics.includes(closureMetric)) expect(query.filter.dims.map(dim => dim.dim_name)).toEqual(['决策业务类型']);
+    if (!query.output_metrics.includes(closureMetric) && !isDiscountAggregate(query)) expect(query.filter.dims).toEqual([]);
     expect(query.order).toEqual({});
   }
 
@@ -62,6 +79,76 @@ test('both tables share the backend aggregate and the chart shows a horizontal m
     averageType:'line',averageMarkers:false,averageValues:[expect.any(Number)],
     monthlyColor:'#fec72a',monthlyMarkers:{symbol:'circle',show:true,all:true},monthlyPointColors:['#fec72a']
   });
+});
+
+test('refreshes just the discount totals for discount filters and all totals for the common filters', async ({page}) => {
+  await page.setViewportSize({width:1600,height:850});
+  const requests: Query[] = [];
+  page.on('request', request => {
+    if (request.method() === 'POST' && request.url().endsWith('/dsl/execute')) {
+      requests.push(...(request.postDataJSON().dsl_list as Query[]));
+    }
+  });
+  await page.goto('/pages/business-result-metrics?region=&mtime=month:2026-10');
+  const header = page.locator('[data-ioc-header]');
+  const pinned = page.locator('tr[data-pinned-top]');
+  await expect(pinned).toHaveCount(2);
+  const summaryCells = 'td:not([data-row-number])';
+  const original = await pinned.first().locator(summaryCells).allTextContents();
+
+  requests.length = 0;
+  await header.getByRole('button',{name:'业务类型',exact:true}).click();
+  await header.getByRole('tree').getByRole('button',{name:'华为公有云CORE',exact:true}).click();
+  await expect.poll(() => aggregateQueries(requests).length).toBeGreaterThanOrEqual(2);
+  for (const query of aggregateQueries(requests)) {
+    expect(isDiscountAggregate(query)).toBe(true);
+    expect(query.filter.dims).toContainEqual(expect.objectContaining({
+      dim_name:'业务类型编码',dim_value_list:['SERVICE_TYPE_HUAWEI_PUBLIC_CLOUD_CORE']
+    }));
+  }
+  await expect(pinned).toHaveCount(2);
+
+  requests.length = 0;
+  const service = '模拟云服务 16';
+  await header.getByRole('button',{name:'云服务排除项',exact:true}).press('ArrowDown');
+  const cloud = header.getByRole('dialog',{name:'云服务排除项候选'});
+  await cloud.getByRole('textbox').fill(service);
+  await cloud.getByRole('option',{name:service,exact:true}).click();
+  await expect.poll(() => aggregateQueries(requests).length).toBeGreaterThanOrEqual(2);
+  for (const query of aggregateQueries(requests)) {
+    expect(isDiscountAggregate(query)).toBe(true);
+    expect(query.filter.dims).toContainEqual(expect.objectContaining({
+      dim_name:'云服务',is_exclude:true,dim_value_list:expect.arrayContaining([service])
+    }));
+  }
+  await expect(pinned).toHaveCount(2);
+  for (const row of await pinned.all()) {
+    await expect(row.locator(summaryCells).nth(1)).not.toHaveText(original[1]!);
+    expect((await row.locator(summaryCells).allTextContents()).slice(3)).toEqual(original.slice(3));
+  }
+  await page.keyboard.press('Escape');
+
+  requests.length = 0;
+  await header.getByRole('button',{name:'客户分类',exact:true}).press('ArrowDown');
+  await header.getByRole('option',{name:'核心NA',exact:true}).click();
+  await expect.poll(() => aggregateQueries(requests).length).toBeGreaterThanOrEqual(5);
+  for (const query of aggregateQueries(requests)) {
+    expect(query.filter.dims).toContainEqual(expect.objectContaining({dim_name:'客户级别',dim_value_list:['核心NA']}));
+  }
+  await expect(pinned).toHaveCount(2);
+
+  requests.length = 0;
+  await header.getByRole('button',{name:'区域',exact:true}).click();
+  await header.getByRole('tree').getByRole('button',{name:'华东地区部',exact:true}).click();
+  await expect.poll(() => aggregateQueries(requests).length).toBeGreaterThanOrEqual(5);
+  for (const query of aggregateQueries(requests)) {
+    expect(query.filter.dims).toEqual(expect.arrayContaining([
+      expect.objectContaining({dim_name:'客户级别',dim_value_list:['核心NA']}),
+      expect.objectContaining({dim_name:'地区部',dim_value_list:['CN-EAST']}),
+    ]));
+  }
+  await expect(pinned).toHaveCount(1);
+  await expect(pinned).not.toContainText('—');
 });
 
 for (const period of ['quarter:2026-Q3','year:2026']) {

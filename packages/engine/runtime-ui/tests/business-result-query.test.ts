@@ -1,6 +1,6 @@
 import {expect,it} from 'vitest';
 import {parsePage} from '@metriccanvas/page';
-import {resolvePeriodSelection,type DataSnapshot,type EffectiveQuery,type Page} from '@metriccanvas/page/internal';
+import {mainColumnField,resolvePeriodSelection,tableColumnLeaves,type DataSnapshot,type EffectiveQuery,type Page} from '@metriccanvas/page/internal';
 import {createSourceProgram,type FilterValue} from '@metriccanvas/data-execution/runtime';
 import type {RuntimeDataGateway} from '../../runtime/src';
 import business from '../../../../pages/temporary/business-result-pinned-diagnosis-20261102/business-result-metrics.json';
@@ -59,7 +59,7 @@ it('renders the supplied business page with selection policies and only the matc
 
 const discountMetric = '净商务折扣（原价）';
 const tableSources = ['region-dept-metrics', 'rep-office-metrics'];
-const summarySources = ['business-results-summary', 'business-commercial-summary', 'business-contract-summary'];
+const summarySources = ['business-results-summary', 'business-commercial-summary', 'business-contract-summary', 'business-discount-summary'];
 const periodCases = [
   { mode: 'month', value: '2026-09', label: '月' },
   { mode: 'quarter', value: '2026-Q3', label: '季' },
@@ -125,34 +125,69 @@ it.each(periodCases)('filters both tables’ current discount and $mode comparis
   }
 });
 
-it.each(periodCases)('shares $mode aggregate rows between both tables and only binds the applied time', async ({mode,value,label}) => {
+it.each(periodCases)('shares $mode scoped aggregate rows and applies the discount filters to discount queries', async ({mode,value,label}) => {
   const parsed = parsePage(business);
   if (!parsed.ok) throw Error(JSON.stringify(parsed.errors));
   const {page} = parsed;
   const conditions = conditionsFor(page);
-  conditions.set('region',{type:'dimension',dimension:'geo-pc-code',level:'geo',values:['R99']});
+  conditions.set('region',{type:'dimension',dimension:'region-dept-code',level:'region-dept',values:['华东地区部']});
   conditions.set('customer-class',{type:'dimension',dimension:'customer-class',values:['核心NA']});
+  conditions.set('business-type',{type:'dimension',dimension:'sub-business-type',level:'sub-business-type',values:['SUB_SERVICE_TYPE_PUBLIC_REGION']});
   conditions.set('cloud-service',{type:'dimension',dimension:'cloud-service',values:['ModelArts']});
+  conditions.set('key-national-only',{type:'boolean',value:true});
   conditions.set('mtime',{type:'timeRange',...resolvePeriodSelection({mode,value},now,periodPrecision(page))});
   const requests: EffectiveQuery[] = [];
-  const program = createSourceProgram(page,{gateway:syntheticGateway(requests),now});
+  const gateway: RuntimeDataGateway = {
+    ...syntheticGateway(requests),
+    async fetchFilterCandidates(request) {
+      if (request.filterId === 'key-national-only') {
+        return {kind:'values',candidates:[{value:'上海代表处',label:'上海代表处'}]};
+      }
+      return {kind:'values',candidates:[
+        {value:'全球',label:'全球',level:'geo'},
+        {value:'华东地区部',label:'华东地区部',level:'region-dept',parent:{level:'geo',value:'全球'}},
+        {value:'上海代表处',label:'上海代表处',level:'office',parent:{level:'region-dept',value:'华东地区部'}}
+      ]};
+    }
+  };
+  const program = createSourceProgram(page,{gateway,now});
   const summaries = new Map<string,DataSnapshot>();
   try {
     for (const component of page.sections.flatMap(section => section.components)) {
       if (component.type !== 'table') continue;
-      expect([component.data.summary, component.data.commercial, component.data.contract]).toEqual(summarySources);
-      expect(component.props.pinnedTop).toEqual({data:'summary',additionalData:['commercial','contract']});
+      expect([component.data.summary, component.data.commercial, component.data.contract, component.data.discount]).toEqual(summarySources);
+      expect(component.props.pinnedTop).toEqual({data:'summary',additionalData:['commercial','contract','discount']});
+      const discountColumns = tableColumnLeaves(component.props.columns)
+        .filter(column => mainColumnField(column.field)?.startsWith('net-discount'));
+      expect(discountColumns).toHaveLength(4);
+      for (const column of discountColumns) {
+        expect(column.pinnedTop).toEqual({field:{data:'discount',field:mainColumnField(column.field)}});
+      }
     }
     for await (const update of program.read({ roots:summarySources, presentation:page, conditions, freshness:'refresh' })) {
       summaries.set(update.sourceId,update.snapshot);
     }
-    expect(summaries.get(summarySources[0])).toMatchObject({status:'ready',rows:[{
+    for (const id of summarySources) expect(summaries.get(id)?.status).toBe('ready');
+    expect(summaries.get('business-discount-summary')).toMatchObject({status:'ready',rows:[{
       'net-discount-rate':10,[`net-discount-${mode}-change`]:10
     }]});
-    expect(requests).toHaveLength(4);
+    expect(requests).toHaveLength(5);
     expect(requests.flatMap(queryMetrics).filter(metric => metric.includes('变化'))).toEqual([`净商务折扣（原价）${label}变化`]);
     for (const query of requests) {
-      expect(query.filterValues).toEqual([expect.objectContaining({target:'time'})]);
+      const commonFilters = [
+        expect.objectContaining({target:'time'}),
+        {target:'dimension',queryField:'地区部',values:['华东地区部']},
+        {target:'dimension',queryField:'客户级别',values:['核心NA']},
+        {target:'dimension',queryField:'代表处',values:['上海代表处']},
+      ];
+      const discountFilters = [
+        {target:'dimension',queryField:'子业务类型编码',values:['SUB_SERVICE_TYPE_PUBLIC_REGION']},
+        {target:'dimension',queryField:'云服务',values:['ModelArts'],operator:'!='},
+      ];
+      const expected = queryMetrics(query).every(metric => metric.startsWith(discountMetric))
+        ? [...commonFilters,...discountFilters] : commonFilters;
+      expect(query.filterValues).toHaveLength(expected.length);
+      expect(query.filterValues).toEqual(expect.arrayContaining(expected));
       const item = query.body.dsl_list[0];
       expect(item.output_dims).toEqual([]);
       expect(item.order).toEqual({});

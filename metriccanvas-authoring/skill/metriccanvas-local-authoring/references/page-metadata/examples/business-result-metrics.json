@@ -2833,13 +2833,6 @@
     },
     "business-results-summary": {
       "fields": {
-        "net-discount-rate": {
-          "type": "number",
-          "role": "measure",
-          "label": "净商务折扣",
-          "defaultFormat": "percent-1",
-          "queryField": "净商务折扣（原价）"
-        },
         "framework-execution-rate": {
           "type": "number",
           "role": "measure",
@@ -2860,6 +2853,62 @@
           "label": "禁止类条款签署率",
           "defaultFormat": "percent-1",
           "queryField": "云计算BU禁止条款风险合同率"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [],
+                "output_metrics": [
+                  "框架执行率",
+                  "重大高风险合同率",
+                  "云计算BU禁止条款风险合同率"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": [],
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": true
+                  }
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "mtime": {
+              "target": "time"
+            },
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "geo": "geo_pc_code",
+                "region-dept": "地区部",
+                "office": "代表处"
+              }
+            },
+            "customer-class": {
+              "target": "dimension",
+              "queryField": "客户级别"
+            }
+          }
+        }
+      }
+    },
+    "business-discount-summary": {
+      "fields": {
+        "net-discount-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "净商务折扣",
+          "defaultFormat": "percent-1",
+          "queryField": "净商务折扣（原价）"
         },
         "net-discount-month-change": {
           "type": "number",
@@ -2896,10 +2945,7 @@
               {
                 "output_dims": [],
                 "output_metrics": [
-                  "净商务折扣（原价）",
-                  "框架执行率",
-                  "重大高风险合同率",
-                  "云计算BU禁止条款风险合同率"
+                  "净商务折扣（原价）"
                 ],
                 "filter": {
                   "dims": [],
@@ -2914,8 +2960,42 @@
             ]
           },
           "filterBindings": {
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "geo": "geo_pc_code",
+                "region-dept": "地区部",
+                "office": "代表处"
+              }
+            },
             "mtime": {
               "target": "time"
+            },
+            "customer-class": {
+              "target": "dimension",
+              "queryField": "客户级别"
+            },
+            "business-type": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "business-type": "业务类型编码",
+                "sub-business-type": "子业务类型编码"
+              },
+              "when": {
+                "not": {
+                  "filter": "business-type",
+                  "part": "values",
+                  "op": "containsAny",
+                  "values": [
+                    "all"
+                  ]
+                }
+              }
+            },
+            "cloud-service": {
+              "target": "dimension",
+              "queryField": "云服务",
+              "operator": "!="
             }
           }
         }
@@ -3007,6 +3087,18 @@
           "filterBindings": {
             "mtime": {
               "target": "time"
+            },
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "geo": "geo_pc_code",
+                "region-dept": "地区部",
+                "office": "代表处"
+              }
+            },
+            "customer-class": {
+              "target": "dimension",
+              "queryField": "客户级别"
             }
           }
         }
@@ -3057,6 +3149,18 @@
           "filterBindings": {
             "mtime": {
               "target": "time"
+            },
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "geo": "geo_pc_code",
+                "region-dept": "地区部",
+                "office": "代表处"
+              }
+            },
+            "customer-class": {
+              "target": "dimension",
+              "queryField": "客户级别"
             }
           }
         }
@@ -3098,6 +3202,14 @@
             ]
           },
           "filterBindings": {
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "geo": "geo_pc_code",
+                "region-dept": "地区部",
+                "office": "代表处"
+              }
+            },
             "mtime": {
               "target": "time",
               "periodPolicy": {
@@ -3106,6 +3218,32 @@
                   "month"
                 ]
               }
+            },
+            "customer-class": {
+              "target": "dimension",
+              "queryField": "客户级别"
+            },
+            "business-type": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "business-type": "业务类型编码",
+                "sub-business-type": "子业务类型编码"
+              },
+              "when": {
+                "not": {
+                  "filter": "business-type",
+                  "part": "values",
+                  "op": "containsAny",
+                  "values": [
+                    "all"
+                  ]
+                }
+              }
+            },
+            "cloud-service": {
+              "target": "dimension",
+              "queryField": "云服务",
+              "operator": "!="
             }
           }
         }
@@ -3147,6 +3285,14 @@
             ]
           },
           "filterBindings": {
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "geo": "geo_pc_code",
+                "region-dept": "地区部",
+                "office": "代表处"
+              }
+            },
             "mtime": {
               "target": "time",
               "periodPolicy": {
@@ -3155,6 +3301,32 @@
                   "quarter"
                 ]
               }
+            },
+            "customer-class": {
+              "target": "dimension",
+              "queryField": "客户级别"
+            },
+            "business-type": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "business-type": "业务类型编码",
+                "sub-business-type": "子业务类型编码"
+              },
+              "when": {
+                "not": {
+                  "filter": "business-type",
+                  "part": "values",
+                  "op": "containsAny",
+                  "values": [
+                    "all"
+                  ]
+                }
+              }
+            },
+            "cloud-service": {
+              "target": "dimension",
+              "queryField": "云服务",
+              "operator": "!="
             }
           }
         }
@@ -3196,6 +3368,14 @@
             ]
           },
           "filterBindings": {
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "geo": "geo_pc_code",
+                "region-dept": "地区部",
+                "office": "代表处"
+              }
+            },
             "mtime": {
               "target": "time",
               "periodPolicy": {
@@ -3204,6 +3384,32 @@
                   "year"
                 ]
               }
+            },
+            "customer-class": {
+              "target": "dimension",
+              "queryField": "客户级别"
+            },
+            "business-type": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "business-type": "业务类型编码",
+                "sub-business-type": "子业务类型编码"
+              },
+              "when": {
+                "not": {
+                  "filter": "business-type",
+                  "part": "values",
+                  "op": "containsAny",
+                  "values": [
+                    "all"
+                  ]
+                }
+              }
+            },
+            "cloud-service": {
+              "target": "dimension",
+              "queryField": "云服务",
+              "operator": "!="
             }
           }
         }
@@ -3362,7 +3568,8 @@
             "main": "region-dept-metrics",
             "summary": "business-results-summary",
             "commercial": "business-commercial-summary",
-            "contract": "business-contract-summary"
+            "contract": "business-contract-summary",
+            "discount": "business-discount-summary"
           },
           "props": {
             "title": "地区部业务结果指标情况",
@@ -3409,7 +3616,7 @@
                 "sortable": true,
                 "pinnedTop": {
                   "field": {
-                    "data": "summary",
+                    "data": "discount",
                     "field": "net-discount-rate"
                   }
                 }
@@ -3429,7 +3636,7 @@
                 },
                 "pinnedTop": {
                   "field": {
-                    "data": "summary",
+                    "data": "discount",
                     "field": "net-discount-quarter-change"
                   }
                 }
@@ -3449,7 +3656,7 @@
                 },
                 "pinnedTop": {
                   "field": {
-                    "data": "summary",
+                    "data": "discount",
                     "field": "net-discount-year-change"
                   }
                 }
@@ -3469,7 +3676,7 @@
                 },
                 "pinnedTop": {
                   "field": {
-                    "data": "summary",
+                    "data": "discount",
                     "field": "net-discount-month-change"
                   }
                 }
@@ -3544,7 +3751,8 @@
               "data": "summary",
               "additionalData": [
                 "commercial",
-                "contract"
+                "contract",
+                "discount"
               ]
             }
           }
@@ -3565,7 +3773,8 @@
             "main": "rep-office-metrics",
             "summary": "business-results-summary",
             "commercial": "business-commercial-summary",
-            "contract": "business-contract-summary"
+            "contract": "business-contract-summary",
+            "discount": "business-discount-summary"
           },
           "props": {
             "title": "代表处业务结果指标情况",
@@ -3645,7 +3854,7 @@
                 "sortable": true,
                 "pinnedTop": {
                   "field": {
-                    "data": "summary",
+                    "data": "discount",
                     "field": "net-discount-rate"
                   }
                 }
@@ -3665,7 +3874,7 @@
                 },
                 "pinnedTop": {
                   "field": {
-                    "data": "summary",
+                    "data": "discount",
                     "field": "net-discount-quarter-change"
                   }
                 }
@@ -3685,7 +3894,7 @@
                 },
                 "pinnedTop": {
                   "field": {
-                    "data": "summary",
+                    "data": "discount",
                     "field": "net-discount-year-change"
                   }
                 }
@@ -3705,7 +3914,7 @@
                 },
                 "pinnedTop": {
                   "field": {
-                    "data": "summary",
+                    "data": "discount",
                     "field": "net-discount-month-change"
                   }
                 }
@@ -3780,7 +3989,8 @@
               "data": "summary",
               "additionalData": [
                 "commercial",
-                "contract"
+                "contract",
+                "discount"
               ]
             }
           }

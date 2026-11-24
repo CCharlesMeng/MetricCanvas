@@ -23,6 +23,10 @@ const cloudSignature = JSON.stringify([[cloudField],[]]);
 const netPayment = '净付费金额';
 const cloudPaymentSignature = JSON.stringify([[cloudField],[netPayment]]);
 const customerClasses = ['卓越NA','战略NA','核心NA'];
+const businessCustomerClasses = [...customerClasses, '商业客户'];
+const businessCustomerClass = new Map([...fixture.organizations, ...fixture.europePreviewOrganizations].map(
+  (organization, index) => [organization, businessCustomerClasses[index % businessCustomerClasses.length]] as const
+));
 const cloudTypeValues: Record<string,string> = {
   业务类型编码: 'SERVICE_TYPE_HUAWEI_PUBLIC_CLOUD_CORE',
   子业务类型编码: 'SUB_SERVICE_TYPE_PUBLIC_REGION'
@@ -53,7 +57,7 @@ function dimensionsFor(metrics: string[]): string[][] {
   if (metrics[0] === closure) return [[],['地区部'],['决策业务类型','地区部'],['决策业务类型','地区部','代表处']];
   if (metrics === mainMetrics) return [[],['地区部'],['代表处']];
   if (metrics[0] === netDiscount) return [[],['地区部'],['代表处']];
-  if (metrics === detailMetrics) return [['地区部'],['代表处']];
+  if (metrics === detailMetrics) return [[],['地区部'],['代表处']];
   if (discountComparisonPeriods.has(metrics[0])) return [[],['地区部'],['代表处']];
   return [['代表处']];
 }
@@ -136,10 +140,13 @@ function matchesCloud(row:(typeof cloudServices)[number], predicate:ObjectValue)
   const value = row[field];
   const choices = predicate.dim_value_list as string[];
   if (predicate.operator === 'contains') return String(value).includes(choices[0]);
-  if (choices.includes(String(value))) return true;
+  return matchesOrganizationValue(row, field, choices);
+}
+
+function matchesOrganizationValue(row: Organization, field: string, choices: readonly unknown[]): boolean {
+  if (choices.includes(String(row[field as keyof Organization]))) return true;
   if (field === '地区部') return choices.includes(row.region_dept_code);
-  if (field === '代表处') return choices.includes(row.rep_office_code);
-  return false;
+  return field === '代表处' && choices.includes(row.rep_office_code);
 }
 
 function validTime(time: ObjectValue): boolean {
@@ -151,7 +158,7 @@ function validTime(time: ObjectValue): boolean {
 function validatePredicate(predicate: unknown): asserts predicate is ObjectValue {
   if (!record(predicate)) throw Error('predicate');
   const dimension = String(predicate.dim_name), values = predicate.dim_value_list;
-  const allowed = ['geo_pc_code','region_dept_code','rep_office_code','地区部','代表处','国内或海外','决策业务类型',cloudField,...Object.keys(cloudTypeValues)];
+  const allowed = ['geo_pc_code','region_dept_code','rep_office_code','地区部','代表处','国内或海外','决策业务类型','客户级别',cloudField,...Object.keys(cloudTypeValues)];
   if (!allowed.includes(dimension) || !Array.isArray(values)) throw Error('dimension');
   if ((predicate.operator ?? '=') !== '=' || (predicate.is_exclude === true) !== (dimension === cloudField)) throw Error('operator');
   if (values.some(value => typeof value !== 'string')) throw Error('value');
@@ -163,8 +170,9 @@ function matches(row: Organization, predicate: unknown): boolean {
   const field = String(p.dim_name), values = p.dim_value_list as unknown[];
   if (field === '决策业务类型') return true;
   if (field === cloudField) return !values.includes(businessCloudService.get(row));
+  if (field === '客户级别') return values.includes(businessCustomerClass.get(row));
   if (Object.hasOwn(cloudTypeValues,field)) return values.includes(cloudTypeValues[field]);
-  return values.includes(row[field as keyof Organization]);
+  return matchesOrganizationValue(row, field, values);
 }
 
 function aggregateRows(organizations: Organization[], dims: string[], metrics: string[], time: ObjectValue, categories: string[]): Row[] {
