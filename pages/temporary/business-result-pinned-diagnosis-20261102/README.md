@@ -30,11 +30,11 @@
 
 ## 合计取数
 
-两表首行显示「合计」，不占明细数量。两表共用后端完整汇总，使用 `output_dims: []` 和 `time.is_aggregate: true`，查询使用当前统计期间、区域、客户分类。勾选「仅看重点国代」时，引擎沿 Region 绑定把已授权名单作为交集条件。汇总继续受服务端授权范围限制。
+两表在汇总加载期间先显示首行「合计」，未返回的指标显示加载占位，已返回的值原位填入。主汇总为空或汇总查询失败时收起该行。合计不占明细数量。两表共用后端完整汇总，使用 `output_dims: []` 和 `time.is_aggregate: true`，查询使用当前统计期间、区域、客户分类。勾选「仅看重点国代」时，引擎沿 Region 绑定把已授权名单作为交集条件。汇总继续受服务端授权范围限制。
 
 `business-results-summary` 读取框架执行率及两项合同风险指标。商务和合同闭环率查询各自保留固定的决策业务类型谓词。`business-discount-summary` 单独读取净商务折扣本期值与当前期间对应的同比或环比，并额外应用业务类型和云服务排除项。统计期间、区域、客户分类和重点国代作用于全部合计指标。切换两项专用筛选时，折扣本期及变化值重新取数，其他指标继续使用当前通用条件下的汇总。
 
-用 `pnpm dev:dqe` 启动本地环境。打开 `/pages/business-result-metrics?region=&mtime=month:2026-10`，先切换业务类型及云服务排除项，再切换客户分类及区域。浏览器回归 `pnpm --filter playground test:ioc business-result-summary-time.browser.ts` 检查独立汇总请求、两表行值及固定闭环谓词。重点国代由运行时测试提供合成授权名单，真实名单和生产 DQE 按集成环境复验。
+用 `pnpm dev:dqe` 启动本地环境。打开 `/pages/business-result-metrics?region=&mtime=month:2026-10`，先切换业务类型及云服务排除项，再切换客户分类及区域。浏览器回归 `pnpm --filter playground test:ioc business-result-summary-time.browser.ts` 检查独立汇总请求、两表行值及固定闭环谓词。用 `-g "shows each pinned total row"` 单独重跑延迟回执场景，检验两张表在 DQE 回执前显示「合计」，回执后原位显示数值。重点国代由运行时测试提供合成授权名单，真实名单和生产 DQE 按集成环境复验。
 
 ## 验证与环境
 

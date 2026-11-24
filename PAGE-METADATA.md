@@ -170,7 +170,7 @@ Embed 省略 `initialSearch` 时自动读取当前 URL（含 hash 路由 query�
 
 引擎统一兼容组织键计算中的空记录：`unionKeys`、`joinAggregate` 跳过空组织行，保留有效组织、零分、负分及脱值数量告警；页面 Schema 不新增字段或开关。限制及 `/pages/missing-organization-key` 合成验收入口见[空组织键兼容](docs/page-metadata/compute.md#空组织键兼容)。
 
-6.79 支持多条独立完整汇总查询组成同一置顶行：`pinnedTop.additionalData` 声明额外查询槽，列级 `pinnedTop.text` 声明固定纯文本。明细不参与汇总计算，任一汇总异常保留明细并拒绝完整导出。见[表格模块](docs/page-metadata/components/table.md#独立查询置顶行660)，可观察入口 `/pages/business-result-metrics`（真实 DQE 查询配置，内网取数另验）。
+6.79 支持多条独立完整汇总查询组成同一置顶行：`pinnedTop.additionalData` 声明额外查询槽，列级 `pinnedTop.text` 声明固定纯文本。浏览器在汇总加载时先显示置顶占位行，汇总值就绪后原位填入。明细不参与汇总计算，任一汇总异常保留明细并拒绝完整导出。见[表格模块](docs/page-metadata/components/table.md#独立查询置顶行660)，可观察入口 `/pages/business-result-metrics`（真实 DQE 查询配置，内网取数另验）。
 
 
 IOC Header 认领的客户类型筛选由组件查询规则固定使用 `dim_name:"客户级别"`，覆盖页面误写的查询字段；既有绑定仍控制订阅范围，普通筛选不受影响。无需新增 Schema 字段，标识与边界见[筛选规则](docs/page-metadata/filters.md#business-filters)，合成入口 `/pages/ioc-customer-query-field?customer-category=战略`。

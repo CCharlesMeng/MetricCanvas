@@ -24,6 +24,32 @@ function isDiscountAggregate(query: Query): boolean {
 const chartSelector = '[data-component="net-discount-chart/net-discount-card"] .bar-chart .echart';
 const chartRuntime = `/@fs${fileURLToPath(new URL('../../../packages/engine/widgets/src/shared/echarts-runtime.ts', import.meta.url))}`;
 
+test('shows each pinned total row while its DQE response is pending', async ({page}) => {
+  let release!: () => void;
+  const response = new Promise<void>(resolve => { release = resolve; });
+  await page.route('**/dsl/execute', async route => {
+    await response;
+    await route.continue();
+  });
+  const totals = page.locator('tr[data-pinned-top]');
+  try {
+    await page.goto('/pages/business-result-metrics?region=&mtime=month:2026-10');
+    await expect(totals).toHaveCount(2);
+    for (const row of await totals.all()) {
+      await expect(row).toContainText('合计');
+      await expect(row.locator('.skeleton').first()).toBeVisible();
+      await expect(row.locator('td[data-row-number]')).toHaveText('');
+    }
+  } finally {
+    release();
+  }
+  await expect(totals).toHaveCount(2);
+  for (const row of await totals.all()) {
+    await expect(row).toContainText('%');
+    await expect(row.locator('.skeleton')).toHaveCount(0);
+  }
+});
+
 test('both tables share the backend aggregate and the chart shows a horizontal mean and yellow monthly line', async ({page}) => {
   const requests: Query[] = [];
   page.on('request', request => {
