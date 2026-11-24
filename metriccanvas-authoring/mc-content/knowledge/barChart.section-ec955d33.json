@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.133",
+  "schemaVersion": "6.135",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "barChart.section-ec955d33"
@@ -13,6 +13,19 @@
         "## 堆叠合计标签\n\n`stacked: true` 配合 `showStackTotalLabels: true` 在每个类别显示当前系列的数值合计，包含负数扣分。标签锚定可见堆叠的外端，与柱体保持 8 CSS px 间距；正负混合时置于正值柱顶，显示值仍为含扣分的净合计；全负数置于负值外端，横向条形相应置于右侧或左侧。 用图例隐藏系列时，标签跟随当前可见柱段移动，合计仍使用该图表的全部有效系列（含负数扣分）；全部系列都隐藏时清除标签。无需声明额外的“总分”系列；未开启时不显示合计。`/pages/partner-health-interactions` 使用前端计算的合成得分，四类得分含负数风险扣分；业务 `/pages/partner-health` 的地区部和代表处图表均开启此配置。\n\n<a id=\"bar-category-order\"></a>"
       ],
       "rules": [
+        {
+          "id": "chart-tooltip-color-rule",
+          "description": "6.134 柱图和折线图字段系列的悬浮提示数值着色",
+          "valid": [
+            "chart-tooltip-color-rule"
+          ],
+          "invalid": [
+            "chart-tooltip-color-before-version",
+            "chart-tooltip-color-nonnumeric",
+            "chart-tooltip-color-invalid-color",
+            "chart-tooltip-color-constant"
+          ]
+        },
         {
           "id": "bar-series-average",
           "description": "同一图表的当前值和前端均值字段系列，保留原类别及版本边界",
@@ -89,6 +102,7 @@
         "references/page-metadata/examples/sdt-period-aggregation.json",
         "references/page-metadata/examples/bar-line-marker-color.json",
         "references/page-metadata/examples/bar-category-order.json",
+        "references/page-metadata/examples/chart-tooltip-color-rule.json",
         "references/page-metadata/examples/chart-customer-series.json",
         "references/page-metadata/examples/conditional-compute-demand.json"
       ]

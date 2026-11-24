@@ -61,7 +61,7 @@ RegionFilter 固定提供可搜索、可清空的单选组织树，层级为 `ge
 
 <a id="ioc-header-filter-rows"></a>
 
-## 页头筛选行（6.133）
+## 页头筛选行（6.135）
 
 在 IOC 页头组件的 `props.filterRows` 声明一条或多条独立筛选行，按数组顺序呈现。每行 `title` 可省略，填写时使用非空纯文本。每行 `filterIds` 按显示顺序引用已由 `components` 或兼容 `props.filterIds` 认领的筛选 ID。Region 使用筛选 ID `region`。同一筛选在所有行中最多引用一次。每行至少引用一个筛选。省略 `filterRows` 时沿用现有页头排版。旧根级 `iocHeader` 继续按历史协议读取。
 

@@ -4,14 +4,14 @@
   "expected": [
     {
       "type": "SCHEMA_ERROR",
-      "message": "文档格式版本 6.134 高于运行时当前次版本 6.133",
+      "message": "文档格式版本 6.136 高于运行时当前次版本 6.135",
       "paths": [
         "/schemaVersion"
       ]
     }
   ],
   "inputExcerpt": {
-    "schemaVersion": "6.134"
+    "schemaVersion": "6.136"
   },
   "fullInput": "page/conformance/invalid/unrestricted-filter-clear-version-ahead.json"
 }

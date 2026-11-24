@@ -2,7 +2,11 @@
 
 页面搜索筛选、远程下拉候选、表头动态候选和表格工具栏搜索统一在停输 300 毫秒后自动生效。中文输入法组词期间等待确认。静态候选即时筛选。分页候选在依赖条件就绪后开始取数。见[下拉搜索](docs/page-metadata/filters.md#下拉搜索与普通树643)和[表格搜索](docs/page-metadata/components/table.md#表格工具栏与搜索621)。
 
-Schema 6.133 支持 IOC 页头在 `props.filterRows` 中为已认领的筛选声明独立行和可选小标题。其余页头筛选保留首行，筛选值、默认值与查询绑定由现有声明控制。见[页头筛选行](docs/page-metadata/components/iocHeader.md#ioc-header-filter-rows)和 Playground 的 `/pages/ioc-header-filter-rows`。
+Schema 6.135 支持 IOC 页头在 `props.filterRows` 中为已认领的筛选声明独立行和可选小标题。其余页头筛选保留首行，筛选值、默认值与查询绑定由现有声明控制。见[页头筛选行](docs/page-metadata/components/iocHeader.md#ioc-header-filter-rows)和 Playground 的 `/pages/ioc-header-filter-rows`。
+
+Schema 6.134 支持柱状图、折线图和柱线组合图在字段系列的 `tooltip.colorRule` 声明悬浮提示数值颜色。见[悬浮提示数字着色](docs/page-metadata/components/barChart.md#chart-tooltip-color-rule)与合成入口 `/pages/chart-tooltip-color-rule`。
+
+Schema 6.133 支持饼图和环形图在表格式图例的字段列声明 `colorRule`，复用表格和指标卡的正负与固定颜色规则。见[图例数字着色](docs/page-metadata/components/pieChart.md#pie-legend-color-rule)与合成入口 `/pages/pie-legend-color-rule`。
 
 Schema 6.132 支持普通柱状图在 `props.order` 声明排序字段和方向。按 `data.main` 结果字段在前端排序，支持计算字段，类别、系列、点击和图片导出使用相同顺序。见[柱图按字段排序](docs/page-metadata/components/barChart.md#bar-category-order)与合成入口 `/pages/bar-category-order`。
 

@@ -26,22 +26,21 @@ function businessTypePredicates(request: QueryItem) {
   return request.filter.dims.filter(item => ['业务类型编码', '子业务类型编码'].includes(item.dim_name));
 }
 
-const longCloudService = '合成云服务12（跨区域智能网络与分布式数据治理企业级服务）';
+const longCloudService = '合成云服务22（跨区域智能网络与分布式数据治理企业级服务）';
 
 function cloudServiceWindow(item: QueryItem) {
   const values = Array.from({length:25}, (_, index) => `合成云服务${String(index + 1).padStart(2, '0')}`);
-  values[11] = longCloudService;
+  values[21] = longCloudService;
   const selection = item.filter.dims.find(predicate => predicate.dim_name === '云服务');
   const matches = selection ? values.filter(value => selection.dim_value_list.includes(value)) : values;
   const {offset=0,limit=matches.length} = item.order ?? {};
-  return {code:'SUCCESS', data:matches.slice(offset,offset+limit).map(value=>({云服务:value})), total_count:matches.length};
+  return {code:'SUCCESS', data:matches.slice(offset,offset+limit).map(value=>({云服务:value,净付费金额:100})), total_count:matches.length};
 }
 
 test('业务类型按层下推并与分页的云服务排除一起作用', async ({ page }) => {
   await page.setViewportSize({ width: 1600, height: 850 });
   const requests: QueryItem[] = [];
   const cloudPages: number[] = [];
-  const cloudProbes: QueryItem[] = [];
   await page.addInitScript(() => Object.assign(window, { __METRICCANVAS__: {
     dqeEndpoint: '/synthetic-business-type-dqe', pageMetadataBaseUrl: '/pages',
     authToken: 'synthetic', operatorId: 'synthetic', workspaceId: 'synthetic'
@@ -52,9 +51,9 @@ test('业务类型按层下推并与分页的云服务排除一起作用', async
       const dimension = item.output_dims[0]!;
       const region = regionValues[dimension];
       if (region) return { code: 'SUCCESS', data: [{ [dimension]: region }], total_count: 1 };
-      if (dimension === '云服务' && item.output_metrics.length === 0) {
-        if (item.order?.limit === 10) cloudPages.push(item.order.offset!);
-        else cloudProbes.push(item);
+      if (dimension === '云服务' && item.output_metrics.includes('净付费金额')) {
+        expect(item.order?.limit).toBe(20);
+        cloudPages.push(item.order!.offset!);
         return cloudServiceWindow(item);
       }
       if (item.output_metrics.some(metric => metric.startsWith('净商务折扣（原价）'))) requests.push(item);
@@ -65,7 +64,7 @@ test('业务类型按层下推并与分页的云服务排除一起作用', async
   await page.goto('/pages/business-result-metrics?mtime=last12Months&mtime.from=2025-11&mtime.to=2026-10&region=华东地区部');
   await expect(page).toHaveURL(/business-result-metrics.*region-dept=/);
   await expect.poll(() => requests.some(item => item.output_metrics.includes('净商务折扣（原价）'))).toBe(true);
-  expect(cloudProbes).toHaveLength(1);
+  await expect.poll(() => cloudPages).toEqual([0]);
   const header = page.locator('[data-ioc-header]');
   const control = header.locator('[data-filter-id="business-type"]');
   await expect(page.locator('[data-filter-group="business-type"], [data-filter-group="cloud-service"]')).toHaveCount(0);
@@ -85,8 +84,9 @@ test('业务类型按层下推并与分页的云服务排除一起作用', async
     { dimensions: ['代表处'], predicates: [childPredicate] },
     { dimensions: [], predicates: [childPredicate] },
   ]));
-  expect(cloudProbes).toHaveLength(1);
+  expect(cloudPages).toEqual([0]);
   const restoredUrl = page.url();
+  cloudPages.length = 0;
   await page.reload();
   await expect(control.getByRole('button', { name: '业务类型', exact: true })).toHaveText(child);
   await expect(page).toHaveURL(restoredUrl);
@@ -97,17 +97,18 @@ test('业务类型按层下推并与分页的云服务排除一起作用', async
 
   await selectBusinessType(control, child, parent);
   const cloudControl = header.locator('[data-filter-id="cloud-service"]');
-  await cloudControl.getByRole('button', { name: '云服务排除项', exact: true }).click();
+  await cloudControl.getByRole('button', { name: '云服务排除项', exact: true }).press('ArrowDown');
   const cloudPopup = cloudControl.getByRole('dialog', { name: '云服务排除项候选' });
   const list = cloudControl.getByRole('listbox');
   await expect(list.getByRole('option', { name: '合成云服务10', exact: true })).toBeVisible();
-  await expect(cloudPopup).toHaveCSS('width', '160px');
+  const initialPopupWidth = (await cloudPopup.boundingBox())!.width;
+  expect(initialPopupWidth).toBeGreaterThanOrEqual(160);
   expect(cloudPages).toEqual([0]);
   await list.evaluate(element => { element.scrollTop = element.scrollHeight; });
   const choice = list.getByRole('option', { name: longCloudService, exact: true });
   await expect(choice).toBeVisible();
-  expect(cloudPages).toEqual([0, 10]);
-  await expect.poll(async () => (await cloudPopup.boundingBox())!.width).toBeGreaterThan(160);
+  expect(cloudPages).toEqual([0, 20]);
+  await expect.poll(async () => (await cloudPopup.boundingBox())!.width).toBeGreaterThan(initialPopupWidth);
   const label = choice.getByText(longCloudService, { exact: true });
   await expect.poll(() => label.evaluate(node => node.scrollWidth - node.clientWidth)).toBe(0);
   await choice.click();

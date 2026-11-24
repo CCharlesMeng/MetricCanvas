@@ -18,6 +18,8 @@
 
 Dashboard 正文通过独立 [filterGroup](filterGroup.md) 组件声明筛选按钮组；需要同组放置时使用组合卡。图表本身不再声明 `props.filter`。迁移后的完整页面见 `chart-local-filter-page`。
 
+6.134 起，字段系列可声明 `tooltip.colorRule`，在[悬浮提示](barChart.md#chart-tooltip-color-rule)里按正负或固定颜色显示数值。
+
 6.32 的隐含高级入口 `props.echartsOption` 用于显式要求的 ECharts 呈现定制；普通创作优先使用上面的封闭属性。规则、保护路径、console 诊断与降级见[高级呈现扩展](../chart-option.md)。
 
 ## 常量取值（6.59）

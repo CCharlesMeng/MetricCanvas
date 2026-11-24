@@ -27,7 +27,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  */
 export const UNRESTRICTED_FILTER_CLEAR_MINOR = 124;
 export const INDEPENDENT_EXCLUSION_CANDIDATES_MINOR = 125;
-const CURRENT_MINOR = 133;
+const CURRENT_MINOR = 135;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -180,7 +180,7 @@ export const pageCapabilities = {
     usedAt: () => []
   },
   'ioc-header-filter-rows': {
-    minor: 133,
+    minor: 135,
     legacyReadable: false,
     description: 'IOC 页头为已认领的筛选声明独立呈现行',
     usedAt: document => componentPaths(document, component => component.type === 'iocHeader' && has(props(component), 'filterRows')).map(path => path + '/props/filterRows')
@@ -190,6 +190,18 @@ export const pageCapabilities = {
     legacyReadable: false,
     description: '柱状图按 main 数据槽的结果字段和方向在前端排序类别',
     usedAt: document => componentPaths(document, component => component.type === 'barChart' && has(props(component), 'order')).map(path => `${path}/props/order`)
+  },
+  'pie-legend-color-rule': {
+    minor: 133,
+    legacyReadable: false,
+    description: '饼图表格式图例字段列可声明数字颜色规则',
+    usedAt: pieLegendColorRulePaths
+  },
+  'chart-tooltip-color-rule': {
+    minor: 134,
+    legacyReadable: false,
+    description: '柱状图与折线图字段系列的悬浮提示支持数字颜色规则',
+    usedAt: chartTooltipColorRulePaths
   },
   'dimension-filter-url-opt-out': {
     minor: 131,
@@ -1525,6 +1537,32 @@ function timeFormatPaths(document: unknown): string[] {
   const paths: string[] = [];
   walkDocumentComponents(document, (component, path) => {
     paths.push(...findPaths(component.props, node => record(node.format)?.type === 'time').map(own => `${path}/props${own}/format`));
+  });
+  return paths;
+}
+
+function pieLegendColorRulePaths(document: unknown): string[] {
+  const paths: string[] = [];
+  walkDocumentComponents(document, (component, path) => {
+    if (component.type !== 'pieChart') return;
+    const columns = record(props(component)?.legend)?.columns;
+    if (!Array.isArray(columns)) return;
+    columns.forEach((column, index) => {
+      if (has(record(column), 'colorRule')) paths.push(`${path}/props/legend/columns/${index}/colorRule`);
+    });
+  });
+  return paths;
+}
+
+function chartTooltipColorRulePaths(document: unknown): string[] {
+  const paths: string[] = [];
+  walkDocumentComponents(document, (component, path) => {
+    if (component.type !== 'barChart' && component.type !== 'lineChart') return;
+    const series = props(component)?.series;
+    if (!Array.isArray(series)) return;
+    series.forEach((item, index) => {
+      if (has(record(record(item)?.tooltip), 'colorRule')) paths.push(`${path}/props/series/${index}/tooltip/colorRule`);
+    });
   });
   return paths;
 }

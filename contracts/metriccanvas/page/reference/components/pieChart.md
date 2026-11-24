@@ -37,6 +37,24 @@
 
 完整内联合成场景：`/pages/pie-table-legend`，包含左右位置、默认/升降序、自定义类别顺序、数量变化后保持顺序、返回占比/自动占比、缺失与零合计。它不是独立的 `categoryBreakdown` 页面组件；只是内部复用其呈现实现。
 
+<a id="pie-legend-color-rule"></a>
+
+## 图例数字着色（6.133）
+
+在 `props.legend.columns[]` 的字段列声明可选 `colorRule`，绑定 main 数据槽的 `number` 或 `money` 度量。规则与表格数字列和指标卡变化项共用。
+
+```json
+{
+  "label": "同比",
+  "field": { "data": "main", "field": "yoy", "format": "percent-2-signed" },
+  "colorRule": { "mode": "sign", "positive": "green", "negative": "red" }
+}
+```
+
+`sign` 分别声明正、负值的颜色，零和缺失值用普通文字色。`{"mode":"fixed","color":"red"}` 给所有有效数值着色，包括零。两种模式均只接受 `red` 和 `green`。正负判断沿用[共享数值格式规则](../field-bindings-and-formats.md#numeric-value-color)，使用列内显式格式或字段的默认格式。示例中的 `8.5` 表示 `8.5%`。
+
+颜色作用于屏幕和静态导出的数值单元格。省略规则时沿用普通文字色。类别色点、扇区、列头和图例行序沿用各自既有规则。自动占比列 `value: "percentage"` 使用普通文字色。合成入口 `/pages/pie-legend-color-rule` 对照同比、环比、固定色、零、缺失和舍入。
+
 <a id="percentage-labels"></a>
 
 ## 外围百分比标签
@@ -60,7 +78,7 @@ Dashboard 正文通过独立 [filterGroup](filterGroup.md) 组件声明筛选按
 本组件的数据配置项支持字段或常量来源，声明互斥、格式单位、空态和限制见[组件取值](../field-bindings-and-formats.md#chart-constant-values)。示例路由为 `/pages/chart-constant-values-page`。常量沿本组件原有行集或单值语义使用，不新增查询结果或业务身份。
 
 
-页面协议 6.133。结构真源为本册[schema.json](../schema.json)，SHA256 `30f244aa6b0cd4e6febada6fb46df1bb56ba1ddc6c9dd5bb9368f7eae05ea129`。字段表自动生成；可选不等于有默认值。
+页面协议 6.135。结构真源为本册[schema.json](../schema.json)，SHA256 `8b965be58c0383eecc9c38936fb3eb2dca79168ec3bc77016c2fe0d1e12ecbf2`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -397,6 +415,26 @@ Schema位置：`#/definitions/pieLegendColumn/anyOf/0/properties/align`。
 | "left" | 左对齐或左侧固定，由字段位置决定。 |
 | "center" | 本列列头与数据单元格水平居中。 |
 | "right" | 右对齐或右侧固定，由字段位置决定。 |
+
+<a id="schema-232f646566696e6974696f6e732f7069654c6567656e64436f6c756d6e2f616e794f662f302f70726f706572746965732f636f6c6f7252756c65"></a>
+
+### `@pieLegendColumn · anyOf[0].colorRule`
+
+Schema位置：`#/definitions/pieLegendColumn/anyOf/0/properties/colorRule`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 数字展示位置的显式颜色规则，只支持number/money；与旧染色声明互斥。 |
+
+<a id="schema-232f646566696e6974696f6e732f7069654c6567656e64436f6c756d6e2f616e794f662f302f70726f706572746965732f636f6c6f7252756c652f616c6c4f662f30"></a>
+
+### `@pieLegendColumn · anyOf[0].colorRule · allOf[0]`
+
+Schema位置：`#/definitions/pieLegendColumn/anyOf/0/properties/colorRule/allOf/0`。目标：[#/definitions/colorRule](../field-bindings-and-formats.md#schema-232f646566696e6974696f6e732f636f6c6f7252756c65)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/colorRule | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f7069654c6567656e64436f6c756d6e2f616e794f662f31"></a>
 
@@ -1024,6 +1062,7 @@ Schema位置：`#/definitions/pieChartComponent/properties/props/anyOf/1/propert
 - [chart-constant-values-page](../examples/chart-constant-values-page.json)：完整合法页面；查询仅为静态契约证据。
 - [chart-constant-branches](../examples/chart-constant-branches.json)：完整合法页面；查询仅为静态契约证据。
 - [pie-table-legend](../examples/pie-table-legend.json)：完整合法页面；查询仅为静态契约证据。
+- [pie-legend-color-rule](../examples/pie-legend-color-rule.json)：完整合法页面；查询仅为静态契约证据。
 
 局部片段提取自[完整页面](../examples/component-pieChart.json)的`#/sections/0/components/0`；此片段依赖完整页面的数据源/字段，不能单独作为页面校验。
 

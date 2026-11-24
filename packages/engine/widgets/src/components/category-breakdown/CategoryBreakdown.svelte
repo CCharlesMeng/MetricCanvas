@@ -7,6 +7,7 @@
   import type { CategoryBreakdownProps } from '@metriccanvas/page/internal';
   import type { MainDataSlots } from '../../shared/component-data';
   import { CATEGORICAL_PALETTE_PROPERTY, readColorList, type ColorList } from '../../shared/chart-palette';
+  import { valueColorStyle } from '../../shared/value-color';
   import { categoryBreakdownView, type CategoryColumnPresentation } from './rows';
 
   /**
@@ -78,7 +79,8 @@
             </span>
           </th>
           {#each row.values as value, valueIndex (valueIndex)}
-            <td class="measure" style:text-align={columnPresentation?.[valueIndex]?.align}>{value}</td>
+            <td class="measure" style:text-align={columnPresentation?.[valueIndex]?.align}
+              style:color={valueColorStyle(row.valueColors?.[valueIndex])}>{value}</td>
           {/each}
         </tr>
       {/each}

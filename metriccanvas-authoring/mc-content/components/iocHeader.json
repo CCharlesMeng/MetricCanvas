@@ -23,7 +23,7 @@
   "knowledge": "iocHeader.overview",
   "reference": "references/page-metadata/components/iocHeader.md",
   "versionPolicy": "protocol/version-policy",
-  "currentWriter": "6.133",
+  "currentWriter": "6.135",
   "exampleVersionRequirements": [
     {
       "file": "references/page-metadata/examples/ioc-header-title-link.json",
@@ -452,11 +452,11 @@
     },
     {
       "file": "references/page-metadata/examples/ioc-header-filter-rows.json",
-      "requiredVersion": "6.133",
+      "requiredVersion": "6.135",
       "capabilities": [
         {
           "id": "ioc-header-filter-rows",
-          "minor": 133,
+          "minor": 135,
           "description": "IOC 页头为已认领的筛选声明独立呈现行"
         },
         {

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { PieChartProps } from '@metriccanvas/page/internal';
+import type { PieSeriesOption } from 'echarts';
 import type { MainDataSlots } from '../src/shared/component-data';
 import { pieRows, pieLegendData, pieCategoryDomain } from '../src/components/pie-chart/presentation';
 import { pieOption } from '../src/components/pie-chart/options';
@@ -119,6 +120,33 @@ describe('pie table legend', () => {
     const view = table(props, zero);
     expect(view.rows).toHaveLength(2);
     expect(view.rows[0]!.values[1]).toBe('—');
+  });
+
+  it('uses shared numeric colors and leaves sector data and category swatches intact', () => {
+    const input = structuredClone(data);
+    input.main.fields.share = { type: 'number', role: 'measure', defaultFormat: 'points-1-signed' };
+    input.main.snapshot.rows[0]!.share = 0.04;
+    input.main.snapshot.rows[1]!.share = -2.5;
+    input.main.snapshot.rows[2]!.share = null;
+    const baseline: PieChartProps = { ...props, legend: { type: 'table', columns: [
+      { label: '变化', field: 'share', align: 'left' },
+      { label: '数量', field: 'count', unit: '家' },
+      { label: '占比', value: 'percentage' }
+    ] } };
+    const colored: PieChartProps = { ...props, legend: { type: 'table', columns: [
+      { label: '变化', field: 'share', align: 'left', colorRule: { mode: 'sign', positive: 'green', negative: 'red' } },
+      { label: '数量', field: 'count', unit: '家', colorRule: { mode: 'fixed', color: 'green' } },
+      { label: '占比', value: 'percentage' }
+    ] } };
+    const view = table(colored, input);
+    expect(view.rows.map(row => row.valueColors)).toEqual([
+      [undefined, 'green', undefined], ['red', 'green', undefined],
+      [undefined, 'green', undefined], [undefined, 'green', undefined]
+    ]);
+    expect(view.rows.map(({ valueColors, ...row }) => row)).toEqual(table(baseline, input).rows);
+    const [coloredSeries] = pieOption(input, colored, palette).series as PieSeriesOption[];
+    const [baselineSeries] = pieOption(input, baseline, palette).series as PieSeriesOption[];
+    expect(coloredSeries!.data).toEqual(baselineSeries!.data);
   });
 
   it('hides outer labels only by default for table legends and keeps existing charts unchanged', () => {

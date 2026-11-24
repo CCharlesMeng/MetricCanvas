@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.133",
-  "schemaSha256": "30f244aa6b0cd4e6febada6fb46df1bb56ba1ddc6c9dd5bb9368f7eae05ea129",
+  "schemaVersion": "6.135",
+  "schemaSha256": "8b965be58c0383eecc9c38936fb3eb2dca79168ec3bc77016c2fe0d1e12ecbf2",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -654,6 +654,7 @@
         "sdt-period-aggregation",
         "bar-line-marker-color",
         "bar-category-order",
+        "chart-tooltip-color-rule",
         "chart-customer-series",
         "conditional-compute-demand"
       ],
@@ -662,7 +663,8 @@
         "query-dimension-measures",
         "bar-series-average",
         "bar-line-marker-color",
-        "bar-category-order"
+        "bar-category-order",
+        "chart-tooltip-color-rule"
       ]
     },
     "components/lineChart.md": {
@@ -681,14 +683,16 @@
         "chart-constant-branches",
         "dual-axis-alignment",
         "chart-series-visibility",
-        "chart-table-unit"
+        "chart-table-unit",
+        "chart-tooltip-color-rule"
       ],
       "rules": [
         "schema-structure",
         "data-slot-known-source",
         "field-binding-resolves",
         "field-binding-role",
-        "field-binding-match"
+        "field-binding-match",
+        "chart-tooltip-color-rule"
       ]
     },
     "components/pieChart.md": {
@@ -706,7 +710,8 @@
         "composite-page",
         "chart-constant-values-page",
         "chart-constant-branches",
-        "pie-table-legend"
+        "pie-table-legend",
+        "pie-legend-color-rule"
       ],
       "rules": [
         "schema-structure",
@@ -1404,7 +1409,9 @@
         "6.130",
         "6.131",
         "6.132",
-        "6.133"
+        "6.133",
+        "6.134",
+        "6.135"
       ]
     },
     {
@@ -12903,6 +12910,19 @@
       "module": "components/barChart.md"
     },
     {
+      "pointer": "#/definitions/barChartSeries/anyOf/0/properties/tooltip",
+      "path": "@barChartSeries · anyOf[0].tooltip",
+      "required": "本分支可选",
+      "module": "components/barChart.md"
+    },
+    {
+      "pointer": "#/definitions/barChartSeries/anyOf/0/properties/tooltip/properties/colorRule",
+      "path": "@barChartSeries · anyOf[0].tooltip.colorRule",
+      "required": "本分支必填",
+      "module": "components/barChart.md",
+      "ref": "#/definitions/colorRule"
+    },
+    {
       "pointer": "#/definitions/barChartSeries/anyOf/0/properties/label",
       "path": "@barChartSeries · anyOf[0].label",
       "required": "本分支可选",
@@ -13454,6 +13474,19 @@
       "module": "components/lineChart.md"
     },
     {
+      "pointer": "#/definitions/chartSeries/anyOf/0/properties/tooltip",
+      "path": "@chartSeries · anyOf[0].tooltip",
+      "required": "本分支可选",
+      "module": "components/lineChart.md"
+    },
+    {
+      "pointer": "#/definitions/chartSeries/anyOf/0/properties/tooltip/properties/colorRule",
+      "path": "@chartSeries · anyOf[0].tooltip.colorRule",
+      "required": "本分支必填",
+      "module": "components/lineChart.md",
+      "ref": "#/definitions/colorRule"
+    },
+    {
       "pointer": "#/definitions/chartSeries/anyOf/0/properties/label",
       "path": "@chartSeries · anyOf[0].label",
       "required": "本分支可选",
@@ -13936,6 +13969,19 @@
         "center",
         "right"
       ]
+    },
+    {
+      "pointer": "#/definitions/pieLegendColumn/anyOf/0/properties/colorRule",
+      "path": "@pieLegendColumn · anyOf[0].colorRule",
+      "required": "本分支可选",
+      "module": "components/pieChart.md"
+    },
+    {
+      "pointer": "#/definitions/pieLegendColumn/anyOf/0/properties/colorRule/allOf/0",
+      "path": "@pieLegendColumn · anyOf[0].colorRule · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/pieChart.md",
+      "ref": "#/definitions/colorRule"
     },
     {
       "pointer": "#/definitions/pieLegendColumn/anyOf/1",
@@ -23805,5 +23851,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "8eb94715601c6cb612b246f11dd9c079d1bedb84a933d386483ca7edb29d78f0"
+  "semanticSourceDigest": "0ba0a184abf891878c466a246bf93c8475e796cd1926cd7af5ff8bbdd873395d"
 }

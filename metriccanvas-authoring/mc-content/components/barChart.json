@@ -35,7 +35,7 @@
   "knowledge": "barChart.overview",
   "reference": "references/page-metadata/components/barChart.md",
   "versionPolicy": "protocol/version-policy",
-  "currentWriter": "6.133",
+  "currentWriter": "6.135",
   "exampleVersionRequirements": [
     {
       "file": "references/page-metadata/examples/forecast-page.json",
@@ -408,6 +408,43 @@
           "id": "data-source-computation",
           "minor": 0,
           "description": "页面数据源的受控计算阶段与具名算子(ADR-0046)"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/chart-tooltip-color-rule.json",
+      "requiredVersion": "6.134",
+      "capabilities": [
+        {
+          "id": "chart-tooltip-color-rule",
+          "minor": 134,
+          "description": "柱状图与折线图字段系列的悬浮提示支持数字颜色规则"
+        },
+        {
+          "id": "chart-table-display-unit",
+          "minor": 94,
+          "description": "柱线系列与表格列显式展示单位"
+        },
+        {
+          "id": "percentage-point-format",
+          "minor": 77,
+          "description": "带符号的一位小数百分点格式"
+        },
+        {
+          "id": "binding-missing-text",
+          "minor": 12,
+          "description": "字段绑定的缺失值展示文案"
+        },
+        {
+          "id": "mixed-chart-series",
+          "minor": 12,
+          "description": "柱线混合系列与显式坐标轴"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
         }
       ],
       "scope": "complete example; actual used fields determine the floor, independently of readableVersions"

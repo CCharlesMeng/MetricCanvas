@@ -4,7 +4,7 @@
   "expected": [
     {
       "type": "SCHEMA_ERROR",
-      "message": "IOC 页头为已认领的筛选声明独立呈现行 由 6.133 引入，文档声明的是 6.130",
+      "message": "IOC 页头为已认领的筛选声明独立呈现行 由 6.135 引入，文档声明的是 6.130",
       "paths": [
         "/sections/0/components/0/props/filterRows"
       ]

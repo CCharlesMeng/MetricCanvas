@@ -87,6 +87,8 @@ pages/
 
 - 旧页面升级后继续开发：[步骤与边界](capabilities/layout/README.md#旧页面升级后继续开发)、[实际页面](capabilities/layout/schema-upgrade-demo.json)。
 - 饼图表格式图例与固定类别顺序：[图表场景](capabilities/chart/README.md)，入口 `/pages/pie-table-legend`。
+- [饼图图例数字着色](capabilities/chart/README.md#饼图图例数字着色6133)，入口 `/pages/pie-legend-color-rule`。
+- [悬浮提示数字着色](capabilities/chart/README.md#悬浮提示数字着色6134)，入口 `/pages/chart-tooltip-color-rule`。
 
 - IOC 公共页头：组件目录 `/catalog/components/iocHeader`；[专题场景](capabilities/ioc-header/scenarios/README.md)、[业务确认](capabilities/ioc-header/business/README.md)、[选择回执](capabilities/ioc-header/selection/README.md)。
 

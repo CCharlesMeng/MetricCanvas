@@ -1,0 +1,60 @@
+{
+  "case": "pie-legend-color-before-version",
+  "invariant": "pie-legend-color-rule",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "饼图表格式图例字段列可声明数字颜色规则 由 6.133 引入，文档声明的是 6.132",
+      "paths": [
+        "/sections/0/components/0/props/legend/columns/0/colorRule",
+        "/sections/0/components/0/props/legend/columns/1/colorRule",
+        "/sections/0/components/0/props/legend/columns/2/colorRule",
+        "/sections/0/components/0/props/legend/columns/3/colorRule"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "legend": {
+                "columns": [
+                  {
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "green",
+                      "negative": "red"
+                    }
+                  },
+                  {
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "red",
+                      "negative": "green"
+                    }
+                  },
+                  {
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "green",
+                      "negative": "red"
+                    }
+                  },
+                  {
+                    "colorRule": {
+                      "mode": "fixed",
+                      "color": "red"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

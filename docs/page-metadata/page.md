@@ -112,4 +112,4 @@ IOC Header 使用普通组件外壳 `id/type/layout/props`，限定在 `sections
 
 新声明采用 `iocHeader.props.components`，支持引用普通筛选的 `filterControl` 和拥有标准 Region 的 `regionFilter`；旧 `filterIds` 保留读取，两者互斥。Region 由子控件显式引入，查询范围和筛选状态不变。完整声明及边界见[页头子控件](components/iocHeader.md#页头子控件691)，合成场景 `/pages/ioc-header-controls`。
 
-6.133 起，组件页头可用 `props.filterRows` 将已认领的筛选排入带可选标题的独立行。见[页头筛选行](components/iocHeader.md#ioc-header-filter-rows)。
+6.135 起，组件页头可用 `props.filterRows` 将已认领的筛选排入带可选标题的独立行。见[页头筛选行](components/iocHeader.md#ioc-header-filter-rows)。

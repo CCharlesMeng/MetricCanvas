@@ -61,7 +61,7 @@ RegionFilter 固定提供可搜索、可清空的单选组织树，层级为 `ge
 
 <a id="ioc-header-filter-rows"></a>
 
-## 页头筛选行（6.133）
+## 页头筛选行（6.135）
 
 在 IOC 页头组件的 `props.filterRows` 声明一条或多条独立筛选行，按数组顺序呈现。每行 `title` 可省略，填写时使用非空纯文本。每行 `filterIds` 按显示顺序引用已由 `components` 或兼容 `props.filterIds` 认领的筛选 ID。Region 使用筛选 ID `region`。同一筛选在所有行中最多引用一次。每行至少引用一个筛选。省略 `filterRows` 时沿用现有页头排版。旧根级 `iocHeader` 继续按历史协议读取。
 
@@ -117,7 +117,7 @@ RegionFilter 固定提供可搜索、可清空的单选组织树，层级为 `ge
 统计期间使用当前已应用值。近一年显式映射模式值及起止范围，以便目标页恢复同一窗口。目标 URL 键由其实际筛选声明决定。合成入口 `/pages/ioc-office-drill-overview` 与 `/pages/ioc-office-drill-detail`，操作见 `pages/capabilities/ioc-header/controls/README.md`。
 
 
-页面协议 6.133。结构真源为本册[schema.json](../schema.json)，SHA256 `30f244aa6b0cd4e6febada6fb46df1bb56ba1ddc6c9dd5bb9368f7eae05ea129`。字段表自动生成；可选不等于有默认值。
+页面协议 6.135。结构真源为本册[schema.json](../schema.json)，SHA256 `8b965be58c0383eecc9c38936fb3eb2dca79168ec3bc77016c2fe0d1e12ecbf2`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -1159,7 +1159,7 @@ Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/pre
 - `ioc-header-component`：首section首组件全宽、唯一且不混写旧根字段。反例：[ioc-component-detail](../errors/ioc-component-detail.json)、[ioc-component-position](../errors/ioc-component-position.json)、[ioc-component-span](../errors/ioc-component-span.json)、[ioc-component-mixed](../errors/ioc-component-mixed.json)、[ioc-component-count](../errors/ioc-component-count.json)、[ioc-component-old-version](../errors/ioc-component-old-version.json)、[ioc-component-legacy-version](../errors/ioc-component-legacy-version.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `ioc-header-controls`：页头显式组合控件，RegionFilter 唯一拥有标准 region，旧排列仍可读。反例：[ioc-controls-root-filter](../errors/ioc-controls-root-filter.json)、[ioc-controls-root-region](../errors/ioc-controls-root-region.json)、[ioc-controls-version](../errors/ioc-controls-version.json)、[ioc-controls-mixed](../errors/ioc-controls-mixed.json)、[ioc-controls-duplicate-region](../errors/ioc-controls-duplicate-region.json)、[ioc-controls-unknown-filter](../errors/ioc-controls-unknown-filter.json)、[ioc-controls-duplicate-id](../errors/ioc-controls-duplicate-id.json)、[ioc-controls-duplicate-claim](../errors/ioc-controls-duplicate-claim.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `ioc-region-office-navigation`：IOC Region 直接下钻自动携带代表处，其他输入复用普通导航。反例：[ioc-office-navigation-version](../errors/ioc-office-navigation-version.json)、[ioc-office-navigation-reserved-key](../errors/ioc-office-navigation-reserved-key.json)、[ioc-office-navigation-no-row](../errors/ioc-office-navigation-no-row.json)、[ioc-office-navigation-legacy-root](../errors/ioc-office-navigation-legacy-root.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
-- `ioc-header-filter-rows`：6.133 IOC 页头的筛选行只引用已认领的筛选且全行唯一。反例：[ioc-filter-rows-version](../errors/ioc-filter-rows-version.json)、[ioc-filter-rows-unclaimed](../errors/ioc-filter-rows-unclaimed.json)、[ioc-filter-rows-duplicate](../errors/ioc-filter-rows-duplicate.json)、[ioc-filter-rows-empty](../errors/ioc-filter-rows-empty.json)、[ioc-filter-rows-legacy-root](../errors/ioc-filter-rows-legacy-root.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `ioc-header-filter-rows`：6.135 IOC 页头的筛选行只引用已认领的筛选且全行唯一。反例：[ioc-filter-rows-version](../errors/ioc-filter-rows-version.json)、[ioc-filter-rows-unclaimed](../errors/ioc-filter-rows-unclaimed.json)、[ioc-filter-rows-duplicate](../errors/ioc-filter-rows-duplicate.json)、[ioc-filter-rows-empty](../errors/ioc-filter-rows-empty.json)、[ioc-filter-rows-legacy-root](../errors/ioc-filter-rows-legacy-root.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 

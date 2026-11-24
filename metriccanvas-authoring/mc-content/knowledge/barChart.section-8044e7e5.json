@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.133",
+  "schemaVersion": "6.135",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "barChart.section-8044e7e5"
@@ -13,6 +13,19 @@
         "## 查阅方式\n\n字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](../README.md)。\n\nDashboard 正文通过独立 [filterGroup](filterGroup.md) 组件声明筛选按钮组；需要同组放置时使用组合卡。图表本身不再声明 `props.filter`。迁移后的完整页面见 `chart-local-filter-page`。\n\n6.32 的隐含高级入口 `props.echartsOption` 用于显式要求的 ECharts 呈现定制；普通创作优先使用上面的封闭属性。规则、保护路径、console 诊断与降级见[高级呈现扩展](../chart-option.md)。"
       ],
       "rules": [
+        {
+          "id": "chart-tooltip-color-rule",
+          "description": "6.134 柱图和折线图字段系列的悬浮提示数值着色",
+          "valid": [
+            "chart-tooltip-color-rule"
+          ],
+          "invalid": [
+            "chart-tooltip-color-before-version",
+            "chart-tooltip-color-nonnumeric",
+            "chart-tooltip-color-invalid-color",
+            "chart-tooltip-color-constant"
+          ]
+        },
         {
           "id": "bar-series-average",
           "description": "同一图表的当前值和前端均值字段系列，保留原类别及版本边界",
@@ -89,6 +102,7 @@
         "references/page-metadata/examples/sdt-period-aggregation.json",
         "references/page-metadata/examples/bar-line-marker-color.json",
         "references/page-metadata/examples/bar-category-order.json",
+        "references/page-metadata/examples/chart-tooltip-color-rule.json",
         "references/page-metadata/examples/chart-customer-series.json",
         "references/page-metadata/examples/conditional-compute-demand.json"
       ]

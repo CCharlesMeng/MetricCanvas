@@ -15,7 +15,7 @@ import {
 import { actionsZ } from '../actions';
 import { componentCatalogRegistry } from '../registry';
 import { tableSortZ } from '../../table/query-view';
-import { categoryLabelsZ, markerColorRuleZ } from '../presentation';
+import { categoryLabelsZ, colorRuleZ, markerColorRuleZ } from '../presentation';
 
 const chartOptionValueZ: z.ZodType<JsonValue> = z.lazy(() => z.union([z.string(), z.number(), z.boolean(), z.null(), z.array(chartOptionValueZ), z.record(z.string(), chartOptionValueZ)])).meta({ id: 'chartOptionValue' });
 export const chartOptionZ = z.record(z.string(), chartOptionValueZ).meta({ id: 'chartOption', description: '高级 ECharts 呈现 JSON；数据、结构和交互由引擎管理，不执行代码' });
@@ -24,8 +24,11 @@ const seriesShape = {
   label: textValueZ.optional(), ...visibilityShape,
   unit: textValueZ.optional().meta({ description: '系列展示单位：图例名称、数值标签及悬浮提示共用；不执行缩放' })
 };
+const chartFieldSeriesSourceZ = fieldSeriesSourceZ.extend({
+  tooltip: z.object({ colorRule: colorRuleZ }).strict().optional().describe('悬浮提示中该字段系列的数值呈现')
+});
 export const chartSeriesZ = z.union([
-  fieldSeriesSourceZ.extend(seriesShape).strict(),
+  chartFieldSeriesSourceZ.extend(seriesShape).strict(),
   constantSeriesSourceZ.extend(seriesShape).strict()
 ]).meta({ id: 'chartSeries' });
 
@@ -40,7 +43,7 @@ const barSeriesShape = {
   stackOrder: z.number().int().optional()
 };
 export const barChartSeriesZ = z.union([
-  fieldSeriesSourceZ.extend({ ...barSeriesShape,
+  chartFieldSeriesSourceZ.extend({ ...barSeriesShape,
     markerColorRule: markerColorRuleZ.optional().describe('仅字段折线系列可声明，按原始值选择圆点颜色'),
     aggregate: z.literal('avg').optional().meta({ description: '对当前图表全部有效字段值求算术平均，并在每个类别显示同一均值柱；0参与、空值跳过' })
   }).strict(),
@@ -143,7 +146,7 @@ const pieLegendColumnPresentation = {
 };
 
 const pieLegendColumnZ = z.union([
-  z.object({ label: nonEmptyTextValueZ, field: fieldBindingZ, ...pieLegendColumnPresentation }).strict(),
+  z.object({ label: nonEmptyTextValueZ, field: fieldBindingZ, ...pieLegendColumnPresentation, colorRule: colorRuleZ.optional() }).strict(),
   z.object({ label: nonEmptyTextValueZ, value: z.literal('percentage'), format: valueFormatPresetZ.optional(), ...pieLegendColumnPresentation }).strict()
 ]).meta({ id: 'pieLegendColumn' });
 

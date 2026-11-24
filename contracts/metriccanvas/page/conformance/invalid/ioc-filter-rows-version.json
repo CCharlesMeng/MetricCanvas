@@ -2,7 +2,7 @@
   "case": "ioc-filter-rows-version",
   "invariant": "ioc-header-filter-rows",
   "input": {
-    "schemaVersion": "6.132",
+    "schemaVersion": "6.134",
     "id": "ioc-header-filter-rows",
     "layout": "dashboard",
     "meta": {
@@ -111,7 +111,7 @@
     {
       "type": "SCHEMA_ERROR",
       "path": "/sections/0/components/0/props/filterRows",
-      "message": "IOC 页头为已认领的筛选声明独立呈现行 由 6.133 引入，文档声明的是 6.132"
+      "message": "IOC 页头为已认领的筛选声明独立呈现行 由 6.135 引入，文档声明的是 6.134"
     }
   ]
 }

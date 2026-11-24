@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.133",
+  "schemaVersion": "6.135",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "iocHeader.section-78cb7718"
@@ -15,7 +15,7 @@
       "rules": [
         {
           "id": "ioc-header-filter-rows",
-          "description": "6.133 IOC 页头的筛选行只引用已认领的筛选且全行唯一",
+          "description": "6.135 IOC 页头的筛选行只引用已认领的筛选且全行唯一",
           "valid": [
             "ioc-header-filter-rows",
             "business-result-metrics"
