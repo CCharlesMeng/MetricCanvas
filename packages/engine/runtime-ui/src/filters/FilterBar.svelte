@@ -3,7 +3,7 @@
   import type { PeriodRange } from '@metriccanvas/page/internal';
 </script>
 <script lang="ts">
-  import {rollingFinalizationName} from '@metriccanvas/page/internal';
+  import {finalizationMonthLimit,monthFinalizationName,rollingFinalizationName} from '@metriccanvas/page/internal';
   import {getContext} from 'svelte';
   import {SOURCE_FILTER_CONTEXT,type SourceFilterReader} from '../dashboard/source-filter-context';
   const sourceFilters=getContext<SourceFilterReader|undefined>(SOURCE_FILTER_CONTEXT);
@@ -176,10 +176,13 @@
       <ModeTimeRangeFilter {declaration} value={timeRangeValue(declaration.id)} readOnly={readOnly||!!limits.reason} max={limits.max} blockedRanges={limits.blockedRanges} snapshot={timeContext.snapshot} revision={timeContext.revision} onchange={next=>ontimerange(declaration.id,next)}/>
     {:else if declaration.type === 'timeRange' && declaration.display === 'period'}
       {@const finalization = rollingFinalizationName(declaration)}
+      {@const monthFinalization = monthFinalizationName(declaration)}
       <PeriodFilter
         initialMode={initialPeriodMode(declaration)}
         rollingMonth={timeContext.finalizationDates?.get(finalization ?? '')?.slice(0,7)}
         rollingPending={!!finalization && !timeContext.finalizationDates}
+        finalizationMonth={finalizationMonthLimit(monthFinalization,timeContext.finalizationDates)}
+        monthPending={!!monthFinalization && !timeContext.finalizationDates}
         periodModes={declaration.periodModes}
         min={declaration.min} max={limits.max} blockedRanges={limits.blockedRanges}
         label={declaration.label} precision={declaration.precision === 'month' ? 'month' : 'date'}

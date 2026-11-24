@@ -655,20 +655,22 @@
     function needsInitialFilterValue(filter: FilterDeclaration): boolean {
       return !fromURL.has(filter.id) && !preparation.unresolved.has(filter.id) && !(pendingRegion && filter.id === 'region');
     }
-    filterValues=new Map([...fromDeclarations,...explicit]);
+    filterValues=new Map([...fromDeclarations,...preparation.immediate]);
     const officeRedirect = officeNavigationTarget(loaded, filterValues.get('region'));
     preparingFilters=[...preparation.unresolved];
     tableController=createTableController(loaded,()=>stream,()=>syncTableState(loaded),()=>filterValues,candidateTimeContext,()=>({gateway:activeGateway,filters:filterValues,params:pageParams,blocked:initializing?declarations.map(filter=>filter.id):blockedFilters,displaySnapshot,filterRevision}));
     publishInitialPage(officeRedirect, loaded, textBindings, preparation.unresolved, capabilities);
-    let finalizationDates:ReadonlyMap<string,string>;
+    let finalizationDates:ReadonlyMap<string,string> | undefined;
+    let initialFilters:FilterValues;
     try {
-      const prepared = await prepareInitialNavigation(loaded, officeRedirect, preparation, fromDeclarations, explicit, mySession);
+      const prepared = await prepareInitialNavigation(loaded, officeRedirect, preparation, bootstrap ? new Map() : fromDeclarations, mySession);
       if (!prepared) return;
-      ({ finalizationDates, fromDeclarations } = prepared);
+      ({ finalizationDates, initialFilters } = prepared);
+      resolvedFinalizationDates = finalizationDates;
     } catch {failTimeInitialization(mySession,finalizationController.signal,emit);return;}
     let state:ReturnType<typeof createFilterState>;
     try {
-      state = createFilterState(bootstrap ? bootstrap.filters : new Map([...fromDeclarations, ...fromURL]), declarations, localOptions, { schemaVersion:loaded.schemaVersion, iocRegion:usesIocRegion(loaded), candidates:true, displayInputs:()=>displaySnapshot,readOnly: () => filterEditing?.readOnly === true || pageFiltersReadOnly(loaded) });
+      state = createFilterState(initialFilters, declarations, localOptions, { schemaVersion:loaded.schemaVersion, iocRegion:usesIocRegion(loaded), candidates:true, displayInputs:()=>displaySnapshot,finalizationDates:()=>resolvedFinalizationDates,readOnly: () => filterEditing?.readOnly === true || pageFiltersReadOnly(loaded) });
     } catch {
       pageState={phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters',message:'筛选初始化值不符合声明或日期边界'}]};
       emit?.({type:'invalid',errors:pageState.errors});return;
@@ -681,7 +683,7 @@
     }
     filterState = state;
     initializing=false;
-    const regionDefault = createIocRegionDefault(loaded, search, new Map([...fromDeclarations, ...fromURL]), !!bootstrap);
+    const regionDefault = createIocRegionDefault(loaded, search, initialFilters, !!bootstrap);
     let redirectingRegion = false;
 
     function loadCandidates(loader: NonNullable<typeof candidatesLoader>, values: FilterValues) {
@@ -771,7 +773,7 @@
       })
     );
 
-    search = initializeURLSearch(loaded, search, navigationAdapter);
+    search = initialSearchWithFinalization(loaded, state, preparation, search, navigationAdapter);
     syncTableState(loaded);
     pageState = { phase: 'ready', page: periodFactPage(filterTextPage(loaded, textBindings, filterValues,state.preparation()),displaySnapshot,state.revision), capabilities };
 
@@ -799,7 +801,7 @@
       if(session!==mySession||finalizationController.signal.aborted)return;
       finalizationDates=dates;
       resolvedFinalizationDates=dates;
-      state.completePreparation(preparation.values(dates));
+      state.completePreparation(preparation.values(dates, state.preparation()));
       emit?.({type:'ready',pageId:loaded.id});
     }).catch(()=>{
       if(session!==mySession||finalizationController.signal.aborted)return;
@@ -850,15 +852,24 @@
     pageState = { phase: 'ready', page: periodFactPage(filterTextPage(page, bindings, filterValues, pending), displaySnapshot, 0), capabilities };
   }
 
-  async function prepareInitialNavigation(page: Page, redirect: NavigationTarget | undefined, preparation: ReturnType<typeof createFinalizationPreparation>, defaults: Map<string, FilterValue>, explicit: FilterValues, mySession: number) {
+  async function prepareInitialNavigation(page: Page, redirect: NavigationTarget | undefined, preparation: ReturnType<typeof createFinalizationPreparation>, defaults: Map<string, FilterValue>, mySession: number) {
     const finalizationDates = await (redirect && preparation.unresolved.size ? preparation.resolve() : preparation.initialDates());
     if (mySession !== session || runtimeInvalidated()) return;
+    const restored = finalizationDates ? preparation.values(finalizationDates) : [];
+    const initialFilters = new Map([...defaults, ...restored, ...preparation.immediate]);
     if (redirect) {
-      const applied = new Map([...defaults, ...preparation.values(finalizationDates), ...explicit]);
-      navigateOffice(redirect, applied, { replace: true, sourcePageId: page.id });
+      navigateOffice(redirect, initialFilters, { replace: true, sourcePageId: page.id });
       return;
     }
-    return { finalizationDates, fromDeclarations: new Map([...defaults, ...preparation.initialValues(finalizationDates)]) };
+    return { finalizationDates, initialFilters };
+  }
+
+  function initialSearchWithFinalization(page: Page, state: FilterState, preparation: ReturnType<typeof createFinalizationPreparation>, search: string, navigationAdapter?: RuntimeNavigation): string {
+    const initial = initializeURLSearch(page, search, navigationAdapter);
+    if (!preparation.deferred.size || preparation.pending.size) return initial;
+    const next = mergedSearch(state, initial);
+    if (next !== initial) replaceRuntimeSearch(navigationAdapter, next);
+    return next;
   }
 
   function configurationIssue(
@@ -995,7 +1006,7 @@
   function mergedSearch(state: FilterState, initial: string): string {
     const params = new URLSearchParams(pageURLSearch(declarationPage!, initial, navigation?.preserveSearchParams));
     for (const declaration of declarations) {
-      if (declaration.id === 'region' && preparingFilters.includes('region')) continue;
+      if (preparingFilters.includes(declaration.id)) continue;
       for (const key of Object.values(filterURLKeys(declaration,!!declarationPage&&usesIocRegion(declarationPage)))) params.delete(key);
     }
     for (const [key, value] of new URLSearchParams(state.toURL(declarations))) params.append(key, value);

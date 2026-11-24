@@ -1,4 +1,5 @@
 import { validateTimePointValue, type FilterDeclaration } from './filter';
+import type { AppliedPeriodSelection } from './period-filter';
 
 /** Business lookup name; the resolved date belongs to the page instance. */
 export interface FinalizationDefault { finalizationName: string }
@@ -16,6 +17,31 @@ export function rollingFinalizationName(filter: FilterDeclaration): string | und
   if (filter.type !== 'timeRange' || filter.display !== 'period') return;
   if (filter.periodModes && !filter.periodModes.includes('last12Months')) return;
   return finalizationName(filter);
+}
+
+export function monthFinalizationName(filter: FilterDeclaration): string | undefined {
+  if (filter.type !== 'timeRange' || filter.display !== 'period') return;
+  if (filter.periodModes && !filter.periodModes.includes('month')) return;
+  return finalizationName(filter);
+}
+
+export function finalizationMonthLimit(name: string | undefined, dates: ReadonlyMap<string, string> | undefined, now = new Date()): string | undefined {
+  if (!name) return;
+  const month = dates?.get(name)?.slice(0, 7);
+  const current = localCalendarDate(now).slice(0, 7);
+  return month && month > current ? current : month;
+}
+
+export function finalizationMonthIssue(
+  filter: FilterDeclaration | undefined, selection: AppliedPeriodSelection | undefined,
+  dates: ReadonlyMap<string, string> | undefined, now?: Date
+): string | undefined {
+  if (!filter || selection?.mode !== 'month') return;
+  const name = monthFinalizationName(filter);
+  if (!name) return;
+  if (!dates) return '等待定稿日期';
+  const limit = finalizationMonthLimit(name, dates, now);
+  if (limit && selection.value > limit) return `月份不得晚于 ${limit}`;
 }
 
 /** Calendar dates are never interpreted as UTC instants. */

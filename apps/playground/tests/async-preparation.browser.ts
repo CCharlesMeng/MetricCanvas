@@ -30,19 +30,28 @@ test('structure and unrelated data appear before defaults; first business query 
   await expect(page.locator('[data-filter-pending]')).toHaveCount(0);expect(errors).toEqual([]);
 });
 
-test('an explicit month queries immediately while the rolling cutoff loads',async({page})=>{
-  const traces=await observe(page);
-  await page.goto('/pages/ioc-async-preparation?key-national-only=false&mtime=month:2026-03');
-  await expect(page.getByRole('cell',{name:'南京代表处',exact:true})).toBeVisible();
-  expect(traces.filter(item=>item.kind==='membership-start')).toEqual([]);
-  await expect.poll(()=>traces.filter(item=>item.kind==='finalization-ready').length).toBe(1);
-  expect(mainQueries(traces)[0].at).toBeLessThan(traces.find(item=>item.kind==='finalization-ready')!.at);
-  await expect(page.locator('[data-period-filter]').getByRole('combobox')).toHaveValue('2026-03');
-  await page.getByRole('button',{name:'近一年',exact:true}).click();
-  await expect.poll(()=>mainQueries(traces).at(-1)?.value.query?.filterValues).toContainEqual(
-    {target:'time',period:'month',value:{from:'2025-05',to:'2026-04'}}
-  );
-});
+for (const [requested, applied] of [['2026-03','2026-03'],['2026-11','2026-04']]) {
+  test(`waits for the cutoff before applying month ${requested} as ${applied}`,async({page})=>{
+    await page.clock.setFixedTime(new Date('2026-11-14T04:00:00Z'));
+    const traces=await observe(page);
+    await page.goto(`/pages/ioc-async-preparation?key-national-only=false&mtime=month:${requested}`);
+    const month=page.locator('[data-period-filter]').getByRole('combobox');
+    await expect(month).toBeDisabled();
+    await expect(page.getByRole('cell',{name:'无关数据已就绪',exact:true})).toBeVisible();
+    expect(mainQueries(traces)).toHaveLength(0);
+    await expect(page.getByRole('cell',{name:'南京代表处',exact:true})).toBeVisible();
+    expect(traces.filter(item=>item.kind==='membership-start')).toEqual([]);
+    expect(mainQueries(traces)[0].at).toBeGreaterThanOrEqual(traces.find(item=>item.kind==='finalization-ready')!.at);
+    expect(mainQueries(traces)[0].value.query?.filterValues).toContainEqual(
+      {target:'time',period:'month',value:{from:applied,to:applied}}
+    );
+    await expect(month).toHaveValue(applied);
+    await page.getByRole('button',{name:'近一年',exact:true}).click();
+    await expect.poll(()=>mainQueries(traces).at(-1)?.value.query?.filterValues).toContainEqual(
+      {target:'time',period:'month',value:{from:'2025-05',to:'2026-04'}}
+    );
+  });
+}
 
 for(const state of ['empty','error'])test(`membership ${state} cannot send an unrestricted query`,async({page})=>{
   const traces=await observe(page);
@@ -65,15 +74,20 @@ test('checking membership removes broader retained rows while the new scope is p
   await expect(page.getByRole('cell',{name:'南京代表处',exact:true})).toHaveCount(0);
 });
 
-test('a time selection made during initialization wins over the late cutoff',async({page})=>{
+test('a quarter selected during initialization wins over the late month default',async({page})=>{
   await page.clock.setFixedTime(new Date('2026-11-14T04:00:00Z'));
   const traces=await observe(page);
   await page.goto('/pages/ioc-async-preparation');
   await expect(page.locator('[data-filter-pending]')).toBeVisible();
-  await page.getByRole('button',{name:'月',exact:true}).click();
+  await page.getByRole('button',{name:'季',exact:true}).click();
   await expect(page.getByRole('cell',{name:'上海代表处',exact:true})).toBeVisible();
-  expect(mainQueries(traces)[0].value.query?.filterValues).toContainEqual({target:'time',period:'month',value:{from:'2026-11',to:'2026-11'}});
+  expect(mainQueries(traces)[0].value.query?.filterValues).toContainEqual({target:'time',period:'quarter',value:{from:'2026-Q4',to:'2026-Q4'}});
   await expect(page.locator('[data-filter-pending]')).toHaveCount(0);
+  await page.getByRole('button',{name:'月',exact:true}).click();
+  await expect(page.locator('[data-period-filter]').getByRole('combobox')).toHaveValue('2026-04');
+  await expect.poll(()=>mainQueries(traces).at(-1)?.value.query?.filterValues).toContainEqual(
+    {target:'time',period:'month',value:{from:'2026-04',to:'2026-04'}}
+  );
 });
 
 const legacyPage='/pages/ioc-legacy-key-office?mtime=month:2026-04';

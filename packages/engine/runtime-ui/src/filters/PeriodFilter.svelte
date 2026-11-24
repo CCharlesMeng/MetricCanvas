@@ -3,8 +3,8 @@
   import { DEFAULT_NULL_TEXT } from '../../../widgets/src/shared/value-format';
   import { untrack } from 'svelte';
   import { DatePicker } from '@metriccanvas/ui';
-  import { timeAvailabilityIssue,resolvePeriodSelection, periodRangeLabel, type PeriodMode, type PeriodRange, type AppliedPeriodSelection } from '@metriccanvas/page/internal';
-  let {label,precision='date',value,readOnly=false,rollingMonth,rollingPending=false,initialMode,periodModes,min,max,blockedRanges=[],onchange}:{label?:string;precision?:'month'|'date';value:PeriodRange|null;readOnly?:boolean;rollingMonth?:string;rollingPending?:boolean;initialMode?:PeriodMode;periodModes?:PeriodMode[];min?:string;max?:string;blockedRanges?:readonly {from:string;to:string}[];onchange:(value:PeriodRange)=>void}=$props();
+  import { calendarEndpoint,timeAvailabilityIssue,resolvePeriodSelection, periodRangeLabel, type PeriodMode, type PeriodRange, type AppliedPeriodSelection } from '@metriccanvas/page/internal';
+  let {label,precision='date',value,readOnly=false,rollingMonth,rollingPending=false,finalizationMonth,monthPending=false,initialMode,periodModes,min,max,blockedRanges=[],onchange}:{label?:string;precision?:'month'|'date';value:PeriodRange|null;readOnly?:boolean;rollingMonth?:string;rollingPending?:boolean;finalizationMonth?:string;monthPending?:boolean;initialMode?:PeriodMode;periodModes?:PeriodMode[];min?:string;max?:string;blockedRanges?:readonly {from:string;to:string}[];onchange:(value:PeriodRange)=>void}=$props();
   let error=$state('');
   function commit(range:PeriodRange){error=timeAvailabilityIssue({id:'period',type:'timeRange',min,max,blockedRanges:[...blockedRanges]},{type:'timeRange',...range})??'';if(!error)onchange(range);}
   const allModes=[{id:'year',label:'年'},{id:'quarter',label:'季'},{id:'month',label:'月'},{id:'last12Months',label:'近一年'}] as const;
@@ -41,10 +41,19 @@
     const quarter = Math.ceil(Number(anchor.slice(5, 7)) / 3);
     return `${year}-Q${quarter}`;
   }
+  function modePending(mode: PeriodMode): boolean {
+    return mode === 'month' ? monthPending : mode === 'last12Months' && rollingPending;
+  }
+  function calendarModeValue(mode: CalendarMode): string {
+    const value = rememberedValues[mode] ?? initialValueFor(mode);
+    return mode === 'month' && finalizationMonth && value > finalizationMonth ? finalizationMonth : value;
+  }
+  const pickerMax=$derived(mode === 'month' && finalizationMonth
+    && (!max || calendarEndpoint(finalizationMonth, true) < calendarEndpoint(max, true)) ? finalizationMonth : max);
   function select(next:PeriodMode) {
     const selection = next === 'last12Months'
       ? { mode: next, anchor: rollingMonth } as const
-      : { mode: next, value: rememberedValues[next] ?? initialValueFor(next) };
+      : { mode: next, value: calendarModeValue(next) };
     commit(resolvePeriodSelection(selection,new Date(),precision));
   }
   const selected=$derived(value?.selection?.mode==='last12Months'?undefined:value?.selection.value);
@@ -57,14 +66,14 @@
   {:else}
     {#if modes.length>1}
     <div class="segments" role="group" aria-label={label??'时间粒度'}>
-      {#each modes as item}<button type="button" aria-pressed={mode===item.id} disabled={item.id==='last12Months'&&rollingPending} onclick={()=>select(item.id)}>{item.label}</button>{/each}
+      {#each modes as item}<button type="button" aria-pressed={mode===item.id} disabled={modePending(item.id)} onclick={()=>select(item.id)}>{item.label}</button>{/each}
     </div>
     {/if}
     {#if mode==='last12Months'}
       <span class="range" data-period-range>{value?periodRangeLabel(value):DEFAULT_NULL_TEXT}</span>
     {:else}
       <div class="picker">
-        <DatePicker label={label??'统计期间'} precision={mode} {min} {max} {blockedRanges} required value={selected?{from:selected,to:selected}:null}
+        <DatePicker label={label??'统计期间'} precision={mode} {min} max={pickerMax} {blockedRanges} disabled={modePending(mode)} required value={selected?{from:selected,to:selected}:null}
           onchange={next=>{if(next)commit(resolvePeriodSelection({mode,value:next.from},new Date(),precision));}} />
       </div>
     {/if}

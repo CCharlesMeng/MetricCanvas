@@ -354,10 +354,10 @@
   :global(.mc-date-picker :is(.tiny-year-table, .tiny-month-table) tr),:global(.mc-date-picker :is(.tiny-year-table, .tiny-month-table) td) { text-align:center;padding:16px 0;cursor:pointer }
   :global(.mc-date-picker :is(.tiny-year-table, .tiny-month-table) tr.current),:global(.mc-date-picker :is(.tiny-year-table, .tiny-month-table) td.current) { padding-left:3px;padding-right:3px }
   :global(.mc-date-picker :is(.tiny-year-table, .tiny-month-table) tr div),:global(.mc-date-picker :is(.tiny-year-table, .tiny-month-table) td div) { height:28px;box-sizing:border-box;padding:0 4px }
-  :global(.mc-date-picker :is(.tiny-year-table, .tiny-month-table) tr.today .cell),:global(.mc-date-picker :is(.tiny-year-table, .tiny-month-table) td.today .cell) { color:#191919;box-shadow:0 0 1px 1px #191919 }
-  :global(.mc-date-picker :is(.tiny-year-table, .tiny-month-table) tr.today.end-date .cell),:global(.mc-date-picker :is(.tiny-year-table, .tiny-month-table) td.today.end-date .cell),:global(.mc-date-picker :is(.tiny-year-table, .tiny-month-table) tr.today.start-date .cell),:global(.mc-date-picker :is(.tiny-year-table, .tiny-month-table) td.today.start-date .cell) { color:#ffffff;box-shadow:none }
+  :global(.mc-date-picker :is(.tiny-year-table, .tiny-month-table) :is(tr, td).today .cell:enabled) { color:#191919;box-shadow:0 0 1px 1px #191919 }
+  :global(.mc-date-picker :is(.tiny-year-table, .tiny-month-table) :is(tr, td).today:is(.end-date, .start-date) .cell:enabled) { color:#ffffff;box-shadow:none }
   :global(.mc-date-picker :is(.tiny-year-table, .tiny-month-table) tr .cell),:global(.mc-date-picker :is(.tiny-year-table, .tiny-month-table) td .cell) { width:100%;height:28px;padding:calc((28px - 1.5 * 14px) / 2) 0;line-height:1.5;display:block;color:#191919 }
-  :global(.mc-date-picker :is(.tiny-year-table, .tiny-month-table) tr .cell:hover),:global(.mc-date-picker :is(.tiny-year-table, .tiny-month-table) td .cell:hover) { background:#deecff;box-shadow:none }
+  :global(.mc-date-picker :is(.tiny-year-table, .tiny-month-table) :is(tr, td) .cell:enabled:hover) { background:#deecff;box-shadow:none }
   :global(.mc-date-picker :is(.tiny-year-table, .tiny-month-table) tr.in-range div),:global(.mc-date-picker :is(.tiny-year-table, .tiny-month-table) td.in-range div),:global(.mc-date-picker :is(.tiny-year-table, .tiny-month-table) tr.in-range div:hover),:global(.mc-date-picker :is(.tiny-year-table, .tiny-month-table) td.in-range div:hover) { background-color:#deecff }
   :global(.mc-date-picker :is(.tiny-year-table, .tiny-month-table) tr.in-range:first-of-type div),:global(.mc-date-picker :is(.tiny-year-table, .tiny-month-table) td.in-range:first-of-type div) { border-radius:999px 0 0 999px }
   :global(.mc-date-picker :is(.tiny-year-table, .tiny-month-table) tr.in-range:first-of-type.end-date div),:global(.mc-date-picker :is(.tiny-year-table, .tiny-month-table) td.in-range:first-of-type.end-date div) { border-radius:999px;padding-left:0 }
@@ -400,7 +400,7 @@
   :global(.mc-date-picker .tiny-picker-panel) { margin:0; box-shadow:none; border:0; }
   :global(.mc-date-picker :is(.tiny-year-table, .tiny-month-table) td:not(.in-range) .cell) { width:100%; }
   :global(.mc-date-picker .tiny-date-table td.current span) { color:#fff; background:#1476ff; border-radius:999px; box-shadow:none; }
-  :global(.mc-date-picker :is(.tiny-year-table, .tiny-month-table) td.current .cell) { color:#fff; background:#1476ff; box-shadow:none; }
+  :global(.mc-date-picker :is(.tiny-year-table, .tiny-month-table) td.current .cell:enabled) { color:#fff; background:#1476ff; box-shadow:none; }
   :global(.mc-date-picker :is(.tiny-year-table, .tiny-month-table, .tiny-date-table) td button:disabled),
   :global(.mc-date-picker :is(.tiny-year-table, .tiny-month-table, .tiny-date-table) td button:disabled:hover) { color:#c2c2c2; background:transparent; cursor:not-allowed; }
   :global(.mc-date-picker .tiny-picker-panel__icon-btn:disabled .tiny-svg) { fill:#c2c2c2; }
