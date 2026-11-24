@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "54cf2508989d81157febd02f7493288842c434614b3af99594a26629b5165624",
+  "sha256": "90ed3a572e5017e2b9d4a9e948ddfd10c255e1ef9cd95ee62725099fea55a393",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -36,7 +36,7 @@
     },
     {
       "file": "docs/page-metadata/components/barChart.md",
-      "sha256": "c70fedd496d90a22dcbe1a0d80504981f3395fcc5836d9fd5913c28f3e9e1894"
+      "sha256": "a207c7772b8321d6b3745f4685541bd5856669cbad5fefaee55275c1257f6045"
     },
     {
       "file": "docs/page-metadata/components/button.md",
@@ -72,7 +72,7 @@
     },
     {
       "file": "docs/page-metadata/components/lineChart.md",
-      "sha256": "1ad1fa29707f4d69638a2a5f3de8478a070b5160f7246048710d68834d785e04"
+      "sha256": "6398089ce12471c2ad1f6b2aa047ef68ead74f1a665db651c53276e2c7de9005"
     },
     {
       "file": "docs/page-metadata/components/mapChart.md",
@@ -84,7 +84,7 @@
     },
     {
       "file": "docs/page-metadata/components/pieChart.md",
-      "sha256": "fca8702fc5eae1cdc39f41de1dbb468a36f09c27c527583921f1bf40a50b948b"
+      "sha256": "792245c26c5f2111402539af2f76d0c41497b27b60cb1dbc17ad4391bf2d2364"
     },
     {
       "file": "docs/page-metadata/components/rankingCard.md",
@@ -128,7 +128,7 @@
     },
     {
       "file": "docs/page-metadata/field-bindings-and-formats.md",
-      "sha256": "dee36d70c8fca37cf7aa652bea5b04754dc759de532df2d4a7af0e3524e90dd8"
+      "sha256": "319402d7961e508bf7acf914e39de7ebb877fbed14b355841be2e37641f447bf"
     },
     {
       "file": "docs/page-metadata/fields.md",
@@ -160,7 +160,7 @@
     },
     {
       "file": "docs/page-metadata/reference-map.json",
-      "sha256": "4af919af460fb25d9f2e1b4dc7d3caf5ed7f4246c9bf69a77971f9c3999ff20a"
+      "sha256": "063022e5f5edf302e31703a80f0dd39d1f7e3b9664beb1580af3b66ad17869a0"
     },
     {
       "file": "docs/page-metadata/sections-and-layout.md",
@@ -1924,7 +1924,7 @@
     },
     {
       "file": "packages/page/src/schema/components/charts.ts",
-      "sha256": "2f6314ed1ac263c7878c7a01d3db1f1eb9634837058f2f30a1c3eb74cf384109"
+      "sha256": "13d187be2b634dcc789f9d21fbe719ed65c1b0d5fd9fa47b60264d12f5053c1f"
     },
     {
       "file": "packages/page/src/schema/components/composite-card.ts",
@@ -2208,11 +2208,11 @@
     },
     {
       "file": "packages/page/src/validate.ts",
-      "sha256": "1efced3b5294dc57cf1425840ffb13b7cdf679cc64c9d5d28af5dee8ab88be42"
+      "sha256": "93bc5d41692f54a8312b95c7e38e35f113c211b795e07ca8dd019048b00a5cca"
     },
     {
       "file": "packages/page/src/version.ts",
-      "sha256": "c8a6382f2a8a60500a5b0f653f0b924b37aa80c3455ba89ac4691f736ce9dc41"
+      "sha256": "647a60abdfe84b08e4b1a2f9aba07254bafadf0a2358205fe57452af428daca6"
     },
     {
       "file": "packages/page/src/write-version.ts",
@@ -2220,7 +2220,7 @@
     },
     {
       "file": "pages/README.md",
-      "sha256": "8bdf42f6da32e861fd53fbf0ef4ea89be7d57f57e99d5e30e3423eed8ed63e00"
+      "sha256": "f17096353c75fd4737a9875a17e1a3c21c139b131a6cc4765183c40828f57dd3"
     },
     {
       "file": "pages/business-rejection-details.json",
@@ -2380,7 +2380,7 @@
     },
     {
       "file": "pages/capabilities/chart/README.md",
-      "sha256": "18478141417ec705a23bb77b20c19bf261c32939ae6ab12f86b765d18df10758"
+      "sha256": "555a5d60a16e53356ea2b05777024fc06612e179957fb48358a5a19119e779a0"
     },
     {
       "file": "pages/capabilities/chart/bar-category-order.json",
@@ -2431,8 +2431,16 @@
       "sha256": "d21843c1db123d8e26f3a96121ec72f588b698b29c9616281d71c1e428afa348"
     },
     {
+      "file": "pages/capabilities/chart/chart-tooltip-color-rule.json",
+      "sha256": "2d2f2dc22c4019dc9b4ebac91add63c1058547d1a39e68e2e6c3eae6989cf1c2"
+    },
+    {
       "file": "pages/capabilities/chart/dual-axis-alignment.json",
       "sha256": "d40dc9f83efa1a4d4bdbf8cec057993da8c8980e1c22e69bbea50c2617b292d2"
+    },
+    {
+      "file": "pages/capabilities/chart/pie-legend-color-rule.json",
+      "sha256": "e2913470a71b2813f21608f1897a8865d37732a9567ea2a50ed2403cec5d4c2e"
     },
     {
       "file": "pages/capabilities/chart/pie-table-legend.json",
@@ -2876,15 +2884,15 @@
     },
     {
       "file": "pages/capabilities/layout/mc-content-layout-demo.json",
-      "sha256": "9fe58d7ebd6fa498f4c74f6756f7ef5c50eae895f56a58458ca6b919ef994a8e"
+      "sha256": "9948cbba13a197fc6aa30c68b3661d4bae4bddaab931840ac0754f527f00c03a"
     },
     {
       "file": "pages/capabilities/layout/mc-layout-business-report.json",
-      "sha256": "122772d2cc7334589d3c0a36bcca0fae884e872903b91b41336a5d30c1582b41"
+      "sha256": "3da0a708ea82174dccb50a5087f4df1bafad520a6351e239d92b1436e06f7b03"
     },
     {
       "file": "pages/capabilities/layout/mc-layout-usage-report.json",
-      "sha256": "e65e4e44d3d9f71d86db469f94de88419521f87e6ebe104b83a40d933ef6fa5e"
+      "sha256": "730a28d34385871bc9186b814b79b16c76c64f3837b21a9d899f5f567479727e"
     },
     {
       "file": "pages/capabilities/layout/metric-card-definition-tip.json",
@@ -2916,7 +2924,7 @@
     },
     {
       "file": "pages/capabilities/layout/schema-upgrade-demo.json",
-      "sha256": "53d710425183254b54330e9c063077ab1cfc2dbd5351cb12466ec3efffca16f4"
+      "sha256": "0ab94782b8d36fb50118814b6d8c42e2cfbd122cd7fa9de0de2e2e1d9d8445fd"
     },
     {
       "file": "pages/capabilities/layout/tab-mixed-content-report.json",
@@ -3912,11 +3920,11 @@
     },
     {
       "file": "tools/scripts/page-conformance-sources.ts",
-      "sha256": "0c3ed809a5a3e56dc7058790e58e9c71abc118662355406f66e201836841de55"
+      "sha256": "ef461901be69090c26767a9ebebc7ae224eb01703fefe96c1bef7f281b785451"
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "9c59b80c938a2e21dab0944ccc97ac512022c6b022bc4a74a0fd330c1fa96ef1"
+      "sha256": "a3ce0d6388cfadba9fcbd87b089c803af11145dfeb96b5fbd529f729e56e36b5"
     },
     {
       "file": "tools/scripts/page-files.d.mts",

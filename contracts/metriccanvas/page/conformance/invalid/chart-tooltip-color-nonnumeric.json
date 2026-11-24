@@ -1,0 +1,244 @@
+{
+  "case": "chart-tooltip-color-nonnumeric",
+  "invariant": "chart-tooltip-color-rule",
+  "input": {
+    "schemaVersion": "6.134",
+    "id": "chart-tooltip-color-rule",
+    "layout": "dashboard",
+    "meta": {
+      "title": "柱图和折线图悬浮提示数字着色"
+    },
+    "dataSources": {
+      "changes": {
+        "fields": {
+          "month": {
+            "type": "string",
+            "role": "dimension"
+          },
+          "customers": {
+            "type": "number",
+            "role": "measure",
+            "unit": "家"
+          },
+          "yoy": {
+            "type": "number",
+            "role": "measure",
+            "unit": "%",
+            "defaultFormat": "percent-2-signed",
+            "nullable": true
+          },
+          "mom": {
+            "type": "number",
+            "role": "measure",
+            "unit": "%",
+            "defaultFormat": "percent-2-signed",
+            "nullable": true
+          },
+          "points": {
+            "type": "number",
+            "role": "measure",
+            "defaultFormat": "points-1-signed",
+            "nullable": true
+          },
+          "note": {
+            "type": "string",
+            "role": "measure",
+            "nullable": true
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "month": "1 月",
+              "customers": 20,
+              "yoy": 8.5,
+              "mom": -3.2,
+              "points": 0.04
+            },
+            {
+              "month": "2 月",
+              "customers": 22,
+              "yoy": -3.2,
+              "mom": 5.1,
+              "points": -2.5
+            },
+            {
+              "month": "3 月",
+              "customers": 24,
+              "yoy": 0,
+              "mom": 0,
+              "points": 0
+            },
+            {
+              "month": "4 月",
+              "customers": 18,
+              "yoy": null,
+              "mom": 4.8,
+              "points": null
+            }
+          ]
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "charts",
+        "components": [
+          {
+            "id": "bar",
+            "type": "barChart",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "changes"
+            },
+            "props": {
+              "title": "柱图 · 同比和环比",
+              "categoryField": "month",
+              "series": [
+                {
+                  "field": "yoy",
+                  "label": "同比",
+                  "stackOrder": 20,
+                  "tooltip": {
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "green",
+                      "negative": "red"
+                    }
+                  }
+                },
+                {
+                  "field": "mom",
+                  "label": "环比",
+                  "stackOrder": 10,
+                  "tooltip": {
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "red",
+                      "negative": "green"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "id": "line",
+            "type": "lineChart",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "changes"
+            },
+            "props": {
+              "title": "折线图 · 零值和缺失值",
+              "xField": "month",
+              "series": [
+                {
+                  "field": "note",
+                  "label": "同比",
+                  "tooltip": {
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "green",
+                      "negative": "red"
+                    }
+                  }
+                },
+                {
+                  "field": "mom",
+                  "label": "环比",
+                  "tooltip": {
+                    "colorRule": {
+                      "mode": "fixed",
+                      "color": "red"
+                    }
+                  }
+                },
+                {
+                  "field": "points",
+                  "label": "占比变化",
+                  "tooltip": {
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "green",
+                      "negative": "red"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "id": "mixed",
+            "type": "barChart",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "changes"
+            },
+            "props": {
+              "title": "柱线组合图 · 客户数和同比",
+              "categoryField": "month",
+              "dualAxis": true,
+              "series": [
+                {
+                  "field": "customers",
+                  "label": "客户数",
+                  "kind": "bar",
+                  "axis": "primary",
+                  "unit": "家"
+                },
+                {
+                  "field": "yoy",
+                  "label": "同比",
+                  "kind": "line",
+                  "axis": "secondary",
+                  "tooltip": {
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "green",
+                      "negative": "red"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/changes/source/rows/0/note",
+      "message": "行缺少字段:note"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/changes/source/rows/1/note",
+      "message": "行缺少字段:note"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/changes/source/rows/2/note",
+      "message": "行缺少字段:note"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/changes/source/rows/3/note",
+      "message": "行缺少字段:note"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/series/0/tooltip/colorRule",
+      "message": "colorRule 只支持 number 或 money 字段"
+    }
+  ]
+}

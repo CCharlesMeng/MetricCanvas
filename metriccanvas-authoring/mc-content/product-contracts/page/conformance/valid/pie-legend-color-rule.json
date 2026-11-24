@@ -1,0 +1,57 @@
+{
+  "schemaVersion": "6.133",
+  "id": "pie-legend-color-rule",
+  "layout": "dashboard",
+  "meta": {
+    "title": "饼图表格式图例数值颜色"
+  },
+  "dataSources": {
+    "customers-by-region": {
+      "fields": {
+        "region": { "type": "string", "role": "dimension" },
+        "customers": { "type": "number", "role": "measure" },
+        "yoy": { "type": "number", "role": "measure", "defaultFormat": "percent-2-signed", "nullable": true },
+        "mom": { "type": "number", "role": "measure", "nullable": true },
+        "shareDelta": { "type": "number", "role": "measure", "defaultFormat": "points-1-signed", "nullable": true }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          { "region": "华东", "customers": 96, "yoy": 8.5, "mom": -3.2, "shareDelta": 0.04 },
+          { "region": "华北", "customers": 72, "yoy": -3.2, "mom": 5.1, "shareDelta": -2.5 },
+          { "region": "华南", "customers": 0, "yoy": 0, "mom": 0, "shareDelta": 0 },
+          { "region": "西南", "customers": 48, "yoy": null, "mom": null, "shareDelta": null }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "changes",
+          "type": "pieChart",
+          "layout": { "span": 12 },
+          "data": { "main": "customers-by-region" },
+          "props": {
+            "title": "区域客户数与变化",
+            "categoryField": "region",
+            "valueField": "customers",
+            "ring": "46%",
+            "legend": {
+              "type": "table",
+              "columns": [
+                { "label": "同比", "field": "yoy", "colorRule": { "mode": "sign", "positive": "green", "negative": "red" } },
+                { "label": "环比", "field": { "data": "main", "field": "mom", "format": "percent-2-signed" }, "colorRule": { "mode": "sign", "positive": "red", "negative": "green" } },
+                { "label": "占比变化", "field": "shareDelta", "colorRule": { "mode": "sign", "positive": "green", "negative": "red" } },
+                { "label": "客户数", "field": "customers", "unit": "家", "colorRule": { "mode": "fixed", "color": "red" } },
+                { "label": "占比", "value": "percentage" }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

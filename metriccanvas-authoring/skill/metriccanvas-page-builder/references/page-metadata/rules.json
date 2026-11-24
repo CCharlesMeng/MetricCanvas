@@ -1,6 +1,32 @@
 {
   "invariants": [
     {
+      "id": "chart-tooltip-color-rule",
+      "description": "6.134 柱图和折线图字段系列的悬浮提示数值着色",
+      "valid": [
+        "chart-tooltip-color-rule"
+      ],
+      "invalid": [
+        "chart-tooltip-color-before-version",
+        "chart-tooltip-color-nonnumeric",
+        "chart-tooltip-color-invalid-color",
+        "chart-tooltip-color-constant"
+      ]
+    },
+    {
+      "id": "pie-legend-color-rule",
+      "description": "6.133 饼图表格式图例字段列复用数字颜色规则",
+      "valid": [
+        "pie-legend-color-rule"
+      ],
+      "invalid": [
+        "pie-legend-color-before-version",
+        "pie-legend-color-nonnumeric",
+        "pie-legend-color-invalid-color",
+        "pie-legend-color-on-percentage"
+      ]
+    },
+    {
       "id": "paged-join-auto-pagination",
       "description": "6.118 records 自动选择主查询分页或完整关联，旧模式不变",
       "valid": [

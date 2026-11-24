@@ -37,6 +37,24 @@
 
 完整内联合成场景：`/pages/pie-table-legend`，包含左右位置、默认/升降序、自定义类别顺序、数量变化后保持顺序、返回占比/自动占比、缺失与零合计。它不是独立的 `categoryBreakdown` 页面组件；只是内部复用其呈现实现。
 
+<a id="pie-legend-color-rule"></a>
+
+## 图例数字着色（6.133）
+
+在 `props.legend.columns[]` 的字段列声明可选 `colorRule`，绑定 main 数据槽的 `number` 或 `money` 度量。规则与表格数字列和指标卡变化项共用。
+
+```json
+{
+  "label": "同比",
+  "field": { "data": "main", "field": "yoy", "format": "percent-2-signed" },
+  "colorRule": { "mode": "sign", "positive": "green", "negative": "red" }
+}
+```
+
+`sign` 分别声明正、负值的颜色，零和缺失值用普通文字色。`{"mode":"fixed","color":"red"}` 给所有有效数值着色，包括零。两种模式均只接受 `red` 和 `green`。正负判断沿用[共享数值格式规则](../field-bindings-and-formats.md#numeric-value-color)，使用列内显式格式或字段的默认格式。示例中的 `8.5` 表示 `8.5%`。
+
+颜色作用于屏幕和静态导出的数值单元格。省略规则时沿用普通文字色。类别色点、扇区、列头和图例行序沿用各自既有规则。自动占比列 `value: "percentage"` 使用普通文字色。合成入口 `/pages/pie-legend-color-rule` 对照同比、环比、固定色、零、缺失和舍入。
+
 <a id="percentage-labels"></a>
 
 ## 外围百分比标签

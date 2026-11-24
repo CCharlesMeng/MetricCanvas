@@ -32,7 +32,7 @@
   "knowledge": "pieChart.overview",
   "reference": "references/page-metadata/components/pieChart.md",
   "versionPolicy": "protocol/version-policy",
-  "currentWriter": "6.132",
+  "currentWriter": "6.134",
   "exampleVersionRequirements": [
     {
       "file": "references/page-metadata/examples/composite-page.json",
@@ -213,6 +213,33 @@
           "id": "open-detail-action",
           "minor": 10,
           "description": "组件点击在页内打开详情浮层"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/pie-legend-color-rule.json",
+      "requiredVersion": "6.133",
+      "capabilities": [
+        {
+          "id": "pie-legend-color-rule",
+          "minor": 133,
+          "description": "饼图表格式图例字段列可声明数字颜色规则"
+        },
+        {
+          "id": "percentage-point-format",
+          "minor": 77,
+          "description": "带符号的一位小数百分点格式"
+        },
+        {
+          "id": "pie-legend-table",
+          "minor": 64,
+          "description": "饼图表格式图例、显式数值排序与类别顺序"
         },
         {
           "id": "page-layout",

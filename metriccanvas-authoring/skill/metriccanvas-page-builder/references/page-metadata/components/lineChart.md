@@ -18,6 +18,8 @@
 
 Dashboard 正文通过独立 [filterGroup](filterGroup.md) 组件声明筛选按钮组；需要同组放置时使用组合卡。图表本身不再声明 `props.filter`。迁移后的完整页面见 `chart-local-filter-page`。
 
+6.134 起，字段系列可声明 `tooltip.colorRule`，在[悬浮提示](barChart.md#chart-tooltip-color-rule)里按正负或固定颜色显示数值。
+
 6.32 的隐含高级入口 `props.echartsOption` 用于显式要求的 ECharts 呈现定制；普通创作优先使用上面的封闭属性。规则、保护路径、console 诊断与降级见[高级呈现扩展](../chart-option.md)。
 
 ## 常量取值（6.59）
@@ -37,7 +39,7 @@ Dashboard 正文通过独立 [filterGroup](filterGroup.md) 组件声明筛选按
 6.94 起系列可声明 `unit`，图例名称、数值标签与悬浮提示共用。声明、单位与缩放组合、缺失及导出规则见[展示单位](../field-bindings-and-formats.md#display-unit)。场景 `/pages/chart-table-unit`。
 
 
-页面协议 6.132。结构真源为本册[schema.json](../schema.json)，SHA256 `07ee79be6c82f479408234becba0169d33ee5d52643ab928ce8be6a9779fe60f`。字段表自动生成；可选不等于有默认值。
+页面协议 6.134。结构真源为本册[schema.json](../schema.json)，SHA256 `466e35cadc1f2120b8f321e35b66b79834e1a565c41594922e5e57513d7fe884`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -259,6 +261,26 @@ Schema位置：`#/definitions/chartSeries/anyOf/0/properties/value/not`。
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | 开放JSON | 条件结构 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f63686172745365726965732f616e794f662f302f70726f706572746965732f746f6f6c746970"></a>
+
+### `@chartSeries · anyOf[0].tooltip`
+
+Schema位置：`#/definitions/chartSeries/anyOf/0/properties/tooltip`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支可选 | required=["colorRule"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 悬浮提示中该字段系列的数值呈现 |
+
+<a id="schema-232f646566696e6974696f6e732f63686172745365726965732f616e794f662f302f70726f706572746965732f746f6f6c7469702f70726f706572746965732f636f6c6f7252756c65"></a>
+
+### `@chartSeries · anyOf[0].tooltip.colorRule`
+
+Schema位置：`#/definitions/chartSeries/anyOf/0/properties/tooltip/properties/colorRule`。目标：[#/definitions/colorRule](../field-bindings-and-formats.md#schema-232f646566696e6974696f6e732f636f6c6f7252756c65)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/colorRule | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 数字展示位置的显式颜色规则，只支持number/money；与旧染色声明互斥。 |
 
 <a id="schema-232f646566696e6974696f6e732f63686172745365726965732f616e794f662f302f70726f706572746965732f6c6162656c"></a>
 
@@ -653,6 +675,7 @@ Schema位置：`#/definitions/lineChartComponent/properties/props/properties/act
 - `field-binding-resolves`：字段绑定引用组件已声明的数据槽与数据源中存在的字段。反例：[field-binding-undeclared-slot](../errors/field-binding-undeclared-slot.json)、[unknown-component-field](../errors/unknown-component-field.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `field-binding-role`：字段绑定的角色符合组件属性要求。反例：[field-binding-role-mismatch](../errors/field-binding-role-mismatch.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `field-binding-match`：行匹配字段必须是 dimension，匹配值符合其类型。反例：[match-field-unknown](../errors/match-field-unknown.json)、[match-field-not-dimension](../errors/match-field-not-dimension.json)、[match-value-type-mismatch](../errors/match-value-type-mismatch.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `chart-tooltip-color-rule`：6.134 柱图和折线图字段系列的悬浮提示数值着色。反例：[chart-tooltip-color-before-version](../errors/chart-tooltip-color-before-version.json)、[chart-tooltip-color-nonnumeric](../errors/chart-tooltip-color-nonnumeric.json)、[chart-tooltip-color-invalid-color](../errors/chart-tooltip-color-invalid-color.json)、[chart-tooltip-color-constant](../errors/chart-tooltip-color-constant.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 
@@ -663,6 +686,7 @@ Schema位置：`#/definitions/lineChartComponent/properties/props/properties/act
 - [dual-axis-alignment](../examples/dual-axis-alignment.json)：完整合法页面；查询仅为静态契约证据。
 - [chart-series-visibility](../examples/chart-series-visibility.json)：完整合法页面；查询仅为静态契约证据。
 - [chart-table-unit](../examples/chart-table-unit.json)：完整合法页面；查询仅为静态契约证据。
+- [chart-tooltip-color-rule](../examples/chart-tooltip-color-rule.json)：完整合法页面；查询仅为静态契约证据。
 
 局部片段提取自[完整页面](../examples/component-lineChart.json)的`#/sections/0/components/0`；此片段依赖完整页面的数据源/字段，不能单独作为页面校验。
 

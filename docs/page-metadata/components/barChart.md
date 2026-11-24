@@ -12,6 +12,24 @@
 
 <a id="bar-line-marker-color"></a>
 
+<a id="chart-tooltip-color-rule"></a>
+
+## 悬浮提示数字着色（6.134）
+
+在柱状图、折线图和柱线组合图的 `props.series[]` 字段系列声明 `tooltip.colorRule`，给该系列在悬浮提示中的数值文字着色。
+
+```json
+{
+  "label": "同比",
+  "field": { "data": "main", "field": "yoy", "format": "percent-2-signed" },
+  "tooltip": { "colorRule": { "mode": "sign", "positive": "green", "negative": "red" } }
+}
+```
+
+`tooltip` 可省略。声明时须填写 `colorRule`，字段须为 `number` 或 `money` 度量。规则、主题色、缺失值和格式对应的正负判断复用[数字颜色规则](../field-bindings-and-formats.md#numeric-value-color)。`sign` 的零和缺失值使用普通文字色，`fixed` 给所有有效数值着色，包括零。数值格式和单位沿用系列设置，图例、绘图区和悬浮提示的系列标记继续使用原系列色。
+
+显式高级 `echartsOption.tooltip.formatter` 沿用覆盖优先级，显式 `renderMode: "richText"` 由 ECharts 原生画布提示接管。合成入口 `/pages/chart-tooltip-color-rule` 可悬停查看三种图表的着色。
+
 ## 折线圆点按数值正负着色（6.128）
 
 柱线组合图 `barChart.props.series[]` 中，绑定字段且声明 `kind: "line"` 的系列可选配 `markerColorRule`。以下系列以 `change` 为数值字段，使用副轴。

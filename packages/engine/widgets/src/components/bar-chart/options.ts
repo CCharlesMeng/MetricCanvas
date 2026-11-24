@@ -13,6 +13,7 @@ import { finiteNumber, formatValue } from '../../shared/value-format';
 import { CHART_PALETTE, GRID, alignedSecondaryAxis, categoryWindow, dualOrSingleAxis, formattedValueAxis, formatterValue, formatChartNumber } from '../../shared/chart-option';
 import { serialColor, type ColorList } from '../../shared/chart-palette';
 import { categoryLabelOption, pointValueLabel, valueLabelLayout } from '../../shared/chart-presentation';
+import { chartTooltip, seriesTooltipValue } from '../../shared/chart-tooltip';
 
 const DEFAULT_BAR_WIDTH = 16;
 const MARKER_COLORS = { red: '#f5222d', green: '#52c41a' } as const;
@@ -49,15 +50,16 @@ export function barOption(
   const categoryAxis = { type: 'category' as const, data: categories,
     ...(props.horizontal ? { inverse: true } : {}),
     ...categoryLabelOption(props.categoryLabels, props.showValueLabels) };
+  const declaredEntries = props.series.map((series, originalIndex) => ({
+    series, originalIndex, roleIndex: chartRoleIndex(props, originalIndex),
+    field: resolveBarSeriesValue(series, data, props.emptyBehavior)
+  }));
   const valueAxis = dualOrSingleAxis(props.dualAxis, chartDeclaration(props).series.length, false,
-    chartAxisFormats(props, props.series.map(series => chartAxisField(resolveBarSeriesValue(series, data, props.emptyBehavior), rows, series.unit))));
+    chartAxisFormats(props, declaredEntries.map(({ field, series }) => chartAxisField(field, rows, series.unit))));
   const horizontalAxis = Array.isArray(valueAxis)
     ? valueAxis.map(horizontalValueLabels)
     : horizontalValueLabels(valueAxis);
   const reportForecast = props.variant === 'reportForecast';
-  const declaredEntries = props.series.map((series, originalIndex) => ({
-    series, originalIndex, roleIndex: chartRoleIndex(props, originalIndex)
-  }));
   const seriesEntries = barSeriesOrder(props).map(index => declaredEntries[index]!);
   const topEntryByGroup = new Map<string, (typeof seriesEntries)[number]>();
   for (const entry of seriesEntries) {
@@ -73,14 +75,13 @@ export function barOption(
       ...(reportForecast ? { top: 44, right: 0, bottom: 20, left: 0 } : {}),
       ...(rows.length > 20 && props.categoryLabels?.mode !== 'all' ? (props.horizontal ? { right: 40 } : { bottom: 36 }) : {})
     },
-    tooltip: { trigger: 'axis', confine: true },
+    tooltip: chartTooltip(seriesEntries, props.echartsOption?.tooltip),
     ...barLegend(props, legendData),
     // 横向条形:类目轴与数值轴对调(覆盖存量两个水平条形组件的场景)
     xAxis: props.horizontal ? horizontalAxis : categoryAxis,
     yAxis: props.horizontal ? categoryAxis : valueAxis,
     series: seriesEntries.map((entry) => {
-      const { series, originalIndex, roleIndex } = entry;
-      const field = resolveBarSeriesValue(series, data, props.emptyBehavior);
+      const { series, originalIndex, roleIndex, field } = entry;
       const roleColor =
         roleIndex === undefined
           ? undefined
@@ -162,8 +163,7 @@ export function barOption(
             }
           : {}),
         tooltip: {
-          valueFormatter: (value: unknown) =>
-            formatChartNumber(formatterValue(value), field.format, field.missingText, field.unit, series.unit)
+          valueFormatter: (value: unknown) => seriesTooltipValue(entry, value)
         },
         data: displayedValues
       };
@@ -315,18 +315,19 @@ export function barSeriesOrder(props: BarChartProps): number[] {
 function mixedOption(data: MainDataSlots, props: BarChartProps, palette?: ColorList): EChartsOption {
   const rows = data.main.snapshot.rows;
   const category = resolveField(props.categoryField, data);
+  const entries = props.series.map(series => ({ series, field: resolveBarSeriesValue(series, data, props.emptyBehavior) }));
   const axis = (name: 'primary' | 'secondary') => {
-    const fields = props.series.filter(series => (series.axis ?? 'primary') === name)
-      .map(series => chartAxisField(resolveBarSeriesValue(series, data, props.emptyBehavior), rows, series.unit));
+    const fields = entries.filter(({ series }) => (series.axis ?? 'primary') === name)
+      .map(({ field, series }) => chartAxisField(field, rows, series.unit));
     return formattedValueAxis(fields);
   };
   return {
     color: [...(palette ?? CHART_PALETTE)], grid: GRID,
-    legend: { top: 0, left: 0 }, tooltip: { trigger: 'axis', confine: true },
+    legend: { top: 0, left: 0 }, tooltip: chartTooltip(entries, props.echartsOption?.tooltip),
     xAxis: { type: 'category', data: rows.map(row => formatValue(row[category.field], category.format, category.missingText)), ...categoryLabelOption(props.categoryLabels, props.showValueLabels) },
     yAxis: props.dualAxis ? [axis('primary'), alignedSecondaryAxis(axis('secondary'))] : axis('primary'),
-    series: props.series.map((series, index) => {
-      const field = resolveBarSeriesValue(series, data, props.emptyBehavior);
+    series: entries.map((entry, index) => {
+      const { series, field } = entry;
       const markerColorRule = series.kind === 'line' && 'markerColorRule' in series ? series.markerColorRule : undefined;
       return {
         type: series.kind ?? 'bar', name: seriesDisplayName(series.label ?? field.label, series.unit),
@@ -338,7 +339,7 @@ function mixedOption(data: MainDataSlots, props: BarChartProps, palette?: ColorL
           label: pointValueLabel(field.format, field.missingText, field.unit, series.unit), labelLayout: valueLabelLayout(rows.map(row => finiteNumber(field.read(row))), series.kind === 'line'),
           ...(series.kind === 'line' ? { showAllSymbol: true } : {})
         } : {}),
-        tooltip: { valueFormatter: (value: unknown) => formatChartNumber(formatterValue(value), field.format, field.missingText, field.unit, series.unit) },
+        tooltip: { valueFormatter: (value: unknown) => seriesTooltipValue(entry, value) },
         data: rows.map(row => {
           const value = finiteNumber(field.read(row));
           if (value === undefined) return null;

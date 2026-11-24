@@ -12,6 +12,24 @@
 
 <a id="bar-line-marker-color"></a>
 
+<a id="chart-tooltip-color-rule"></a>
+
+## 悬浮提示数字着色（6.134）
+
+在柱状图、折线图和柱线组合图的 `props.series[]` 字段系列声明 `tooltip.colorRule`，给该系列在悬浮提示中的数值文字着色。
+
+```json
+{
+  "label": "同比",
+  "field": { "data": "main", "field": "yoy", "format": "percent-2-signed" },
+  "tooltip": { "colorRule": { "mode": "sign", "positive": "green", "negative": "red" } }
+}
+```
+
+`tooltip` 可省略。声明时须填写 `colorRule`，字段须为 `number` 或 `money` 度量。规则、主题色、缺失值和格式对应的正负判断复用[数字颜色规则](../field-bindings-and-formats.md#numeric-value-color)。`sign` 的零和缺失值使用普通文字色，`fixed` 给所有有效数值着色，包括零。数值格式和单位沿用系列设置，图例、绘图区和悬浮提示的系列标记继续使用原系列色。
+
+显式高级 `echartsOption.tooltip.formatter` 沿用覆盖优先级，显式 `renderMode: "richText"` 由 ECharts 原生画布提示接管。合成入口 `/pages/chart-tooltip-color-rule` 可悬停查看三种图表的着色。
+
 ## 折线圆点按数值正负着色（6.128）
 
 柱线组合图 `barChart.props.series[]` 中，绑定字段且声明 `kind: "line"` 的系列可选配 `markerColorRule`。以下系列以 `change` 为数值字段，使用副轴。
@@ -156,7 +174,7 @@ Dashboard 正文通过独立 [filterGroup](filterGroup.md) 组件声明筛选按
 按堆叠总数排序时，让查询返回总数字段，或用 [`sumFields`](../compute.md) 在前端计算总数，图表的 `series` 继续声明各段字段。新数据到达后按指定字段重排，图例显隐时排序仍取同一字段。类别轴、系列、标签、点击动作及 PDF/PNG 使用同一行序。合成入口 `/pages/bar-category-order` 并排展示总数降序、维度升序和数据源行序。
 
 
-页面协议 6.132。结构真源为本册[schema.json](../schema.json)，SHA256 `07ee79be6c82f479408234becba0169d33ee5d52643ab928ce8be6a9779fe60f`。字段表自动生成；可选不等于有默认值。
+页面协议 6.134。结构真源为本册[schema.json](../schema.json)，SHA256 `466e35cadc1f2120b8f321e35b66b79834e1a565c41594922e5e57513d7fe884`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -427,6 +445,26 @@ Schema位置：`#/definitions/barChartSeries/anyOf/0/properties/value/not`。
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | 开放JSON | 条件结构 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f62617243686172745365726965732f616e794f662f302f70726f706572746965732f746f6f6c746970"></a>
+
+### `@barChartSeries · anyOf[0].tooltip`
+
+Schema位置：`#/definitions/barChartSeries/anyOf/0/properties/tooltip`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支可选 | required=["colorRule"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 悬浮提示中该字段系列的数值呈现 |
+
+<a id="schema-232f646566696e6974696f6e732f62617243686172745365726965732f616e794f662f302f70726f706572746965732f746f6f6c7469702f70726f706572746965732f636f6c6f7252756c65"></a>
+
+### `@barChartSeries · anyOf[0].tooltip.colorRule`
+
+Schema位置：`#/definitions/barChartSeries/anyOf/0/properties/tooltip/properties/colorRule`。目标：[#/definitions/colorRule](../field-bindings-and-formats.md#schema-232f646566696e6974696f6e732f636f6c6f7252756c65)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/colorRule | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 数字展示位置的显式颜色规则，只支持number/money；与旧染色声明互斥。 |
 
 <a id="schema-232f646566696e6974696f6e732f62617243686172745365726965732f616e794f662f302f70726f706572746965732f6c6162656c"></a>
 
@@ -1005,6 +1043,7 @@ Schema位置：`#/definitions/barChartComponent/properties/props/properties/acti
 - `bar-series-average`：同一图表的当前值和前端均值字段系列，保留原类别及版本边界。反例：[bar-average-old-version](../errors/bar-average-old-version.json)、[bar-average-category-removed](../errors/bar-average-category-removed.json)、[bar-average-stacked](../errors/bar-average-stacked.json)、[bar-average-line](../errors/bar-average-line.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `bar-line-marker-color`：柱线组合的字段折线圆点按原始数值正负着色。反例：[bar-line-marker-color-old-version](../errors/bar-line-marker-color-old-version.json)、[bar-line-marker-color-on-bar-series](../errors/bar-line-marker-color-on-bar-series.json)、[bar-line-marker-color-unknown-color](../errors/bar-line-marker-color-unknown-color.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `bar-category-order`：普通柱图按结果字段和方向排序类别，兼容省略 order 的页面。反例：[bar-category-order-old-version](../errors/bar-category-order-old-version.json)、[bar-category-order-unknown-field](../errors/bar-category-order-unknown-field.json)、[bar-category-order-invalid-direction](../errors/bar-category-order-invalid-direction.json)、[bar-category-order-on-forecast](../errors/bar-category-order-on-forecast.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `chart-tooltip-color-rule`：6.134 柱图和折线图字段系列的悬浮提示数值着色。反例：[chart-tooltip-color-before-version](../errors/chart-tooltip-color-before-version.json)、[chart-tooltip-color-nonnumeric](../errors/chart-tooltip-color-nonnumeric.json)、[chart-tooltip-color-invalid-color](../errors/chart-tooltip-color-invalid-color.json)、[chart-tooltip-color-constant](../errors/chart-tooltip-color-constant.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 
@@ -1020,6 +1059,7 @@ Schema位置：`#/definitions/barChartComponent/properties/props/properties/acti
 - [sdt-period-aggregation](../examples/sdt-period-aggregation.json)：完整合法页面；查询仅为静态契约证据。
 - [bar-line-marker-color](../examples/bar-line-marker-color.json)：完整合法页面；查询仅为静态契约证据。
 - [bar-category-order](../examples/bar-category-order.json)：完整合法页面；查询仅为静态契约证据。
+- [chart-tooltip-color-rule](../examples/chart-tooltip-color-rule.json)：完整合法页面；查询仅为静态契约证据。
 - [chart-customer-series](../examples/chart-customer-series.json)：完整合法页面；查询仅为静态契约证据。
 - [conditional-compute-demand](../examples/conditional-compute-demand.json)：完整合法页面；查询仅为静态契约证据。
 
