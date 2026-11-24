@@ -434,7 +434,7 @@ Dashboard 的 `display:"period"` 声明定稿名称后，月模式默认禁选�
 合成入口为 `/pages/finalization-default-time` 与 `/pages/finalization-default-time-detail`，`?period-filter=month:2026-11` 验证晚于定稿月时回到 2026-10，`?state=error|missing|invalid|conflict|timeout` 验证回退。集成应用通过数据网关的finalizationSource提供固定DQE请求体、nameField与dateField映射，页面作者不填写端点、凭据或表结构。这些场景不证明真实截止表或生产DQE已接入。
 
 
-页面协议 6.135。结构真源为本册[schema.json](schema.json)，SHA256 `8b965be58c0383eecc9c38936fb3eb2dca79168ec3bc77016c2fe0d1e12ecbf2`。字段表自动生成；可选不等于有默认值。
+页面协议 6.136。结构真源为本册[schema.json](schema.json)，SHA256 `2a5f403d14ec6e704de9fb1bbcce5c3794e431e4c960bfa9c77fe8bf67991b9e`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

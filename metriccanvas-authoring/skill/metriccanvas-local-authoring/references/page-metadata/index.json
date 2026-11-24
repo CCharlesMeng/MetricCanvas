@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.135",
-  "schemaSha256": "8b965be58c0383eecc9c38936fb3eb2dca79168ec3bc77016c2fe0d1e12ecbf2",
+  "schemaVersion": "6.136",
+  "schemaSha256": "2a5f403d14ec6e704de9fb1bbcce5c3794e431e4c960bfa9c77fe8bf67991b9e",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -619,7 +619,8 @@
         "metric-card-equation",
         "metric-card-primary-detail",
         "metric-card-select-tab",
-        "metric-card-definition-tip"
+        "metric-card-definition-tip",
+        "metric-card-change-visibility"
       ],
       "rules": [
         "schema-structure",
@@ -629,7 +630,8 @@
         "field-binding-match",
         "metric-card-before",
         "metric-card-primary-detail",
-        "metric-card-select-tab"
+        "metric-card-select-tab",
+        "metric-card-change-visibility"
       ]
     },
     "components/barChart.md": {
@@ -1411,7 +1413,8 @@
         "6.132",
         "6.133",
         "6.134",
-        "6.135"
+        "6.135",
+        "6.136"
       ]
     },
     {
@@ -11683,6 +11686,19 @@
       ]
     },
     {
+      "pointer": "#/definitions/metricCardComponent/properties/props/properties/rows/items/properties/changes/items/properties/visibleWhen",
+      "path": "@metricCardComponent.props.rows[].changes[].visibleWhen",
+      "required": "本分支可选",
+      "module": "components/metricCard.md"
+    },
+    {
+      "pointer": "#/definitions/metricCardComponent/properties/props/properties/rows/items/properties/changes/items/properties/visibleWhen/allOf/0",
+      "path": "@metricCardComponent.props.rows[].changes[].visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/metricCard.md",
+      "ref": "#/definitions/condition"
+    },
+    {
       "pointer": "#/definitions/metricCardComponent/properties/props/properties/secondaryRows",
       "path": "@metricCardComponent.props.secondaryRows",
       "required": "本分支可选",
@@ -11822,6 +11838,19 @@
       "required": "独立分支（不合并required）",
       "module": "components/metricCard.md",
       "ref": "#/definitions/colorRule"
+    },
+    {
+      "pointer": "#/definitions/metricCardComponent/properties/props/properties/secondaryRows/items/properties/changes/items/properties/visibleWhen",
+      "path": "@metricCardComponent.props.secondaryRows[].changes[].visibleWhen",
+      "required": "本分支可选",
+      "module": "components/metricCard.md"
+    },
+    {
+      "pointer": "#/definitions/metricCardComponent/properties/props/properties/secondaryRows/items/properties/changes/items/properties/visibleWhen/allOf/0",
+      "path": "@metricCardComponent.props.secondaryRows[].changes[].visibleWhen · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/metricCard.md",
+      "ref": "#/definitions/condition"
     },
     {
       "pointer": "#/definitions/metricCardComponent/properties/props/properties/panelLayout",
@@ -23851,5 +23880,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "55886333e573af53ad7fec1a40483d06471290065615ec248f8a2ce3928ea873"
+  "semanticSourceDigest": "49039f9a989edb031cb63f285899ffc51ea54e64e98e3d2e0be8c92f30a7f016"
 }

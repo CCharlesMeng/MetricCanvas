@@ -1,8 +1,13 @@
 {
   "major": 6,
-  "minor": 135,
-  "current": "6.135",
+  "minor": 136,
+  "current": "6.136",
   "capabilities": {
+    "metric-card-change-visibility": {
+      "minor": 136,
+      "description": "指标卡主、次指标行的变化项按展示条件显隐",
+      "legacyReadable": false
+    },
     "metric-card-row-definition-tip": {
       "minor": 129,
       "description": "结果字段指标编码与指标行定义气泡",
@@ -1155,6 +1160,7 @@
     "6.132",
     "6.133",
     "6.134",
-    "6.135"
+    "6.135",
+    "6.136"
   ]
 }

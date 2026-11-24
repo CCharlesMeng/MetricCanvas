@@ -19,9 +19,19 @@ export interface PolicySite {
 export function presentationPolicies(page: Page): PolicySite[] {
   const sites: PolicySite[] = [];
   const add = (node: PolicyNode | undefined, path: string, fields?: Record<string, FieldDefinition>) => { if (node) sites.push({node,path,fields}); };
+  function metricCardChanges(node: Extract<Component, { type: 'metricCard' }>, path: string) {
+    for (const key of ['rows', 'secondaryRows'] as const) {
+      node.props[key]?.forEach((row, rowIndex) => {
+        row.changes?.forEach((change, changeIndex) => {
+          add(change, `${path}/props/${key}/${rowIndex}/changes/${changeIndex}`);
+        });
+      });
+    }
+  }
   function component(node: Component, path: string) {
     add(node,path);
     if(node.type==='barChart'||node.type==='lineChart') node.props.series.forEach((series,i)=>add(series,`${path}/props/series/${i}`));
+    if (node.type === 'metricCard') metricCardChanges(node, path);
     const source = node.data?.main ? page.dataSources[node.data.main] : undefined;
     const fields = source ? resolveDataSourceFields(source) : undefined;
     const props = node.props as unknown as Record<string, any>;

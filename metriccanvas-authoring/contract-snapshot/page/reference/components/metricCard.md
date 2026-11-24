@@ -4,6 +4,26 @@
 
 数据槽和字段绑定声明取哪行哪列；不同variant改变摘要结构，不能把列清单当任意HTML模板。
 
+<a id="metric-card-change-visibility"></a>
+
+## 变化项显隐
+
+6.136 起，`props.rows[].changes[]` 和 `props.secondaryRows[].changes[]` 可就地声明 [`visibleWhen`](../conditions.md)。例如，已应用的时间范围筛选器 `period` 使用期间选择时，可用下面的变化项声明按月显示环比。
+
+```json
+{
+  "label": "环比",
+  "field": { "data": "main", "field": "mom", "format": "percent-0" },
+  "visibleWhen": { "filter": "period", "part": "mode", "op": "eq", "value": "month" }
+}
+```
+
+用 `op: "in"` 和 `values: ["year", "quarter"]` 可让同比在年、季度两种模式下显示。每项条件独立生效，省略条件的变化项照常显示。变化项可引用筛选器、权限或事实，行字段引用和 `enabledWhen` 在此处非法。
+
+条件为假、等待或出错时隐藏对应变化项。卡内指标行、主值及其他构件继续呈现，可见变化项沿用声明顺序和原字段绑定。页面、详情与 PDF/PNG 导出共用展示投影，取数继续使用已声明的数据槽。
+
+完整场景见 [指标卡变化项显隐](../examples/metric-card-change-visibility.json)，Playground 入口为 `/pages/metric-card-change-visibility`。
+
 <a id="metric-definition-tip"></a>
 
 ## 指标定义气泡
@@ -102,7 +122,7 @@ Dashboard 的 plain/card 内容分区可以在顶层相邻指标卡的 `layout.b
 数值与单位遵循[统一语义格式](../field-bindings-and-formats.md#numeric-value-display)：组件显式格式优先，自动金额和数量不再重复追加旧的元/万等单位标签。比率变化项使用正负号，即使 `showTrendArrows: true` 也不显示箭头；绝对变化项保留既有箭头行为。进度环图形可裁到0–100%，文字仍按真实比率格式化，不把超过100%的真实值改成100%。缺失比率默认显示 `—`，自定义缺失文字按原声明。合成场景 `/pages/semantic-numeric-display`。
 
 
-页面协议 6.135。结构真源为本册[schema.json](../schema.json)，SHA256 `8b965be58c0383eecc9c38936fb3eb2dca79168ec3bc77016c2fe0d1e12ecbf2`。字段表自动生成；可选不等于有默认值。
+页面协议 6.136。结构真源为本册[schema.json](../schema.json)，SHA256 `2a5f403d14ec6e704de9fb1bbcce5c3794e431e4c960bfa9c77fe8bf67991b9e`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -565,6 +585,26 @@ Schema位置：`#/definitions/metricCardComponent/properties/props/properties/ro
 |---|---|---|---|---|
 | 引用 #/definitions/colorRule | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
+<a id="schema-232f646566696e6974696f6e732f6d657472696343617264436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f726f77732f6974656d732f70726f706572746965732f6368616e6765732f6974656d732f70726f706572746965732f76697369626c655768656e"></a>
+
+### `@metricCardComponent.props.rows[].changes[].visibleWhen`
+
+Schema位置：`#/definitions/metricCardComponent/properties/props/properties/rows/items/properties/changes/items/properties/visibleWhen`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 节点展示条件；只受自身与祖先约束，子项不反推父级。 |
+
+<a id="schema-232f646566696e6974696f6e732f6d657472696343617264436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f726f77732f6974656d732f70726f706572746965732f6368616e6765732f6974656d732f70726f706572746965732f76697369626c655768656e2f616c6c4f662f30"></a>
+
+### `@metricCardComponent.props.rows[].changes[].visibleWhen · allOf[0]`
+
+Schema位置：`#/definitions/metricCardComponent/properties/props/properties/rows/items/properties/changes/items/properties/visibleWhen/allOf/0`。目标：[#/definitions/condition](../conditions.md#schema-232f646566696e6974696f6e732f636f6e646974696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/condition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
 <a id="schema-232f646566696e6974696f6e732f6d657472696343617264436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f7365636f6e64617279526f7773"></a>
 
 ### `@metricCardComponent.props.secondaryRows`
@@ -782,6 +822,26 @@ Schema位置：`#/definitions/metricCardComponent/properties/props/properties/se
 |---|---|---|---|---|
 | 引用 #/definitions/colorRule | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
+<a id="schema-232f646566696e6974696f6e732f6d657472696343617264436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f7365636f6e64617279526f77732f6974656d732f70726f706572746965732f6368616e6765732f6974656d732f70726f706572746965732f76697369626c655768656e"></a>
+
+### `@metricCardComponent.props.secondaryRows[].changes[].visibleWhen`
+
+Schema位置：`#/definitions/metricCardComponent/properties/props/properties/secondaryRows/items/properties/changes/items/properties/visibleWhen`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 节点展示条件；只受自身与祖先约束，子项不反推父级。 |
+
+<a id="schema-232f646566696e6974696f6e732f6d657472696343617264436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f7365636f6e64617279526f77732f6974656d732f70726f706572746965732f6368616e6765732f6974656d732f70726f706572746965732f76697369626c655768656e2f616c6c4f662f30"></a>
+
+### `@metricCardComponent.props.secondaryRows[].changes[].visibleWhen · allOf[0]`
+
+Schema位置：`#/definitions/metricCardComponent/properties/props/properties/secondaryRows/items/properties/changes/items/properties/visibleWhen/allOf/0`。目标：[#/definitions/condition](../conditions.md#schema-232f646566696e6974696f6e732f636f6e646974696f6e)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/condition | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
 <a id="schema-232f646566696e6974696f6e732f6d657472696343617264436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f70616e656c4c61796f7574"></a>
 
 ### `@metricCardComponent.props.panelLayout`
@@ -887,6 +947,7 @@ Schema位置：`#/definitions/metricCardComponent/properties/props/properties/ac
 - `metric-card-before`：6.34 Dashboard 顶层指标卡前置文字、受控间距与整组跨度。反例：[metric-before-version](../errors/metric-before-version.json)、[metric-before-report](../errors/metric-before-report.json)、[metric-before-tracks](../errors/metric-before-tracks.json)、[metric-before-span](../errors/metric-before-span.json)、[metric-before-empty](../errors/metric-before-empty.json)、[metric-before-gap](../errors/metric-before-gap.json)、[metric-before-nested](../errors/metric-before-nested.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `metric-card-primary-detail`：主次指标卡有且仅有一个主指标，次级字段和链接复用既有契约。反例：[metric-primary-multiple](../errors/metric-primary-multiple.json)、[metric-primary-version](../errors/metric-primary-version.json)、[metric-secondary-field](../errors/metric-secondary-field.json)、[metric-secondary-link](../errors/metric-secondary-link.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `metric-card-select-tab`：指标值只能切换当前页目标容器中已声明的页签。反例：[metric-select-tab-missing-container](../errors/metric-select-tab-missing-container.json)、[metric-select-tab-invalid-container-type](../errors/metric-select-tab-invalid-container-type.json)、[metric-select-tab-unknown-tab](../errors/metric-select-tab-unknown-tab.json)、[metric-select-tab-link-conflict](../errors/metric-select-tab-link-conflict.json)、[metric-select-tab-secondary-link-conflict](../errors/metric-select-tab-secondary-link-conflict.json)、[metric-select-tab-card-level](../errors/metric-select-tab-card-level.json)、[metric-select-tab-unsupported-row-action](../errors/metric-select-tab-unsupported-row-action.json)、[metric-select-tab-version-floor](../errors/metric-select-tab-version-floor.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `metric-card-change-visibility`：6.136 指标卡主、次指标行的变化项使用统一展示条件。反例：[metric-change-visibility-version](../errors/metric-change-visibility-version.json)、[metric-change-visibility-filter](../errors/metric-change-visibility-filter.json)、[metric-change-visibility-period](../errors/metric-change-visibility-period.json)、[metric-change-visibility-row](../errors/metric-change-visibility-row.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 
@@ -903,6 +964,7 @@ Schema位置：`#/definitions/metricCardComponent/properties/props/properties/ac
 - [metric-card-primary-detail](../examples/metric-card-primary-detail.json)：完整合法页面；查询仅为静态契约证据。
 - [metric-card-select-tab](../examples/metric-card-select-tab.json)：完整合法页面；查询仅为静态契约证据。
 - [metric-card-definition-tip](../examples/metric-card-definition-tip.json)：完整合法页面；查询仅为静态契约证据。
+- [metric-card-change-visibility](../examples/metric-card-change-visibility.json)：完整合法页面；查询仅为静态契约证据。
 
 局部片段提取自[完整页面](../examples/component-metricCard.json)的`#/sections/0/components/0`；此片段依赖完整页面的数据源/字段，不能单独作为页面校验。
 

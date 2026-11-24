@@ -33,7 +33,7 @@
   "knowledge": "metricCard.overview",
   "reference": "references/page-metadata/components/metricCard.md",
   "versionPolicy": "protocol/version-policy",
-  "currentWriter": "6.135",
+  "currentWriter": "6.136",
   "exampleVersionRequirements": [
     {
       "file": "references/page-metadata/examples/inline-report.json",
@@ -191,6 +191,43 @@
           "id": "composite-card-metric-grid",
           "minor": 0,
           "description": "组合卡的紧凑指标网格呈现档"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/metric-card-change-visibility.json",
+      "requiredVersion": "6.136",
+      "capabilities": [
+        {
+          "id": "metric-card-change-visibility",
+          "minor": 136,
+          "description": "指标卡主、次指标行的变化项按展示条件显隐"
+        },
+        {
+          "id": "ioc-header-component",
+          "minor": 81,
+          "description": "IOC 页头作为首分区首组件"
+        },
+        {
+          "id": "period-query-policy",
+          "minor": 67,
+          "description": "查询独立期间策略与期间模式展示条件"
+        },
+        {
+          "id": "metric-primary-details",
+          "minor": 65,
+          "description": "单一主指标与多行小字号次级指标，同排卡片等高"
+        },
+        {
+          "id": "period-filter",
+          "minor": 27,
+          "description": "Dashboard 年季月与近一年期间筛选"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
         }
       ],
       "scope": "complete example; actual used fields determine the floor, independently of readableVersions"

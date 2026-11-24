@@ -1,0 +1,42 @@
+{
+  "case": "metric-change-visibility-period",
+  "invariant": "metric-card-change-visibility",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "条件引用了未知期间模式",
+      "paths": [
+        "/sections/1/components/0/props/secondaryRows/0/changes/1/visibleWhen"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      "…",
+      {
+        "components": [
+          {
+            "props": {
+              "secondaryRows": [
+                {
+                  "changes": [
+                    "…",
+                    {
+                      "visibleWhen": {
+                        "filter": "period",
+                        "part": "mode",
+                        "op": "eq",
+                        "value": "week"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/metric-change-visibility-period.json"
+}

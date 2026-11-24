@@ -119,6 +119,25 @@ export const invariants: InvariantDefinition[] = [
   periodAggregationInvariant,
   barAverageInvariant,
   {
+    id: 'metric-card-change-visibility',
+    description: '6.136 指标卡主、次指标行的变化项使用统一展示条件',
+    valid: ['metric-card-change-visibility'],
+    cases: [
+      { case: 'metric-change-visibility-version', base: 'metric-card-change-visibility', expect: /由 6.136 引入/, mutate: document => {
+        document.schemaVersion = '6.135';
+      } },
+      { case: 'metric-change-visibility-filter', base: 'metric-card-change-visibility', expect: /条件引用了不存在/, mutate: document => {
+        document.sections[1].components[0].props.rows[0].changes[0].visibleWhen.filter = 'missing';
+      } },
+      { case: 'metric-change-visibility-period', base: 'metric-card-change-visibility', expect: /条件引用了未知期间模式/, mutate: document => {
+        document.sections[1].components[0].props.secondaryRows[0].changes[1].visibleWhen.value = 'week';
+      } },
+      { case: 'metric-change-visibility-row', base: 'metric-card-change-visibility', expect: /缺少行上下文/, mutate: document => {
+        document.sections[1].components[0].props.secondaryRows[0].changes[0].visibleWhen = { row: 'secondaryYoy', op: 'gt', value: 0 };
+      } }
+    ]
+  },
+  {
     id: 'ioc-header-filter-rows',
     description: '6.135 IOC 页头的筛选行只引用已认领的筛选且全行唯一',
     valid: ['ioc-header-filter-rows', 'business-result-metrics'],
