@@ -47,6 +47,8 @@
         <h2 id="editor-title">Page JSON</h2>
         {#if result.status === 'valid'}
           <span class="status valid">契约有效</span>
+        {:else if result.status === 'runtime-compatible'}
+          <span class="status invalid">可预览，发布前需修复</span>
         {:else}
           <span class="status invalid">需要修复</span>
         {/if}
@@ -64,7 +66,7 @@
           <strong>JSON 语法错误</strong>
           <code>{result.message}</code>
         </div>
-      {:else if result.status === 'contract-error'}
+      {:else if result.status === 'contract-error' || result.status === 'runtime-compatible'}
         <div class="error-box" role="alert">
           <strong>Page 文档未通过契约校验</strong>
           <ul>
@@ -84,7 +86,7 @@
         <h2 id="render-title">即时预览</h2>
       </div>
       <div class="render-surface">
-        {#if result.status === 'valid'}
+        {#if result.status === 'valid' || result.status === 'runtime-compatible'}
           <RuntimeView
             document={result.document}
             {dataGateway}

@@ -10,6 +10,13 @@ const scenario = (id: string) => {
   return scenario;
 };
 const flush = () => new Promise(r=>setTimeout(r,0));
+it('accepts an executable snapshot whose document understates a used capability', () => {
+  const {request, response} = scenario('execute-success');
+  response.document.sections[0].components[0].props.rows[0].showDefinition = false;
+  expect(parsePage(response.document).ok).toBe(false);
+  expect(prepareExecution(request, response).document).toEqual(response.document);
+});
+
 for (const id of ['execute-success','execute-partial','execute-empty','execute-missing-source','execute-wrong-conditions','execute-no-access']) {
   it(`消费T04 ${id}`, async () => {
     const {request,response,expected} = scenario(id);

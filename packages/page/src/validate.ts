@@ -111,7 +111,7 @@ import {
   type RowContractIssue
 } from './result-field-contract';
 import { barForecastBoundaryIssues } from './bar-forecast-boundary';
-import { capabilityFloorErrors, versionErrors } from './version';
+import { capabilityFloorErrors, versionErrors, PAGE_SCHEMA_MAJOR } from './version';
 import { layoutCompatibilityErrors, canonicalLayoutDocument } from './layout-compatibility';
 import { adaptLegacyPageDocument } from './legacy-compatibility';
 import type { PageDocument } from './page-document';
@@ -137,12 +137,32 @@ export function parsePage(
   input: unknown,
   options: PageParseOptions = {}
 ): PageParseResult {
+  return parsePageDocument(input, options);
+}
+
+type CapabilityDiagnosticReporter = (diagnostics: TypedError[]) => void;
+const ignoreCapabilityDiagnostics: CapabilityDiagnosticReporter = () => {};
+
+/** Read an executable page with the current engine, preserving historical version semantics. */
+export function parseRuntimePage(
+  input: unknown,
+  options: PageParseOptions = {},
+  reportCapabilityDiagnostics = ignoreCapabilityDiagnostics
+): PageParseResult {
+  return parsePageDocument(input, options, reportCapabilityDiagnostics);
+}
+
+function parsePageDocument(
+  input: unknown,
+  options: PageParseOptions,
+  reportCapabilityDiagnostics?: CapabilityDiagnosticReporter
+): PageParseResult {
   const document = sourceIocRegionDocument(input);
   const removed = [...obsoleteChartFilterErrors(document), ...chartConstantInputErrors(document), ...iocHeaderControlErrors(document)];
   if (removed.length) return {ok:false,errors:removed};
   const optionErrors = chartOptionErrors(document);
   if (optionErrors.length) {
-    const other = parsePage(withoutChartOptions(document), options);
+    const other = parsePageDocument(withoutChartOptions(document), options, reportCapabilityDiagnostics && ignoreCapabilityDiagnostics);
     return { ok: false, errors: [...optionErrors, ...(other.ok ? [] : other.errors)] };
   }
   const compatibleDocument = expandIocHeaderRegion(normalizeReportExportScales(adaptLegacyPageDocument(document)));
@@ -157,30 +177,25 @@ export function parsePage(
   }
 
   const timeContractErrors=timeExtensionErrors(compatibleDocument as Page);if(timeContractErrors.length)return {ok:false,errors:timeContractErrors};
+  return materializeValidatedPage(compatibleDocument as PageDocument, validateStructure, options, reportCapabilityDiagnostics);
+}
+
+function materializeValidatedPage(
+  document: PageDocument,
+  validateStructure: ReturnType<typeof pageStructureValidator>,
+  options: PageParseOptions,
+  reportCapabilityDiagnostics?: CapabilityDiagnosticReporter
+): PageParseResult {
   // 能力下限与页面参数判定都必须跑在文本取值替换之前:替换会把引用消解掉,
   // 拿解析产物去判会漏掉「声明 5.0 却引用了页面参数」这类文档。
-  const declarations = pageParamDeclarations(compatibleDocument);
-  const documentErrors = [
-    ...metricBeforeErrors(compatibleDocument),
-    ...metricCardTipTitleErrors(compatibleDocument as Page),
-    ...((compatibleDocument as Page).strictURLInputs&&declarations.some(p=>!p.path&&(p.value!==undefined||p.type==='timeRange'))?[schemaError('/strictURLInputs','严格URL输入不支持旧数组固定参数，请使用分组参数')]:[]),
-    ...emptyIocHeaderErrors(compatibleDocument),
-    ...(typeof (compatibleDocument as PageDocument).params === 'object' && !Array.isArray((compatibleDocument as PageDocument).params) && declarations.length === 0 ? [schemaError('/params', '分组参数至少声明一个参数')] : []),
-    ...capabilityFloorErrors(compatibleDocument).map(error => error.path.endsWith('/props/echartsOption') ? { ...error, type: 'CHART_OPTION_ERROR' as const } : error),
-    ...aiSummaryPositionErrors(compatibleDocument as Page),
-    ...layoutCompatibilityErrors(compatibleDocument),
-    ...paramBindingErrors(compatibleDocument),
-    ...queryParamReferenceErrors(compatibleDocument),
-    ...filterTextValueErrors(compatibleDocument, filterDeclarations(compatibleDocument)),
-    ...pageParamErrors(
-      declarations,
-      new Set(filterDeclarations(compatibleDocument).map((filter) => filter.id)),
-      compatibleDocument
-    )
-  ];
+  const declarations = pageParamDeclarations(document);
+  const capabilityIssues = capabilityFloorErrors(document).map(error =>
+    error.path.endsWith('/props/echartsOption') ? { ...error, type: 'CHART_OPTION_ERROR' as const } : error);
+  const runtimeRead = reportCapabilityDiagnostics !== undefined && document.schemaVersion.startsWith(`${PAGE_SCHEMA_MAJOR}.`);
+  const documentErrors = pageDeclarationErrors(document, declarations, runtimeRead ? [] : capabilityIssues);
   if (documentErrors.length > 0) return { ok: false, errors: documentErrors };
 
-  const materialized = materializePageDocument(compatibleDocument, options.textValues);
+  const materialized = materializePageDocument(document, options.textValues);
   if (materialized.errors.length > 0) {
     return { ok: false, errors: materialized.errors };
   }
@@ -196,6 +211,40 @@ export function parsePage(
 
   const page = nativeIocRuntimePage(canonicalLayoutDocument(materialized.document as Page),false);
   if (page.params) page.params = JSON.parse(JSON.stringify(declarations)) as PageParamDeclaration[];
+  const result = validateMaterializedPage(page, materialized, options);
+  if (result.ok && runtimeRead && capabilityIssues.length) reportCapabilityDiagnostics(capabilityIssues);
+  return result;
+}
+
+function pageDeclarationErrors(
+  document: PageDocument,
+  declarations: PageParamDeclaration[],
+  capabilityIssues: TypedError[]
+): TypedError[] {
+  const filters = filterDeclarations(document);
+  return [
+    ...metricBeforeErrors(document),
+    ...metricCardTipTitleErrors(document as Page),
+    ...(document.strictURLInputs && declarations.some(p => !p.path && (p.value !== undefined || p.type === 'timeRange'))
+      ? [schemaError('/strictURLInputs', '严格URL输入不支持旧数组固定参数，请使用分组参数')] : []),
+    ...emptyIocHeaderErrors(document),
+    ...(typeof document.params === 'object' && !Array.isArray(document.params) && declarations.length === 0
+      ? [schemaError('/params', '分组参数至少声明一个参数')] : []),
+    ...capabilityIssues,
+    ...aiSummaryPositionErrors(document as Page),
+    ...layoutCompatibilityErrors(document),
+    ...paramBindingErrors(document),
+    ...queryParamReferenceErrors(document),
+    ...filterTextValueErrors(document, filters),
+    ...pageParamErrors(declarations, new Set(filters.map(filter => filter.id)), document)
+  ];
+}
+
+function validateMaterializedPage(
+  page: Page,
+  materialized: ReturnType<typeof materializePageDocument>,
+  options: PageParseOptions
+): PageParseResult {
   const selectionErrors=[...timeExtensionErrors(page),...querySelectionErrors(page),...fieldSelectionErrors(page),...periodAggregationErrors(page),...queryBindingWhenErrors(page)];
   if(selectionErrors.length)return {ok:false,errors:selectionErrors};
   const errors:TypedError[]=[...metricDefinitionErrors(page),...presentationPolicyErrors(page),...columnScopeErrors(page),...tableEnumErrors(page),...tableHeaderDefaultErrors(page),...tableHeaderInputErrors(page,options.textValues?.values),...filterGroupErrors(page),...sourceCandidateErrors(page)];

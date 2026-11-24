@@ -1,8 +1,10 @@
 import { normalizePageDocument, type TypedError } from '@metriccanvas/page';
+import { parseRuntimePage } from '@metriccanvas/page/internal';
 import defaultPreviewPage from './default-preview-page.json';
 
 export type PreviewDocumentResult =
   | { status: 'valid'; document: unknown }
+  | { status: 'runtime-compatible'; document: unknown; errors: TypedError[] }
   | { status: 'syntax-error'; message: string }
   | { status: 'contract-error'; errors: TypedError[] };
 
@@ -23,7 +25,12 @@ export function parsePreviewDocument(
   }
 
   const errors = validateDocument(document);
-  if (errors.length > 0) return { status: 'contract-error', errors };
+  if (errors.length > 0) {
+    const parsed = parseRuntimePage(document);
+    return parsed.ok
+      ? { status: 'runtime-compatible', document, errors }
+      : { status: 'contract-error', errors: parsed.errors };
+  }
   const normalized = normalizePageDocument(document);
   return normalized.ok
     ? { status: 'valid', document: normalized.document }

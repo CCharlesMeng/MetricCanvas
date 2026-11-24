@@ -33,6 +33,7 @@ export { pageSchema } from './schema';
 export { compositeCardChildTypes } from './schema/component';
 export {
   parsePage,
+  parseRuntimePage,
   normalizePageDocument,
   validate,
   type PageParseOptions,

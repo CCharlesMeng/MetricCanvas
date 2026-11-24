@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { supportedVersions, versionPolicy } from '@metriccanvas/page';
 import type { MountOptions } from '../../src/types';
+import table from '../../../../pages/capabilities/table/table-expand.json' with { type: 'json' };
 
 const supported = supportedVersions();
 const [major, minor] = versionPolicy.current.split('.').map(Number);
@@ -73,6 +74,14 @@ for (const mode of ['classic', 'esm'] as const) {
       expect(await page.evaluate(() => window.queryEvents.map((event) => event.type))).toEqual(['version-error']);
       await expect(host.getByRole('table')).toHaveCount(0);
     }
+
+    await page.evaluate(document => {
+      window.queryEvents = [];
+      window.missingRuntime.update({ document });
+    }, { ...table, schemaVersion: '6.136' });
+    await expect(host.getByRole('button', { name: '放大表格' })).toBeVisible();
+    expect(await page.evaluate(() => window.queryEvents.map(event => event.type))).toEqual(['ready']);
+
     await page.evaluate(() => {
       window.queryEvents = [];
       window.missingRuntime.update({ document: { ...window.queryPageDocument, schemaVersion: 'bad' } });
