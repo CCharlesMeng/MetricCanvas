@@ -170,8 +170,8 @@ test('measured first-row collapse still expands naturally without internal scrol
   await expectNoHeaderScrollbars(header);
 });
 
-test('business result aligns discount filters on an independent row', async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 850 });
+test('business result packs primary filters after the title and right-aligns the discount row', async ({ page }) => {
+  await page.setViewportSize({ width: 1920, height: 850 });
   await page.goto('/pages/business-result-metrics');
   const header = page.locator('[data-ioc-header]');
   const primary = header.locator('[data-dashboard-primary-filters]');
@@ -190,6 +190,8 @@ test('business result aligns discount filters on an independent row', async ({ p
   const cloudService = discount.getByRole('button', { name: '云服务排除项', exact: true });
   const customer = primary.locator('[data-ioc-filter="customer-class"] button[aria-haspopup]');
   await expect.poll(async () => {
+    const headingBox = (await header.getByRole('heading', { name: '业务结果指标情况' }).boundingBox())!;
+    const firstFilterBox = (await primary.locator('[data-ioc-filter]').first().boundingBox())!;
     const customerBox = (await customer.boundingBox())!;
     const typeBox = (await businessType.boundingBox())!;
     const serviceBox = (await cloudService.boundingBox())!;
@@ -199,9 +201,10 @@ test('business result aligns discount filters on an independent row', async ({ p
       separateRow: typeBox.y > customerBox.y + customerBox.height,
       sameRow: Math.abs(typeBox.y - serviceBox.y) < 1,
       gap: serviceBox.x - typeBox.x - typeBox.width,
-      titleOnLeft: titleBox.x + titleBox.width < typeBox.x,
+      headingGap: Math.round(firstFilterBox.x - headingBox.x - headingBox.width),
+      rowTitleGap: Math.round(typeBox.x - titleBox.x - titleBox.width),
     };
-  }).toEqual({rightAligned:true,separateRow:true,sameRow:true,gap:16,titleOnLeft:true});
+  }).toEqual({rightAligned:true,separateRow:true,sameRow:true,gap:16,headingGap:16,rowTitleGap:16});
   await expect(header.getByRole('button', { name: '展开筛选' })).toHaveCount(0);
 
   await page.setViewportSize({ width: 447, height: 850 });

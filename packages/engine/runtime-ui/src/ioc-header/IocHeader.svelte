@@ -66,42 +66,44 @@
 </script>
 {#if model.title || model.code || model.tags.length || model.description || model.facts.length || displayedIds.length || overflowIds.length || filterRows?.length || showBack}
 <header data-ioc-header data-dashboard-toolbar={model.layout==='inline'?true:undefined} data-density={model.density} class:flow={flow} class:with-rows={withRows} class:inline={model.layout==='inline'} class:identityless={!hasIdentity} class:static-view={staticView} class:compact={model.density==='compact'}>
-  {#if hasIdentity}
-    <div class="identity">
-      <div class="heading">
-        {#if showBack}<button data-dashboard-back class="back" type="button" aria-label={model.legacyBack?'返回':returnContext?.label ?? '返回上一页'} onclick={backAction}>{flow?'<':'←'}</button>{/if}
-        {#if model.title}<h1 data-ioc-title>{#if titleLink && !staticView && !titleLink.disabled}<a href={titleLink.href} role={titleLink.href?undefined:'link'} aria-disabled={titleLink.href?undefined:true} tabindex={titleLink.href?undefined:0} onkeydown={activateTitleLink} onclick={titleLink.onclick}>{model.title}</a>{:else}<span aria-disabled={titleLink?.disabled || undefined}>{model.title}</span>{/if}</h1>{/if}
-        {#each model.tags as tag (tag.id)}<span data-ioc-tag={tag.id} data-tone={tag.tone} class="tag">{tag.text}</span>{/each}
+  <div class="header-main">
+    {#if hasIdentity}
+      <div class="identity">
+        <div class="heading">
+          {#if showBack}<button data-dashboard-back class="back" type="button" aria-label={model.legacyBack?'返回':returnContext?.label ?? '返回上一页'} onclick={backAction}>{flow?'<':'←'}</button>{/if}
+          {#if model.title}<h1 data-ioc-title>{#if titleLink && !staticView && !titleLink.disabled}<a href={titleLink.href} role={titleLink.href?undefined:'link'} aria-disabled={titleLink.href?undefined:true} tabindex={titleLink.href?undefined:0} onkeydown={activateTitleLink} onclick={titleLink.onclick}>{model.title}</a>{:else}<span aria-disabled={titleLink?.disabled || undefined}>{model.title}</span>{/if}</h1>{/if}
+          {#each model.tags as tag (tag.id)}<span data-ioc-tag={tag.id} data-tone={tag.tone} class="tag">{tag.text}</span>{/each}
+        </div>
+        {#if model.code}<div class="code" data-ioc-code><span>{model.code.label}：</span><span>{model.code.value}</span></div>{/if}
+        {#if model.description}
+          {#if !staticView && model.description.presentation==='tooltip'}<details class="description"><summary aria-label="查看页面说明">说明</summary><p>{model.description.text}</p></details>
+          {:else}<p class="description">{model.description.text}</p>{/if}
+        {/if}
+        {#if model.facts.length}<dl>{#each model.facts as fact (fact.id)}<div data-ioc-fact={fact.id}><dt>{fact.label}：</dt><dd>{fact.value}</dd></div>{/each}</dl>{/if}
       </div>
-      {#if model.code}<div class="code" data-ioc-code><span>{model.code.label}：</span><span>{model.code.value}</span></div>{/if}
-      {#if model.description}
-        {#if !staticView && model.description.presentation==='tooltip'}<details class="description"><summary aria-label="查看页面说明">说明</summary><p>{model.description.text}</p></details>
-        {:else}<p class="description">{model.description.text}</p>{/if}
-      {/if}
-      {#if model.facts.length}<dl>{#each model.facts as fact (fact.id)}<div data-ioc-fact={fact.id}><dt>{fact.label}：</dt><dd>{fact.value}</dd></div>{/each}</dl>{/if}
-    </div>
-  {/if}
-  {#if displayedIds.length || overflowIds.length}
-    <div class="filter-region">
-      <div data-dashboard-primary-filters id={uid} bind:this={filters} class="filters" class:collapsed style:max-height={collapsed?`${firstHeight}px`:undefined}>
-        {#each displayedIds as id (id)}
-          {@const hidden=collapsed && hiddenIds.includes(id)}
-          <div data-ioc-filter={id} class="filter" class:concealed={hidden} inert={hidden} aria-hidden={hidden || undefined}>
-            {@render controls(id,readOnly || staticView)}
-          </div>
-        {/each}
+    {/if}
+    {#if displayedIds.length || overflowIds.length}
+      <div class="filter-region">
+        <div data-dashboard-primary-filters id={uid} bind:this={filters} class="filters" class:collapsed style:max-height={collapsed?`${firstHeight}px`:undefined}>
+          {#each displayedIds as id (id)}
+            {@const hidden=collapsed && hiddenIds.includes(id)}
+            <div data-ioc-filter={id} class="filter" class:concealed={hidden} inert={hidden} aria-hidden={hidden || undefined}>
+              {@render controls(id,readOnly || staticView)}
+            </div>
+          {/each}
+        </div>
+        {#if !staticView && overflowIds.length}
+          <details data-dashboard-filter-overflow class="filter-overflow">
+            <summary><span>更多筛选</span><span data-dashboard-filter-count class="filter-count">{overflowIds.length}</span><span class="overflow-arrow" aria-hidden="true">▾</span></summary>
+            <div data-dashboard-overflow-panel class="overflow-panel">
+              {#each overflowIds as id (id)}<div data-ioc-filter={id} class="filter">{@render controls(id,readOnly)}</div>{/each}
+            </div>
+          </details>
+        {/if}
+        {#if !staticView && model.collapse==='firstRow' && overflowing}<button class="toggle" type="button" aria-expanded={expanded} aria-controls={uid} onclick={toggle}>{expanded?'收起筛选':'展开筛选'}</button>{/if}
       </div>
-      {#if !staticView && overflowIds.length}
-        <details data-dashboard-filter-overflow class="filter-overflow">
-          <summary><span>更多筛选</span><span data-dashboard-filter-count class="filter-count">{overflowIds.length}</span><span class="overflow-arrow" aria-hidden="true">▾</span></summary>
-          <div data-dashboard-overflow-panel class="overflow-panel">
-            {#each overflowIds as id (id)}<div data-ioc-filter={id} class="filter">{@render controls(id,readOnly)}</div>{/each}
-          </div>
-        </details>
-      {/if}
-      {#if !staticView && model.collapse==='firstRow' && overflowing}<button class="toggle" type="button" aria-expanded={expanded} aria-controls={uid} onclick={toggle}>{expanded?'收起筛选':'展开筛选'}</button>{/if}
-    </div>
-  {/if}
+    {/if}
+  </div>
   {#each filterRows ?? [] as row (row.key)}
     <div class="filter-row" data-ioc-filter-row role="group" aria-label={row.title}>
       {#if row.title}<div class="filter-row-title">{row.title}</div>{/if}
@@ -152,12 +154,14 @@
   .inline .filter-region{flex:1 1 240px;flex-wrap:wrap;align-items:center;}.inline .filters{gap:16px;align-items:center;}
   .inline:not(.flow) .filter-region{flex-basis:max-content;}
   .inline .filter{--mc-filter-label-display:none;}
-  .with-rows .filters{justify-content:flex-end;}
+  .header-main{display:contents;}
+  header.with-rows{display:grid;grid-template-columns:fit-content(100%);row-gap:12px;}
+  .with-rows .header-main{display:block;min-width:0;}
+  .inline.with-rows .header-main{display:flex;flex-wrap:wrap;align-items:center;gap:12px 0;}
   .inline.with-rows .filter-region{flex-basis:240px;}
-  .filter-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;width:100%;min-width:0;margin-top:12px;}
-  .inline .filter-row{margin-top:0;}
-  .filter-row-title{font-size:14px;font-weight:600;overflow-wrap:anywhere;}
-  .filter-row .row-controls{flex:1 1 auto;align-items:center;}
+  .filter-row{display:flex;flex-wrap:wrap;justify-content:flex-end;align-items:center;gap:8px 16px;min-width:0;}
+  .filter-row-title{max-width:100%;font-size:14px;font-weight:600;overflow-wrap:anywhere;}
+  .filter-row .row-controls{flex:0 1 auto;justify-content:flex-end;align-items:center;}
   .filter-overflow{position:relative;z-index:70;flex:none;margin-left:auto;}
   .filter-overflow summary{display:inline-flex;box-sizing:border-box;height:var(--mc-filter-control-height,34px);align-items:center;gap:6px;padding:0 12px;color:#191919;background:#fff;border:1px solid var(--mc-filter-control-border-color,#c2c2c2);border-radius:var(--mc-filter-control-radius,6px);cursor:pointer;font-size:var(--mc-filter-font-size,14px);list-style:none;white-space:nowrap;}
   .filter-overflow summary::-webkit-details-marker{display:none;}

@@ -2,7 +2,7 @@
 
 启动 `pnpm dev:playground`，打开 `/pages/business-result-metrics`。
 
-本页为 Dashboard。IOC 页头首行依次展示重点国代开关、统计期间、区域和客户分类。第二行左侧为「净商务折扣筛选项」，右侧依次为业务类型和云服务排除项，最后一个下拉与首行的右边缘对齐。区域为可搜索单选组织树，支持 geo / region-dept / office 层级。
+本页为 Dashboard。IOC 页头首行紧跟主标题展示重点国代开关、统计期间、区域和客户分类。第二行的「净商务折扣筛选项」紧邻业务类型和云服务排除项，整组与首行筛选右端对齐。区域为可搜索单选组织树，支持 geo / region-dept / office 层级。
 
 期间输入框与各下拉框为 160px，同一组控件间距为 16px。下拉候选弹层以触发框宽度为起点，随候选内容加宽，上限为视口可用宽度。窄窗口的首行通过「展开筛选」访问换行控件，净商务折扣筛选行独立显示。布局回归为 `pnpm --filter playground test:ioc ioc-header-layout.browser.ts`。
 
