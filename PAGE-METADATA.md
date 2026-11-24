@@ -130,7 +130,7 @@ IOC 页头返回统一使用 `props.back:true`，默认按浏览器后退能力�
 
 6.95：表格列 `selection.writes` 可用 `level` 显式选择目标维度筛选的组织层级；复用页头 Region 状态、候选校验和查询绑定。省略保持原默认层级行为。见[单元格点击与筛选联动](docs/page-metadata/components/table.md#单元格点击与筛选联动)，入口 `/pages/ioc-header-controls`。
 
-6.93：按可信字段语义全局选择金额、比率、人数、资源、存储与时长格式，组件显式格式优先；增加9个封闭预设，字段净增0。自适应百分比按数值档位展示，650显示 `650%`，带符号的正值显示 `+650%`；表格箭头由列级 `arrowRule` 声明。同比/环比基期非正或缺失返回null，普通ratio保持。系统空值统一显示单个长横线 `—`，图表与百分比同样不追加百分号或单位。见[统一语义格式](docs/page-metadata/field-bindings-and-formats.md#numeric-value-display)，合成入口 `/pages/semantic-numeric-display`。
+6.93：按可信字段语义全局选择金额、比率、人数、资源、存储与时长格式，组件显式格式优先；增加9个封闭预设，字段净增0。自适应百分比在原始绝对值达到500时显示阈值文案，正值为 `>500%`，负值为 `<-500%`。表格箭头由列级 `arrowRule` 声明。同比/环比基期非正或缺失返回null，普通ratio保持。系统空值统一显示单个长横线 `—`，图表与百分比同样不追加百分号或单位。见[统一语义格式](docs/page-metadata/field-bindings-and-formats.md#numeric-value-display)，合成入口 `/pages/semantic-numeric-display`。
 
 普通查询表格首屏按 DQE `order.order_by_field/type` 回显列头方向，用户操作后沿用会话排序；不新增字段或改变查询。常量基线与指标排序可以同时使用。声明和边界见[查询默认排序](docs/page-metadata/components/table.md#查询默认排序的首屏方向)，入口 `/pages/query-sort-baseline`。
 

@@ -11,7 +11,7 @@ test('semantic values react to the device while explicit SLO and headcount forma
   const component = (id: string) => page.locator(`[data-component="rules/${id}"]`);
   for (const [id, expected] of [
     ['cny-card', '1.23万'], ['usd-card', '12.3K'], ['rate-card', '12.3%'],
-    ['tiny-card', '0.001%'], ['limit-card', '650%'], ['slo-card', '99.999%'],
+    ['tiny-card', '0.001%'], ['limit-card', '>500%'], ['slo-card', '99.999%'],
     ['users-card', '1.2万户'], ['people-card', '12,345'], ['resource-card', '1.23万核'],
     ['resource-tb-card', '1.23万TB'], ['storage-card', '1 TB'], ['bandwidth-card', '1 Gb/s'],
     ['minutes-card', '1.23千分钟'], ['messages-card', '1.23万条'], ['billing-card', '1.02小时'],
@@ -26,7 +26,7 @@ test('semantic values react to the device while explicit SLO and headcount forma
   await page.setViewportSize({ width: 390, height: 844 });
   await expect(component('cny-card').locator('.row-value')).toHaveText('1.2万');
   await expect(component('slo-card').locator('.row-value')).toHaveText('99.999%');
-  await expect(component('limit-card').locator('.row-value')).toHaveText('650%');
+  await expect(component('limit-card').locator('.row-value')).toHaveText('>500%');
   await expect(component('people-card').locator('.row-value')).toHaveText('12,345');
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await page.screenshot({ path: '/tmp/semantic-numeric-mobile.png', fullPage: true });
@@ -36,7 +36,7 @@ test('growth uses original baselines, preserves the table and exposes the declar
   await page.goto(`/pages/${fixture.id}`);
   const table = page.locator('[data-component="rules/growth-table"]');
   await expect(table.locator('tbody td[data-column-field="growth"]')).toHaveText([
-    '+12.3%', '—', '—', '—', '+500%', '-50%', '+650%', '-650%'
+    '+12.3%', '—', '—', '—', '>500%', '-50%', '>500%', '<-500%'
   ]);
   await expect(table.locator('.cell-trend-arrow')).toHaveCount(0);
   const downloaded = page.waitForEvent('download');
@@ -47,9 +47,9 @@ test('growth uses original baselines, preserves the table and exposes the declar
   await workbook.xlsx.readFile((await download.path())!);
   const sheet = workbook.worksheets[0];
   expect(sheet.getCell('D8').value).toBe(650);
-  expect(sheet.getCell('D8').numFmt).toBe('"+650%"');
+  expect(sheet.getCell('D8').numFmt).toBe('">500%"');
   expect(sheet.getCell('D9').value).toBe(-650);
-  expect(sheet.getCell('D9').numFmt).toBe('"-650%"');
+  expect(sheet.getCell('D9').numFmt).toBe('"<-500%"');
 });
 
 test('chart canvas and hover keep physical units and use the em dash placeholder', async ({ page }) => {

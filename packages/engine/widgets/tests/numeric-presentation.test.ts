@@ -23,13 +23,14 @@ describe('semantic numeric presentation', () => {
   it.each([
     [0.001, '0.001%'], [0.009, '0.009%'], [0.099, '0.1%'], [0.1, '0.1%'],
     [0.999, '1%'], [1, '1%'], [9.995, '10%'], [10, '10%'], [12.34, '12.3%'],
-    [99.99, '100%'], [100, '100%'], [499.9, '500%'], [500, '500%'], [650.3, '650%'],
-    [-500, '-500%'], [-650.3, '-650%'], [-0.001, '-0.001%'], [0, '0%'], [-0, '0%']
+    [99.99, '100%'], [100, '100%'], [499.9, '500%'], [500, '>500%'], [650.3, '>500%'],
+    [-499.9, '-500%'], [-500, '<-500%'], [-650.3, '<-500%'], [-0.001, '-0.001%'], [0, '0%'], [-0, '0%']
   ] as const)('ratio %s → %s', (value, expected) => {
     expect(formatValue(value, 'percent-adaptive')).toBe(expected);
   });
   it.each([
-    [500, '+500%'], [650, '+650%'], [-500, '-500%'], [-650, '-650%'], [0, '0%']
+    [499.9, '+500%'], [500, '>500%'], [650, '>500%'],
+    [-499.9, '-500%'], [-500, '<-500%'], [-650, '<-500%'], [0, '0%']
   ] as const)('signed percentage %s → %s', (value, expected) => {
     expect(formatValue(value, 'percent-adaptive-signed')).toBe(expected);
   });
@@ -63,7 +64,8 @@ describe('semantic numeric presentation', () => {
     expect(formatFieldValue(12345, resolveField('money', data))).toBe('1.23万');
     const rate = resolveField('rate', data);
     expect(formatFieldValue(12.34, rate)).toBe('12.3%');
-    expect(formatChangeValue(650, rate)).toBe('+650%');
+    expect(formatChangeValue(650, rate)).toBe('>500%');
+    expect(formatChangeValue(-650, rate)).toBe('<-500%');
     expect(formatFieldValue(12345, resolveField({ data: 'main', field: 'people', format: 'number-grouped' }, data))).toBe('12,345');
     expect(formatFieldValue(99.999, resolveField('slo', data))).toBe('99.999%');
     expect(formatFieldValue(99.999, resolveField({ data: 'main', field: 'slo', format: 'number' }, data))).toBe('99.999');
