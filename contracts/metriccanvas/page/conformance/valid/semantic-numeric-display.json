@@ -103,7 +103,7 @@
             "usd": 12345,
             "rate": 12.345,
             "tiny": 0.001,
-            "limit": 500,
+            "limit": 650,
             "slo": 99.999,
             "users": 12345,
             "people": 12345,
@@ -179,6 +179,16 @@
           {
             "case": "下降",
             "current": 50,
+            "base": 100
+          },
+          {
+            "case": "正变化超过500%",
+            "current": 750,
+            "base": 100
+          },
+          {
+            "case": "负变化超过500%",
+            "current": -550,
             "base": 100
           }
         ]
@@ -378,7 +388,7 @@
           "props": {
             "rows": [
               {
-                "label": "大幅变化",
+                "label": "高比率",
                 "valueField": "limit",
                 "unit": "%"
               }

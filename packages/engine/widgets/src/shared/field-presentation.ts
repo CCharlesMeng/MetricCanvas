@@ -23,7 +23,7 @@ export function isPercentFormat(format: ValueFormat | undefined): boolean {
 export function formatChangeValue(value: FieldValue | undefined, field: ResolvedField, positiveTone = false): string {
   const text = formatFieldValue(value, field);
   const numeric = finiteNumber(value);
-  if (numeric === undefined || numeric <= 0 || text.startsWith('+') || text.startsWith('上升')) return text;
+  if (numeric === undefined || numeric <= 0 || text.startsWith('+')) return text;
   const signed = isPercentFormat(field.format) || (positiveTone && !isSignedNumberFormat(field.format));
   return signed ? `+${text}` : text;
 }
