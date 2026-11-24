@@ -258,7 +258,7 @@
         {@const tipCode = component.props.tipCode}
         {@const canShowDefinition = !exportMode && !screen.retained && metricDefinitionTips?.available()}
         <MetricCard
-          loading={snapshot.status === 'loading' && !screen.retained} data={metricData} animate={!exportMode}
+          loading={snapshot.status === 'loading'} data={metricData} animate={!exportMode}
           props={component.props} onlink={onmetriclink} linkHref={metricHref}
           definitionTip={canShowDefinition && tipCode ? metricTitleAccessory : undefined}
           rowDefinitionTip={canShowDefinition ? metricDefinitionAccessory : undefined}

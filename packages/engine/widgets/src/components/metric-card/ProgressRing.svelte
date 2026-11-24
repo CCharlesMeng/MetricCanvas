@@ -1,31 +1,26 @@
 <svelte:options css="injected" />
 <script lang="ts">
-  import type { FieldValue, ValueFormat } from '@metriccanvas/page/internal';
+  import type { ValueFormat } from '@metriccanvas/page/internal';
   import { formatValue, hasDisplayValue } from '../../shared/value-format';
   import EChart from '../../shared/EChart.svelte';
   import Skeleton from '../../shared/Skeleton.svelte';
-  import MetricValueMotion from './MetricValueMotion.svelte';
-  import { normalizeProgressValue, progressRingOption } from './ring-options';
+  import { progressRingOption } from './ring-options';
 
   interface Props {
     value: number | undefined;
     loading?: boolean;
-    animate: boolean;
+    shimmer: boolean;
     missingText?: string;
     ringPercent?: number;
     label?: string;
     format?: ValueFormat;
   }
 
-  let { value, loading = false, animate, ringPercent, label = '完成率', missingText, format = 'percent-adaptive' }: Props = $props();
-  function displayText(number: FieldValue | undefined): string {
-    const text = formatValue(number, format, missingText);
-    return text.endsWith('%') || !hasDisplayValue(number) ? text : `${text}%`;
-  }
-  const display = $derived(displayText(value));
-  const normalized = $derived(value === undefined || !Number.isFinite(value) ? undefined : normalizeProgressValue(value));
-  const visibleTrackPercent = $derived(normalizeProgressValue(ringPercent ?? 100));
-  const option = $derived(progressRingOption(normalized ?? 0, visibleTrackPercent));
+  let { value, loading = false, shimmer, ringPercent, label = '完成率', missingText, format = 'percent-adaptive' }: Props = $props();
+  const formatted = $derived(formatValue(value, format, missingText));
+  const display = $derived(formatted.endsWith('%') || !hasDisplayValue(value) ? formatted : `${formatted}%`);
+  const percent = $derived(display.endsWith('%'));
+  const option = $derived(progressRingOption(loading ? 0 : (value ?? 0), ringPercent));
 </script>
 
 <div class="progress-ring" aria-busy={loading} aria-label={loading ? label : `${label} ${display}`}>
@@ -34,16 +29,10 @@
   </div>
   <div class="number">
     {#if loading}
-      <Skeleton width="44px" inline shimmer={animate} />
+      <Skeleton width="44px" inline {shimmer} />
     {:else}
-      <MetricValueMotion {value} {format} {animate}>
-        {#snippet children(visibleValue)}
-          {@const text = displayText(visibleValue)}
-          {@const percent = text.endsWith('%')}
-          <span class="value">{percent ? text.slice(0, -1) : text}</span>
-          {#if percent}<span class="percent">%</span>{/if}
-        {/snippet}
-      </MetricValueMotion>
+      <span class="value">{percent ? display.slice(0, -1) : display}</span>
+      {#if percent}<span class="percent">%</span>{/if}
     {/if}
   </div>
   <span class="label">{label}</span>

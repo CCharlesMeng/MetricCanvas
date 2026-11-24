@@ -38,7 +38,7 @@
 
 - [审批人下钻查询参数](capabilities/table/README.md#审批人下钻查询参数)：记录模式的主表和补列源各自绑定查询参数，不枚举审批人候选值；入口 `/pages/record-join-query-params?approver-name=合成审批人甲`，经标准 execute HTTP 调用 DQE Sim。
 
-- [加载时保留组件结构](capabilities/layout/README.md#加载时保留组件结构)：首次取数、筛选、查询翻页、展开明细与 Tab 激活时保留真实组件；统一入口 `/loading-components-review`，覆盖19种组件及IOC页头，可重播3秒加载；使用 DQE Sim 合成数据。
+- [加载时保留组件结构](capabilities/layout/README.md#加载时保留组件结构)覆盖首次取数、筛选、查询翻页、展开明细与 Tab 激活。`/loading-components-review` 可重播 19 种组件及 IOC 页头的加载过程。[指标卡首次取数和重查](capabilities/layout/README.md#指标卡首次取数和重查共用加载骨架)可在 `/pages/metric-card-loading` 观察。两处均使用 DQE Sim 合成数据。
 
 - [商务驳回明细原始元数据](business-rejection-details.json)：审批object主表、责任人与生命状态补列的完整模拟验收；入口 `/pages/business-rejection-details`，操作及1205/402/201条预期见 [DQE Sim说明](../tools/dqe-sim/README.md#商务驳回明细的原始元数据模拟验收)。
 
