@@ -2,7 +2,7 @@ import {expect,it} from 'vitest';
 import ExcelJS from 'exceljs';
 import fixture from '../../../../pages/capabilities/table/table-pinned-summary.json';
 import {parsePage,versionPolicy} from '@metriccanvas/page';
-import {projectTableRows,tableRowColumn,alignedCellText} from '../../widgets/src/components/table/rows';
+import {projectTableRows,tableRowColumn,alignedCellLoading,alignedCellText} from '../../widgets/src/components/table/rows';
 import {hostRenderSnapshot} from '../src/widget-host-state';
 import {encodeTableWorkbook} from '../src/table/export/workbook';
 import {prepareTableExport} from '../src/table/export/prepare';
@@ -58,6 +58,30 @@ it('keeps detail rendering independent and suppresses the summary while an auxil
   expect(projectTableRows(data,component.props)).toHaveLength(2);
   data.china.snapshot.rows=[];data.china.snapshot.totalCount=0;
   expect(projectTableRows(data,component.props)).toHaveLength(1);
+});
+it('projects a screen-only summary during loading and fills its ready slots', () => {
+  const {component, data} = setup();
+  const waiting = {
+    main: {...data.main, sourceStatus:'loading' as const},
+    china: {...data.china, sourceStatus:'loading' as const},
+    extra: {...data.extra, sourceStatus:'loading' as const}
+  };
+  const columns = tableLeafColumns(component.props.columns);
+  const [placeholder] = projectTableRows(waiting, component.props, {showPendingPinned:true, showBody:false});
+  expect(placeholder.kind).toBe('pinnedTop');
+  expect(alignedCellText(tableRowColumn(columns[0], placeholder, waiting).field, waiting, placeholder)).toBe('合计');
+  const pending = tableRowColumn(columns[3], placeholder, waiting).field;
+  expect(alignedCellLoading(pending, waiting, placeholder)).toBe(true);
+  expect(projectTableRows(waiting, component.props)).toHaveLength(1);
+
+  const partial = {...waiting, extra:data.extra};
+  const [progress] = projectTableRows(partial, component.props, {showPendingPinned:true, showBody:false});
+  expect(alignedCellText(pending, partial, progress)).toBe('90%');
+
+  const empty = {...partial, china:{...data.china, snapshot:{status:'ready' as const, rows:[], totalCount:0}}};
+  expect(projectTableRows(empty, component.props, {showPendingPinned:true, showBody:false})).toEqual([]);
+  const failed = {...partial, extra:{...data.extra, sourceStatus:'error' as const}};
+  expect(projectTableRows(failed, component.props, {showPendingPinned:true, showBody:false})).toEqual([]);
 });
 it('rejects duplicate, shared, truncated and old-version declarations',()=>{
   const old=document();old.schemaVersion='6.78';expect(parsePage(old).ok).toBe(false);

@@ -1,7 +1,7 @@
 {
   "interfaceVersion": "1.0",
-  "contentVersion": "1-9ba90189d589c17f",
-  "contentSha256": "9ba90189d589c17f2e73d7e81e420a89a8c059b5eebcfc45100fdf30eceef8f6",
+  "contentVersion": "1-dd2b72f2cacd4d9f",
+  "contentSha256": "dd2b72f2cacd4d9fa2c5f47ec7b923ea9096f11445aa47be31daf21fb819318e",
   "files": [
     {
       "file": "authoring-contracts/authored/adapter-interface.md",
@@ -2757,11 +2757,11 @@
     },
     {
       "file": "knowledge/table.pinnedTop.json",
-      "sha256": "943c040b40946cca88712020cd2d270a22f328a062b14ec293061bd464a27410"
+      "sha256": "f0e9101342cab4cab8a6ee63a4e3c0061f8291712da68a25810f588f80b692bd"
     },
     {
       "file": "knowledge/table.pinnedTop.multiple.json",
-      "sha256": "97e1a3e731360a527e462f0232be11f06903f77b3c80dff708f13c0e8f362a99"
+      "sha256": "1955cab45ed3a8f9dce332c8030588aac260e88331ea1bae6488f20e57be6c31"
     },
     {
       "file": "knowledge/table.query-sort.json",
@@ -2825,7 +2825,7 @@
     },
     {
       "file": "knowledge/table.section-36f7e93f.json",
-      "sha256": "cf13cabca2304e8b840f45c7042d829748c4104df1a9c67c8912324635f9cf70"
+      "sha256": "dd28d75d47194a3f544e07bfd10ec8be7446ac0c84bef7438ce50d4206f273c2"
     },
     {
       "file": "knowledge/table.section-37fb578d.json",
@@ -2877,7 +2877,7 @@
     },
     {
       "file": "knowledge/table.section-ba042a9e.json",
-      "sha256": "fc2a93adc8791103024742731522b6f60a18b1759b0cd0907eccdc57936e9665"
+      "sha256": "d4963148700884d0edf2b4531c2a9daea846c44f4a9f3644e4436bd2237c4f02"
     },
     {
       "file": "knowledge/table.section-c00c9350.json",
@@ -3069,7 +3069,7 @@
     },
     {
       "file": "product-contracts/manifest.json",
-      "sha256": "a4749d3174095c151bdce204d7ea566277a05770d37fe78af1b10d1028436dd1"
+      "sha256": "b7a71151f965ebd9cc99e7d95cc7397ae140457cd3c5237589d90f8b5a02cdcc"
     },
     {
       "file": "product-contracts/page/component-catalog.json",
@@ -6709,7 +6709,7 @@
     },
     {
       "file": "references/authoring-knowledge/model.json",
-      "sha256": "dbf6ce0152d6022cf1a38e3d0ec193176c79784d40b68d9f266522756f91e736"
+      "sha256": "2b0b719758fe1a4853c2bb525791d17d89aa2e2dc93eb6c8b14b80476d7a463f"
     },
     {
       "file": "references/example-guides/bar-category-order/bar-category-order.md",
@@ -6873,7 +6873,7 @@
     },
     {
       "file": "references/page-metadata/components/table.md",
-      "sha256": "99a764e9d3570804647aa0bd8ac84ecd6c13b5be2e2043fd3423eebd5ba805fd"
+      "sha256": "047600f99c5a52133c9b3e6ed3ca2fe37e1df78b9f66e160d21cc862cc4f2eda"
     },
     {
       "file": "references/page-metadata/components/text.md",
@@ -10445,7 +10445,7 @@
     },
     {
       "file": "references/page-metadata/index.json",
-      "sha256": "0dd19720ddb665ac6ee0743bdd852d0b1f4f2bb56be5e59f6138df91aeec6636"
+      "sha256": "8b275b7694ef9f0c11b32a649c8f2cd3814e7fc1491f1e88efe039925ea910e4"
     },
     {
       "file": "references/page-metadata/page.md",
@@ -10485,7 +10485,7 @@
     },
     {
       "file": "runtime/contract-alignment.json",
-      "sha256": "cfc2ffa1b3753ae48554e891644c0c173d84a8100fa87f65036133e34ec4305f"
+      "sha256": "dcdadd98b08d253ee67a0d79e43cc93fdae10ab637227f7e3ad200b5fe66fffc"
     },
     {
       "file": "runtime/coverage.json",
@@ -10533,7 +10533,7 @@
     },
     {
       "file": "runtime/source-identity.json",
-      "sha256": "0c2f55f16b5614799c26c9d743bf4a090e8dcd54db89f5fe50fe3ce1c9897c70"
+      "sha256": "4dc7d569afb7b4a7df1bc50905d2a55dcfc0b70bdfdeec56d65b49b0e7a12b11"
     },
     {
       "file": "runtime/tool-behavior.md",
@@ -10643,7 +10643,7 @@
   "alignedWith": {
     "productContractVersion": "1.0.0-rc.4",
     "productManifest": "contract-snapshot/manifest.json",
-    "productManifestSha256": "a4749d3174095c151bdce204d7ea566277a05770d37fe78af1b10d1028436dd1",
+    "productManifestSha256": "b7a71151f965ebd9cc99e7d95cc7397ae140457cd3c5237589d90f8b5a02cdcc",
     "authoringContractVersion": "0.3.1",
     "authoringManifest": "contracts/manifest.json",
     "authoringManifestSha256": "f9ebc49502164e05f54740278ca588bc93b6e97df7a9b3fa27683169a6b0030d",

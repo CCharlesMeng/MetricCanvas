@@ -146,7 +146,7 @@
   const columnLayout = $derived(buildTableColumnLayout(props.columns, data.main.fields));
   const leaves = $derived(columnLayout.leaves);
   const wrapHeaders = $derived(shouldWrapTableHeaders(props.fit, leaves.length));
-  const rows = $derived(projectTableRows(data, props));
+  const rows = $derived(projectTableRows(data, props, { showPendingPinned: !staticExport, showBody: !bodyLoading }));
   const rowTiers = $derived(rows.map((row) => tableRowTier(row, props.rowKindField)));
   /** 首列合并:相邻同值折成一个单元格,rowSpan 为 0 的行不渲染该列。 */
   const rowSpans = $derived(mergeSpans(rows, props.mergeBy));
@@ -600,17 +600,6 @@
         {/each}
       </thead>
       <tbody inert={loading || !!data.main.progress}>
-        {#if bodyLoading}
-          {#each Array(10) as _}
-            <tr class="skeleton-row" aria-hidden="true">
-              {#if expandable}<td class="expand-column fixed" style="left:0"><Skeleton shimmer /></td>{/if}
-              {#if props.rowNumber}<td class:fixed={props.rowNumber.fixed === 'left'} style={rowNumberStyle}><Skeleton shimmer /></td>{/if}
-              {#each leaves as column}
-                <td class:fixed={!!column.fixed} style={cellStyle(column)}><Skeleton width="72%" shimmer /></td>
-              {/each}
-            </tr>
-          {/each}
-        {:else}
         {#each rows as row, i (expandable && row.kind !== 'pinnedTop' && validExpansionKeys.has(expansion?.key(row.main) ?? '') ? expansion!.key(row.main)! : i)}
           {@const canExpandRow = expandable && rowTiers[i] === 'detail' && validExpansionKeys.has(expansion!.key(row.main) ?? '')}
           <tr class:subtotal-row={rowTiers[i] === 'subtotal'} class:total-row={row.kind !== 'pinnedTop' && rowTiers[i] === 'total'} data-pinned-top={row.kind === 'pinnedTop' ? '' : undefined}>
@@ -655,12 +644,18 @@
                 )}
                 {#snippet supplementaryFields()}
                   {#if column.secondaryField}
-                    {@const secondary = resolveField(column.secondaryField, data)}
-                    <small>{alignedCellText(column.secondaryField, data, row)}</small>
+                    {#if row.kind === 'pinnedTop' && !staticExport && alignedCellLoading(column.secondaryField, data, row)}
+                      <Skeleton width="2.5rem" shimmer />
+                    {:else}
+                      <small>{alignedCellText(column.secondaryField, data, row)}</small>
+                    {/if}
                   {/if}
                   {#if column.badgeField}
-                    {@const badge = resolveField(column.badgeField, data)}
-                    <small class="cell-badge">{alignedCellText(column.badgeField, data, row)}</small>
+                    {#if row.kind === 'pinnedTop' && !staticExport && alignedCellLoading(column.badgeField, data, row)}
+                      <Skeleton width="2rem" shimmer />
+                    {:else}
+                      <small class="cell-badge">{alignedCellText(column.badgeField, data, row)}</small>
+                    {/if}
                   {/if}
                 {/snippet}
                 {@const actionGate=row.kind === 'pinnedTop' ? {eligible:false,enabled:false} : interactionGate?.(row.main,column)??{eligible:true,enabled:true}}
@@ -685,7 +680,14 @@
                   style:color={column.colorRule ? valueColorStyle(color) : undefined}
                 >
                   {#if !staticExport && alignedCellLoading(column.field, data, row)}
-                    <Skeleton width="72%" shimmer />
+                    {#if row.kind === 'pinnedTop'}
+                      <div class="cell-stack pending-cell-stack">
+                        <Skeleton width="72%" shimmer />
+                        {@render supplementaryFields()}
+                      </div>
+                    {:else}
+                      <Skeleton width="72%" shimmer />
+                    {/if}
                   {:else if selectable}
                     <button
                       type="button"
@@ -783,7 +785,17 @@
             </td></tr>
           {/if}
         {/each}
-        {#if data.main.snapshot.rows.length === 0}
+        {#if bodyLoading}
+          {#each Array(10) as _}
+            <tr class="skeleton-row" aria-hidden="true">
+              {#if expandable}<td class="expand-column fixed" style="left:0"><Skeleton shimmer /></td>{/if}
+              {#if props.rowNumber}<td class:fixed={props.rowNumber.fixed === 'left'} style={rowNumberStyle}><Skeleton shimmer /></td>{/if}
+              {#each leaves as column}
+                <td class:fixed={!!column.fixed} style={cellStyle(column)}><Skeleton width="72%" shimmer /></td>
+              {/each}
+            </tr>
+          {/each}
+        {:else if data.main.snapshot.rows.length === 0}
           <tr>
             <td class="empty-row" colspan={Math.max(leaves.length + leadingColumnCount, 1)}>
               {#if props.variant === 'reportCompact'}
@@ -793,7 +805,6 @@
               {/if}
             </td>
           </tr>
-        {/if}
         {/if}
       </tbody>
     </table>
@@ -1148,6 +1159,7 @@
     flex-direction: column;
     gap: 3px;
   }
+  .pending-cell-stack { display: flex; }
   .cell-stack small {
     color: #71717a;
     font-size: 11px;
