@@ -47,10 +47,11 @@ export function summarize(files) {
 }
 
 function inventory(repository) {
-  const tracked = execFileSync('git', ['ls-files', '-z'], { cwd: repository, encoding: 'utf8' });
+  const gitOptions = { cwd: repository, encoding: 'utf8', maxBuffer: 32 * 1024 * 1024 };
+  const tracked = execFileSync('git', ['ls-files', '-z'], gitOptions);
   // Include new maintained sources, without pulling unrelated untracked release archives into the audit.
   const added = execFileSync('git', ['ls-files', '--others', '--exclude-standard', '-z', '--',
-    'apps', 'packages', 'tools', 'tests', 'metriccanvas-authoring'], { cwd: repository, encoding: 'utf8' });
+    'apps', 'packages', 'tools', 'tests', 'metriccanvas-authoring'], gitOptions);
   return [...new Set((tracked + added).split('\0'))].filter(supported).sort();
 }
 function baselineMetadata(repository, ref) {
