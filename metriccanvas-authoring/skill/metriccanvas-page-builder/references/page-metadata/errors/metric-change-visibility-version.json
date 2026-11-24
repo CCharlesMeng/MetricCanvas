@@ -1,0 +1,80 @@
+{
+  "case": "metric-change-visibility-version",
+  "invariant": "metric-card-change-visibility",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "指标卡主、次指标行的变化项按展示条件显隐 由 6.136 引入，文档声明的是 6.135",
+      "paths": [
+        "/sections/1/components/0/props/rows/0/changes/0/visibleWhen",
+        "/sections/1/components/0/props/rows/0/changes/1/visibleWhen",
+        "/sections/1/components/0/props/secondaryRows/0/changes/0/visibleWhen",
+        "/sections/1/components/0/props/secondaryRows/0/changes/1/visibleWhen"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      "…",
+      {
+        "components": [
+          {
+            "props": {
+              "rows": [
+                {
+                  "changes": [
+                    {
+                      "visibleWhen": {
+                        "filter": "period",
+                        "part": "mode",
+                        "op": "in",
+                        "values": [
+                          "year",
+                          "quarter"
+                        ]
+                      }
+                    },
+                    {
+                      "visibleWhen": {
+                        "filter": "period",
+                        "part": "mode",
+                        "op": "eq",
+                        "value": "month"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "secondaryRows": [
+                {
+                  "changes": [
+                    {
+                      "visibleWhen": {
+                        "filter": "period",
+                        "part": "mode",
+                        "op": "in",
+                        "values": [
+                          "year",
+                          "quarter"
+                        ]
+                      }
+                    },
+                    {
+                      "visibleWhen": {
+                        "filter": "period",
+                        "part": "mode",
+                        "op": "eq",
+                        "value": "month"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/metric-change-visibility-version.json"
+}

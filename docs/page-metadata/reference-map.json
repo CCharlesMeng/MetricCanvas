@@ -762,7 +762,8 @@
         "metric-card-equation",
         "metric-card-primary-detail",
         "metric-card-select-tab",
-        "metric-card-definition-tip"
+        "metric-card-definition-tip",
+        "metric-card-change-visibility"
       ],
       "sources": [
         "packages/page/src/schema/components/metric-card.ts",
@@ -777,7 +778,8 @@
         "field-binding-match",
         "metric-card-before",
         "metric-card-primary-detail",
-        "metric-card-select-tab"
+        "metric-card-select-tab",
+        "metric-card-change-visibility"
       ]
     },
     "components/barChart.md": {
@@ -2439,7 +2441,8 @@
     "#/properties/schemaVersion=\"6.132\"": "柱状图可声明 order，在前端按结果字段和方向排序类别。",
     "#/properties/schemaVersion=\"6.133\"": "饼图表格式图例可在字段列声明 colorRule，按正负或固定颜色显示数值。",
     "#/properties/schemaVersion=\"6.134\"": "柱图和折线图的字段系列可声明 tooltip.colorRule，为悬浮提示中的数值着色。",
-    "#/properties/schemaVersion=\"6.135\"": "IOC 页头可用 filterRows 为已认领的筛选声明独立行与小标题。"
+    "#/properties/schemaVersion=\"6.135\"": "IOC 页头可用 filterRows 为已认领的筛选声明独立行与小标题。",
+    "#/properties/schemaVersion=\"6.136\"": "指标卡的主、次指标行可为各自的变化项声明 visibleWhen。"
   },
   "branchExceptions": {
     "#/properties/iocHeader/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/0": {
@@ -3578,6 +3581,7 @@
       "查阅方式"
     ],
     "components/metricCard.md": [
+      "变化项显隐",
       "指标定义气泡",
       "主指标与多行次级指标 6.65",
       "前置连接文字 6.34",

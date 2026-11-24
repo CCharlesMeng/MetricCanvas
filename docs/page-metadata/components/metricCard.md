@@ -4,6 +4,26 @@
 
 数据槽和字段绑定声明取哪行哪列；不同variant改变摘要结构，不能把列清单当任意HTML模板。
 
+<a id="metric-card-change-visibility"></a>
+
+## 变化项显隐
+
+6.136 起，`props.rows[].changes[]` 和 `props.secondaryRows[].changes[]` 可就地声明 [`visibleWhen`](../conditions.md)。例如，已应用的时间范围筛选器 `period` 使用期间选择时，可用下面的变化项声明按月显示环比。
+
+```json
+{
+  "label": "环比",
+  "field": { "data": "main", "field": "mom", "format": "percent-0" },
+  "visibleWhen": { "filter": "period", "part": "mode", "op": "eq", "value": "month" }
+}
+```
+
+用 `op: "in"` 和 `values: ["year", "quarter"]` 可让同比在年、季度两种模式下显示。每项条件独立生效，省略条件的变化项照常显示。变化项可引用筛选器、权限或事实，行字段引用和 `enabledWhen` 在此处非法。
+
+条件为假、等待或出错时隐藏对应变化项。卡内指标行、主值及其他构件继续呈现，可见变化项沿用声明顺序和原字段绑定。页面、详情与 PDF/PNG 导出共用展示投影，取数继续使用已声明的数据槽。
+
+完整场景见 [指标卡变化项显隐](../examples/metric-card-change-visibility.json)，Playground 入口为 `/pages/metric-card-change-visibility`。
+
 <a id="metric-definition-tip"></a>
 
 ## 指标定义气泡

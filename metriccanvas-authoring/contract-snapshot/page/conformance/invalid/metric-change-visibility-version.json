@@ -1,0 +1,229 @@
+{
+  "case": "metric-change-visibility-version",
+  "invariant": "metric-card-change-visibility",
+  "input": {
+    "schemaVersion": "6.135",
+    "id": "metric-card-change-visibility",
+    "layout": "dashboard",
+    "meta": {
+      "title": "指标卡变化项显隐",
+      "description": "内联合成数据。按已应用的统计期间切换主、次指标行的同比与环比。"
+    },
+    "filters": [
+      {
+        "id": "period",
+        "type": "timeRange",
+        "display": "period",
+        "precision": "date",
+        "label": "统计期间",
+        "default": {
+          "mode": "month"
+        }
+      }
+    ],
+    "dataSources": {
+      "metrics": {
+        "fields": {
+          "primary": {
+            "type": "number",
+            "role": "measure"
+          },
+          "secondary": {
+            "type": "number",
+            "role": "measure"
+          },
+          "yoy": {
+            "type": "number",
+            "role": "measure"
+          },
+          "mom": {
+            "type": "number",
+            "role": "measure"
+          },
+          "secondaryYoy": {
+            "type": "number",
+            "role": "measure"
+          },
+          "secondaryMom": {
+            "type": "number",
+            "role": "measure"
+          },
+          "targetGap": {
+            "type": "number",
+            "role": "measure"
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "primary": 82,
+              "secondary": 91,
+              "yoy": 7,
+              "mom": 3,
+              "secondaryYoy": 5,
+              "secondaryMom": -2,
+              "targetGap": 1
+            }
+          ]
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "header",
+        "components": [
+          {
+            "id": "header",
+            "type": "iocHeader",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "identity": {
+                "title": "指标卡变化项显隐"
+              },
+              "filterIds": [
+                "period"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "metrics",
+        "components": [
+          {
+            "id": "rates",
+            "type": "metricCard",
+            "layout": {
+              "span": 6
+            },
+            "data": {
+              "main": "metrics"
+            },
+            "props": {
+              "variant": "primaryDetail",
+              "rows": [
+                {
+                  "label": "签约完成率",
+                  "valueField": {
+                    "data": "main",
+                    "field": "primary",
+                    "format": "percent-0"
+                  },
+                  "changes": [
+                    {
+                      "label": "同比",
+                      "field": {
+                        "data": "main",
+                        "field": "yoy",
+                        "format": "percent-0"
+                      },
+                      "visibleWhen": {
+                        "filter": "period",
+                        "part": "mode",
+                        "op": "in",
+                        "values": [
+                          "year",
+                          "quarter"
+                        ]
+                      }
+                    },
+                    {
+                      "label": "环比",
+                      "field": {
+                        "data": "main",
+                        "field": "mom",
+                        "format": "percent-0"
+                      },
+                      "visibleWhen": {
+                        "filter": "period",
+                        "part": "mode",
+                        "op": "eq",
+                        "value": "month"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "secondaryRows": [
+                {
+                  "label": "回款完成率",
+                  "valueField": {
+                    "data": "main",
+                    "field": "secondary",
+                    "format": "percent-0"
+                  },
+                  "changes": [
+                    {
+                      "label": "同比",
+                      "field": {
+                        "data": "main",
+                        "field": "secondaryYoy",
+                        "format": "percent-0"
+                      },
+                      "visibleWhen": {
+                        "filter": "period",
+                        "part": "mode",
+                        "op": "in",
+                        "values": [
+                          "year",
+                          "quarter"
+                        ]
+                      }
+                    },
+                    {
+                      "label": "环比",
+                      "field": {
+                        "data": "main",
+                        "field": "secondaryMom",
+                        "format": "percent-0"
+                      },
+                      "visibleWhen": {
+                        "filter": "period",
+                        "part": "mode",
+                        "op": "eq",
+                        "value": "month"
+                      }
+                    },
+                    {
+                      "label": "较目标",
+                      "field": {
+                        "data": "main",
+                        "field": "targetGap",
+                        "format": "percent-0"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/1/components/0/props/rows/0/changes/0/visibleWhen",
+      "message": "指标卡主、次指标行的变化项按展示条件显隐 由 6.136 引入，文档声明的是 6.135"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/1/components/0/props/rows/0/changes/1/visibleWhen",
+      "message": "指标卡主、次指标行的变化项按展示条件显隐 由 6.136 引入，文档声明的是 6.135"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/1/components/0/props/secondaryRows/0/changes/0/visibleWhen",
+      "message": "指标卡主、次指标行的变化项按展示条件显隐 由 6.136 引入，文档声明的是 6.135"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/1/components/0/props/secondaryRows/0/changes/1/visibleWhen",
+      "message": "指标卡主、次指标行的变化项按展示条件显隐 由 6.136 引入，文档声明的是 6.135"
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 import {tableColumnPresentation} from './table/column-presentation';
 import {chartPresentation} from '@metriccanvas/data-execution/runtime';
-import { evaluateCondition, type ConditionContext, type ConditionResult, type Condition, type Component, type Page, type PageSection, type TableComponent, type Row, type PolicyNode } from '@metriccanvas/page/internal';
+import { evaluateCondition, type ConditionContext, type ConditionResult, type Condition, type Component, type MetricCardRow, type Page, type PageSection, type TableComponent, type Row, type PolicyNode } from '@metriccanvas/page/internal';
 export interface PresentationGate { eligible: boolean; enabled: boolean; reason?: string }
 const allowed:PresentationGate={eligible:true,enabled:true};
 export function policyGate(node:PolicyNode,context:ConditionContext,parent:PresentationGate=allowed):PresentationGate {
@@ -25,6 +25,23 @@ function table(page:Page,node:TableComponent,context:ConditionContext,gate:Prese
   ...(toolbar.export&&policyGate(toolbar.export,context,gate).eligible?{export:toolbar.export}:{})
  }}};
 }
+function metricCardRows(rows: MetricCardRow[], context: ConditionContext, gate: PresentationGate): MetricCardRow[] {
+  const projected = rows.map(row => {
+    if (!row.changes?.length) return row;
+    const changes = row.changes.filter(change => policyGate(change, context, gate).eligible);
+    return changes.length === row.changes.length ? row : { ...row, changes };
+  });
+  return projected.some((row, index) => row !== rows[index]) ? projected : rows;
+}
+function metricCard(
+  node: Extract<Component, { type: 'metricCard' }>, context: ConditionContext, gate: PresentationGate
+): typeof node {
+  const { rows, secondaryRows } = node.props;
+  const main = metricCardRows(rows, context, gate);
+  const secondary = secondaryRows && metricCardRows(secondaryRows, context, gate);
+  if (main === rows && secondary === secondaryRows) return node;
+  return { ...node, props: { ...node.props, rows: main, ...(secondary && { secondaryRows: secondary }) } };
+}
 /** Pure presentation projection. Original Page and source graph remain immutable. */
 export function compilePresentation(page:Page) {
   return {
@@ -43,6 +60,7 @@ export function compilePresentation(page:Page) {
         components.set(node.id,gate);
         if(!gate.eligible)return undefined;
         if(node.type==='barChart'||node.type==='lineChart')return chartPresentation(page,node,context);
+        if (node.type === 'metricCard') return metricCard(node, context, gate);
         if(node.type==='tabContainer')return {...node,props:{...node.props,tabs:node.props.tabs.flatMap(tab=>{
           const tabGate=policyGate(tab,context,gate);if(!tabGate.eligible)return [];
           if('components' in tab)return [{...tab,components:tab.components.flatMap(child=>component(child,tabGate)??[]) as typeof tab.components}];

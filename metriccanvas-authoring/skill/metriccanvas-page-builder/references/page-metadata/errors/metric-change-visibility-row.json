@@ -1,0 +1,40 @@
+{
+  "case": "metric-change-visibility-row",
+  "invariant": "metric-card-change-visibility",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "条件引用了不存在的来源、非法筛选部分或缺少行上下文",
+      "paths": [
+        "/sections/1/components/0/props/secondaryRows/0/changes/0/visibleWhen"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      "…",
+      {
+        "components": [
+          {
+            "props": {
+              "secondaryRows": [
+                {
+                  "changes": [
+                    {
+                      "visibleWhen": {
+                        "row": "secondaryYoy",
+                        "op": "gt",
+                        "value": 0
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/metric-change-visibility-row.json"
+}

@@ -2,6 +2,8 @@
 
 页面搜索筛选、远程下拉候选、表头动态候选和表格工具栏搜索统一在停输 300 毫秒后自动生效。中文输入法组词期间等待确认。静态候选即时筛选。分页候选在依赖条件就绪后开始取数。见[下拉搜索](docs/page-metadata/filters.md#下拉搜索与普通树643)和[表格搜索](docs/page-metadata/components/table.md#表格工具栏与搜索621)。
 
+Schema 6.136 支持指标卡在主、次指标行的 `changes[]` 上声明 `visibleWhen`。按已应用的统计期间切换同比和环比时，指标行和主值继续呈现。见[指标卡变化项显隐](docs/page-metadata/components/metricCard.md#metric-card-change-visibility)和 Playground 的 `/pages/metric-card-change-visibility`。
+
 Schema 6.135 支持 IOC 页头在 `props.filterRows` 中为已认领的筛选声明独立行和可选小标题。其余页头筛选保留首行，筛选值、默认值与查询绑定由现有声明控制。见[页头筛选行](docs/page-metadata/components/iocHeader.md#ioc-header-filter-rows)和 Playground 的 `/pages/ioc-header-filter-rows`。
 
 Schema 6.134 支持柱状图、折线图和柱线组合图在字段系列的 `tooltip.colorRule` 声明悬浮提示数值颜色。见[悬浮提示数字着色](docs/page-metadata/components/barChart.md#chart-tooltip-color-rule)与合成入口 `/pages/chart-tooltip-color-rule`。

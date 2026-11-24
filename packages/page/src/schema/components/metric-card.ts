@@ -19,7 +19,8 @@ const metricCardChangeZ = z
     field: fieldBindingZ,
     unit: textValueZ.optional(),
     tone: z.enum(['auto', 'neutral', 'positive', 'danger']).optional(),
-    colorRule: colorRuleZ.optional()
+    colorRule: colorRuleZ.optional(),
+    ...visibilityShape
   })
   .strict();
 

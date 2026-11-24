@@ -27,7 +27,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  */
 export const UNRESTRICTED_FILTER_CLEAR_MINOR = 124;
 export const INDEPENDENT_EXCLUSION_CANDIDATES_MINOR = 125;
-const CURRENT_MINOR = 135;
+const CURRENT_MINOR = 136;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -82,13 +82,23 @@ function bindingOperatorUsed(query:Record<string,unknown>|undefined):boolean {
 }
 
 export const pageCapabilities = {
+  'metric-card-change-visibility': {
+    minor: 136,
+    legacyReadable: false,
+    description: '指标卡主、次指标行的变化项按展示条件显隐',
+    usedAt: document => metricCardRowPaths(document, row => {
+      const changes = row?.changes;
+      if (!Array.isArray(changes)) return [];
+      return changes.flatMap((change, index) => has(record(change), 'visibleWhen') ? [`/changes/${index}/visibleWhen`] : []);
+    })
+  },
   'metric-card-row-definition-tip': {
     minor: 129,
     legacyReadable: false,
     description: '结果字段指标编码与指标行定义气泡',
     usedAt: document => [
       ...resultFieldPropertyPaths(document, 'metricCode'),
-      ...metricCardRowPaths(document, row => has(row, 'showDefinition') ? '/showDefinition' : undefined)
+      ...metricCardRowPaths(document, row => has(row, 'showDefinition') ? ['/showDefinition'] : [])
     ]
   },
   'bar-line-marker-color': {
@@ -108,7 +118,7 @@ export const pageCapabilities = {
     legacyReadable: false,
     description: '指标值切换同页 Tab',
     usedAt: document => metricCardRowPaths(document, row =>
-      has(record(row?.action), 'selectTab') ? '/action/selectTab' : undefined)
+      has(record(row?.action), 'selectTab') ? ['/action/selectTab'] : [])
   },
   'number-ungrouped': { minor:123, legacyReadable:false, description:'普通数值默认千分位，ungrouped 显式关闭且保留精度和符号', usedAt:document=>namedFormatPaths(document,/^number(?:-[0-5])?-ungrouped(?:-signed)?$/) },
   'native-ioc-filter-preparation': {
@@ -1229,7 +1239,7 @@ function metricCardTipPaths(document: unknown): string[] {
 
 function metricCardRowPaths(
   document: unknown,
-  propertyPath: (row: Json | undefined) => string | undefined
+  propertyPaths: (row: Json | undefined) => string[]
 ): string[] {
   const paths: string[] = [];
   walkDocumentComponents(document, (component, path) => {
@@ -1239,8 +1249,9 @@ function metricCardRowPaths(
       const rows = metricProps?.[key];
       if (!Array.isArray(rows)) continue;
       rows.forEach((row, index) => {
-        const suffix = propertyPath(record(row));
-        if (suffix) paths.push(`${path}/props/${key}/${index}${suffix}`);
+        for (const suffix of propertyPaths(record(row))) {
+          paths.push(`${path}/props/${key}/${index}${suffix}`);
+        }
       });
     }
   });
