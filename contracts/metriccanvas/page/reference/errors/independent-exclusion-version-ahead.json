@@ -4,14 +4,14 @@
   "expected": [
     {
       "type": "SCHEMA_ERROR",
-      "message": "文档格式版本 6.133 高于运行时当前次版本 6.132",
+      "message": "文档格式版本 6.135 高于运行时当前次版本 6.134",
       "paths": [
         "/schemaVersion"
       ]
     }
   ],
   "inputExcerpt": {
-    "schemaVersion": "6.133"
+    "schemaVersion": "6.135"
   },
   "fullInput": "page/conformance/invalid/independent-exclusion-version-ahead.json"
 }

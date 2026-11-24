@@ -802,6 +802,7 @@
         "sdt-period-aggregation",
         "bar-line-marker-color",
         "bar-category-order",
+        "chart-tooltip-color-rule",
         "chart-customer-series",
         "conditional-compute-demand"
       ],
@@ -818,7 +819,8 @@
         "query-dimension-measures",
         "bar-series-average",
         "bar-line-marker-color",
-        "bar-category-order"
+        "bar-category-order",
+        "chart-tooltip-color-rule"
       ]
     },
     "components/lineChart.md": {
@@ -837,7 +839,8 @@
         "chart-constant-branches",
         "dual-axis-alignment",
         "chart-series-visibility",
-        "chart-table-unit"
+        "chart-table-unit",
+        "chart-tooltip-color-rule"
       ],
       "sources": [
         "packages/page/src/schema/components/charts.ts",
@@ -850,7 +853,8 @@
         "data-slot-known-source",
         "field-binding-resolves",
         "field-binding-role",
-        "field-binding-match"
+        "field-binding-match",
+        "chart-tooltip-color-rule"
       ]
     },
     "components/pieChart.md": {
@@ -868,7 +872,8 @@
         "composite-page",
         "chart-constant-values-page",
         "chart-constant-branches",
-        "pie-table-legend"
+        "pie-table-legend",
+        "pie-legend-color-rule"
       ],
       "sources": [
         "packages/page/src/schema/components/charts.ts",
@@ -2426,7 +2431,9 @@
     "#/properties/schemaVersion=\"6.129\"": "顶层度量结果字段声明 metricCode，主次指标行通过 showDefinition 独立开启气泡。",
     "#/properties/schemaVersion=\"6.130\"": "可选动态多选排除项可用 defaultWhen 关联一个独立单选维度的实际取值。",
     "#/properties/schemaVersion=\"6.131\"": "维度筛选器可用 urlParams: false 关闭本页 URL 读写。",
-    "#/properties/schemaVersion=\"6.132\"": "柱状图可声明 order，在前端按结果字段和方向排序类别。"
+    "#/properties/schemaVersion=\"6.132\"": "柱状图可声明 order，在前端按结果字段和方向排序类别。",
+    "#/properties/schemaVersion=\"6.133\"": "饼图表格式图例可在字段列声明 colorRule，按正负或固定颜色显示数值。",
+    "#/properties/schemaVersion=\"6.134\"": "柱图和折线图的字段系列可声明 tooltip.colorRule，为悬浮提示中的数值着色。"
   },
   "branchExceptions": {
     "#/properties/iocHeader/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/0": {
@@ -3571,6 +3578,7 @@
     ],
     "components/barChart.md": [
       "分类组合系列与页头筛选",
+      "悬浮提示数字着色（6.134）",
       "折线圆点按数值正负着色（6.128）",
       "前端均值柱系列（6.103）",
       "默认柱宽",
@@ -3593,6 +3601,7 @@
     ],
     "components/pieChart.md": [
       "表格式图例与顺序（6.64）",
+      "图例数字着色（6.133）",
       "外围百分比标签",
       "查阅方式",
       "常量取值（6.59）"

@@ -100,6 +100,10 @@ export function pieLegendData(data: MainDataSlots, props: PieChartProps) {
       field: { data: 'main', field: `__value_${index}`, missingText: column.missingText, format: column.format ?? (column.definition.role === 'detail' ? undefined : column.definition.defaultFormat) }
     }))
   };
-  const columnPresentation = props.legend?.columns.map(({ unit, align }) => ({ unit, align }));
+  const columnPresentation = props.legend?.columns.map(column => ({
+    unit: column.unit,
+    align: column.align,
+    ...('field' in column && column.colorRule ? { colorRule: column.colorRule } : {})
+  }));
   return { data: legendData, props: legendProps, columnPresentation };
 }

@@ -1,8 +1,9 @@
 import { formatFieldValue } from '../../shared/field-presentation';
-import type { CategoryBreakdownProps, FieldValue } from '@metriccanvas/page/internal';
+import type { CategoryBreakdownProps, ColorRule, FieldValue } from '@metriccanvas/page/internal';
 import type { MainDataSlots, ResolvedField } from '../../shared/component-data';
 import { fieldLabel, resolveField } from '../../shared/component-data';
 import { hasDisplayValue } from '../../shared/value-format';
+import { valueColor, type ValueColor } from '../../shared/value-color';
 import {
   categoricalColor,
   categoryDomain,
@@ -16,6 +17,7 @@ export interface CategoryBreakdownRow {
   swatch?: string;
   /** 逐列的展示文本,顺序与 `columns` 一致。 */
   values: string[];
+  valueColors?: ValueColor[];
 }
 
 export interface CategoryBreakdownView {
@@ -33,6 +35,7 @@ export interface CategoryBreakdownView {
 export interface CategoryColumnPresentation {
   unit?: string;
   align?: 'left' | 'center' | 'right';
+  colorRule?: ColorRule;
 }
 
 function columnValue(value: FieldValue | undefined, resolved: ResolvedField, unit?: string): string {
@@ -59,8 +62,10 @@ export function categoryBreakdownView(
   const columns = props.columns.map((column, index) => ({
     label: column.label,
     unit: columnPresentation?.[index]?.unit,
+    colorRule: columnPresentation?.[index]?.colorRule,
     resolved: resolveField(column.field, data)
   }));
+  const hasColorRules = columns.some(column => column.colorRule !== undefined);
   const rows = data.main.snapshot.rows;
   const categories = rows.map((row) =>
     formatFieldValue(row[category.field], category)
@@ -85,7 +90,12 @@ export function categoryBreakdownView(
         ...(swatch ? { swatch } : {}),
         values: columns.map((column) =>
           columnValue(row[column.resolved.field], column.resolved, column.unit)
-        )
+        ),
+        ...(hasColorRules ? {
+          valueColors: columns.map(({ colorRule, resolved }) =>
+            colorRule && valueColor(row[resolved.field], colorRule, resolved.format)
+          )
+        } : {})
       };
     })
   };

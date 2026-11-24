@@ -11,6 +11,7 @@ import { finiteNumber, formatValue } from '../../shared/value-format';
 import { CHART_PALETTE, GRID, categoryWindow, dualOrSingleAxis, formatterValue, formatChartNumber } from '../../shared/chart-option';
 import { serialColor, type ColorList } from '../../shared/chart-palette';
 import { categoryLabelOption, pointValueLabel, valueLabelLayout } from '../../shared/chart-presentation';
+import { chartTooltip, seriesTooltipValue } from '../../shared/chart-tooltip';
 
 /**
  * 已解析命名数据槽 + 折线图 props → ECharts option 的纯翻译。
@@ -25,13 +26,14 @@ export function lineOption(
 ): EChartsOption {
   const rows = data.main.snapshot.rows;
   const x = resolveField(props.xField, data);
+  const entries = props.series.map(series => ({ series, field: resolveComponentValue(series, data, props.emptyBehavior) }));
 
   return {
     ...(palette ? { color: [...palette] } : {}),
     ...(props.categoryLabels?.mode === 'all' ? {} : categoryWindow(rows.length)),
     grid: { ...GRID, ...(props.showPointLabels ? { top: 36, right: 30 } : {}),
       ...(rows.length > 20 && props.categoryLabels?.mode !== 'all' ? { bottom: 36 } : {}) },
-    tooltip: { trigger: 'axis', confine: true, hideDelay: 200 },
+    tooltip: chartTooltip(entries, props.echartsOption?.tooltip, { hideDelay: 200 }),
     ...(chartLegendVisible(chartDeclaration(props).series) ? { legend: { top: 0, left: 0 } } : {}),
     xAxis: {
       type: 'category',
@@ -40,9 +42,9 @@ export function lineOption(
       ...categoryLabelOption(props.categoryLabels, props.showValueLabels)
     },
     yAxis: dualOrSingleAxis(props.dualAxis, chartDeclaration(props).series.length, props.hideYAxis,
-      chartAxisFormats(props, props.series.map(series => chartAxisField(resolveComponentValue(series, data, props.emptyBehavior), rows, series.unit)))),
-    series: props.series.map((series, i) => {
-      const field = resolveComponentValue(series, data, props.emptyBehavior);
+      chartAxisFormats(props, entries.map(({ field, series }) => chartAxisField(field, rows, series.unit)))),
+    series: entries.map((entry, i) => {
+      const { series, field } = entry;
       return {
         name: seriesDisplayName(series.label ?? field.label, series.unit),
         type: 'line' as const,
@@ -66,8 +68,7 @@ export function lineOption(
             }
           : {}),
         tooltip: {
-          valueFormatter: (value: unknown) =>
-            formatChartNumber(formatterValue(value), field.format, field.missingText, field.unit, series.unit)
+          valueFormatter: (value: unknown) => seriesTooltipValue(entry, value)
         },
         data: rows.map((row) => props.showValueLabels ? finiteNumber(field.read(row)) ?? null : finiteNumber(field.read(row)))
       };

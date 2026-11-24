@@ -1,5 +1,13 @@
 # pages/capabilities/chart
 
+## 悬浮提示数字着色（6.134）
+
+<!-- example-guide: task=chart-tooltip-color-rule; page=chart-tooltip-color-rule; components=bar,line,mixed; verified=structure,browser -->
+
+启动 `pnpm dev:playground` 后打开 `/pages/chart-tooltip-color-rule`。三图使用相同的内联合成数据。移植时把 `tooltip.colorRule` 放入需要着色的字段系列，颜色方向按指标含义配置。
+
+柱图悬停 1 月时，同比 `+8.5%` 和环比 `-3.2%` 均为绿，悬停 2 月时两者均为红。折线图悬停 3 月时，同比 `0%` 用普通文字色，环比 `0%` 按固定规则为红色。1 月占比变化舍入到 `0P`，4 月显示「暂无同比」，两者均用普通文字色。柱线组合图的客户数使用普通文字色，同比正值为绿、负值为红。
+
 ## 柱图按字段排序（6.132）
 
 <!-- example-guide: task=bar-category-order; page=bar-category-order; components=by-total,by-region,source-order; verified=structure,browser,export -->
@@ -169,6 +177,16 @@
 ### 图例列单位与对齐
 
 同一 `/pages/pie-table-legend` 首图将客户数量列声明为 `unit: "家"`，未声明 align，显示 `96 家` 并保持右对齐。紧接的「列呈现」图将客户数量列居中、占比列左对齐；数量变化图则将客户数量列左对齐、占比列显式右对齐。列头和数据应同步对齐。「左侧图例」示例省略 unit/align，保持原有无单位、数值列右对齐；缺省不会自动把字段元数据里的单位附到数值后。零及缺失单位的细节由行为测试补充，未执行真实查询。
+
+## 饼图图例数字着色（6.133）
+
+<!-- example-guide: task=pie-legend-color-rule; page=pie-legend-color-rule; components=changes; verified=structure,browser,export -->
+
+参考对象：`/pages/pie-legend-color-rule` 的 `changes` 环形图读取区域客户数、同比、环比和占比变化。运行 `pnpm dev:playground` 后可直接访问，使用内联合成数据。
+
+移植时保留 `legend.type: "table"`，将字段列改绑到 main 数据槽的数值度量。为每列声明颜色方向，先确认百分数刻度及显示精度。自动占比列继续用 `value: "percentage"`。
+
+华东的同比 `+8.5%` 和环比 `-3.2%` 均为绿，华北的同比 `-3.2%` 和环比 `+5.1%` 均为红。华南的同比、环比为普通文字色，固定红色列仍显示红色的 `0 家`。西南的缺失值与华东舍入后的 `0P` 用普通文字色。类别色点与扇区配色对应。PDF、PNG 静态导出使用相同的文字着色。
 
 ## 双轴刻度对齐与单套网格线
 

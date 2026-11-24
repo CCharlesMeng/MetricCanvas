@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.132",
+  "schemaVersion": "6.134",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "barChart.overview"
@@ -12,6 +12,19 @@
         "# 柱状图 barChart\n\n比较离散类别之间的大小或展示分类分布。适用于区域/渠道/产品对比、分类分布、多指标类别比较。数据形状：一个 dimension 类别字段 + 一个或多个 metric 字段。"
       ],
       "rules": [
+        {
+          "id": "chart-tooltip-color-rule",
+          "description": "6.134 柱图和折线图字段系列的悬浮提示数值着色",
+          "valid": [
+            "chart-tooltip-color-rule"
+          ],
+          "invalid": [
+            "chart-tooltip-color-before-version",
+            "chart-tooltip-color-nonnumeric",
+            "chart-tooltip-color-invalid-color",
+            "chart-tooltip-color-constant"
+          ]
+        },
         {
           "id": "bar-series-average",
           "description": "同一图表的当前值和前端均值字段系列，保留原类别及版本边界",
@@ -88,6 +101,7 @@
         "references/page-metadata/examples/sdt-period-aggregation.json",
         "references/page-metadata/examples/bar-line-marker-color.json",
         "references/page-metadata/examples/bar-category-order.json",
+        "references/page-metadata/examples/chart-tooltip-color-rule.json",
         "references/page-metadata/examples/chart-customer-series.json",
         "references/page-metadata/examples/conditional-compute-demand.json"
       ]

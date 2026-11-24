@@ -3,8 +3,8 @@ import { describe, expect, it } from 'vitest';
 import { validate } from '../src/validate';
 import { requiredMinorVersion } from '../src/version';
 
-function document() {
-  return JSON.parse(readFileSync(new URL('../../../pages/capabilities/chart/pie-table-legend.json', import.meta.url), 'utf8'));
+function document(name = 'pie-table-legend') {
+  return JSON.parse(readFileSync(new URL(`../../../pages/capabilities/chart/${name}.json`, import.meta.url), 'utf8'));
 }
 
 describe('pie table legend contract', () => {
@@ -47,5 +47,36 @@ describe('pie table legend contract', () => {
     const issues = validate(page);
     expect(issues.some(error => error.path.endsWith('/echartsOption/legend'))).toBe(true);
     expect(issues.some(error => error.path.endsWith('/props/legend'))).toBe(true);
+  });
+
+  it('requires 6.133 at every configured legend column', () => {
+    const page = document('pie-legend-color-rule');
+    expect(validate(page)).toEqual([]);
+    expect(requiredMinorVersion(page)).toBe(133);
+    page.schemaVersion = '6.132';
+    expect(validate(page).map(error => error.path)).toEqual([
+      '/sections/0/components/0/props/legend/columns/0/colorRule',
+      '/sections/0/components/0/props/legend/columns/1/colorRule',
+      '/sections/0/components/0/props/legend/columns/2/colorRule',
+      '/sections/0/components/0/props/legend/columns/3/colorRule'
+    ]);
+  });
+
+  it('rejects invalid rules and allows only numeric field bindings to use them', () => {
+    const page = document('pie-legend-color-rule');
+    const columns = page.sections[0].components[0].props.legend.columns;
+    const rule = columns[0].colorRule;
+    columns[0].colorRule = null;
+    expect(validate(page)).not.toEqual([]);
+    columns[0].colorRule = rule;
+    columns[4].colorRule = rule;
+    expect(validate(page)).not.toEqual([]);
+    delete columns[4].colorRule;
+    page.dataSources['customers-by-region'].fields.note = { type: 'string', role: 'measure', nullable: true };
+    columns[0].field = 'note';
+    expect(validate(page)).toContainEqual(expect.objectContaining({
+      path: '/sections/0/components/0/props/legend/columns/0/colorRule',
+      message: 'colorRule 只支持 number 或 money 字段'
+    }));
   });
 });

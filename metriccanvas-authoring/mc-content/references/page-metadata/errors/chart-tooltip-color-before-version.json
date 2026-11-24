@@ -1,0 +1,99 @@
+{
+  "case": "chart-tooltip-color-before-version",
+  "invariant": "chart-tooltip-color-rule",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "柱状图与折线图字段系列的悬浮提示支持数字颜色规则 由 6.134 引入，文档声明的是 6.133",
+      "paths": [
+        "/sections/0/components/0/props/series/0/tooltip/colorRule",
+        "/sections/0/components/0/props/series/1/tooltip/colorRule",
+        "/sections/0/components/1/props/series/0/tooltip/colorRule",
+        "/sections/0/components/1/props/series/1/tooltip/colorRule",
+        "/sections/0/components/1/props/series/2/tooltip/colorRule",
+        "/sections/0/components/2/props/series/1/tooltip/colorRule"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "series": [
+                {
+                  "tooltip": {
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "green",
+                      "negative": "red"
+                    }
+                  }
+                },
+                {
+                  "tooltip": {
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "red",
+                      "negative": "green"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "props": {
+              "series": [
+                {
+                  "tooltip": {
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "green",
+                      "negative": "red"
+                    }
+                  }
+                },
+                {
+                  "tooltip": {
+                    "colorRule": {
+                      "mode": "fixed",
+                      "color": "red"
+                    }
+                  }
+                },
+                {
+                  "tooltip": {
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "green",
+                      "negative": "red"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "props": {
+              "series": [
+                "…",
+                {
+                  "tooltip": {
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "green",
+                      "negative": "red"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

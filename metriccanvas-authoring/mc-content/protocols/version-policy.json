@@ -1,7 +1,7 @@
 {
   "major": 6,
-  "minor": 132,
-  "current": "6.132",
+  "minor": 134,
+  "current": "6.134",
   "capabilities": {
     "metric-card-row-definition-tip": {
       "minor": 129,
@@ -201,6 +201,16 @@
     "bar-category-order": {
       "minor": 132,
       "description": "柱状图按 main 数据槽的结果字段和方向在前端排序类别",
+      "legacyReadable": false
+    },
+    "pie-legend-color-rule": {
+      "minor": 133,
+      "description": "饼图表格式图例字段列可声明数字颜色规则",
+      "legacyReadable": false
+    },
+    "chart-tooltip-color-rule": {
+      "minor": 134,
+      "description": "柱状图与折线图字段系列的悬浮提示支持数字颜色规则",
       "legacyReadable": false
     },
     "dimension-filter-url-opt-out": {
@@ -1137,6 +1147,8 @@
     "6.129",
     "6.130",
     "6.131",
-    "6.132"
+    "6.132",
+    "6.133",
+    "6.134"
   ]
 }

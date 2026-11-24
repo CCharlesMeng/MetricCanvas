@@ -1,0 +1,113 @@
+{
+  "schemaVersion": "6.134",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "barChart.section-a7a636a4"
+  ],
+  "semantics": [
+    {
+      "module": "barChart",
+      "reference": "references/page-metadata/components/barChart.md",
+      "blocks": [
+        "# 柱状图 barChart\n\n比较离散类别之间的大小或展示分类分布。适用于区域/渠道/产品对比、分类分布、多指标类别比较。数据形状：一个 dimension 类别字段 + 一个或多个 metric 字段。",
+        "## 悬浮提示数字着色（6.134）\n\n在柱状图、折线图和柱线组合图的 `props.series[]` 字段系列声明 `tooltip.colorRule`，给该系列在悬浮提示中的数值文字着色。\n\n```json\n{\n  \"label\": \"同比\",\n  \"field\": { \"data\": \"main\", \"field\": \"yoy\", \"format\": \"percent-2-signed\" },\n  \"tooltip\": { \"colorRule\": { \"mode\": \"sign\", \"positive\": \"green\", \"negative\": \"red\" } }\n}\n```\n\n`tooltip` 可省略。声明时须填写 `colorRule`，字段须为 `number` 或 `money` 度量。规则、主题色、缺失值和格式对应的正负判断复用[数字颜色规则](../field-bindings-and-formats.md#numeric-value-color)。`sign` 的零和缺失值使用普通文字色，`fixed` 给所有有效数值着色，包括零。数值格式和单位沿用系列设置，图例、绘图区和悬浮提示的系列标记继续使用原系列色。\n\n显式高级 `echartsOption.tooltip.formatter` 沿用覆盖优先级，显式 `renderMode: \"richText\"` 由 ECharts 原生画布提示接管。合成入口 `/pages/chart-tooltip-color-rule` 可悬停查看三种图表的着色。"
+      ],
+      "rules": [
+        {
+          "id": "chart-tooltip-color-rule",
+          "description": "6.134 柱图和折线图字段系列的悬浮提示数值着色",
+          "valid": [
+            "chart-tooltip-color-rule"
+          ],
+          "invalid": [
+            "chart-tooltip-color-before-version",
+            "chart-tooltip-color-nonnumeric",
+            "chart-tooltip-color-invalid-color",
+            "chart-tooltip-color-constant"
+          ]
+        },
+        {
+          "id": "bar-series-average",
+          "description": "同一图表的当前值和前端均值字段系列，保留原类别及版本边界",
+          "valid": [
+            "sdt-period-aggregation"
+          ],
+          "invalid": [
+            "bar-average-old-version",
+            "bar-average-category-removed",
+            "bar-average-stacked",
+            "bar-average-line"
+          ]
+        },
+        {
+          "id": "bar-category-order",
+          "description": "普通柱图按结果字段和方向排序类别，兼容省略 order 的页面",
+          "valid": [
+            "bar-category-order"
+          ],
+          "invalid": [
+            "bar-category-order-old-version",
+            "bar-category-order-unknown-field",
+            "bar-category-order-invalid-direction",
+            "bar-category-order-on-forecast"
+          ]
+        },
+        {
+          "id": "bar-line-marker-color",
+          "description": "柱线组合的字段折线圆点按原始数值正负着色",
+          "valid": [
+            "bar-line-marker-color"
+          ],
+          "invalid": [
+            "bar-line-marker-color-old-version",
+            "bar-line-marker-color-on-bar-series",
+            "bar-line-marker-color-unknown-color"
+          ]
+        },
+        {
+          "id": "query-dimension-measures",
+          "description": "6.56 DQE output_dims 中的现成数值显式作为页面度量，不改变查询与行粒度",
+          "valid": [
+            "stored-count-measures"
+          ],
+          "invalid": [
+            "dimension-measure-version",
+            "dimension-measure-legacy",
+            "dimension-measure-time-qualified-version",
+            "dimension-measure-nonnumeric",
+            "dimension-number-not-series",
+            "dimension-measure-not-collapsible"
+          ]
+        },
+        {
+          "id": "bar-forecast-boundary",
+          "description": "实际 / 预测系列不得跨越采集时间所在月",
+          "valid": [
+            "forecast-page"
+          ],
+          "invalid": [
+            "forecast-before-captured-month",
+            "actual-after-captured-month"
+          ]
+        }
+      ],
+      "examples": [
+        "references/page-metadata/examples/forecast-page.json",
+        "references/page-metadata/examples/stored-count-measures.json",
+        "references/page-metadata/examples/chart-constant-values-page.json",
+        "references/page-metadata/examples/chart-constant-branches.json",
+        "references/page-metadata/examples/dual-axis-alignment.json",
+        "references/page-metadata/examples/chart-series-visibility.json",
+        "references/page-metadata/examples/chart-table-unit.json",
+        "references/page-metadata/examples/sdt-period-aggregation.json",
+        "references/page-metadata/examples/bar-line-marker-color.json",
+        "references/page-metadata/examples/bar-category-order.json",
+        "references/page-metadata/examples/chart-tooltip-color-rule.json",
+        "references/page-metadata/examples/chart-customer-series.json",
+        "references/page-metadata/examples/conditional-compute-demand.json"
+      ]
+    }
+  ],
+  "nodes": [],
+  "unresolvedRefs": []
+}

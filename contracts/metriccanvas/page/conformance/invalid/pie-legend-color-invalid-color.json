@@ -1,0 +1,910 @@
+{
+  "case": "pie-legend-color-invalid-color",
+  "invariant": "pie-legend-color-rule",
+  "input": {
+    "schemaVersion": "6.133",
+    "id": "pie-legend-color-rule",
+    "layout": "dashboard",
+    "meta": {
+      "title": "饼图表格式图例数值颜色"
+    },
+    "dataSources": {
+      "customers-by-region": {
+        "fields": {
+          "region": {
+            "type": "string",
+            "role": "dimension"
+          },
+          "customers": {
+            "type": "number",
+            "role": "measure"
+          },
+          "yoy": {
+            "type": "number",
+            "role": "measure",
+            "defaultFormat": "percent-2-signed",
+            "nullable": true
+          },
+          "mom": {
+            "type": "number",
+            "role": "measure",
+            "nullable": true
+          },
+          "shareDelta": {
+            "type": "number",
+            "role": "measure",
+            "defaultFormat": "points-1-signed",
+            "nullable": true
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "region": "华东",
+              "customers": 96,
+              "yoy": 8.5,
+              "mom": -3.2,
+              "shareDelta": 0.04
+            },
+            {
+              "region": "华北",
+              "customers": 72,
+              "yoy": -3.2,
+              "mom": 5.1,
+              "shareDelta": -2.5
+            },
+            {
+              "region": "华南",
+              "customers": 0,
+              "yoy": 0,
+              "mom": 0,
+              "shareDelta": 0
+            },
+            {
+              "region": "西南",
+              "customers": 48,
+              "yoy": null,
+              "mom": null,
+              "shareDelta": null
+            }
+          ]
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "main",
+        "components": [
+          {
+            "id": "changes",
+            "type": "pieChart",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "customers-by-region"
+            },
+            "props": {
+              "title": "区域客户数与变化",
+              "categoryField": "region",
+              "valueField": "customers",
+              "ring": "46%",
+              "legend": {
+                "type": "table",
+                "columns": [
+                  {
+                    "label": "同比",
+                    "field": "yoy",
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "blue",
+                      "negative": "red"
+                    }
+                  },
+                  {
+                    "label": "环比",
+                    "field": {
+                      "data": "main",
+                      "field": "mom",
+                      "format": "percent-2-signed"
+                    },
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "red",
+                      "negative": "green"
+                    }
+                  },
+                  {
+                    "label": "占比变化",
+                    "field": "shareDelta",
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "green",
+                      "negative": "red"
+                    }
+                  },
+                  {
+                    "label": "客户数",
+                    "field": "customers",
+                    "unit": "家",
+                    "colorRule": {
+                      "mode": "fixed",
+                      "color": "red"
+                    }
+                  },
+                  {
+                    "label": "占比",
+                    "value": "percentage"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/data",
+      "message": "存在未定义字段 data(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "存在未定义字段 valueField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/ring",
+      "message": "存在未定义字段 ring(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend",
+      "message": "存在未定义字段 legend(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/rows",
+      "message": "缺少必填字段 rows"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "存在未定义字段 valueField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/ring",
+      "message": "存在未定义字段 ring(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend",
+      "message": "存在未定义字段 legend(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/series",
+      "message": "缺少必填字段 series"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "存在未定义字段 valueField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/ring",
+      "message": "存在未定义字段 ring(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend",
+      "message": "存在未定义字段 legend(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/xField",
+      "message": "缺少必填字段 xField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/series",
+      "message": "缺少必填字段 series"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "存在未定义字段 valueField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/ring",
+      "message": "存在未定义字段 ring(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend",
+      "message": "存在未定义字段 legend(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend/columns/0/colorRule/color",
+      "message": "缺少必填字段 color"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend/columns/0/colorRule/positive",
+      "message": "存在未定义字段 positive(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend/columns/0/colorRule/negative",
+      "message": "存在未定义字段 negative(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend/columns/0/colorRule/mode",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend/columns/0/colorRule/positive",
+      "message": "取值不在允许范围:[\"red\",\"green\"]"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend/columns/0/colorRule",
+      "message": "must match exactly one schema in oneOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend/columns/0/value",
+      "message": "缺少必填字段 value"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend/columns/0/field",
+      "message": "存在未定义字段 field(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend/columns/0/colorRule",
+      "message": "存在未定义字段 colorRule(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend/columns/0",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/value",
+      "message": "缺少必填字段 value"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "must NOT be valid"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend/columns/0/colorRule/color",
+      "message": "缺少必填字段 color"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend/columns/0/colorRule/positive",
+      "message": "存在未定义字段 positive(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend/columns/0/colorRule/negative",
+      "message": "存在未定义字段 negative(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend/columns/0/colorRule/mode",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend/columns/0/colorRule/positive",
+      "message": "取值不在允许范围:[\"red\",\"green\"]"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend/columns/0/colorRule",
+      "message": "must match exactly one schema in oneOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend/columns/0/value",
+      "message": "缺少必填字段 value"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend/columns/0/field",
+      "message": "存在未定义字段 field(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend/columns/0/colorRule",
+      "message": "存在未定义字段 colorRule(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend/columns/0",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "缺少必填字段 columns"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "存在未定义字段 valueField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/ring",
+      "message": "存在未定义字段 ring(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend",
+      "message": "存在未定义字段 legend(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/nameField",
+      "message": "缺少必填字段 nameField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/map",
+      "message": "缺少必填字段 map"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/ring",
+      "message": "存在未定义字段 ring(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend/bands",
+      "message": "缺少必填字段 bands"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend/type",
+      "message": "存在未定义字段 type(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend/columns",
+      "message": "存在未定义字段 columns(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/value",
+      "message": "缺少必填字段 value"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/nameField",
+      "message": "缺少必填字段 nameField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/map",
+      "message": "缺少必填字段 map"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/ring",
+      "message": "存在未定义字段 ring(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "must NOT be valid"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend/bands",
+      "message": "缺少必填字段 bands"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend/type",
+      "message": "存在未定义字段 type(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend/columns",
+      "message": "存在未定义字段 columns(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/ring",
+      "message": "存在未定义字段 ring(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend",
+      "message": "存在未定义字段 legend(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/value",
+      "message": "缺少必填字段 value"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/ring",
+      "message": "存在未定义字段 ring(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend",
+      "message": "存在未定义字段 legend(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "must NOT be valid"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/data",
+      "message": "存在未定义字段 data(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/tabs",
+      "message": "缺少必填字段 tabs"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "存在未定义字段 valueField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/ring",
+      "message": "存在未定义字段 ring(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend",
+      "message": "存在未定义字段 legend(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/data",
+      "message": "存在未定义字段 data(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/components",
+      "message": "缺少必填字段 components"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "存在未定义字段 valueField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/ring",
+      "message": "存在未定义字段 ring(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend",
+      "message": "存在未定义字段 legend(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/nameField",
+      "message": "缺少必填字段 nameField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/ring",
+      "message": "存在未定义字段 ring(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend",
+      "message": "存在未定义字段 legend(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/nameField",
+      "message": "缺少必填字段 nameField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/ring",
+      "message": "存在未定义字段 ring(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend",
+      "message": "存在未定义字段 legend(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/items",
+      "message": "缺少必填字段 items"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "存在未定义字段 valueField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/ring",
+      "message": "存在未定义字段 ring(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend",
+      "message": "存在未定义字段 legend(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "缺少必填字段 columns"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "存在未定义字段 valueField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/ring",
+      "message": "存在未定义字段 ring(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend",
+      "message": "存在未定义字段 legend(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/field",
+      "message": "缺少必填字段 field"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "存在未定义字段 valueField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/ring",
+      "message": "存在未定义字段 ring(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend",
+      "message": "存在未定义字段 legend(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/data",
+      "message": "存在未定义字段 data(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "存在未定义字段 valueField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/ring",
+      "message": "存在未定义字段 ring(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend",
+      "message": "存在未定义字段 legend(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/data",
+      "message": "存在未定义字段 data(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "存在未定义字段 valueField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/ring",
+      "message": "存在未定义字段 ring(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend",
+      "message": "存在未定义字段 legend(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/data",
+      "message": "存在未定义字段 data(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/label",
+      "message": "缺少必填字段 label"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/action",
+      "message": "缺少必填字段 action"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/title",
+      "message": "存在未定义字段 title(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "存在未定义字段 valueField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/ring",
+      "message": "存在未定义字段 ring(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend",
+      "message": "存在未定义字段 legend(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/data",
+      "message": "存在未定义字段 data(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterId",
+      "message": "缺少必填字段 filterId"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/title",
+      "message": "存在未定义字段 title(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "存在未定义字段 categoryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "存在未定义字段 valueField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/ring",
+      "message": "存在未定义字段 ring(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/legend",
+      "message": "存在未定义字段 legend(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0",
+      "message": "must match exactly one schema in oneOf"
+    }
+  ]
+}

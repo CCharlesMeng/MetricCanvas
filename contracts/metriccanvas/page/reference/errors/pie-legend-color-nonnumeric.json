@@ -1,0 +1,59 @@
+{
+  "case": "pie-legend-color-nonnumeric",
+  "invariant": "pie-legend-color-rule",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "行缺少字段:note",
+      "paths": [
+        "/dataSources/customers-by-region/source/rows/0/note",
+        "/dataSources/customers-by-region/source/rows/1/note",
+        "/dataSources/customers-by-region/source/rows/2/note",
+        "/dataSources/customers-by-region/source/rows/3/note"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "colorRule 只支持 number 或 money 字段",
+      "paths": [
+        "/sections/0/components/0/props/legend/columns/0/colorRule"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "customers-by-region": {
+        "source": {
+          "rows": [
+            {},
+            {},
+            {},
+            {}
+          ]
+        }
+      }
+    },
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "legend": {
+                "columns": [
+                  {
+                    "colorRule": {
+                      "mode": "sign",
+                      "positive": "green",
+                      "negative": "red"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/pie-legend-color-nonnumeric.json"
+}

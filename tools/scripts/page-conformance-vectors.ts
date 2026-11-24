@@ -57,6 +57,48 @@ function longString(length: number): string {
 }
 
 export const invariants: InvariantDefinition[] = [
+  {
+    id: 'chart-tooltip-color-rule',
+    description: '6.134 柱图和折线图字段系列的悬浮提示数值着色',
+    valid: ['chart-tooltip-color-rule'],
+    cases: [
+      { case: 'chart-tooltip-color-before-version', base: 'chart-tooltip-color-rule', expect: /由 6.134 引入/, mutate: document => {
+        document.schemaVersion = '6.133';
+      } },
+      { case: 'chart-tooltip-color-nonnumeric', base: 'chart-tooltip-color-rule', expect: /colorRule 只支持 number 或 money/, mutate: document => {
+        document.dataSources.changes.fields.note = { type: 'string', role: 'measure', nullable: true };
+        firstComponent(document, 0, 1).props.series[0].field = 'note';
+      } },
+      { case: 'chart-tooltip-color-invalid-color', base: 'chart-tooltip-color-rule', expect: /取值不在允许范围/, mutate: document => {
+        firstComponent(document).props.series[0].tooltip.colorRule.positive = 'blue';
+      } },
+      { case: 'chart-tooltip-color-constant', base: 'chart-tooltip-color-rule', expect: /存在未定义字段 tooltip/, mutate: document => {
+        const series = firstComponent(document).props.series[0];
+        delete series.field;
+        series.value = 0;
+      } }
+    ]
+  },
+  {
+    id: 'pie-legend-color-rule',
+    description: '6.133 饼图表格式图例字段列复用数字颜色规则',
+    valid: ['pie-legend-color-rule'],
+    cases: [
+      { case: 'pie-legend-color-before-version', base: 'pie-legend-color-rule', expect: /由 6.133 引入/, mutate: document => {
+        document.schemaVersion = '6.132';
+      } },
+      { case: 'pie-legend-color-nonnumeric', base: 'pie-legend-color-rule', expect: /colorRule 只支持 number 或 money/, mutate: document => {
+        document.dataSources['customers-by-region'].fields.note = { type: 'string', role: 'measure', nullable: true };
+        firstComponent(document).props.legend.columns[0].field = 'note';
+      } },
+      { case: 'pie-legend-color-invalid-color', base: 'pie-legend-color-rule', expect: /取值不在允许范围/, mutate: document => {
+        firstComponent(document).props.legend.columns[0].colorRule.positive = 'blue';
+      } },
+      { case: 'pie-legend-color-on-percentage', base: 'pie-legend-color-rule', expect: /不允许属性|不允许额外属性|额外字段|colorRule/, mutate: document => {
+        firstComponent(document).props.legend.columns[4].colorRule = { mode: 'fixed', color: 'red' };
+      } }
+    ]
+  },
   {id:'paged-join-auto-pagination',description:'6.118 records 自动选择主查询分页或完整关联，旧模式不变',valid:['record-join-auto-page'],cases:[
     {case:'auto-pagination-version',base:'record-join-auto-page',expect:/由 6.118 引入/,mutate:d=>{d.schemaVersion='6.117';}},
     {case:'auto-pagination-needs-records',base:'record-join-auto-page',expect:/自动分页目前只支持/,mutate:d=>{delete d.dataSources['rejection-overview'].source.records;}},

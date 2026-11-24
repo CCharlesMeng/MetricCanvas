@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.132",
+  "schemaVersion": "6.134",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "lineChart.section-553a32ec"
@@ -13,6 +13,19 @@
         "## 数值格式\n\n标签、悬浮提示及数值轴使用[统一数值格式规则](../field-bindings-and-formats.md#chart-number-format)。数值轴默认在轴顶显示非百分比单位，左轴与刻度数字右对齐、右轴左对齐；百分号跟随每个刻度值（如 `10%`、`20%`），不单独显示在轴顶，双轴分别处理。无格式与可信语义时默认两位小数，不隐式缩放为万；显式 `number` 保留原值，`compact-wan-0` 显式采用万单位。场景：`/pages/chart-number-format`、`/pages/chart-axis-unit`。"
       ],
       "rules": [
+        {
+          "id": "chart-tooltip-color-rule",
+          "description": "6.134 柱图和折线图字段系列的悬浮提示数值着色",
+          "valid": [
+            "chart-tooltip-color-rule"
+          ],
+          "invalid": [
+            "chart-tooltip-color-before-version",
+            "chart-tooltip-color-nonnumeric",
+            "chart-tooltip-color-invalid-color",
+            "chart-tooltip-color-constant"
+          ]
+        },
         {
           "id": "schema-structure",
           "description": "Page Schema 结构校验（ajv allErrors 文案与顺序）",
@@ -117,7 +130,8 @@
         "references/page-metadata/examples/chart-constant-branches.json",
         "references/page-metadata/examples/dual-axis-alignment.json",
         "references/page-metadata/examples/chart-series-visibility.json",
-        "references/page-metadata/examples/chart-table-unit.json"
+        "references/page-metadata/examples/chart-table-unit.json",
+        "references/page-metadata/examples/chart-tooltip-color-rule.json"
       ]
     }
   ],

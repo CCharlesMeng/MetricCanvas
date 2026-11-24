@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.132",
+  "schemaVersion": "6.134",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "lineChart.section-46ae77fb"
@@ -13,6 +13,19 @@
         "## 自定义展示单位\n\n6.94 起系列可声明 `unit`，图例名称、数值标签与悬浮提示共用。声明、单位与缩放组合、缺失及导出规则见[展示单位](../field-bindings-and-formats.md#display-unit)。场景 `/pages/chart-table-unit`。"
       ],
       "rules": [
+        {
+          "id": "chart-tooltip-color-rule",
+          "description": "6.134 柱图和折线图字段系列的悬浮提示数值着色",
+          "valid": [
+            "chart-tooltip-color-rule"
+          ],
+          "invalid": [
+            "chart-tooltip-color-before-version",
+            "chart-tooltip-color-nonnumeric",
+            "chart-tooltip-color-invalid-color",
+            "chart-tooltip-color-constant"
+          ]
+        },
         {
           "id": "schema-structure",
           "description": "Page Schema 结构校验（ajv allErrors 文案与顺序）",
@@ -117,7 +130,8 @@
         "references/page-metadata/examples/chart-constant-branches.json",
         "references/page-metadata/examples/dual-axis-alignment.json",
         "references/page-metadata/examples/chart-series-visibility.json",
-        "references/page-metadata/examples/chart-table-unit.json"
+        "references/page-metadata/examples/chart-table-unit.json",
+        "references/page-metadata/examples/chart-tooltip-color-rule.json"
       ]
     }
   ],
