@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.130",
+  "schemaVersion": "6.136",
   "id": "contract-business-overview",
   "layout": "dashboard",
   "meta": {
@@ -938,6 +938,15 @@
                 "changes": [
                   {
                     "label": "同比",
+                    "visibleWhen": {
+                      "filter": "mtime",
+                      "part": "mode",
+                      "op": "in",
+                      "values": [
+                        "year",
+                        "quarter"
+                      ]
+                    },
                     "field": {
                       "data": "main",
                       "field": "discount-yoy",
@@ -952,6 +961,12 @@
                   },
                   {
                     "label": "环比",
+                    "visibleWhen": {
+                      "filter": "mtime",
+                      "part": "mode",
+                      "op": "eq",
+                      "value": "month"
+                    },
                     "field": {
                       "data": "main",
                       "field": "discount-mom",
@@ -1810,6 +1825,15 @@
                 "changes": [
                   {
                     "label": "同比",
+                    "visibleWhen": {
+                      "filter": "mtime",
+                      "part": "mode",
+                      "op": "in",
+                      "values": [
+                        "year",
+                        "quarter"
+                      ]
+                    },
                     "field": {
                       "data": "main",
                       "field": "discount-yoy",
@@ -1824,6 +1848,12 @@
                   },
                   {
                     "label": "环比",
+                    "visibleWhen": {
+                      "filter": "mtime",
+                      "part": "mode",
+                      "op": "eq",
+                      "value": "month"
+                    },
                     "field": {
                       "data": "main",
                       "field": "discount-mom",
@@ -2675,6 +2705,15 @@
                 "changes": [
                   {
                     "label": "同比",
+                    "visibleWhen": {
+                      "filter": "mtime",
+                      "part": "mode",
+                      "op": "in",
+                      "values": [
+                        "year",
+                        "quarter"
+                      ]
+                    },
                     "field": {
                       "data": "main",
                       "field": "discount-yoy",
@@ -2689,6 +2728,12 @@
                   },
                   {
                     "label": "环比",
+                    "visibleWhen": {
+                      "filter": "mtime",
+                      "part": "mode",
+                      "op": "eq",
+                      "value": "month"
+                    },
                     "field": {
                       "data": "main",
                       "field": "discount-mom",
