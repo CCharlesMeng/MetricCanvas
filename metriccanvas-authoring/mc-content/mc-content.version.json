@@ -1,7 +1,7 @@
 {
   "interfaceVersion": "1.0",
-  "contentVersion": "1-7b0ac8b2e6bdc36d",
-  "contentSha256": "7b0ac8b2e6bdc36dbaaa61bb0817912d25f94b0dfc8d851b86d2c0c9893bae36",
+  "contentVersion": "1-04ecb9f0ba12b7e7",
+  "contentSha256": "04ecb9f0ba12b7e7f6aa2ca30a6f518b7fae12a58b1a16c0eb768d067890caad",
   "files": [
     {
       "file": "authoring-contracts/authored/adapter-interface.md",
@@ -2509,7 +2509,7 @@
     },
     {
       "file": "knowledge/pieChart.section-b260577c.json",
-      "sha256": "221dee50d00b1f459df9d3added440d7c2d1ccf887de643129e2c7bd2e273bc6"
+      "sha256": "c0b33188a81d84f8000faddaa6c786b2f3ea624e05253b15f73fe73283f339e6"
     },
     {
       "file": "knowledge/pieChart.section-ccbc80f8.json",
@@ -3061,7 +3061,7 @@
     },
     {
       "file": "product-contracts/manifest.json",
-      "sha256": "b421c1fd1bf67a4b3d4fa22636b1620a763134bfe29b64f5750ad17681f6e395"
+      "sha256": "bfb2b3f2b79f34923a83fa6000f76388939c31c59ae073657d8a4154d4e04394"
     },
     {
       "file": "product-contracts/page/component-catalog.json",
@@ -6689,7 +6689,7 @@
     },
     {
       "file": "references/authoring-knowledge/model.json",
-      "sha256": "25191496eb87921a0891d805f9c47f547e3ae26f37f605bc63328a1a9023fcef"
+      "sha256": "e265fd84eb696090d5812cb14390bc5ae0284d20fcef98874623623d54bc0040"
     },
     {
       "file": "references/example-guides/bar-category-order/bar-category-order.md",
@@ -6738,6 +6738,10 @@
     {
       "file": "references/example-guides/pie-legend-color-rule/pie-legend-color-rule.md",
       "sha256": "4eb916ca696b738a6c9c35f1ae36279e9c936aad7c685dbd6697c43a51206ea3"
+    },
+    {
+      "file": "references/example-guides/pie-table-legend/pie-table-legend-centering.md",
+      "sha256": "2cf51789bb24bb4bc86f7d10793685875313c096d28b2645521fabbf0d013386"
     },
     {
       "file": "references/example-guides/table-absolute-display-limit/absolute-display-limit.md",
@@ -6825,7 +6829,7 @@
     },
     {
       "file": "references/page-metadata/components/pieChart.md",
-      "sha256": "7c7d610935667e4872d3798227139f92507eeb9464c2f83e722d6e4db2952e85"
+      "sha256": "7b0c23b39ee710b92fed8c0860ac0408ad1dac72fa80d8b2f1334d1a85525ac9"
     },
     {
       "file": "references/page-metadata/components/rankingCard.md",
@@ -9997,7 +10001,7 @@
     },
     {
       "file": "references/page-metadata/examples/pie-table-legend.json",
-      "sha256": "9176f07906af8dbe81d69e02a9164bf196f39e8119ece2ebe975cb0da9398e7b"
+      "sha256": "cc3a530435d6608fcb008448829b6d29dc493e8bd332ba7387a5ad9ff8094fde"
     },
     {
       "file": "references/page-metadata/examples/query-cascade-page.json",
@@ -10409,7 +10413,7 @@
     },
     {
       "file": "references/page-metadata/index.json",
-      "sha256": "c2d202ec8b75e13a77a328996d5b8bf0c6bbf4af5bc44e55ceba7384428674ff"
+      "sha256": "dcbf9ac8c85c230aced9a8b1f4ca115d69897a4e69d427f2cb5127e08ba76efc"
     },
     {
       "file": "references/page-metadata/page.md",
@@ -10449,7 +10453,7 @@
     },
     {
       "file": "runtime/contract-alignment.json",
-      "sha256": "83b43a3cdf2ec69a2d4d5683b502843ae8fe3d7256f00993b8ce7aab7920846d"
+      "sha256": "d5d969b48db4c9bc767abb4d5aae68c5e7245006819236c835569c0e31b840a3"
     },
     {
       "file": "runtime/coverage.json",
@@ -10497,7 +10501,7 @@
     },
     {
       "file": "runtime/source-identity.json",
-      "sha256": "0241308b814a4bc19bc709eb644a88545fba65923c00f73505dda84d503598a6"
+      "sha256": "bf6d56c22c545bab7aba88e0faf2b35e8fe263c35c580f5b249ebeb822501b84"
     },
     {
       "file": "runtime/tool-behavior.md",
@@ -10607,7 +10611,7 @@
   "alignedWith": {
     "productContractVersion": "1.0.0-rc.4",
     "productManifest": "contract-snapshot/manifest.json",
-    "productManifestSha256": "b421c1fd1bf67a4b3d4fa22636b1620a763134bfe29b64f5750ad17681f6e395",
+    "productManifestSha256": "bfb2b3f2b79f34923a83fa6000f76388939c31c59ae073657d8a4154d4e04394",
     "authoringContractVersion": "0.3.1",
     "authoringManifest": "contracts/manifest.json",
     "authoringManifestSha256": "a6a381c785ae9aa10746cda5197ea7dfacc0c4410be2ca70d61569c6b686176b",

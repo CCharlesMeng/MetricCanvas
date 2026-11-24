@@ -191,6 +191,91 @@
   },
   "sections": [
     {
+      "id": "centered-pair",
+      "title": "饼图与表格式图例整体居中",
+      "components": [
+        {
+          "id": "execution-distribution",
+          "type": "pieChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "bands"
+          },
+          "props": {
+            "title": "框架执行率分布区间的客户数及占比",
+            "categoryField": "band",
+            "valueField": "customers",
+            "ring": "58%",
+            "legend": {
+              "type": "table",
+              "position": "right",
+              "columns": [
+                {
+                  "label": "客户数量",
+                  "field": "customers",
+                  "unit": "家",
+                  "align": "right"
+                },
+                {
+                  "label": "占比",
+                  "value": "percentage",
+                  "format": "percent-1",
+                  "align": "right"
+                }
+              ]
+            },
+            "actions": [
+              {
+                "on": "click",
+                "openDetail": {
+                  "surface": "modal",
+                  "titleField": "band",
+                  "fields": [
+                    {
+                      "label": "区间",
+                      "field": "band"
+                    },
+                    {
+                      "label": "客户数量",
+                      "field": "customers"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "execution-by-interval",
+          "type": "barChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "bands"
+          },
+          "props": {
+            "title": "各区间框架执行率客户数",
+            "categoryField": {
+              "data": "main",
+              "field": "band"
+            },
+            "series": [
+              {
+                "field": {
+                  "data": "main",
+                  "field": "customers"
+                },
+                "label": "客户数量"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
       "id": "default",
       "components": [
         {

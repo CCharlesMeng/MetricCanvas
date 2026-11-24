@@ -3,7 +3,7 @@ import type { PieChartProps } from '@metriccanvas/page/internal';
 import type { PieSeriesOption } from 'echarts';
 import type { MainDataSlots } from '../src/shared/component-data';
 import { pieRows, pieLegendData, pieCategoryDomain } from '../src/components/pie-chart/presentation';
-import { pieOption } from '../src/components/pie-chart/options';
+import { pieOption, pieTableLegendGeometry } from '../src/components/pie-chart/options';
 import { categoryBreakdownView } from '../src/components/category-breakdown/rows';
 
 const data: MainDataSlots = { main: {
@@ -156,21 +156,29 @@ describe('pie table legend', () => {
       .toMatchObject([{ label: { show: true } }]);
   });
 
-  it('draws a 16px ring with an 8px hover inset at each legend edge', () => {
+  it('centers both orientations while preserving the ring thickness and legend gap', () => {
     const config: PieChartProps = { ...props, ring: '46%' };
     const plot = { width: 400, height: 300 };
-    expect(pieOption(data, config, undefined, { ...plot, legendEdge: 'right' }).series)
-      .toMatchObject([{ radius: ['46%', 85], center: [307, 150] }]);
-    expect(pieOption(data, config, undefined, { ...plot, legendEdge: 'left' }).series)
-      .toMatchObject([{ radius: ['46%', 85], center: [93, 150] }]);
-    expect(pieOption(data, config, undefined, { ...plot, legendEdge: 'bottom' }).series)
-      .toMatchObject([{ radius: ['46%', 85], center: [200, 207] }]);
+    const right = pieTableLegendGeometry(config.ring, { ...plot, legendEdge: 'right' });
+    const left = pieTableLegendGeometry(config.ring, { ...plot, legendEdge: 'left' });
+    expect(right).toEqual({ series: { radius: ['46%', 85], center: [196, 150] }, legendOffset: -111 });
+    expect(left).toEqual({ series: { radius: ['46%', 85], center: [204, 150] }, legendOffset: 111 });
+    expect(pieOption(data, config, undefined, right.series).series).toMatchObject([right.series]);
     expect(pieOption(data, config).series).toMatchObject([{ radius: ['46%', '72%'] }]);
-    expect(pieOption(data, props, undefined, { ...plot, legendEdge: 'right' }).series)
-      .toMatchObject([{ radius: 108 }]);
-    expect(pieOption(data, { ...config, ring: '70%' }, undefined, { ...plot, legendEdge: 'bottom' }).series)
-      .toMatchObject([{ radius: ['70%', 108] }]);
-    expect(pieOption(data, { ...config, ring: '99%' }, undefined, { ...plot, legendEdge: 'bottom' }).series)
-      .toMatchObject([{ radius: ['99%', 108], center: [200, 150] }]);
+    expect(pieTableLegendGeometry(undefined, { ...plot, legendEdge: 'right' }).series)
+      .toMatchObject({ radius: 108 });
+  });
+
+  it('moves no legend on the stacked row and keeps the radius limit', () => {
+    const plot = { width: 400, height: 300, legendEdge: 'bottom' } as const;
+    expect(pieTableLegendGeometry('46%', plot))
+      .toEqual({ series: { radius: ['46%', 85], center: [200, 207] }, legendOffset: 0 });
+    expect(pieTableLegendGeometry('70%', plot).series.radius).toEqual(['70%', 108]);
+    expect(pieTableLegendGeometry('99%', plot).series)
+      .toEqual({ radius: ['99%', 108], center: [200, 150] });
+
+    const wideRing = pieTableLegendGeometry('96%', { width: 250, height: 300, legendEdge: 'right' });
+    expect(wideRing.series.center).toEqual([122.5, 150]);
+    expect(wideRing.legendOffset).toEqual(-2.5);
   });
 });

@@ -22,26 +22,38 @@ interface PiePlot {
   legendEdge: 'left' | 'right' | 'bottom';
 }
 
-function pieGeometry(props: PieChartProps, plot?: PiePlot): Pick<PieSeriesOption, 'radius' | 'center'> {
+type PieGeometry = Pick<PieSeriesOption, 'radius' | 'center'>;
+
+export function pieTableLegendGeometry(ring: PieChartProps['ring'], plot: PiePlot): {
+  series: PieGeometry;
+  legendOffset: number;
+} {
+  const halfSize = Math.min(plot.width, plot.height) / 2;
+  const inner = Number.parseInt(ring ?? '0', 10) / 100 * halfSize;
+  const outerLimit = halfSize * 0.72;
+  const hasRing = inner > 0 && inner < outerLimit;
+  const radius = hasRing ? Math.min(outerLimit, inner + DEFAULT_RING_THICKNESS) : outerLimit;
+  const outerRadius = Math.max(radius, inner);
+  const edgeInset = outerRadius + PIE_PLOT_EDGE_INSET;
+  const center: [number, number] = [plot.width / 2, plot.height / 2];
+  let legendOffset = 0;
+  if (plot.legendEdge === 'bottom') {
+    center[1] = plot.height - Math.min(edgeInset, center[1]);
+  } else {
+    const nearEdge = Math.min(edgeInset, center[0]);
+    const direction = plot.legendEdge === 'left' ? 1 : -1;
+    // Share the blank plot area opposite the legend between the two outer margins.
+    legendOffset = direction * (plot.width - nearEdge - outerRadius) / 2;
+    center[0] += direction * (nearEdge - outerRadius) / 2;
+  }
+  return { series: { radius: ring ? [ring, radius] : radius, center }, legendOffset };
+}
+
+function pieGeometry(props: PieChartProps, tableGeometry?: PieGeometry): PieGeometry {
   if (props.variant === 'compactRing') {
     return { radius: [props.ring ?? '58%', '82%'], center: ['50%', '50%'] };
   }
-  if (!plot) return { radius: props.ring ? [props.ring, '72%'] : '72%' };
-
-  const halfSize = Math.min(plot.width, plot.height) / 2;
-  const inner = Number.parseInt(props.ring ?? '0', 10) / 100 * halfSize;
-  const outer = halfSize * 0.72;
-  // Respect the declared inner radius and the outer radius limit in smaller plots.
-  const ring = inner > 0 && inner < outer;
-  const radius = ring ? Math.min(outer, inner + DEFAULT_RING_THICKNESS) : outer;
-  const edgeInset = Math.max(radius, inner) + PIE_PLOT_EDGE_INSET;
-  const center: [number, number] = [plot.width / 2, plot.height / 2];
-  const horizontalInset = Math.min(edgeInset, center[0]);
-  if (plot.legendEdge === 'left') center[0] = horizontalInset;
-  if (plot.legendEdge === 'right') center[0] = plot.width - horizontalInset;
-  if (plot.legendEdge === 'bottom') center[1] = plot.height - Math.min(edgeInset, center[1]);
-
-  return { radius: props.ring ? [props.ring, radius] : radius, center };
+  return tableGeometry ?? { radius: props.ring ? [props.ring, '72%'] : '72%' };
 }
 
 /**
@@ -55,7 +67,7 @@ export function pieOption(
   data: MainDataSlots,
   props: PieChartProps,
   palette?: ColorList,
-  plot?: PiePlot
+  tableGeometry?: PieGeometry
 ): EChartsOption {
   const rows = pieRows(data, props);
   const category = resolveField(props.categoryField, data);
@@ -79,7 +91,7 @@ export function pieOption(
     series: [
       {
         type: 'pie',
-        ...pieGeometry(props, plot),
+        ...pieGeometry(props, tableGeometry),
         label: {
           show: compactRing ? false : showLabelLine,
           ...(total === 0 ? { alignTo: 'edge' as const, edgeDistance: 8, overflow: 'none' as const } : {}),
