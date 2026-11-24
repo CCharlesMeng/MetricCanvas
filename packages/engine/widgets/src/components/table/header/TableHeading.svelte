@@ -45,6 +45,7 @@
   }
   .subtitle {
     color: #595959;
+    font-family: Helvetica, Arial, PingFangSC-Regular, 'Hiragino Sans GB', 'Microsoft YaHei', 微软雅黑, 'Microsoft JhengHei';
     font-size: 12px;
     font-weight: 400;
     line-height: 22px;
