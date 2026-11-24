@@ -2,7 +2,7 @@ import {independentExclusionFilterIds,type Page,timeAvailabilityIssue,modeRangeI
 import { numberRangeIssue,rangeContextIssue, filterDependencies, filterExecutionDependencies, dimensionSelectionIssue, matchingDimensionDefault, supportsUnrestrictedFilterClear } from '@metriccanvas/page/internal';
 import { resolvePeriodSelection, isPeriodSelection } from '@metriccanvas/page/internal';
 import { filterURLKeys, readLevelURLSelection } from '@metriccanvas/page/internal';
-import { rollingFinalizationName } from '@metriccanvas/page/internal';
+import { finalizationMonthIssue, rollingFinalizationName } from '@metriccanvas/page/internal';
 import {
   timeFilterBoundaryError,
   dimensionOfLevel,
@@ -61,7 +61,7 @@ export interface FilterState {
   fromURL(search: string, declarations: readonly FilterDeclaration[]): void;
 }
 
-export function createFilterState(initial?: FilterValues, declarations: readonly FilterDeclaration[] = [], dimensionOptions: ReadonlyMap<string, readonly string[]> = new Map(), editing: { schemaVersion?: string; iocRegion?: boolean; readOnly?: () => boolean; candidates?: boolean; displayInputs?: () => DisplayInputsSnapshot | undefined; now?: () => Date } = {}): CoordinatedFilterState {
+export function createFilterState(initial?: FilterValues, declarations: readonly FilterDeclaration[] = [], dimensionOptions: ReadonlyMap<string, readonly string[]> = new Map(), editing: { schemaVersion?: string; iocRegion?: boolean; readOnly?: () => boolean; candidates?: boolean; displayInputs?: () => DisplayInputsSnapshot | undefined; finalizationDates?: () => ReadonlyMap<string,string> | undefined; now?: () => Date } = {}): CoordinatedFilterState {
   function accepted(id: string, value: FilterValue | null | undefined): boolean {
     const options = dimensionOptions.get(id);
     return !options || !!value && value.type === 'dimension' && value.values.length === 1 && options.includes(value.values[0]!);
@@ -75,7 +75,7 @@ export function createFilterState(initial?: FilterValues, declarations: readonly
       const timed = declaration?.type === 'timeRange' || declaration?.type === 'timePoint';
       if (declarations.length && (!declaration || !matchesDeclaration(value, declaration)))
         throw new Error(`筛选器 ${id} 初值不符合声明`);
-      const valid = normalize(value, declaration, editing.now?.());
+      const valid = normalizeWithFinalization(value, declaration, editing.now?.());
       if (valid === undefined || timed && !valid)
         throw new Error(`筛选器 ${id} 初值不符合时间边界`);
       if (!accepted(id, valid))
@@ -85,6 +85,16 @@ export function createFilterState(initial?: FilterValues, declarations: readonly
     }
     validateInitialRanges();
   }
+  function monthIssue(declaration: FilterDeclaration | undefined, value: FilterValue | null | undefined, now?: Date): string | undefined {
+    if (!editing.finalizationDates || value?.type !== 'timeRange') return;
+    return finalizationMonthIssue(declaration, value.selection, editing.finalizationDates(), now);
+  }
+
+  function normalizeWithFinalization(value: FilterValue | null, declaration: FilterDeclaration | undefined, now?: Date) {
+    const normalized = normalize(value, declaration, now);
+    return monthIssue(declaration, normalized, now) ? undefined : normalized;
+  }
+
   function validateInitialRanges(): void {
     for (const declaration of declarations)
       if (declaration.type === 'numberRange' && current.has(declaration.id) && rangeContextIssue(declaration, current))
@@ -230,7 +240,7 @@ export function createFilterState(initial?: FilterValues, declarations: readonly
         const declaration = byId.get(id);
         const invalid = declarations.length > 0 && !declaration || value && declaration && !matchesDeclaration(value, declaration);
         const edit = isEditIntent(intent) ? explicitDimensionClear(value, declaration) : value;
-        const next = invalid ? undefined : normalize(edit, declaration, now);
+        const next = invalid ? undefined : normalizeWithFinalization(edit, declaration, now);
         const availability = next && declaration ? timeAvailabilityIssue(declaration, next, facts, revision) : undefined;
         if (!validCommitValue(id, next, availability, trusted, invalid)) {
           issues.push({ filterId: id, code: 'INVALID_FILTER_INTENT', message: '筛选写入不符合声明、边界或只读约束' });
@@ -271,8 +281,14 @@ export function createFilterState(initial?: FilterValues, declarations: readonly
 
   function restoreMissingDates(next: Map<string, FilterValue>, declarations: readonly FilterDeclaration[]): void {
     for (const declaration of declarations) {
-      if (next.has(declaration.id) || !requiresURLFallback(declaration)) continue;
-      const fallback = current.get(declaration.id) ?? initialFilterValues([declaration]).get(declaration.id);
+      if (!requiresURLFallback(declaration)) continue;
+      const now = editing.now?.();
+      const value = next.get(declaration.id);
+      if (value && !monthIssue(declaration, value, now)) continue;
+      next.delete(declaration.id);
+      if (preparation.has(declaration.id)) continue;
+      const fallback = current.get(declaration.id)
+        ?? initialFilterValues([declaration], now, undefined, undefined, editing.finalizationDates?.()).get(declaration.id);
       if (fallback) next.set(declaration.id, fallback);
     }
   }
@@ -339,7 +355,7 @@ export function createFilterState(initial?: FilterValues, declarations: readonly
     },
     fromURL(search, declarations) {
       for (const declaration of declarations) byId.set(declaration.id, declaration);
-      const next = new Map(parseFilterSearch(search, declarations, undefined, editing.iocRegion));
+      const next = new Map(parseFilterSearch(search, declarations, editing.now?.(), editing.iocRegion));
       for (const declaration of declarations) {
         const local = current.get(declaration.id);
         if (declaration.urlParams === false && local) next.set(declaration.id, local);

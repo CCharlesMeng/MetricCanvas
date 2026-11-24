@@ -22,10 +22,35 @@ test('schema default, user edits, rolling period and drill-through share the app
 
 for (const state of ['error', 'missing', 'invalid', 'conflict', 'timeout']) test(`falls back to current month for ${state}`, async ({page}) => {
   await page.goto(`/pages/finalization-default-time?state=${state}`);
+  if (state === 'timeout') {
+    await expect(page.locator('[data-filter-pending]')).toBeVisible();
+    await page.clock.fastForward(180_001);
+  }
   await expect(page.locator('[data-period-filter]').getByRole('combobox')).toHaveValue('2026-11');
   await expect(page.getByText('2026-11 至 2026-11；定稿查询 1 次', {exact: true})).toBeVisible();
   await page.getByRole('button', {name: '近一年', exact: true}).click();
   await expect(page.getByText('2025-12 至 2026-11；定稿查询 1 次', {exact: true})).toBeVisible();
+});
+
+test('shows post-finalization months greyed out as soon as the panel opens', async ({page}) => {
+  await page.goto('/pages/finalization-default-time');
+  const period=page.locator('[data-period-filter]');
+  const month=period.getByRole('combobox');
+  await expect(month).toHaveValue('2026-10');
+  await month.click();
+  await expect(page.getByRole('button',{name:'2026-10',exact:true})).toBeEnabled();
+  const afterFinalization = page.getByRole('button',{name:'2026-11',exact:true});
+  await expect(afterFinalization).toBeDisabled();
+  await expect(afterFinalization).toHaveCSS('color', 'rgb(194, 194, 194)');
+  await expect(afterFinalization).toHaveCSS('box-shadow', 'none');
+  await month.fill('2026-11');
+  await month.press('Enter');
+  await expect(period.getByRole('status')).toBeVisible();
+  await expect(page.getByText('2026-10 至 2026-10；定稿查询 1 次',{exact:true})).toBeVisible();
+  await page.getByRole('button',{name:'季',exact:true}).click();
+  await expect(period.getByRole('combobox')).toHaveValue('2026 年 Q4');
+  await page.goto('/pages/finalization-default-time?period-filter=month:2026-11');
+  await expect(month).toHaveValue('2026-10');
 });
 
 test('defaults to and restores a rolling window ending in the finalized month', async ({page}) => {

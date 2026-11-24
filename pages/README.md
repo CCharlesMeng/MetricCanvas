@@ -46,6 +46,8 @@
 
 [旧版 IOC 重点国代](capabilities/filters/README.md#旧版-ioc-重点国代)，入口 `/pages/ioc-legacy-key-office`，原版 6.102 页面无需装载前桥接即可异步取名单。
 
+[定稿月上限](capabilities/filters/README.md#定稿日期默认期间)，入口 `/pages/finalization-default-time`，可查看定稿月之后禁选及越界链接回退。
+
 期间查询策略与按年/季/月切换列：[period-query-columns-demo](capabilities/filters/period-query-columns-demo.json)，操作及数据边界见[筛选示例说明](capabilities/filters/README.md)。
 
 - [MC 内容包、布局与 Schema 兼容](capabilities/layout/README.md#mc-内容包布局与版本检查)：真实本地诊断生成的合成页面、旧文件升级流程及未验范围；入口 `/pages/mc-content-layout-demo`。

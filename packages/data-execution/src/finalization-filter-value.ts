@@ -11,6 +11,9 @@ export function finalizationFilterValue(
   if (!name) return;
   const fallback = localCalendarDate(now);
   const date = finalizationDate(dates?.get(name)) ?? fallback;
+  const month = declaration.type === 'timeRange' && declaration.display === 'period'
+    && isPeriodSelection(declaration.default) && declaration.default.mode === 'month';
+  if (month && date.slice(0, 7) > fallback.slice(0, 7)) return valueAtDate(declaration, fallback);
   try { return valueAtDate(declaration, date); }
   catch { return valueAtDate(declaration, fallback); }
 }

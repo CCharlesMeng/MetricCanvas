@@ -407,6 +407,8 @@ filterQueryResultRows
 filterTextValueErrors
 filterURLKeys
 finalizationDate
+finalizationMonthIssue
+finalizationMonthLimit
 finalizationName
 flattenPageComponents
 formatPeriod
@@ -479,6 +481,7 @@ metricCardTipAnchor
 modeRangeIssue
 moneyFormatCurrency
 moneyFormatMatchesCurrency
+monthFinalizationName
 nativeIocBindingTargets
 nativeIocFilters
 nativeIocRuntimePage

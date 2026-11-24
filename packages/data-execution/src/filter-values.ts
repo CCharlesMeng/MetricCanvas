@@ -1,5 +1,5 @@
 import {finalizationFilterValue} from './finalization-filter-value';
-import {isFinalizationDefault} from '@metriccanvas/page/internal';
+import {finalizationMonthIssue,isFinalizationDefault} from '@metriccanvas/page/internal';
 import {isoWeekRange} from '@metriccanvas/page/internal';
 import {initialModeRange,availabilityInitial,type DisplayInputsSnapshot,type TimeMode} from '@metriccanvas/page/internal';
 import { numberRangeIssue, dimensionSelectionIssue, matchingDimensionDefault } from '@metriccanvas/page/internal';
@@ -75,16 +75,22 @@ export function initialFilterValues(
   for (const decl of declarations) {
     const prepared = availabilityDeclaration(decl, displayInputs, filterRevision);
     if (!prepared) continue;
-    let value = finalizationFilterValue(prepared, now, finalizationDates) ?? initialValue(prepared, now);
-    if (value && (value.type === 'timePoint' || value.type === 'timeRange')) {
-      if (timeFilterBoundaryError(decl, value, now) && isFinalizationDefault(decl.default)) value = finalizationFilterValue(decl, now) ?? value;
-      const issue = timeFilterBoundaryError(decl, value, now);
-      if (issue) throw new Error(`筛选器 ${decl.id}: ${issue}`);
-    }
+    const value = checkedInitialValue(decl, prepared, now, finalizationDates);
     if (value) values.set(decl.id, value);
   }
   applyConditionalDimensionDefaults(declarations, values, explicit);
   return values;
+}
+
+function checkedInitialValue(declaration: FilterDeclaration, prepared: FilterDeclaration, now: Date, dates?: ReadonlyMap<string,string>): FilterValue | undefined {
+  let value = finalizationFilterValue(prepared, now, dates) ?? initialValue(prepared, now);
+  if (value?.type !== 'timePoint' && value?.type !== 'timeRange') return value;
+  if (timeFilterBoundaryError(declaration, value, now) && isFinalizationDefault(declaration.default))
+    value = finalizationFilterValue(declaration, now) ?? value;
+  const issue = timeFilterBoundaryError(declaration, value, now)
+    ?? (dates && finalizationMonthIssue(declaration, value.type === 'timeRange' ? value.selection : undefined, dates, now));
+  if (issue) throw new Error(`筛选器 ${declaration.id}: ${issue}`);
+  return value;
 }
 
 export function applyConditionalDimensionDefaults(
