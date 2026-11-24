@@ -1,0 +1,35 @@
+{
+  "case": "ioc-filter-rows-duplicate",
+  "invariant": "ioc-header-filter-rows",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "筛选行不能重复引用同一筛选",
+      "paths": [
+        "/sections/0/components/0/props/filterRows/1/filterIds/1"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "filterRows": [
+                "…",
+                {
+                  "filterIds": [
+                    "…",
+                    "include-pending"
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/ioc-filter-rows-duplicate.json"
+}

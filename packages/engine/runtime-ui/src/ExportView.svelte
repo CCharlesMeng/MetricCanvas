@@ -9,6 +9,8 @@
   import { compatibilityHeaderSection } from './ioc-header/render-plan';
   import { iocHeaderDeclaration } from '@metriccanvas/page/internal';
   import { resolvedIocHeader } from './ioc-header/model';
+  import { placeHeaderFilterRows, selectHeaderFilters } from './ioc-header/filter-groups';
+  import { visibleFilterDeclarations } from './filters/filter-bar';
   import { setContext, untrack } from 'svelte';
   import { projectFieldSelections, type Component } from '@metriccanvas/page/internal';
   import { EXPORT_SCALE_CONTEXT, STATIC_EXPORT_CONTEXT } from '../../widgets/src/shared/export-context';
@@ -34,6 +36,10 @@
   }
   const legacyHeader=$derived(compatibilityHeaderSection(state.page,true));
   const header=$derived(iocHeaderDeclaration(state.page));
+  const headerPlacement = $derived(header?.filterRows ? placeHeaderFilterRows(
+    visibleFilterDeclarations(selectHeaderFilters(presentation.filters, header.filterIds)),
+    header.filterRows
+  ) : undefined);
   const nested:NestedComponentRender={summarySnapshot:c=>state.summaries[c.id],map:c=>exportComponentMap(state,c),data:c=>exportComponentData(state,c),snapshot:c=>exportComponentSnapshot(state,c),table,onchartclick:()=>undefined,onmetriclink:()=>undefined,metricHref:()=>()=>undefined};
 </script>
 <div class="export-view" data-page-layout-form={state.page.layout ?? 'report'} data-export-view style:width={`${width}px`} style:padding={padding}>
@@ -44,7 +50,7 @@
   {#snippet componentContent(component:Component)}
     <div data-export-component={component.id}>
     <ComponentRenderer {component}
-      iocHeader={header?{model:resolvedIocHeader(header),filterIds:header.filterIds??[],controls:iocStaticControls,note:header.note,readOnly:true}:undefined} data={exportComponentData(state,component)} snapshot={exportComponentSnapshot(state,component)}
+      iocHeader={header?{model:resolvedIocHeader(header),filterIds:headerPlacement?.primary.map(filter=>filter.id)??header.filterIds??[],filterRows:headerPlacement?.filterRows,controls:iocStaticControls,note:header.note,readOnly:true}:undefined} data={exportComponentData(state,component)} snapshot={exportComponentSnapshot(state,component)}
       filterGroupValue={component => {
         if (component.type !== 'filterGroup') return undefined;
         const value = state.filters.get(component.props.filterId);

@@ -1208,6 +1208,11 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/ioc-header-filter-rows.json",
+      "target": "product-contracts/page/conformance/valid/ioc-header-filter-rows.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/valid/ioc-component-availability-page.json",
       "target": "product-contracts/page/conformance/valid/ioc-component-availability-page.json",
       "scope": "exact product contract"
@@ -1570,6 +1575,31 @@
     {
       "source": "product:page/conformance/invalid/bar-average-line.json",
       "target": "product-contracts/page/conformance/invalid/bar-average-line.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/ioc-filter-rows-version.json",
+      "target": "product-contracts/page/conformance/invalid/ioc-filter-rows-version.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/ioc-filter-rows-unclaimed.json",
+      "target": "product-contracts/page/conformance/invalid/ioc-filter-rows-unclaimed.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/ioc-filter-rows-duplicate.json",
+      "target": "product-contracts/page/conformance/invalid/ioc-filter-rows-duplicate.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/ioc-filter-rows-empty.json",
+      "target": "product-contracts/page/conformance/invalid/ioc-filter-rows-empty.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/ioc-filter-rows-legacy-root.json",
+      "target": "product-contracts/page/conformance/invalid/ioc-filter-rows-legacy-root.json",
       "scope": "exact product contract"
     },
     {
@@ -4780,6 +4810,31 @@
     {
       "source": "product:page/reference/errors/bar-average-line.json",
       "target": "references/page-metadata/errors/bar-average-line.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/ioc-filter-rows-version.json",
+      "target": "references/page-metadata/errors/ioc-filter-rows-version.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/ioc-filter-rows-unclaimed.json",
+      "target": "references/page-metadata/errors/ioc-filter-rows-unclaimed.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/ioc-filter-rows-duplicate.json",
+      "target": "references/page-metadata/errors/ioc-filter-rows-duplicate.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/ioc-filter-rows-empty.json",
+      "target": "references/page-metadata/errors/ioc-filter-rows-empty.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/ioc-filter-rows-legacy-root.json",
+      "target": "references/page-metadata/errors/ioc-filter-rows-legacy-root.json",
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
@@ -8843,6 +8898,11 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/examples/ioc-header-filter-rows.json",
+      "target": "references/page-metadata/examples/ioc-header-filter-rows.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/components/iocHeader.md",
       "target": "references/page-metadata/components/iocHeader.md",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -9059,11 +9119,11 @@
     }
   ],
   "counts": {
-    "product": 1779,
+    "product": 1791,
     "authoring": 32,
     "modules": 36,
-    "topics": 326,
-    "nodes": 2758,
+    "topics": 327,
+    "nodes": 2763,
     "tools": 9,
     "components": 20
   },

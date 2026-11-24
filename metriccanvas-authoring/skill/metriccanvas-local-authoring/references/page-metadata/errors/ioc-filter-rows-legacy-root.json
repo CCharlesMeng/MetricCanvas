@@ -1,0 +1,32 @@
+{
+  "case": "ioc-filter-rows-legacy-root",
+  "invariant": "ioc-header-filter-rows",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 filterRows(拼写错误?)",
+      "paths": [
+        "/iocHeader/filterRows"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "iocHeader": {
+      "filterRows": [
+        {
+          "title": "记录范围",
+          "filterIds": [
+            "…（共2项）"
+          ]
+        },
+        {
+          "title": "审核筛选",
+          "filterIds": [
+            "…（共1项）"
+          ]
+        }
+      ]
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

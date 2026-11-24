@@ -3234,6 +3234,15 @@
                 "density": "normal",
                 "collapse": "firstRow"
               },
+              "filterRows": [
+                {
+                  "title": "净商务折扣筛选项",
+                  "filterIds": [
+                    "business-type",
+                    "cloud-service"
+                  ]
+                }
+              ],
               "components": [
                 {
                   "id": "header-key-national-only-control",
@@ -4313,6 +4322,11 @@
     ]
   },
   "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterRows",
+      "message": "IOC 页头为已认领的筛选声明独立呈现行 由 6.133 引入，文档声明的是 6.130"
+    },
     {
       "type": "SCHEMA_ERROR",
       "path": "/filters/9/urlParams",

@@ -1,0 +1,34 @@
+{
+  "case": "ioc-filter-rows-unclaimed",
+  "invariant": "ioc-header-filter-rows",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "筛选行只能引用已由 IOC 页头认领的筛选",
+      "paths": [
+        "/sections/0/components/0/props/filterRows/1/filterIds/0"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "filterRows": [
+                "…",
+                {
+                  "filterIds": [
+                    "include-audit"
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

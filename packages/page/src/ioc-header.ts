@@ -1,4 +1,5 @@
 import {iocHeaderFilterIds} from './ioc-header-controls';
+import type { IocHeaderDeclaration } from './schema/ioc-header';
 import { iocHeaderDeclaration, resolveHeaderBinding, headerDeclarations } from './header-binding';
 import type { Page } from './page';
 import type { DimensionFilterDeclaration } from './filter';
@@ -23,6 +24,7 @@ export function iocHeaderErrors(page: Page): TypedError[] {
   }
   errors.push(...iocRegionErrors(page,base));
   const placed = new Set(header.filterIds ?? []);
+  errors.push(...iocHeaderFilterRowErrors(header.filterRows, placed, base));
   header.filterIds?.forEach((id, index) => {
     const filter = page.filters?.find(f => f.id === id);
     if (!filter || filter.visible === false) issue(header.components?`${base}/components/${index}`:`${base}/filterIds/${index}`, 'IOC 页头只能认领静态可见的页级筛选');
@@ -33,6 +35,27 @@ export function iocHeaderErrors(page: Page): TypedError[] {
     if (component.props.variant === 'projectDetail' || path === '/sections/0/components/0') issue(path, 'IOC 页头不能与首个业务 reportHeader 重复承担页面身份');
     if (component.props.filterIds?.some(id => placed.has(id))) issue(`${path}/props/filterIds`, '筛选不能被多个页头认领');
   });
+  return errors;
+}
+
+function iocHeaderFilterRowErrors(
+  rows: IocHeaderDeclaration['filterRows'],
+  claimed: ReadonlySet<string>,
+  base: string
+): TypedError[] {
+  if (!rows) return [];
+  const path = base + '/filterRows';
+  const assigned = new Set<string>();
+  const errors: TypedError[] = [];
+  rows.forEach((row, rowIndex) => row.filterIds.forEach((id, filterIndex) => {
+    const reference = `${path}/${rowIndex}/filterIds/${filterIndex}`;
+    if (!claimed.has(id)) {
+      errors.push({type: 'SCHEMA_ERROR', path: reference, message: '筛选行只能引用已由 IOC 页头认领的筛选'});
+    } else if (assigned.has(id)) {
+      errors.push({type: 'SCHEMA_ERROR', path: reference, message: '筛选行不能重复引用同一筛选'});
+    }
+    assigned.add(id);
+  }));
   return errors;
 }
 
@@ -78,7 +101,7 @@ function componentPlacementErrors(page:Page):TypedError[] {
 /** Runs before text resolution, preserving declaration intent and raw error paths. */
 export function emptyIocHeaderErrors(document:unknown):TypedError[] {
   return headerDeclarations(document).flatMap(({props,path})=>{
-    const header=props as import('./schema/ioc-header').IocHeaderDeclaration;
+    const header=props as IocHeaderDeclaration;
     const identity=header.identity;
     const populated=identity?.title || identity?.code || identity?.description || identity?.tags?.length || identity?.facts?.length || iocHeaderFilterIds(header).length || header.back;
     return populated?[]:[{type:'SCHEMA_ERROR' as const,path,message:'IOC 页头需要身份、筛选或返回意图'}];

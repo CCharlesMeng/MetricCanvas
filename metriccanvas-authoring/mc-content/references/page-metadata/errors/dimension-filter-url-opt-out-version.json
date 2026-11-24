@@ -4,6 +4,13 @@
   "expected": [
     {
       "type": "SCHEMA_ERROR",
+      "message": "IOC 页头为已认领的筛选声明独立呈现行 由 6.133 引入，文档声明的是 6.130",
+      "paths": [
+        "/sections/0/components/0/props/filterRows"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
       "message": "维度筛选器可关闭本页 URL 输入和同步 由 6.131 引入，文档声明的是 6.130",
       "paths": [
         "/filters/9/urlParams"
@@ -11,6 +18,24 @@
     }
   ],
   "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "filterRows": [
+                {
+                  "title": "净商务折扣筛选项",
+                  "filterIds": [
+                    "…（共2项）"
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ],
     "filters": [
       "…",
       "…",

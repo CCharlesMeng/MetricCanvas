@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.132",
+  "schemaVersion": "6.133",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "iocHeader.section-1063eb1e"
@@ -13,6 +13,21 @@
         "## 代表处跨页下钻（6.121）\n\n来源页在 `regionFilter.props.officeNavigate` 声明一个目标。`href` 必填，`query` 可选，沿用 URL 导航的页面参数与筛选传参。控件没有行上下文。引擎以本次选中的 `office` 节点稳定值覆盖 URL 上的 `rep-office`，因此 `query` 不允许声明这个键。目标页使用标准 Region URL 输入，按自身候选权限校验组织值。\n\n```json\n{\n  \"id\": \"region-control\",\n  \"type\": \"regionFilter\",\n  \"props\": {\n    \"officeNavigate\": {\n      \"href\": \"/pages/ioc-office-drill-detail\",\n      \"query\": {\n        \"period\": { \"source\": \"filter\", \"id\": \"stat-period\", \"part\": \"value\" },\n        \"period-from\": { \"source\": \"filter\", \"id\": \"stat-period\", \"part\": \"from\" },\n        \"period-to\": { \"source\": \"filter\", \"id\": \"stat-period\", \"part\": \"to\" }\n      }\n    }\n  }\n}\n```\n\n配置后，在 IOC 页头选中一个代表处会直接打开目标页，保留来源页原有筛选和历史记录。初始化时已有一个代表处（例如 URL 输入）会在概览渲染和业务查询前导航，并替换当前历史记录。`back: true` 及兼容的 `back: \"auto\"` 沿用浏览器后退行为。目标使用独立详情页，避免指回概览。地区部的子节点数量不影响当前页筛选。省略 `officeNavigate` 时，代表处仍可作为页内筛选使用。\n\n统计期间使用当前已应用值。近一年显式映射模式值及起止范围，以便目标页恢复同一窗口。目标 URL 键由其实际筛选声明决定。合成入口 `/pages/ioc-office-drill-overview` 与 `/pages/ioc-office-drill-detail`，操作见 `pages/capabilities/ioc-header/controls/README.md`。"
       ],
       "rules": [
+        {
+          "id": "ioc-header-filter-rows",
+          "description": "6.133 IOC 页头的筛选行只引用已认领的筛选且全行唯一",
+          "valid": [
+            "ioc-header-filter-rows",
+            "business-result-metrics"
+          ],
+          "invalid": [
+            "ioc-filter-rows-version",
+            "ioc-filter-rows-unclaimed",
+            "ioc-filter-rows-duplicate",
+            "ioc-filter-rows-empty",
+            "ioc-filter-rows-legacy-root"
+          ]
+        },
         {
           "id": "ioc-header-controls",
           "description": "页头显式组合控件，RegionFilter 唯一拥有标准 region，旧排列仍可读",
@@ -72,7 +87,8 @@
         "references/page-metadata/examples/ioc-header-controls.json",
         "references/page-metadata/examples/ioc-office-drill-overview.json",
         "references/page-metadata/examples/ioc-office-drill-detail.json",
-        "references/page-metadata/examples/ioc-office-navigation-page-param.json"
+        "references/page-metadata/examples/ioc-office-navigation-page-param.json",
+        "references/page-metadata/examples/ioc-header-filter-rows.json"
       ]
     }
   ],

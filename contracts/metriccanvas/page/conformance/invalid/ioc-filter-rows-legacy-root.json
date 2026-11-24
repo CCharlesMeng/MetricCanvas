@@ -1,0 +1,105 @@
+{
+  "case": "ioc-filter-rows-legacy-root",
+  "invariant": "ioc-header-filter-rows",
+  "input": {
+    "schemaVersion": "6.133",
+    "id": "ioc-header-filter-rows",
+    "layout": "dashboard",
+    "meta": {
+      "title": "IOC 页头筛选行 · 合成演示"
+    },
+    "dataSources": {},
+    "filters": [
+      {
+        "id": "show-audit",
+        "type": "boolean",
+        "label": "显示审核筛选",
+        "default": true
+      },
+      {
+        "id": "include-pending",
+        "type": "boolean",
+        "label": "包含待处理",
+        "default": false
+      },
+      {
+        "id": "include-archived",
+        "type": "boolean",
+        "label": "包含归档",
+        "default": false
+      },
+      {
+        "id": "include-audit",
+        "type": "boolean",
+        "label": "包含审核记录",
+        "default": false,
+        "visibleWhen": {
+          "filter": "show-audit",
+          "part": "value",
+          "op": "eq",
+          "value": true
+        }
+      }
+    ],
+    "sections": [
+      {
+        "id": "records",
+        "components": [
+          {
+            "id": "applied-filters",
+            "type": "text",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "body": {
+                "parts": [
+                  "包含待处理：",
+                  {
+                    "filter": "include-pending"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "iocHeader": {
+      "identity": {
+        "title": "IOC 页头筛选行"
+      },
+      "filterIds": [
+        "show-audit",
+        "include-pending",
+        "include-archived",
+        "include-audit"
+      ],
+      "filterRows": [
+        {
+          "title": "记录范围",
+          "filterIds": [
+            "include-archived",
+            "include-pending"
+          ]
+        },
+        {
+          "title": "审核筛选",
+          "filterIds": [
+            "include-audit"
+          ]
+        }
+      ],
+      "presentation": {
+        "layout": "inline"
+      }
+    }
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/iocHeader/filterRows",
+      "message": "存在未定义字段 filterRows(拼写错误?)"
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.132",
-  "schemaSha256": "07ee79be6c82f479408234becba0169d33ee5d52643ab928ce8be6a9779fe60f",
+  "schemaVersion": "6.133",
+  "schemaSha256": "30f244aa6b0cd4e6febada6fb46df1bb56ba1ddc6c9dd5bb9368f7eae05ea129",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -1146,12 +1146,14 @@
         "ioc-header-controls",
         "ioc-office-drill-overview",
         "ioc-office-drill-detail",
-        "ioc-office-navigation-page-param"
+        "ioc-office-navigation-page-param",
+        "ioc-header-filter-rows"
       ],
       "rules": [
         "ioc-header-component",
         "ioc-header-controls",
-        "ioc-region-office-navigation"
+        "ioc-region-office-navigation",
+        "ioc-header-filter-rows"
       ]
     },
     "authoring-analysis-rebind.md": {
@@ -1401,7 +1403,8 @@
         "6.129",
         "6.130",
         "6.131",
-        "6.132"
+        "6.132",
+        "6.133"
       ]
     },
     {
@@ -20447,6 +20450,36 @@
       "module": "components/iocHeader.md"
     },
     {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/filterRows",
+      "path": "@iocHeaderComponent.props.filterRows",
+      "required": "本分支可选",
+      "module": "components/iocHeader.md"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/filterRows/items",
+      "path": "@iocHeaderComponent.props.filterRows[]",
+      "required": "每个数组项",
+      "module": "components/iocHeader.md"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/filterRows/items/properties/title",
+      "path": "@iocHeaderComponent.props.filterRows[].title",
+      "required": "本分支可选",
+      "module": "components/iocHeader.md"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/filterRows/items/properties/filterIds",
+      "path": "@iocHeaderComponent.props.filterRows[].filterIds",
+      "required": "本分支必填",
+      "module": "components/iocHeader.md"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/filterRows/items/properties/filterIds/items",
+      "path": "@iocHeaderComponent.props.filterRows[].filterIds[]",
+      "required": "每个数组项",
+      "module": "components/iocHeader.md"
+    },
+    {
       "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/presentation",
       "path": "@iocHeaderComponent.props.presentation",
       "required": "本分支可选",
@@ -23772,5 +23805,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "420a8e3875bda0f1e6a99d50b75dca10a6ae6df78b81af04a1f002c8f7ae16cb"
+  "semanticSourceDigest": "8eb94715601c6cb612b246f11dd9c079d1bedb84a933d386483ca7edb29d78f0"
 }

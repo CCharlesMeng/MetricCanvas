@@ -2,13 +2,14 @@ import { iocHeaderDeclaration, hasLegacyDefaultHeader } from '@metriccanvas/page
 import { pageListEntry, type Page, type FilterDeclaration } from '@metriccanvas/page/internal';
 import { contentFilterDeclarations } from '../report-date-header';
 import { visibleFilterDeclarations } from '../filters/filter-bar';
-import { headerFilterGroups } from './filter-groups';
+import { headerFilterGroups, placeHeaderFilterRows, selectHeaderFilters, type ResolvedHeaderFilterRow } from './filter-groups';
 import { resolvedIocHeader, type ResolvedIocHeader } from './model';
 
 export interface PageHeaderPresentation {
   model?: ResolvedIocHeader;
   primary: FilterDeclaration[];
   overflow: FilterDeclaration[];
+  filterRows?: ResolvedHeaderFilterRow[];
   content: FilterDeclaration[];
   readOnly: boolean;
   note?: string;
@@ -33,9 +34,9 @@ export function resolvePageHeader(page: Page, declarations: FilterDeclaration[])
   const readOnly = pageFiltersReadOnly(page);
   const note = header?.note ?? (typeof page.dashboardToolbar === 'object' ? page.dashboardToolbar.note : undefined);
   if (!model) return {primary:[],overflow:[],content:available,readOnly,note};
-  const selected = header ? (header.filterIds ?? []).flatMap(id=>available.find(filter=>filter.id===id) ?? []) : available;
-  const visible = visibleFilterDeclarations(selected);
-  const groups = model.collapse === 'overflow' ? headerFilterGroups(visible,model.density==='compact'?'compact':undefined) : {primary:visible,overflow:[],content:[]};
+  const selected = header ? selectHeaderFilters(available, header.filterIds) : available;
+  const { primary, filterRows } = placeHeaderFilterRows(visibleFilterDeclarations(selected), header?.filterRows);
+  const groups = model.collapse === 'overflow' ? headerFilterGroups(primary,model.density==='compact'?'compact':undefined) : {primary,overflow:[],content:[]};
   const claimed = new Set(selected.map(filter=>filter.id));
-  return {model,...groups,content:[...available.filter(filter=>!claimed.has(filter.id)),...groups.content],readOnly,note};
+  return {model,...groups,filterRows,content:[...available.filter(filter=>!claimed.has(filter.id)),...groups.content],readOnly,note};
 }

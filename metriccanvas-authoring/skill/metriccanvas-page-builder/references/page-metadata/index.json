@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.132",
-  "schemaSha256": "07ee79be6c82f479408234becba0169d33ee5d52643ab928ce8be6a9779fe60f",
+  "schemaVersion": "6.133",
+  "schemaSha256": "30f244aa6b0cd4e6febada6fb46df1bb56ba1ddc6c9dd5bb9368f7eae05ea129",
   "semanticSources": [
     {
       "file": "metriccanvas-authoring/core/page/analysis-report.ts",
@@ -292,7 +292,7 @@
     },
     {
       "file": "packages/page/src/ioc-header.ts",
-      "sha256": "51fe0f7fe27ff61c203773af66b397859464a25463927c2c52192aabf7d4d250"
+      "sha256": "85d9214275609d14d062b141c1cf026f5bf998dd5ed8a09d06c8f71057dc7fca"
     },
     {
       "file": "packages/page/src/layout-compatibility.ts",
@@ -456,7 +456,7 @@
     },
     {
       "file": "packages/page/src/schema/ioc-header.ts",
-      "sha256": "9f48be4ce34a11f3a0bb564c18875d16d16dcbc03513881696fe0899a7c3eab8"
+      "sha256": "503d2be6aeba642a08a044c52727dab1ac0f317bab972f1b62633e64a523b4c2"
     },
     {
       "file": "packages/page/src/schema/navigation.ts",
@@ -464,7 +464,7 @@
     },
     {
       "file": "packages/page/src/schema/page.ts",
-      "sha256": "dd51ee2f336f3a883c3e0bd7f9e409ec1dbeb30aa3506acbbf3d9a3b1e4abd0c"
+      "sha256": "32fb6c7ce8d6649b202d21913c096b5c2285bbda6a03ecc62e8a1ebd4b727329"
     },
     {
       "file": "packages/page/src/schema/paged-union.ts",
@@ -576,7 +576,7 @@
     },
     {
       "file": "packages/page/src/version.ts",
-      "sha256": "c8a6382f2a8a60500a5b0f653f0b924b37aa80c3455ba89ac4691f736ce9dc41"
+      "sha256": "5c42b40df7261d0dac624de5105bf9a0751bc741337c24825d1a8efcc3288431"
     },
     {
       "file": "packages/page/tests/ai-summary-regions.test.ts",
@@ -588,7 +588,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "9c59b80c938a2e21dab0944ccc97ac512022c6b022bc4a74a0fd330c1fa96ef1"
+      "sha256": "6f6422e79f5901b45f98d886e94b74887cb220e33d12779588588910f9387ea4"
     }
   ],
   "modules": {
@@ -2005,7 +2005,8 @@
         "ioc-header-controls",
         "ioc-office-drill-overview",
         "ioc-office-drill-detail",
-        "ioc-office-navigation-page-param"
+        "ioc-office-navigation-page-param",
+        "ioc-header-filter-rows"
       ],
       "sources": [
         "packages/page/src/schema/components/ioc-header.ts",
@@ -2020,7 +2021,8 @@
       "rules": [
         "ioc-header-component",
         "ioc-header-controls",
-        "ioc-region-office-navigation"
+        "ioc-region-office-navigation",
+        "ioc-header-filter-rows"
       ]
     },
     "authoring-analysis-rebind.md": {
@@ -2284,7 +2286,8 @@
         "6.129",
         "6.130",
         "6.131",
-        "6.132"
+        "6.132",
+        "6.133"
       ]
     },
     {
@@ -21327,6 +21330,36 @@
       "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/propertyNames",
       "path": "@iocHeaderComponent.props.components[] · oneOf[1].props.officeNavigate.query · propertyNames",
       "required": "条件结构",
+      "module": "components/iocHeader.md"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/filterRows",
+      "path": "@iocHeaderComponent.props.filterRows",
+      "required": "本分支可选",
+      "module": "components/iocHeader.md"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/filterRows/items",
+      "path": "@iocHeaderComponent.props.filterRows[]",
+      "required": "每个数组项",
+      "module": "components/iocHeader.md"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/filterRows/items/properties/title",
+      "path": "@iocHeaderComponent.props.filterRows[].title",
+      "required": "本分支可选",
+      "module": "components/iocHeader.md"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/filterRows/items/properties/filterIds",
+      "path": "@iocHeaderComponent.props.filterRows[].filterIds",
+      "required": "本分支必填",
+      "module": "components/iocHeader.md"
+    },
+    {
+      "pointer": "#/definitions/iocHeaderComponent/properties/props/properties/filterRows/items/properties/filterIds/items",
+      "path": "@iocHeaderComponent.props.filterRows[].filterIds[]",
+      "required": "每个数组项",
       "module": "components/iocHeader.md"
     },
     {

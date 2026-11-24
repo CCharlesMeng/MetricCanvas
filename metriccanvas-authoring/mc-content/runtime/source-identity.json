@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "54cf2508989d81157febd02f7493288842c434614b3af99594a26629b5165624",
+  "sha256": "f6cd6550cd339a112a3e1a876417ae04bce7785c0644fe1fb50a4ed92150c885",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -64,7 +64,7 @@
     },
     {
       "file": "docs/page-metadata/components/iocHeader.md",
-      "sha256": "a00b8dd4af83680412c3f8e718905b445419573ec82d7a8bb93eea012e9bace5"
+      "sha256": "96afb80ef18238e593cf1e06f464875d4e944b76578d210b34f16302ea0777cc"
     },
     {
       "file": "docs/page-metadata/components/keyValuePanel.md",
@@ -144,7 +144,7 @@
     },
     {
       "file": "docs/page-metadata/page.md",
-      "sha256": "f9583580d4dd0723b7bae0180382b1c9a7d57761d0199440677c447077fd622e"
+      "sha256": "ae6de5348762528e4a3a560971a59f13e6f3fbf3db33b6b06ab65ee051c5930b"
     },
     {
       "file": "docs/page-metadata/parameters.md",
@@ -160,7 +160,7 @@
     },
     {
       "file": "docs/page-metadata/reference-map.json",
-      "sha256": "4af919af460fb25d9f2e1b4dc7d3caf5ed7f4246c9bf69a77971f9c3999ff20a"
+      "sha256": "76f902658b4fab6d79e9c8a77c779326194978bfad6e2241de793259e4e9f1bc"
     },
     {
       "file": "docs/page-metadata/sections-and-layout.md",
@@ -1684,7 +1684,7 @@
     },
     {
       "file": "packages/page/src/ioc-header.ts",
-      "sha256": "51fe0f7fe27ff61c203773af66b397859464a25463927c2c52192aabf7d4d250"
+      "sha256": "85d9214275609d14d062b141c1cf026f5bf998dd5ed8a09d06c8f71057dc7fca"
     },
     {
       "file": "packages/page/src/ioc-period-query.ts",
@@ -2004,7 +2004,7 @@
     },
     {
       "file": "packages/page/src/schema/ioc-header.ts",
-      "sha256": "9f48be4ce34a11f3a0bb564c18875d16d16dcbc03513881696fe0899a7c3eab8"
+      "sha256": "503d2be6aeba642a08a044c52727dab1ac0f317bab972f1b62633e64a523b4c2"
     },
     {
       "file": "packages/page/src/schema/navigation.ts",
@@ -2012,7 +2012,7 @@
     },
     {
       "file": "packages/page/src/schema/page.ts",
-      "sha256": "dd51ee2f336f3a883c3e0bd7f9e409ec1dbeb30aa3506acbbf3d9a3b1e4abd0c"
+      "sha256": "32fb6c7ce8d6649b202d21913c096b5c2285bbda6a03ecc62e8a1ebd4b727329"
     },
     {
       "file": "packages/page/src/schema/paged-join.ts",
@@ -2212,7 +2212,7 @@
     },
     {
       "file": "packages/page/src/version.ts",
-      "sha256": "c8a6382f2a8a60500a5b0f653f0b924b37aa80c3455ba89ac4691f736ce9dc41"
+      "sha256": "5c42b40df7261d0dac624de5105bf9a0751bc741337c24825d1a8efcc3288431"
     },
     {
       "file": "packages/page/src/write-version.ts",
@@ -2220,7 +2220,7 @@
     },
     {
       "file": "pages/README.md",
-      "sha256": "8bdf42f6da32e861fd53fbf0ef4ea89be7d57f57e99d5e30e3423eed8ed63e00"
+      "sha256": "aa507176d4fead2665ce394c113db9b6221345b9177db2b060727a094e20e864"
     },
     {
       "file": "pages/business-rejection-details.json",
@@ -2804,7 +2804,11 @@
     },
     {
       "file": "pages/capabilities/ioc-header/section-component/README.md",
-      "sha256": "78a4dc875d8340d0b2e00f2fd882304b924bd45c3743898025550c2ab5817975"
+      "sha256": "11fb15bc20e82aeb54d230ad074cbdde484e3a837539e4f9f1bc9b753810e5cb"
+    },
+    {
+      "file": "pages/capabilities/ioc-header/section-component/ioc-header-filter-rows.json",
+      "sha256": "24d31e0f34783ec09786edc343d23124fbc1ecf3b06fc56f63136bb37673ec98"
     },
     {
       "file": "pages/capabilities/ioc-header/section-component/ioc-header-flow-sticky.json",
@@ -2916,7 +2920,7 @@
     },
     {
       "file": "pages/capabilities/layout/schema-upgrade-demo.json",
-      "sha256": "53d710425183254b54330e9c063077ab1cfc2dbd5351cb12466ec3efffca16f4"
+      "sha256": "5eb04f3c274c971eb994228919e9acb9a5f7cbbfc0c2271991a84f9117bcc47e"
     },
     {
       "file": "pages/capabilities/layout/tab-mixed-content-report.json",
@@ -3340,11 +3344,11 @@
     },
     {
       "file": "pages/temporary/business-result-pinned-diagnosis-20261102/README.md",
-      "sha256": "b5bdc85dd12249894883c1009eb55efbbdad4acdb3e57044e6cb9f4371834b06"
+      "sha256": "fa0d92835cf33abd9f21566a6eb43cc4912bb3018c4f17bdfbe405512a33d27c"
     },
     {
       "file": "pages/temporary/business-result-pinned-diagnosis-20261102/business-result-metrics.json",
-      "sha256": "8e6b7cc3e31081793292ff53c3eff86f0a42c15000963cb84acec71d4ea8e415"
+      "sha256": "8f838cc91e8434d097d63197fa8e2b55b5d3489cb019f5a0589def2ece19657c"
     },
     {
       "file": "pages/temporary/contract-maturity-linkage-20261027/README.md",
@@ -3912,11 +3916,11 @@
     },
     {
       "file": "tools/scripts/page-conformance-sources.ts",
-      "sha256": "0c3ed809a5a3e56dc7058790e58e9c71abc118662355406f66e201836841de55"
+      "sha256": "8dcc28a44ce459f508bb39ccd3d2915886c99156b6f363adf66ffe22b61081a1"
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "9c59b80c938a2e21dab0944ccc97ac512022c6b022bc4a74a0fd330c1fa96ef1"
+      "sha256": "6f6422e79f5901b45f98d886e94b74887cb220e33d12779588588910f9387ea4"
     },
     {
       "file": "tools/scripts/page-files.d.mts",

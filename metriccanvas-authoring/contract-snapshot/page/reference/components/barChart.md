@@ -156,7 +156,7 @@ Dashboard 正文通过独立 [filterGroup](filterGroup.md) 组件声明筛选按
 按堆叠总数排序时，让查询返回总数字段，或用 [`sumFields`](../compute.md) 在前端计算总数，图表的 `series` 继续声明各段字段。新数据到达后按指定字段重排，图例显隐时排序仍取同一字段。类别轴、系列、标签、点击动作及 PDF/PNG 使用同一行序。合成入口 `/pages/bar-category-order` 并排展示总数降序、维度升序和数据源行序。
 
 
-页面协议 6.132。结构真源为本册[schema.json](../schema.json)，SHA256 `07ee79be6c82f479408234becba0169d33ee5d52643ab928ce8be6a9779fe60f`。字段表自动生成；可选不等于有默认值。
+页面协议 6.133。结构真源为本册[schema.json](../schema.json)，SHA256 `30f244aa6b0cd4e6febada6fb46df1bb56ba1ddc6c9dd5bb9368f7eae05ea129`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

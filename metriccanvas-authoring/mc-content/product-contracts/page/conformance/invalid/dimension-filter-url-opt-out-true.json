@@ -2,7 +2,7 @@
   "case": "dimension-filter-url-opt-out-true",
   "invariant": "dimension-filter-url-opt-out",
   "input": {
-    "schemaVersion": "6.131",
+    "schemaVersion": "6.133",
     "id": "business-result-metrics",
     "layout": "dashboard",
     "meta": {
@@ -3234,6 +3234,15 @@
                 "density": "normal",
                 "collapse": "firstRow"
               },
+              "filterRows": [
+                {
+                  "title": "净商务折扣筛选项",
+                  "filterIds": [
+                    "business-type",
+                    "cloud-service"
+                  ]
+                }
+              ],
               "components": [
                 {
                   "id": "header-key-national-only-control",

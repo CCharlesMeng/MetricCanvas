@@ -9,10 +9,12 @@
   import placement from '../../../../../pages/capabilities/ioc-header/section-component/ioc-header-section-placement.json';
   import sticky from '../../../../../pages/capabilities/ioc-header/section-component/ioc-header-section-sticky.json';
   import grouped from '../../../../../pages/capabilities/ioc-header/section-component/ioc-header-section-groups.json';
+  import filterRows from '../../../../../pages/capabilities/ioc-header/section-component/ioc-header-filter-rows.json';
   import type { ExportRenderState } from '../../../../../packages/engine/runtime-ui/src/export-render-state';
   let mode=$state('custom'),backs=$state(0);
   function documentFor(mode:string):any {
-    const document=structuredClone(mode==='export-groups'?grouped:mode==='custom'?placement:sticky) as any;
+    const examples = { custom: placement, 'export-groups': grouped, 'export-filter-rows': filterRows };
+    const document=structuredClone(examples[mode as keyof typeof examples] ?? sticky) as any;
     if(mode.includes('legacy')) {
       document.schemaVersion='6.80';
       const header=document.sections[0].components.shift();
@@ -31,9 +33,10 @@
   }
   function exportState(document:unknown,hidden:boolean):ExportRenderState {
     const parsed=parsePage(document);if(!parsed.ok)throw Error(JSON.stringify(parsed.errors));
-    return {page:parsed.page,currentYear:2026,filters:new Map([
-      ['team',{type:'dimension',dimension:'team',values:['B']}],['show-header',{type:'boolean',value:!hidden}]
-    ]),snapshots:new Map(),tables:{},headerFilters:{},summaries:{}};
+    const filters: ExportRenderState['filters'] = parsed.page.id === filterRows.id
+      ? new Map([['show-audit', {type:'boolean', value:true}], ['include-audit', {type:'boolean', value:true}]])
+      : new Map([['team',{type:'dimension',dimension:'team',values:['B']}],['show-header',{type:'boolean',value:!hidden}]]);
+    return {page:parsed.page,currentYear:2026,filters,snapshots:new Map(),tables:{},headerFilters:{},summaries:{}};
   }
 </script>
 <label>验收模式<select bind:value={mode}>
@@ -43,6 +46,7 @@
   <option value="export">静态导出</option><option value="export-hidden">条件隐藏导出</option>
   <option value="export-groups">分组导出</option><option value="export-legacy-root">旧根级导出</option>
   <option value="export-legacy-toolbar">旧工具栏导出</option>
+  <option value="export-filter-rows">筛选行导出</option>
 </select></label>
 <output>返回次数：{backs}</output>
 {#key mode}

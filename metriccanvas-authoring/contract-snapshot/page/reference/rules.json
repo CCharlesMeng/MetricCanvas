@@ -74,6 +74,21 @@
       ]
     },
     {
+      "id": "ioc-header-filter-rows",
+      "description": "6.133 IOC 页头的筛选行只引用已认领的筛选且全行唯一",
+      "valid": [
+        "ioc-header-filter-rows",
+        "business-result-metrics"
+      ],
+      "invalid": [
+        "ioc-filter-rows-version",
+        "ioc-filter-rows-unclaimed",
+        "ioc-filter-rows-duplicate",
+        "ioc-filter-rows-empty",
+        "ioc-filter-rows-legacy-root"
+      ]
+    },
+    {
       "id": "bar-category-order",
       "description": "普通柱图按结果字段和方向排序类别，兼容省略 order 的页面",
       "valid": [

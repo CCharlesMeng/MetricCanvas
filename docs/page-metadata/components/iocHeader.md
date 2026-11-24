@@ -59,6 +59,36 @@ RegionFilter 固定提供可搜索、可清空的单选组织树，层级为 `ge
 
 完整合成入口 `/pages/ioc-header-title-link` 与 `/pages/ioc-header-title-link-target`，覆盖页面参数、布尔筛选、目标校验和条件；操作与证据边界见示例目录 README。该场景不验证真实业务地址或 DQE。
 
+<a id="ioc-header-filter-rows"></a>
+
+## 页头筛选行（6.133）
+
+在 IOC 页头组件的 `props.filterRows` 声明一条或多条独立筛选行，按数组顺序呈现。每行 `title` 可省略，填写时使用非空纯文本。每行 `filterIds` 按显示顺序引用已由 `components` 或兼容 `props.filterIds` 认领的筛选 ID。Region 使用筛选 ID `region`。同一筛选在所有行中最多引用一次。每行至少引用一个筛选。省略 `filterRows` 时沿用现有页头排版。旧根级 `iocHeader` 继续按历史协议读取。
+
+```json
+{
+  "id": "header",
+  "type": "iocHeader",
+  "layout": { "span": 12 },
+  "props": {
+    "identity": { "title": "业务结果指标情况" },
+    "presentation": { "layout": "inline", "collapse": "firstRow" },
+    "components": [
+      { "id": "period-control", "type": "filterControl", "props": { "filterId": "mtime" } },
+      { "id": "business-type-control", "type": "filterControl", "props": { "filterId": "business-type" } },
+      { "id": "cloud-service-control", "type": "filterControl", "props": { "filterId": "cloud-service" } }
+    ],
+    "filterRows": [
+      { "title": "净商务折扣筛选项", "filterIds": ["business-type", "cloud-service"] }
+    ]
+  }
+}
+```
+
+未分行的已认领筛选按原顺序进入首行，沿用 `presentation.collapse`。独立行的标题靠左，筛选靠右，与首行筛选共用右边界。窄屏下控件在各自的行内换行。行内所有控件因条件隐藏时，整行随之隐藏。筛选的值、默认值、候选、URL 及查询作用范围继续由现有声明决定。静态导出同样呈现有效行及当前选值。
+
+合成入口 `/pages/ioc-header-filter-rows` 验证两条独立行及条件显隐。业务入口 `/pages/business-result-metrics` 将业务类型和云服务排除项放在「净商务折扣筛选项」一行，查询范围沿用原绑定。
+
 <a id="office-navigation"></a>
 
 ## 代表处跨页下钻（6.121）

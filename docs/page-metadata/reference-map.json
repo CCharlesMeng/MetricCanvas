@@ -1413,7 +1413,8 @@
         "ioc-header-controls",
         "ioc-office-drill-overview",
         "ioc-office-drill-detail",
-        "ioc-office-navigation-page-param"
+        "ioc-office-navigation-page-param",
+        "ioc-header-filter-rows"
       ],
       "sources": [
         "packages/page/src/schema/components/ioc-header.ts",
@@ -1428,7 +1429,8 @@
       "rules": [
         "ioc-header-component",
         "ioc-header-controls",
-        "ioc-region-office-navigation"
+        "ioc-region-office-navigation",
+        "ioc-header-filter-rows"
       ]
     },
     "authoring-analysis-rebind.md": {
@@ -1964,6 +1966,9 @@
     "#/definitions/iocHeaderComponent/properties/props/properties/identity/properties/facts": "显式期间/时间事实；不根据类别自动生成当前时间。",
     "#/definitions/iocHeaderComponent/properties/props/properties/back": "返回意图；true 启用，6.111 起 false 显式隐藏，省略隐藏；旧 auto 已废弃但等同 true。默认按浏览器后退能力显示并调用 history.back()，可选 navigation.back 覆盖，无需来源记录。",
     "#/definitions/iocHeaderComponent/properties/props/properties/filterIds": "按序唯一认领静态可见的页级筛选；不含图表独立或详情私有筛选。",
+    "#/definitions/iocHeaderComponent/properties/props/properties/filterRows": "按顺序呈现一条或多条独立筛选行。其余已认领的筛选保留在首行。",
+    "#/definitions/iocHeaderComponent/properties/props/properties/filterRows/items/properties/title": "独立筛选行左侧的可选纯文本小标题。",
+    "#/definitions/iocHeaderComponent/properties/props/properties/filterRows/items/properties/filterIds": "按顺序引用已由 IOC 页头认领的筛选 ID，每个筛选在所有行中最多出现一次。",
     "#/definitions/iocHeaderComponent/properties/props/properties/presentation": "仅改变密度和折叠，不改变筛选语义。",
     "#/definitions/iocHeaderComponent/properties/props/properties/presentation/properties/density": "普通或紧凑页头。",
     "#/definitions/iocHeaderComponent/properties/props/properties/presentation/properties/collapse": "保持全部筛选或按实测首行折叠；隐藏项退出焦点序列。",
@@ -2426,7 +2431,8 @@
     "#/properties/schemaVersion=\"6.129\"": "顶层度量结果字段声明 metricCode，主次指标行通过 showDefinition 独立开启气泡。",
     "#/properties/schemaVersion=\"6.130\"": "可选动态多选排除项可用 defaultWhen 关联一个独立单选维度的实际取值。",
     "#/properties/schemaVersion=\"6.131\"": "维度筛选器可用 urlParams: false 关闭本页 URL 读写。",
-    "#/properties/schemaVersion=\"6.132\"": "柱状图可声明 order，在前端按结果字段和方向排序类别。"
+    "#/properties/schemaVersion=\"6.132\"": "柱状图可声明 order，在前端按结果字段和方向排序类别。",
+    "#/properties/schemaVersion=\"6.133\"": "IOC 页头可用 filterRows 为已认领的筛选声明独立行与小标题。"
   },
   "branchExceptions": {
     "#/properties/iocHeader/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/0": {
@@ -3697,6 +3703,7 @@
     "components/iocHeader.md": [
       "页头子控件（6.91）",
       "标题跳转（6.115）",
+      "页头筛选行（6.133）",
       "代表处跨页下钻（6.121）"
     ],
     "authoring-analysis-rebind.md": [

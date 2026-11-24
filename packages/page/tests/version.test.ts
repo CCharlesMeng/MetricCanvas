@@ -13,6 +13,7 @@ const introducedAt: Record<string, number> = {
   'conditional-dimension-default':130,
   'dimension-filter-url-opt-out':131,
   'bar-category-order':132,
+  'ioc-header-filter-rows':133,
   'filter-source-candidate-levels':122,
   'native-ioc-filter-preparation':120,
   'table-absolute-display-limit':119,

@@ -1,10 +1,37 @@
-import type { FilterDeclaration } from '@metriccanvas/page/internal';
+import type { FilterDeclaration, IocHeaderDeclaration } from '@metriccanvas/page/internal';
 import { visibleFilterDeclarations } from '../filters/filter-bar';
 
 export interface HeaderFilterGroups {
   primary: FilterDeclaration[];
   overflow: FilterDeclaration[];
   content: FilterDeclaration[];
+}
+
+export interface ResolvedHeaderFilterRow {
+  key: string;
+  title?: string;
+  filterIds: string[];
+}
+
+export function selectHeaderFilters(
+  declarations: readonly FilterDeclaration[],
+  filterIds: readonly string[] = []
+): FilterDeclaration[] {
+  return filterIds.flatMap(id => declarations.find(filter => filter.id === id) ?? []);
+}
+
+export function placeHeaderFilterRows(
+  declarations: FilterDeclaration[],
+  rows: IocHeaderDeclaration['filterRows']
+): { primary: FilterDeclaration[]; filterRows?: ResolvedHeaderFilterRow[] } {
+  if (!rows) return { primary: declarations };
+  const visibleIds = new Set(declarations.map(filter => filter.id));
+  const filterRows = rows.flatMap(row => {
+    const filterIds = row.filterIds.filter(id => visibleIds.has(id));
+    return filterIds.length ? [{ key: row.filterIds[0]!, title: row.title, filterIds }] : [];
+  });
+  const moved = new Set(filterRows.flatMap(row => row.filterIds));
+  return { primary: declarations.filter(filter => !moved.has(filter.id)), filterRows };
 }
 
 const STANDARD_INLINE_LIMIT = 5;

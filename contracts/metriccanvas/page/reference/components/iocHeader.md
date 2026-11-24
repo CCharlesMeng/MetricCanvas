@@ -59,6 +59,36 @@ RegionFilter 固定提供可搜索、可清空的单选组织树，层级为 `ge
 
 完整合成入口 `/pages/ioc-header-title-link` 与 `/pages/ioc-header-title-link-target`，覆盖页面参数、布尔筛选、目标校验和条件；操作与证据边界见示例目录 README。该场景不验证真实业务地址或 DQE。
 
+<a id="ioc-header-filter-rows"></a>
+
+## 页头筛选行（6.133）
+
+在 IOC 页头组件的 `props.filterRows` 声明一条或多条独立筛选行，按数组顺序呈现。每行 `title` 可省略，填写时使用非空纯文本。每行 `filterIds` 按显示顺序引用已由 `components` 或兼容 `props.filterIds` 认领的筛选 ID。Region 使用筛选 ID `region`。同一筛选在所有行中最多引用一次。每行至少引用一个筛选。省略 `filterRows` 时沿用现有页头排版。旧根级 `iocHeader` 继续按历史协议读取。
+
+```json
+{
+  "id": "header",
+  "type": "iocHeader",
+  "layout": { "span": 12 },
+  "props": {
+    "identity": { "title": "业务结果指标情况" },
+    "presentation": { "layout": "inline", "collapse": "firstRow" },
+    "components": [
+      { "id": "period-control", "type": "filterControl", "props": { "filterId": "mtime" } },
+      { "id": "business-type-control", "type": "filterControl", "props": { "filterId": "business-type" } },
+      { "id": "cloud-service-control", "type": "filterControl", "props": { "filterId": "cloud-service" } }
+    ],
+    "filterRows": [
+      { "title": "净商务折扣筛选项", "filterIds": ["business-type", "cloud-service"] }
+    ]
+  }
+}
+```
+
+未分行的已认领筛选按原顺序进入首行，沿用 `presentation.collapse`。独立行的标题靠左，筛选靠右，与首行筛选共用右边界。窄屏下控件在各自的行内换行。行内所有控件因条件隐藏时，整行随之隐藏。筛选的值、默认值、候选、URL 及查询作用范围继续由现有声明决定。静态导出同样呈现有效行及当前选值。
+
+合成入口 `/pages/ioc-header-filter-rows` 验证两条独立行及条件显隐。业务入口 `/pages/business-result-metrics` 将业务类型和云服务排除项放在「净商务折扣筛选项」一行，查询范围沿用原绑定。
+
 <a id="office-navigation"></a>
 
 ## 代表处跨页下钻（6.121）
@@ -87,7 +117,7 @@ RegionFilter 固定提供可搜索、可清空的单选组织树，层级为 `ge
 统计期间使用当前已应用值。近一年显式映射模式值及起止范围，以便目标页恢复同一窗口。目标 URL 键由其实际筛选声明决定。合成入口 `/pages/ioc-office-drill-overview` 与 `/pages/ioc-office-drill-detail`，操作见 `pages/capabilities/ioc-header/controls/README.md`。
 
 
-页面协议 6.132。结构真源为本册[schema.json](../schema.json)，SHA256 `07ee79be6c82f479408234becba0169d33ee5d52643ab928ce8be6a9779fe60f`。字段表自动生成；可选不等于有默认值。
+页面协议 6.133。结构真源为本册[schema.json](../schema.json)，SHA256 `30f244aa6b0cd4e6febada6fb46df1bb56ba1ddc6c9dd5bb9368f7eae05ea129`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -1018,6 +1048,56 @@ Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/com
 |---|---|---|---|---|
 | "string" | 条件结构 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
+<a id="schema-232f646566696e6974696f6e732f696f63486561646572436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f66696c746572526f7773"></a>
+
+### `@iocHeaderComponent.props.filterRows`
+
+Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/filterRows`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支可选 | minItems=1 | Schema未设默认；装配/运行时默认见语义说明 | 按顺序呈现一条或多条独立筛选行。其余已认领的筛选保留在首行。 |
+
+<a id="schema-232f646566696e6974696f6e732f696f63486561646572436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f66696c746572526f77732f6974656d73"></a>
+
+### `@iocHeaderComponent.props.filterRows[]`
+
+Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/filterRows/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 每个数组项 | required=["filterIds"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f696f63486561646572436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f66696c746572526f77732f6974656d732f70726f706572746965732f7469746c65"></a>
+
+### `@iocHeaderComponent.props.filterRows[].title`
+
+Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/filterRows/items/properties/title`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | pattern="\\S" | Schema未设默认；装配/运行时默认见语义说明 | 独立筛选行左侧的可选纯文本小标题。 |
+
+<a id="schema-232f646566696e6974696f6e732f696f63486561646572436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f66696c746572526f77732f6974656d732f70726f706572746965732f66696c746572496473"></a>
+
+### `@iocHeaderComponent.props.filterRows[].filterIds`
+
+Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/filterRows/items/properties/filterIds`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支必填 | minItems=1 | Schema未设默认；装配/运行时默认见语义说明 | 按顺序引用已由 IOC 页头认领的筛选 ID，每个筛选在所有行中最多出现一次。 |
+
+<a id="schema-232f646566696e6974696f6e732f696f63486561646572436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f66696c746572526f77732f6974656d732f70726f706572746965732f66696c7465724964732f6974656d73"></a>
+
+### `@iocHeaderComponent.props.filterRows[].filterIds[]`
+
+Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/filterRows/items/properties/filterIds/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 每个数组项 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
 <a id="schema-232f646566696e6974696f6e732f696f63486561646572436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f70726573656e746174696f6e"></a>
 
 ### `@iocHeaderComponent.props.presentation`
@@ -1079,6 +1159,7 @@ Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/pre
 - `ioc-header-component`：首section首组件全宽、唯一且不混写旧根字段。反例：[ioc-component-detail](../errors/ioc-component-detail.json)、[ioc-component-position](../errors/ioc-component-position.json)、[ioc-component-span](../errors/ioc-component-span.json)、[ioc-component-mixed](../errors/ioc-component-mixed.json)、[ioc-component-count](../errors/ioc-component-count.json)、[ioc-component-old-version](../errors/ioc-component-old-version.json)、[ioc-component-legacy-version](../errors/ioc-component-legacy-version.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `ioc-header-controls`：页头显式组合控件，RegionFilter 唯一拥有标准 region，旧排列仍可读。反例：[ioc-controls-root-filter](../errors/ioc-controls-root-filter.json)、[ioc-controls-root-region](../errors/ioc-controls-root-region.json)、[ioc-controls-version](../errors/ioc-controls-version.json)、[ioc-controls-mixed](../errors/ioc-controls-mixed.json)、[ioc-controls-duplicate-region](../errors/ioc-controls-duplicate-region.json)、[ioc-controls-unknown-filter](../errors/ioc-controls-unknown-filter.json)、[ioc-controls-duplicate-id](../errors/ioc-controls-duplicate-id.json)、[ioc-controls-duplicate-claim](../errors/ioc-controls-duplicate-claim.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 - `ioc-region-office-navigation`：IOC Region 直接下钻自动携带代表处，其他输入复用普通导航。反例：[ioc-office-navigation-version](../errors/ioc-office-navigation-version.json)、[ioc-office-navigation-reserved-key](../errors/ioc-office-navigation-reserved-key.json)、[ioc-office-navigation-no-row](../errors/ioc-office-navigation-no-row.json)、[ioc-office-navigation-legacy-root](../errors/ioc-office-navigation-legacy-root.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `ioc-header-filter-rows`：6.133 IOC 页头的筛选行只引用已认领的筛选且全行唯一。反例：[ioc-filter-rows-version](../errors/ioc-filter-rows-version.json)、[ioc-filter-rows-unclaimed](../errors/ioc-filter-rows-unclaimed.json)、[ioc-filter-rows-duplicate](../errors/ioc-filter-rows-duplicate.json)、[ioc-filter-rows-empty](../errors/ioc-filter-rows-empty.json)、[ioc-filter-rows-legacy-root](../errors/ioc-filter-rows-legacy-root.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 
@@ -1093,6 +1174,7 @@ Schema位置：`#/definitions/iocHeaderComponent/properties/props/properties/pre
 - [ioc-office-drill-overview](../examples/ioc-office-drill-overview.json)：完整合法页面；查询仅为静态契约证据。
 - [ioc-office-drill-detail](../examples/ioc-office-drill-detail.json)：完整合法页面；查询仅为静态契约证据。
 - [ioc-office-navigation-page-param](../examples/ioc-office-navigation-page-param.json)：完整合法页面；查询仅为静态契约证据。
+- [ioc-header-filter-rows](../examples/ioc-header-filter-rows.json)：完整合法页面；查询仅为静态契约证据。
 
 局部片段提取自[完整页面](../examples/component-iocHeader.json)的`#/sections/0/components/0`；此片段依赖完整页面的数据源/字段，不能单独作为页面校验。
 

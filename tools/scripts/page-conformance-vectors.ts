@@ -77,6 +77,28 @@ export const invariants: InvariantDefinition[] = [
   periodAggregationInvariant,
   barAverageInvariant,
   {
+    id: 'ioc-header-filter-rows',
+    description: '6.133 IOC 页头的筛选行只引用已认领的筛选且全行唯一',
+    valid: ['ioc-header-filter-rows', 'business-result-metrics'],
+    cases: [
+      { case: 'ioc-filter-rows-version', base: 'ioc-header-filter-rows', expect: /由 6.133 引入/, mutate: document => {
+        document.schemaVersion = '6.132';
+      } },
+      { case: 'ioc-filter-rows-unclaimed', base: 'ioc-header-filter-rows', expect: /只能引用已由 IOC 页头认领/, mutate: document => {
+        firstComponent(document).props.filterIds.pop();
+      } },
+      { case: 'ioc-filter-rows-duplicate', base: 'ioc-header-filter-rows', expect: /筛选行不能重复引用/, mutate: document => {
+        firstComponent(document).props.filterRows[1].filterIds.push('include-pending');
+      } },
+      { case: 'ioc-filter-rows-empty', base: 'ioc-header-filter-rows', expect: /fewer than 1 items/, mutate: document => {
+        firstComponent(document).props.filterRows[0].filterIds = [];
+      } },
+      { case: 'ioc-filter-rows-legacy-root', base: 'ioc-header-filter-rows', expect: /未定义字段 filterRows/, mutate: document => {
+        document.iocHeader = document.sections.shift().components[0].props;
+      } }
+    ]
+  },
+  {
     id: 'bar-category-order',
     description: '普通柱图按结果字段和方向排序类别，兼容省略 order 的页面',
     valid: ['bar-category-order'],

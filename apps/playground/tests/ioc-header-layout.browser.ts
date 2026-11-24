@@ -170,31 +170,46 @@ test('measured first-row collapse still expands naturally without internal scrol
   await expectNoHeaderScrollbars(header);
 });
 
-test('business result header aligns 160px inputs with 16px gaps and collapses on narrow screens', async ({ page }) => {
+test('business result aligns discount filters on an independent row', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 850 });
   await page.goto('/pages/business-result-metrics');
   const header = page.locator('[data-ioc-header]');
+  const primary = header.locator('[data-dashboard-primary-filters]');
+  const discount = header.getByRole('group', { name: '净商务折扣筛选项' });
+  await expect(discount).toBeVisible();
+  await expect(primary.locator('[data-ioc-filter]')).toHaveCount(4);
+  await expect(discount.locator('[data-ioc-filter]')).toHaveCount(2);
   const fields = header.locator('[data-ioc-filter]').filter({
     has: page.locator('button[aria-haspopup], input[role="combobox"]'),
   });
-  await expect(fields).toHaveCount(5);
-  const dropdowns = fields.locator('button[aria-haspopup]');
   const inputs = fields.locator('button[aria-haspopup], input[role="combobox"]');
   await expect.poll(() => inputs.evaluateAll(nodes => nodes.map(node => node.getBoundingClientRect().width)))
     .toEqual([160, 160, 160, 160, 160]);
-  await expect.poll(() => dropdowns.evaluateAll(nodes => nodes.slice(1).map((node, index) =>
-    node.getBoundingClientRect().left - nodes[index]!.getBoundingClientRect().right
-  ))).toEqual([16, 16, 16]);
-  expect(await dropdowns.evaluateAll(nodes => new Set(nodes.map(node => node.getBoundingClientRect().top)).size)).toBe(1);
+
+  const businessType = discount.getByRole('button', { name: '业务类型', exact: true });
+  const cloudService = discount.getByRole('button', { name: '云服务排除项', exact: true });
+  const customer = primary.locator('[data-ioc-filter="customer-class"] button[aria-haspopup]');
+  await expect.poll(async () => {
+    const customerBox = (await customer.boundingBox())!;
+    const typeBox = (await businessType.boundingBox())!;
+    const serviceBox = (await cloudService.boundingBox())!;
+    const titleBox = (await discount.getByText('净商务折扣筛选项').boundingBox())!;
+    return {
+      rightAligned: Math.abs(customerBox.x + customerBox.width - serviceBox.x - serviceBox.width) < 1,
+      separateRow: typeBox.y > customerBox.y + customerBox.height,
+      sameRow: Math.abs(typeBox.y - serviceBox.y) < 1,
+      gap: serviceBox.x - typeBox.x - typeBox.width,
+      titleOnLeft: titleBox.x + titleBox.width < typeBox.x,
+    };
+  }).toEqual({rightAligned:true,separateRow:true,sameRow:true,gap:16,titleOnLeft:true});
   await expect(header.getByRole('button', { name: '展开筛选' })).toHaveCount(0);
 
   await page.setViewportSize({ width: 447, height: 850 });
   await expect(header.getByRole('button', { name: '展开筛选' })).toBeVisible();
-  const cloudService = header.getByRole('button', { name: '云服务排除项', exact: true });
-  await expect(cloudService).toHaveCount(0);
-  await header.getByRole('button', { name: '展开筛选' }).click();
   await expect(cloudService).toBeVisible();
-  await header.getByRole('button', { name: '业务类型', exact: true }).click();
+  await header.getByRole('button', { name: '展开筛选' }).click();
+  await expect(primary.locator('[data-ioc-filter][inert]')).toHaveCount(0);
+  await businessType.click();
   const dropdown = header.getByRole('dialog', { name: '业务类型候选' });
   const search = dropdown.getByRole('textbox', { name: '搜索业务类型' });
   await search.fill('全部业务类型');
@@ -203,10 +218,40 @@ test('business result header aligns 160px inputs with 16px gaps and collapses on
   expect(box.x).toBeGreaterThanOrEqual(0);
   expect(box.x + box.width).toBeLessThanOrEqual(447);
   await search.press('Escape');
-  await expectNoHeaderScrollbars(header);
   await header.getByRole('button', { name: '收起筛选' }).click();
-  await expect(cloudService).toHaveCount(0);
+  await expect(cloudService).toBeVisible();
   await expectNoHeaderScrollbars(header);
+});
+
+test('explicit rows work with filterIds and retain applied values while hidden', async ({ page }) => {
+  await page.goto('/pages/ioc-header-filter-rows');
+  const header = page.locator('[data-ioc-header]');
+  const rows = header.locator('[data-ioc-filter-row]');
+  await expect(rows).toHaveCount(2);
+  await expect(rows.nth(0)).toHaveAccessibleName('记录范围');
+  await expect(rows.nth(1)).toHaveAccessibleName('审核筛选');
+  const recordFilters = rows.first().locator('[data-ioc-filter]');
+  await expect(recordFilters.first()).toHaveAttribute('data-ioc-filter', 'include-archived');
+  await expect(recordFilters.last()).toHaveAttribute('data-ioc-filter', 'include-pending');
+  const showAudit = header.getByRole('checkbox', { name: '显示审核筛选' });
+  const audit = header.getByRole('checkbox', { name: '包含审核记录' });
+  await audit.check();
+  await showAudit.uncheck();
+  await expect(rows).toHaveCount(1);
+  await expect(audit).toHaveCount(0);
+  await showAudit.check();
+  await expect(rows).toHaveCount(2);
+  await expect(audit).toBeChecked();
+});
+
+test('static export preserves explicit rows and their applied values', async ({ page }) => {
+  await page.goto('/preview?prototype=ioc-header-component');
+  await page.getByLabel('验收模式').selectOption('export-filter-rows');
+  const header = page.locator('[data-export-view] [data-ioc-header]');
+  await expect(header.locator('[data-ioc-filter-row]')).toHaveCount(2);
+  const audit = header.getByRole('group', { name: '审核筛选' }).getByRole('checkbox', { name: '包含审核记录' });
+  await expect(audit).toBeChecked();
+  await expect(audit).toBeDisabled();
 });
 
 test('nested header stays at the viewport top when the outer page also scrolls', async ({ page }) => {

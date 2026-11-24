@@ -25,6 +25,10 @@ export const iocHeaderZ = z.object({
   note: z.string().min(1).optional(),
   filterIds: z.array(idZ).min(1).meta({ uniqueItems: true }).optional(),
   components: z.array(iocHeaderControlZ).min(1).optional(),
+  filterRows: z.array(z.object({
+    title: z.string().regex(/\S/).optional(),
+    filterIds: z.array(idZ).min(1)
+  }).strict()).min(1).optional(),
   presentation: z.object({ density: z.enum(['normal', 'compact']).optional(), collapse: z.enum(['none', 'firstRow', 'overflow']).optional(), layout: z.enum(['stacked', 'inline']).optional() }).strict().optional()
 }).strict();
 export type IocHeaderDeclaration = z.infer<typeof iocHeaderZ>;

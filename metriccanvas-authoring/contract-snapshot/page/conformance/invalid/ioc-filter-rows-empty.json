@@ -1,0 +1,879 @@
+{
+  "case": "ioc-filter-rows-empty",
+  "invariant": "ioc-header-filter-rows",
+  "input": {
+    "schemaVersion": "6.133",
+    "id": "ioc-header-filter-rows",
+    "layout": "dashboard",
+    "meta": {
+      "title": "IOC 页头筛选行 · 合成演示"
+    },
+    "dataSources": {},
+    "filters": [
+      {
+        "id": "show-audit",
+        "type": "boolean",
+        "label": "显示审核筛选",
+        "default": true
+      },
+      {
+        "id": "include-pending",
+        "type": "boolean",
+        "label": "包含待处理",
+        "default": false
+      },
+      {
+        "id": "include-archived",
+        "type": "boolean",
+        "label": "包含归档",
+        "default": false
+      },
+      {
+        "id": "include-audit",
+        "type": "boolean",
+        "label": "包含审核记录",
+        "default": false,
+        "visibleWhen": {
+          "filter": "show-audit",
+          "part": "value",
+          "op": "eq",
+          "value": true
+        }
+      }
+    ],
+    "sections": [
+      {
+        "id": "header-section",
+        "components": [
+          {
+            "id": "header",
+            "type": "iocHeader",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "identity": {
+                "title": "IOC 页头筛选行"
+              },
+              "filterIds": [
+                "show-audit",
+                "include-pending",
+                "include-archived",
+                "include-audit"
+              ],
+              "filterRows": [
+                {
+                  "title": "记录范围",
+                  "filterIds": []
+                },
+                {
+                  "title": "审核筛选",
+                  "filterIds": [
+                    "include-audit"
+                  ]
+                }
+              ],
+              "presentation": {
+                "layout": "inline"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "records",
+        "components": [
+          {
+            "id": "applied-filters",
+            "type": "text",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "body": {
+                "parts": [
+                  "包含待处理：",
+                  {
+                    "filter": "include-pending"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/title",
+      "message": "缺少必填字段 title"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/identity",
+      "message": "存在未定义字段 identity(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterRows",
+      "message": "存在未定义字段 filterRows(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/presentation",
+      "message": "存在未定义字段 presentation(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/data",
+      "message": "缺少必填字段 data"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/rows",
+      "message": "缺少必填字段 rows"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/identity",
+      "message": "存在未定义字段 identity(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterIds",
+      "message": "存在未定义字段 filterIds(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterRows",
+      "message": "存在未定义字段 filterRows(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/presentation",
+      "message": "存在未定义字段 presentation(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/data",
+      "message": "缺少必填字段 data"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "缺少必填字段 categoryField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/series",
+      "message": "缺少必填字段 series"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/identity",
+      "message": "存在未定义字段 identity(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterIds",
+      "message": "存在未定义字段 filterIds(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterRows",
+      "message": "存在未定义字段 filterRows(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/presentation",
+      "message": "存在未定义字段 presentation(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/data",
+      "message": "缺少必填字段 data"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/xField",
+      "message": "缺少必填字段 xField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/series",
+      "message": "缺少必填字段 series"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/identity",
+      "message": "存在未定义字段 identity(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterIds",
+      "message": "存在未定义字段 filterIds(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterRows",
+      "message": "存在未定义字段 filterRows(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/presentation",
+      "message": "存在未定义字段 presentation(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/data",
+      "message": "缺少必填字段 data"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "缺少必填字段 valueField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "缺少必填字段 categoryField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/identity",
+      "message": "存在未定义字段 identity(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterIds",
+      "message": "存在未定义字段 filterIds(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterRows",
+      "message": "存在未定义字段 filterRows(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/presentation",
+      "message": "存在未定义字段 presentation(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/value",
+      "message": "缺少必填字段 value"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "缺少必填字段 categoryField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/identity",
+      "message": "存在未定义字段 identity(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterIds",
+      "message": "存在未定义字段 filterIds(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterRows",
+      "message": "存在未定义字段 filterRows(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/presentation",
+      "message": "存在未定义字段 presentation(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/data",
+      "message": "缺少必填字段 data"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "缺少必填字段 columns"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/identity",
+      "message": "存在未定义字段 identity(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterIds",
+      "message": "存在未定义字段 filterIds(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterRows",
+      "message": "存在未定义字段 filterRows(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/presentation",
+      "message": "存在未定义字段 presentation(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/data",
+      "message": "缺少必填字段 data"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "缺少必填字段 valueField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/nameField",
+      "message": "缺少必填字段 nameField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/map",
+      "message": "缺少必填字段 map"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/identity",
+      "message": "存在未定义字段 identity(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterIds",
+      "message": "存在未定义字段 filterIds(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterRows",
+      "message": "存在未定义字段 filterRows(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/presentation",
+      "message": "存在未定义字段 presentation(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/value",
+      "message": "缺少必填字段 value"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/nameField",
+      "message": "缺少必填字段 nameField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/map",
+      "message": "缺少必填字段 map"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/identity",
+      "message": "存在未定义字段 identity(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterIds",
+      "message": "存在未定义字段 filterIds(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterRows",
+      "message": "存在未定义字段 filterRows(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/presentation",
+      "message": "存在未定义字段 presentation(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "缺少必填字段 valueField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/identity",
+      "message": "存在未定义字段 identity(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterIds",
+      "message": "存在未定义字段 filterIds(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterRows",
+      "message": "存在未定义字段 filterRows(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/presentation",
+      "message": "存在未定义字段 presentation(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/value",
+      "message": "缺少必填字段 value"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/identity",
+      "message": "存在未定义字段 identity(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterIds",
+      "message": "存在未定义字段 filterIds(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterRows",
+      "message": "存在未定义字段 filterRows(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/presentation",
+      "message": "存在未定义字段 presentation(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/tabs",
+      "message": "缺少必填字段 tabs"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/identity",
+      "message": "存在未定义字段 identity(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterIds",
+      "message": "存在未定义字段 filterIds(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterRows",
+      "message": "存在未定义字段 filterRows(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/presentation",
+      "message": "存在未定义字段 presentation(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/components",
+      "message": "缺少必填字段 components"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/identity",
+      "message": "存在未定义字段 identity(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterIds",
+      "message": "存在未定义字段 filterIds(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterRows",
+      "message": "存在未定义字段 filterRows(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/presentation",
+      "message": "存在未定义字段 presentation(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/data",
+      "message": "缺少必填字段 data"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/nameField",
+      "message": "缺少必填字段 nameField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "缺少必填字段 valueField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/identity",
+      "message": "存在未定义字段 identity(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterIds",
+      "message": "存在未定义字段 filterIds(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterRows",
+      "message": "存在未定义字段 filterRows(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/presentation",
+      "message": "存在未定义字段 presentation(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/data",
+      "message": "缺少必填字段 data"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/nameField",
+      "message": "缺少必填字段 nameField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "缺少必填字段 valueField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/identity",
+      "message": "存在未定义字段 identity(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterIds",
+      "message": "存在未定义字段 filterIds(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterRows",
+      "message": "存在未定义字段 filterRows(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/presentation",
+      "message": "存在未定义字段 presentation(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/data",
+      "message": "缺少必填字段 data"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/items",
+      "message": "缺少必填字段 items"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/identity",
+      "message": "存在未定义字段 identity(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterIds",
+      "message": "存在未定义字段 filterIds(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterRows",
+      "message": "存在未定义字段 filterRows(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/presentation",
+      "message": "存在未定义字段 presentation(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/data",
+      "message": "缺少必填字段 data"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "缺少必填字段 categoryField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "缺少必填字段 columns"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/identity",
+      "message": "存在未定义字段 identity(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterIds",
+      "message": "存在未定义字段 filterIds(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterRows",
+      "message": "存在未定义字段 filterRows(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/presentation",
+      "message": "存在未定义字段 presentation(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/data",
+      "message": "缺少必填字段 data"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/field",
+      "message": "缺少必填字段 field"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/identity",
+      "message": "存在未定义字段 identity(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterIds",
+      "message": "存在未定义字段 filterIds(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterRows",
+      "message": "存在未定义字段 filterRows(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/presentation",
+      "message": "存在未定义字段 presentation(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/identity",
+      "message": "存在未定义字段 identity(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterIds",
+      "message": "存在未定义字段 filterIds(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterRows",
+      "message": "存在未定义字段 filterRows(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/presentation",
+      "message": "存在未定义字段 presentation(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/identity",
+      "message": "存在未定义字段 identity(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterIds",
+      "message": "存在未定义字段 filterIds(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterRows",
+      "message": "存在未定义字段 filterRows(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/presentation",
+      "message": "存在未定义字段 presentation(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/label",
+      "message": "缺少必填字段 label"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/action",
+      "message": "缺少必填字段 action"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/identity",
+      "message": "存在未定义字段 identity(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterIds",
+      "message": "存在未定义字段 filterIds(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterRows",
+      "message": "存在未定义字段 filterRows(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/presentation",
+      "message": "存在未定义字段 presentation(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterId",
+      "message": "缺少必填字段 filterId"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/identity",
+      "message": "存在未定义字段 identity(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterIds",
+      "message": "存在未定义字段 filterIds(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterRows",
+      "message": "存在未定义字段 filterRows(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/presentation",
+      "message": "存在未定义字段 presentation(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterRows/0/filterIds",
+      "message": "must NOT have fewer than 1 items"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0",
+      "message": "must match exactly one schema in oneOf"
+    }
+  ]
+}

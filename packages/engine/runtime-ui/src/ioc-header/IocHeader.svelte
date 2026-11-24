@@ -4,10 +4,12 @@
   import type { Snippet } from 'svelte';
   import { onMount } from 'svelte';
   import type { ResolvedIocHeader } from './model';
+  import type { ResolvedHeaderFilterRow } from './filter-groups';
   import { headerBackAction, type BrowserReturn } from './back';
-  let {model, titleLink, filterIds, overflowIds=[], controls, returnContext, onback, readOnly=false, note, staticView=false}: {
+  let {model, titleLink, filterIds, overflowIds=[], filterRows, controls, returnContext, onback, readOnly=false, note, staticView=false}: {
     titleLink?:import('../../../widgets/src/components/text/links').TextBlockLink;
     model:ResolvedIocHeader;filterIds:string[];overflowIds?:string[];controls:Snippet<[string,boolean]>;
+    filterRows?:ResolvedHeaderFilterRow[];
     returnContext?:{entryId:string;label?:string;back?:()=>void};onback?:()=>void;readOnly?:boolean;note?:string;staticView?:boolean;
   } = $props();
   let browser = $state<BrowserReturn>();
@@ -16,7 +18,8 @@
   $effect(() => {
     if (note && !staticView) debugWarn('[MetricCanvas][IOC_HEADER_NOTICE]', note);
   });
-  const flow=$derived(model.layout==='inline' && model.collapse!=='firstRow');
+  const withRows = $derived(filterRows !== undefined);
+  const flow=$derived(model.layout==='inline' && model.collapse!=='firstRow' && !withRows);
   const uid = $props.id();
   const displayedIds=$derived(staticView?[...filterIds,...overflowIds]:filterIds);
   const showBack=$derived(!staticView && !!backAction);
@@ -37,10 +40,20 @@
       overflowing=hidden.length>0;
       firstHeight=Math.max(0,...nodes.filter(node=>!hidden.includes(node)).map(node=>node.getBoundingClientRect().bottom-first));
     };
-    const observer=new ResizeObserver(measure);observer.observe(element);
+    let frame = 0;
+    const observer = new ResizeObserver(() => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(measure);
+    });
+    observer.observe(element);
     for(const node of element.children)observer.observe(node);
     void element.ownerDocument.fonts?.ready.then(measure);
-    measure();return()=>{active=false;observer.disconnect();};
+    measure();
+    return () => {
+      active = false;
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+    };
   });
   const collapsed=$derived(!staticView && model.collapse==='firstRow' && overflowing && !expanded);
   function activateTitleLink(event:KeyboardEvent){
@@ -51,8 +64,8 @@
     expanded=!expanded;
   }
 </script>
-{#if model.title || model.code || model.tags.length || model.description || model.facts.length || displayedIds.length || overflowIds.length || showBack}
-<header data-ioc-header data-dashboard-toolbar={model.layout==='inline'?true:undefined} data-density={model.density} class:flow={flow} class:inline={model.layout==='inline'} class:identityless={!hasIdentity} class:static-view={staticView} class:compact={model.density==='compact'}>
+{#if model.title || model.code || model.tags.length || model.description || model.facts.length || displayedIds.length || overflowIds.length || filterRows?.length || showBack}
+<header data-ioc-header data-dashboard-toolbar={model.layout==='inline'?true:undefined} data-density={model.density} class:flow={flow} class:with-rows={withRows} class:inline={model.layout==='inline'} class:identityless={!hasIdentity} class:static-view={staticView} class:compact={model.density==='compact'}>
   {#if hasIdentity}
     <div class="identity">
       <div class="heading">
@@ -89,6 +102,16 @@
       {#if !staticView && model.collapse==='firstRow' && overflowing}<button class="toggle" type="button" aria-expanded={expanded} aria-controls={uid} onclick={toggle}>{expanded?'收起筛选':'展开筛选'}</button>{/if}
     </div>
   {/if}
+  {#each filterRows ?? [] as row (row.key)}
+    <div class="filter-row" data-ioc-filter-row role="group" aria-label={row.title}>
+      {#if row.title}<div class="filter-row-title">{row.title}</div>{/if}
+      <div class="filters row-controls">
+        {#each row.filterIds as id (id)}
+          <div data-ioc-filter={id} class="filter">{@render controls(id,readOnly || staticView)}</div>
+        {/each}
+      </div>
+    </div>
+  {/each}
 </header>
 {/if}
 <style>
@@ -129,6 +152,12 @@
   .inline .filter-region{flex:1 1 240px;flex-wrap:wrap;align-items:center;}.inline .filters{gap:16px;align-items:center;}
   .inline:not(.flow) .filter-region{flex-basis:max-content;}
   .inline .filter{--mc-filter-label-display:none;}
+  .with-rows .filters{justify-content:flex-end;}
+  .inline.with-rows .filter-region{flex-basis:240px;}
+  .filter-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;width:100%;min-width:0;margin-top:12px;}
+  .inline .filter-row{margin-top:0;}
+  .filter-row-title{font-size:14px;font-weight:600;overflow-wrap:anywhere;}
+  .filter-row .row-controls{flex:1 1 auto;align-items:center;}
   .filter-overflow{position:relative;z-index:70;flex:none;margin-left:auto;}
   .filter-overflow summary{display:inline-flex;box-sizing:border-box;height:var(--mc-filter-control-height,34px);align-items:center;gap:6px;padding:0 12px;color:#191919;background:#fff;border:1px solid var(--mc-filter-control-border-color,#c2c2c2);border-radius:var(--mc-filter-control-radius,6px);cursor:pointer;font-size:var(--mc-filter-font-size,14px);list-style:none;white-space:nowrap;}
   .filter-overflow summary::-webkit-details-marker{display:none;}

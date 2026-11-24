@@ -659,6 +659,7 @@ Embed 自动读取 URL（含 hash 路由）：[账号参数场景](capabilities/
 - [折线圆点按数值正负着色](capabilities/chart/README.md#bar-line-marker-color)：`/pages/bar-line-marker-color`，内联合成数据。
 - [柱线组合的系列条件显隐](capabilities/chart/README.md#系列条件显隐687)：`/pages/chart-series-visibility`，内联合成数据。
 
+- [IOC 页头筛选行](capabilities/ioc-header/section-component/README.md)：`/pages/ioc-header-filter-rows`，展示多条带标题的独立筛选行和条件显隐。
 - [IOC Header 子控件](capabilities/ioc-header/controls/README.md)：`/pages/ioc-header-controls`，显式 RegionFilter、应用级 Adapter 与原查询绑定。
 - [IOC Region 代表处下钻](capabilities/ioc-header/controls/README.md#office-navigation)：`/pages/ioc-office-drill-overview` 到 `/pages/ioc-office-drill-detail`，覆盖期间传递、概览返回和直达替换历史。
 数值显示：[整数与缺失值](capabilities/data/numeric-value-display.json)，入口 `/pages/numeric-value-display`；合成数据覆盖整数百分比、单位缩放、真实零、自定义缺失、指标卡进度环和表格副标题默认、覆盖及关闭，步骤见[数据场景说明](capabilities/data/README.md#整数与缺失值显示)。

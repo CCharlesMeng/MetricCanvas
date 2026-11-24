@@ -118,7 +118,7 @@ export const pageDocumentSchemaZ: z.ZodType = z
     layout: pageLayoutFormZ.optional(),
     layoutForm: pageLayoutFormZ.optional(),
     dashboardToolbar: dashboardToolbarZ.optional(),
-    iocHeader: iocHeaderZ.optional().meta({deprecated:true,description:'旧根级IOC页头兼容读取；新写出使用首section首组件iocHeader，属性位于props'}),
+    iocHeader: iocHeaderZ.omit({filterRows:true}).optional().meta({deprecated:true,description:'旧根级IOC页头兼容读取；新写出使用首section首组件iocHeader，属性位于props'}),
     strictURLInputs: z.literal(true).optional(),
     params: z.union([z.array(pageParamZ).min(1), groupedPageParamsZ]).optional(),
     dataSources: z.record(idZ, dataSourceDocumentZ),
