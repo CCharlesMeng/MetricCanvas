@@ -1701,7 +1701,15 @@ function componentErrors(
 
   }
 
+  function checkTableExpand(component: Extract<Component, { type: 'table' }>): void {
+    if (!component.props.expand) return;
+    if (!/^\/sections\/\d+\/components\/\d+$/.test(componentPath) || component.layout.layer === 'backdrop') {
+      errors.push(schemaError(`${componentPath}/props/expand`, 'expand 只适用于页面正文分区的顶层表格'));
+    }
+  }
+
   function checkTable(component: Extract<Component, { type: 'table' }>): void {
+    checkTableExpand(component);
     function checkNumericPresentationColumn(column: Exclude<TableColumnNode, { kind: 'group' }>, path: string): void {
       const properties = (['arrowRule', 'absoluteDisplayLimit'] as const).filter(key => column[key] !== undefined);
       if (!properties.length) return;

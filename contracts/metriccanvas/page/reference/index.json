@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.136",
-  "schemaSha256": "2a5f403d14ec6e704de9fb1bbcce5c3794e431e4c960bfa9c77fe8bf67991b9e",
+  "schemaVersion": "6.137",
+  "schemaSha256": "45ce0c52efa0f945cae978f9511fd8bf6d2bb6e3745b4471d7a31943915391b3",
   "semanticSources": [
     {
       "file": "metriccanvas-authoring/core/page/analysis-report.ts",
@@ -100,7 +100,7 @@
     },
     {
       "file": "packages/engine/runtime-ui/src/RuntimeSection.svelte",
-      "sha256": "3cf010b6f420a647487bb2adbfd6d96df3bbf1acbe02df03de4c19ea23baafc4"
+      "sha256": "3a95b224306f3cc88205ea47b84403b32fb16be085ebb06bed4603186d12ec33"
     },
     {
       "file": "packages/engine/runtime-ui/src/dashboard/FilterGroup.svelte",
@@ -432,7 +432,7 @@
     },
     {
       "file": "packages/page/src/schema/components/table.ts",
-      "sha256": "7192fb54d32ca2af388af69a13fc746a946b393cc04aec830f2ec0b362e984b9"
+      "sha256": "9997c82781785c3f23beb0df77ed94ae1b5a396075f963dbf884ce09c7a27373"
     },
     {
       "file": "packages/page/src/schema/components/text.ts",
@@ -572,11 +572,11 @@
     },
     {
       "file": "packages/page/src/validate.ts",
-      "sha256": "93bc5d41692f54a8312b95c7e38e35f113c211b795e07ca8dd019048b00a5cca"
+      "sha256": "9624b8c5bbec3004fe6104cac123926331d65d5dc1e8d7be6cc13ac740b15cdb"
     },
     {
       "file": "packages/page/src/version.ts",
-      "sha256": "1df7a2fc19f8c647a518b9365e94f099520487adc4184dbd53a97bd8fe4c7a1b"
+      "sha256": "3d8b92c62cf8de17a892943eb28378e9edc870c68096071557e45606fb09a154"
     },
     {
       "file": "packages/page/tests/ai-summary-regions.test.ts",
@@ -588,7 +588,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "96b1999cb0f307f9d27d5ac36d3271483b61ac1f66281b60b3b4b13874019703"
+      "sha256": "731106ebda6a58ed3fb9a4a981bfdab9298190f9b4a81d5dedac9aebaa397399"
     }
   ],
   "modules": {
@@ -1500,6 +1500,7 @@
       ],
       "examples": [
         "table-absolute-display-limit",
+        "table-expand",
         "table-trend-arrows",
         "query-dashboard",
         "reference-branches-page",
@@ -2297,7 +2298,8 @@
         "6.133",
         "6.134",
         "6.135",
-        "6.136"
+        "6.136",
+        "6.137"
       ]
     },
     {
@@ -15468,6 +15470,12 @@
       "ref": "#/definitions/textValue"
     },
     {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/expand",
+      "path": "@tableComponent.props.expand",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
       "pointer": "#/definitions/tableComponent/properties/props/properties/toolbar",
       "path": "@tableComponent.props.toolbar",
       "required": "本分支可选",
@@ -22124,42 +22132,42 @@
       "type": "text",
       "file": "examples/component-text.json",
       "pointer": "#/sections/0/components/0",
-      "source": "page/conformance/valid/page-visibility-inputs.json"
+      "source": "page/conformance/valid/table-expand.json"
     },
     {
       "type": "text",
       "variant": "plain",
       "file": "examples/component-text-plain.json",
       "pointer": "#/sections/0/components/0",
-      "source": "page/conformance/valid/report-title-styles.json"
+      "source": "page/conformance/valid/table-expand.json"
     },
     {
       "type": "text",
       "variant": "heading",
       "file": "examples/component-text-heading.json",
       "pointer": "#/sections/0/components/0",
-      "source": "page/conformance/valid/report-title-styles.json"
+      "source": "page/conformance/valid/table-expand.json"
     },
     {
       "type": "text",
       "variant": "insight",
       "file": "examples/component-text-insight.json",
       "pointer": "#/sections/0/components/0",
-      "source": "page/conformance/valid/report-title-styles.json"
+      "source": "page/conformance/valid/table-expand.json"
     },
     {
       "type": "text",
       "variant": "reportInline",
       "file": "examples/component-text-reportInline.json",
       "pointer": "#/sections/0/components/0",
-      "source": "page/conformance/valid/report-title-styles.json"
+      "source": "page/conformance/valid/table-expand.json"
     },
     {
       "type": "text",
       "variant": "riskNotice",
       "file": "examples/component-text-riskNotice.json",
       "pointer": "#/sections/0/components/0",
-      "source": "page/conformance/valid/report-title-styles.json"
+      "source": "page/conformance/valid/table-expand.json"
     },
     {
       "type": "aiSummary",

@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "6.137",
+  "id": "table-expand",
+  "layout": "dashboard",
+  "meta": { "title": "分区整行表格展开（合成演示）" },
+  "dataSources": {
+    "regions": {
+      "fields": {
+        "region": { "type": "string", "role": "dimension" },
+        "amount": { "type": "number", "role": "measure" }
+      },
+      "source": { "type": "inline", "rows": [
+        { "region": "欧洲", "amount": 30 },
+        { "region": "亚太", "amount": 18 }
+      ] }
+    }
+  },
+  "sections": [{
+    "id": "regions",
+    "container": "plain",
+    "columnTracks": [2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3],
+    "components": [
+      { "id": "total", "type": "text", "layout": { "span": 12 }, "props": { "body": "地区总览" } },
+      { "id": "peer", "type": "text", "layout": { "span": 9 }, "props": { "body": "同行说明" } },
+      {
+        "id": "details",
+        "type": "table",
+        "layout": { "span": 3 },
+        "data": { "main": "regions" },
+        "props": {
+          "title": "地区指标明细",
+          "expand": true,
+          "columns": [
+            { "field": "region", "title": "地区" },
+            { "field": "amount", "title": "金额", "sortable": true }
+          ]
+        }
+      },
+      { "id": "footer", "type": "text", "layout": { "span": 12 }, "props": { "body": "下一行内容" } }
+    ]
+  }]
+}

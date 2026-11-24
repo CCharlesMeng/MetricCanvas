@@ -209,6 +209,7 @@ export const tableComponentZ = z
         rowVisibleWhen: conditionZ.optional(),
         title: textValueZ.optional(),
         subtitle: textValueZ.optional(),
+        expand: z.boolean().optional().describe('允许表格展开至分区整行并收起同行组件'),
         toolbar: z.object({
           search: z.union([z.object({
             ...interactionShape,

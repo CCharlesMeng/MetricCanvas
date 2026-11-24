@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.136",
+  "schemaVersion": "6.137",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "table.pinnedTop"
@@ -331,6 +331,7 @@
       ],
       "examples": [
         "references/page-metadata/examples/table-absolute-display-limit.json",
+        "references/page-metadata/examples/table-expand.json",
         "references/page-metadata/examples/table-trend-arrows.json",
         "references/page-metadata/examples/query-dashboard.json",
         "references/page-metadata/examples/reference-branches-page.json",
@@ -385,7 +386,7 @@
           "sections"
         ],
         "title": "页面",
-        "$id": "https://metriccanvas/page/v6.136",
+        "$id": "https://metriccanvas/page/v6.137",
         "properties": {
           "schemaVersion": "#/properties/schemaVersion",
           "id": "#/properties/id",
@@ -451,6 +452,7 @@
           "rowVisibleWhen": "#/definitions/tableComponent/properties/props/properties/rowVisibleWhen",
           "title": "#/definitions/tableComponent/properties/props/properties/title",
           "subtitle": "#/definitions/tableComponent/properties/props/properties/subtitle",
+          "expand": "#/definitions/tableComponent/properties/props/properties/expand",
           "toolbar": "#/definitions/tableComponent/properties/props/properties/toolbar",
           "variant": "#/definitions/tableComponent/properties/props/properties/variant",
           "bottomFade": "#/definitions/tableComponent/properties/props/properties/bottomFade",

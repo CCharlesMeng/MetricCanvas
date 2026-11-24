@@ -1228,6 +1228,11 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/table-expand.json",
+      "target": "product-contracts/page/conformance/valid/table-expand.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/valid/ioc-component-availability-page.json",
       "target": "product-contracts/page/conformance/valid/ioc-component-availability-page.json",
       "scope": "exact product contract"
@@ -1630,6 +1635,16 @@
     {
       "source": "product:page/conformance/invalid/bar-average-line.json",
       "target": "product-contracts/page/conformance/invalid/bar-average-line.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/table-expand-version.json",
+      "target": "product-contracts/page/conformance/invalid/table-expand-version.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/table-expand-type.json",
+      "target": "product-contracts/page/conformance/invalid/table-expand-type.json",
       "scope": "exact product contract"
     },
     {
@@ -4925,6 +4940,16 @@
     {
       "source": "product:page/reference/errors/bar-average-line.json",
       "target": "references/page-metadata/errors/bar-average-line.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/table-expand-version.json",
+      "target": "references/page-metadata/errors/table-expand-version.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/table-expand-type.json",
+      "target": "references/page-metadata/errors/table-expand-type.json",
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
@@ -8653,6 +8678,11 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/examples/table-expand.json",
+      "target": "references/page-metadata/examples/table-expand.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/examples/table-trend-arrows.json",
       "target": "references/page-metadata/examples/table-trend-arrows.json",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -9269,11 +9299,11 @@
     }
   ],
   "counts": {
-    "product": 1821,
+    "product": 1827,
     "authoring": 32,
     "modules": 36,
-    "topics": 331,
-    "nodes": 2773,
+    "topics": 332,
+    "nodes": 2774,
     "tools": 9,
     "components": 20
   },

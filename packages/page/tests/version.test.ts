@@ -17,6 +17,7 @@ const introducedAt: Record<string, number> = {
   'chart-tooltip-color-rule':134,
   'ioc-header-filter-rows':135,
   'metric-card-change-visibility':136,
+  'table-expand':137,
   'filter-source-candidate-levels':122,
   'native-ioc-filter-preparation':120,
   'table-absolute-display-limit':119,

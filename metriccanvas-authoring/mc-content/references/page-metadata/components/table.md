@@ -597,8 +597,16 @@ sign 模式的零、负零及缺失不显示箭头；fixed 模式与固定颜色
 
 `/pages/numeric-value-display` 用内联合成数据验收有标题、无标题、显式关闭和自定义四种情况。
 
+<a id="table-expand"></a>
 
-页面协议 6.136。结构真源为本册[schema.json](../schema.json)，SHA256 `2a5f403d14ec6e704de9fb1bbcce5c3794e431e4c960bfa9c77fe8bf67991b9e`。字段表自动生成；可选不等于有默认值。
+## 表格展开（6.137）
+
+正文分区的顶层表格可声明 `"expand": true`。在并排布局中，表格右上角提供放大按钮。展开时表格占满分区整行，同一视觉行的其他组件收起。再次点击恢复原布局，表格保留当前排序、筛选和分页。当前分区隐藏或表格移除时结束展开；已经全宽的表格和静态导出沿用默认布局。省略或设为 `false` 时沿用默认呈现。
+
+配置示例见 [table-expand](../examples/table-expand.json)，Playground 入口 `/pages/table-expand`。
+
+
+页面协议 6.137。结构真源为本册[schema.json](../schema.json)，SHA256 `45ce0c52efa0f945cae978f9511fd8bf6d2bb6e3745b4471d7a31943915391b3`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -790,6 +798,16 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/subtitl
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | 引用 #/definitions/textValue | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f657870616e64"></a>
+
+### `@tableComponent.props.expand`
+
+Schema位置：`#/definitions/tableComponent/properties/props/properties/expand`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "boolean" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 允许表格展开至分区整行并收起同行组件 |
 
 <a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f746f6f6c626172"></a>
 
@@ -4254,6 +4272,7 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/actions
 - [embedded](../examples/component-table-embedded.json)：独立完整页面，保留必要语义依赖。
 - [forecastMatrix](../examples/component-table-forecastMatrix.json)：独立完整页面，保留必要语义依赖。
 - [table-absolute-display-limit](../examples/table-absolute-display-limit.json)：完整合法页面；查询仅为静态契约证据。
+- [table-expand](../examples/table-expand.json)：完整合法页面；查询仅为静态契约证据。
 - [table-trend-arrows](../examples/table-trend-arrows.json)：完整合法页面；查询仅为静态契约证据。
 - [query-dashboard](../examples/query-dashboard.json)：完整合法页面；查询仅为静态契约证据。
 - [reference-branches-page](../examples/reference-branches-page.json)：完整合法页面；查询仅为静态契约证据。

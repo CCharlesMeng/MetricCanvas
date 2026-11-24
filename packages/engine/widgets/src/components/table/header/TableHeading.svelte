@@ -1,9 +1,9 @@
 <svelte:options css="injected" />
 <script lang="ts">
   import type {Snippet} from 'svelte';
-  let {title,subtitle,showTools=false,tools}:{title?:string;subtitle?:string;showTools?:boolean;tools?:Snippet}=$props();
+  let {title,subtitle,showTools=false,tools,trailingAction}:{title?:string;subtitle?:string;showTools?:boolean;tools?:Snippet;trailingAction?:Snippet}=$props();
 </script>
-{#if title || subtitle || showTools}
+{#if title || subtitle || showTools || trailingAction}
   <div class="table-heading">
     {#if title || subtitle}
       <div class="heading-copy">
@@ -11,7 +11,14 @@
         {#if subtitle}<div class="subtitle">{subtitle}</div>{/if}
       </div>
     {/if}
-    {#if showTools && tools}{@render tools()}{/if}
+    {#if trailingAction}
+      <div class="heading-actions">
+        {#if showTools && tools}{@render tools()}{/if}
+        {@render trailingAction()}
+      </div>
+    {:else if showTools && tools}
+      {@render tools()}
+    {/if}
   </div>
 {/if}
 <style>
@@ -31,6 +38,13 @@
     gap: 4px 16px;
     min-width: 0;
     overflow-wrap: anywhere;
+  }
+  .heading-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-inline-start: auto;
   }
   h3 {
     margin: 0;

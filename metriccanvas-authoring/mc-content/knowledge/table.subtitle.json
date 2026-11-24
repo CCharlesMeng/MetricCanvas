@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.136",
+  "schemaVersion": "6.137",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "table.subtitle"
@@ -10,7 +10,7 @@
       "reference": "references/page-metadata/components/table.md",
       "blocks": [
         "# 明细表 table\n\n首次加载、筛选重查、查询翻页和排序期间保留表头、工具栏及分页区域，表体统一显示10行灰色骨架，柔光从左向右循环扫过各占位条，不显示加载提示文字或转圈；当前结果就绪后替换。本地即时操作不增加加载等待，展开子表格遵循同一规则。系统启用减少动态效果时显示静态骨架。完整边界见[加载时保留组件结构](../data-sources.md#screen-loading)。级联查询按[渐进补列](../data-sources.md#progressive-table-columns)先显示已确定行集的就绪列，未完成单元格显示骨架，失败或确认缺失的值沿用既有缺失展示；行集与顺序有待确认时继续显示表体骨架。\n\ncolumns/children 定义字段列与递归列组；交互、查询与呈现约束见下列专题。\n\n\n<a id=\"local-default-sort\"></a>",
-        "## 表格标题与备注\n\n外层明细表省略 `props.subtitle` 时，由引擎显示「— 代表本周期没有合同单/商务单」。显式写 `\"subtitle\": \"\"` 可隐藏，其他已解析文本覆盖默认文案。该字段复用 `props.title` 支持的文字取值。存量页面随新版运行时生效，无需修改 Schema 版本。行内子表格沿用自己的标题配置。\n\n副标题为 12 px 灰字。有标题时在右侧相隔 16 px 同行排列，空间不足时可换行。无标题时从表头左侧开始。表格搜索与导出操作保持右侧对齐。\n\n`/pages/numeric-value-display` 用内联合成数据验收有标题、无标题、显式关闭和自定义四种情况。"
+        "## 表格标题与备注\n\n外层明细表省略 `props.subtitle` 时，由引擎显示「— 代表本周期没有合同单/商务单」。显式写 `\"subtitle\": \"\"` 可隐藏，其他已解析文本覆盖默认文案。该字段复用 `props.title` 支持的文字取值。存量页面随新版运行时生效，无需修改 Schema 版本。行内子表格沿用自己的标题配置。\n\n副标题为 12 px 灰字。有标题时在右侧相隔 16 px 同行排列，空间不足时可换行。无标题时从表头左侧开始。表格搜索与导出操作保持右侧对齐。\n\n`/pages/numeric-value-display` 用内联合成数据验收有标题、无标题、显式关闭和自定义四种情况。\n\n<a id=\"table-expand\"></a>"
       ],
       "rules": [
         {
@@ -331,6 +331,7 @@
       ],
       "examples": [
         "references/page-metadata/examples/table-absolute-display-limit.json",
+        "references/page-metadata/examples/table-expand.json",
         "references/page-metadata/examples/table-trend-arrows.json",
         "references/page-metadata/examples/query-dashboard.json",
         "references/page-metadata/examples/reference-branches-page.json",
@@ -385,7 +386,7 @@
           "sections"
         ],
         "title": "页面",
-        "$id": "https://metriccanvas/page/v6.136",
+        "$id": "https://metriccanvas/page/v6.137",
         "properties": {
           "schemaVersion": "#/properties/schemaVersion",
           "id": "#/properties/id",
@@ -451,6 +452,7 @@
           "rowVisibleWhen": "#/definitions/tableComponent/properties/props/properties/rowVisibleWhen",
           "title": "#/definitions/tableComponent/properties/props/properties/title",
           "subtitle": "#/definitions/tableComponent/properties/props/properties/subtitle",
+          "expand": "#/definitions/tableComponent/properties/props/properties/expand",
           "toolbar": "#/definitions/tableComponent/properties/props/properties/toolbar",
           "variant": "#/definitions/tableComponent/properties/props/properties/variant",
           "bottomFade": "#/definitions/tableComponent/properties/props/properties/bottomFade",

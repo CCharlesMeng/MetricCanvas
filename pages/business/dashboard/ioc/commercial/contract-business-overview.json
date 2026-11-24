@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.136",
+  "schemaVersion": "6.137",
   "id": "contract-business-overview",
   "layout": "dashboard",
   "meta": {
@@ -1575,7 +1575,7 @@
           "id": "world-map",
           "type": "mapChart",
           "layout": {
-            "span": 6
+            "span": 9
           },
           "data": {
             "main": "regions"
@@ -1690,7 +1690,7 @@
           "id": "global-overview-table",
           "type": "table",
           "layout": {
-            "span": 6
+            "span": 3
           },
           "data": {
             "main": "regions"
@@ -1768,9 +1768,24 @@
               }
             ],
             "subtitle": "",
-            "title": "地区部指标明细"
+            "title": "地区部指标明细",
+            "expand": true
           }
         }
+      ],
+      "columnTracks": [
+        2,
+        3,
+        2,
+        3,
+        2,
+        3,
+        2,
+        3,
+        2,
+        3,
+        2,
+        3
       ]
     },
     {
@@ -2462,7 +2477,7 @@
           "id": "china-map",
           "type": "mapChart",
           "layout": {
-            "span": 6
+            "span": 9
           },
           "data": {
             "main": "offices"
@@ -2568,7 +2583,7 @@
           "id": "china-overview-table",
           "type": "table",
           "layout": {
-            "span": 6
+            "span": 3
           },
           "data": {
             "main": "offices"
@@ -2646,9 +2661,24 @@
               }
             ],
             "subtitle": "",
-            "title": "代表处指标明细"
+            "title": "代表处指标明细",
+            "expand": true
           }
         }
+      ],
+      "columnTracks": [
+        2,
+        3,
+        2,
+        3,
+        2,
+        3,
+        2,
+        3,
+        2,
+        3,
+        2,
+        3
       ]
     },
     {
@@ -3342,7 +3372,7 @@
           "id": "regional-map",
           "type": "mapChart",
           "layout": {
-            "span": 6
+            "span": 9
           },
           "data": {
             "main": "offices"
@@ -3448,7 +3478,7 @@
           "id": "regional-overview-table",
           "type": "table",
           "layout": {
-            "span": 6
+            "span": 3
           },
           "data": {
             "main": "offices"
@@ -3526,9 +3556,24 @@
               }
             ],
             "subtitle": "",
-            "title": "代表处指标明细"
+            "title": "代表处指标明细",
+            "expand": true
           }
         }
+      ],
+      "columnTracks": [
+        2,
+        3,
+        2,
+        3,
+        2,
+        3,
+        2,
+        3,
+        2,
+        3,
+        2,
+        3
       ]
     }
   ]

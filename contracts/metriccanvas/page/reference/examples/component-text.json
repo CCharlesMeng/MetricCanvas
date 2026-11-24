@@ -1,20 +1,20 @@
 {
   "schemaVersion": "6.5",
-  "id": "page-visibility-inputs",
-  "layout": "report",
+  "id": "table-expand",
+  "layout": "dashboard",
   "dataSources": {},
   "sections": [
     {
       "id": "main",
       "components": [
         {
-          "id": "fact-text",
+          "id": "peer",
           "type": "text",
           "layout": {
-            "span": 12
+            "span": 9
           },
           "props": {
-            "body": "业务事实已就绪。"
+            "body": "同行说明"
           }
         }
       ]

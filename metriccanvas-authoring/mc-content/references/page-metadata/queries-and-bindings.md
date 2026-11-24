@@ -416,7 +416,7 @@ SourceProgram、Node执行入口、分页/组合查询、导出统一选择合�
 同一次查询可绑定两个独立筛选器到同一字段，例如 `include-office` 使用 `operator:"="`、`exclude-office` 使用 `operator:"!="`，两项按 AND 生效。引擎将包含集合减去排除集合后编码为一个包含条件；包含范围清空时只保留排除条件，排除范围清空时只保留包含条件，两项均清空则不生成该字段条件。包含集合被全部排除时直接产生空结果，不发出无条件请求。图表右上角双多选下拉示例 `/pages/chart-include-exclude` 复用 `filterGroup`、数据源候选与组合卡工具栏；图表与明细共用同一个查询页面数据源，无需新增 Schema 或引擎分支。示例使用合成数据，不代表真实 DQE 验收。
 
 
-页面协议 6.136。结构真源为本册[schema.json](schema.json)，SHA256 `2a5f403d14ec6e704de9fb1bbcce5c3794e431e4c960bfa9c77fe8bf67991b9e`。字段表自动生成；可选不等于有默认值。
+页面协议 6.137。结构真源为本册[schema.json](schema.json)，SHA256 `45ce0c52efa0f945cae978f9511fd8bf6d2bb6e3745b4471d7a31943915391b3`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

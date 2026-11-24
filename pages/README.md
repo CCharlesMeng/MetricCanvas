@@ -220,6 +220,8 @@ pages/
 - 修改与删除可用顶部「撤销上一步」恢复；点击「保存草稿」才提交。本地浏览器测试证明交互、文档投影与受控保存回读，不能替代真实 Java 资产服务或部署验收。
 ## 表格与明细
 
+- [右上角展开表格](capabilities/table/README.md#右上角展开表格)，入口 `/pages/table-expand`。
+
 ### 三层表头
 
 - 页面：[table-toolbar-demo.json](capabilities/table/table-toolbar-demo.json)，入口：[三层表头示例](http://localhost:5173/pages/table-toolbar-demo)。目录中可搜索 `table-toolbar-demo`。

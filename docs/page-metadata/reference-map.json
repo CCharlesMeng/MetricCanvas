@@ -908,6 +908,7 @@
       ],
       "examples": [
         "table-absolute-display-limit",
+        "table-expand",
         "table-trend-arrows",
         "query-dashboard",
         "reference-branches-page",
@@ -2442,7 +2443,8 @@
     "#/properties/schemaVersion=\"6.133\"": "饼图表格式图例可在字段列声明 colorRule，按正负或固定颜色显示数值。",
     "#/properties/schemaVersion=\"6.134\"": "柱图和折线图的字段系列可声明 tooltip.colorRule，为悬浮提示中的数值着色。",
     "#/properties/schemaVersion=\"6.135\"": "IOC 页头可用 filterRows 为已认领的筛选声明独立行与小标题。",
-    "#/properties/schemaVersion=\"6.136\"": "指标卡的主、次指标行可为各自的变化项声明 visibleWhen。"
+    "#/properties/schemaVersion=\"6.136\"": "指标卡的主、次指标行可为各自的变化项声明 visibleWhen。",
+    "#/properties/schemaVersion=\"6.137\"": "正文分区顶层表格可声明 expand，展开时占满分区整行。"
   },
   "branchExceptions": {
     "#/properties/iocHeader/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/0": {
@@ -3656,7 +3658,8 @@
       "列级上下箭头（6.99）",
       "时间列转换（6.102）",
       "详情组合标题（6.106）",
-      "表格标题与备注"
+      "表格标题与备注",
+      "表格展开（6.137）"
     ],
     "components/mapChart.md": [
       "查阅方式",

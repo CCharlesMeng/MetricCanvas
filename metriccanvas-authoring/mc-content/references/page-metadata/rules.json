@@ -100,6 +100,17 @@
       ]
     },
     {
+      "id": "table-expand",
+      "description": "6.137 顶层表格可选择展开至分区整行",
+      "valid": [
+        "table-expand"
+      ],
+      "invalid": [
+        "table-expand-version",
+        "table-expand-type"
+      ]
+    },
+    {
       "id": "metric-card-change-visibility",
       "description": "6.136 指标卡主、次指标行的变化项使用统一展示条件",
       "valid": [

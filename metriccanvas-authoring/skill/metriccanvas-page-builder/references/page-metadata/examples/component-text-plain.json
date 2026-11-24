@@ -1,21 +1,21 @@
 {
   "schemaVersion": "6.5",
-  "id": "report-title-styles",
-  "layout": "report",
+  "id": "table-expand",
+  "layout": "dashboard",
   "dataSources": {},
   "sections": [
     {
       "id": "main",
       "components": [
         {
-          "id": "card-heading",
+          "id": "peer",
           "type": "text",
           "layout": {
-            "span": 12
+            "span": 9
           },
           "props": {
-            "variant": "plain",
-            "title": "内容章节标题"
+            "body": "同行说明",
+            "variant": "plain"
           }
         }
       ]

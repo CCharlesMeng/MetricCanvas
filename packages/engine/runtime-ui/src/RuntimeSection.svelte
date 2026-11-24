@@ -1,7 +1,8 @@
 <svelte:options css="injected" />
 <script lang="ts">
-  import { getContext } from 'svelte';
+  import { getContext, onDestroy, setContext } from 'svelte';
   import { STATIC_EXPORT_CONTEXT } from '../../widgets/src/shared/export-context';
+  import { TABLE_EXPAND_CONTEXT, type TableExpandControl } from '../../widgets/src/shared/table-expand-context';
   const staticExport = Boolean(getContext(STATIC_EXPORT_CONTEXT));
   import {
     isChartComponent,
@@ -16,7 +17,8 @@
     type SafeAreaRect
   } from './backdrop-safe-area';
   import type { RuntimeSectionProps } from './composition-types';
-  import { sectionGridTemplate } from './section-grid';
+  import { sectionGridColumnCount, sectionGridTemplate } from './section-grid';
+  import { expandTableRow, restoreTableRow, tableExpandCell, type ExpandedTableRow } from './table-expand-layout';
   import MetricConnectionRow from './MetricConnectionRow.svelte';
   import { metricConnectionItems } from './metric-connections';
 
@@ -31,12 +33,50 @@
      数字是验收事实，运行时仍只消费页面声明的权重。 */
   let { section, contentOnly = false, hidden = false, componentContent, cellAttachment, cellOverlay, emptyContent, onbeforeselect }: RuntimeSectionProps = $props();
   let sectionGrid = $state<HTMLElement | null>(null);
+  let expandedTable = $state.raw<ExpandedTableRow>();
   const container = $derived(contentOnly ? 'plain' : section.container);
   const layoutItems = $derived(metricConnectionItems(section.components));
+  const expandableTableCells = $derived.by(() => {
+    const columns = sectionGridColumnCount(section.columnTracks);
+    return new Set(section.components.filter(component =>
+      component.type === 'table' && component.props.expand && component.layout.span < columns
+    ).map(component => `${section.id}/${component.id}`));
+  });
   const backdropId = $derived(sectionBackdrop(section)?.id);
   const backdropOnly = $derived(
     backdropId !== undefined && section.components.every((component) => component.id === backdropId)
   );
+
+  function restoreExpandedTable(): void {
+    if (expandedTable) restoreTableRow(expandedTable);
+    expandedTable = undefined;
+  }
+
+  function toggleExpandedTable(anchor: HTMLElement): void {
+    const cell = tableExpandCell(sectionGrid, anchor);
+    if (!cell) return;
+    const restoring = cell === expandedTable?.cell;
+    restoreExpandedTable();
+    if (!restoring) expandedTable = expandTableRow(cell);
+  }
+
+  setContext<TableExpandControl>(TABLE_EXPAND_CONTEXT, {
+    available(anchor) {
+      if (staticExport || contentOnly || hidden) return false;
+      const cell = tableExpandCell(sectionGrid, anchor);
+      return expandableTableCells.has(cell?.dataset.component ?? '');
+    },
+    expanded: anchor => expandedTable !== undefined && expandedTable.cell === tableExpandCell(sectionGrid, anchor),
+    toggle: toggleExpandedTable
+  });
+
+  $effect(() => {
+    const cell = expandedTable?.cell;
+    if (!cell) return;
+    if (hidden || contentOnly || cell.parentElement !== sectionGrid ||
+      !expandableTableCells.has(cell.dataset.component ?? '')) restoreExpandedTable();
+  });
+  onDestroy(restoreExpandedTable);
 
   $effect(() => {
     if (!sectionGrid) return;
@@ -256,6 +296,8 @@
     grid-template-columns: var(--mc-section-grid-columns, repeat(12, minmax(0, 1fr)));
     gap: var(--section-grid-gap);
   }
+  .section-grid > :global([data-table-expanded]) { grid-column: 1 / -1 !important; }
+  .section-grid > :global([data-table-expansion-peer]) { display: none !important; }
   .cell {
     position: relative;
     display: flex;

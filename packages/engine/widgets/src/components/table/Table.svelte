@@ -20,6 +20,8 @@
   let dateError = $state('');
   import { Empty } from '@metriccanvas/ui';
   import TableHeading from './header/TableHeading.svelte';
+  import TableExpandButton from './header/TableExpandButton.svelte';
+  import { TABLE_EXPAND_CONTEXT, type TableExpandControl } from '../../shared/table-expand-context';
   import TableToolbar from './TableToolbar.svelte';
   import TableControlIcon from './TableControlIcon.svelte';
   import { tableFilterPopover } from './filter-popover';
@@ -214,6 +216,12 @@
    * `--mc-table-header-row-height` 缺席即变体缺省档(报表形态的既有取值)。
    */
   let root = $state<HTMLElement | null>(null);
+  const sectionExpansion = getContext<TableExpandControl | undefined>(TABLE_EXPAND_CONTEXT);
+  const showSectionExpansion = $derived(Boolean(props.expand && root && !staticExport && sectionExpansion?.available(root)));
+
+  function toggleSectionExpansion(): void {
+    if (root) sectionExpansion?.toggle(root);
+  }
   const variantHeaderRowHeight = $derived(
     props.variant === 'forecastMatrix' ? 32 : props.variant === 'reportCompact' ? 33 : 42
   );
@@ -414,7 +422,11 @@
   style:--table-content-min-width={`${columnWidthTotal}px`}
   style:--table-fit-min-width={`${fitMinWidth}px`}
 >
-  <TableHeading title={props.title} {subtitle} showTools={interactive && !staticExport && !!props.toolbar && leaves.length>0}>
+  {#snippet sectionExpandAction()}
+    <TableExpandButton expanded={root ? sectionExpansion?.expanded(root) ?? false : false} onclick={toggleSectionExpansion} />
+  {/snippet}
+  <TableHeading title={props.title} {subtitle} showTools={interactive && !staticExport && !!props.toolbar && leaves.length>0}
+    trailingAction={showSectionExpansion ? sectionExpandAction : undefined}>
     {#snippet tools()}
       {#if interactive && !staticExport && props.toolbar}
         <TableToolbar toolbar={props.toolbar} searchEnabled={toolbarEnabled?.search??true} canExport={(toolbarEnabled?.export??true) && data.main.sourceStatus !== 'loading' && !data.main.progress} option={searchOption} onoption={onsearchoption} draft={searchDraft} busy={exporting} error={exportError}

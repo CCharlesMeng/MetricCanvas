@@ -119,6 +119,19 @@ export const invariants: InvariantDefinition[] = [
   periodAggregationInvariant,
   barAverageInvariant,
   {
+    id: 'table-expand',
+    description: '6.137 顶层表格可选择展开至分区整行',
+    valid: ['table-expand'],
+    cases: [
+      { case: 'table-expand-version', base: 'table-expand', expect: /由 6.137 引入/, mutate: document => {
+        document.schemaVersion = '6.136';
+      } },
+      { case: 'table-expand-type', base: 'table-expand', expect: /expand/, mutate: document => {
+        document.sections[0].components[2].props.expand = 'true';
+      } }
+    ]
+  },
+  {
     id: 'metric-card-change-visibility',
     description: '6.136 指标卡主、次指标行的变化项使用统一展示条件',
     valid: ['metric-card-change-visibility'],

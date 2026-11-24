@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.136",
+  "schemaVersion": "6.137",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "table.section-cfd0b82d"
@@ -331,6 +331,7 @@
       ],
       "examples": [
         "references/page-metadata/examples/table-absolute-display-limit.json",
+        "references/page-metadata/examples/table-expand.json",
         "references/page-metadata/examples/table-trend-arrows.json",
         "references/page-metadata/examples/query-dashboard.json",
         "references/page-metadata/examples/reference-branches-page.json",

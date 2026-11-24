@@ -1,17 +1,17 @@
 {
   "skill": "metriccanvas-local-authoring",
-  "schemaVersion": "6.136",
+  "schemaVersion": "6.137",
   "productContractVersion": "1.0.0-rc.4",
   "node": ">=22",
-  "schemaSha256": "2a5f403d14ec6e704de9fb1bbcce5c3794e431e4c960bfa9c77fe8bf67991b9e",
+  "schemaSha256": "45ce0c52efa0f945cae978f9511fd8bf6d2bb6e3745b4471d7a31943915391b3",
   "files": [
     {
       "file": "assets/layouts/overview-map-led.json",
-      "sha256": "e2356514bfb1064ec316916e997ad19fa7aced2e1df29b6fa2e2bc234852501a"
+      "sha256": "36fbc8bb9dd221276c5919423e4c1847de552ec156ef735c598a06e8fab3ca1d"
     },
     {
       "file": "references/authoring-knowledge/model.json",
-      "sha256": "e265fd84eb696090d5812cb14390bc5ae0284d20fcef98874623623d54bc0040"
+      "sha256": "e814130548a4da528c4ef91fd70a2a6841d1b8825231663bc6c2b904007a64d5"
     },
     {
       "file": "references/example-guides/bar-category-order/bar-category-order.md",
@@ -91,83 +91,83 @@
     },
     {
       "file": "references/page-metadata/actions-and-navigation.md",
-      "sha256": "bd9a85b181b30166fe6d451209fb78aed01b022f39151f4d839bbe7ef13f9679"
+      "sha256": "04a4a59c0397c8fa67bc0648f0e6d300006cb412d2e0c3b84f97acb18a978b9e"
     },
     {
       "file": "references/page-metadata/authoring-analysis-rebind.md",
-      "sha256": "5de0bbd04fe413fddb8be91aacfc7be3ec5c44cfa5340775675bafda8dd44d1f"
+      "sha256": "a331604b5c4f6b25f1210ebda431509f8cb040c0b173031378c6219171e8954a"
     },
     {
       "file": "references/page-metadata/authoring-presentation.md",
-      "sha256": "a212ccddbb7a41012cbe17f180a071cfebbe56f99adab8f5b0623425867ed2e5"
+      "sha256": "31a77ad3026a69c7ee9ae82905865cd90f033682a1778581ad5836204a9334f5"
     },
     {
       "file": "references/page-metadata/chart-option.md",
-      "sha256": "4c6c99768fabca6f63de6a68e55bffb222c9230af4b52707e1613de8ed015f75"
+      "sha256": "be494ffee7d102882f6727865327088405a9ff8e8c1cb36a95936d03e95f6020"
     },
     {
       "file": "references/page-metadata/components/aiSummary.md",
-      "sha256": "320bf6115bbee4b688c8e7dd1fc3ff57db53ee3323da39fbd69ce6278c74897b"
+      "sha256": "0adb1da991b61b19b91e2bdc747a1e41abcc6ac91b882f9902ac9dee9c4fbea0"
     },
     {
       "file": "references/page-metadata/components/barChart.md",
-      "sha256": "bbcf40ee22700134e7e67a9070da68a41a8b45a09647cd939d4ce02d908625ab"
+      "sha256": "fce342cfd405c0245cfb0a1b920ff40b59bb189c44ae2e30c0d0adc93878871c"
     },
     {
       "file": "references/page-metadata/components/button.md",
-      "sha256": "171d43741d4bce9094c3011b19016ac67af967a67e248675a707819b97cbe76f"
+      "sha256": "228ca76036b228ae9bb106ac43183e372c595f4a61b003fac58345701bfd7533"
     },
     {
       "file": "references/page-metadata/components/categoryBreakdown.md",
-      "sha256": "12e3ede9d2027ee95370efe7712c7c86ddf7ef410f7e375a888d6affa89e1649"
+      "sha256": "6b8052ead720581ac14a8bba1fc8fa081ea4fd13b235f75943bfaf4f9927e596"
     },
     {
       "file": "references/page-metadata/components/compositeCard.md",
-      "sha256": "f8b7e19b919f93b8baa0ba844f3cf2fa2229838be262966f4ee109bcf0ef4d6c"
+      "sha256": "44552a81b5dbe64ed128887fb0f04027404de397b4df35b901805642668fcd6c"
     },
     {
       "file": "references/page-metadata/components/fieldText.md",
-      "sha256": "f64b0e83e36f5030b9c1e28ef63a04763d24f7e248820a8fb4422689c3edc58d"
+      "sha256": "dccb6727dde80dc610c6f100ec4072cda911e4585ae2c427be147b5e672322c2"
     },
     {
       "file": "references/page-metadata/components/filterGroup.md",
-      "sha256": "a9e19734c387f5308eab1027f825d167cb197d9f47964ee8b33b6a87fa79790e"
+      "sha256": "4f5156afa51e07d1df33c2d276749f63a6a1c6e3df4be93266f4718df62559a1"
     },
     {
       "file": "references/page-metadata/components/gauge.md",
-      "sha256": "1dfbea5c276bb24617f47cc5ccf943a63eecd748b2cb50e5750c57c02cb02c00"
+      "sha256": "5e2ddedff07da69987b9b116b6cdef92b6510a3c5935d162e03f1326cc5c8c34"
     },
     {
       "file": "references/page-metadata/components/iocHeader.md",
-      "sha256": "2c63932dbd43261460030669c10e4f58d9bad662e4eebc16fddb581e60f069cf"
+      "sha256": "154839272d8101f753e4d1ac58bcd2e6a1c4ec9c90c45dfcac59e8b2d2186647"
     },
     {
       "file": "references/page-metadata/components/keyValuePanel.md",
-      "sha256": "66c53878a3c9b2d6b854880915bec20d2ac2bc1f565dfb24d9c4ac173cbfd1a2"
+      "sha256": "e31440ab995de02c27aad458a8b942601c51705cce1d7de5b3851e15e9210088"
     },
     {
       "file": "references/page-metadata/components/lineChart.md",
-      "sha256": "c5f1d7a022fe3bd415e29854a2a62a89163ff84c448e8cb1161db9a598332823"
+      "sha256": "73e2b57b140038a7b7a86109f888c70dcc88d41cf4fce55308236bb886a0b469"
     },
     {
       "file": "references/page-metadata/components/mapChart.md",
-      "sha256": "4c54e9c52bc6cfbc36d0275d2fbaba61345822715048b7bd530a02d3f5e7f208"
+      "sha256": "c326b82c4cb6194def547d521bd162ff561a2959743b6d637be0604ec48d1ce9"
     },
     {
       "file": "references/page-metadata/components/metricCard.md",
-      "sha256": "0dcae43ea55d7d23457ec8a027f184a55b76ba21f7c8a3a1cc26addbe04f58db"
+      "sha256": "202650d2bf216d637619ac9a09459ce6f9d5c032c0848fec926898d8fe6819f2"
     },
     {
       "file": "references/page-metadata/components/pieChart.md",
-      "sha256": "7b0c23b39ee710b92fed8c0860ac0408ad1dac72fa80d8b2f1334d1a85525ac9"
+      "sha256": "c3524e5fdf26b06279ab32c70a2b59ba4938b54f820fdb5660a54116d3458697"
     },
     {
       "file": "references/page-metadata/components/rankingCard.md",
-      "sha256": "f64538cf5425d27151ad94a6f903ce8d5fe7b3e5b696681002e122fdd61f1a83"
+      "sha256": "7fedcc25d39ef081cbacb8aad019559a997bfc6c4a58cb64a11fae52cb8a72fb"
     },
     {
       "file": "references/page-metadata/components/rankingDetailCard.md",
-      "sha256": "a6ed9c05859ed9abc70bab39433c5cf6095daf325172080a9f6e62a592a9c373"
+      "sha256": "49c1329bcff1197d34996a0a4f9d3c7776cccbdb3a5381ebdf9ca54a853b6396"
     },
     {
       "file": "references/page-metadata/components/README.md",
@@ -175,31 +175,31 @@
     },
     {
       "file": "references/page-metadata/components/reportHeader.md",
-      "sha256": "5b5b14a2ffbe6c87fedf2ad0987e9bb2eec6c78b954babcb972e7da6e449cc75"
+      "sha256": "e6e92305fd1d5dc953ce65bad363ce4dfd2b185b1fcfa55939ac79587e1ec0d7"
     },
     {
       "file": "references/page-metadata/components/tabContainer.md",
-      "sha256": "ac9bb00e0899ab943fd1439bee8708a96018163d500ea2c8c9774fe3cdfb3a55"
+      "sha256": "832f55cd0758ee5102181529dc98cf52ec39ecc21f7cf04164b647bd8e4b8bb7"
     },
     {
       "file": "references/page-metadata/components/table.md",
-      "sha256": "095d23ec82d80256bb74f2d9e156fef6d17533c4dda1efbe57e28f40cb132b33"
+      "sha256": "99a764e9d3570804647aa0bd8ac84ecd6c13b5be2e2043fd3423eebd5ba805fd"
     },
     {
       "file": "references/page-metadata/components/text.md",
-      "sha256": "d2962c91f1770c6163ccc6457c24551d461faae73a84fe9eca015b6009f066c2"
+      "sha256": "a1321c438fbf341dc01ac58d45d32ece517a77b4d2d4f24e56189fbb854a3f77"
     },
     {
       "file": "references/page-metadata/compute.md",
-      "sha256": "961a93163d2338e80d6f8c3ac4d4190ba00e601d6d8b7ce9a7f36e892ac58d77"
+      "sha256": "a1a4b560261603b3266abd3ecbead2974137b36319baea06e7415a0c314b0c9b"
     },
     {
       "file": "references/page-metadata/conditions.md",
-      "sha256": "371d93ef5afa52ce319ba975a93b284e3be46a4a6b053b286f78f51b86c2e6cb"
+      "sha256": "028f23065b6e18cb253b7d7c22af3b0b406baa79d74b432ae0673a8e0bd382c9"
     },
     {
       "file": "references/page-metadata/data-sources.md",
-      "sha256": "c8eca2d205f5f4989d8913a75a9938c3ae6858bae229286776603db15daefe8f"
+      "sha256": "16f760eac0981fcd35429a3189d812a4aeb1e8aa53972b3fd1b2cd5479c7e78c"
     },
     {
       "file": "references/page-metadata/errors/actual-after-captured-month.json",
@@ -935,7 +935,7 @@
     },
     {
       "file": "references/page-metadata/errors/independent-exclusion-version-ahead.json",
-      "sha256": "778cdb0d80683cbc841d9e1df273bf8a25e1c71f150650b78bfa1725a047dfbf"
+      "sha256": "24a2eb59ae7ddffd666f46de2584892a46e5bb1c35486fe46df5ad31a15edd99"
     },
     {
       "file": "references/page-metadata/errors/initial-row-date-object.json",
@@ -1211,7 +1211,7 @@
     },
     {
       "file": "references/page-metadata/errors/layout-before-6.1.json",
-      "sha256": "699a2163e91ef8bcaf4301054e0398a9e6ad172fd67a38ef8aff366f3ce9a738"
+      "sha256": "19dfc2adda59e9b7fe7f9145232606cd3337954a2e81689da313c77da3c57615"
     },
     {
       "file": "references/page-metadata/errors/layout-dual-conflict.json",
@@ -2122,6 +2122,14 @@
       "sha256": "3ee290cb752b9d8e63d2ead313cafdc7cbab1dd55a18180af750eff3e7a7d35f"
     },
     {
+      "file": "references/page-metadata/errors/table-expand-type.json",
+      "sha256": "bbeb018fd09bcbe3a336eddfce56206ea842d02f42484b7693bfe57c0f09c8b4"
+    },
+    {
+      "file": "references/page-metadata/errors/table-expand-version.json",
+      "sha256": "b1a31bfc3dcb47fedc724674b17c8892b7d1eeddb3ddbe640eeb6727debc6137"
+    },
+    {
       "file": "references/page-metadata/errors/table-filter-search-old-false.json",
       "sha256": "46cbe22076d5f7ba1e4b19738dd7d99f78428ce7558feacddffafd935cd8f842"
     },
@@ -2575,7 +2583,7 @@
     },
     {
       "file": "references/page-metadata/errors/unrestricted-filter-clear-version-ahead.json",
-      "sha256": "6a5e9741011169f1493744025ff7cd378c6c56d1e4e2e426541bd4891031b473"
+      "sha256": "3f4cb1a2001bbfd8c652db7a10cbcda510d0b2d1ea3f56bfd9e256e36c1bfa03"
     },
     {
       "file": "references/page-metadata/errors/value-label-bar-conflict.json",
@@ -2587,11 +2595,11 @@
     },
     {
       "file": "references/page-metadata/errors/version-major-unsupported.json",
-      "sha256": "3fb95516ce5f1c3473c388dfe0a60f494a35112846371f8809a6be0f12e288c5"
+      "sha256": "932571149e256a41381a860066bfff88af75231f86cd61f4503986c803f62faf"
     },
     {
       "file": "references/page-metadata/errors/version-minor-ahead.json",
-      "sha256": "077e9ea5e5a3f08ae0d01d72eed81b7a7721a1714ee6fc529678bde8e3881be2"
+      "sha256": "d1037799a334c0ed15b97cb41506ae336b9ba1a914c5572fdca05b26c982e023"
     },
     {
       "file": "references/page-metadata/errors/write-filter-non-dimension.json",
@@ -2887,27 +2895,27 @@
     },
     {
       "file": "references/page-metadata/examples/component-text-heading.json",
-      "sha256": "d2fb4dbde41fcef5db5213bcde7d4d76cf8608536bcc129b38649254a3718e7e"
+      "sha256": "8b0c1e79dcee278811854097a9a4d7fb84e12f82f1f557d98f5962b779ad03b5"
     },
     {
       "file": "references/page-metadata/examples/component-text-insight.json",
-      "sha256": "fbf3384fbad5522d3e9be7eb594c93b4b02b61271e2f4c84cb328cce9ee98c0d"
+      "sha256": "fb958b56c5d29a477d9a81f4a77ba2aa8bc8d4e9a42ba3d341684967b9403e59"
     },
     {
       "file": "references/page-metadata/examples/component-text-plain.json",
-      "sha256": "7fc701fd42015176657babb6fa87f212b1e320a6f88924a927447e308cba4f11"
+      "sha256": "bd296d504c5ed5d8e11c69b51a76eb67f36ddbdc56ade7508ea34f5c68a7a568"
     },
     {
       "file": "references/page-metadata/examples/component-text-reportInline.json",
-      "sha256": "add5ef34e0918fbc84b040075f77dceff969f4c0a26749a90eaeddaabb4a8f20"
+      "sha256": "ffeaf6c4178ff98cd03699687cd26de7406d587b0507e893b808f284d306dae9"
     },
     {
       "file": "references/page-metadata/examples/component-text-riskNotice.json",
-      "sha256": "6825b60da82b16402d3c87cbb0203f14b018f997b80b062665480314c25fe344"
+      "sha256": "702b648e1440635d8eb41df8ceab375443a2234e265a5ca05dcdf3f1a0028515"
     },
     {
       "file": "references/page-metadata/examples/component-text.json",
-      "sha256": "f5a59f42a27c3e7af3fb88c2d81056ce4344cabc243ca7671fa327dda2b77ec2"
+      "sha256": "e5195d93a1db2c59c3baacca5adc79596e0ff462d8884c30e9f6ce7f3cea9b89"
     },
     {
       "file": "references/page-metadata/examples/composite-page.json",
@@ -3590,6 +3598,10 @@
       "sha256": "0b7880e45abd117f20a3e4512e6250571f41374e96a6a56618c83698069d4df3"
     },
     {
+      "file": "references/page-metadata/examples/table-expand.json",
+      "sha256": "4276f7b0a5bde5eb9442d35adc588109e3bc84b9af1557755ea976659da21942"
+    },
+    {
       "file": "references/page-metadata/examples/table-header-filter-defaults-query.json",
       "sha256": "ace50ccafca0d3e0247770176b9b9053e2a67c4272fc1d9ca03a930ca015586f"
     },
@@ -3731,31 +3743,31 @@
     },
     {
       "file": "references/page-metadata/field-bindings-and-formats.md",
-      "sha256": "a08b0e2ca1b9f61615c0cecb98b0e1419c9158710a43dbe82b34447ae879dba0"
+      "sha256": "b054eeb9e9bd36b1ce449ebe0804c257ddd7514b2a58acbeb538917f39103dd1"
     },
     {
       "file": "references/page-metadata/fields.md",
-      "sha256": "5c417b326b52a55d11f25950ca83264f89fef1815da6385e1ca6d88a349b94a8"
+      "sha256": "9c3198acb61f07e097da7b5c7ffe1f4c328b1e3a3160d9c26c910b080e421e60"
     },
     {
       "file": "references/page-metadata/filters.md",
-      "sha256": "6fa7a3d07347a19435171a065a96387e2bb648e33284e402faee456a46c97f07"
+      "sha256": "447cf9c5b71aca355c6acb706a94772c1b432577357b38ec26401fc6044e394e"
     },
     {
       "file": "references/page-metadata/index.json",
-      "sha256": "dcbf9ac8c85c230aced9a8b1f4ca115d69897a4e69d427f2cb5127e08ba76efc"
+      "sha256": "c6c1b7c3816280dd271f93a5241936c5743baef3cd622c0f0204f0030b55da97"
     },
     {
       "file": "references/page-metadata/page.md",
-      "sha256": "3c58dfdb17b00699f9003b285db2dc328feff15a65634da3a0199764461f1770"
+      "sha256": "fce0d07a4ec48620f783f18dee72ea1351d4a252540dfa51a84132a8d851d85e"
     },
     {
       "file": "references/page-metadata/params-and-text-values.md",
-      "sha256": "0716ad92a535ae1806e4bbfb9bb4bf266309f0c393846f7a8f2c524e6a8c89b7"
+      "sha256": "8a242d177fbe533dd6883dd016a3d8e71521cffa035364cdc0913cfa77fbbc0b"
     },
     {
       "file": "references/page-metadata/queries-and-bindings.md",
-      "sha256": "09ed11855e5e3b13e5c6438d280d6cd5b8264a4806cf5530412fe7386f7b8253"
+      "sha256": "fdd632bab741d56296511dbc04a5258dbfe64c4b4b4fc789f905d65a08e602ed"
     },
     {
       "file": "references/page-metadata/README.md",
@@ -3763,23 +3775,23 @@
     },
     {
       "file": "references/page-metadata/rules.json",
-      "sha256": "b4bc70741847460d9cdd284bf7da5e7ed81642b567d28bf72f1e6ffff0eb4ad3"
+      "sha256": "37ce64fe1e5e9a9b4e1d4407a6fc3ddb311e38c50a5b892f9879ff2e0717398b"
     },
     {
       "file": "references/page-metadata/schema.json",
-      "sha256": "2a5f403d14ec6e704de9fb1bbcce5c3794e431e4c960bfa9c77fe8bf67991b9e"
+      "sha256": "45ce0c52efa0f945cae978f9511fd8bf6d2bb6e3745b4471d7a31943915391b3"
     },
     {
       "file": "references/page-metadata/sections-and-layout.md",
-      "sha256": "9cbafa57600d27e22f53f7693ff0df6cffd92a407bd041941a11adb16add168a"
+      "sha256": "0ad775bf5b3070d00e8c4b2edd6b4b1a7ec3080ad63b20e322d12b660f5d2c70"
     },
     {
       "file": "references/page-metadata/semantic-html.md",
-      "sha256": "148241a114d17e9b6f0ff2cf80fa81da5fcb5d591995bd25df36f0519db63e1a"
+      "sha256": "d587b9eaf0546c10397e2398fbca49ed7b97baa1b3b3a79caacc5a1e962ea938"
     },
     {
       "file": "references/page-metadata/validation.md",
-      "sha256": "2ed765ed7ba63733ab9b0c378f7e8801b1d6d12d4e503117994b959c967eecb7"
+      "sha256": "4c528df15ce1e1896b0638dae7088f17d1044aefaeea583cabf73ecaccc3b3d5"
     },
     {
       "file": "references/page-patterns/dashboard-analysis.json",
@@ -3811,15 +3823,15 @@
     },
     {
       "file": "scripts/analyze-data.mjs",
-      "sha256": "875e573b742feca79615beb1a2b817d95df700120fefedcef71b88a9c3609720"
+      "sha256": "2266d86fed4991c8b38a069c06071b514920c760a9b04e38309c823acff4d019"
     },
     {
       "file": "scripts/associate-data.mjs",
-      "sha256": "0185457d65829300e34f70256d5e0ef72157ca7cef00c5bede44f9707d047fa0"
+      "sha256": "fed819e82d532cda4f2e3b092bebd27002e4416684997beacc211cbad27b3449"
     },
     {
       "file": "scripts/configure-metric-tips.mjs",
-      "sha256": "30563b2d3794f90b9bb4a5576249a6d51362e0a8ce1c1eba885f4a2db6541e69"
+      "sha256": "33abe8f9ae8f9d4b40f50c85745e0b57ae307019147a8c7f4b689b7b257c6b7f"
     },
     {
       "file": "scripts/read-knowledge.mjs",
@@ -3831,11 +3843,11 @@
     },
     {
       "file": "scripts/upgrade-page.mjs",
-      "sha256": "8d74135aedcb93d3ad80f7ad0d14ef3fb30a922e5bc6396d7a605939345f7acf"
+      "sha256": "2c11260023e8e28898bf29d9b60e89020004c6e5849e67e971595ac5e9c50f7b"
     },
     {
       "file": "scripts/validate-page.mjs",
-      "sha256": "b2b28c59fbfd521e43f7432ff0d112fd669d76fbf564f3c1f30066796cb96ef1"
+      "sha256": "91fa43d76d2328a1090b9b2989bdeed80d4b8d1043373d759ef15104ea461449"
     }
   ]
 }

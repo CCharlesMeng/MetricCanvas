@@ -1,8 +1,13 @@
 {
   "major": 6,
-  "minor": 136,
-  "current": "6.136",
+  "minor": 137,
+  "current": "6.137",
   "capabilities": {
+    "table-expand": {
+      "minor": 137,
+      "description": "顶层表格可选择展开至分区整行",
+      "legacyReadable": false
+    },
     "metric-card-change-visibility": {
       "minor": 136,
       "description": "指标卡主、次指标行的变化项按展示条件显隐",
@@ -1161,6 +1166,7 @@
     "6.133",
     "6.134",
     "6.135",
-    "6.136"
+    "6.136",
+    "6.137"
   ]
 }

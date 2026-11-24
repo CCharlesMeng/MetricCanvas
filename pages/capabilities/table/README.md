@@ -2,6 +2,10 @@
 
 页面由 JSON 自动发现。本文件仅记录使用说明，不参与渲染或注册。
 
+## 右上角展开表格
+
+运行 `pnpm dev:playground` 后打开 `/pages/table-expand`，使用内联合成数据。表格 `details` 通过 `props.expand: true` 显示右上角放大按钮，初始宽度由分区列轨和 `layout.span` 决定。先按金额排序，再放大表格。同行说明收起，前后两行保留，左上方排序后的行顺序一致。还原后可继续排序。移植时使用目标表格自己的字段与查询。
+
 ## 组合查询成员搜索
 
 运行 `pnpm dev:playground`，打开 `/pages/paged-join-search`；无需 URL 参数或真实 DQE。`contract-closure-main` 与 `contract-closure-basic` 复用合同明细和基础资料查询形状，由内存仿真网关为2026年10月、11月各提供相同范围的36条合同，ID唯一。页面显式为 Dashboard，`contract-closure-joined` 独占合同表格，字段投影和搜索以页面声明为准。

@@ -1,0 +1,29 @@
+{
+  "case": "table-expand-version",
+  "invariant": "table-expand",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "顶层表格可选择展开至分区整行 由 6.137 引入，文档声明的是 6.136",
+      "paths": [
+        "/sections/0/components/2/props/expand"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          "…",
+          "…",
+          {
+            "props": {
+              "expand": true
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}
