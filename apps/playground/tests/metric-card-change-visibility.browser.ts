@@ -8,11 +8,17 @@ test('switches change items by applied period while preserving both metric value
   const period = page.locator('[data-filter-id="period"]');
   await expect(card.locator('.change-label')).toHaveText(['环比', '环比', '较目标']);
   await expect(card.locator('.change-value')).toHaveText(['+3%', '-2%', '+1%']);
+  const primaryChange = card.locator('.metric-content .change');
+  await expect(primaryChange.locator('.change-label')).toHaveCSS('color', 'rgb(113, 113, 122)');
+  await expect(primaryChange.locator('.change-value')).toHaveCSS('color', 'rgb(245, 34, 45)');
 
   for (const mode of ['年', '季']) {
     await period.getByRole('button', { name: mode, exact: true }).click();
     await expect(card.locator('.change-label')).toHaveText(['同比', '同比', '较目标']);
     await expect(card.locator('.change-value')).toHaveText(['+7%', '+5%', '+1%']);
+    await expect(primaryChange.locator('.change-label')).toHaveCSS('color', 'rgb(113, 113, 122)');
+    await expect(primaryChange.locator('.change-value')).toHaveCSS('color', 'rgb(245, 34, 45)');
+    await expect(card.locator('.metric-panel .change-value').first()).toHaveCSS('color', 'rgb(82, 196, 26)');
   }
 
   await period.getByRole('button', { name: '近一年', exact: true }).click();

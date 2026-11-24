@@ -119,6 +119,20 @@ export const invariants: InvariantDefinition[] = [
   periodAggregationInvariant,
   barAverageInvariant,
   {
+    id: 'metric-card-value-color-rule',
+    description: '6.138 指标卡主值使用 colorRule',
+    valid: ['metric-card-value-color'],
+    cases: [
+      { case: 'metric-card-value-color-version', base: 'metric-card-value-color', expect: /由 6.138 引入/, mutate: document => {
+        document.schemaVersion = '6.137';
+      } },
+      { case: 'metric-card-value-color-secondary', base: 'metric-card-value-color', expect: /colorRule/, mutate: document => {
+        const props = firstComponent(document).props;
+        props.secondaryRows = [props.rows[0]];
+      } }
+    ]
+  },
+  {
     id: 'table-expand',
     description: '6.137 顶层表格可选择展开至分区整行',
     valid: ['table-expand'],

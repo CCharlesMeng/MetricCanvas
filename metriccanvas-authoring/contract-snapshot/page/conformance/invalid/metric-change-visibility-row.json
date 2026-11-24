@@ -120,6 +120,11 @@
                         "field": "yoy",
                         "format": "percent-0"
                       },
+                      "colorRule": {
+                        "mode": "sign",
+                        "positive": "red",
+                        "negative": "green"
+                      },
                       "visibleWhen": {
                         "filter": "period",
                         "part": "mode",
@@ -136,6 +141,11 @@
                         "data": "main",
                         "field": "mom",
                         "format": "percent-0"
+                      },
+                      "colorRule": {
+                        "mode": "sign",
+                        "positive": "red",
+                        "negative": "green"
                       },
                       "visibleWhen": {
                         "filter": "period",

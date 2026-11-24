@@ -441,6 +441,7 @@
   {:else}
   <div
     class:content-frame={props.variant === 'reportCompact'}
+    class:section-expand-scroll={showSectionExpansion}
     class="scroll"
   >
     <table>
@@ -935,6 +936,9 @@
     overflow: auto;
     border: 1px solid #e8ebf3;
     border-radius: 0;
+  }
+  .scroll.section-expand-scroll {
+    overscroll-behavior-x: none;
   }
   table {
     width: 100%;

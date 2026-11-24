@@ -1,0 +1,197 @@
+{
+  "schemaVersion": "6.138",
+  "scope": "partial; follow references or validate the complete document",
+  "topics": [
+    "metricCard.section-b84c1fe1"
+  ],
+  "semantics": [
+    {
+      "module": "metricCard",
+      "reference": "references/page-metadata/components/metricCard.md",
+      "blocks": [
+        "# 指标卡 metricCard\n\n突出一个或少量核心指标的当前值、变化值与可选完成率。适用于总额、数量、完成率、KPI、核心指标、年度活动进展。数据形状：单行或少量行；至少一个 metric 字段，可选变化值和完成率 metric。\n\n数据槽和字段绑定声明取哪行哪列；不同variant改变摘要结构，不能把列清单当任意HTML模板。\n\n<a id=\"metric-card-change-visibility\"></a>",
+        "## 主值着色 6.138\n\n在 `props.rows[].colorRule` 声明已有的正负或固定颜色规则，给主指标数值着色。正负模式使用字段格式对应的正负判定，零值和缺失值沿用原有呈现。规则应用在数值本身，指标名称、独立单位、次级指标和点击动作沿用原样。省略时继续使用卡片默认主值颜色。\n\n```json\n{\n  \"label\": \"利润偏差\",\n  \"valueField\": { \"field\": \"margin-gap\", \"format\": \"points-1-signed\" },\n  \"colorRule\": { \"mode\": \"sign\", \"positive\": \"green\", \"negative\": \"red\" }\n}\n```\n\n配置示例见 [指标卡主值着色](../examples/metric-card-value-color.json)，Playground 入口为 `/pages/metric-card-value-color`。"
+      ],
+      "rules": [
+        {
+          "id": "metric-card-value-color-rule",
+          "description": "6.138 指标卡主值使用 colorRule",
+          "valid": [
+            "metric-card-value-color"
+          ],
+          "invalid": [
+            "metric-card-value-color-version",
+            "metric-card-value-color-secondary"
+          ]
+        },
+        {
+          "id": "metric-card-change-visibility",
+          "description": "6.136 指标卡主、次指标行的变化项使用统一展示条件",
+          "valid": [
+            "metric-card-change-visibility"
+          ],
+          "invalid": [
+            "metric-change-visibility-version",
+            "metric-change-visibility-filter",
+            "metric-change-visibility-period",
+            "metric-change-visibility-row"
+          ]
+        },
+        {
+          "id": "metric-card-primary-detail",
+          "description": "主次指标卡有且仅有一个主指标，次级字段和链接复用既有契约",
+          "valid": [
+            "metric-card-primary-detail"
+          ],
+          "invalid": [
+            "metric-primary-multiple",
+            "metric-primary-version",
+            "metric-secondary-field",
+            "metric-secondary-link"
+          ]
+        },
+        {
+          "id": "metric-card-before",
+          "description": "6.34 Dashboard 顶层指标卡前置文字、受控间距与整组跨度",
+          "valid": [
+            "metric-card-equation"
+          ],
+          "invalid": [
+            "metric-before-version",
+            "metric-before-report",
+            "metric-before-tracks",
+            "metric-before-span",
+            "metric-before-empty",
+            "metric-before-gap",
+            "metric-before-nested"
+          ]
+        },
+        {
+          "id": "schema-structure",
+          "description": "Page Schema 结构校验（ajv allErrors 文案与顺序）",
+          "valid": [
+            "inline-report",
+            "mixed-page",
+            "query-dashboard",
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "params-page",
+            "composite-page",
+            "map-page",
+            "forecast-page",
+            "url-navigation-page"
+          ],
+          "invalid": [
+            "missing-schema-version",
+            "unknown-top-level-field",
+            "layout-span-out-of-range",
+            "field-id-pattern",
+            "sections-empty"
+          ]
+        },
+        {
+          "id": "data-slot-known-source",
+          "description": "组件数据槽只能引用已声明的页面数据源",
+          "valid": [
+            "inline-report",
+            "mixed-page",
+            "query-dashboard",
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "params-page",
+            "composite-page",
+            "map-page",
+            "forecast-page",
+            "url-navigation-page"
+          ],
+          "invalid": [
+            "data-slot-unknown-source"
+          ]
+        },
+        {
+          "id": "field-binding-resolves",
+          "description": "字段绑定引用组件已声明的数据槽与数据源中存在的字段",
+          "valid": [
+            "inline-report",
+            "mixed-page",
+            "query-dashboard",
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "params-page",
+            "composite-page",
+            "map-page",
+            "forecast-page",
+            "url-navigation-page"
+          ],
+          "invalid": [
+            "field-binding-undeclared-slot",
+            "unknown-component-field"
+          ]
+        },
+        {
+          "id": "field-binding-role",
+          "description": "字段绑定的角色符合组件属性要求",
+          "valid": [
+            "inline-report",
+            "mixed-page",
+            "query-dashboard",
+            "filters-page",
+            "compute-page",
+            "grouped-fields-page",
+            "params-page",
+            "composite-page",
+            "map-page",
+            "forecast-page",
+            "url-navigation-page"
+          ],
+          "invalid": [
+            "field-binding-role-mismatch"
+          ]
+        },
+        {
+          "id": "field-binding-match",
+          "description": "行匹配字段必须是 dimension，匹配值符合其类型",
+          "valid": [
+            "composite-page"
+          ],
+          "invalid": [
+            "match-field-unknown",
+            "match-field-not-dimension",
+            "match-value-type-mismatch"
+          ]
+        },
+        {
+          "id": "metric-card-select-tab",
+          "description": "指标值只能切换当前页目标容器中已声明的页签",
+          "valid": [
+            "metric-card-select-tab"
+          ],
+          "invalid": [
+            "metric-select-tab-missing-container",
+            "metric-select-tab-invalid-container-type",
+            "metric-select-tab-unknown-tab",
+            "metric-select-tab-link-conflict",
+            "metric-select-tab-secondary-link-conflict",
+            "metric-select-tab-card-level",
+            "metric-select-tab-unsupported-row-action",
+            "metric-select-tab-version-floor"
+          ]
+        }
+      ],
+      "examples": [
+        "references/page-metadata/examples/inline-report.json",
+        "references/page-metadata/examples/metric-card-equation.json",
+        "references/page-metadata/examples/metric-card-primary-detail.json",
+        "references/page-metadata/examples/metric-card-select-tab.json",
+        "references/page-metadata/examples/metric-card-definition-tip.json",
+        "references/page-metadata/examples/metric-card-change-visibility.json",
+        "references/page-metadata/examples/metric-card-value-color.json"
+      ]
+    }
+  ],
+  "nodes": [],
+  "unresolvedRefs": []
+}

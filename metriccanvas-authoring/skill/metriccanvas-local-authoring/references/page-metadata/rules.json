@@ -100,6 +100,17 @@
       ]
     },
     {
+      "id": "metric-card-value-color-rule",
+      "description": "6.138 指标卡主值使用 colorRule",
+      "valid": [
+        "metric-card-value-color"
+      ],
+      "invalid": [
+        "metric-card-value-color-version",
+        "metric-card-value-color-secondary"
+      ]
+    },
+    {
       "id": "table-expand",
       "description": "6.137 顶层表格可选择展开至分区整行",
       "valid": [

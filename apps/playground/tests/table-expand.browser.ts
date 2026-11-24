@@ -9,6 +9,7 @@ test('table expands across its row and keeps its sort and neighboring rows', asy
   const firstRow = table.getByRole('row').nth(1);
   const expand = table.getByRole('button', { name: '放大表格' });
   await expect(expand).toBeVisible();
+  await expect(table.locator('.table-widget > .scroll')).toHaveCSS('overscroll-behavior-x', 'none');
   await expect(peer).toBeVisible();
   const initialWidth = (await table.boundingBox())!.width;
   const gridWidth = (await grid.boundingBox())!.width;

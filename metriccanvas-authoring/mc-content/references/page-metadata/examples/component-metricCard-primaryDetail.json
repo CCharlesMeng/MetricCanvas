@@ -1,40 +1,36 @@
 {
-  "schemaVersion": "6.65",
-  "id": "metric-card-definition-tip",
+  "schemaVersion": "6.116",
+  "id": "metric-card-value-color",
   "layout": "dashboard",
   "dataSources": {
-    "metrics": {
+    "values": {
       "fields": {
-        "grossProfitRate": {
+        "gain": {
           "type": "number",
           "role": "measure"
         },
-        "revenue": {
+        "loss": {
           "type": "number",
           "role": "measure"
         },
-        "executionRate": {
+        "flat": {
           "type": "number",
           "role": "measure"
         },
-        "closureRate": {
+        "missing": {
           "type": "number",
-          "role": "measure"
-        },
-        "comparisonCount": {
-          "type": "number",
-          "role": "measure"
+          "role": "measure",
+          "nullable": true
         }
       },
       "source": {
         "type": "inline",
         "rows": [
           {
-            "grossProfitRate": 32.8,
-            "revenue": 8642,
-            "executionRate": 86.5,
-            "closureRate": 95,
-            "comparisonCount": 18
+            "gain": 2.4,
+            "loss": -1.2,
+            "flat": 0,
+            "missing": null
           }
         ]
       }
@@ -45,23 +41,25 @@
       "id": "main",
       "components": [
         {
-          "id": "comparison-count",
+          "id": "default",
           "type": "metricCard",
           "layout": {
-            "span": 3
+            "span": 2
           },
           "data": {
-            "main": "metrics"
+            "main": "values"
           },
           "props": {
-            "title": "已跟进项目",
+            "variant": "primaryDetail",
             "rows": [
               {
-                "label": "本月",
-                "valueField": "comparisonCount"
+                "label": "原有主值",
+                "valueField": {
+                  "field": "gain",
+                  "format": "points-1-signed"
+                }
               }
-            ],
-            "variant": "primaryDetail"
+            ]
           }
         }
       ]

@@ -22,6 +22,8 @@
 
 条件为假、等待或出错时隐藏对应变化项。卡内指标行、主值及其他构件继续呈现，可见变化项沿用声明顺序和原字段绑定。页面、详情与 PDF/PNG 导出共用展示投影，取数继续使用已声明的数据槽。
 
+变化项的 `colorRule`、`tone` 和默认正负规则对数值、单位和趋势箭头着色，标签沿用卡片的中性文字颜色。例如「环比 +3%」可将 `+3%` 显示为红色，「环比」仍为灰色。
+
 完整场景见 [指标卡变化项显隐](../examples/metric-card-change-visibility.json)，Playground 入口为 `/pages/metric-card-change-visibility`。
 
 <a id="metric-definition-tip"></a>
@@ -79,9 +81,25 @@
 
 `/pages/metric-card-loading` 使用 DQE Sim 合成数据。切换区域可观察全部指标卡形态的加载与数值更新，覆盖主数值、次级指标、变化值、完成率及宽窄屏。
 
+<a id="metric-card-value-color"></a>
+
+## 主值着色 6.138
+
+在 `props.rows[].colorRule` 声明已有的正负或固定颜色规则，给主指标数值着色。正负模式使用字段格式对应的正负判定，零值和缺失值沿用原有呈现。规则应用在数值本身，指标名称、独立单位、次级指标和点击动作沿用原样。省略时继续使用卡片默认主值颜色。
+
+```json
+{
+  "label": "利润偏差",
+  "valueField": { "field": "margin-gap", "format": "points-1-signed" },
+  "colorRule": { "mode": "sign", "positive": "green", "negative": "red" }
+}
+```
+
+配置示例见 [指标卡主值着色](../examples/metric-card-value-color.json)，Playground 入口为 `/pages/metric-card-value-color`。
+
 ## 主指标与多行次级指标 6.65
 
-`props.variant: "primaryDetail"` 表达一张卡内的一个主指标和零到多行次级指标。`rows` 必须恰好一行，名称在上、大数值在下；`secondaryRows` 按声明顺序在其下逐行呈现，每行是指标名及指标值，不设数量上限。不需要次级指标时省略 `secondaryRows`，不能写空数组。它们是独立字段绑定，不能把次级指标塞进表示变化信息的 `changes`。
+`props.variant: "primaryDetail"` 表达一张卡内的一个主指标和零到多行次级指标。`rows` 必须恰好一行，名称在上、大数值在下；`secondaryRows` 按声明顺序在其下逐行呈现，每行是指标名及指标值，不设数量上限。不需要次级指标时省略 `secondaryRows`，不能写空数组。它们是独立字段绑定，不能把次级指标塞进表示变化信息的 `changes`。主指标的多条变化项在主值下默认纵排，每条的标签和数值同行。
 
 每一行次级指标的上方间距为8 CSS px（首行距主指标8px，其后行距上一行8px），水平名称与数值间距8px。字体为 `"PingFang SC", sans-serif`、normal、400、14px、字距0、左对齐；指标名为 `rgba(0,0,0,0.5)`、行高20px，指标值及单位为 `rgba(0,0,0,0.8)`、行高17px。长名称允许换行，零值和缺失值继续沿用字段格式及缺失占位规则。
 

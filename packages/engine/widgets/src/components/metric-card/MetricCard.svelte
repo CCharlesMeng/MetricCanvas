@@ -7,7 +7,7 @@
   import { fieldRow, fieldValue, resolveField } from '../../shared/component-data';
   import { DEFAULT_NULL_TEXT, hasDisplayValue, finiteNumber, isSignedNumberFormat, valuePolarity } from '../../shared/value-format';
   import { fieldUnitText, formatChangeValue, formatFieldValue, isPercentFormat } from '../../shared/field-presentation';
-  import { changeValueColor, valueColorStyle } from '../../shared/value-color';
+  import { changeValueColor, valueColor, valueColorStyle } from '../../shared/value-color';
   import Skeleton from '../../shared/Skeleton.svelte';
   import ProgressRing from './ProgressRing.svelte';
 
@@ -67,7 +67,8 @@
   {#if row.context}<span class="row-context">{row.context}</span>{/if}
   {@const raw = fieldValue(row.valueField, data)}
   {@const field = resolveField(row.valueField, data)}
-  <span class="row-value">
+  {@const color = !loading && row.colorRule ? valueColor(raw, row.colorRule, field.format) : undefined}
+  <span class="row-value" style:color={valueColorStyle(color)}>
     {#if loading}
       {@render loadingValue()}
     {:else}
@@ -129,9 +130,9 @@
               {@const field = resolveField(change.field, data)}
               {@const color = changeValueColor(value, change, field.format)}
               {@const direction = change.colorRule || isSignedNumberFormat(field.format) ? valuePolarity(value, field.format) : color === 'green' ? 'positive' : color === 'red' ? 'negative' : 'neutral'}
-              <span class:positive={color === 'green'} class:negative={color === 'red'} class:explicit-color={change.colorRule !== undefined} style:color={change.colorRule ? valueColorStyle(color) : undefined} class="change">
+              <span class:positive={color === 'green'} class:negative={color === 'red'} class="change">
                 <span class="change-label">{change.label}</span>
-                <span class="change-value">
+                <span class="change-value" style:color={change.colorRule ? valueColorStyle(color) : undefined}>
                   {#if !loading && props.showTrendArrows && direction !== 'neutral' && !isPercentFormat(field.format)}
                     <span
                       class:up={direction === 'positive'}
@@ -271,6 +272,27 @@
   .primary-detail > .metric-content .row-value {
     font-size: 28px;
     line-height: 34px;
+  }
+  .primary-detail > .metric-content .changes {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 4px;
+  }
+  .primary-detail > .metric-content .change {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    font-family: "PingFang SC", sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+  }
+  .primary-detail > .metric-content .change-label {
+    margin-right: 0;
+    line-height: 20px;
+  }
+  .primary-detail > .metric-content .change-value {
+    line-height: 17px;
   }
   .primary-detail > .metric-panel {
     min-height: 0;
@@ -568,9 +590,6 @@
   .compact-strip .change.negative .change-value {
     color: #f23030;
     background: rgb(242 48 48 / 0.08);
-  }
-  .compact-strip .change.explicit-color .change-value {
-    color: inherit;
   }
   .metric-panel .placeholder-values .row-value,
   .metric-panel .placeholder-values .change {
@@ -926,10 +945,10 @@
     font-weight: 700;
     line-height: 1;
   }
-  .positive {
+  .change.positive .change-value {
     color: var(--mc-color-positive, #5cb300);
   }
-  .negative {
+  .change.negative .change-value {
     color: var(--mc-color-negative, #f21e1e);
   }
 </style>

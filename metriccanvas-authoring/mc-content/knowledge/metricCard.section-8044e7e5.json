@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.137",
+  "schemaVersion": "6.138",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "metricCard.section-8044e7e5"
@@ -13,6 +13,17 @@
         "## 查阅方式\n\n字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](../README.md)。\n\n\n数值与单位遵循[统一语义格式](../field-bindings-and-formats.md#numeric-value-display)：组件显式格式优先，自动金额和数量不再重复追加旧的元/万等单位标签。比率变化项使用正负号，即使 `showTrendArrows: true` 也不显示箭头；绝对变化项保留既有箭头行为。进度环图形可裁到0–100%，文字仍按真实比率格式化，不把超过100%的真实值改成100%。缺失比率默认显示 `—`，自定义缺失文字按原声明。合成场景 `/pages/semantic-numeric-display`。"
       ],
       "rules": [
+        {
+          "id": "metric-card-value-color-rule",
+          "description": "6.138 指标卡主值使用 colorRule",
+          "valid": [
+            "metric-card-value-color"
+          ],
+          "invalid": [
+            "metric-card-value-color-version",
+            "metric-card-value-color-secondary"
+          ]
+        },
         {
           "id": "metric-card-change-visibility",
           "description": "6.136 指标卡主、次指标行的变化项使用统一展示条件",
@@ -176,7 +187,8 @@
         "references/page-metadata/examples/metric-card-primary-detail.json",
         "references/page-metadata/examples/metric-card-select-tab.json",
         "references/page-metadata/examples/metric-card-definition-tip.json",
-        "references/page-metadata/examples/metric-card-change-visibility.json"
+        "references/page-metadata/examples/metric-card-change-visibility.json",
+        "references/page-metadata/examples/metric-card-value-color.json"
       ]
     }
   ],

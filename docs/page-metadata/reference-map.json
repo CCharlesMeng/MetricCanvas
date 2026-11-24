@@ -763,7 +763,8 @@
         "metric-card-primary-detail",
         "metric-card-select-tab",
         "metric-card-definition-tip",
-        "metric-card-change-visibility"
+        "metric-card-change-visibility",
+        "metric-card-value-color"
       ],
       "sources": [
         "packages/page/src/schema/components/metric-card.ts",
@@ -779,7 +780,8 @@
         "metric-card-before",
         "metric-card-primary-detail",
         "metric-card-select-tab",
-        "metric-card-change-visibility"
+        "metric-card-change-visibility",
+        "metric-card-value-color-rule"
       ]
     },
     "components/barChart.md": {
@@ -2444,7 +2446,8 @@
     "#/properties/schemaVersion=\"6.134\"": "柱图和折线图的字段系列可声明 tooltip.colorRule，为悬浮提示中的数值着色。",
     "#/properties/schemaVersion=\"6.135\"": "IOC 页头可用 filterRows 为已认领的筛选声明独立行与小标题。",
     "#/properties/schemaVersion=\"6.136\"": "指标卡的主、次指标行可为各自的变化项声明 visibleWhen。",
-    "#/properties/schemaVersion=\"6.137\"": "正文分区顶层表格可声明 expand，展开时占满分区整行。"
+    "#/properties/schemaVersion=\"6.137\"": "正文分区顶层表格可声明 expand，展开时占满分区整行。",
+    "#/properties/schemaVersion=\"6.138\"": "指标卡主指标行可用 colorRule 给主值着色。"
   },
   "branchExceptions": {
     "#/properties/iocHeader/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/0": {
@@ -3586,6 +3589,7 @@
     "components/metricCard.md": [
       "变化项显隐",
       "指标定义气泡",
+      "主值着色 6.138",
       "主指标与多行次级指标 6.65",
       "前置连接文字 6.34",
       "查阅方式"

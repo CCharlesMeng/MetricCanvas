@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.137",
+  "schemaVersion": "6.138",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "metricCard.title"
@@ -12,6 +12,17 @@
         "# 指标卡 metricCard\n\n突出一个或少量核心指标的当前值、变化值与可选完成率。适用于总额、数量、完成率、KPI、核心指标、年度活动进展。数据形状：单行或少量行；至少一个 metric 字段，可选变化值和完成率 metric。\n\n数据槽和字段绑定声明取哪行哪列；不同variant改变摘要结构，不能把列清单当任意HTML模板。\n\n<a id=\"metric-card-change-visibility\"></a>"
       ],
       "rules": [
+        {
+          "id": "metric-card-value-color-rule",
+          "description": "6.138 指标卡主值使用 colorRule",
+          "valid": [
+            "metric-card-value-color"
+          ],
+          "invalid": [
+            "metric-card-value-color-version",
+            "metric-card-value-color-secondary"
+          ]
+        },
         {
           "id": "metric-card-change-visibility",
           "description": "6.136 指标卡主、次指标行的变化项使用统一展示条件",
@@ -175,7 +186,8 @@
         "references/page-metadata/examples/metric-card-primary-detail.json",
         "references/page-metadata/examples/metric-card-select-tab.json",
         "references/page-metadata/examples/metric-card-definition-tip.json",
-        "references/page-metadata/examples/metric-card-change-visibility.json"
+        "references/page-metadata/examples/metric-card-change-visibility.json",
+        "references/page-metadata/examples/metric-card-value-color.json"
       ]
     }
   ],
@@ -196,7 +208,7 @@
           "sections"
         ],
         "title": "页面",
-        "$id": "https://metriccanvas/page/v6.137",
+        "$id": "https://metriccanvas/page/v6.138",
         "properties": {
           "schemaVersion": "#/properties/schemaVersion",
           "id": "#/properties/id",

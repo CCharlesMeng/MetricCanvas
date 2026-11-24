@@ -33,7 +33,7 @@
   "knowledge": "metricCard.overview",
   "reference": "references/page-metadata/components/metricCard.md",
   "versionPolicy": "protocol/version-policy",
-  "currentWriter": "6.137",
+  "currentWriter": "6.138",
   "exampleVersionRequirements": [
     {
       "file": "references/page-metadata/examples/inline-report.json",
@@ -233,6 +233,48 @@
           "id": "period-filter",
           "minor": 27,
           "description": "Dashboard 年季月与近一年期间筛选"
+        },
+        {
+          "id": "explicit-value-colors",
+          "minor": 16,
+          "description": "数字展示位置显式声明固定颜色或正负颜色映射"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/metric-card-value-color.json",
+      "requiredVersion": "6.138",
+      "capabilities": [
+        {
+          "id": "metric-card-value-color-rule",
+          "minor": 138,
+          "description": "指标卡主值支持 colorRule 着色"
+        },
+        {
+          "id": "field-binding-default-main",
+          "minor": 116,
+          "description": "对象字段绑定省略 data 时固定引用 main 数据槽"
+        },
+        {
+          "id": "percentage-point-format",
+          "minor": 77,
+          "description": "带符号的一位小数百分点格式"
+        },
+        {
+          "id": "metric-primary-details",
+          "minor": 65,
+          "description": "单一主指标与多行小字号次级指标，同排卡片等高"
+        },
+        {
+          "id": "explicit-value-colors",
+          "minor": 16,
+          "description": "数字展示位置显式声明固定颜色或正负颜色映射"
         },
         {
           "id": "page-layout",

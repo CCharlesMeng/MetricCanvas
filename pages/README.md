@@ -4,6 +4,8 @@
 
 指标卡与页签的页内联动见[指标值切换同页 Tab](capabilities/layout/README.md#指标值切换同页-tab)。
 
+指标卡主值按正负着色见[指标卡主值着色](capabilities/layout/README.md#指标卡主值着色)。`/pages/metric-card-value-color` 使用内联合成数据。
+
 主、次指标的同比、环比随期间切换见[指标卡变化项显隐](capabilities/layout/README.md#指标卡变化项显隐)。`/pages/metric-card-change-visibility` 使用内联合成数据。
 
 - [默认千分位与显式关闭](capabilities/data/README.md#普通数值默认千分位6123)：`/pages/number-default-grouping`，默认、精度、符号、ungrouped、图表及导出对照；内联合成数据。

@@ -1,0 +1,77 @@
+{
+  "case": "metric-card-value-color-version",
+  "invariant": "metric-card-value-color-rule",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "指标卡主值支持 colorRule 着色 由 6.138 引入，文档声明的是 6.137",
+      "paths": [
+        "/sections/0/components/0/props/rows/0/colorRule",
+        "/sections/0/components/1/props/rows/0/colorRule",
+        "/sections/0/components/2/props/rows/0/colorRule",
+        "/sections/0/components/3/props/rows/0/colorRule"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "rows": [
+                {
+                  "colorRule": {
+                    "mode": "sign",
+                    "positive": "green",
+                    "negative": "red"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "props": {
+              "rows": [
+                {
+                  "colorRule": {
+                    "mode": "sign",
+                    "positive": "green",
+                    "negative": "red"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "props": {
+              "rows": [
+                {
+                  "colorRule": {
+                    "mode": "sign",
+                    "positive": "green",
+                    "negative": "red"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "props": {
+              "rows": [
+                {
+                  "colorRule": {
+                    "mode": "sign",
+                    "positive": "green",
+                    "negative": "red"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/metric-card-value-color-version.json"
+}
