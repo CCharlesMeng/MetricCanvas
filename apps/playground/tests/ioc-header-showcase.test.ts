@@ -15,8 +15,11 @@ describe('IOC 公共页头统一入口', () => {
     const matches = filterPageDirectory(groups, '', 'all', 'all', 'all', 'capabilities/ioc-header/scenarios').flatMap(group => group.pages);
     expect(matches).toHaveLength(15);
     expect(matches.every(entry => pageExternalInputs(entry.id) === 'ioc-header')).toBe(true);
-    expect(entries.filter(entry => entry.filePath.startsWith('business/dashboard/ioc/'))).toHaveLength(12);
-    expect(entries).toContainEqual(expect.objectContaining({id:'business-decision-all-details',filePath:'business/dashboard/ioc/commercial/business-decision-all-details.json'}));
+    const commercial = filterPageDirectory(groups, '', 'all', 'all', 'all', 'business/dashboard/ioc/commercial').flatMap(group => group.pages);
+    expect(commercial).toEqual(expect.arrayContaining([
+      expect.objectContaining({ id: 'business-decision-all-details', filePath: 'business/dashboard/ioc/commercial/business-decision-all-details.json' }),
+      expect.objectContaining({ id: 'contract-business-overview', filePath: 'business/dashboard/ioc/commercial/contract-business-overview.json' })
+    ]));
     expect(pageExternalInputs('business-decision-all-details')).toBe('ioc-region');
     expect(pageExternalInputs('ioc-opportunity-analysis')).toBe('ioc-region-dept');
     expect(pageExternalInputs('ioc-header-standard')).toBe('ioc-business');

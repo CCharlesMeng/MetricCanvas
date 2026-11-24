@@ -93,6 +93,31 @@ test('metric value switches Tab in the JSON preview without an address adapter',
   expect(regions).toEqual([['CN']]);
 });
 
+test('the metric anchor and click use the same eligible navigation', async ({ page, context }) => {
+  await page.goto('/pages/metric-card-select-tab');
+  const link = page.getByRole('link', { name: '区域超期单数 12' });
+  await expect(link).toHaveAttribute('href', '/pages/ioc-header-title-link-target?project=P001');
+
+  await page.getByRole('button', { name: '其他区域', exact: true }).click();
+  const unavailable = page.getByRole('button', { name: '区域超期单数 12' });
+  await expect(unavailable).not.toHaveAttribute('href');
+  const source = page.url();
+  await unavailable.press('Enter');
+  await expect(page).toHaveURL(source);
+
+  await page.getByRole('button', { name: '海外', exact: true }).click();
+  const target = '/pages/playground-route-target?project-id=ORDERS';
+  await expect(link).toHaveAttribute('href', target);
+  const destination = new URL(target, page.url()).href;
+  const opened = context.waitForEvent('page');
+  await link.click({ modifiers: [process.platform === 'darwin' ? 'Meta' : 'Control'] });
+  const newTab = await opened;
+  await expect(newTab).toHaveURL(destination);
+  await newTab.close();
+  await link.click();
+  await expect(page).toHaveURL(destination);
+});
+
 test('the IOC page routes the configured metric values and keeps the applied header filters', async ({ page }) => {
   const url = new URLSearchParams({ period: 'month:2026-11', 'customer-category': '卓越NA' });
   await page.goto(`/pages/rep-office-execution-efficiency-tab-demo?${url}`);

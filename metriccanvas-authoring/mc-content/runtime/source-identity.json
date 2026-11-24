@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "cfaaae04f2413fe84d33ca6374c84506963a5d93127a0d335efe5e18685b9ca5",
+  "sha256": "b768388816c8a255936610b3d8481747db3e3665ac2d3dc23e8308c79480f1c2",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -12,7 +12,7 @@
     },
     {
       "file": "docs/page-metadata/actions-and-navigation.md",
-      "sha256": "2375ec9fd3d957c254b8e032e27f1e53edad666d7939bc41861f07597bf59575"
+      "sha256": "0d9acd2a52e07f9c792277ce0349795c2368bba9d4242f445a799e4ca8a3c330"
     },
     {
       "file": "docs/page-metadata/authoring-analysis-rebind.md",
@@ -136,7 +136,7 @@
     },
     {
       "file": "docs/page-metadata/filters.md",
-      "sha256": "a5742831a7d3912da3be8d5530c3ce9a517d42144f18d8083fd206ce80c98067"
+      "sha256": "ba87fe3e46e95a4afe8059f8a271a098156b5d64a04193706dde3c07779cc92e"
     },
     {
       "file": "docs/page-metadata/layout-migration.md",
@@ -160,7 +160,7 @@
     },
     {
       "file": "docs/page-metadata/reference-map.json",
-      "sha256": "6b46c4fa05f4d5607af8c5331d0069e010994cc39a07625b0d9d7bb4f436d6b2"
+      "sha256": "e9109f611c3f419b9378216c7bf5cfa751ad69d4823cb3b020c991b0ba9e7546"
     },
     {
       "file": "docs/page-metadata/sections-and-layout.md",
@@ -2248,7 +2248,7 @@
     },
     {
       "file": "pages/business/dashboard/ioc/approval/rep-business-result.json",
-      "sha256": "69de5498302a7f078636689624a2e637b1842affb65a8f4840419093e78d8180"
+      "sha256": "572628b7293d157d585fd8ab653dd14d8e2f38e349a3416bf4159afdd7460ee6"
     },
     {
       "file": "pages/business/dashboard/ioc/approval/rep-office-approval-detail.json",
@@ -2260,11 +2260,15 @@
     },
     {
       "file": "pages/business/dashboard/ioc/commercial/README.md",
-      "sha256": "81049bb2b3f80bdd329b869b31163955a579ba0c5189162ef0cca03a6259043d"
+      "sha256": "468d1af61eb83668afb1915e11c983b5a2512c9239bae609b3f54f35348879ad"
     },
     {
       "file": "pages/business/dashboard/ioc/commercial/business-decision-all-details.json",
       "sha256": "cda741d10bd3b1e7b2373fe0d2f8a90f09db3fbc6c78310e633cb3470ef9d5f1"
+    },
+    {
+      "file": "pages/business/dashboard/ioc/commercial/contract-business-overview.json",
+      "sha256": "29a4812c1d05d9e8a6e5897c17a90c455e9eb9d926ddee7625d830ad41443662"
     },
     {
       "file": "pages/business/dashboard/ioc/opportunity/README.md",
@@ -2548,7 +2552,7 @@
     },
     {
       "file": "pages/capabilities/filters/README.md",
-      "sha256": "a12c530d0275b2be144a574cea4d533d9d9230e4a6d0c68e0ebe7e8a44d2a5c3"
+      "sha256": "91f896c97149e634965e496c51c2bc21faf47d7b486f5cf3a9dc57fe88f34550"
     },
     {
       "file": "pages/capabilities/filters/chart-include-exclude.json",
@@ -2600,11 +2604,11 @@
     },
     {
       "file": "pages/capabilities/filters/finalization-default-time-detail.json",
-      "sha256": "74131cb68970aa4754b06c21f4cb648ec3c8d58e4bd14f9f7933262a2ddae71a"
+      "sha256": "d28f318795c570bfcaa8879f86859e02ae88e4316905c6c22042c4b5e397e028"
     },
     {
       "file": "pages/capabilities/filters/finalization-default-time.json",
-      "sha256": "e41aeeb994a49611786f768c840e5a3c9ee7271b5a6d4413d8eeabd217c7acce"
+      "sha256": "736825424b9989489306d5b89243ade2a338e907ce802f7052114f182a24e0d2"
     },
     {
       "file": "pages/capabilities/filters/ioc-async-preparation.json",
@@ -2852,7 +2856,7 @@
     },
     {
       "file": "pages/capabilities/layout/README.md",
-      "sha256": "d6f07719cf27323264e37b372b74141da7e874364eaa85c1cbbf0305d28eb8f1"
+      "sha256": "b67f132ba73dfc10586f6ed5e673c3a3c0fdf25ab3371effbf6c18b1831d05c5"
     },
     {
       "file": "pages/capabilities/layout/dashboard-title-styles.json",
@@ -2888,7 +2892,7 @@
     },
     {
       "file": "pages/capabilities/layout/mc-content-layout-demo.json",
-      "sha256": "cd1c5bd8329c211f4cf672339a72465fb2b99a3a5ff6828804087e254f7cc503"
+      "sha256": "8a2b579831a70845cbf3bc4972e9b799f0e0a97d8cf1dc1083e01048a51c4ad6"
     },
     {
       "file": "pages/capabilities/layout/mc-layout-business-report.json",
@@ -2920,7 +2924,7 @@
     },
     {
       "file": "pages/capabilities/layout/metric-card-select-tab.json",
-      "sha256": "06fcaecb40e46b42619197dde65ec7a40dac55b7ce22a9bfc9e81ee1387ac42d"
+      "sha256": "bcafe62398f03674998048dad3e0b62cc38cd488ab0f1c945edbe4218919cea6"
     },
     {
       "file": "pages/capabilities/layout/rep-office-execution-efficiency-tab-demo.json",

@@ -1421,6 +1421,11 @@
           "description": "表格静态搜索选项与所选字段匹配"
         },
         {
+          "id": "tab-url-initial-state",
+          "minor": 33,
+          "description": "Tab 容器通过显式 URL 参数初始化活动页签"
+        },
+        {
           "id": "chart-echarts-option",
           "minor": 32,
           "description": "柱状图、折线图、饼图高级 ECharts 呈现扩展"
