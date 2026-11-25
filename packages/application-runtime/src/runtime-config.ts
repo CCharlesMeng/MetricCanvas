@@ -140,6 +140,10 @@ export function createInjectedDqeGateway(
 ): import('@metriccanvas/engine').RuntimeDataGateway & DimensionValuesGateway {
   return createDqeGateway({
     get finalizationSource() { return source()?.finalizationSource; },
+    get finalizationCacheIdentity() {
+      const config = readRuntimeConfig(source);
+      if (config) return [config.dqeEndpoint, config.operatorId, config.workspaceId, config.authToken, config.cftk ?? ''];
+    },
     get columnCandidates() { return { mode: 'fullQuery' as const, maxRows: source()?.columnCandidatesMaxRows }; },
     devDetail,
     fetchImpl: (async (_input, init) => {

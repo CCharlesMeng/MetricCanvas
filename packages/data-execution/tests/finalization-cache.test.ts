@@ -15,13 +15,15 @@ function gateway():RuntimeDataGateway {return {finalizationSource:structuredClon
 function deferred<T>() {let resolve!:(value:T)=>void;const promise=new Promise<T>(done=>{resolve=done;});return {promise,resolve};}
 afterEach(()=>vi.useRealTimers());
 
-it('shares completed results across page names for four hours, then reloads',async()=>{
+it('shares completed results across page names until the local day changes',async()=>{
   vi.useFakeTimers();vi.setSystemTime(now);
   const base=gateway();
   expect((await resolveFinalizationDates(page(),base,now)).get('经营数据')).toBe('2026-04-18');
   expect((await resolveFinalizationDates(page('second','合同数据'),base,now)).get('合同数据')).toBe('2026-03-18');
   expect(base.fetchData).toHaveBeenCalledTimes(1);
-  vi.setSystemTime(now.getTime()+4*60*60*1000);
+  vi.setSystemTime(new Date(2026, 10, 14, 23, 59));
+  await resolveFinalizationDates(page(),base,now);expect(base.fetchData).toHaveBeenCalledTimes(1);
+  vi.setSystemTime(new Date(2026, 10, 15));
   await resolveFinalizationDates(page(),base,now);expect(base.fetchData).toHaveBeenCalledTimes(2);
 });
 it('does not merge simultaneous page misses; cancelling one page leaves the other independent',async()=>{

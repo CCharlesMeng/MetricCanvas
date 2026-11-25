@@ -8,6 +8,7 @@
   import {SOURCE_FILTER_CONTEXT,type SourceFilterReader} from '../dashboard/source-filter-context';
   const sourceFilters=getContext<SourceFilterReader|undefined>(SOURCE_FILTER_CONTEXT);
   import FilterConfirmation from './FilterConfirmation.svelte';
+  import type { PendingPeriodChoice } from './pending-period-mode';
   import {PRESENTATION_CONTEXT,type PresentationReader} from '../presentation-context';
   const presentation=getContext<PresentationReader|undefined>(PRESENTATION_CONTEXT);
   import {selectedCase,appliedAmountRange} from '@metriccanvas/page/internal';
@@ -60,6 +61,7 @@
     candidates: DimensionValuesSnapshots;
     ondimension: (declaration: DimensionDeclaration, values: string[], level?: string) => void;
     ontimerange: (filterId: string, range: TimeRangeValue | null) => void;
+    onpendingperiod?: (filterId: string, choice: PendingPeriodChoice) => void;
     ontimepoint: (filterId: string, granularity: 'month' | 'date', value: string | null) => void;
     onboolean: (filterId: string, checked: boolean) => void;
     onnumberrange: (filterId: string, range: NumberRangeValue | null) => void;
@@ -80,6 +82,7 @@
     ondimension,
     ontimerange,
     ontimepoint,
+    onpendingperiod,
     onboolean,
     onnumberrange,
     onsearch,
@@ -179,6 +182,8 @@
       {@const monthFinalization = monthFinalizationName(declaration)}
       <PeriodFilter
         initialMode={initialPeriodMode(declaration)}
+        pendingMode={timeContext.periodModes?.get(declaration.id)}
+        onpendingmode={onpendingperiod && (choice => onpendingperiod?.(declaration.id, choice))}
         rollingMonth={resolvedFinalizationDate(finalization,timeContext.finalizationDates)?.slice(0,7)}
         rollingPending={!!finalization && !timeContext.finalizationDates}
         finalizationMonth={finalizationMonthLimit(monthFinalization,timeContext.finalizationDates)}

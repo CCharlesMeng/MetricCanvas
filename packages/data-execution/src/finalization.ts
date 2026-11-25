@@ -16,7 +16,7 @@ export interface FinalizationSourceDefinition {
   timeoutMs?: number;
 }
 
-/** Each page owns its lookup; 6.120 pages reuse only completed, session-scoped results. */
+/** Each page owns its lookup; 6.120 pages reuse only completed results for the current day. */
 export async function resolveFinalizationDates(
   page: Pick<Page, 'id' | 'filters'> & Partial<Pick<Page,'schemaVersion'>>,
   gateway: RuntimeDataGateway,

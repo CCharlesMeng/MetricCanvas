@@ -2,14 +2,15 @@
 <script lang="ts">
   import { DEFAULT_NULL_TEXT } from '../../../widgets/src/shared/value-format';
   import { untrack } from 'svelte';
+  import type { PendingPeriodChoice } from './pending-period-mode';
   import { DatePicker } from '@metriccanvas/ui';
   import { calendarEndpoint,timeAvailabilityIssue,resolvePeriodSelection, periodRangeLabel, type PeriodMode, type PeriodRange, type AppliedPeriodSelection } from '@metriccanvas/page/internal';
-  let {label,precision='date',value,readOnly=false,rollingMonth,rollingPending=false,finalizationMonth,monthPending=false,initialMode,periodModes,min,max,blockedRanges=[],onchange}:{label?:string;precision?:'month'|'date';value:PeriodRange|null;readOnly?:boolean;rollingMonth?:string;rollingPending?:boolean;finalizationMonth?:string;monthPending?:boolean;initialMode?:PeriodMode;periodModes?:PeriodMode[];min?:string;max?:string;blockedRanges?:readonly {from:string;to:string}[];onchange:(value:PeriodRange)=>void}=$props();
+  let {label,precision='date',value,readOnly=false,rollingMonth,rollingPending=false,finalizationMonth,monthPending=false,initialMode,pendingMode,periodModes,min,max,blockedRanges=[],onchange,onpendingmode}:{label?:string;precision?:'month'|'date';value:PeriodRange|null;readOnly?:boolean;rollingMonth?:string;rollingPending?:boolean;finalizationMonth?:string;monthPending?:boolean;initialMode?:PeriodMode;pendingMode?:PeriodMode;periodModes?:PeriodMode[];min?:string;max?:string;blockedRanges?:readonly {from:string;to:string}[];onchange:(value:PeriodRange)=>void;onpendingmode?:(choice:PendingPeriodChoice)=>void}=$props();
   let error=$state('');
   function commit(range:PeriodRange){error=timeAvailabilityIssue({id:'period',type:'timeRange',min,max,blockedRanges:[...blockedRanges]},{type:'timeRange',...range})??'';if(!error)onchange(range);}
   const allModes=[{id:'year',label:'年'},{id:'quarter',label:'季'},{id:'month',label:'月'},{id:'last12Months',label:'近一年'}] as const;
   const modes=$derived(periodModes ? periodModes.map(id=>allModes.find(item=>item.id===id)!) : allModes);
-  const mode=$derived(value?.selection?.mode ?? initialMode ?? periodModes?.[0] ?? 'month');
+  const mode=$derived(pendingMode ?? value?.selection?.mode ?? initialMode ?? periodModes?.[0] ?? 'month');
   type CalendarMode = Exclude<PeriodMode, 'last12Months'>;
   let anchor=$state(untrack(()=>anchorOf(value?.selection)));
   // The anchor supplies the initial value for a mode that has not been used yet.
@@ -51,26 +52,35 @@
   const pickerMax=$derived(mode === 'month' && finalizationMonth
     && (!max || calendarEndpoint(finalizationMonth, true) < calendarEndpoint(max, true)) ? finalizationMonth : max);
   function select(next:PeriodMode) {
+    if (modePending(next)) {
+      if (next !== mode) requestPendingMode(next);
+      return;
+    }
     const selection = next === 'last12Months'
       ? { mode: next, anchor: rollingMonth } as const
       : { mode: next, value: calendarModeValue(next) };
     commit(resolvePeriodSelection(selection,new Date(),precision));
   }
-  const selected=$derived(value?.selection?.mode==='last12Months'?undefined:value?.selection.value);
-  const text=$derived(mode==='last12Months'?value?periodRangeLabel(value):DEFAULT_NULL_TEXT:selected?selected.replace('-Q',' 年 Q')+(mode==='year'?' 年':''):DEFAULT_NULL_TEXT);
+  function requestPendingMode(next: PeriodMode) {
+    if (next === 'month') onpendingmode?.({ mode: next, value: calendarModeValue(next) });
+    if (next === 'last12Months') onpendingmode?.({ mode: next });
+  }
+  const range = $derived(value?.selection?.mode === mode ? value : null);
+  const selected = $derived(range?.selection?.mode === 'last12Months' ? undefined : range?.selection.value);
+  const text = $derived(mode === 'last12Months' ? range ? periodRangeLabel(range) : DEFAULT_NULL_TEXT : selected ? selected.replace('-Q',' 年 Q') + (mode === 'year' ? ' 年' : '') : DEFAULT_NULL_TEXT);
 </script>
 <div class="period-filter" data-period-filter>
   {#if label}<span class="label">{label}</span>{/if}
   {#if readOnly}
-    <span data-filter-display>{text}{mode!=='last12Months' && value?`（${value.from} 至 ${value.to}）`:''}</span>
+    <span data-filter-display>{text}{mode!=='last12Months' && range?`（${range.from} 至 ${range.to}）`:''}</span>
   {:else}
     {#if modes.length>1}
     <div class="segments" role="group" aria-label={label??'时间粒度'}>
-      {#each modes as item}<button type="button" aria-pressed={mode===item.id} disabled={modePending(item.id)} onclick={()=>select(item.id)}>{item.label}</button>{/each}
+      {#each modes as item}<button type="button" aria-pressed={mode===item.id} disabled={!onpendingmode && modePending(item.id)} onclick={()=>select(item.id)}>{item.label}</button>{/each}
     </div>
     {/if}
     {#if mode==='last12Months'}
-      <span class="range" data-period-range>{value?periodRangeLabel(value):DEFAULT_NULL_TEXT}</span>
+      <span class="range" data-period-range>{text}</span>
     {:else}
       <div class="picker">
         <DatePicker label={label??'统计期间'} precision={mode} {min} max={pickerMax} {blockedRanges} disabled={modePending(mode)} required value={selected?{from:selected,to:selected}:null}

@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "811a7b67d3e9058cc641369470d5eeef660c8cee1848bab340228e0b7a967f6e",
+  "sha256": "cc707bdbd479067d5d7b18adfa4324d6b0995b65a739ca8918b89c8d18eabc44",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -120,7 +120,7 @@
     },
     {
       "file": "docs/page-metadata/data-sources.md",
-      "sha256": "f8cf8d614bd52ac9350d8ce5204c1c7cc0751757803aebc9c893ee90a05e1035"
+      "sha256": "f65df2d01a6858e9a1184c75c256bbc393d3783bde51c333f4c57b751b92a03a"
     },
     {
       "file": "docs/page-metadata/examples/README.md",
@@ -136,7 +136,7 @@
     },
     {
       "file": "docs/page-metadata/filters.md",
-      "sha256": "8c0706058bbb14e952dc78c9da5560487b8ff7259406f892785cea90b448b51b"
+      "sha256": "0270417afc651dc4045684fa7789c172c60c087724a3e6c007f70ea4f116da74"
     },
     {
       "file": "docs/page-metadata/layout-migration.md",
@@ -160,7 +160,7 @@
     },
     {
       "file": "docs/page-metadata/reference-map.json",
-      "sha256": "7a3443cdf8ce62285c8431c53870e29c8f9e7c93073bb45dfa2f5643102adb9b"
+      "sha256": "daea46c2d4ca72c6d039bf67346150a6fd3bb5e6df14559c7e74ce9f8c1b68ac"
     },
     {
       "file": "docs/page-metadata/sections-and-layout.md",
@@ -1568,7 +1568,7 @@
     },
     {
       "file": "packages/page/src/condition.ts",
-      "sha256": "034c79b20c27339e9c4d42965286fcf88739326b6f387db5b7daae99c97469e8"
+      "sha256": "9729aa64e29538327ad47e803bfcc80f5e100a5f6be11fd4f6b9b42854cf77a6"
     },
     {
       "file": "packages/page/src/data-source-references.ts",
@@ -2556,7 +2556,7 @@
     },
     {
       "file": "pages/capabilities/filters/README.md",
-      "sha256": "42cd822a70534c95de4ea8e7bcb1094223eeebcedff98a1df26b01d632c10c60"
+      "sha256": "da2e9d3decda4d902b602563880d53ce267f5451cb7c10d7c80c762c9677b76f"
     },
     {
       "file": "pages/capabilities/filters/chart-include-exclude.json",
@@ -3380,7 +3380,7 @@
     },
     {
       "file": "pages/temporary/business-result-pinned-diagnosis-20261102/README.md",
-      "sha256": "6ac607c98f6da78c635f816474f2baad2faa1ef316e6a12b03d01ab334fed377"
+      "sha256": "0f7e724fcfe609101198d4306a381e3b4279648ad32e710ba7ccfae2c3b23d32"
     },
     {
       "file": "pages/temporary/business-result-pinned-diagnosis-20261102/business-result-metrics.json",

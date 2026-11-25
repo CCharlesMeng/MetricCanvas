@@ -16,8 +16,8 @@ function interactionGate(node:PolicyNode,context:ConditionContext,parent?:Presen
  return nested?policyGate(nested,context,own):own;
 }
 function reason(result:ConditionResult){return result.reason ?? (result.status==='deny'?'CONDITION_FALSE':undefined);}
-function table(page:Page,node:TableComponent,context:ConditionContext,gate:PresentationGate):TableComponent {
- const projected=tableColumnPresentation(page,node,context).component;
+function table(page:Page,node:TableComponent,context:ConditionContext,gate:PresentationGate,periodModes:ConditionContext['periodModes']):TableComponent {
+ const projected=tableColumnPresentation(page,node,{...context,periodModes}).component;
  const toolbar=projected.props.toolbar;
  if(!toolbar)return projected;
  return {...projected,props:{...projected.props,toolbar:{
@@ -45,7 +45,7 @@ function metricCard(
 /** Pure presentation projection. Original Page and source graph remain immutable. */
 export function compilePresentation(page:Page) {
   return {
-    evaluate(input:Omit<ConditionContext,'declarations'>) {
+    evaluate(input:Omit<ConditionContext,'declarations'|'periodModes'>, periodModes?:ConditionContext['periodModes']) {
       const context:ConditionContext={...input,declarations:page.filters??[]};
       const components=new Map<string,PresentationGate>();
       const sections=new Map<string,PresentationGate>();
@@ -69,7 +69,7 @@ export function compilePresentation(page:Page) {
           return [{...tab,components:child?[child as typeof tab.component]:[]}];
         })}};
         if(node.type==='compositeCard')return {...node,props:{...node.props,components:node.props.components.flatMap(child=>component(child,gate)??[]) as typeof node.props.components}};
-        if(node.type==='table')return table(page,node,context,gate);
+        if(node.type==='table')return table(page,node,context,gate,periodModes);
         if(node.type==='text'&&node.props.parts)return {...node,props:{...node.props,body:node.props.parts.filter(part=>policyGate(part,context,gate).eligible).map(part=>part.text).join('')}};
         return node;
       }

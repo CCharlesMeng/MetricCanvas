@@ -165,9 +165,17 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
       return next;
     }
     snapshots = screenSnapshots();
+    function clearCompletedProgress(next: PageDataSnapshots): void {
+      for (const id of progress.keys()) {
+        const status = next.get(id)?.status;
+        if (status === 'ready' || status === 'empty') progress.delete(id);
+      }
+    }
     function publish() {
       cancelProgressPublish();
       snapshots = screenSnapshots();
+      // A single root can finish before its dependencies are published in the shared graph.
+      clearCompletedProgress(snapshots);
       for (const run of subscribers) notify(run, snapshots);
     }
     function refetch(changed: Set<string>, firstRead = false, releaseInitial = false) {
@@ -224,7 +232,6 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
                     compiled.limits.set(root, update.viewCorrection.pageSize);
                   tables.get(root)?.correct(update.viewCorrection, generations.get(root)!);
                 }
-                if (update.snapshot.status === 'ready' || update.snapshot.status === 'empty') progress.delete(root);
                 raw = new Map(raw).set(root, update.raw);
                 publish();
               }
