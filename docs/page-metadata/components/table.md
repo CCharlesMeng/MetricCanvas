@@ -130,7 +130,7 @@ select 叶子列声明 `filterable: {"mode":"select","initialParam":"is-valid","
 
 本能力覆盖各表格变体、Tab/组合卡内表格、详情及行内子表，使用各自作用域输入。父表零列时释放全部展开实例并取消/隔离在途请求，恢复后应用父表的默认展开规则。已有子表导出限制不因此解除。涉及远程排序、表头筛选或搜索的新能力表格必须独占查询页面数据源；inline 和无分页窗口的 complete 结果仍可共享、分别持有表格状态。
 
-Excel、PDF、PNG共用列规则，导出开始冻结筛选、事实、有效列和已提交状态；不导出隐藏字段，复合列只展开可见列的次字段/徽标。权限修订变化仍按已有规则停止旧实例及导出。
+Excel、PDF、PNG共用列规则，导出开始冻结筛选、事实、有效列和已提交状态；不导出隐藏字段，复合列只展开可见列的次字段/徽标。
 
 可观察入口：`/pages/table-column-visibility`（四种表格外观、搜索与 Excel）、`/pages/table-column-visibility-scopes`（Tab、详情、展开子表）、`/pages/table-column-visibility-report`（PDF/PNG）。均为内联合成数据；远程状态调和由集成测试覆盖，不作为真实 DQE/Relay 验收。
 

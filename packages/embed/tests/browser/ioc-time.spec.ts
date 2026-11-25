@@ -23,12 +23,11 @@ test('presets use inclusive dates, explicit anchor and reject blocked interior d
  await page.getByRole('button',{name:'上个完整月',exact:true}).click();await expect(page.getByText('所选期间包含禁选区间',{exact:true})).toBeVisible();await expect(table(page)).toContainText('2026-10-13 至 2026-10-19');
  await page.getByRole('button',{name:'锚点近3天',exact:true}).click();await expect(table(page)).toContainText('2026-10-05 至 2026-10-07');
 });
-test('trusted latest/complete are separate, URL wins initial, subscriptions preserve selection and identity stops the old instance',async({page})=>{
+test('trusted latest/complete are separate, URL wins initial, subscription and revision updates preserve selection',async({page})=>{
  await page.goto('/pages/ioc-header-availability-demo?month=2026-08');await expect(table(page)).toContainText('sales_month=2026-08');await expect(page.locator('[data-ioc-header]')).toContainText('2026年10月19日 10:00:00');
  await page.getByRole('button',{name:'事实等待',exact:true}).click();await expect(page.locator('[data-filter-id="month"] input')).toBeDisabled();await expect(page.locator('[data-component="body/unbound-table"]')).toContainText('无绑定条件');await expect(table(page).getByRole('button',{name:'导出',exact:true})).toBeDisabled();
  await page.getByRole('button',{name:'事实恢复',exact:true}).click();await expect(table(page)).toContainText('sales_month=2026-08');
- await page.getByRole('button',{name:'身份变化',exact:true}).click();await expect(page.getByText('权限会话已变化，请以当前身份重新初始化页面')).toBeVisible();await expect(page.locator('[data-ioc-header]')).toHaveCount(0);
- await page.getByRole('button',{name:'重新挂载',exact:true}).click();await expect(table(page)).toContainText('sales_month=2026-08');
+ await page.getByRole('button',{name:'更新权限修订号',exact:true}).click();await expect(page.locator('[data-ioc-header]')).toBeVisible();await expect(table(page)).toContainText('sales_month=2026-08');
 });
 test('latest initial uses complete period and missing/future choices remain unapplied',async({page})=>{
  await page.goto('/pages/ioc-header-availability-demo');await expect(table(page)).toContainText('sales_month=2026-09');const input=page.getByRole('combobox',{name:'数据月份',exact:true});

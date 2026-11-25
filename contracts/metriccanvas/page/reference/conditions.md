@@ -26,9 +26,9 @@ button组件使用props.label和单个props.action，顶层可声明visibleWhen/
 
 text的props.parts可声明{id,text,visibleWhen?}，与body/bodyFormat互斥，纯文本按顺序连接，标点属于片段本身。它与现有Text Value的{parts:[字符串或引用]}位于不同层，原有标题组合保持原义。
 
-集成应用可提供displayInputs的getSnapshot/subscribe，携带permissionRevision、permissions、values及依赖筛选的filterRevision。筛选条件页无需外部输入。权限会话变化立即停用旧内容、详情及导出，集成应用用当前身份重新初始化；页面无法改写已有权限。
+集成应用可提供 displayInputs 的 getSnapshot/subscribe，携带 permissionRevision、permissions、values 及依赖筛选的 filterRevision。筛选条件页无需外部输入。统一运行时在同一页面实例接收新的展示输入并重新求值。仅更新 permissionRevision 时页面继续渲染，已开始的页面导出继续执行。实际身份切换时，由集成应用管理页面及数据网关的会话生命周期。
 
-PDF/PNG导出捕获当前条件和筛选，展开所有允许的分区/Tab，不受当前选项限制；条件禁止的内容不导出，允许的空父容器保留。XLSX使用同一表格行投影。普通筛选变化不修改已捕获导出，权限修订变化取消下载；一般节点隐藏仍不自动停查，表格列与图表系列按上述依赖规则裁剪取数。
+PDF/PNG导出捕获当前条件和筛选，展开所有允许的分区/Tab，不受当前选项限制；条件禁止的内容不导出，允许的空父容器保留。XLSX使用同一表格行投影。导出继续使用捕获时的筛选和展示条件。一般节点隐藏仍不自动停查，表格列与图表系列按上述依赖规则裁剪取数。
 
 验收入口：[层级联动](examples/page-visibility-region-linkage.json)、[外部事实Sim](examples/page-visibility-inputs.json)。示例使用明确的本地演示输入；内联数据与Sim事实不能替代真实CloudIOC/DQE联调。
 

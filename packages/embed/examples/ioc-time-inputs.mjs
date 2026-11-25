@@ -7,7 +7,7 @@ export function createTimeInputs(){
 export function timeInputsPanel(source,remount){
  const panel=document.createElement('aside');panel.setAttribute('aria-label','合成期间事实控制');panel.style.cssText='padding:10px;display:flex;flex-wrap:wrap;gap:8px;font:13px sans-serif;background:#f5f8ff';
  const label=document.createElement('span');label.textContent='本地合成输入：';panel.append(label);
- for(const [label,action]of [['隐藏期间说明',()=>source.setSnapshot({...source.getSnapshot(),values:{'period-details':{status:'ready',value:false}}})],['显示期间说明',()=>source.setSnapshot({...source.getSnapshot(),values:{'period-details':{status:'ready',value:true}}})],['事实等待',()=>source.setStatus('loading')],['事实恢复',()=>source.reset()],['事实错误',()=>source.setStatus('error')],['身份变化',()=>source.setSnapshot({...source.getSnapshot(),permissionRevision:'synthetic-user-2'})],['重新挂载',remount]]){
+ for(const [label,action]of [['隐藏期间说明',()=>source.setSnapshot({...source.getSnapshot(),values:{'period-details':{status:'ready',value:false}}})],['显示期间说明',()=>source.setSnapshot({...source.getSnapshot(),values:{'period-details':{status:'ready',value:true}}})],['事实等待',()=>source.setStatus('loading')],['事实恢复',()=>source.reset()],['事实错误',()=>source.setStatus('error')],['更新权限修订号',()=>source.setSnapshot({...source.getSnapshot(),permissionRevision:'synthetic-user-2'})],['重新挂载',remount]]){
   const button=document.createElement('button');button.textContent=label;button.onclick=action;panel.append(button);
  }
  document.body.prepend(panel);
