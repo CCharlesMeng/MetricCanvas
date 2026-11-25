@@ -130,6 +130,31 @@ export const invariants: InvariantDefinition[] = [
     ]
   },
   {
+    id: 'map-tooltip-rows', description: '6.141 地图按指标行呈现同排对比值', valid: ['ioc-region-map-demo'],
+    cases: [
+      {case: 'map-tooltip-rows-version', base: 'ioc-region-map-demo', expect: /由 6.141 引入/, mutate: document => {
+        document.schemaVersion = '6.140';
+        delete firstComponent(document, 1).props.pointLabel;
+      }},
+      {case: 'map-tooltip-rows-conflict', base: 'ioc-region-map-demo', expect: /tooltipRows 与 tooltipFields 不能同时声明/, mutate: document => {
+        firstComponent(document, 1).props.tooltipFields = [{ label: '净商务折扣', field: 'discount' }];
+      }},
+      {case: 'map-tooltip-comparison-field', base: 'ioc-region-map-demo', expect: /missing-comparison/, mutate: document => {
+        firstComponent(document, 1).props.tooltipRows[0].comparison = { label: '同比', field: 'missing-comparison' };
+      }}
+    ]
+  },
+  {
+    id: 'map-point-label-value', description: '6.141 地图散点同时显示名称与指标值', valid: ['ioc-region-map-demo'],
+    cases: [
+      {case: 'map-point-label-version', base: 'ioc-region-map-demo', expect: /由 6.141 引入/, mutate: document => {
+        document.schemaVersion = '6.140';
+        delete firstComponent(document, 1).props.tooltipRows;
+      }},
+      {case: 'map-point-label-unknown', base: 'ioc-region-map-demo', expect: /pointLabel/, mutate: document => { firstComponent(document, 1).props.pointLabel = 'valueOnly'; }}
+    ]
+  },
+  {
     id: 'map-geography-overrides', description:'组织地图资料支持页面覆盖', valid:['ioc-region-map-demo'],
     cases:[{case:'map-overrides-version',base:'ioc-region-map-demo',expect:/由 6.139 引入/,mutate: document => {document.schemaVersion='6.138';}},
       {case:'map-overrides-invalid-zoom',base:'ioc-region-map-demo',expect:/zoom|大于|greater|>/i,mutate: document => {document.mapOverrides.world['region-dept']['欧洲地区部'].viewport.zoom=-1;}}]

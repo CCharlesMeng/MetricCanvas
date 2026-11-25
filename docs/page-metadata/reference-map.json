@@ -1003,6 +1003,7 @@
         "mapLegend",
         "mapLegendBand",
         "mapTooltipField",
+        "mapTooltipRow",
         "mapPinnedSummary",
         "mapGeographyEntry",
         "mapGeographyLevels"
@@ -1487,6 +1488,9 @@
     }
   },
   "fieldNotes": {
+    "tooltipRows": "悬浮提示的有序指标行，可含同排对比；与 tooltipFields 互斥。",
+    "pointLabel": "nameAndValue 将格式化的地图指标附在散点名称后，指标缺失时仅显示名称。",
+    "#/definitions/mapTooltipRow/properties/comparison": "同一提示行的可选对比度量，以标签与主槽字段绑定声明。",
     "metricCode": "外部指标定义服务使用的顶层度量编码，指标行沿 valueField 读取。",
     "#/definitions/selectTabAction/properties/selectTab": "指标值点击后选中当前页面的指定页签，使用当前筛选状态。",
     "#/definitions/selectTabAction/properties/selectTab/properties/componentId": "当前页面中目标 tabContainer 组件的 ID。",
@@ -2193,7 +2197,7 @@
     "number-signed": "保留普通数值精度，正数加正号，负数保留负号，零无符号；6.17新增。",
     "number-1-signed": "保留一位小数，舍入后零无符号；表格正负颜色与指标卡变化箭头按展示方向判断；6.17新增。",
     "6.17": "新增带符号普通数值格式，按展示精度统一符号、正负颜色与变化箭头。",
-    "yoy-p-signed": "同比原值先四舍五入保留两位小数，再乘100显示整数并追加大写P；正数带+，舍入零中性；6.87新增。",
+    "yoy-p-signed": "同比原值大于5显示>500P，小于-5显示<-500P；阈值内先舍入至两位小数，再乘100显示整数P。正值带+，舍入零中性；6.87新增。",
     "number-2-signed": "保留两位小数，正数加正号，舍入后零无符号；方向与展示精度一致；6.18新增。",
     "number-grouped-signed": "沿用number-grouped千分位与默认小数精度，正数加正号，舍入后零无符号；6.18新增。",
     "6.18": "补齐普通数值格式族的两位小数及千分位带符号版本；保留6.17读取。",
@@ -2331,7 +2335,7 @@
     "6.74": "完整结果按稳定维度键取组织并集，再关联单项并计算分类与总分。",
     "6.75": "6.75：boolean 候选依赖与统一条件启用。",
     "6.76": "6.76：组合源显式按需分页、最后操作成员生效和表格为空条件能力边界。",
-    "points-1-signed": "百分点值保留一位小数和符号，追加P，不乘100。",
+    "points-1-signed": "百分点原值大于500显示>500P，小于-500显示<-500P；阈值内保留一位小数和符号，追加P，不乘100。",
     "current": "所选期间截至可信统计截止日。",
     "previousPeriod": "月前移一月、季前移三月、年与近一年前移一年。",
     "previousYear": "所选期间前移一年，保持相同统计进度。",
@@ -2465,7 +2469,8 @@
     "#/properties/schemaVersion=\"6.137\"": "正文分区顶层表格可声明 expand，展开时占满分区整行。",
     "#/properties/schemaVersion=\"6.138\"": "指标卡主指标行可用 colorRule 给主值着色。",
     "#/properties/schemaVersion=\"6.139\"": "组织地图共享地理资料与页面级覆盖。",
-    "#/properties/schemaVersion=\"6.140\"": "Dashboard 自然期间可从多个定稿名称选取当年最早的有效定稿月。"
+    "#/properties/schemaVersion=\"6.140\"": "Dashboard 自然期间可从多个定稿名称选取当年最早的有效定稿月。",
+    "#/properties/schemaVersion=\"6.141\"": "地图提示可在同一行绑定主指标与对比值，散点名称可带地图指标。"
   },
   "branchExceptions": {
     "#/properties/iocHeader/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/0": {
@@ -3689,6 +3694,7 @@
     "components/mapChart.md": [
       "IOC Region 宿主视口",
       "组织地图地理资料（6.139）",
+      "悬浮提示与散点标签（6.141）",
       "查阅方式",
       "常量取值（6.59）"
     ],

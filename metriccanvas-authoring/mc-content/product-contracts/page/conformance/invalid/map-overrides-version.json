@@ -188,6 +188,13 @@
               "scatter": "point",
               "nameField": "org-key",
               "valueField": "discount",
+              "pointLabel": "nameAndValue",
+              "tooltipRows": [
+                {
+                  "label": "净商务折扣",
+                  "field": "discount"
+                }
+              ],
               "actions": [
                 {
                   "on": "click",
@@ -436,6 +443,16 @@
     }
   },
   "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/1/components/0/props/tooltipRows",
+      "message": "地图提示框可声明指标与同排对比值 由 6.141 引入，文档声明的是 6.138"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/1/components/0/props/pointLabel",
+      "message": "地图点位标签可同时显示名称和指标值 由 6.141 引入，文档声明的是 6.138"
+    },
     {
       "type": "SCHEMA_ERROR",
       "path": "/mapOverrides",

@@ -1,6 +1,6 @@
 # Operation Map 合同商务总览地图接入手册
 
-目标版本为支持页面 Schema 6.139 的 MC Embed。交付时请从同一份构建复制入口和全部 chunks。OM 负责提供当前身份的组织候选、查询网关及共享地理字典。MC 按页面配置分区，绘制底图及业务行，并将点击回写至页头 Region。浏览器可执行的接线示例见 [独立集成页](../packages/embed/examples/ioc-region-map.html)、[模拟数据网关及地图适配器](../packages/embed/examples/ioc-region-map-fixture.mjs) 与 [所属地区部展示事实](../packages/embed/examples/region-department-facts.mjs)。模拟网关应替换为 OM 已有网关。
+目标版本为支持合同商务总览 Schema 6.141 的 MC Embed。交付时请从同一份构建复制入口和全部 chunks。OM 负责提供当前身份的组织候选、查询网关及共享地理字典。MC 按页面配置分区，绘制底图及业务行，并将点击回写至页头 Region。浏览器可执行的接线示例见 [独立集成页](../packages/embed/examples/ioc-region-map.html)、[模拟数据网关及地图适配器](../packages/embed/examples/ioc-region-map-fixture.mjs) 与 [所属地区部展示事实](../packages/embed/examples/region-department-facts.mjs)。模拟网关应替换为 OM 已有网关。
 
 ## 第一步　整理数据
 

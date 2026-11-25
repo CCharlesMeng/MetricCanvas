@@ -55,6 +55,7 @@
    */
   let basemap = $state<{ id: BasemapName; meta: BasemapMeta }>();
   const chartProps = $derived({ ...props, map: basemap?.id ?? props.map });
+  const loading = $derived(data.main.sourceStatus === 'loading' && !data.main.progress);
 
   $effect(() => {
     let alive = true;
@@ -206,11 +207,11 @@
          这里要有一个定位参照物;它接手 EChart 原来占的那一格弹性空间,
          `.echart` 仍是 `flex: 1`,几何与加壳之前一致。 -->
     <div
-      class="map-frame" class:loading-map={data.main.sourceStatus === 'loading'}
+      class="map-frame" class:loading-map={loading}
       data-projection-square={projection ? String(projection.width === projection.height) : undefined}
     >
       <EChart
-        loading={data.main.sourceStatus === 'loading'}
+        {loading}
         option={withMapViewport(mapOption(
           data,
           chartProps,

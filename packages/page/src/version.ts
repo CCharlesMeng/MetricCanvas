@@ -27,7 +27,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  */
 export const UNRESTRICTED_FILTER_CLEAR_MINOR = 124;
 export const INDEPENDENT_EXCLUSION_CANDIDATES_MINOR = 125;
-const CURRENT_MINOR = 140;
+const CURRENT_MINOR = 141;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -82,6 +82,16 @@ function bindingOperatorUsed(query:Record<string,unknown>|undefined):boolean {
 }
 
 export const pageCapabilities = {
+  'map-tooltip-rows': {
+    minor: 141, legacyReadable: false, description: '地图提示框可声明指标与同排对比值',
+    usedAt: document => componentPaths(document, component => component.type === 'mapChart' && has(props(component), 'tooltipRows'))
+      .map(path => `${path}/props/tooltipRows`)
+  },
+  'map-point-label-value': {
+    minor: 141, legacyReadable: false, description: '地图点位标签可同时显示名称和指标值',
+    usedAt: document => componentPaths(document, component => component.type === 'mapChart' && has(props(component), 'pointLabel'))
+      .map(path => `${path}/props/pointLabel`)
+  },
   'finalization-name-list': {
     minor: 140, legacyReadable: false, description: '自然期间可按多个定稿名称选择当年最早的可用定稿月',
     usedAt: document => filterPaths(document, filter => Array.isArray(record(filter.default)?.finalizationName))

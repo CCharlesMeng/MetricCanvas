@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.140",
-  "schemaSha256": "e63ac5e9265706b6508600a77a489c4d8f0e7b60be7e71666860f8834b820779",
+  "schemaVersion": "6.141",
+  "schemaSha256": "c40184a8d67e0d0d991d75179dffd3e5fa36e94fa121b5a46b2574e8ee3da1fb",
   "semanticSources": [
     {
       "file": "metriccanvas-authoring/core/page/analysis-report.ts",
@@ -212,7 +212,7 @@
     },
     {
       "file": "packages/engine/widgets/src/shared/value-format.ts",
-      "sha256": "886b8980566eae245c2b5e6dd9dd9596688759c7e1e754fa76e6aa8989bbd634"
+      "sha256": "8c81a05b851b2ff0d8d8ea3817fa19400297961a98b70e3afe1dade3c643851a"
     },
     {
       "file": "packages/page/src/ai-summary-region.ts",
@@ -408,7 +408,7 @@
     },
     {
       "file": "packages/page/src/schema/components/map-chart.ts",
-      "sha256": "b35cb210fceb789feef36c0c532df76094c9add7163fe410d4023d0eb3b0b207"
+      "sha256": "3efca07f1d41cb1353cb5a0e857e99e98d866f81b00407f30ac7a529624ccfb2"
     },
     {
       "file": "packages/page/src/schema/components/metric-card.ts",
@@ -572,11 +572,11 @@
     },
     {
       "file": "packages/page/src/validate.ts",
-      "sha256": "e81a46a6e8341d9376d3a91b9fcb5746fa0f8648c5864dc180c924689a91a737"
+      "sha256": "018b8ad8469585e1a227c13631c0e5c8f56dda1e9c4c44b8039614ade3f3647e"
     },
     {
       "file": "packages/page/src/version.ts",
-      "sha256": "35b686843f3a02569cdc6954c8cee75dc34c4d8d7f623371b3878cb183992373"
+      "sha256": "a756ccc29b19ccfb4971af9b8955977ade5cdda02ddb314b05fb1e04b6e86e36"
     },
     {
       "file": "packages/page/tests/ai-summary-regions.test.ts",
@@ -588,7 +588,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "2da1c409d688d82362b8a14535a65485c12482af88627824e380d7b497d32e50"
+      "sha256": "77c8025bbc5d1704ae0f408caac523662577598b70e4d5c42b84be76cc559594"
     }
   ],
   "modules": {
@@ -1595,6 +1595,7 @@
         "mapLegend",
         "mapLegendBand",
         "mapTooltipField",
+        "mapTooltipRow",
         "mapPinnedSummary",
         "mapGeographyEntry",
         "mapGeographyLevels"
@@ -2308,7 +2309,8 @@
         "6.137",
         "6.138",
         "6.139",
-        "6.140"
+        "6.140",
+        "6.141"
       ]
     },
     {
@@ -18073,6 +18075,66 @@
       "ref": "#/definitions/nonEmptyTextValue"
     },
     {
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/0/properties/tooltipRows",
+      "path": "@mapChartComponent.props · anyOf[0].tooltipRows",
+      "required": "本分支可选",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/0/properties/tooltipRows/items",
+      "path": "@mapChartComponent.props · anyOf[0].tooltipRows[]",
+      "required": "每个数组项",
+      "module": "components/mapChart.md",
+      "ref": "#/definitions/mapTooltipRow"
+    },
+    {
+      "pointer": "#/definitions/mapTooltipRow",
+      "path": "@mapTooltipRow",
+      "required": "类型/分支",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapTooltipRow/properties/label",
+      "path": "@mapTooltipRow.label",
+      "required": "本分支必填",
+      "module": "components/mapChart.md",
+      "ref": "#/definitions/nonEmptyTextValue"
+    },
+    {
+      "pointer": "#/definitions/mapTooltipRow/properties/field",
+      "path": "@mapTooltipRow.field",
+      "required": "本分支必填",
+      "module": "components/mapChart.md",
+      "ref": "#/definitions/fieldBinding"
+    },
+    {
+      "pointer": "#/definitions/mapTooltipRow/properties/comparison",
+      "path": "@mapTooltipRow.comparison",
+      "required": "本分支可选",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapTooltipRow/properties/comparison/properties/label",
+      "path": "@mapTooltipRow.comparison.label",
+      "required": "本分支必填",
+      "module": "components/mapChart.md",
+      "ref": "#/definitions/nonEmptyTextValue"
+    },
+    {
+      "pointer": "#/definitions/mapTooltipRow/properties/comparison/properties/field",
+      "path": "@mapTooltipRow.comparison.field",
+      "required": "本分支必填",
+      "module": "components/mapChart.md",
+      "ref": "#/definitions/fieldBinding"
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/0/properties/pointLabel",
+      "path": "@mapChartComponent.props · anyOf[0].pointLabel",
+      "required": "本分支可选",
+      "module": "components/mapChart.md",
+      "const": "nameAndValue"
+    },
+    {
       "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/0/properties/pinnedSummary",
       "path": "@mapChartComponent.props · anyOf[0].pinnedSummary",
       "required": "本分支可选",
@@ -18447,6 +18509,26 @@
       "required": "每个数组项",
       "module": "components/mapChart.md",
       "ref": "#/definitions/mapTooltipField"
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/1/properties/tooltipRows",
+      "path": "@mapChartComponent.props · anyOf[1].tooltipRows",
+      "required": "本分支可选",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/1/properties/tooltipRows/items",
+      "path": "@mapChartComponent.props · anyOf[1].tooltipRows[]",
+      "required": "每个数组项",
+      "module": "components/mapChart.md",
+      "ref": "#/definitions/mapTooltipRow"
+    },
+    {
+      "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/1/properties/pointLabel",
+      "path": "@mapChartComponent.props · anyOf[1].pointLabel",
+      "required": "本分支可选",
+      "module": "components/mapChart.md",
+      "const": "nameAndValue"
     },
     {
       "pointer": "#/definitions/mapChartComponent/properties/props/anyOf/1/properties/pinnedSummary",

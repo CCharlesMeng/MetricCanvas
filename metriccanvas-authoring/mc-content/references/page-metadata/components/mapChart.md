@@ -31,6 +31,36 @@ Region 地图可从集成应用的 `regionMap.geography` 读取公共地理资�
 
 合同商务总览的全球/空选择显示地区部行。地区部和代表处的中国及海外分区通过现有展示事实 regionDepartment 区分，集成应用从授权树派生。地图和表格绑定同一数据源。合成示例 `/pages/ioc-region-map-demo`。
 
+<a id="map-tooltip-rows"></a>
+
+## 悬浮提示与散点标签（6.141）
+
+`props.tooltipRows` 按声明顺序绘制非空指标行，每行使用 `label` 和 `field`，可跟一个同排 `comparison`，它也使用 `label` 和 `field`。字段绑定至同一个地图主数据槽的度量并沿用绑定格式。无外边框的提示以当前组织名称为标题，数值统一加粗，普通值默认黑色。同排对比值与带符号格式的指标按方向显示，正值为绿、负值为红，零和缺失值保持黑色。只有能唯一对应实际数据行的散点或着色区域显示指标提示。声明 `tooltipRows` 时由作者列出所有行，包括需显示的地图着色指标。旧 `tooltipFields` 仍在地图着色指标之后逐行追加，两种提示配置互斥。
+
+```json
+{
+  "nameField": "org-key",
+  "valueField": { "data": "main", "field": "discount", "format": "percent-1" },
+  "map": "world",
+  "scatter": "point",
+  "pointLabel": "nameAndValue",
+  "tooltipRows": [
+    {
+      "label": "净商务折扣",
+      "field": { "data": "main", "field": "discount", "format": "percent-1" },
+      "comparison": {
+        "label": "同比",
+        "field": { "data": "main", "field": "discount-yoy", "format": "points-1-signed" }
+      }
+    }
+  ]
+}
+```
+
+`pointLabel: "nameAndValue"` 在散点名称后附上使用 `valueField` 格式的加粗指标值。值为空或尚未就绪时只显示名称。散点的数据身份、授权区域选择和固定摘要规则保持原样。合成示例 `/pages/ioc-region-map-demo`，完整四行见 `/pages/contract-business-overview`。
+
+有稳定组织行和位置字段时，地图可以用本轮[渐进数据](../data-sources.md#progressive-map-data)先显示点位，再随折扣和其他指标返回补齐着色、标签和提示。
+
 ## 查阅方式
 
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](../README.md)。
@@ -42,7 +72,7 @@ Dashboard 正文通过独立 [filterGroup](filterGroup.md) 组件声明筛选按
 本组件的数据配置项支持字段或常量来源，声明互斥、格式单位、空态和限制见[组件取值](../field-bindings-and-formats.md#chart-constant-values)。示例路由为 `/pages/chart-constant-values-page`。常量沿本组件原有行集或单值语义使用，不新增查询结果或业务身份。
 
 
-页面协议 6.140。结构真源为本册[schema.json](../schema.json)，SHA256 `e63ac5e9265706b6508600a77a489c4d8f0e7b60be7e71666860f8834b820779`。字段表自动生成；可选不等于有默认值。
+页面协议 6.141。结构真源为本册[schema.json](../schema.json)，SHA256 `c40184a8d67e0d0d991d75179dffd3e5fa36e94fa121b5a46b2574e8ee3da1fb`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -678,8 +708,8 @@ Schema位置：`#/definitions/mapTooltipField/anyOf/1/properties/format`。
 | "percent-1" | 原数值加百分号，1位小数。 |
 | "percent-2" | 原数值加百分号，2位小数。 |
 | "percent-raw" | 个性化百分比保留原值精度并附加百分号，不乘100、不按量级舍入；用于SLO/SLA与微小比率。 |
-| "points-1-signed" | 百分点值保留一位小数和符号，追加P，不乘100。 |
-| "yoy-p-signed" | 同比原值先四舍五入保留两位小数，再乘100显示整数并追加大写P；正数带+，舍入零中性；6.87新增。 |
+| "points-1-signed" | 百分点原值大于500显示>500P，小于-500显示<-500P；阈值内保留一位小数和符号，追加P，不乘100。 |
+| "yoy-p-signed" | 同比原值大于5显示>500P，小于-5显示<-500P；阈值内先舍入至两位小数，再乘100显示整数P。正值带+，舍入零中性；6.87新增。 |
 | "percent-2-signed" | 原数值百分比，2位小数并显示正负号。 |
 | "date" | 日期值或日期格式；timePoint中表示YYYY-MM-DD粒度。 |
 | "date-month-day" | 只展示月日的日期格式。 |
@@ -739,6 +769,100 @@ Schema位置：`#/definitions/mapTooltipField/anyOf/1/properties/label`。目标
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | 引用 #/definitions/nonEmptyTextValue | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 人类可读标签，不代替稳定id。 |
+
+<a id="schema-232f646566696e6974696f6e732f6d61704368617274436f6d706f6e656e742f70726f706572746965732f70726f70732f616e794f662f302f70726f706572746965732f746f6f6c746970526f7773"></a>
+
+### `@mapChartComponent.props · anyOf[0].tooltipRows`
+
+Schema位置：`#/definitions/mapChartComponent/properties/props/anyOf/0/properties/tooltipRows`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支可选 | minItems=1 | Schema未设默认；装配/运行时默认见语义说明 | 悬浮提示的有序指标行，可含同排对比；与 tooltipFields 互斥。 |
+
+<a id="schema-232f646566696e6974696f6e732f6d61704368617274436f6d706f6e656e742f70726f706572746965732f70726f70732f616e794f662f302f70726f706572746965732f746f6f6c746970526f77732f6974656d73"></a>
+
+### `@mapChartComponent.props · anyOf[0].tooltipRows[]`
+
+Schema位置：`#/definitions/mapChartComponent/properties/props/anyOf/0/properties/tooltipRows/items`。目标：[#/definitions/mapTooltipRow](../components/mapChart.md#schema-232f646566696e6974696f6e732f6d6170546f6f6c746970526f77)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/mapTooltipRow | 每个数组项 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f6d6170546f6f6c746970526f77"></a>
+
+### `@mapTooltipRow`
+
+Schema位置：`#/definitions/mapTooltipRow`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 类型/分支 | required=["label","field"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f6d6170546f6f6c746970526f772f70726f706572746965732f6c6162656c"></a>
+
+### `@mapTooltipRow.label`
+
+Schema位置：`#/definitions/mapTooltipRow/properties/label`。目标：[#/definitions/nonEmptyTextValue](../params-and-text-values.md#schema-232f646566696e6974696f6e732f6e6f6e456d7074795465787456616c7565)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/nonEmptyTextValue | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 人类可读标签，不代替稳定id。 |
+
+<a id="schema-232f646566696e6974696f6e732f6d6170546f6f6c746970526f772f70726f706572746965732f6669656c64"></a>
+
+### `@mapTooltipRow.field`
+
+Schema位置：`#/definitions/mapTooltipRow/properties/field`。目标：[#/definitions/fieldBinding](../field-bindings-and-formats.md#schema-232f646566696e6974696f6e732f6669656c6442696e64696e67)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/fieldBinding | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 页面字段引用或字段绑定。 |
+
+<a id="schema-232f646566696e6974696f6e732f6d6170546f6f6c746970526f772f70726f706572746965732f636f6d70617269736f6e"></a>
+
+### `@mapTooltipRow.comparison`
+
+Schema位置：`#/definitions/mapTooltipRow/properties/comparison`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支可选 | required=["label","field"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 同一提示行的可选对比度量，以标签与主槽字段绑定声明。 |
+
+<a id="schema-232f646566696e6974696f6e732f6d6170546f6f6c746970526f772f70726f706572746965732f636f6d70617269736f6e2f70726f706572746965732f6c6162656c"></a>
+
+### `@mapTooltipRow.comparison.label`
+
+Schema位置：`#/definitions/mapTooltipRow/properties/comparison/properties/label`。目标：[#/definitions/nonEmptyTextValue](../params-and-text-values.md#schema-232f646566696e6974696f6e732f6e6f6e456d7074795465787456616c7565)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/nonEmptyTextValue | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 人类可读标签，不代替稳定id。 |
+
+<a id="schema-232f646566696e6974696f6e732f6d6170546f6f6c746970526f772f70726f706572746965732f636f6d70617269736f6e2f70726f706572746965732f6669656c64"></a>
+
+### `@mapTooltipRow.comparison.field`
+
+Schema位置：`#/definitions/mapTooltipRow/properties/comparison/properties/field`。目标：[#/definitions/fieldBinding](../field-bindings-and-formats.md#schema-232f646566696e6974696f6e732f6669656c6442696e64696e67)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/fieldBinding | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 页面字段引用或字段绑定。 |
+
+<a id="schema-232f646566696e6974696f6e732f6d61704368617274436f6d706f6e656e742f70726f706572746965732f70726f70732f616e794f662f302f70726f706572746965732f706f696e744c6162656c"></a>
+
+### `@mapChartComponent.props · anyOf[0].pointLabel`
+
+Schema位置：`#/definitions/mapChartComponent/properties/props/anyOf/0/properties/pointLabel`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | const="nameAndValue" | Schema未设默认；装配/运行时默认见语义说明 | nameAndValue 将格式化的地图指标附在散点名称后，指标缺失时仅显示名称。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "nameAndValue" | 用于选择@mapChartComponent.props · anyOf[0].pointLabel分支；同分支其它约束同时成立。 |
 
 <a id="schema-232f646566696e6974696f6e732f6d61704368617274436f6d706f6e656e742f70726f706572746965732f70726f70732f616e794f662f302f70726f706572746965732f70696e6e656453756d6d617279"></a>
 
@@ -984,8 +1108,8 @@ Schema位置：`#/definitions/mapChartComponent/properties/props/anyOf/1/propert
 | "percent-1" | 原数值加百分号，1位小数。 |
 | "percent-2" | 原数值加百分号，2位小数。 |
 | "percent-raw" | 个性化百分比保留原值精度并附加百分号，不乘100、不按量级舍入；用于SLO/SLA与微小比率。 |
-| "points-1-signed" | 百分点值保留一位小数和符号，追加P，不乘100。 |
-| "yoy-p-signed" | 同比原值先四舍五入保留两位小数，再乘100显示整数并追加大写P；正数带+，舍入零中性；6.87新增。 |
+| "points-1-signed" | 百分点原值大于500显示>500P，小于-500显示<-500P；阈值内保留一位小数和符号，追加P，不乘100。 |
+| "yoy-p-signed" | 同比原值大于5显示>500P，小于-5显示<-500P；阈值内先舍入至两位小数，再乘100显示整数P。正值带+，舍入零中性；6.87新增。 |
 | "percent-2-signed" | 原数值百分比，2位小数并显示正负号。 |
 | "date" | 日期值或日期格式；timePoint中表示YYYY-MM-DD粒度。 |
 | "date-month-day" | 只展示月日的日期格式。 |
@@ -1299,6 +1423,40 @@ Schema位置：`#/definitions/mapChartComponent/properties/props/anyOf/1/propert
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | 引用 #/definitions/mapTooltipField | 每个数组项 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f6d61704368617274436f6d706f6e656e742f70726f706572746965732f70726f70732f616e794f662f312f70726f706572746965732f746f6f6c746970526f7773"></a>
+
+### `@mapChartComponent.props · anyOf[1].tooltipRows`
+
+Schema位置：`#/definitions/mapChartComponent/properties/props/anyOf/1/properties/tooltipRows`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支可选 | minItems=1 | Schema未设默认；装配/运行时默认见语义说明 | 悬浮提示的有序指标行，可含同排对比；与 tooltipFields 互斥。 |
+
+<a id="schema-232f646566696e6974696f6e732f6d61704368617274436f6d706f6e656e742f70726f706572746965732f70726f70732f616e794f662f312f70726f706572746965732f746f6f6c746970526f77732f6974656d73"></a>
+
+### `@mapChartComponent.props · anyOf[1].tooltipRows[]`
+
+Schema位置：`#/definitions/mapChartComponent/properties/props/anyOf/1/properties/tooltipRows/items`。目标：[#/definitions/mapTooltipRow](../components/mapChart.md#schema-232f646566696e6974696f6e732f6d6170546f6f6c746970526f77)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/mapTooltipRow | 每个数组项 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f6d61704368617274436f6d706f6e656e742f70726f706572746965732f70726f70732f616e794f662f312f70726f706572746965732f706f696e744c6162656c"></a>
+
+### `@mapChartComponent.props · anyOf[1].pointLabel`
+
+Schema位置：`#/definitions/mapChartComponent/properties/props/anyOf/1/properties/pointLabel`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | const="nameAndValue" | Schema未设默认；装配/运行时默认见语义说明 | nameAndValue 将格式化的地图指标附在散点名称后，指标缺失时仅显示名称。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "nameAndValue" | 用于选择@mapChartComponent.props · anyOf[1].pointLabel分支；同分支其它约束同时成立。 |
 
 <a id="schema-232f646566696e6974696f6e732f6d61704368617274436f6d706f6e656e742f70726f706572746965732f70726f70732f616e794f662f312f70726f706572746965732f70696e6e656453756d6d617279"></a>
 

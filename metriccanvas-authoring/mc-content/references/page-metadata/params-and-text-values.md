@@ -93,7 +93,7 @@ filter 读取当前已应用筛选状态，初次从 default/initialParam/URL �
 表头 select 叶子列的 initialParam 引用 params.query.dimensions 字符串维度参数，作为实例初值，与 defaultValues 互斥；不要求固定 paramBindings，不得重复永久控制目标。参数保存值提供缺省，URL 重复键提供多值；缺席可选参数不限，非法值拒绝。初值只在新实例消费，TableSession 拥有之后的已提交选择，清空、分页、刷新、Tab、恢复空视图与导出不补回 URL。allBehavior 的全选规则、静态 main 范围和查询限制见[Table 正文](components/table.md#table-header-params)。
 
 
-页面协议 6.140。结构真源为本册[schema.json](schema.json)，SHA256 `e63ac5e9265706b6508600a77a489c4d8f0e7b60be7e71666860f8834b820779`。字段表自动生成；可选不等于有默认值。
+页面协议 6.141。结构真源为本册[schema.json](schema.json)，SHA256 `c40184a8d67e0d0d991d75179dffd3e5fa36e94fa121b5a46b2574e8ee3da1fb`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -211,8 +211,8 @@ Schema位置：`#/definitions/textValueReference/properties/format`。
 | "percent-1" | 原数值加百分号，1位小数。 |
 | "percent-2" | 原数值加百分号，2位小数。 |
 | "percent-raw" | 个性化百分比保留原值精度并附加百分号，不乘100、不按量级舍入；用于SLO/SLA与微小比率。 |
-| "points-1-signed" | 百分点值保留一位小数和符号，追加P，不乘100。 |
-| "yoy-p-signed" | 同比原值先四舍五入保留两位小数，再乘100显示整数并追加大写P；正数带+，舍入零中性；6.87新增。 |
+| "points-1-signed" | 百分点原值大于500显示>500P，小于-500显示<-500P；阈值内保留一位小数和符号，追加P，不乘100。 |
+| "yoy-p-signed" | 同比原值大于5显示>500P，小于-5显示<-500P；阈值内先舍入至两位小数，再乘100显示整数P。正值带+，舍入零中性；6.87新增。 |
 | "percent-2-signed" | 原数值百分比，2位小数并显示正负号。 |
 | "date" | 日期值或日期格式；timePoint中表示YYYY-MM-DD粒度。 |
 | "date-month-day" | 只展示月日的日期格式。 |
@@ -312,8 +312,8 @@ Schema位置：`#/definitions/filterTextValueReference/properties/format`。
 | "percent-1" | 原数值加百分号，1位小数。 |
 | "percent-2" | 原数值加百分号，2位小数。 |
 | "percent-raw" | 个性化百分比保留原值精度并附加百分号，不乘100、不按量级舍入；用于SLO/SLA与微小比率。 |
-| "points-1-signed" | 百分点值保留一位小数和符号，追加P，不乘100。 |
-| "yoy-p-signed" | 同比原值先四舍五入保留两位小数，再乘100显示整数并追加大写P；正数带+，舍入零中性；6.87新增。 |
+| "points-1-signed" | 百分点原值大于500显示>500P，小于-500显示<-500P；阈值内保留一位小数和符号，追加P，不乘100。 |
+| "yoy-p-signed" | 同比原值大于5显示>500P，小于-5显示<-500P；阈值内先舍入至两位小数，再乘100显示整数P。正值带+，舍入零中性；6.87新增。 |
 | "percent-2-signed" | 原数值百分比，2位小数并显示正负号。 |
 | "date" | 日期值或日期格式；timePoint中表示YYYY-MM-DD粒度。 |
 | "date-month-day" | 只展示月日的日期格式。 |

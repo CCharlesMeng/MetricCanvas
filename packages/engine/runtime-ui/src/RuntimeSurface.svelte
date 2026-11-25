@@ -152,6 +152,7 @@
   import RuntimeSection from './RuntimeSection.svelte';
   import { createRetainedScreenData, RETAINED_SCREEN_DATA } from './retained-screen-data';
   import { usableTableProgress } from './table/screen-progress';
+  import { usableMapProgress } from './map-screen-progress';
   const retainedScreenData = createRetainedScreenData();
   setContext(RETAINED_SCREEN_DATA, retainedScreenData);
   import type { RuntimeSurfaceProps } from './composition-types';
@@ -1512,7 +1513,7 @@
       const source = loaded.dataSources[sourceId];
       if (!source || !snapshot) continue;
       const fields = resolveDataSourceFields(source);
-      const progress = component.type === 'table' && slot === 'main' ? usableTableProgress(component, stream?.getScreenProgress?.(sourceId), tableController?.render(component)) : undefined;
+      const progress = slot === 'main' ? componentScreenProgress(component, sourceId, snapshot) : undefined;
       const renderable = progress?.snapshot ?? displayDataSnapshot(snapshot);
       let visible =
         component.type === 'table' && slot === 'main'
@@ -1541,6 +1542,12 @@
       data[slot] = { snapshot: visible, fields, sourceStatus: snapshot.status, ...(progress ? {progress:{pendingFields:progress.pendingFields}} : {}), diagnostics: { componentId: component.id, sourceId, snapshot } };
     }
     return data;
+  }
+
+  function componentScreenProgress(component: Component, sourceId: string, snapshot: DataSnapshot) {
+    const progress = stream?.getScreenProgress?.(sourceId);
+    if (component.type === 'table') return usableTableProgress(component, progress, tableController?.render(component));
+    if (component.type === 'mapChart' && snapshot.status === 'loading') return usableMapProgress(component.props, progress);
   }
 
   function prepareSlotSnapshot(component: Component, slot: string, sourceId: string, snapshot: DataSnapshot | undefined): DataSnapshot | undefined {

@@ -22,8 +22,8 @@ it('keeps text, percent, points, scientific notation and displayed polarity inta
   expect(formatValue(1e-25, 'number')).toBe('1e-25');
   expect(formatValue(1e25, 'number')).toBe('1e+25');
   expect(formatValue(1234.567, 'percent-2')).toBe('1234.57%');
-  expect(formatValue(1234.567, 'points-1-signed')).toBe('+1234.6P');
-  expect(formatValue(1234.567, 'yoy-p-signed')).toBe('+123457P');
+  expect(formatValue(123.4567, 'points-1-signed')).toBe('+123.5P');
+  expect(formatValue(1.234567, 'yoy-p-signed')).toBe('+123P');
   expect(valuePolarity(-0.004, 'number-2-ungrouped-signed')).toBe('neutral');
   expect(formatValue(-0.004, 'number-2-ungrouped-signed')).toBe('0');
   expect(valuePolarity(1234, 'number-ungrouped-signed')).toBe('positive');

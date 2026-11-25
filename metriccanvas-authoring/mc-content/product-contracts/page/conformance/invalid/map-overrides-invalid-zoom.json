@@ -2,7 +2,7 @@
   "case": "map-overrides-invalid-zoom",
   "invariant": "map-geography-overrides",
   "input": {
-    "schemaVersion": "6.139",
+    "schemaVersion": "6.141",
     "id": "ioc-region-map-demo",
     "layout": "dashboard",
     "meta": {
@@ -188,6 +188,13 @@
               "scatter": "point",
               "nameField": "org-key",
               "valueField": "discount",
+              "pointLabel": "nameAndValue",
+              "tooltipRows": [
+                {
+                  "label": "净商务折扣",
+                  "field": "discount"
+                }
+              ],
               "actions": [
                 {
                   "on": "click",

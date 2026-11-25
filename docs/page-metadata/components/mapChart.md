@@ -31,6 +31,36 @@ Region 地图可从集成应用的 `regionMap.geography` 读取公共地理资�
 
 合同商务总览的全球/空选择显示地区部行。地区部和代表处的中国及海外分区通过现有展示事实 regionDepartment 区分，集成应用从授权树派生。地图和表格绑定同一数据源。合成示例 `/pages/ioc-region-map-demo`。
 
+<a id="map-tooltip-rows"></a>
+
+## 悬浮提示与散点标签（6.141）
+
+`props.tooltipRows` 按声明顺序绘制非空指标行，每行使用 `label` 和 `field`，可跟一个同排 `comparison`，它也使用 `label` 和 `field`。字段绑定至同一个地图主数据槽的度量并沿用绑定格式。无外边框的提示以当前组织名称为标题，数值统一加粗，普通值默认黑色。同排对比值与带符号格式的指标按方向显示，正值为绿、负值为红，零和缺失值保持黑色。只有能唯一对应实际数据行的散点或着色区域显示指标提示。声明 `tooltipRows` 时由作者列出所有行，包括需显示的地图着色指标。旧 `tooltipFields` 仍在地图着色指标之后逐行追加，两种提示配置互斥。
+
+```json
+{
+  "nameField": "org-key",
+  "valueField": { "data": "main", "field": "discount", "format": "percent-1" },
+  "map": "world",
+  "scatter": "point",
+  "pointLabel": "nameAndValue",
+  "tooltipRows": [
+    {
+      "label": "净商务折扣",
+      "field": { "data": "main", "field": "discount", "format": "percent-1" },
+      "comparison": {
+        "label": "同比",
+        "field": { "data": "main", "field": "discount-yoy", "format": "points-1-signed" }
+      }
+    }
+  ]
+}
+```
+
+`pointLabel: "nameAndValue"` 在散点名称后附上使用 `valueField` 格式的加粗指标值。值为空或尚未就绪时只显示名称。散点的数据身份、授权区域选择和固定摘要规则保持原样。合成示例 `/pages/ioc-region-map-demo`，完整四行见 `/pages/contract-business-overview`。
+
+有稳定组织行和位置字段时，地图可以用本轮[渐进数据](../data-sources.md#progressive-map-data)先显示点位，再随折扣和其他指标返回补齐着色、标签和提示。
+
 ## 查阅方式
 
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](../README.md)。
