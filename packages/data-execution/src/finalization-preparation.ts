@@ -1,6 +1,6 @@
 import {
-  availabilityInitial, finalizationMonthIssue, finalizationName, monthFinalizationName,
-  rollingFinalizationName, supportsNativePreparation, type Page, type DisplayInputsSnapshot, type FilterDeclaration
+  availabilityInitial, finalizationMonthIssue, finalizationName, isPeriodSelection, monthFinalizationName,
+  rollingFinalizationName, supportsNativePreparation, type Page, type DisplayInputsSnapshot, type FilterDeclaration, type PeriodMode
 } from '@metriccanvas/page/internal';
 import type {RuntimeDataGateway} from './ports';
 import {initialFilterValues,type FilterValue,type FilterValues,type TimeRangeFilterValue} from './filter-values';
@@ -18,6 +18,7 @@ export function createFinalizationPreparation(page:Page,gateway:RuntimeDataGatew
     .map(filter=>rollingInputs.has(filter.id)?rollingDefault(filter):filter);
   const unresolved=new Set(filters.map(filter=>filter.id));
   const pending=new Set(asynchronous?unresolved:[]);
+  const periodModes = pendingPeriodModes(filters, pending, deferred);
   const lookupFilters=native?declarations.filter(filter=>unresolved.has(filter.id)||rollingFinalizationName(filter)||monthFinalizationName(filter)):declarations;
   let request:Promise<ReadonlyMap<string,string>>|undefined;
   function resolve():Promise<ReadonlyMap<string,string>> {
@@ -38,6 +39,7 @@ export function createFinalizationPreparation(page:Page,gateway:RuntimeDataGatew
     immediate,
     deferred,
     pending,
+    periodModes,
     unresolved,
     initialDates:()=>asynchronous?Promise.resolve(undefined):resolve(),
     resolve,
@@ -60,4 +62,14 @@ function rollingDefault(filter:FilterDeclaration):FilterDeclaration {
   const name=rollingFinalizationName(filter);
   if(filter.type!=='timeRange'||!name)return filter;
   return {...filter,default:{mode:'last12Months',finalizationName:name}};
+}
+
+function pendingPeriodModes(filters: readonly FilterDeclaration[], pending: ReadonlySet<string>, deferred: ReadonlyMap<string, TimeRangeFilterValue>): Map<string, PeriodMode> {
+  const modes = new Map<string, PeriodMode>();
+  for (const filter of filters) {
+    if (filter.type !== 'timeRange' || filter.display !== 'period' || !pending.has(filter.id)) continue;
+    const mode = deferred.get(filter.id)?.selection?.mode ?? (isPeriodSelection(filter.default) ? filter.default.mode : undefined);
+    if (mode) modes.set(filter.id, mode);
+  }
+  return modes;
 }

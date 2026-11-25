@@ -1,3 +1,4 @@
+import { identifyFinalizationCache } from '../finalization-cache';
 import { dqeTimeoutMs } from '../dqe-timeout';
 import {intersectQueryFilters} from '../intersect-filters';
 import {reportQueryHttpError} from '../query-http-error';
@@ -110,6 +111,8 @@ export function createInMemoryDqeDiagnostics(limit = 100): InMemoryDqeDiagnostic
 export interface DqeGatewayConfig {
   /** Shared fixed query for page finalization defaults; executed by the engine once per page instance. */
   finalizationSource?: import('../finalization').FinalizationSourceDefinition;
+  /** Identity of the transport when it supplies authenticated request context outside headers. */
+  finalizationCacheIdentity?: readonly string[];
   /** Explicit fallback for services without original-result DISTINCT; retains all query outputs. */
   columnCandidates?: import('./full-query-candidates').FullQueryCandidatesConfig;
   /** Deployment-verified multi-field object ordering; single-field uses native order_by_field. */
@@ -547,7 +550,15 @@ export function createDqeGateway(
       return fetchDimensionValuesOnce(dimension, options?.signal, options?.constraints);
     }
   };
+  identifyFinalizationCache(gateway, () => config.finalizationCacheIdentity ?? dqeFinalizationIdentity(endpoint, headers));
   return Object.defineProperty(gateway, 'finalizationSource', {enumerable:true, get:()=>config.finalizationSource});
+}
+
+function dqeFinalizationIdentity(endpoint: string, headers: Record<string, string>): readonly string[] | undefined {
+  const normalized = new Headers(headers);
+  const identity = ['x-operator-id', 'x-workspace-id', 'x-auth-token'].map(name => normalized.get(name)?.trim());
+  if (!identity.every((value): value is string => !!value)) return;
+  return [endpoint, ...identity, normalized.get('cftk') ?? ''];
 }
 
 /**

@@ -36,6 +36,12 @@
 
 用 `pnpm dev:dqe` 启动本地环境。打开 `/pages/business-result-metrics?region=&mtime=month:2026-10`，先切换业务类型及云服务排除项，再切换客户分类及区域。浏览器回归 `pnpm --filter playground test:ioc business-result-summary-time.browser.ts` 检查独立汇总请求、两表行值及固定闭环谓词。用 `-g "shows each pinned total row"` 单独重跑延迟回执场景，检验两张表在 DQE 回执前显示「合计」，回执后原位显示数值。重点国代由运行时测试提供合成授权名单，真实名单和生产 DQE 按集成环境复验。
 
+## 慢速定稿与折扣回填
+
+打开 `/pages/business-result-metrics?region=`。定稿日期等待时默认按「月」显示月环比表头，切换「季」或「年」会立即显示相应同比列。切回「月」时表头先切换，相关月度查询等待定稿日期。已返回的明细先显示，等待中的折扣值用单元格骨架占位，返回后在原行填入。
+
+运行 `pnpm --filter playground test:ioc business-result-slow-period.browser.ts`，通过合成 DQE 分别控制定稿、折扣返回，并验证同一天新浏览器页面复用定稿、跨日与工作区变化重新请求。该场景使用同一份页面配置，查询响应为合成数据。
+
 ## 验证与环境
 
 业务查询需要真实 DQE 入口和身份，区域筛选需要可信组织候选。业务类型候选由页面内联声明。Playground 合成回执仅用于交互与查询请求验收，页面 JSON 不保存凭证。

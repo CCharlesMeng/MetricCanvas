@@ -7,7 +7,7 @@
   import MetricDefinitionLayer from './metric-definition/MetricDefinitionLayer.svelte';
   import {createAuthRequiredGateway, notifyAuthRequired, type AuthRequiredEvent} from './auth-required';
   import {invalidateAiSummaryPage} from './ai-summary/runtime/session';
-  import {debugWarn,createFinalizationPreparation,inheritFinalizationCache,supportsMembershipCandidates} from '@metriccanvas/data-execution/runtime';
+  import {debugWarn,createFinalizationPreparation,inheritFinalizationCache,invalidateFinalizationCache,supportsMembershipCandidates} from '@metriccanvas/data-execution/runtime';
   import {preparationBlocksPage,preparationBlocksFilter,discardPreparingData} from './preparation-blocked';
   import { isOfficeNavigationFeedback, officeNavigationInput, officeNavigationTarget, sameNavigationAddress, type OfficeNavigationInput } from './ioc-header/office-navigation';
   import {nativeSourceFilterIds,nativeIocRuntimePage} from '@metriccanvas/page/internal';
@@ -16,6 +16,8 @@
   import { AI_SUMMARY_RUNTIME_CONTEXT, type AiSummaryRuntimeReader } from './ai-summary';
   import { initialTabSelections, tabSearch } from '@metriccanvas/page/internal';
   import { TAB_SELECTION_CONTEXT, type TabSelectionContext } from './tab-selection';
+  import { resolvePendingPeriodChoice, visiblePendingPeriodModes, type PendingPeriodChoice } from './filters/pending-period-mode';
+  import type { PeriodMode } from '@metriccanvas/page/internal';
   import { compilePresentation, resolvePresentationRow } from '../../runtime/src/presentation';
   import type { DisplaySnapshot } from '../../runtime/src/display-inputs';
   import { PRESENTATION_CONTEXT } from './presentation-context';
@@ -316,12 +318,15 @@
   let blockedFilters = $state<string[]>([]);
   let confirmationFilters = $state<string[]>([]);
   let preparingFilters = $state<string[]>([]);
+  let initialPeriodModes = $state.raw<ReadonlyMap<string, PeriodMode>>(new Map());
+  let chosenPendingPeriods = $state.raw<ReadonlyMap<string, PendingPeriodChoice>>(new Map());
+  const pendingPeriodModes = $derived(visiblePendingPeriodModes(preparingFilters, initialPeriodModes, chosenPendingPeriods));
   let filterValues = $state<FilterValues>(new Map());
   let pageParams = $state<PageParamValues>(new Map());
   let displaySnapshot=$state.raw<DisplaySnapshot|undefined>();
   let filterRevision=$state(0);
   const presentationProgram=$derived(pageState.phase==='ready'?compilePresentation(pageState.page):null);
-  const presentation=$derived(presentationProgram?.evaluate({filters:filterValues,filterRevision,displaySnapshot})??null);
+  const presentation=$derived(presentationProgram?.evaluate({filters:filterValues,filterRevision,displaySnapshot},pendingPeriodModes)??null);
   setContext(PRESENTATION_CONTEXT,()=>presentation);
   $effect(()=>{
     void presentation;
@@ -364,7 +369,7 @@
       if(stopped||runtimeInvalidated())return;
       if(!snapshot||typeof snapshot.permissionRevision!=='string'||!snapshot.permissionRevision){clearDisplaySnapshot();return;}
       if(permissionRevision!==undefined&&permissionRevision!==snapshot.permissionRevision){
-        stopped=true;permissionInvalidated=true;retainedScreenData.clear();dispose();snapshots=new Map();displaySnapshot=undefined;
+        stopped=true;permissionInvalidated=true;invalidateFinalizationCache(activeGateway);retainedScreenData.clear();dispose();snapshots=new Map();displaySnapshot=undefined;
         const error={code:'DISPLAY_PERMISSION_CHANGED' as const,message:'权限会话已变化，请以当前身份重新初始化页面'};
         pageState={phase:'configuration-error',error};onevent?.({type:'configuration-error',...error});return;
       }
@@ -460,10 +465,10 @@
   let declarations = $state<FilterDeclaration[]>([]);
   let candidateClock=$state.raw(new Date());
   let resolvedFinalizationDates=$state.raw<ReadonlyMap<string,string>>();
-  const timeContext=$derived({snapshot:displaySnapshot,revision:filterRevision,pending:preparingFilters,initializing,finalizationDates:resolvedFinalizationDates});
+  const timeContext=$derived({snapshot:displaySnapshot,revision:filterRevision,pending:preparingFilters,periodModes:pendingPeriodModes,initializing,finalizationDates:resolvedFinalizationDates});
   const candidateTimeContext=()=>({displayInputs:displaySnapshot,filterRevision,now:candidateClock});
   const filterCandidateContext=()=>({...candidateTimeContext(),page:pageState.phase==='ready'?pageState.page:undefined});
-  let filterState: FilterState | null = null;
+  let filterState: ReturnType<typeof createFilterState> | null = null;
   let candidatesLoader: ReturnType<typeof createDimensionValuesLoader> | null = null;
   let stream: PageSnapshotStream | null = null;
   const summaryRuntime: AiSummaryRuntimeReader = () => {
@@ -558,6 +563,8 @@
     snapshots = new Map();
     filterValues = new Map();
     resolvedFinalizationDates=undefined;
+    initialPeriodModes = new Map();
+    chosenPendingPeriods = new Map();
     dimensionCandidates = new Map();
     tableViews = {};
     untrack(() => closeDetail(false));
@@ -672,6 +679,7 @@
     }
     filterValues=new Map([...fromDeclarations,...preparation.immediate]);
     const officeRedirect = officeNavigationTarget(loaded, filterValues.get('region'));
+    initialPeriodModes = preparation.periodModes;
     preparingFilters=[...preparation.unresolved];
     tableController=createTableController(loaded,()=>stream,()=>syncTableState(loaded),()=>filterValues,candidateTimeContext,()=>({gateway:activeGateway,filters:filterValues,params:pageParams,blocked:initializing?declarations.map(filter=>filter.id):blockedFilters,displaySnapshot,filterRevision}));
     publishInitialPage(officeRedirect, loaded, textBindings, preparation.unresolved, capabilities);
@@ -816,6 +824,7 @@
       if(session!==mySession||finalizationController.signal.aborted)return;
       finalizationDates=dates;
       resolvedFinalizationDates=dates;
+      applyPendingPeriods(state, loaded, dates);
       state.completePreparation(preparation.values(dates, state.preparation()));
       emit?.({type:'ready',pageId:loaded.id});
     }).catch(()=>{
@@ -1052,6 +1061,28 @@
       }
     }
     writeDimension(declaration, values, level);
+  }
+
+  function choosePendingPeriod(filterId: string, choice: PendingPeriodChoice) {
+    if (resolvedFinalizationDates || !filterState) return;
+    chosenPendingPeriods = new Map(chosenPendingPeriods).set(filterId, choice);
+    filterState.preparing(filterId, true);
+  }
+
+  function applyPendingPeriods(state: ReturnType<typeof createFilterState>, page: Page, dates: ReadonlyMap<string, string>) {
+    const pending = state.preparation();
+    const now = state.clock();
+    const chosen = (page.filters ?? []).flatMap(filter => {
+      const choice = chosenPendingPeriods.get(filter.id);
+      return filter.type === 'timeRange' && choice && pending.has(filter.id)
+        ? [[filter.id, resolvePendingPeriodChoice(filter, choice, dates, now)] as const] : [];
+    });
+    chosenPendingPeriods = new Map();
+    if (!chosen.length) return;
+    const result = state.commit({ type: 'applyDraft', changes: chosen });
+    if (!result.ok) for (const [id] of chosen) {
+      if (!initialPeriodModes.has(id)) state.preparing(id, false);
+    }
   }
 
   function writeTimeRange(filterId: string, range: TimeRangeValue | null) {
@@ -1770,7 +1801,7 @@
     >
       {#snippet headerControls(ids: string[])}
         <FilterBar confirmationIds={confirmationFilters} {timeContext} onretry={retryCandidates} readOnly={filterEditing?.readOnly} declarations={ids.flatMap(id=>presentation?.filters.find(f=>f.id===id)??[])} values={filterValues}
-          candidates={dimensionCandidates} ondimension={writeDimension} ontimerange={writeTimeRange}
+          candidates={dimensionCandidates} ondimension={writeDimension} ontimerange={writeTimeRange} onpendingperiod={choosePendingPeriod}
           ontimepoint={writeTimePoint} onboolean={writeBoolean} onnumberrange={writeNumberRange} onsearch={writeSearch}/>
       {/snippet}
       {#snippet componentContent(component: Component)}
@@ -1816,14 +1847,14 @@
     {/if}
     {#snippet iocHeaderControls(id: string, readOnly: boolean)}
       <FilterBar iocHeader confirmationIds={confirmationFilters} {timeContext} onretry={retryCandidates} declarations={(presentation?.filters??declarations).filter(filter=>filter.id===id)} values={filterValues} candidates={dimensionCandidates}
-        {readOnly} ondimension={selectHeaderDimension} ontimerange={writeTimeRange} ontimepoint={writeTimePoint}
+        {readOnly} ondimension={selectHeaderDimension} ontimerange={writeTimeRange} onpendingperiod={choosePendingPeriod} ontimepoint={writeTimePoint}
         onboolean={writeBoolean} onnumberrange={writeNumberRange} onsearch={writeSearch}/>
     {/snippet}
     {#if pageState.capabilities.filters && hasVisibleFilters(header.content)}
       <div data-dashboard-content-filters={layoutForm==='dashboard'?true:undefined} class:dashboard-content-filters={layoutForm==='dashboard'}>
         <FilterBar confirmationIds={confirmationFilters} {timeContext} onretry={retryCandidates} readOnly={pageReadOnly}
           declarations={header.content} values={filterValues} candidates={dimensionCandidates}
-          ondimension={writeDimension} ontimerange={writeTimeRange} ontimepoint={writeTimePoint}
+          ondimension={writeDimension} ontimerange={writeTimeRange} onpendingperiod={choosePendingPeriod} ontimepoint={writeTimePoint}
           onboolean={writeBoolean} onnumberrange={writeNumberRange} onsearch={writeSearch}/>
       </div>
     {/if}

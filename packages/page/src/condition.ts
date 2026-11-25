@@ -13,6 +13,7 @@ export interface DisplaySnapshot {
 export interface ConditionContext {
   declarations: readonly FilterDeclaration[];
   filters: ReadonlyMap<string, { type: string; level?: string; values?: string[]; value?: unknown; query?: string; from?: string | number; to?: string | number; selection?: import('./period-filter').AppliedPeriodSelection }>;
+  periodModes?: ReadonlyMap<string, import('./period-filter').PeriodMode>;
   displaySnapshot?: DisplaySnapshot;
   filterRevision?: number;
   row?: Readonly<Record<string, unknown>>;
@@ -35,7 +36,7 @@ function filterInput(leaf: Extract<Condition, {filter: string}>, context: Condit
   const declaration = context.declarations.find(item => item.id === leaf.filter);
   if (!declaration) return { status: 'error' };
   const selected = context.filters.get(leaf.filter);
-  if (leaf.part === 'mode') return periodModeInput(declaration, selected?.selection);
+  if (leaf.part === 'mode') return periodModeInput(declaration, context.periodModes?.get(leaf.filter) ?? selected?.selection?.mode);
   if (leaf.part === 'level' && declaration.type === 'dimension') return ready(selected?.level ?? declaration.defaultLevel ?? declaration.hierarchy?.[0]?.id ?? null);
   if (leaf.part === 'values') return ready(selected?.values ?? []);
   if (leaf.part === 'value') {
@@ -45,9 +46,9 @@ function filterInput(leaf: Extract<Condition, {filter: string}>, context: Condit
   const value = selected?.[leaf.part as 'from' | 'to'];
   return ready(value ?? null);
 }
-function periodModeInput(declaration: FilterDeclaration, selection: import('./period-filter').AppliedPeriodSelection | undefined): ConditionInput {
+function periodModeInput(declaration: FilterDeclaration, mode: import('./period-filter').PeriodMode | undefined): ConditionInput {
   if (declaration.type !== 'timeRange' || declaration.display !== 'period') return {status:'error'};
-  return selection ? ready(selection.mode) : {status:'pending'};
+  return mode ? ready(mode) : {status:'pending'};
 }
 function resolveInput(leaf: ReturnType<typeof conditionLeaves>[number], context: ConditionContext): ConditionInput {
   if ('filter' in leaf) return filterInput(leaf, context);
