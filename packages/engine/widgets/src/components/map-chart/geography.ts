@@ -9,7 +9,7 @@ export interface GeographyInput {
   displayNames?: RegionMapDisplayNames;
 }
 
-function organizationBinding(props: MapChartProps): {level:OrganizationLevel; field:string} | undefined {
+export function organizationBinding(props: MapChartProps): {level:OrganizationLevel; field:string} | undefined {
   if (props.hierarchyFilter === 'region' && props.parentField && props.codeField) return {level:'office',field:fieldName(props.codeField)};
   for (const action of props.actions ?? []) {
     if ('writeFilter' in action && action.writeFilter === 'region' && (action.level === 'region-dept' || action.level === 'office')) {

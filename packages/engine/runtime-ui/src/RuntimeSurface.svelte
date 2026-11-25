@@ -1377,7 +1377,7 @@
   }
 
   function currentRegionMapSelection() {
-    if (!regionMapActive()) return;
+    if (pageState.phase !== 'ready' || !usesIocRegion(pageState.page)) return;
     const selected = regionMapSelection(filterValues.get('region'));
     if (!selected) return;
     const declaration = declarations.find(item => item.id === 'region');

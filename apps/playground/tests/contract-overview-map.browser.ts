@@ -22,13 +22,13 @@ function delayFor(item: DqeItem): 'discount' | 'margin' | undefined {
   if (fields.includes('区域结算价毛利率(付费口径)') || fields.includes('测算销毛率')) return 'margin';
 }
 
-function syntheticResult(item: DqeItem) {
-  const dimensions = (item.output_dims ?? []).map(field => [field, field === '代表处' ? '德国代表处' : region]);
+function syntheticResult(item: DqeItem, department = region, office = '德国代表处') {
+  const dimensions = (item.output_dims ?? []).map(field => [field, field === '代表处' ? office : department]);
   const measures = (item.output_metrics ?? []).map(field => [field, metrics[field] ?? 10]);
   return { code: 'SUCCESS', data: [Object.fromEntries([...dimensions, ...measures])], total_count: 1 };
 }
 
-function mapPoint(chart: Locator) {
+function mapPoint(chart: Locator, name = region) {
   return chart.evaluate(async (element, { url, name }) => {
     const echarts = await import(url);
     const instance = echarts.getInstanceByDom(element);
@@ -39,13 +39,24 @@ function mapPoint(chart: Locator) {
     const point = instance.convertToPixel({ geoIndex: 0 }, row.value.slice(0, 2)) as [number, number];
     return {
       label: series.label.formatter({name}),
+      position: series.label.position,
       metricLabel: series.label.rich?.metric,
       value: row.value[2] as number | null,
       coloredAreas: option.series[0].data.filter((item: { value?: number }) => Number.isFinite(item.value)).length,
       x: point[0],
       y: point[1] + (series.symbolOffset?.[1] ?? 0)
     };
-  }, {url: charts, name: region});
+  }, {url: charts, name});
+}
+
+function mapViewport(chart: Locator) {
+  return chart.evaluate(async (element, url) => {
+    const echarts = await import(url);
+    const chart = echarts.getInstanceByDom(element);
+    const geo = chart.getOption().geo[0];
+    const pixel = (lng: number) => chart.convertToPixel({geoIndex: 0}, [lng, 31])[0];
+    return { center: geo?.center, zoom: geo.zoom, bounds: geo.boundingCoords, pixelsPerDegree: pixel(122) - pixel(121) };
+  }, charts);
 }
 
 function deferred() {
@@ -71,7 +82,7 @@ test('合同商务地图先显示点位，再显示折扣和同一组织的四�
       await gates[delay].promise;
       pending.delete(delay);
     }
-    await route.fulfill({ json: {retCode: 'CBC.0000', results: items.map(syntheticResult)} });
+    await route.fulfill({ json: {retCode: 'CBC.0000', results: items.map(item => syntheticResult(item))} });
   }
   await page.route('**/rest/cdi/cdinl2databuilderservice/v1/dsl/execute', respond);
   try {
@@ -93,18 +104,19 @@ test('合同商务地图先显示点位，再显示折扣和同一组织的四�
 
     discount.resolve();
     await expect.poll(() => mapPoint(chart)).toMatchObject({
-      label: `${mapDisplayName} {metric|36.4%}`, value: 36.4, metricLabel: {fontWeight: 'bold', color: '#000'}
+      label: `${mapDisplayName} {metric|36.4%}`, value: 36.4, metricLabel: {fontWeight: 400, color: '#000'}
     });
     await expect(card.locator('.change-label')).toHaveText('同比');
     await expect(card.locator('.change-value')).toHaveText('-1.2P');
     await expect(card.locator('.change-value')).toHaveCSS('color', 'rgb(245, 34, 45)');
     await expect(card.locator('.row-value')).toHaveCSS('color', 'rgb(0, 0, 0)');
-    await expect(card.locator('.row-value')).toHaveCSS('font-weight', '700');
+    await expect(card.locator('.row-value')).toHaveCSS('font-weight', '400');
+    await expect(card.locator('.change-value')).toHaveCSS('font-weight', '400');
     expect(pending.has('margin')).toBe(true);
-    await page.mouse.move(5, 5);
     await hoverPoint(chart);
     await expect(heading).toHaveText(mapDisplayName);
     await expect(heading).toHaveCSS('font-size', '18px');
+    await expect(heading).toHaveCSS('font-weight', '400');
     await expect(heading.locator('..')).toHaveCSS('border-top-width', '0px');
     await expect(rows).toHaveText([
       /净商务折扣\s+36\.4%\s*同比\s+-1\.2/,
@@ -112,18 +124,19 @@ test('合同商务地图先显示点位，再显示折扣和同一组织的四�
       /框架执行率\s+74\.6%/,
       /测算销毛与核算销毛偏差\s+—/
     ]);
-    await expect(rows.first().locator('b')).toHaveCount(2);
-    await expect(rows.first().locator('b').nth(0)).toHaveCSS('color', 'rgb(0, 0, 0)');
-    await expect(rows.first().locator('b').nth(0)).toHaveCSS('font-weight', '700');
-    await expect(rows.first().locator('b').nth(1)).toHaveCSS('color', 'rgb(245, 34, 45)');
-    await expect(rows.nth(1).locator('b').nth(1)).toHaveCSS('color', 'rgb(82, 196, 26)');
+    const discountValues = rows.first().locator('[data-map-tooltip-value]');
+    await expect(discountValues).toHaveCount(2);
+    await expect(discountValues.nth(0)).toHaveCSS('color', 'rgb(0, 0, 0)');
+    await expect(discountValues.nth(0)).toHaveCSS('font-weight', '400');
+    await expect(discountValues.nth(1)).toHaveCSS('font-weight', '400');
+    await expect(discountValues.nth(1)).toHaveCSS('color', 'rgb(245, 34, 45)');
+    await expect(rows.nth(1).locator('[data-map-tooltip-value]').nth(1)).toHaveCSS('color', 'rgb(82, 196, 26)');
 
     margin.resolve();
     await expect(table.getByText('+5P', {exact: true})).toBeVisible();
-    await page.mouse.move(5, 5);
     await hoverPoint(chart);
     await expect(rows.last()).toHaveText(/测算销毛与核算销毛偏差\s+\+5P/);
-    await expect(rows.last().locator('b')).toHaveCSS('color', 'rgb(82, 196, 26)');
+    await expect(rows.last().locator('[data-map-tooltip-value]')).toHaveCSS('color', 'rgb(82, 196, 26)');
     await page.screenshot({path: info.outputPath('contract-overview-map-tooltip.png')});
     expect(errors).toEqual([]);
   } finally {
@@ -132,7 +145,44 @@ test('合同商务地图先显示点位，再显示折扣和同一组织的四�
   }
 });
 
+test('合同商务地图把图钉放进代表处标签，点击后聚焦代表处', async ({ page }) => {
+  const department = '中国地区部';
+  const office = '上海代表处';
+  await page.route('**/rest/cdi/cdinl2databuilderservice/v1/dsl/execute', route => {
+    const items: DqeItem[] = route.request().postDataJSON().dsl_list;
+    return route.fulfill({ json: {retCode: 'CBC.0000', results: items.map(item => syntheticResult(item, department, office))} });
+  });
+  await page.setViewportSize({ width: 1600, height: 950 });
+  await page.goto('/pages/contract-business-overview?region-dept=' + encodeURIComponent(department));
+  const chart = page.locator('[data-component="overview-content/china-department-map"] [_echarts_instance_]');
+  await expect(chart).toBeVisible({ timeout: 15_000 });
+  await expect.poll(() => mapViewport(chart)).toMatchObject({ center: [107, 32], zoom: 1.25 });
+  const departmentScale = (await mapViewport(chart)).pixelsPerDegree;
+  await expect.poll(() => mapPoint(chart, office)).toMatchObject({
+    label: '{pin|} 上海代表处 {metric|36.4%}', position: 'inside', metricLabel: {fontWeight: 400, color: '#000'}
+  });
+  const point = (await mapPoint(chart, office))!;
+  const position = { x: point.x - 40, y: point.y };
+  await chart.hover({ position });
+  await expect(page.locator('[data-map-tooltip-heading]')).toHaveText(office);
+  await chart.click({ position });
+  await expect(page.locator('[data-filter-id="region"]').getByRole('button', { name: '区域', exact: true })).toHaveText(office);
+  const focused = page.locator('[data-component="overview-content/china-map"] [_echarts_instance_]');
+  await expect(focused).toBeVisible();
+  await expect.poll(async () => (await mapViewport(focused)).pixelsPerDegree).toBeGreaterThan(departmentScale * 2);
+  const [[west, south], [east, north]] = (await mapViewport(focused)).bounds;
+  expect(west).toBeLessThan(121.41);
+  expect(east).toBeGreaterThan(121.41);
+  expect(south).toBeLessThan(31.09);
+  expect(north).toBeGreaterThan(31.09);
+});
+
 async function hoverPoint(chart: Locator) {
-  const point = (await mapPoint(chart))!;
-  await chart.hover({position: {x: point.x, y: point.y}});
+  const page = chart.page();
+  await expect(async () => {
+    await page.mouse.move(5, 5);
+    const point = (await mapPoint(chart))!;
+    await chart.hover({position: {x: point.x, y: point.y}});
+    await expect(page.locator('[data-map-tooltip-heading]')).toHaveText(mapDisplayName, {timeout: 500});
+  }).toPass({timeout: 5_000});
 }

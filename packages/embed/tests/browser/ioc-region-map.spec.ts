@@ -41,7 +41,7 @@ test('ES 宿主使用公开入口接入候选、查询与地图资料', async ({
   await expect(page.locator('[data-component="global-overview/world-map"] canvas')).toBeVisible();
 });
 
-test('global 宿主可丢弃过期视口，并在无资料时继续绘制', async ({ page }) => {
+test('global 宿主丢弃过期视口并绘制最新组织', async ({ page }) => {
   await page.goto(example + '?entry=global&viewport=slow');
   const header = page.locator('[data-filter-id="region"]');
   await chooseTree(header, '欧洲地区部');
@@ -55,6 +55,15 @@ test('global 宿主可丢弃过期视口，并在无资料时继续绘制', asyn
   await expect(page.locator('[data-component="regional-overview/regional-map"] canvas')).toBeVisible();
 });
 
+test('缺少组织视口资料时继续绘制组织地图', async ({ page }) => {
+  await page.goto(example + '?entry=global&viewport=missing');
+  await chooseTree(page.locator('[data-filter-id="region"]'), '拉美地区部');
+  await expect(page.getByRole('table').getByText('巴西代表处', { exact: true })).toBeVisible();
+  await expect.poll(async () => (await demo(page)).viewRequests).toEqual([
+    { level: 'region-dept', value: '拉美地区部', basemap: 'world', aborted: false }
+  ]);
+  await expect(page.locator('[data-component="regional-overview/regional-map"] canvas')).toBeVisible();
+});
 
 test('正式合同商务页从代表处 URL 恢复，按授权父级选择中国分区', async ({ page }) => {
   const document = JSON.parse(readFileSync(new URL('../../../../pages/business/dashboard/ioc/commercial/contract-business-overview.json',import.meta.url),'utf8'));

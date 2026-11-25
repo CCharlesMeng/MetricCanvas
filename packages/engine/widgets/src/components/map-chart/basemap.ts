@@ -1,3 +1,4 @@
+import { polygonBounds, type Bounds } from './auto-focus';
 import * as echarts from '../../shared/echarts-runtime';
 
 /**
@@ -8,11 +9,14 @@ import * as echarts from '../../shared/echarts-runtime';
 export type BasemapName = 'china' | 'world';
 
 export interface BasemapMeta {
+  bounds: ReadonlyMap<string, Bounds>;
   /** 区域名 → 区域中心点经纬度(取自资产的 properties.cp),散点叠加的坐标来源 */
   centers: ReadonlyMap<string, [number, number]>;
 }
 
 interface GeoFeature {
+  geometry: { type: 'Polygon'; coordinates: [number, number][][] } |
+    { type: 'MultiPolygon'; coordinates: [number, number][][][] };
   properties: { name: string; cp?: [number, number] };
 }
 
@@ -38,10 +42,13 @@ async function load(name: BasemapName): Promise<BasemapMeta> {
   echarts.registerMap(name, geoJson as Parameters<typeof echarts.registerMap>[1]);
 
   const centers = new Map<string, [number, number]>();
+  const bounds = new Map<string, Bounds>();
   for (const feature of (geoJson as { features: GeoFeature[] }).features) {
+    const geometry = feature.geometry;
+    bounds.set(feature.properties.name, polygonBounds(geometry.type === 'Polygon' ? [geometry.coordinates] : geometry.coordinates));
     if (feature.properties.name && feature.properties.cp) {
       centers.set(feature.properties.name, feature.properties.cp);
     }
   }
-  return { centers };
+  return { centers, bounds };
 }

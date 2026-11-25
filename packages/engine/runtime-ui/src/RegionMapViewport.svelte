@@ -9,7 +9,7 @@
   let { enabled, basemap, children }: {
     enabled: boolean;
     basemap: RegionMapViewportRequest['basemap'];
-    children: Snippet<[MapViewport | undefined, GeographyInput]>;
+    children: Snippet<[MapViewport | undefined, GeographyInput, ReturnType<RegionMapContext['selection']>]>;
   } = $props();
   const source = getContext<RegionMapContext | undefined>(REGION_MAP_CONTEXT);
   const adapter = $derived(source?.adapter());
@@ -37,4 +37,4 @@
   $effect(() => enabled && level && value ? source?.capture?.(key, () => viewport) : undefined);
 </script>
 
-{@render children(viewport, geography)}
+{@render children(viewport, geography, selection)}

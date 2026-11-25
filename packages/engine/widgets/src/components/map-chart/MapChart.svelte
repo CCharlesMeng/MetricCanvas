@@ -1,5 +1,6 @@
 <svelte:options css="injected" />
 <script lang="ts">
+  import { automaticMapFocus, type OrganizationSelection } from './auto-focus';
   import { resolveComponentValue } from '../../shared/component-value';
   import { getContext } from 'svelte';
   import { STATIC_EXPORT_CONTEXT } from '../../shared/export-context';
@@ -35,13 +36,14 @@
     props: MapChartProps;
     /** 层级下钻后的底图,缺省用 props.map */
     map?: 'china' | 'world';
+    selection?: OrganizationSelection;
     viewport?: MapViewport;
     geography?: GeographyInput;
     /** 区域/散点点击,携带该区域对应的数据行 */
     onregionclick?: (context: { row: Row }) => void;
   }
 
-  let { data, props, map, viewport, geography, onregionclick }: Props = $props();
+  let { data, props, map, viewport, selection, geography, onregionclick }: Props = $props();
   const staticExport=getContext<boolean>(STATIC_EXPORT_CONTEXT)??false;
   const basemapId = $derived(map ?? props.map);
 
@@ -74,6 +76,12 @@
    * 「双名」注释)。只收一种的话,另一种点击会静默找不到行。
    */
   const locations = $derived(mapRows(data.main.snapshot.rows, resolveField(props.nameField, data).field, chartProps, geography));
+
+  const focus = $derived(viewport ?? (
+    basemap && selection && chartProps.variant === 'regionalOverview'
+      ? automaticMapFocus(chartProps, selection, geography ?? {}, locations, basemap.meta)
+      : undefined
+  ));
 
   function handleClick(_dataIndex: number, name?: string, seriesIndex?: number) {
     const row = name && (seriesIndex === 1 ? locations.points : locations.areas).get(name);
@@ -220,7 +228,7 @@
           false,
           mapScale,
           regionalPinUrl, locations
-        ), basemap.id === basemapId ? viewport : undefined)}
+        ), basemap.id === basemapId ? focus : undefined)}
         onitemclick={onregionclick ? handleClick : undefined}
       />
       {#if props.variant === 'regionalOverview' && pinnedSummary}
