@@ -140,7 +140,7 @@
   }
 
   function regionQueryGateway(input: ReturnType<typeof pageExternalInputs>): DataGateway | undefined {
-    if(input==='region-map')return regionMapPreview.dataGateway;
+    if(input==='region-map-viewport')return regionMapPreview.dataGateway;
     if(input==='region-url')return createRegionURLGateway();
     if(input==='ioc-region'||input==='ioc-region-dept')return withIocRegionCandidates(dataGateway,input==='ioc-region');
   }
@@ -280,7 +280,7 @@
       displayInputs={activeDisplayInputs}
       document={pageState.document}
       dataGateway={pageState.dataGateway}
-      regionMap={pageExternalInputs(page.params.pageId)==='region-map'?regionMapPreview.regionMap:undefined}
+      regionMap={pageExternalInputs(page.params.pageId)==='region-map-viewport'?regionMapPreview.regionMap:undefined}
       {aiSummary}
       onevent={recordSharedFilters}
       {initialSearch}
