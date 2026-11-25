@@ -1088,6 +1088,11 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/ioc-region-map-demo.json",
+      "target": "product-contracts/page/conformance/valid/ioc-region-map-demo.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/valid/key-office-filter-demo.json",
       "target": "product-contracts/page/conformance/valid/key-office-filter-demo.json",
       "scope": "exact product contract"
@@ -8848,6 +8853,11 @@
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
+      "source": "product:page/reference/examples/ioc-region-map-demo.json",
+      "target": "references/page-metadata/examples/ioc-region-map-demo.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
       "source": "product:page/reference/components/mapChart.md",
       "target": "references/page-metadata/components/mapChart.md",
       "scope": "current normalized reference; frozen vectors remain separate"
@@ -9329,10 +9339,10 @@
     }
   ],
   "counts": {
-    "product": 1833,
+    "product": 1835,
     "authoring": 32,
     "modules": 36,
-    "topics": 334,
+    "topics": 335,
     "nodes": 2776,
     "tools": 9,
     "components": 20

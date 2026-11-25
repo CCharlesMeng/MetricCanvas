@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>合同商务总览 · Region 地图接入演示</title>
+<style>
+  body { margin: 0; background: #f5f7fb; color: #344054; font: 14px system-ui, sans-serif; }
+  .host { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px 24px; padding: 12px 24px; background: white; border-bottom: 1px solid #e4e7ec; }
+  .host p { margin: 0; }
+  a { color: #175cd3; }
+</style>
+<body>
+  <header class="host">
+    <p><strong>Embed 宿主演示</strong> · 合成组织和指标数据</p>
+    <p>从顶部选择欧洲，或点图上的组织，查看列表和 Region 的变化。</p>
+    <a id="fallback" href="?viewport=missing">体验视口缺失回退</a>
+  </header>
+  <main id="dashboard"></main>
+  <output id="status" role="status"></output>
+  <script type="module">
+    import { createRegionMapFixture } from './ioc-region-map-fixture.mjs';
+
+    const params = new URLSearchParams(location.search);
+    const focus = params.get('viewport') !== 'missing';
+    const fallback = document.querySelector('#fallback');
+    if (!focus) {
+      fallback.href = location.pathname;
+      fallback.textContent = '恢复欧洲自动聚焦';
+    }
+
+    async function publicApi() {
+      if (params.get('entry') !== 'global') return import('../dist/metriccanvas-runtime.es.js');
+      await new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = '../dist/metriccanvas-runtime.global.js';
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.append(script);
+      });
+      return window.MetricCanvas.ready;
+    }
+
+    try {
+      const [api, response] = await Promise.all([publicApi(), fetch('/pages/ioc-region-map-demo.json')]);
+      if (!response.ok) throw new Error('无法加载页面文档');
+      const document = await response.json();
+      const fixture = createRegionMapFixture(api.withOperationMapRegion, {
+        focus, delay: params.get('viewport') === 'slow' ? 1400 : 0
+      });
+      const {dataGateway, regionMap, queries, viewRequests} = fixture;
+      const events = [];
+      api.mount('#dashboard', {
+        document, dataGateway, regionMap,
+        navigation: { preserveSearchParams: ['entry', 'viewport'] },
+        onEvent: event => events.push(event)
+      });
+      window.regionMapDemo = { queries, viewRequests, events };
+    } catch (error) {
+      document.querySelector('#status').textContent = String(error);
+    }
+  </script>
+</body>
+</html>

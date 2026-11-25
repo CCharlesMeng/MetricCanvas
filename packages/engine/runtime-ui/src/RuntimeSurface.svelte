@@ -65,6 +65,7 @@
     type DataSnapshot,
     type FieldReference,
     type FilterDeclaration,
+    type MapChartProps,
     type OpenDetailAction,
     type Row,
     type TableColumn,
@@ -122,6 +123,7 @@
     resolveMapBasemap,
     resolveMapClick
   } from './map-hierarchy';
+  import { REGION_MAP_CONTEXT, regionMapCandidate, regionMapSelection, type RegionMapContext } from './region-map';
   import { collectDataErrors } from './data-error-events';
   import { runtimeVersionError } from './version-error';
   import { headerPeriod } from './report-date-header';
@@ -183,6 +185,7 @@
     displayInputs,
     sectionsContent,
     dataGateway,
+    regionMap,
     aiSummary,
     initialSearch = '',
     navigation,
@@ -192,6 +195,11 @@
     pageRevisionId,
     execution
   }: RuntimeSurfaceProps = $props();
+
+  setContext<RegionMapContext>(REGION_MAP_CONTEXT, {
+    adapter: () => regionMap,
+    selection: currentRegionMapSelection
+  });
 
   let tabSelections = $state<Record<string, string>>({});
   let syncTabSearch: (selections: Record<string, string>) => void = () => {};
@@ -1314,24 +1322,7 @@
 
   function handleChartClick(component: Component, row: Row) {
     if (!componentCapability(component)?.actions || presentation?.component(component.id).enabled===false) return;
-    if (component.type === 'mapChart' && component.props.hierarchyFilter) {
-      const declaration = declarations.find(
-        (item) => item.id === component.props.hierarchyFilter
-      );
-      if (isHierarchyDeclaration(declaration)) {
-        const decision = resolveMapClick(
-          component.props,
-          declaration,
-          filterValues.get(declaration.id),
-          row
-        );
-        if (decision.kind === 'ignore') return;
-        if (decision.kind === 'drill') {
-          writeDimension(declaration, decision.value.values, decision.value.level);
-          return;
-        }
-      }
-    }
+    if (component.type === 'mapChart' && handleMapHierarchyClick(component, row)) return;
     const actions=component.type==='button'?[component.props.action]:('actions' in component.props?component.props.actions??[]:[]);
     for (const action of actions) {
       if(!actionAllowed(component,action,row))continue;
@@ -1345,16 +1336,70 @@
         openDetailFor(component, action, row);
         return;
       }
-      const clicked = 'field' in action ? row[fieldName(action.field)] : action.value;
-      const target = declarations.find((declaration) => declaration.id === action.writeFilter);
-      if (clicked == null || target?.type !== 'dimension') continue;
-      filterState?.write(action.writeFilter, {
-        type: 'dimension',
-        dimension: target.dimension,
-        ...(target.hierarchy?{level:action.level??dimensionValueOf(filterValues,target.id).level??target.defaultLevel??target.hierarchy[0]?.id}:{}),
-        values: [String(clicked)]
-      });
+      writeChartFilter(component, action, row);
     }
+  }
+
+  function regionMapActive() {
+    return !!regionMap && pageState.phase === 'ready' && usesIocRegion(pageState.page);
+  }
+
+  function currentRegionMapSelection() {
+    if (!regionMapActive()) return;
+    const selected = regionMapSelection(filterValues.get('region'));
+    if (!selected) return;
+    const declaration = declarations.find(item => item.id === 'region');
+    if (!isHierarchyDeclaration(declaration)) return;
+    if (regionMapCandidate(sourceFilterCandidates(declaration), selected.level, selected.value)) return selected;
+  }
+
+  function selectRegionFromMap(
+    declaration: Extract<FilterDeclaration, { type: 'dimension' }>,
+    level: 'region-dept' | 'office',
+    value: unknown,
+    parent?: { value: unknown }
+  ) {
+    if (initializing || pageState.phase !== 'ready' || filterEditing?.readOnly || pageFiltersReadOnly(pageState.page)) return;
+    const node = regionMapCandidate(sourceFilterCandidates(declaration), level, value, parent);
+    if (node) selectHeaderDimension(declaration, [node.value], level);
+  }
+
+  function handleMapHierarchyClick(component: Extract<Component, { type: 'mapChart' }>, row: Row): boolean {
+    const props = component.props;
+    if (!props.hierarchyFilter) return false;
+    const declaration = declarations.find(item => item.id === props.hierarchyFilter);
+    if (!isHierarchyDeclaration(declaration)) return false;
+    const value = filterValues.get(declaration.id);
+    if (declaration.id === 'region' && regionMapActive() && props.parentField && props.codeField &&
+        value?.type === 'dimension' && (value.level === 'region-dept' || value.level === 'office')) {
+      selectRegionFromMap(declaration, 'office', row[fieldName(props.codeField)], { value: row[fieldName(props.parentField)] });
+      return true;
+    }
+    const decision = resolveMapClick(props, declaration, value, row);
+    if (decision.kind === 'drill') writeDimension(declaration, decision.value.values, decision.value.level);
+    return decision.kind !== 'navigate';
+  }
+
+  function writeChartFilter(
+    component: Component,
+    action: Extract<NonNullable<MapChartProps['actions']>[number], { writeFilter: string }>,
+    row: Row
+  ) {
+    const clicked = 'field' in action ? row[fieldName(action.field)] : action.value;
+    const target = declarations.find(declaration => declaration.id === action.writeFilter);
+    if (clicked == null || target?.type !== 'dimension') return;
+    const level = action.level;
+    if (component.type === 'mapChart' && target.id === 'region' && regionMapActive() &&
+        (level === 'region-dept' || level === 'office')) {
+      selectRegionFromMap(target, level, clicked);
+      return;
+    }
+    filterState?.write(action.writeFilter, {
+      type: 'dimension',
+      dimension: target.dimension,
+      ...(target.hierarchy ? { level: level ?? dimensionValueOf(filterValues,target.id).level ?? target.defaultLevel ?? target.hierarchy[0]?.id } : {}),
+      values: [String(clicked)]
+    });
   }
 
   function headerTitleLink(model:import('./ioc-header/model').ResolvedIocHeader) {

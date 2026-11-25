@@ -8,6 +8,16 @@ nameMap 的方向是数据地名 → 底图区域名，例如 {"中国":"China"}
 
 层级绑定的 levelField 值必须等于 dimension filter 的 hierarchy.id，而非显示 label；例如 id 为 global、label 为 全球时，行内层级值为 global。初始作用域、codeField 和 parentField 需要与层级数据一致。地图着色、提示与下钻仍须在运行时验证，未知或未匹配地区不能用零值伪造完整覆盖。
 
+<a id="ioc-region-map-viewport"></a>
+
+## IOC Region 宿主视口
+
+集成应用启用 Region 地图适配后，`hierarchyFilter: "region"` 的地图可按已选地区部或代表处聚焦。底图继续由 `map` 或 `levelMaps` 决定；视口缺失时使用该底图默认视角。「全球」使用默认视角。
+
+地区部地图可用 `actions.writeFilter` 指定 Region 和目标层级。代表处地图使用 `hierarchyFilter`、`parentField`、`codeField`，点击按当前授权候选核对组织名和父地区部，再走 IOC 页头选择。解绑的行可保留在表格。地图和列表可引用同一数据源，`nameMap` 负责底图地名匹配，查询字段继续用 `levelQueryFields`。页面配置沿用现有字段。
+
+合成场景 `/pages/ioc-region-map-demo`。集成应用通过公开的 Embed `regionMap` 输入提供资料。
+
 ## 查阅方式
 
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](../README.md)。
@@ -1328,6 +1338,7 @@ Schema位置：`#/definitions/mapChartComponent/properties/props/anyOf/1/propert
 - [最小组件](../examples/component-mapChart.json)：独立完整页面，保留必要语义依赖。
 - [regionalOverview](../examples/component-mapChart-regionalOverview.json)：独立完整页面，保留必要语义依赖。
 - [map-page](../examples/map-page.json)：完整合法页面；查询仅为静态契约证据。
+- [ioc-region-map-demo](../examples/ioc-region-map-demo.json)：完整合法页面；查询仅为静态契约证据。
 - [reference-branches-page](../examples/reference-branches-page.json)：完整合法页面；查询仅为静态契约证据。
 - [chart-constant-values-page](../examples/chart-constant-values-page.json)：完整合法页面；查询仅为静态契约证据。
 - [chart-constant-branches](../examples/chart-constant-branches.json)：完整合法页面；查询仅为静态契约证据。

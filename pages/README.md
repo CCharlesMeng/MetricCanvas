@@ -63,6 +63,7 @@
 - [记录关联省略行数预算](capabilities/table/README.md#记录关联省略行数预算669)：100001条合成审批记录完整关联，入口 `/pages/record-join-no-row-limit`。
 
 - [IOC Region URL 输入](capabilities/filters/README.md#ioc-region-参数名表示层级)：地区部 `region-dept`、代表处 `rep-office`，同组按 URL 顺序取最后项；合成入口 `/pages/ioc-region-url-demo`。
+- [IOC Region 地图与列表联动](capabilities/ioc-header/region-map/README.md)，合成入口 `/pages/ioc-region-map-demo`。
 
 ## 目录组织
 

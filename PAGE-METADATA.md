@@ -1,5 +1,7 @@
 # MetricCanvas 页面元数据规范
 
+IOC Region 地图可由集成应用注入视口资料。地图点击使用当前候选节点切换页头 Region，查询和地图继续消费同一筛选状态。页面沿用现有声明，见[宿主地图视口](docs/page-metadata/components/mapChart.md#ioc-region-map-viewport)与合成入口 `/pages/ioc-region-map-demo`。
+
 Schema 6.138 支持在 `metricCard.props.rows[].colorRule` 复用正负与固定颜色规则给主值着色。`primaryDetail` 主指标的变化项默认纵排。见[主值着色](docs/page-metadata/components/metricCard.md#metric-card-value-color)与合成入口 `/pages/metric-card-value-color`。
 
 对当前引擎支持的 6.x 页面，实际配置可执行时，能力引入版本高于页面声明仅作为调试诊断。独立校验、保存和发布继续严格检查能力下限。本次沿用现有页面字段与 Schema 版本。见[运行时兼容读取](docs/page-metadata/validation.md#runtime-capability-floor)与合成入口 `/pages/bar-category-order`。

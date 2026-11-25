@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "e2c43c117d53fbcffff31381b04f13603718cbf6df2f82c2f7808786a368ea91",
+  "sha256": "20240d902e5f09d1e35a50c8b501506dba45aa73781783d7b3e867246a4fbfe4",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -76,7 +76,7 @@
     },
     {
       "file": "docs/page-metadata/components/mapChart.md",
-      "sha256": "abbbbdab5f95b08db64e9fd517c8db81cdd1c4ba54f9898774d99bf6f8523f5d"
+      "sha256": "088082a5413cb49ee9348186fc22fc21dbf278a42735870ef81c9315dfe6cfcd"
     },
     {
       "file": "docs/page-metadata/components/metricCard.md",
@@ -160,7 +160,7 @@
     },
     {
       "file": "docs/page-metadata/reference-map.json",
-      "sha256": "c5fc22378f57b02e4c3d7e28fb355f1799b7d2454edf54a8ef55baf47471ec88"
+      "sha256": "5fc7afc1c64154b3f186865e150c93046948a2290850f450bd73f89471f132a0"
     },
     {
       "file": "docs/page-metadata/sections-and-layout.md",
@@ -2220,7 +2220,7 @@
     },
     {
       "file": "pages/README.md",
-      "sha256": "0660d9aa8b5331de69f55222654c9aeb513cf40e48deebabc7060eb224513b58"
+      "sha256": "f2563f22fe81616e651b08d4d02aa1c8e257c9386e644c0c0f282fdab8e50517"
     },
     {
       "file": "pages/business-rejection-details.json",
@@ -2749,6 +2749,14 @@
     {
       "file": "pages/capabilities/ioc-header/controls/ioc-office-drill-overview.json",
       "sha256": "85c49d2f0c72d10328c69de06aac830e3a1efbf9fe70bbb5f345fcca89a26374"
+    },
+    {
+      "file": "pages/capabilities/ioc-header/region-map/README.md",
+      "sha256": "d2434e66006f6cbf1f82dea91cfbba000728b027e359210653f83bdfed3623c3"
+    },
+    {
+      "file": "pages/capabilities/ioc-header/region-map/ioc-region-map-demo.json",
+      "sha256": "6721fb4d509bcd49002fbb635e9fb5bffa72738af323dd8ab1b97c842bdff5c2"
     },
     {
       "file": "pages/capabilities/ioc-header/scenarios/README.md",
@@ -3940,7 +3948,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-sources.ts",
-      "sha256": "9ab81f4c76b93ba409f444bbd4293411117e9812879d5168d36fda481828603a"
+      "sha256": "42ec015afcb87e07bcd51e3f4ec0b4f327efe4800c4936d0295c28f42fbba071"
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",

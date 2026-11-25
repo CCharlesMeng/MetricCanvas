@@ -18,6 +18,7 @@ const exactInputs = new Map([
   ['sdt-period-aggregation','period-aggregation'],
   ['table-header-select-all-query','full-query-candidates'],
   ['ioc-header-controls','header-controls'],
+  ['ioc-region-map-demo','region-map-viewport'],
   ['ioc-office-drill-overview','header-controls'], ['ioc-office-drill-detail','header-controls'],
   ['filter-source-candidates','source-candidates'],
   ['filter-source-candidate-levels','source-candidates'],

@@ -55,6 +55,11 @@ export function projectionRect(
   };
 }
 
+export interface MapViewport {
+  center: [number, number];
+  zoom: number;
+}
+
 /**
  * 地图:nameField 的值定位底图区域,valueField 驱动着色;
  * 散点叠加坐标取底图资产的区域中心点(centers,见 basemap.ts)。
@@ -261,6 +266,12 @@ export function mapOption(
         : [])
     ]
   };
+}
+
+/** A resolved viewport is a rendering input, independent of the page and metric rows. */
+export function withMapViewport(option: EChartsOption, viewport: MapViewport | undefined): EChartsOption {
+  if (!viewport || !option.geo || Array.isArray(option.geo)) return option;
+  return { ...option, geo: { ...option.geo, ...viewport } };
 }
 
 /** tooltip 回调参数里的数据项名;`trigger: 'item'` 下恒为单项。 */
