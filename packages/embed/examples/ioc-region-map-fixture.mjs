@@ -26,13 +26,13 @@ const displayNames = {
   office: { 德国代表处: '德国', 法国代表处: ' ' }
 };
 
-/** @type {Partial<Record<'region-dept' | 'office', Record<string, import('@metriccanvas/engine/ui').MapViewport>>>} */
-const viewports = {
-  'region-dept': { 欧洲地区部: { center: [14, 48], zoom: 6.4 } },
-  office: {
-    德国代表处: { center: [10.45, 51.16], zoom: 5 },
-    法国代表处: { center: [2.2, 46.8], zoom: 5 }
-  }
+/** @type {Record<string, Record<string, import('@metriccanvas/engine/ui').MapViewport>>} */
+const departmentViewports = {
+  world: {
+    欧洲地区部: { center: [14, 48], zoom: 6.4 },
+    拉美地区部: { center: [-60, -20], zoom: 2.8 }
+  },
+  china: { 中国地区部: { center: [107, 32], zoom: 1.25 } }
 };
 
 /** @param {Parameters<import('@metriccanvas/engine').RuntimeDataGateway['fetchData']>[0]} query */
@@ -84,7 +84,7 @@ export function createRegionMapFixture(withOperationMapRegion, { focus = true, d
       // Slow demo mode intentionally returns a late response to exercise Embed cancellation.
       if (delay) await new Promise(resolve => setTimeout(resolve, delay));
       record.aborted = signal.aborted;
-      if (focus && request.basemap === 'world') return viewports[request.level]?.[request.value];
+      if (focus && request.level === 'region-dept') return departmentViewports[request.basemap][request.value];
     }
   };
   return { dataGateway, regionMap, queries, viewRequests, ...createRegionDepartmentFacts([...regionNodes,...officeNodes], initialSearch) };

@@ -12,9 +12,11 @@ nameMap 的方向是数据地名 → 底图区域名，例如 {"中国":"China"}
 
 ## IOC Region 宿主视口
 
-集成应用启用 Region 地图适配后，`hierarchyFilter: "region"` 的地图可按已选地区部或代表处聚焦。底图继续由 `map` 或 `levelMaps` 决定；视口缺失时使用该底图默认视角。「全球」使用默认视角。
+集成应用启用 Region 地图适配后，`hierarchyFilter: "region"` 的地图可按已选地区部或代表处聚焦。底图继续由 `map` 或 `levelMaps` 决定；显式视口优先。绑定 Region 的 `regionalOverview` 在没有显式视口时按组织覆盖的底图边界自动取景。地区部也可按已知下属代表处的点位范围取景，单点居中并放大。缺少可定位资料时使用默认视角。其他地图沿用底图默认视角。「全球」使用默认视角。
 
 地区部地图可用 `actions.writeFilter` 指定 Region 和目标层级。代表处地图使用 `hierarchyFilter`、`parentField`、`codeField`，点击按当前授权候选核对组织名和父地区部，再走 IOC 页头选择。解绑的行可保留在表格。地图和列表可引用同一数据源，`nameMap` 负责底图地名匹配，查询字段继续用 `levelQueryFields`。
+
+`regionalOverview` 的代表处散点把图钉放在名称标签内部的左侧。悬浮或点击图钉时，按该代表处行展示提示或切换选择。集成应用可按实际底图为各可选地区部和代表处提供 `viewport.center` 和 `viewport.zoom`，使选中后聚焦。
 
 合成场景 `/pages/ioc-region-map-demo`。集成应用通过公开的 Embed `regionMap` 输入提供资料。
 
@@ -35,7 +37,7 @@ Region 地图可从集成应用的 `regionMap.geography` 读取公共地理资�
 
 ## 悬浮提示与散点标签（6.141）
 
-`props.tooltipRows` 按声明顺序绘制非空指标行，每行使用 `label` 和 `field`，可跟一个同排 `comparison`，它也使用 `label` 和 `field`。字段绑定至同一个地图主数据槽的度量并沿用绑定格式。无外边框的提示以当前组织名称为标题，数值统一加粗，普通值默认黑色。同排对比值与带符号格式的指标按方向显示，正值为绿、负值为红，零和缺失值保持黑色。只有能唯一对应实际数据行的散点或着色区域显示指标提示。声明 `tooltipRows` 时由作者列出所有行，包括需显示的地图着色指标。旧 `tooltipFields` 仍在地图着色指标之后逐行追加，两种提示配置互斥。
+`props.tooltipRows` 按声明顺序绘制非空指标行，每行使用 `label` 和 `field`，可跟一个同排 `comparison`，它也使用 `label` 和 `field`。字段绑定至同一个地图主数据槽的度量并沿用绑定格式。无外边框的提示以当前组织名称为标题，标题和数值均使用 400 字重，普通值默认黑色。同排对比值与带符号格式的指标按方向显示，正值为绿、负值为红，零和缺失值保持黑色。只有能唯一对应实际数据行的散点或着色区域显示指标提示。声明 `tooltipRows` 时由作者列出所有行，包括需显示的地图着色指标。旧 `tooltipFields` 仍在地图着色指标之后逐行追加，两种提示配置互斥。
 
 ```json
 {
@@ -57,7 +59,7 @@ Region 地图可从集成应用的 `regionMap.geography` 读取公共地理资�
 }
 ```
 
-`pointLabel: "nameAndValue"` 在散点名称后附上使用 `valueField` 格式的加粗指标值。值为空或尚未就绪时只显示名称。散点的数据身份、授权区域选择和固定摘要规则保持原样。合成示例 `/pages/ioc-region-map-demo`，完整四行见 `/pages/contract-business-overview`。
+`pointLabel: "nameAndValue"` 在散点名称后附上使用 `valueField` 格式的指标值，数字使用 400 字重。值为空或尚未就绪时只显示名称。散点的数据身份、授权区域选择和固定摘要规则保持原样。合成示例 `/pages/ioc-region-map-demo`，完整四行见 `/pages/contract-business-overview`。
 
 集成应用可以在 Embed 挂载参数中传入 `regionMap.displayNames`，例如 `{ "region-dept": {"中国地区部":"中国区"}, "office": {"德国代表处":"德国"} }`。组内键取原组织业务值。命中的显示名仅用于 Region 地图的散点标签和对应数据行的悬浮标题。缺省、空白或没有命中时使用原名称。页头候选、明细表和点击回写继续使用已有字段。合成示例 `/pages/ioc-region-map-demo?mapLabels=short` 可观察特意指定的「中国区」和简称缺省回退。
 

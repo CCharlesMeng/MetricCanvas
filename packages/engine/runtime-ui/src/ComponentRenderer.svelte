@@ -351,11 +351,12 @@
           enabled={component.props.hierarchyFilter === 'region'}
           basemap={map ?? component.props.map}
         >
-          {#snippet children(viewport, geography)}
+          {#snippet children(viewport, geography, selection)}
             <MapChart
               data={mainData}
               props={component.props}
               {map}
+              {selection}
               {viewport}
               {geography}
               onregionclick={onchartclick && !mainData.main.progress ? ({ row }) => onchartclick?.(row) : undefined}

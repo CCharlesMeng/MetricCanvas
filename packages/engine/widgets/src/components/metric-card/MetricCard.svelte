@@ -272,7 +272,7 @@
   .primary-detail > .metric-content .row-value {
     color: #000;
     font-size: 28px;
-    font-weight: 700;
+    font-weight: 400;
     line-height: 34px;
   }
   .primary-detail > .metric-content .changes {
@@ -294,7 +294,7 @@
     line-height: 20px;
   }
   .primary-detail > .metric-content .change-value {
-    font-weight: 700;
+    font-weight: 400;
     line-height: 17px;
   }
   .primary-detail > .metric-panel {

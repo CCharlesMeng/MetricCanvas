@@ -1,3 +1,4 @@
+import {automaticMapFocus} from "../../widgets/src/components/map-chart/auto-focus";
 import {describe,it,expect} from 'vitest';
 import {mapGeographyZ} from '../../../page/src/schema/map-geography';
 import {hasRegionMapRouting, resolveRegionMapViewport, selectedViewport} from '../src/region-map';
@@ -40,5 +41,26 @@ describe('组织地理资料',()=>{
     for(const entry of [{viewport:{center:[300.7129,0.166]}},{viewport:{zoom:0}},{point:{lngLat:[0,0],feature:'France'}}]) {
       expect(mapGeographyZ.safeParse({world:{office:{A:entry}}}).success).toBe(false);
     }
+  });
+});
+
+describe('区域概览的自动聚焦', () => {
+  const props = {map:'world', nameField:'name', valueField:'value', hierarchyFilter:'region', parentField:'dept', codeField:'id'} as const;
+  const geography = {page:mapGeographyZ.parse({world:{'region-dept':{一区:{point:{feature:'Anchor'}}},office:{
+    A:{point:{lngLat:[10,20]}}, B:{point:{lngLat:[30,40]}}, C:{point:{lngLat:[100,0]}}
+  }}})};
+  const locations = mapRows([
+    {id:'A', name:'甲', dept:'一区'}, {id:'B', name:'乙', dept:'一区'}, {id:'C', name:'丙', dept:'二区'}
+  ], 'name', props, geography);
+  const map = {centers:new Map(), bounds:new Map<string, [[number, number], [number, number]]>([['Anchor', [[0,0], [1,1]]]])};
+
+  it('单坐标按原始组织值居中放大，无法定位则回退', () => {
+    expect(automaticMapFocus(props,{level:'office',value:'A'},geography,locations,map)).toEqual({center:[10,20],zoom:4});
+    expect(automaticMapFocus(props,{level:'office',value:'未知'},geography,locations,map)).toBeUndefined();
+  });
+
+  it('地区部按所属代表处取景，排除其他地区部的行', () => {
+    expect(automaticMapFocus(props,{level:'region-dept',value:'一区'},geography,locations,map))
+      .toEqual({boundingCoords:[[7.6,17.6],[32.4,42.4]]});
   });
 });

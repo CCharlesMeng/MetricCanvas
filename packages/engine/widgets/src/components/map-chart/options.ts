@@ -1,4 +1,5 @@
-import {mapRows} from './geography';
+import type { MapFocus } from './auto-focus';
+import { mapRows, organizationBinding } from './geography';
 import { resolveComponentValue, type ResolvedComponentValue } from '../../shared/component-value';
 import type { MapChartProps, Row } from '@metriccanvas/page/internal';
 import type { EChartsOption } from 'echarts';
@@ -103,6 +104,7 @@ export function mapOption(
   const lo = rawMin < rawMax ? rawMin : Math.min(0, rawMin);
   const hi = rawMax > rawMin ? rawMax : Math.max(1, rawMax);
   const regionalOverview = props.variant === 'regionalOverview';
+  const inlinePin = regionalOverview && organizationBinding(props)?.level === 'office' ? regionalPinUrl : undefined;
   const pinnedMatch = props.pinnedSummary
     ? resolveField(props.pinnedSummary.matchField, data)
     : undefined;
@@ -121,7 +123,11 @@ export function mapOption(
     return [{
       name: rawName,
       value: [...cp, pendingValue ? null : (finiteNumber(value.read(row)) ?? 0)],
-      ...(pinned ? { label: { show: false }, emphasis: { label: { show: false } } } : {})
+      ...(pinned ? {
+        label: { show: false },
+        emphasis: { label: { show: false } },
+        ...(inlinePin ? mapScatterSymbol(true, inlinePin) : {})
+      } : {})
     }];
   });
 
@@ -130,7 +136,7 @@ export function mapOption(
   const levels = props.legend ? mapLegendLevels(props.legend.bands, scale) : undefined;
   const pieces = levels && scale ? mapLegendPieces(levels) : undefined;
 
-  const pointLabel = mapPointLabel(props, value, locations);
+  const pointLabel = mapPointLabel(props, value, locations, inlinePin);
   return {
     tooltip: mapTooltip(data, props, name.field, value, locations),
     // geo 组件承载底图(散点叠加需要 geo 坐标系),map 系列经 geoIndex 挂靠其上
@@ -190,19 +196,12 @@ export function mapOption(
             {
               type: props.scatter === 'effect' ? ('effectScatter' as const) : ('scatter' as const),
               coordinateSystem: 'geo' as const,
-              ...(regionalOverview
-                ? {
-                    ...(regionalPinUrl ? { symbol: `image://${regionalPinUrl}` } : {}),
-                    symbolSize: [15.51, 20],
-                    symbolOffset: [0, 10]
-                  }
-                : { symbolSize: 10 }),
-              itemStyle: { color: regionalOverview ? '#6177e4' : '#f59e0b' },
+              ...mapScatterSymbol(regionalOverview, regionalPinUrl, inlinePin),
               label: regionalOverview
                 ? {
                     show: true,
                     ...pointLabel,
-                    position: 'top' as const,
+                    position: inlinePin ? 'inside' as const : 'top' as const,
                     distance: 2,
                     padding: [2, 8],
                     color: '#191919',
@@ -237,24 +236,41 @@ function mapValuePending(props: MapChartProps, data: MainDataSlots): boolean {
   return props.valueField !== undefined && pending?.includes(resolveField(props.valueField, data).field) === true;
 }
 
-function mapPointLabel(props: MapChartProps, value: ResolvedComponentValue, locations: ReturnType<typeof mapRows>) {
-  if (props.pointLabel !== 'nameAndValue') {
-    if (!locations.displayNames.size) return { formatter: '{b}' };
-    return { formatter: (params: unknown) => {
-      const name = itemName(params);
-      return mapDisplayName(locations, locations.points.get(name), name);
-    } };
-  }
+function mapScatterSymbol(regionalOverview: boolean, pinUrl?: string, inlinePin?: string) {
+  if (!regionalOverview) return { symbolSize: 10, itemStyle: { color: '#f59e0b' } };
+  // Keep an anchor for the interactive label. The pin itself is drawn inside that label.
+  if (inlinePin) return { symbol: 'circle', symbolSize: 1, itemStyle: { color: 'transparent' } };
   return {
-    rich: { metric: { fontWeight: 'bold' as const, color: '#000' } },
+    ...(pinUrl ? { symbol: `image://${pinUrl}` } : {}),
+    symbolSize: [15.51, 20],
+    symbolOffset: [0, 10],
+    itemStyle: { color: '#6177e4' }
+  };
+}
+
+function mapPointLabel(
+  props: MapChartProps,
+  value: ResolvedComponentValue,
+  locations: ReturnType<typeof mapRows>,
+  inlinePin?: string
+) {
+  const showValue = props.pointLabel === 'nameAndValue';
+  if (!showValue && !inlinePin && !locations.displayNames.size) return { formatter: '{b}' };
+  return {
+    rich: {
+      ...(showValue ? { metric: { fontWeight: 400, color: '#000' } } : {}),
+      ...(inlinePin ? { pin: { backgroundColor: { image: inlinePin }, width: 9.3, height: 12 } } : {})
+    },
     formatter: (params: unknown) => {
       const name = itemName(params);
       const row = locations.points.get(name);
-      if (!row) return name;
       const displayName = mapDisplayName(locations, row, name);
+      const label = inlinePin ? `{pin|} ${displayName}` : displayName;
+      if (!showValue) return label;
+      if (!row) return label;
       const metric = value.read(row);
-      if (finiteNumber(metric) === undefined) return displayName;
-      return `${displayName} {metric|${formatChartNumber(metric, value.format, value.missingText, value.unit)}}`;
+      if (finiteNumber(metric) === undefined) return label;
+      return `${label} {metric|${formatChartNumber(metric, value.format, value.missingText, value.unit)}}`;
     }
   };
 }
@@ -294,7 +310,7 @@ function mapTooltip(
 }
 
 /** A resolved viewport is a rendering input, independent of the page and metric rows. */
-export function withMapViewport(option: EChartsOption, viewport: MapViewport | undefined): EChartsOption {
+export function withMapViewport(option: EChartsOption, viewport: MapFocus | undefined): EChartsOption {
   if (!viewport || !option.geo || Array.isArray(option.geo)) return option;
   return { ...option, geo: { ...option.geo, ...viewport } };
 }
