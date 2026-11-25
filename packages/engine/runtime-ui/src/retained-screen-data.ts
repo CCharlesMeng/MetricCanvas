@@ -1,4 +1,4 @@
-import { canonicalizeJson, type Component, type DataSnapshot, type Page } from '@metriccanvas/page/internal';
+import { canonicalizeJson, tablePinnedSlots, type Component, type DataSnapshot, type Page } from '@metriccanvas/page/internal';
 import type { NamedDataSlots } from '../../widgets/src/shared/component-data';
 import type { TableRenderBinding } from './component-render';
 
@@ -52,6 +52,10 @@ export function createRetainedScreenData() {
       // A component advances as one display unit; never mix old supplementary slots with new main rows.
       const retained = { ...previous.data };
       if (retained.main) retained.main = { ...retained.main, sourceStatus: 'loading' };
+      // Pinned totals are independent of detail rows and follow their own current query state.
+      if (component.type === 'table') {
+        for (const slot of tablePinnedSlots(component.props)) retained[slot] = data[slot];
+      }
       return { data: retained, retained: true, table: previous.table };
     }
   };

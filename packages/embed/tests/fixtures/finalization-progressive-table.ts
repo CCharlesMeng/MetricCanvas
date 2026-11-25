@@ -17,7 +17,7 @@ function query(dimensions: string[], metrics: string[]): QueryDataSource['source
         filter: { dims: [], metrics: [], time: { is_aggregate: true } },
         order: {}
       }] },
-      filterBindings: { mtime: { target: 'time' } }
+      filterBindings: { mtime: { target: 'time' }, customer: { target: 'dimension', queryField: '客户级别' } }
     }
   };
 }
@@ -32,6 +32,10 @@ export const finalizationProgressiveTable: PageDocument = {
   filters: [{
     id: 'mtime', type: 'timeRange', display: 'period', precision: 'date', required: true,
     label: '统计期间', default: { mode: 'month', finalizationName }, periodModes: ['month', 'quarter', 'year']
+  }, {
+    id: 'customer', type: 'dimension', dimension: 'customer-class-code', display: 'select',
+    label: '客户分类', emptyLabel: '客户分类', selection: { mode: 'multiple', allBehavior: 'values' },
+    options: [{ label: '核心NA', value: '核心NA' }, { label: '商业客户', value: '商业客户' }]
   }],
   dataSources: {
     results: {
@@ -56,7 +60,10 @@ export const finalizationProgressiveTable: PageDocument = {
       id: 'ioc-header', type: 'iocHeader', layout: { span: 12 },
       props: {
         identity: { title: finalizationName },
-        components: [{ id: 'period', type: 'filterControl', props: { filterId: 'mtime' } }]
+        components: [
+          { id: 'period', type: 'filterControl', props: { filterId: 'mtime' } },
+          { id: 'customer-control', type: 'filterControl', props: { filterId: 'customer' } }
+        ]
       }
     }]
   }, {
