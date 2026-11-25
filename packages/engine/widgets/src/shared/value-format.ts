@@ -52,11 +52,17 @@ function formatNumericValue(numeric: number, format: ValueFormatPreset, context:
   const adaptive = adaptiveNumericText(numeric, format, context.unit, context.mobile ?? mobilePresentation());
   if (adaptive !== undefined) return adaptive;
   if (format === 'percent-raw') return `${numeric}%`;
-  if (format === 'yoy-p-signed') return yoyPresentation(numeric).text;
-  if (format === 'points-1-signed') return `${signedNumberPresentation(numeric, 'number-1-ungrouped-signed').text}P`;
+  if (format === 'yoy-p-signed' || format === 'points-1-signed') return pointValueText(numeric, format);
   const percent = /^percent-([012])(-signed)?$/.exec(format);
   if (percent) return `${percent[2] && numeric > 0 ? '+' : ''}${formatNumber(numeric, Number(percent[1]))}%`;
   return formatStandardNumber(numeric, format);
+}
+
+function pointValueText(value: number, format: 'points-1-signed' | 'yoy-p-signed'): string {
+  const points = format === 'yoy-p-signed' ? value * 100 : value;
+  if (Math.abs(points) > 500) return points < 0 ? '<-500P' : '>500P';
+  if (format === 'yoy-p-signed') return yoyPresentation(value).text;
+  return `${signedNumberPresentation(value, 'number-1-ungrouped-signed').text}P`;
 }
 
 function formatStandardNumber(numeric: number, format: ValueFormatPreset): string {

@@ -165,6 +165,12 @@ it('formats percentage point differences without scaling and with rounded neutra
   expect(formatValue(10, 'points-1-signed')).toBe('+10P');
   expect(formatValue(-2.56, 'points-1-signed')).toBe('-2.6P');
   expect(formatValue(-0.04, 'points-1-signed')).toBe('0P');
+  expect(formatValue(499.99, 'points-1-signed')).toBe('+500P');
+  expect(formatValue(-499.99, 'points-1-signed')).toBe('-500P');
+  expect(formatValue(500, 'points-1-signed')).toBe('+500P');
+  expect(formatValue(-500, 'points-1-signed')).toBe('-500P');
+  expect(formatValue(500.01, 'points-1-signed')).toBe('>500P');
+  expect(formatValue(-500.01, 'points-1-signed')).toBe('<-500P');
   expect(formatValue(null, 'points-1-signed')).toBe('—');
 });
 

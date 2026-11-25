@@ -2,6 +2,8 @@
 
 Schema 6.141 的地图支持提示框按行展示指标和同排对比值，并在散点的组织名称后显示地图指标。地图可直接使用同轮数据源已经就绪的组织行，等待期间逐步补齐数值。见[地图提示与散点标签](docs/page-metadata/components/mapChart.md#map-tooltip-rows)及 `/pages/ioc-region-map-demo`。
 
+百分点格式与同比 P 格式统一在舍入前判断阈值。超过 `500P` 显示 `>500P`，低于 `-500P` 显示 `<-500P`，恰好等于 `±500P` 时正常显示。沿用现有格式声明。见[百分点差值](docs/page-metadata/field-bindings-and-formats.md#百分点差值677)与合成入口 `/pages/metric-card-value-color`、`/pages/yoy-p-format-demo`。
+
 Schema 6.140 支持 Dashboard 自然期间在 `default.finalizationName` 传入非空定稿名称数组。引擎一次查询，取有效当年日期中的最早月份，全部不可用时沿用当前月。见[多个定稿名称](docs/page-metadata/filters.md#multiple-finalization-names)与合成入口 `/pages/finalization-default-time`。
 
 IOC Region 地图可由集成应用注入视口资料。地图点击使用当前候选节点切换页头 Region，查询和地图继续消费同一筛选状态。页面沿用现有声明，见[宿主地图视口](docs/page-metadata/components/mapChart.md#ioc-region-map-viewport)与合成入口 `/pages/ioc-region-map-demo`。
