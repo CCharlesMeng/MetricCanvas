@@ -246,6 +246,7 @@ export interface Page {
     filters?: string[];
     components: Component[];
   }>;
+  mapOverrides?: import('./schema/map-geography').MapGeography;
   sectionGroups?: SectionGroup[];
   defaultSectionGroup?: string;
   sectionGroupParam?: string;

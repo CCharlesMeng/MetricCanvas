@@ -73,6 +73,17 @@
       ]
     },
     {
+      "id": "map-geography-overrides",
+      "description": "组织地图资料支持页面覆盖",
+      "valid": [
+        "ioc-region-map-demo"
+      ],
+      "invalid": [
+        "map-overrides-version",
+        "map-overrides-invalid-zoom"
+      ]
+    },
+    {
       "id": "period-aggregation",
       "description": "近一年按业务维度逐字段求和/取月均值平均，完整输入及版本约束",
       "valid": [

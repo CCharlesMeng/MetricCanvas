@@ -16,6 +16,9 @@ import type { AiSummarySnapshot } from './ai-summary';
 export const SUMMARY_EXPORT_CAPTURE = Symbol('metriccanvas.summaryCapture');
 export type SummaryCapture = Map<string, () => AiSummarySnapshot>;
 export interface ExportRenderState {
+  geography?: Page['mapOverrides'];
+  regionSelection?: Pick<import('./region-map').RegionMapViewportRequest,'level'|'value'>;
+  viewports?: Map<string,import('./region-map').MapViewport|undefined>;
   page: Page;
   currentYear:number;now?:Date;
   filters: FilterValues;

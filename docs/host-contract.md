@@ -305,6 +305,8 @@ const handle = mount('#dashboard', { document: pageDocument, dataGateway });
 
 页面只写 `{ "id":"region-control", "type":"regionFilter" }`，不再复制 Region 定义；业务 `filterBindings.region` 仍保留原字段映射。现有 `initialSearch`、URL 和选择事件接线不变，不新增实时同步或默认全球选择。尚未安装 Adapter 的页面沿用既有候选能力缺失诊断；封装不会制造候选或跨权限回退。合成验收 `/pages/ioc-header-controls`，真实接口须在集成应用验证。
 
+组织地理资料、页面覆盖、数据来源及操作验收见[Operation Map 地图实施交接](operation-map-geography.md)。
+
 ## Operation Map 地图视口接入
 
 集成应用可在 `mount` 或 `RuntimeView` 注入可选的 `regionMap`，与 `withOperationMapRegion` 候选接线独立。

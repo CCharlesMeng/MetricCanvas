@@ -116,6 +116,11 @@ export const invariants: InvariantDefinition[] = [
     {case:'ioc-auto-back-legacy',base:'ioc-auto-back-page',expect:/由 6.96 引入/,mutate:d=>{d.schemaVersion='5.4';}},
     {case:'ioc-auto-back-unknown',base:'ioc-auto-back-page',expect:/must/,mutate:d=>{firstComponent(d).props.back='history';}}
   ]},
+  {
+    id: 'map-geography-overrides', description:'组织地图资料支持页面覆盖', valid:['ioc-region-map-demo'],
+    cases:[{case:'map-overrides-version',base:'ioc-region-map-demo',expect:/由 6.139 引入/,mutate: document => {document.schemaVersion='6.138';}},
+      {case:'map-overrides-invalid-zoom',base:'ioc-region-map-demo',expect:/zoom|大于|greater|>/i,mutate: document => {document.mapOverrides.world['region-dept']['欧洲地区部'].viewport.zoom=-1;}}]
+  },
   periodAggregationInvariant,
   barAverageInvariant,
   {

@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "20240d902e5f09d1e35a50c8b501506dba45aa73781783d7b3e867246a4fbfe4",
+  "sha256": "95769dbf928869f4b59dacc827153b9e07c34dd01a271c514be544adf3403567",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -76,7 +76,7 @@
     },
     {
       "file": "docs/page-metadata/components/mapChart.md",
-      "sha256": "088082a5413cb49ee9348186fc22fc21dbf278a42735870ef81c9315dfe6cfcd"
+      "sha256": "1173987647e37d9caa5c60b95b7fd40b4380e18c01096551a56f484b827de4d1"
     },
     {
       "file": "docs/page-metadata/components/metricCard.md",
@@ -160,7 +160,7 @@
     },
     {
       "file": "docs/page-metadata/reference-map.json",
-      "sha256": "5fc7afc1c64154b3f186865e150c93046948a2290850f450bd73f89471f132a0"
+      "sha256": "ec128f180990fe1dcbe79caa3324f36594c9b7b62cdb129968167f5d358684ab"
     },
     {
       "file": "docs/page-metadata/sections-and-layout.md",
@@ -276,7 +276,7 @@
     },
     {
       "file": "metriccanvas-authoring/contracts/authored/publication-contract.ts",
-      "sha256": "e0db19861d36ed584f438ff5061ab53a7efe2c23d713b0be6c0154f89a53157a"
+      "sha256": "98933e239d2c1d5214b235c6f5f1cb50296363f45d290c3ed496645477351e7d"
     },
     {
       "file": "metriccanvas-authoring/contracts/authored/publish-request.schema.json",
@@ -1672,7 +1672,7 @@
     },
     {
       "file": "packages/page/src/internal.ts",
-      "sha256": "1a726385bf7beed4a3a428572845f0d4e321cad78313f135d1e6bbea00d08761"
+      "sha256": "7be2c79dae3448e009a207811f7fab98958172202ee9ced2fdbe5af59667fe33"
     },
     {
       "file": "packages/page/src/ioc-header-controls.ts",
@@ -1752,7 +1752,7 @@
     },
     {
       "file": "packages/page/src/page.ts",
-      "sha256": "01ad66d5403745bb236c8fa985d9f6916c764d0a9e363702c9c54309c7a8a07c"
+      "sha256": "1688d188da05efc75a97024bba1140969afc9d4d3ad72e56f88e2173249dc3f2"
     },
     {
       "file": "packages/page/src/paged-join-compute.ts",
@@ -2007,12 +2007,16 @@
       "sha256": "503d2be6aeba642a08a044c52727dab1ac0f317bab972f1b62633e64a523b4c2"
     },
     {
+      "file": "packages/page/src/schema/map-geography.ts",
+      "sha256": "c9395f66b49b2ad6742def635e57d17c8e621145803838c01d28150a6016037a"
+    },
+    {
       "file": "packages/page/src/schema/navigation.ts",
       "sha256": "2e1b4f4b67aec7cb6f0ec26bb006b57fd8739ae0331c9ef6b6ae0eea1662b2ec"
     },
     {
       "file": "packages/page/src/schema/page.ts",
-      "sha256": "32fb6c7ce8d6649b202d21913c096b5c2285bbda6a03ecc62e8a1ebd4b727329"
+      "sha256": "44f1bfa59c7998c061951aef8cfa378845edfccbb7921c932d7242bab82391ae"
     },
     {
       "file": "packages/page/src/schema/paged-join.ts",
@@ -2212,7 +2216,7 @@
     },
     {
       "file": "packages/page/src/version.ts",
-      "sha256": "bf99940a144c976c7a151ca1ca542a0094a274e131fb57029396f638a4042125"
+      "sha256": "ac14c999a675bfdbe244319e77c415759757eb631ce7f128ec5d754a3d3a0e82"
     },
     {
       "file": "packages/page/src/write-version.ts",
@@ -2260,7 +2264,7 @@
     },
     {
       "file": "pages/business/dashboard/ioc/commercial/README.md",
-      "sha256": "2b3b17f8da27091ed287040363f5a5ff9a2c248e0f8aaa9602b8078c8182af5b"
+      "sha256": "220ebdb1c8daf6fc058dd30d31e318fd0d8465b52472abe851d4166b847a505e"
     },
     {
       "file": "pages/business/dashboard/ioc/commercial/business-decision-all-details.json",
@@ -2268,7 +2272,7 @@
     },
     {
       "file": "pages/business/dashboard/ioc/commercial/contract-business-overview.json",
-      "sha256": "dc96c9218d087264050cb2ee4e3c44024dbe665303c64c469ba0d78a0287f569"
+      "sha256": "bc328e19527a1dfbeff6838dcf0d75d1bc438735c4d6bd932be3e9d1ac83ef1f"
     },
     {
       "file": "pages/business/dashboard/ioc/opportunity/README.md",
@@ -2752,11 +2756,11 @@
     },
     {
       "file": "pages/capabilities/ioc-header/region-map/README.md",
-      "sha256": "d2434e66006f6cbf1f82dea91cfbba000728b027e359210653f83bdfed3623c3"
+      "sha256": "e9c4b9c608bc08a431d017c4c4d2a06b3aa4f8f5d8b1043be8123694605746a7"
     },
     {
       "file": "pages/capabilities/ioc-header/region-map/ioc-region-map-demo.json",
-      "sha256": "6721fb4d509bcd49002fbb635e9fb5bffa72738af323dd8ab1b97c842bdff5c2"
+      "sha256": "a233611ee8ec5a82c48be11b7c5b9c76d3f2e2259bed53e7bca5dc065a7044dd"
     },
     {
       "file": "pages/capabilities/ioc-header/scenarios/README.md",
@@ -2948,7 +2952,7 @@
     },
     {
       "file": "pages/capabilities/layout/schema-upgrade-demo.json",
-      "sha256": "172a9a7b2021d6a5c080832c22c7065f30cbc8e91116d717dcb70bbf7ed1daee"
+      "sha256": "1a167e560cd3f06fc93c46f94459debfb4c1b624ff42da8b40648da1e8871e85"
     },
     {
       "file": "pages/capabilities/layout/tab-mixed-content-report.json",
@@ -3948,11 +3952,11 @@
     },
     {
       "file": "tools/scripts/page-conformance-sources.ts",
-      "sha256": "42ec015afcb87e07bcd51e3f4ec0b4f327efe4800c4936d0295c28f42fbba071"
+      "sha256": "0709b0cea723d170cd6510cc324b293f74588105d04fd078e97b69ed04417de2"
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "6729ae01f7faed714ef6289d77da343ed038becbb2fadd2575581b1651bf9d27"
+      "sha256": "59560fee41791aa081a33f800705a29a5afccb46a13a21a2c478413703351986"
     },
     {
       "file": "tools/scripts/page-files.d.mts",

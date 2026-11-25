@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.138",
+  "schemaVersion": "6.139",
   "id": "ioc-region-map-demo",
   "layout": "dashboard",
   "meta": {
@@ -157,6 +157,11 @@
           {
             "filter": "region",
             "part": "values",
+            "op": "isEmpty"
+          },
+          {
+            "filter": "region",
+            "part": "values",
             "op": "containsAny",
             "values": [
               "全球"
@@ -180,11 +185,6 @@
             "scatter": "point",
             "nameField": "org-key",
             "valueField": "discount",
-            "nameMap": {
-              "欧洲地区部": "Germany",
-              "中国地区部": "China",
-              "拉美地区部": "Brazil"
-            },
             "actions": [
               {
                 "on": "click",
@@ -227,13 +227,41 @@
     {
       "id": "china-overview",
       "visibleWhen": {
-        "filter": "region",
-        "part": "values",
-        "op": "containsAny",
-        "values": [
-          "中国地区部",
-          "北京代表处",
-          "深圳办事处"
+        "all": [
+          {
+            "not": {
+              "any": [
+                {
+                  "filter": "region",
+                  "part": "level",
+                  "op": "eq",
+                  "value": "geo"
+                },
+                {
+                  "filter": "region",
+                  "part": "values",
+                  "op": "isEmpty"
+                },
+                {
+                  "filter": "region",
+                  "part": "values",
+                  "op": "containsAny",
+                  "values": [
+                    "全球"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "fact": "regionDepartment",
+            "op": "isNotNull"
+          },
+          {
+            "fact": "regionDepartment",
+            "op": "eq",
+            "value": "中国地区部"
+          }
         ]
       },
       "components": [
@@ -252,10 +280,6 @@
             "scatter": "point",
             "nameField": "org-key",
             "valueField": "discount",
-            "nameMap": {
-              "北京代表处": "北京市",
-              "深圳办事处": "广东省"
-            },
             "hierarchyFilter": "region",
             "parentField": "region-key",
             "codeField": "org-key"
@@ -293,9 +317,9 @@
     {
       "id": "regional-overview",
       "visibleWhen": {
-        "not": {
-          "any": [
-            {
+        "all": [
+          {
+            "not": {
               "any": [
                 {
                   "filter": "region",
@@ -306,25 +330,29 @@
                 {
                   "filter": "region",
                   "part": "values",
+                  "op": "isEmpty"
+                },
+                {
+                  "filter": "region",
+                  "part": "values",
                   "op": "containsAny",
                   "values": [
                     "全球"
                   ]
                 }
               ]
-            },
-            {
-              "filter": "region",
-              "part": "values",
-              "op": "containsAny",
-              "values": [
-                "中国地区部",
-                "北京代表处",
-                "深圳办事处"
-              ]
             }
-          ]
-        }
+          },
+          {
+            "fact": "regionDepartment",
+            "op": "isNotNull"
+          },
+          {
+            "fact": "regionDepartment",
+            "op": "ne",
+            "value": "中国地区部"
+          }
+        ]
       },
       "components": [
         {
@@ -342,11 +370,6 @@
             "scatter": "point",
             "nameField": "org-key",
             "valueField": "discount",
-            "nameMap": {
-              "德国代表处": "Germany",
-              "法国代表处": "France",
-              "巴西代表处": "Brazil"
-            },
             "hierarchyFilter": "region",
             "parentField": "region-key",
             "codeField": "org-key"
@@ -381,5 +404,31 @@
         }
       ]
     }
-  ]
+  ],
+  "mapOverrides": {
+    "world": {
+      "region-dept": {
+        "欧洲地区部": {
+          "viewport": {
+            "zoom": 6.4
+          }
+        },
+        "拉美地区部": {
+          "point": {
+            "lngLat": [
+              -62,
+              -15
+            ]
+          }
+        }
+      },
+      "office": {
+        "法国代表处": {
+          "point": {
+            "feature": "France"
+          }
+        }
+      }
+    }
+  }
 }

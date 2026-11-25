@@ -33,7 +33,7 @@ export type {
   RuntimeDataGateway
 } from '@metriccanvas/engine';
 export type { AuthRequiredEvent, AiSummaryConfig, NavigationInputContract, RuntimeNavigation, RuntimeNavigationTarget } from '@metriccanvas/engine/ui';
-export type { MapViewport, RegionMapAdapter, RegionMapViewportRequest } from '@metriccanvas/engine/ui';
+export type { MapGeography, MapViewport, RegionMapAdapter, RegionMapViewportRequest } from '@metriccanvas/engine/ui';
 
 interface EmbedRootExports {
   update(input: RuntimeInput): void;

@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.138",
-  "schemaSha256": "985ad212d3c3da553ae05fba9f8c73f262cc550749766715659afd0a6bfb3ddc",
+  "schemaVersion": "6.139",
+  "schemaSha256": "51454666e5be3d15087cf43505c6e85cf446dd5a8abdd3c72dc5237b4102cece",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -812,7 +812,9 @@
         "mapLegend",
         "mapLegendBand",
         "mapTooltipField",
-        "mapPinnedSummary"
+        "mapPinnedSummary",
+        "mapGeographyEntry",
+        "mapGeographyLevels"
       ],
       "keywords": [
         "components/mapChart",
@@ -823,7 +825,8 @@
         "ioc-region-map-demo",
         "reference-branches-page",
         "chart-constant-values-page",
-        "chart-constant-branches"
+        "chart-constant-branches",
+        "ioc-region-map-demo"
       ],
       "rules": [
         "map-legend-bands-increasing",
@@ -1420,7 +1423,8 @@
         "6.135",
         "6.136",
         "6.137",
-        "6.138"
+        "6.138",
+        "6.139"
       ]
     },
     {
@@ -20617,6 +20621,148 @@
       ]
     },
     {
+      "pointer": "#/properties/mapOverrides",
+      "path": "$.mapOverrides",
+      "required": "本分支可选",
+      "module": "page.md"
+    },
+    {
+      "pointer": "#/properties/mapOverrides/properties/world",
+      "path": "$.mapOverrides.world",
+      "required": "本分支可选",
+      "module": "page.md"
+    },
+    {
+      "pointer": "#/properties/mapOverrides/properties/world/allOf/0",
+      "path": "$.mapOverrides.world · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "page.md",
+      "ref": "#/definitions/mapGeographyLevels"
+    },
+    {
+      "pointer": "#/definitions/mapGeographyLevels",
+      "path": "@mapGeographyLevels",
+      "required": "类型/分支",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapGeographyLevels/properties/region-dept",
+      "path": "@mapGeographyLevels.region-dept",
+      "required": "本分支可选",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapGeographyLevels/properties/region-dept/additionalProperties",
+      "path": "@mapGeographyLevels.region-dept{key}",
+      "required": "动态键的值",
+      "module": "components/mapChart.md",
+      "ref": "#/definitions/mapGeographyEntry"
+    },
+    {
+      "pointer": "#/definitions/mapGeographyEntry",
+      "path": "@mapGeographyEntry",
+      "required": "类型/分支",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapGeographyEntry/properties/point",
+      "path": "@mapGeographyEntry.point",
+      "required": "本分支可选",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapGeographyEntry/properties/point/anyOf/0",
+      "path": "@mapGeographyEntry.point · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapGeographyEntry/properties/point/anyOf/0/properties/lngLat",
+      "path": "@mapGeographyEntry.point · anyOf[0].lngLat",
+      "required": "本分支必填",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapGeographyEntry/properties/point/anyOf/1",
+      "path": "@mapGeographyEntry.point · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapGeographyEntry/properties/point/anyOf/1/properties/feature",
+      "path": "@mapGeographyEntry.point · anyOf[1].feature",
+      "required": "本分支必填",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapGeographyEntry/properties/viewport",
+      "path": "@mapGeographyEntry.viewport",
+      "required": "本分支可选",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapGeographyEntry/properties/viewport/properties/center",
+      "path": "@mapGeographyEntry.viewport.center",
+      "required": "本分支可选",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapGeographyEntry/properties/viewport/properties/zoom",
+      "path": "@mapGeographyEntry.viewport.zoom",
+      "required": "本分支可选",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapGeographyEntry/properties/features",
+      "path": "@mapGeographyEntry.features",
+      "required": "本分支可选",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapGeographyEntry/properties/features/items",
+      "path": "@mapGeographyEntry.features[]",
+      "required": "每个数组项",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapGeographyLevels/properties/region-dept/propertyNames",
+      "path": "@mapGeographyLevels.region-dept · propertyNames",
+      "required": "条件结构",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapGeographyLevels/properties/office",
+      "path": "@mapGeographyLevels.office",
+      "required": "本分支可选",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/definitions/mapGeographyLevels/properties/office/additionalProperties",
+      "path": "@mapGeographyLevels.office{key}",
+      "required": "动态键的值",
+      "module": "components/mapChart.md",
+      "ref": "#/definitions/mapGeographyEntry"
+    },
+    {
+      "pointer": "#/definitions/mapGeographyLevels/properties/office/propertyNames",
+      "path": "@mapGeographyLevels.office · propertyNames",
+      "required": "条件结构",
+      "module": "components/mapChart.md"
+    },
+    {
+      "pointer": "#/properties/mapOverrides/properties/china",
+      "path": "$.mapOverrides.china",
+      "required": "本分支可选",
+      "module": "page.md"
+    },
+    {
+      "pointer": "#/properties/mapOverrides/properties/china/allOf/0",
+      "path": "$.mapOverrides.china · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "page.md",
+      "ref": "#/definitions/mapGeographyLevels"
+    },
+    {
       "pointer": "#/properties/sectionGroups",
       "path": "$.sectionGroups",
       "required": "本分支可选",
@@ -21426,8 +21572,8 @@
     {
       "schemaPointer": "#/definitions/condition/anyOf/8/properties/value/anyOf/0",
       "module": "conditions.md",
-      "file": "examples/reference-conditions-page.json",
-      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/11/value"
+      "file": "examples/ioc-region-map-demo.json",
+      "pointer": "#/sections/2/visibleWhen/all/2/value"
     },
     {
       "schemaPointer": "#/definitions/condition/anyOf/8/properties/value/anyOf/1",
@@ -21474,8 +21620,8 @@
     {
       "schemaPointer": "#/definitions/condition/anyOf/11",
       "module": "conditions.md",
-      "file": "examples/reference-conditions-page.json",
-      "pointer": "#/sections/0/components/1/props/rowVisibleWhen/all/18"
+      "file": "examples/ioc-region-map-demo.json",
+      "pointer": "#/sections/2/visibleWhen/all/1"
     },
     {
       "schemaPointer": "#/definitions/condition/anyOf/12",
@@ -23779,6 +23925,18 @@
       "pointer": "#/sections/0/components/0/props/components/2/props/officeNavigate/query/rep-office-name"
     },
     {
+      "schemaPointer": "#/definitions/mapGeographyEntry/properties/point/anyOf/0",
+      "module": "components/mapChart.md",
+      "file": "examples/ioc-region-map-demo.json",
+      "pointer": "#/mapOverrides/world/region-dept/拉美地区部/point"
+    },
+    {
+      "schemaPointer": "#/definitions/mapGeographyEntry/properties/point/anyOf/1",
+      "module": "components/mapChart.md",
+      "file": "examples/ioc-region-map-demo.json",
+      "pointer": "#/mapOverrides/world/office/法国代表处/point"
+    },
+    {
       "schemaPointer": "#/definitions/section/properties/components/items/oneOf/0",
       "module": "sections-and-layout.md",
       "file": "examples/component-reportHeader.json",
@@ -23905,5 +24063,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "ebf5c4373d6954aba7a4d41d71196b04d26626dea868cdf4d9761d1625377508"
+  "semanticSourceDigest": "1ff6233f062d2fa2ba56834fec516fc35c22e675883b31c3718c92283977fc49"
 }

@@ -14,9 +14,22 @@ nameMap 的方向是数据地名 → 底图区域名，例如 {"中国":"China"}
 
 集成应用启用 Region 地图适配后，`hierarchyFilter: "region"` 的地图可按已选地区部或代表处聚焦。底图继续由 `map` 或 `levelMaps` 决定；视口缺失时使用该底图默认视角。「全球」使用默认视角。
 
-地区部地图可用 `actions.writeFilter` 指定 Region 和目标层级。代表处地图使用 `hierarchyFilter`、`parentField`、`codeField`，点击按当前授权候选核对组织名和父地区部，再走 IOC 页头选择。解绑的行可保留在表格。地图和列表可引用同一数据源，`nameMap` 负责底图地名匹配，查询字段继续用 `levelQueryFields`。页面配置沿用现有字段。
+地区部地图可用 `actions.writeFilter` 指定 Region 和目标层级。代表处地图使用 `hierarchyFilter`、`parentField`、`codeField`，点击按当前授权候选核对组织名和父地区部，再走 IOC 页头选择。解绑的行可保留在表格。地图和列表可引用同一数据源，`nameMap` 负责底图地名匹配，查询字段继续用 `levelQueryFields`。
 
 合成场景 `/pages/ioc-region-map-demo`。集成应用通过公开的 Embed `regionMap` 输入提供资料。
+
+<a id="map-geography"></a>
+## 组织地图地理资料（6.139）
+
+Region 地图可从集成应用的 `regionMap.geography` 读取公共地理资料。页面根级可选 `mapOverrides` 使用相同结构。两者按实际底图（world/china）、组织层级（region-dept/office）、候选业务值三级查找。例如：
+
+```json
+{"mapOverrides":{"world":{"region-dept":{"欧洲地区部":{"viewport":{"zoom":6.4}}}}}}
+```
+
+地区部图通过写入 region 的 action.level 识别行层级，代表处图通过 hierarchyFilter=region、codeField 和 parentField 识别。point 可给 `{"lngLat":[21,52.13]}` 或 `{"feature":"Germany"}`。匹配顺序为页面 point、组件 nameMap、公共 point、业务值同名底图要素。features 是当前行指标着色的底图要素名数组，可独立于散点覆盖；空数组清除着色。共享要素归属有歧义时使用原始散点选择组织。viewport.center（WGS84 经纬度）和 zoom（正数）逐字段叠加到已有 resolveViewport 回执，优先级为页面、公共资料、回执。数组和点位整体替换。地区部全球汇总点和选中该地区部时的镜头分别配置。匹配失败只跳过对应散点。
+
+合同商务总览的全球/空选择显示地区部行。地区部和代表处的中国及海外分区通过现有展示事实 regionDepartment 区分，集成应用从授权树派生。地图和表格绑定同一数据源。合成示例 `/pages/ioc-region-map-demo`。
 
 ## 查阅方式
 
@@ -29,7 +42,7 @@ Dashboard 正文通过独立 [filterGroup](filterGroup.md) 组件声明筛选按
 本组件的数据配置项支持字段或常量来源，声明互斥、格式单位、空态和限制见[组件取值](../field-bindings-and-formats.md#chart-constant-values)。示例路由为 `/pages/chart-constant-values-page`。常量沿本组件原有行集或单值语义使用，不新增查询结果或业务身份。
 
 
-页面协议 6.138。结构真源为本册[schema.json](../schema.json)，SHA256 `985ad212d3c3da553ae05fba9f8c73f262cc550749766715659afd0a6bfb3ddc`。字段表自动生成；可选不等于有默认值。
+页面协议 6.139。结构真源为本册[schema.json](../schema.json)，SHA256 `51454666e5be3d15087cf43505c6e85cf446dd5a8abdd3c72dc5237b4102cece`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -1327,6 +1340,186 @@ Schema位置：`#/definitions/mapChartComponent/properties/props/anyOf/1/propert
 |---|---|---|---|---|
 | 引用 #/definitions/actions | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
+<a id="schema-232f646566696e6974696f6e732f6d617047656f6772617068794c6576656c73"></a>
+
+### `@mapGeographyLevels`
+
+Schema位置：`#/definitions/mapGeographyLevels`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 类型/分支 | additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f6d617047656f6772617068794c6576656c732f70726f706572746965732f726567696f6e2d64657074"></a>
+
+### `@mapGeographyLevels.region-dept`
+
+Schema位置：`#/definitions/mapGeographyLevels/properties/region-dept`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支可选 | propertyNames={"type":"string","minLength":1} | Schema未设默认；装配/运行时默认见语义说明 | 按地区部业务值查找本页覆盖。 |
+
+<a id="schema-232f646566696e6974696f6e732f6d617047656f6772617068794c6576656c732f70726f706572746965732f726567696f6e2d646570742f6164646974696f6e616c50726f70657274696573"></a>
+
+### `@mapGeographyLevels.region-dept{key}`
+
+Schema位置：`#/definitions/mapGeographyLevels/properties/region-dept/additionalProperties`。目标：[#/definitions/mapGeographyEntry](../components/mapChart.md#schema-232f646566696e6974696f6e732f6d617047656f677261706879456e747279)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/mapGeographyEntry | 动态键的值 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f6d617047656f677261706879456e747279"></a>
+
+### `@mapGeographyEntry`
+
+Schema位置：`#/definitions/mapGeographyEntry`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 类型/分支 | additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f6d617047656f677261706879456e7472792f70726f706572746965732f706f696e74"></a>
+
+### `@mapGeographyEntry.point`
+
+Schema位置：`#/definitions/mapGeographyEntry/properties/point`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| anyOf联合 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 散点使用独立经纬度或底图要素中心。 |
+
+<a id="schema-232f646566696e6974696f6e732f6d617047656f677261706879456e7472792f70726f706572746965732f706f696e742f616e794f662f30"></a>
+
+### `@mapGeographyEntry.point · anyOf[0]`
+
+Schema位置：`#/definitions/mapGeographyEntry/properties/point/anyOf/0`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["lngLat"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f6d617047656f677261706879456e7472792f70726f706572746965732f706f696e742f616e794f662f302f70726f706572746965732f6c6e674c6174"></a>
+
+### `@mapGeographyEntry.point · anyOf[0].lngLat`
+
+Schema位置：`#/definitions/mapGeographyEntry/properties/point/anyOf/0/properties/lngLat`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | WGS84 经度、纬度坐标对。 |
+
+<a id="schema-232f646566696e6974696f6e732f6d617047656f677261706879456e7472792f70726f706572746965732f706f696e742f616e794f662f31"></a>
+
+### `@mapGeographyEntry.point · anyOf[1]`
+
+Schema位置：`#/definitions/mapGeographyEntry/properties/point/anyOf/1`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["feature"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f6d617047656f677261706879456e7472792f70726f706572746965732f706f696e742f616e794f662f312f70726f706572746965732f66656174757265"></a>
+
+### `@mapGeographyEntry.point · anyOf[1].feature`
+
+Schema位置：`#/definitions/mapGeographyEntry/properties/point/anyOf/1/properties/feature`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 当前底图中的精确区域名。 |
+
+<a id="schema-232f646566696e6974696f6e732f6d617047656f677261706879456e7472792f70726f706572746965732f76696577706f7274"></a>
+
+### `@mapGeographyEntry.viewport`
+
+Schema位置：`#/definitions/mapGeographyEntry/properties/viewport`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支可选 | additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 选中组织后显示的镜头，按子字段覆盖。 |
+
+<a id="schema-232f646566696e6974696f6e732f6d617047656f677261706879456e7472792f70726f706572746965732f76696577706f72742f70726f706572746965732f63656e746572"></a>
+
+### `@mapGeographyEntry.viewport.center`
+
+Schema位置：`#/definitions/mapGeographyEntry/properties/viewport/properties/center`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 选中组织后视口中心的经纬度。 |
+
+<a id="schema-232f646566696e6974696f6e732f6d617047656f677261706879456e7472792f70726f706572746965732f76696577706f72742f70726f706572746965732f7a6f6f6d"></a>
+
+### `@mapGeographyEntry.viewport.zoom`
+
+Schema位置：`#/definitions/mapGeographyEntry/properties/viewport/properties/zoom`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "number" | 本分支可选 | exclusiveMinimum=0 | Schema未设默认；装配/运行时默认见语义说明 | 当前底图适用的有限正数缩放。 |
+
+<a id="schema-232f646566696e6974696f6e732f6d617047656f677261706879456e7472792f70726f706572746965732f6665617475726573"></a>
+
+### `@mapGeographyEntry.features`
+
+Schema位置：`#/definitions/mapGeographyEntry/properties/features`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 本行指标着色的底图要素，整体替换，空数组清除。 |
+
+<a id="schema-232f646566696e6974696f6e732f6d617047656f677261706879456e7472792f70726f706572746965732f66656174757265732f6974656d73"></a>
+
+### `@mapGeographyEntry.features[]`
+
+Schema位置：`#/definitions/mapGeographyEntry/properties/features/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 每个数组项 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f6d617047656f6772617068794c6576656c732f70726f706572746965732f726567696f6e2d646570742f70726f70657274794e616d6573"></a>
+
+### `@mapGeographyLevels.region-dept · propertyNames`
+
+Schema位置：`#/definitions/mapGeographyLevels/properties/region-dept/propertyNames`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 条件结构 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f6d617047656f6772617068794c6576656c732f70726f706572746965732f6f6666696365"></a>
+
+### `@mapGeographyLevels.office`
+
+Schema位置：`#/definitions/mapGeographyLevels/properties/office`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支可选 | propertyNames={"type":"string","minLength":1} | Schema未设默认；装配/运行时默认见语义说明 | 按代表处业务值查找本页覆盖。 |
+
+<a id="schema-232f646566696e6974696f6e732f6d617047656f6772617068794c6576656c732f70726f706572746965732f6f66666963652f6164646974696f6e616c50726f70657274696573"></a>
+
+### `@mapGeographyLevels.office{key}`
+
+Schema位置：`#/definitions/mapGeographyLevels/properties/office/additionalProperties`。目标：[#/definitions/mapGeographyEntry](../components/mapChart.md#schema-232f646566696e6974696f6e732f6d617047656f677261706879456e747279)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/mapGeographyEntry | 动态键的值 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f6d617047656f6772617068794c6576656c732f70726f706572746965732f6f66666963652f70726f70657274794e616d6573"></a>
+
+### `@mapGeographyLevels.office · propertyNames`
+
+Schema位置：`#/definitions/mapGeographyLevels/properties/office/propertyNames`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 条件结构 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
 ## 语义规则与反例（生成）
 
 - `map-legend-bands-increasing`：地图图例档位下界严格递增。反例：[map-legend-bands-not-increasing](../errors/map-legend-bands-not-increasing.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
@@ -1342,6 +1535,7 @@ Schema位置：`#/definitions/mapChartComponent/properties/props/anyOf/1/propert
 - [reference-branches-page](../examples/reference-branches-page.json)：完整合法页面；查询仅为静态契约证据。
 - [chart-constant-values-page](../examples/chart-constant-values-page.json)：完整合法页面；查询仅为静态契约证据。
 - [chart-constant-branches](../examples/chart-constant-branches.json)：完整合法页面；查询仅为静态契约证据。
+- [ioc-region-map-demo](../examples/ioc-region-map-demo.json)：完整合法页面；查询仅为静态契约证据。
 
 局部片段提取自[完整页面](../examples/component-mapChart.json)的`#/sections/0/components/0`；此片段依赖完整页面的数据源/字段，不能单独作为页面校验。
 
@@ -1393,3 +1587,5 @@ Schema位置：`#/definitions/mapChartComponent/properties/props/anyOf/1/propert
 - `#/definitions/mapChartComponent/properties/props/anyOf/1`：[合法完整页面](../examples/component-mapChart.json)，JSON Pointer `#/sections/0/components/0/props`。
 - `#/definitions/mapChartComponent/properties/props/anyOf/1/properties/value/anyOf/0`：[合法完整页面](../examples/component-mapChart.json)，JSON Pointer `#/sections/0/components/0/props/value`。
 - `#/definitions/mapChartComponent/properties/props/anyOf/1/properties/value/anyOf/1`：[合法完整页面](../examples/chart-constant-branches.json)，JSON Pointer `#/sections/0/components/3/props/value`。
+- `#/definitions/mapGeographyEntry/properties/point/anyOf/0`：[合法完整页面](../examples/ioc-region-map-demo.json)，JSON Pointer `#/mapOverrides/world/region-dept/拉美地区部/point`。
+- `#/definitions/mapGeographyEntry/properties/point/anyOf/1`：[合法完整页面](../examples/ioc-region-map-demo.json)，JSON Pointer `#/mapOverrides/world/office/法国代表处/point`。

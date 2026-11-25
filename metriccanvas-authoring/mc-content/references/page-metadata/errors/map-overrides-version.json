@@ -1,0 +1,26 @@
+{
+  "case": "map-overrides-version",
+  "invariant": "map-geography-overrides",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "页面可覆盖组织地图地理资料 由 6.139 引入，文档声明的是 6.138",
+      "paths": [
+        "/mapOverrides"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "mapOverrides": {
+      "world": {
+        "region-dept": {
+          "…": "共2个键"
+        },
+        "office": {
+          "…": "共1个键"
+        }
+      }
+    }
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

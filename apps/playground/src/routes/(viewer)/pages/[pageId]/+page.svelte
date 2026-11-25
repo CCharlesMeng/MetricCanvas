@@ -19,6 +19,8 @@
   const queryComparisonPreview = $derived(createQueryComparisonPreview(page.url.searchParams.get("state") ?? "ready"));
   const activeDisplayInputs = $derived.by(()=>{
     switch(pageExternalInputs(page.params.pageId)){
+      case 'contract-region-map':
+      case 'region-map-viewport': return regionMapPreview.displayInputs;
       case 'query-comparison': return queryComparisonPreview.displayInputs;
       case 'period-comparison': return comparisonPreview.displayInputs;
       case 'ioc-business': return businessPreview.displayInputs;
@@ -91,7 +93,10 @@
   let pageRevisionId = $state<string | undefined>(undefined);
   let activeURL = '';
   let loadSession = 0;
-  const regionMapPreview = createRegionMapFixture(withOperationMapRegion);
+  const regionMapPreview = $derived(createRegionMapFixture(withOperationMapRegion,{
+    initialSearch, baseGateway:pageExternalInputs(page.params.pageId)==='contract-region-map' ? dataGateway : undefined
+  }));
+  const hasRegionMap = $derived(['region-map-viewport','contract-region-map'].includes(pageExternalInputs(page.params.pageId) ?? ''));
   /** 页面外框在校验之前就要定下来,因此按原始文档结构读布局形态。 */
   const layoutForm = $derived(
     pageState.phase === 'ready' ? documentLayoutForm(pageState.document) : 'report'
@@ -140,7 +145,7 @@
   }
 
   function regionQueryGateway(input: ReturnType<typeof pageExternalInputs>): DataGateway | undefined {
-    if(input==='region-map-viewport')return regionMapPreview.dataGateway;
+    if(input==='region-map-viewport' || input==='contract-region-map')return regionMapPreview.dataGateway;
     if(input==='region-url')return createRegionURLGateway();
     if(input==='ioc-region'||input==='ioc-region-dept')return withIocRegionCandidates(dataGateway,input==='ioc-region');
   }
@@ -205,6 +210,7 @@
   }
 
   function recordSharedFilters(event:RuntimeViewEvent) {
+    if (event.type==='filter-change' && hasRegionMap) regionMapPreview.setSelection(event.search,event.filterRevision);
     if(pageExternalInputs(page.params.pageId)==='dimension-operator')window.dispatchEvent(new CustomEvent('metriccanvas:dimension-operator-runtime',{detail:event}));
     if(pageExternalInputs(page.params.pageId)==='customer-series')window.dispatchEvent(new CustomEvent('metriccanvas:customer-series-runtime',{detail:event}));
     if(event.type!=='filter-change'||pageState.phase!=='ready'||!['key-office','key-office-priority'].includes(pageExternalInputs(page.params.pageId)??''))return;
@@ -280,7 +286,7 @@
       displayInputs={activeDisplayInputs}
       document={pageState.document}
       dataGateway={pageState.dataGateway}
-      regionMap={pageExternalInputs(page.params.pageId)==='region-map-viewport'?regionMapPreview.regionMap:undefined}
+      regionMap={hasRegionMap?regionMapPreview.regionMap:undefined}
       {aiSummary}
       onevent={recordSharedFilters}
       {initialSearch}
