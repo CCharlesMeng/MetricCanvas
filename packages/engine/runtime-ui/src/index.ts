@@ -15,7 +15,7 @@ export type {
 } from './types';
 
 export type {DisplayInputsSource,DisplayInputsSnapshot,DataPeriodFact} from '@metriccanvas/page/internal';
-export type { MapGeography, MapViewport, RegionMapAdapter, RegionMapViewportRequest } from './region-map';
+export type { MapGeography, MapViewport, RegionMapAdapter, RegionMapDisplayNames, RegionMapViewportRequest } from './region-map';
 
 export { createAiSummaryTaskSession, aiSummaryInputKey } from './ai-summary';
 export type { AiSummaryGenerate, AiSummaryContextInfo, AiSummaryDataSource } from './ai-summary';

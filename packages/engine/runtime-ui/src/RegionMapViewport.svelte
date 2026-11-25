@@ -13,7 +13,9 @@
   } = $props();
   const source = getContext<RegionMapContext | undefined>(REGION_MAP_CONTEXT);
   const adapter = $derived(source?.adapter());
-  const geography = $derived({host: adapter?.geography,page: source?.overrides()});
+  const geography = $derived({
+    host: adapter?.geography, page: source?.overrides(), displayNames: adapter?.displayNames
+  });
   const selection = $derived(enabled ? source?.selection() : undefined);
   const level = $derived(selection?.level);
   const value = $derived(selection?.value);

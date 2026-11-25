@@ -8,9 +8,12 @@ function chartState(chart: Locator, name?: string) {
     const echarts = await import(url);
     const instance = echarts.getInstanceByDom(element);
     const option = instance.getOption();
-    const symbol = option.series[1].data.find((item: { name: string }) => item.name === name);
+    const series = option.series[1];
+    const symbol = series.data.find((item: { name: string }) => item.name === name);
+    const { formatter } = series.label;
     return {
       point: symbol?.value,
+      label: typeof formatter === 'function' ? formatter({ name }) : name,
       areas: option.series[0].data.filter((item:{value?:unknown})=>typeof item.value === 'number' && Number.isFinite(item.value)),
       zoom: option.geo[0].zoom,
       center: option.geo[0].center,
@@ -52,4 +55,25 @@ test('共享结果行驱动地图点，点击切换页头 Region 和列表', asy
   await expect(global).toBeVisible();
   await expect.poll(async () => (await chartState(global)).zoom).toBe(1);
   await expect(table.getByText('欧洲地区部', { exact: true })).toBeVisible();
+});
+
+test('地图简称保留页头、明细和点击使用的组织全称', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/pages/ioc-region-map-demo?mapLabels=short');
+  const header = page.locator('[data-filter-id="region"]');
+  const trigger = header.getByRole('button', { name: '区域', exact: true });
+  const global = page.locator('[data-component="global-overview/world-map"] [_echarts_instance_]');
+  const overseas = page.locator('[data-component="regional-overview/regional-map"] [_echarts_instance_]');
+  const table = page.getByRole('table');
+  await expect.poll(() => chartState(global, '中国地区部')).toMatchObject({ label: '中国区 {metric|31.2%}' });
+  await expect.poll(() => chartState(global, '拉美地区部')).toMatchObject({ label: '拉美地区部 {metric|44.1%}' });
+  await expect(table.getByText('中国地区部', { exact: true })).toBeVisible();
+  await clickPoint(global, '欧洲地区部');
+  await expect(trigger).toHaveText('欧洲地区部');
+  await expect.poll(() => chartState(overseas, '德国代表处')).toMatchObject({ label: '德国' });
+  await expect.poll(() => chartState(overseas, '法国代表处')).toMatchObject({ label: '法国代表处' });
+  await clickPoint(overseas, '德国代表处');
+  await expect(trigger).toHaveText('德国代表处');
+  await expect(table.getByText('德国代表处', { exact: true })).toBeVisible();
+  await expect(table.getByText('法国代表处', { exact: true })).toHaveCount(0);
 });

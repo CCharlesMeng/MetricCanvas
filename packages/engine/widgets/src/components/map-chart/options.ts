@@ -130,7 +130,7 @@ export function mapOption(
   const levels = props.legend ? mapLegendLevels(props.legend.bands, scale) : undefined;
   const pieces = levels && scale ? mapLegendPieces(levels) : undefined;
 
-  const pointLabel = mapPointLabel(props, value, locations.points);
+  const pointLabel = mapPointLabel(props, value, locations);
   return {
     tooltip: mapTooltip(data, props, name.field, value, locations),
     // geo 组件承载底图(散点叠加需要 geo 坐标系),map 系列经 geoIndex 挂靠其上
@@ -237,19 +237,30 @@ function mapValuePending(props: MapChartProps, data: MainDataSlots): boolean {
   return props.valueField !== undefined && pending?.includes(resolveField(props.valueField, data).field) === true;
 }
 
-function mapPointLabel(props: MapChartProps, value: ResolvedComponentValue, points: ReadonlyMap<string, Row>) {
-  if (props.pointLabel !== 'nameAndValue') return { formatter: '{b}' };
+function mapPointLabel(props: MapChartProps, value: ResolvedComponentValue, locations: ReturnType<typeof mapRows>) {
+  if (props.pointLabel !== 'nameAndValue') {
+    if (!locations.displayNames.size) return { formatter: '{b}' };
+    return { formatter: (params: unknown) => {
+      const name = itemName(params);
+      return mapDisplayName(locations, locations.points.get(name), name);
+    } };
+  }
   return {
     rich: { metric: { fontWeight: 'bold' as const, color: '#000' } },
     formatter: (params: unknown) => {
       const name = itemName(params);
-      const row = points.get(name);
+      const row = locations.points.get(name);
       if (!row) return name;
+      const displayName = mapDisplayName(locations, row, name);
       const metric = value.read(row);
-      if (finiteNumber(metric) === undefined) return name;
-      return `${name} {metric|${formatChartNumber(metric, value.format, value.missingText, value.unit)}}`;
+      if (finiteNumber(metric) === undefined) return displayName;
+      return `${displayName} {metric|${formatChartNumber(metric, value.format, value.missingText, value.unit)}}`;
     }
   };
+}
+
+function mapDisplayName(locations: ReturnType<typeof mapRows>, row: Row | undefined, original: string): string {
+  return row ? locations.displayNames.get(row) ?? original : original;
 }
 
 function mapTooltip(
@@ -257,7 +268,7 @@ function mapTooltip(
   locations: ReturnType<typeof mapRows>
 ): EChartsOption['tooltip'] {
   const hovered = (params: unknown) => (isScatterItem(params) ? locations.points : locations.areas).get(itemName(params));
-  const title = (row?: Row) => String(row?.[nameField] ?? '');
+  const title = (row: Row) => mapDisplayName(locations, row, String(row[nameField] ?? ''));
   if (props.tooltipRows) {
     const markup = groupedMapTooltip(props.tooltipRows, data, props.emptyBehavior);
     return { trigger: 'item', borderWidth: 0, formatter: (params: unknown) => {
@@ -268,7 +279,7 @@ function mapTooltip(
   const fields: MapTooltipField[] = (props.tooltipFields ?? []).map(entry => ({
     ...resolveComponentValue(entry, data, props.emptyBehavior), label: entry.label
   }));
-  if (!fields.length) return {
+  if (!fields.length && !locations.displayNames.size) return {
     trigger: 'item',
     valueFormatter: (raw: unknown) =>
       formatChartNumber(mapFormatterValue(raw), value.format ?? 'number', value.missingText, value.unit)

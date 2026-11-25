@@ -1,12 +1,18 @@
 import {describe,it,expect} from 'vitest';
 import {mapGeographyZ} from '../../../page/src/schema/map-geography';
-import {resolveRegionMapViewport, selectedViewport} from '../src/region-map';
+import {hasRegionMapRouting, resolveRegionMapViewport, selectedViewport} from '../src/region-map';
 import {mapRows,resolvePlacement} from '../../widgets/src/components/map-chart/geography';
 
 const request = {basemap:'world',level:'region-dept',value:'欧洲地区部'} as const;
 const host = mapGeographyZ.parse({world:{'region-dept':{'欧洲地区部':{point:{lngLat:[21,52.13]},viewport:{center:[20.7129,60.166],zoom:3}}}}});
 
 describe('组织地理资料',()=>{
+  it('只传显示名不会启用地理适配的 Region 点击路径',()=>{
+    const displayNames={'region-dept':{'欧洲地区部':'欧洲'}};
+    expect(hasRegionMapRouting({displayNames})).toBe(false);
+    expect(hasRegionMapRouting({geography:host,displayNames})).toBe(true);
+    expect(hasRegionMapRouting({})).toBe(true);
+  });
   it('镜头逐字段合并，优先级为页面、OM 公共资料、动态回执',async()=>{
     const dynamic=await resolveRegionMapViewport({resolveViewport:async()=>({center:[0,0],zoom:1})},request,new AbortController().signal);
     const page=mapGeographyZ.parse({world:{'region-dept':{'欧洲地区部':{viewport:{zoom:6.4}}}}});
@@ -22,10 +28,13 @@ describe('组织地理资料',()=>{
   it('多组织重叠区域不能选择任一组织，散点各自保留原始行',()=>{
     const first={org:'A'},second={org:'B'};
     const page=mapGeographyZ.parse({world:{office:{A:{features:['Germany','France']},B:{features:['Germany']}}}});
-    const result=mapRows([first,second],'org',{map:'world',nameField:'org',valueField:'value',hierarchyFilter:'region',parentField:'dept',codeField:'org'},{page});
+    const displayNames={office:{A:'Abbr',B:'Abbr'}};
+    const result=mapRows([first,second],'org',{map:'world',nameField:'org',valueField:'value',hierarchyFilter:'region',parentField:'dept',codeField:'org'},{page,displayNames});
     expect(result.areas.get('Germany')).toBeUndefined();
     expect(result.areas.get('France')).toBe(first);
     expect(result.points.get('B')).toBe(second);
+    expect(result.points.get('A')).toBe(first);
+    expect(result.displayNames).toEqual(new Map([[first,'Abbr'],[second,'Abbr']]));
   });
   it('拒绝越界坐标、非正缩放和混合点位',()=>{
     for(const entry of [{viewport:{center:[300.7129,0.166]}},{viewport:{zoom:0}},{point:{lngLat:[0,0],feature:'France'}}]) {

@@ -21,6 +21,11 @@ const officeNodes = offices.map(row => ({
   parent: { level: 'region-dept', value: row['region-key'] }
 }));
 
+const displayNames = {
+  'region-dept': { 中国地区部: '中国区', 欧洲地区部: '欧洲' },
+  office: { 德国代表处: '德国', 法国代表处: ' ' }
+};
+
 /** @type {Partial<Record<'region-dept' | 'office', Record<string, import('@metriccanvas/engine/ui').MapViewport>>>} */
 const viewports = {
   'region-dept': { 欧洲地区部: { center: [14, 48], zoom: 6.4 } },
@@ -61,6 +66,7 @@ export function createRegionMapFixture(withOperationMapRegion, { focus = true, d
 
   /** @type {import('@metriccanvas/engine/ui').RegionMapAdapter} */
   const regionMap = {
+    displayNames: new URLSearchParams(initialSearch).get('mapLabels') === 'short' ? displayNames : undefined,
     geography: {
       world: {
         'region-dept': {

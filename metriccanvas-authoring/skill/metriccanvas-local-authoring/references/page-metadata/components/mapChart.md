@@ -59,6 +59,8 @@ Region 地图可从集成应用的 `regionMap.geography` 读取公共地理资�
 
 `pointLabel: "nameAndValue"` 在散点名称后附上使用 `valueField` 格式的加粗指标值。值为空或尚未就绪时只显示名称。散点的数据身份、授权区域选择和固定摘要规则保持原样。合成示例 `/pages/ioc-region-map-demo`，完整四行见 `/pages/contract-business-overview`。
 
+集成应用可以在 Embed 挂载参数中传入 `regionMap.displayNames`，例如 `{ "region-dept": {"中国地区部":"中国区"}, "office": {"德国代表处":"德国"} }`。组内键取原组织业务值。命中的显示名仅用于 Region 地图的散点标签和对应数据行的悬浮标题。缺省、空白或没有命中时使用原名称。页头候选、明细表和点击回写继续使用已有字段。合成示例 `/pages/ioc-region-map-demo?mapLabels=short` 可观察特意指定的「中国区」和简称缺省回退。
+
 有稳定组织行和位置字段时，地图可以用本轮[渐进数据](../data-sources.md#progressive-map-data)先显示点位，再随折扣和其他指标返回补齐着色、标签和提示。
 
 ## 查阅方式
