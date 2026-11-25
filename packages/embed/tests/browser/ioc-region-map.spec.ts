@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { expect, test, type Page } from '@playwright/test';
 import { chooseTree } from './selection-actions';
 
@@ -43,4 +44,17 @@ test('global 宿主可丢弃过期视口，并在无资料时继续绘制', asyn
     { level: 'region-dept', value: '拉美地区部', basemap: 'world', aborted: false }
   ]);
   await expect(page.locator('[data-component="regional-overview/regional-map"] canvas')).toBeVisible();
+});
+
+
+test('正式合同商务页从代表处 URL 恢复，按授权父级选择中国分区', async ({ page }) => {
+  const document = JSON.parse(readFileSync(new URL('../../../../pages/business/dashboard/ioc/commercial/contract-business-overview.json',import.meta.url),'utf8'));
+  await page.route('**/pages/ioc-region-map-demo.json', route => route.fulfill({json:document}));
+  await page.goto(example + '?rep-office=' + encodeURIComponent('上海代表处'));
+  const header = page.locator('[data-filter-id="region"]');
+  await expect(header.getByRole('button',{name:'区域',exact:true})).toHaveText('上海代表处');
+  await expect(page.locator('[data-component="overview-content/china-map"] canvas')).toBeVisible();
+  await expect(page.locator('[data-component="overview-content/regional-map"]')).toHaveCount(0);
+  await chooseTree(header,'全球');
+  await expect(page.locator('[data-component="overview-content/world-map"] canvas')).toBeVisible();
 });

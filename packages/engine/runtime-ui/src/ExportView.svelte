@@ -1,5 +1,6 @@
 <svelte:options css="injected" />
 <script lang="ts">
+  import {REGION_MAP_CONTEXT,type RegionMapContext} from './region-map';
   import {compilePresentation} from '../../runtime/src/presentation';
   import {PRESENTATION_CONTEXT} from './presentation-context';
   import { chartOptionPaths } from '@metriccanvas/page/internal';
@@ -22,6 +23,11 @@
   let {state:inputState,width,padding,gap,scale=2}: {state:ExportRenderState;width:number;padding:string;gap:string;scale?:number}=$props();
   const state=$derived({...inputState,page:projectFieldSelections({...inputState.page,detailViews:undefined},inputState.filters)});
   const presentation=$derived(compilePresentation(state.page).evaluate({filters:state.filters,filterRevision:state.filterRevision,displaySnapshot:state.displaySnapshot}));
+  const frozenMap = $derived({geography:state.geography});
+  setContext<RegionMapContext>(REGION_MAP_CONTEXT, {
+    adapter:()=>frozenMap, overrides:()=>state.page.mapOverrides, selection:()=>state.regionSelection,
+    frozenViewport:key=>state.viewports?.get(key)
+  });
   setContext(PRESENTATION_CONTEXT,()=>presentation);
   setContext<SourceFilterReader>(SOURCE_FILTER_CONTEXT,id=>{
     const declaration=state.page.filters?.find(filter=>filter.id===id);

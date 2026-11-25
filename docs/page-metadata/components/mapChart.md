@@ -14,9 +14,22 @@ nameMap 的方向是数据地名 → 底图区域名，例如 {"中国":"China"}
 
 集成应用启用 Region 地图适配后，`hierarchyFilter: "region"` 的地图可按已选地区部或代表处聚焦。底图继续由 `map` 或 `levelMaps` 决定；视口缺失时使用该底图默认视角。「全球」使用默认视角。
 
-地区部地图可用 `actions.writeFilter` 指定 Region 和目标层级。代表处地图使用 `hierarchyFilter`、`parentField`、`codeField`，点击按当前授权候选核对组织名和父地区部，再走 IOC 页头选择。解绑的行可保留在表格。地图和列表可引用同一数据源，`nameMap` 负责底图地名匹配，查询字段继续用 `levelQueryFields`。页面配置沿用现有字段。
+地区部地图可用 `actions.writeFilter` 指定 Region 和目标层级。代表处地图使用 `hierarchyFilter`、`parentField`、`codeField`，点击按当前授权候选核对组织名和父地区部，再走 IOC 页头选择。解绑的行可保留在表格。地图和列表可引用同一数据源，`nameMap` 负责底图地名匹配，查询字段继续用 `levelQueryFields`。
 
 合成场景 `/pages/ioc-region-map-demo`。集成应用通过公开的 Embed `regionMap` 输入提供资料。
+
+<a id="map-geography"></a>
+## 组织地图地理资料（6.139）
+
+Region 地图可从集成应用的 `regionMap.geography` 读取公共地理资料。页面根级可选 `mapOverrides` 使用相同结构。两者按实际底图（world/china）、组织层级（region-dept/office）、候选业务值三级查找。例如：
+
+```json
+{"mapOverrides":{"world":{"region-dept":{"欧洲地区部":{"viewport":{"zoom":6.4}}}}}}
+```
+
+地区部图通过写入 region 的 action.level 识别行层级，代表处图通过 hierarchyFilter=region、codeField 和 parentField 识别。point 可给 `{"lngLat":[21,52.13]}` 或 `{"feature":"Germany"}`。匹配顺序为页面 point、组件 nameMap、公共 point、业务值同名底图要素。features 是当前行指标着色的底图要素名数组，可独立于散点覆盖；空数组清除着色。共享要素归属有歧义时使用原始散点选择组织。viewport.center（WGS84 经纬度）和 zoom（正数）逐字段叠加到已有 resolveViewport 回执，优先级为页面、公共资料、回执。数组和点位整体替换。地区部全球汇总点和选中该地区部时的镜头分别配置。匹配失败只跳过对应散点。
+
+合同商务总览的全球/空选择显示地区部行。地区部和代表处的中国及海外分区通过现有展示事实 regionDepartment 区分，集成应用从授权树派生。地图和表格绑定同一数据源。合成示例 `/pages/ioc-region-map-demo`。
 
 ## 查阅方式
 

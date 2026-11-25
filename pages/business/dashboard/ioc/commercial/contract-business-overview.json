@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.138",
+  "schemaVersion": "6.139",
   "id": "contract-business-overview",
   "layout": "dashboard",
   "meta": {
@@ -32,7 +32,8 @@
           "role": "measure",
           "nullable": true,
           "queryField": "净商务折扣（原价）",
-          "defaultFormat": "percent-1"
+          "defaultFormat": "percent-1",
+          "metricCode": "ZB0000942"
         },
         "discount-yoy": {
           "type": "number",
@@ -111,7 +112,8 @@
           "role": "measure",
           "nullable": true,
           "queryField": "框架执行率",
-          "defaultFormat": "percent-1"
+          "defaultFormat": "percent-1",
+          "metricCode": "ZB0003141"
         },
         "framework-reached": {
           "type": "number",
@@ -125,7 +127,8 @@
           "nullable": true,
           "currency": "CNY",
           "queryField": "框架目标消费金额",
-          "defaultFormat": "cny-adaptive"
+          "defaultFormat": "cny-adaptive",
+          "metricCode": "ZB0005604"
         },
         "framework-unreached": {
           "type": "money",
@@ -187,15 +190,143 @@
     },
     "margin-card-summary": {
       "fields": {
+        "settlement-rate": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true,
+          "queryField": "区域结算价毛利率(付费口径)",
+          "defaultFormat": "percent-1"
+        },
+        "calc-rate": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true,
+          "defaultFormat": "percent-1"
+        },
         "margin-gap": {
           "type": "number",
           "role": "measure",
-          "nullable": true
+          "nullable": true,
+          "metricCode": "ZB0000946",
+          "defaultFormat": "points-1-signed"
         }
       },
       "source": {
-        "type": "inline",
-        "rows": []
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [],
+                "output_metrics": [
+                  "区域结算价毛利率(付费口径)"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": true
+                  },
+                  "dims": [
+                    {
+                      "dim_name": "子业务类型",
+                      "dim_value_list": [
+                        "公网REGION"
+                      ]
+                    }
+                  ],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "geo": "geo_pc_code",
+                "region-dept": "地区部",
+                "office": "代表处"
+              }
+            },
+            "mtime": {
+              "target": "time"
+            }
+          }
+        }
+      },
+      "compute": [
+        {
+          "op": "joinAggregate",
+          "source": "margin-calc",
+          "keys": [],
+          "values": [
+            {
+              "field": "calc-rate",
+              "output": "calc-rate",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "delta",
+          "minuend": "settlement-rate",
+          "subtrahend": "calc-rate",
+          "output": "margin-gap"
+        }
+      ]
+    },
+    "margin-calc": {
+      "fields": {
+        "calc-rate": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true,
+          "queryField": "测算销毛率",
+          "defaultFormat": "percent-1"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [],
+                "output_metrics": [
+                  "测算销毛率"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": true
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "geo": "geo_pc_code",
+                "region-dept": "地区部",
+                "office": "代表处"
+              }
+            },
+            "mtime": {
+              "target": "time"
+            }
+          }
+        }
       }
     },
     "closure-card-summary": {
@@ -204,7 +335,8 @@
           "type": "number",
           "role": "measure",
           "nullable": true,
-          "queryField": "决策闭环任务总数(投标-商务-合同)"
+          "queryField": "决策闭环任务总数(投标-商务-合同)",
+          "metricCode": "ZB0001417"
         },
         "closed-count": {
           "type": "number",
@@ -222,7 +354,8 @@
           "type": "number",
           "role": "measure",
           "nullable": true,
-          "defaultFormat": "percent-1"
+          "defaultFormat": "percent-1",
+          "metricCode": "ZB0001419"
         },
         "unfulfilled-rate": {
           "type": "number",
@@ -298,13 +431,15 @@
           "role": "measure",
           "nullable": true,
           "queryField": "重大高风险合同率",
-          "defaultFormat": "percent-1"
+          "defaultFormat": "percent-1",
+          "metricCode": "ZB0006441"
         },
         "contract-count": {
           "type": "number",
           "role": "measure",
           "nullable": true,
-          "queryField": "合同总数"
+          "queryField": "合同总数",
+          "metricCode": "ZB0001359"
         }
       },
       "source": {
@@ -353,12 +488,49 @@
         "sdt": {
           "type": "number",
           "role": "measure",
-          "nullable": true
+          "nullable": true,
+          "queryField": "商审SDT平均决策时长",
+          "metricCode": "ZB0001971"
         }
       },
       "source": {
-        "type": "inline",
-        "rows": []
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [],
+                "output_metrics": [
+                  "商审SDT平均决策时长"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": true
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "geo": "geo_pc_code",
+                "region-dept": "地区部",
+                "office": "代表处"
+              }
+            },
+            "mtime": {
+              "target": "time"
+            }
+          }
+        }
       }
     },
     "regions": {
@@ -415,14 +587,42 @@
           "type": "number",
           "role": "measure",
           "nullable": true,
-          "defaultFormat": "percent-1"
+          "defaultFormat": "percent-1",
+          "metricCode": "ZB0001419"
         },
         "high-risk-rate": {
           "type": "number",
           "role": "measure",
           "nullable": true,
           "queryField": "重大高风险合同率",
+          "defaultFormat": "percent-1",
+          "metricCode": "ZB0006441"
+        },
+        "sdt-duration": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true,
+          "queryField": "商审SDT平均决策时长",
+          "defaultFormat": "number-1"
+        },
+        "settlement-rate": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true,
           "defaultFormat": "percent-1"
+        },
+        "calc-rate": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true,
+          "defaultFormat": "percent-1"
+        },
+        "margin-gap": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true,
+          "metricCode": "ZB0000946",
+          "defaultFormat": "points-1-signed"
         }
       },
       "source": {
@@ -440,7 +640,8 @@
                   "框架执行率",
                   "已闭环任务数(投标-商务-合同)",
                   "决策闭环任务总数(投标-商务-合同)",
-                  "重大高风险合同率"
+                  "重大高风险合同率",
+                  "商审SDT平均决策时长"
                 ],
                 "filter": {
                   "time": {
@@ -510,6 +711,48 @@
           "output": "closed-rate",
           "onZeroDenominator": "null",
           "scale": 100
+        },
+        {
+          "op": "joinAggregate",
+          "source": "regions-margin-settlement",
+          "keys": [
+            {
+              "local": "org-key",
+              "foreign": "org-key"
+            }
+          ],
+          "values": [
+            {
+              "field": "settlement-rate",
+              "output": "settlement-rate",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "joinAggregate",
+          "source": "regions-margin-calc",
+          "keys": [
+            {
+              "local": "org-key",
+              "foreign": "org-key"
+            }
+          ],
+          "values": [
+            {
+              "field": "calc-rate",
+              "output": "calc-rate",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "delta",
+          "minuend": "settlement-rate",
+          "subtrahend": "calc-rate",
+          "output": "margin-gap"
         }
       ]
     },
@@ -567,19 +810,47 @@
           "type": "number",
           "role": "measure",
           "nullable": true,
-          "defaultFormat": "percent-1"
+          "defaultFormat": "percent-1",
+          "metricCode": "ZB0001419"
         },
         "high-risk-rate": {
           "type": "number",
           "role": "measure",
           "nullable": true,
           "queryField": "重大高风险合同率",
-          "defaultFormat": "percent-1"
+          "defaultFormat": "percent-1",
+          "metricCode": "ZB0006441"
+        },
+        "sdt-duration": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true,
+          "queryField": "商审SDT平均决策时长",
+          "defaultFormat": "number-1"
         },
         "region-key": {
           "type": "string",
           "role": "dimension",
           "queryField": "地区部"
+        },
+        "settlement-rate": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true,
+          "defaultFormat": "percent-1"
+        },
+        "calc-rate": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true,
+          "defaultFormat": "percent-1"
+        },
+        "margin-gap": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true,
+          "metricCode": "ZB0000946",
+          "defaultFormat": "points-1-signed"
         }
       },
       "source": {
@@ -598,7 +869,8 @@
                   "框架执行率",
                   "已闭环任务数(投标-商务-合同)",
                   "决策闭环任务总数(投标-商务-合同)",
-                  "重大高风险合同率"
+                  "重大高风险合同率",
+                  "商审SDT平均决策时长"
                 ],
                 "filter": {
                   "time": {
@@ -668,6 +940,48 @@
           "output": "closed-rate",
           "onZeroDenominator": "null",
           "scale": 100
+        },
+        {
+          "op": "joinAggregate",
+          "source": "offices-margin-settlement",
+          "keys": [
+            {
+              "local": "org-key",
+              "foreign": "org-key"
+            }
+          ],
+          "values": [
+            {
+              "field": "settlement-rate",
+              "output": "settlement-rate",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "joinAggregate",
+          "source": "offices-margin-calc",
+          "keys": [
+            {
+              "local": "org-key",
+              "foreign": "org-key"
+            }
+          ],
+          "values": [
+            {
+              "field": "calc-rate",
+              "output": "calc-rate",
+              "aggregate": "unique"
+            }
+          ],
+          "onMissing": "null"
+        },
+        {
+          "op": "delta",
+          "minuend": "settlement-rate",
+          "subtrahend": "calc-rate",
+          "output": "margin-gap"
         }
       ]
     },
@@ -868,6 +1182,260 @@
           }
         }
       }
+    },
+    "regions-margin-settlement": {
+      "fields": {
+        "org-key": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "地区部"
+        },
+        "settlement-rate": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true,
+          "queryField": "区域结算价毛利率(付费口径)",
+          "defaultFormat": "percent-1"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "地区部"
+                ],
+                "output_metrics": [
+                  "区域结算价毛利率(付费口径)"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": true
+                  },
+                  "dims": [
+                    {
+                      "dim_name": "子业务类型",
+                      "dim_value_list": [
+                        "公网REGION"
+                      ]
+                    }
+                  ],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "geo": "geo_pc_code",
+                "region-dept": "地区部",
+                "office": "代表处"
+              }
+            },
+            "mtime": {
+              "target": "time"
+            }
+          }
+        }
+      }
+    },
+    "regions-margin-calc": {
+      "fields": {
+        "org-key": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "地区部"
+        },
+        "calc-rate": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true,
+          "queryField": "测算销毛率",
+          "defaultFormat": "percent-1"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "地区部"
+                ],
+                "output_metrics": [
+                  "测算销毛率"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": true
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "geo": "geo_pc_code",
+                "region-dept": "地区部",
+                "office": "代表处"
+              }
+            },
+            "mtime": {
+              "target": "time"
+            }
+          }
+        }
+      }
+    },
+    "offices-margin-settlement": {
+      "fields": {
+        "org-key": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "代表处"
+        },
+        "region-key": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "地区部"
+        },
+        "settlement-rate": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true,
+          "queryField": "区域结算价毛利率(付费口径)",
+          "defaultFormat": "percent-1"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "代表处",
+                  "地区部"
+                ],
+                "output_metrics": [
+                  "区域结算价毛利率(付费口径)"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": true
+                  },
+                  "dims": [
+                    {
+                      "dim_name": "子业务类型",
+                      "dim_value_list": [
+                        "公网REGION"
+                      ]
+                    }
+                  ],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "geo": "geo_pc_code",
+                "region-dept": "地区部",
+                "office": "代表处"
+              }
+            },
+            "mtime": {
+              "target": "time"
+            }
+          }
+        }
+      }
+    },
+    "offices-margin-calc": {
+      "fields": {
+        "org-key": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "代表处"
+        },
+        "region-key": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "地区部"
+        },
+        "calc-rate": {
+          "type": "number",
+          "role": "measure",
+          "nullable": true,
+          "queryField": "测算销毛率",
+          "defaultFormat": "percent-1"
+        }
+      },
+      "source": {
+        "type": "query",
+        "resultScope": "complete",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "代表处",
+                  "地区部"
+                ],
+                "output_metrics": [
+                  "测算销毛率"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": true
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "geo": "geo_pc_code",
+                "region-dept": "地区部",
+                "office": "代表处"
+              }
+            },
+            "mtime": {
+              "target": "time"
+            }
+          }
+        }
+      }
     }
   },
   "sections": [
@@ -905,17 +1473,114 @@
       ]
     },
     {
-      "id": "global-overview",
+      "id": "overview-content",
       "container": "plain",
       "visibleWhen": {
-        "filter": "region",
-        "part": "level",
-        "op": "eq",
-        "value": "geo"
+        "any": [
+          {
+            "any": [
+              {
+                "filter": "region",
+                "part": "level",
+                "op": "eq",
+                "value": "geo"
+              },
+              {
+                "filter": "region",
+                "part": "values",
+                "op": "isEmpty"
+              },
+              {
+                "filter": "region",
+                "part": "values",
+                "op": "containsAny",
+                "values": [
+                  "全球"
+                ]
+              }
+            ]
+          },
+          {
+            "all": [
+              {
+                "not": {
+                  "any": [
+                    {
+                      "filter": "region",
+                      "part": "level",
+                      "op": "eq",
+                      "value": "geo"
+                    },
+                    {
+                      "filter": "region",
+                      "part": "values",
+                      "op": "isEmpty"
+                    },
+                    {
+                      "filter": "region",
+                      "part": "values",
+                      "op": "containsAny",
+                      "values": [
+                        "全球"
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "fact": "regionDepartment",
+                "op": "isNotNull"
+              },
+              {
+                "fact": "regionDepartment",
+                "op": "eq",
+                "value": "中国地区部"
+              }
+            ]
+          },
+          {
+            "all": [
+              {
+                "not": {
+                  "any": [
+                    {
+                      "filter": "region",
+                      "part": "level",
+                      "op": "eq",
+                      "value": "geo"
+                    },
+                    {
+                      "filter": "region",
+                      "part": "values",
+                      "op": "isEmpty"
+                    },
+                    {
+                      "filter": "region",
+                      "part": "values",
+                      "op": "containsAny",
+                      "values": [
+                        "全球"
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "fact": "regionDepartment",
+                "op": "isNotNull"
+              },
+              {
+                "fact": "regionDepartment",
+                "op": "ne",
+                "value": "中国地区部"
+              }
+            ]
+          }
+        ]
       },
       "components": [
         {
-          "id": "discount-card-global-overview",
+          "id": "discount-card-overview",
           "type": "metricCard",
           "layout": {
             "span": 2
@@ -979,7 +1644,8 @@
                       "negative": "green"
                     }
                   }
-                ]
+                ],
+                "showDefinition": true
               }
             ],
             "actions": [
@@ -1065,7 +1731,7 @@
           }
         },
         {
-          "id": "framework-card-global-overview",
+          "id": "framework-card-overview",
           "type": "metricCard",
           "layout": {
             "span": 2
@@ -1084,7 +1750,8 @@
                   "format": "percent-1",
                   "missingText": "--"
                 },
-                "link": true
+                "link": true,
+                "showDefinition": true
               }
             ],
             "secondaryRows": [
@@ -1104,7 +1771,8 @@
                   "field": "framework-target",
                   "format": "cny-adaptive",
                   "missingText": "--"
-                }
+                },
+                "showDefinition": true
               }
             ],
             "actions": [
@@ -1190,7 +1858,7 @@
           }
         },
         {
-          "id": "margin-card-global-overview",
+          "id": "margin-card-overview",
           "type": "metricCard",
           "layout": {
             "span": 2
@@ -1209,6 +1877,7 @@
                   "format": "points-1-signed",
                   "missingText": "--"
                 },
+                "showDefinition": true,
                 "colorRule": {
                   "mode": "sign",
                   "positive": "green",
@@ -1219,7 +1888,7 @@
           }
         },
         {
-          "id": "closure-card-global-overview",
+          "id": "closure-card-overview",
           "type": "metricCard",
           "layout": {
             "span": 2
@@ -1238,7 +1907,8 @@
                   "format": "percent-1",
                   "missingText": "--"
                 },
-                "link": true
+                "link": true,
+                "showDefinition": true
               }
             ],
             "secondaryRows": [
@@ -1249,7 +1919,8 @@
                   "field": "task-count",
                   "format": "number-grouped",
                   "missingText": "--"
-                }
+                },
+                "showDefinition": true
               },
               {
                 "label": "无法落实率",
@@ -1349,7 +2020,7 @@
           }
         },
         {
-          "id": "risk-card-global-overview",
+          "id": "risk-card-overview",
           "type": "metricCard",
           "layout": {
             "span": 2
@@ -1368,7 +2039,8 @@
                   "format": "percent-1",
                   "missingText": "--"
                 },
-                "link": true
+                "link": true,
+                "showDefinition": true
               }
             ],
             "secondaryRows": [
@@ -1379,7 +2051,8 @@
                   "field": "contract-count",
                   "format": "number-grouped",
                   "missingText": "--"
-                }
+                },
+                "showDefinition": true
               }
             ],
             "actions": [
@@ -1470,7 +2143,7 @@
           }
         },
         {
-          "id": "sdt-card-global-overview",
+          "id": "sdt-card-overview",
           "type": "metricCard",
           "layout": {
             "span": 2
@@ -1490,7 +2163,8 @@
                   "missingText": "--"
                 },
                 "link": true,
-                "unit": "天"
+                "unit": "天",
+                "showDefinition": true
               }
             ],
             "actions": [
@@ -1616,32 +2290,6 @@
               "format": "percent-1",
               "missingText": "--"
             },
-            "nameMap": {
-              "中国区": "China",
-              "欧洲": "Germany",
-              "亚太": "Indonesia",
-              "拉美": "Brazil",
-              "南部非洲": "South Africa",
-              "北部非洲": "Egypt",
-              "中东中亚": "Turkey",
-              "巴基斯坦": "Pakistan",
-              "海湾多国": "United Arab Emirates",
-              "沙特": "Saudi Arabia",
-              "伊拉克": "Iraq",
-              "中亚多国": "Kazakhstan",
-              "欧洲地区部": "Germany",
-              "中东中亚地区部": "Turkey",
-              "中国地区部": "China",
-              "南部非洲地区部": "South Africa",
-              "拉美地区部": "Brazil",
-              "亚太地区部": "Indonesia",
-              "北部非洲地区部": "Egypt",
-              "巴基斯坦代表处": "Pakistan",
-              "海湾多国管理部": "United Arab Emirates",
-              "沙特代表处": "Saudi Arabia",
-              "伊拉克代表处": "Iraq",
-              "中亚多国管理部": "Kazakhstan"
-            },
             "tooltipFields": [
               {
                 "label": "折扣同比",
@@ -1689,6 +2337,273 @@
               }
             ],
             "variant": "regionalOverview"
+          },
+          "visibleWhen": {
+            "any": [
+              {
+                "filter": "region",
+                "part": "level",
+                "op": "eq",
+                "value": "geo"
+              },
+              {
+                "filter": "region",
+                "part": "values",
+                "op": "isEmpty"
+              },
+              {
+                "filter": "region",
+                "part": "values",
+                "op": "containsAny",
+                "values": [
+                  "全球"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "china-map",
+          "type": "mapChart",
+          "layout": {
+            "span": 9
+          },
+          "data": {
+            "main": "offices"
+          },
+          "props": {
+            "map": "china",
+            "scatter": "point",
+            "legend": {
+              "title": "净商务折扣",
+              "bands": [
+                {
+                  "label": "30%以下",
+                  "from": 0
+                },
+                {
+                  "label": "30%–40%",
+                  "from": 30
+                },
+                {
+                  "label": "40%–50%",
+                  "from": 40
+                },
+                {
+                  "label": "50%以上",
+                  "from": 50
+                }
+              ]
+            },
+            "nameField": "org-key",
+            "valueField": {
+              "data": "main",
+              "field": "discount",
+              "format": "percent-1",
+              "missingText": "--"
+            },
+            "tooltipFields": [
+              {
+                "label": "折扣同比",
+                "field": {
+                  "data": "main",
+                  "field": "discount-yoy",
+                  "format": "points-1-signed",
+                  "missingText": "--"
+                }
+              },
+              {
+                "label": "净付费金额",
+                "field": {
+                  "data": "main",
+                  "field": "discount-amount",
+                  "format": "cny-adaptive",
+                  "missingText": "--"
+                }
+              },
+              {
+                "label": "金额同比",
+                "field": {
+                  "data": "main",
+                  "field": "payment-yoy",
+                  "format": "percent-1",
+                  "missingText": "--"
+                }
+              },
+              {
+                "label": "框架执行率",
+                "field": {
+                  "data": "main",
+                  "field": "framework-rate",
+                  "format": "percent-1",
+                  "missingText": "--"
+                }
+              }
+            ],
+            "hierarchyFilter": "region",
+            "parentField": "region-key",
+            "codeField": "org-key",
+            "variant": "regionalOverview"
+          },
+          "visibleWhen": {
+            "all": [
+              {
+                "not": {
+                  "any": [
+                    {
+                      "filter": "region",
+                      "part": "level",
+                      "op": "eq",
+                      "value": "geo"
+                    },
+                    {
+                      "filter": "region",
+                      "part": "values",
+                      "op": "isEmpty"
+                    },
+                    {
+                      "filter": "region",
+                      "part": "values",
+                      "op": "containsAny",
+                      "values": [
+                        "全球"
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "fact": "regionDepartment",
+                "op": "isNotNull"
+              },
+              {
+                "fact": "regionDepartment",
+                "op": "eq",
+                "value": "中国地区部"
+              }
+            ]
+          }
+        },
+        {
+          "id": "regional-map",
+          "type": "mapChart",
+          "layout": {
+            "span": 9
+          },
+          "data": {
+            "main": "offices"
+          },
+          "props": {
+            "map": "world",
+            "scatter": "point",
+            "legend": {
+              "title": "净商务折扣",
+              "bands": [
+                {
+                  "label": "30%以下",
+                  "from": 0
+                },
+                {
+                  "label": "30%–40%",
+                  "from": 30
+                },
+                {
+                  "label": "40%–50%",
+                  "from": 40
+                },
+                {
+                  "label": "50%以上",
+                  "from": 50
+                }
+              ]
+            },
+            "nameField": "org-key",
+            "valueField": {
+              "data": "main",
+              "field": "discount",
+              "format": "percent-1",
+              "missingText": "--"
+            },
+            "tooltipFields": [
+              {
+                "label": "折扣同比",
+                "field": {
+                  "data": "main",
+                  "field": "discount-yoy",
+                  "format": "points-1-signed",
+                  "missingText": "--"
+                }
+              },
+              {
+                "label": "净付费金额",
+                "field": {
+                  "data": "main",
+                  "field": "discount-amount",
+                  "format": "cny-adaptive",
+                  "missingText": "--"
+                }
+              },
+              {
+                "label": "金额同比",
+                "field": {
+                  "data": "main",
+                  "field": "payment-yoy",
+                  "format": "percent-1",
+                  "missingText": "--"
+                }
+              },
+              {
+                "label": "框架执行率",
+                "field": {
+                  "data": "main",
+                  "field": "framework-rate",
+                  "format": "percent-1",
+                  "missingText": "--"
+                }
+              }
+            ],
+            "hierarchyFilter": "region",
+            "parentField": "region-key",
+            "codeField": "org-key",
+            "variant": "regionalOverview"
+          },
+          "visibleWhen": {
+            "all": [
+              {
+                "not": {
+                  "any": [
+                    {
+                      "filter": "region",
+                      "part": "level",
+                      "op": "eq",
+                      "value": "geo"
+                    },
+                    {
+                      "filter": "region",
+                      "part": "values",
+                      "op": "isEmpty"
+                    },
+                    {
+                      "filter": "region",
+                      "part": "values",
+                      "op": "containsAny",
+                      "values": [
+                        "全球"
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "fact": "regionDepartment",
+                "op": "isNotNull"
+              },
+              {
+                "fact": "regionDepartment",
+                "op": "ne",
+                "value": "中国地区部"
+              }
+            ]
           }
         },
         {
@@ -1736,6 +2651,23 @@
                 "align": "right"
               },
               {
+                "title": "测算销毛与核算销毛偏差",
+                "field": {
+                  "data": "main",
+                  "field": "margin-gap",
+                  "format": "points-1-signed",
+                  "missingText": "--"
+                },
+                "colorRule": {
+                  "mode": "sign",
+                  "positive": "green",
+                  "negative": "red"
+                },
+                "width": 150,
+                "sortable": true,
+                "align": "right"
+              },
+              {
                 "title": "框架执行率",
                 "field": {
                   "data": "main",
@@ -1770,823 +2702,47 @@
                 "width": 104,
                 "sortable": true,
                 "align": "right"
+              },
+              {
+                "title": "代表处SDT决策时长",
+                "field": {
+                  "data": "main",
+                  "field": "sdt-duration",
+                  "format": "number-1",
+                  "missingText": "--"
+                },
+                "unit": "天",
+                "width": 104,
+                "sortable": true,
+                "align": "right"
               }
             ],
             "subtitle": "",
             "title": "地区部指标明细",
             "expand": true
-          }
-        }
-      ],
-      "columnTracks": [
-        2,
-        3,
-        2,
-        3,
-        2,
-        3,
-        2,
-        3,
-        2,
-        3,
-        2,
-        3
-      ]
-    },
-    {
-      "id": "china-overview",
-      "container": "plain",
-      "visibleWhen": {
-        "all": [
-          {
-            "filter": "region",
-            "part": "level",
-            "op": "in",
-            "values": [
-              "region-dept",
-              "office"
-            ]
           },
-          {
-            "filter": "region",
-            "part": "values",
-            "op": "containsAny",
-            "values": [
-              "中国地区部",
-              "深圳办事处",
-              "北京代表处",
-              "江苏代表处"
-            ]
-          }
-        ]
-      },
-      "components": [
-        {
-          "id": "discount-card-china-overview",
-          "type": "metricCard",
-          "layout": {
-            "span": 2
-          },
-          "data": {
-            "main": "discount-card-summary"
-          },
-          "props": {
-            "variant": "primaryDetail",
-            "rows": [
+          "visibleWhen": {
+            "any": [
               {
-                "label": "净商务折扣（公网region）",
-                "valueField": {
-                  "data": "main",
-                  "field": "discount",
-                  "format": "percent-1",
-                  "missingText": "--"
-                },
-                "link": true,
-                "changes": [
-                  {
-                    "label": "同比",
-                    "visibleWhen": {
-                      "filter": "mtime",
-                      "part": "mode",
-                      "op": "in",
-                      "values": [
-                        "year",
-                        "quarter"
-                      ]
-                    },
-                    "field": {
-                      "data": "main",
-                      "field": "discount-yoy",
-                      "format": "points-1-signed",
-                      "missingText": "--%"
-                    },
-                    "colorRule": {
-                      "mode": "sign",
-                      "positive": "red",
-                      "negative": "green"
-                    }
-                  },
-                  {
-                    "label": "环比",
-                    "visibleWhen": {
-                      "filter": "mtime",
-                      "part": "mode",
-                      "op": "eq",
-                      "value": "month"
-                    },
-                    "field": {
-                      "data": "main",
-                      "field": "discount-mom",
-                      "format": "points-1-signed",
-                      "missingText": "--%"
-                    },
-                    "colorRule": {
-                      "mode": "sign",
-                      "positive": "red",
-                      "negative": "green"
-                    }
-                  }
+                "filter": "region",
+                "part": "level",
+                "op": "eq",
+                "value": "geo"
+              },
+              {
+                "filter": "region",
+                "part": "values",
+                "op": "isEmpty"
+              },
+              {
+                "filter": "region",
+                "part": "values",
+                "op": "containsAny",
+                "values": [
+                  "全球"
                 ]
               }
-            ],
-            "actions": [
-              {
-                "on": "click",
-                "enabledWhen": {
-                  "filter": "region",
-                  "part": "level",
-                  "op": "eq",
-                  "value": "geo"
-                },
-                "navigate": {
-                  "href": "/manage-contract-business/business-result-metrics",
-                  "query": {
-                    "mtime": {
-                      "source": "filter",
-                      "id": "mtime",
-                      "part": "value"
-                    },
-                    "region": {
-                      "source": "filter",
-                      "id": "region"
-                    },
-                    "region.level": {
-                      "source": "filter",
-                      "id": "region",
-                      "part": "level"
-                    }
-                  }
-                }
-              },
-              {
-                "on": "click",
-                "enabledWhen": {
-                  "filter": "region",
-                  "part": "level",
-                  "op": "eq",
-                  "value": "region-dept"
-                },
-                "navigate": {
-                  "href": "/manage-contract-business/business-result-metrics",
-                  "query": {
-                    "mtime": {
-                      "source": "filter",
-                      "id": "mtime",
-                      "part": "value"
-                    },
-                    "region-dept": {
-                      "source": "filter",
-                      "id": "region"
-                    }
-                  }
-                }
-              },
-              {
-                "on": "click",
-                "enabledWhen": {
-                  "filter": "region",
-                  "part": "level",
-                  "op": "eq",
-                  "value": "office"
-                },
-                "navigate": {
-                  "href": "/operationmap/manage-contract-business/rep-business-result?business-result-tab=net-discount-detail",
-                  "query": {
-                    "mtime": {
-                      "source": "filter",
-                      "id": "mtime",
-                      "part": "value"
-                    },
-                    "rep-office": {
-                      "source": "filter",
-                      "id": "region"
-                    },
-                    "rep-office-name": {
-                      "source": "filter",
-                      "id": "region"
-                    }
-                  }
-                }
-              }
             ]
-          }
-        },
-        {
-          "id": "framework-card-china-overview",
-          "type": "metricCard",
-          "layout": {
-            "span": 2
-          },
-          "data": {
-            "main": "framework-card-summary"
-          },
-          "props": {
-            "variant": "primaryDetail",
-            "rows": [
-              {
-                "label": "框架执行率",
-                "valueField": {
-                  "data": "main",
-                  "field": "framework-rate",
-                  "format": "percent-1",
-                  "missingText": "--"
-                },
-                "link": true
-              }
-            ],
-            "secondaryRows": [
-              {
-                "label": "框架未达成金额",
-                "valueField": {
-                  "data": "main",
-                  "field": "framework-unreached",
-                  "format": "cny-adaptive",
-                  "missingText": "--"
-                }
-              },
-              {
-                "label": "框架总金额",
-                "valueField": {
-                  "data": "main",
-                  "field": "framework-target",
-                  "format": "cny-adaptive",
-                  "missingText": "--"
-                }
-              }
-            ],
-            "actions": [
-              {
-                "on": "click",
-                "enabledWhen": {
-                  "filter": "region",
-                  "part": "level",
-                  "op": "eq",
-                  "value": "geo"
-                },
-                "navigate": {
-                  "href": "/manage-contract-business/business-result-metrics",
-                  "query": {
-                    "mtime": {
-                      "source": "filter",
-                      "id": "mtime",
-                      "part": "value"
-                    },
-                    "region": {
-                      "source": "filter",
-                      "id": "region"
-                    },
-                    "region.level": {
-                      "source": "filter",
-                      "id": "region",
-                      "part": "level"
-                    }
-                  }
-                }
-              },
-              {
-                "on": "click",
-                "enabledWhen": {
-                  "filter": "region",
-                  "part": "level",
-                  "op": "eq",
-                  "value": "region-dept"
-                },
-                "navigate": {
-                  "href": "/manage-contract-business/business-result-metrics",
-                  "query": {
-                    "mtime": {
-                      "source": "filter",
-                      "id": "mtime",
-                      "part": "value"
-                    },
-                    "region-dept": {
-                      "source": "filter",
-                      "id": "region"
-                    }
-                  }
-                }
-              },
-              {
-                "on": "click",
-                "enabledWhen": {
-                  "filter": "region",
-                  "part": "level",
-                  "op": "eq",
-                  "value": "office"
-                },
-                "navigate": {
-                  "href": "/operationmap/manage-contract-business/rep-business-result?business-result-tab=framework-execution-detail",
-                  "query": {
-                    "mtime": {
-                      "source": "filter",
-                      "id": "mtime",
-                      "part": "value"
-                    },
-                    "rep-office": {
-                      "source": "filter",
-                      "id": "region"
-                    },
-                    "rep-office-name": {
-                      "source": "filter",
-                      "id": "region"
-                    }
-                  }
-                }
-              }
-            ]
-          }
-        },
-        {
-          "id": "margin-card-china-overview",
-          "type": "metricCard",
-          "layout": {
-            "span": 2
-          },
-          "data": {
-            "main": "margin-card-summary"
-          },
-          "props": {
-            "variant": "primaryDetail",
-            "rows": [
-              {
-                "label": "测算销毛与核算销毛偏差",
-                "valueField": {
-                  "data": "main",
-                  "field": "margin-gap",
-                  "format": "points-1-signed",
-                  "missingText": "--"
-                },
-                "colorRule": {
-                  "mode": "sign",
-                  "positive": "green",
-                  "negative": "red"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "id": "closure-card-china-overview",
-          "type": "metricCard",
-          "layout": {
-            "span": 2
-          },
-          "data": {
-            "main": "closure-card-summary"
-          },
-          "props": {
-            "variant": "primaryDetail",
-            "rows": [
-              {
-                "label": "决策意见闭环率",
-                "valueField": {
-                  "data": "main",
-                  "field": "closed-rate",
-                  "format": "percent-1",
-                  "missingText": "--"
-                },
-                "link": true
-              }
-            ],
-            "secondaryRows": [
-              {
-                "label": "决策任务总数",
-                "valueField": {
-                  "data": "main",
-                  "field": "task-count",
-                  "format": "number-grouped",
-                  "missingText": "--"
-                }
-              },
-              {
-                "label": "无法落实率",
-                "valueField": {
-                  "data": "main",
-                  "field": "unfulfilled-rate",
-                  "format": "percent-1",
-                  "missingText": "--"
-                }
-              }
-            ],
-            "actions": [
-              {
-                "on": "click",
-                "enabledWhen": {
-                  "filter": "region",
-                  "part": "level",
-                  "op": "eq",
-                  "value": "geo"
-                },
-                "navigate": {
-                  "href": "/manage-contract-business/governance-compliance?sdt-duration-site=%E5%9B%BD%E5%86%85&sdt-count-site=%E5%9B%BD%E5%86%85&biz-decision-site=%E5%9B%BD%E5%86%85&contract-decision-site=%E5%9B%BD%E5%86%85",
-                  "query": {
-                    "mtime": {
-                      "source": "filter",
-                      "id": "mtime",
-                      "part": "value"
-                    },
-                    "region": {
-                      "source": "filter",
-                      "id": "region"
-                    },
-                    "region.level": {
-                      "source": "filter",
-                      "id": "region",
-                      "part": "level"
-                    }
-                  }
-                }
-              },
-              {
-                "on": "click",
-                "enabledWhen": {
-                  "filter": "region",
-                  "part": "level",
-                  "op": "eq",
-                  "value": "region-dept"
-                },
-                "navigate": {
-                  "href": "/manage-contract-business/governance-compliance?sdt-duration-site=%E5%9B%BD%E5%86%85&sdt-count-site=%E5%9B%BD%E5%86%85&biz-decision-site=%E5%9B%BD%E5%86%85&contract-decision-site=%E5%9B%BD%E5%86%85",
-                  "query": {
-                    "mtime": {
-                      "source": "filter",
-                      "id": "mtime",
-                      "part": "value"
-                    },
-                    "region": {
-                      "source": "filter",
-                      "id": "region"
-                    },
-                    "region.level": {
-                      "source": "filter",
-                      "id": "region",
-                      "part": "level"
-                    }
-                  }
-                }
-              },
-              {
-                "on": "click",
-                "enabledWhen": {
-                  "filter": "region",
-                  "part": "level",
-                  "op": "eq",
-                  "value": "office"
-                },
-                "navigate": {
-                  "href": "/operationmap/manage-contract-business/rep-business-result?business-result-tab=decision-closure-detail",
-                  "query": {
-                    "mtime": {
-                      "source": "filter",
-                      "id": "mtime",
-                      "part": "value"
-                    },
-                    "rep-office": {
-                      "source": "filter",
-                      "id": "region"
-                    },
-                    "rep-office-name": {
-                      "source": "filter",
-                      "id": "region"
-                    }
-                  }
-                }
-              }
-            ]
-          }
-        },
-        {
-          "id": "risk-card-china-overview",
-          "type": "metricCard",
-          "layout": {
-            "span": 2
-          },
-          "data": {
-            "main": "risk-card-summary"
-          },
-          "props": {
-            "variant": "primaryDetail",
-            "rows": [
-              {
-                "label": "重大／高风险合同率",
-                "valueField": {
-                  "data": "main",
-                  "field": "high-risk-rate",
-                  "format": "percent-1",
-                  "missingText": "--"
-                },
-                "link": true
-              }
-            ],
-            "secondaryRows": [
-              {
-                "label": "合同总数",
-                "valueField": {
-                  "data": "main",
-                  "field": "contract-count",
-                  "format": "number-grouped",
-                  "missingText": "--"
-                }
-              }
-            ],
-            "actions": [
-              {
-                "on": "click",
-                "enabledWhen": {
-                  "filter": "region",
-                  "part": "level",
-                  "op": "eq",
-                  "value": "geo"
-                },
-                "navigate": {
-                  "href": "/manage-contract-business/region-authorization-norms",
-                  "query": {
-                    "mtime": {
-                      "source": "filter",
-                      "id": "mtime",
-                      "part": "value"
-                    },
-                    "region": {
-                      "source": "filter",
-                      "id": "region"
-                    },
-                    "region.level": {
-                      "source": "filter",
-                      "id": "region",
-                      "part": "level"
-                    }
-                  }
-                }
-              },
-              {
-                "on": "click",
-                "enabledWhen": {
-                  "filter": "region",
-                  "part": "level",
-                  "op": "eq",
-                  "value": "region-dept"
-                },
-                "navigate": {
-                  "href": "/manage-contract-business/region-authorization-norms",
-                  "query": {
-                    "mtime": {
-                      "source": "filter",
-                      "id": "mtime",
-                      "part": "value"
-                    },
-                    "region": {
-                      "source": "filter",
-                      "id": "region"
-                    },
-                    "region.level": {
-                      "source": "filter",
-                      "id": "region",
-                      "part": "level"
-                    }
-                  }
-                }
-              },
-              {
-                "on": "click",
-                "enabledWhen": {
-                  "filter": "region",
-                  "part": "level",
-                  "op": "eq",
-                  "value": "office"
-                },
-                "navigate": {
-                  "href": "/operationmap/manage-contract-business/rep-business-result?business-result-tab=contract-risk-detail",
-                  "query": {
-                    "mtime": {
-                      "source": "filter",
-                      "id": "mtime",
-                      "part": "value"
-                    },
-                    "rep-office": {
-                      "source": "filter",
-                      "id": "region"
-                    },
-                    "rep-office-name": {
-                      "source": "filter",
-                      "id": "region"
-                    }
-                  }
-                }
-              }
-            ]
-          }
-        },
-        {
-          "id": "sdt-card-china-overview",
-          "type": "metricCard",
-          "layout": {
-            "span": 2
-          },
-          "data": {
-            "main": "sdt-card-summary"
-          },
-          "props": {
-            "variant": "primaryDetail",
-            "rows": [
-              {
-                "label": "商务代表处SDT决策时长",
-                "valueField": {
-                  "data": "main",
-                  "field": "sdt",
-                  "format": "number-1",
-                  "missingText": "--"
-                },
-                "link": true,
-                "unit": "天"
-              }
-            ],
-            "actions": [
-              {
-                "on": "click",
-                "enabledWhen": {
-                  "filter": "region",
-                  "part": "level",
-                  "op": "eq",
-                  "value": "geo"
-                },
-                "navigate": {
-                  "href": "/manage-contract-business/governance-compliance?sdt-duration-site=%E5%9B%BD%E5%86%85&sdt-count-site=%E5%9B%BD%E5%86%85&biz-decision-site=%E5%9B%BD%E5%86%85&contract-decision-site=%E5%9B%BD%E5%86%85",
-                  "query": {
-                    "mtime": {
-                      "source": "filter",
-                      "id": "mtime",
-                      "part": "value"
-                    },
-                    "region": {
-                      "source": "filter",
-                      "id": "region"
-                    },
-                    "region.level": {
-                      "source": "filter",
-                      "id": "region",
-                      "part": "level"
-                    }
-                  }
-                }
-              },
-              {
-                "on": "click",
-                "enabledWhen": {
-                  "filter": "region",
-                  "part": "level",
-                  "op": "eq",
-                  "value": "region-dept"
-                },
-                "navigate": {
-                  "href": "/manage-contract-business/governance-compliance?sdt-duration-site=%E5%9B%BD%E5%86%85&sdt-count-site=%E5%9B%BD%E5%86%85&biz-decision-site=%E5%9B%BD%E5%86%85&contract-decision-site=%E5%9B%BD%E5%86%85",
-                  "query": {
-                    "mtime": {
-                      "source": "filter",
-                      "id": "mtime",
-                      "part": "value"
-                    },
-                    "region": {
-                      "source": "filter",
-                      "id": "region"
-                    },
-                    "region.level": {
-                      "source": "filter",
-                      "id": "region",
-                      "part": "level"
-                    }
-                  }
-                }
-              },
-              {
-                "on": "click",
-                "enabledWhen": {
-                  "filter": "region",
-                  "part": "level",
-                  "op": "eq",
-                  "value": "office"
-                },
-                "navigate": {
-                  "href": "/operationmap/manage-contract-business/rep-office-execution-efficiency",
-                  "query": {
-                    "period": {
-                      "source": "filter",
-                      "id": "mtime",
-                      "part": "value"
-                    },
-                    "rep-office-name": {
-                      "source": "filter",
-                      "id": "region"
-                    }
-                  }
-                }
-              }
-            ]
-          }
-        },
-        {
-          "id": "china-map",
-          "type": "mapChart",
-          "layout": {
-            "span": 9
-          },
-          "data": {
-            "main": "offices"
-          },
-          "props": {
-            "map": "china",
-            "scatter": "point",
-            "legend": {
-              "title": "净商务折扣",
-              "bands": [
-                {
-                  "label": "30%以下",
-                  "from": 0
-                },
-                {
-                  "label": "30%–40%",
-                  "from": 30
-                },
-                {
-                  "label": "40%–50%",
-                  "from": 40
-                },
-                {
-                  "label": "50%以上",
-                  "from": 50
-                }
-              ]
-            },
-            "nameField": "org-key",
-            "valueField": {
-              "data": "main",
-              "field": "discount",
-              "format": "percent-1",
-              "missingText": "--"
-            },
-            "nameMap": {
-              "深圳办事处": "广东省",
-              "北京代表处": "北京市",
-              "江苏代表处": "江苏省",
-              "德国代表处": "Germany",
-              "法国代表处": "France",
-              "印度尼西亚代表处": "Indonesia",
-              "泰国代表处": "Thailand",
-              "巴西代表处": "Brazil",
-              "墨西哥代表处": "Mexico",
-              "南非代表处": "South Africa",
-              "肯尼亚代表处": "Kenya",
-              "埃及代表处": "Egypt",
-              "摩洛哥代表处": "Morocco",
-              "土耳其代表处": "Turkey",
-              "阿塞拜疆代表处": "Azerbaijan",
-              "巴基斯坦代表处": "Pakistan",
-              "阿联酋代表处": "United Arab Emirates",
-              "沙特代表处": "Saudi Arabia",
-              "伊拉克代表处": "Iraq",
-              "哈萨克斯坦代表处": "Kazakhstan"
-            },
-            "tooltipFields": [
-              {
-                "label": "折扣同比",
-                "field": {
-                  "data": "main",
-                  "field": "discount-yoy",
-                  "format": "points-1-signed",
-                  "missingText": "--"
-                }
-              },
-              {
-                "label": "净付费金额",
-                "field": {
-                  "data": "main",
-                  "field": "discount-amount",
-                  "format": "cny-adaptive",
-                  "missingText": "--"
-                }
-              },
-              {
-                "label": "金额同比",
-                "field": {
-                  "data": "main",
-                  "field": "payment-yoy",
-                  "format": "percent-1",
-                  "missingText": "--"
-                }
-              },
-              {
-                "label": "框架执行率",
-                "field": {
-                  "data": "main",
-                  "field": "framework-rate",
-                  "format": "percent-1",
-                  "missingText": "--"
-                }
-              }
-            ],
-            "hierarchyFilter": "region",
-            "parentField": "region-key",
-            "codeField": "org-key",
-            "variant": "regionalOverview"
           }
         },
         {
@@ -2634,6 +2790,23 @@
                 "align": "right"
               },
               {
+                "title": "测算销毛与核算销毛偏差",
+                "field": {
+                  "data": "main",
+                  "field": "margin-gap",
+                  "format": "points-1-signed",
+                  "missingText": "--"
+                },
+                "colorRule": {
+                  "mode": "sign",
+                  "positive": "green",
+                  "negative": "red"
+                },
+                "width": 150,
+                "sortable": true,
+                "align": "right"
+              },
+              {
                 "title": "框架执行率",
                 "field": {
                   "data": "main",
@@ -2668,825 +2841,62 @@
                 "width": 104,
                 "sortable": true,
                 "align": "right"
+              },
+              {
+                "title": "代表处SDT决策时长",
+                "field": {
+                  "data": "main",
+                  "field": "sdt-duration",
+                  "format": "number-1",
+                  "missingText": "--"
+                },
+                "unit": "天",
+                "width": 104,
+                "sortable": true,
+                "align": "right"
               }
             ],
             "subtitle": "",
             "title": "代表处指标明细",
             "expand": true
-          }
-        }
-      ],
-      "columnTracks": [
-        2,
-        3,
-        2,
-        3,
-        2,
-        3,
-        2,
-        3,
-        2,
-        3,
-        2,
-        3
-      ]
-    },
-    {
-      "id": "regional-overview",
-      "container": "plain",
-      "visibleWhen": {
-        "all": [
-          {
-            "filter": "region",
-            "part": "level",
-            "op": "in",
-            "values": [
-              "region-dept",
-              "office"
-            ]
           },
-          {
-            "not": {
-              "filter": "region",
-              "part": "values",
-              "op": "containsAny",
-              "values": [
-                "中国地区部",
-                "深圳办事处",
-                "北京代表处",
-                "江苏代表处"
-              ]
-            }
-          }
-        ]
-      },
-      "components": [
-        {
-          "id": "discount-card-regional-overview",
-          "type": "metricCard",
-          "layout": {
-            "span": 2
-          },
-          "data": {
-            "main": "discount-card-summary"
-          },
-          "props": {
-            "variant": "primaryDetail",
-            "rows": [
+          "visibleWhen": {
+            "all": [
               {
-                "label": "净商务折扣（公网region）",
-                "valueField": {
-                  "data": "main",
-                  "field": "discount",
-                  "format": "percent-1",
-                  "missingText": "--"
-                },
-                "link": true,
-                "changes": [
-                  {
-                    "label": "同比",
-                    "visibleWhen": {
-                      "filter": "mtime",
-                      "part": "mode",
-                      "op": "in",
-                      "values": [
-                        "year",
-                        "quarter"
-                      ]
-                    },
-                    "field": {
-                      "data": "main",
-                      "field": "discount-yoy",
-                      "format": "points-1-signed",
-                      "missingText": "--%"
-                    },
-                    "colorRule": {
-                      "mode": "sign",
-                      "positive": "red",
-                      "negative": "green"
-                    }
-                  },
-                  {
-                    "label": "环比",
-                    "visibleWhen": {
-                      "filter": "mtime",
-                      "part": "mode",
+                "not": {
+                  "any": [
+                    {
+                      "filter": "region",
+                      "part": "level",
                       "op": "eq",
-                      "value": "month"
+                      "value": "geo"
                     },
-                    "field": {
-                      "data": "main",
-                      "field": "discount-mom",
-                      "format": "points-1-signed",
-                      "missingText": "--%"
+                    {
+                      "filter": "region",
+                      "part": "values",
+                      "op": "isEmpty"
                     },
-                    "colorRule": {
-                      "mode": "sign",
-                      "positive": "red",
-                      "negative": "green"
+                    {
+                      "filter": "region",
+                      "part": "values",
+                      "op": "containsAny",
+                      "values": [
+                        "全球"
+                      ]
                     }
-                  }
-                ]
-              }
-            ],
-            "actions": [
-              {
-                "on": "click",
-                "enabledWhen": {
-                  "filter": "region",
-                  "part": "level",
-                  "op": "eq",
-                  "value": "geo"
-                },
-                "navigate": {
-                  "href": "/manage-contract-business/business-result-metrics",
-                  "query": {
-                    "mtime": {
-                      "source": "filter",
-                      "id": "mtime",
-                      "part": "value"
-                    },
-                    "region": {
-                      "source": "filter",
-                      "id": "region"
-                    },
-                    "region.level": {
-                      "source": "filter",
-                      "id": "region",
-                      "part": "level"
-                    }
-                  }
+                  ]
                 }
               },
               {
-                "on": "click",
-                "enabledWhen": {
-                  "filter": "region",
-                  "part": "level",
-                  "op": "eq",
-                  "value": "region-dept"
-                },
-                "navigate": {
-                  "href": "/manage-contract-business/business-result-metrics",
-                  "query": {
-                    "mtime": {
-                      "source": "filter",
-                      "id": "mtime",
-                      "part": "value"
-                    },
-                    "region-dept": {
-                      "source": "filter",
-                      "id": "region"
-                    }
-                  }
-                }
+                "fact": "regionDepartment",
+                "op": "isNotNull"
               },
               {
-                "on": "click",
-                "enabledWhen": {
-                  "filter": "region",
-                  "part": "level",
-                  "op": "eq",
-                  "value": "office"
-                },
-                "navigate": {
-                  "href": "/operationmap/manage-contract-business/rep-business-result?business-result-tab=net-discount-detail",
-                  "query": {
-                    "mtime": {
-                      "source": "filter",
-                      "id": "mtime",
-                      "part": "value"
-                    },
-                    "rep-office": {
-                      "source": "filter",
-                      "id": "region"
-                    },
-                    "rep-office-name": {
-                      "source": "filter",
-                      "id": "region"
-                    }
-                  }
-                }
+                "fact": "regionDepartment",
+                "op": "eq",
+                "value": "中国地区部"
               }
             ]
-          }
-        },
-        {
-          "id": "framework-card-regional-overview",
-          "type": "metricCard",
-          "layout": {
-            "span": 2
-          },
-          "data": {
-            "main": "framework-card-summary"
-          },
-          "props": {
-            "variant": "primaryDetail",
-            "rows": [
-              {
-                "label": "框架执行率",
-                "valueField": {
-                  "data": "main",
-                  "field": "framework-rate",
-                  "format": "percent-1",
-                  "missingText": "--"
-                },
-                "link": true
-              }
-            ],
-            "secondaryRows": [
-              {
-                "label": "框架未达成金额",
-                "valueField": {
-                  "data": "main",
-                  "field": "framework-unreached",
-                  "format": "cny-adaptive",
-                  "missingText": "--"
-                }
-              },
-              {
-                "label": "框架总金额",
-                "valueField": {
-                  "data": "main",
-                  "field": "framework-target",
-                  "format": "cny-adaptive",
-                  "missingText": "--"
-                }
-              }
-            ],
-            "actions": [
-              {
-                "on": "click",
-                "enabledWhen": {
-                  "filter": "region",
-                  "part": "level",
-                  "op": "eq",
-                  "value": "geo"
-                },
-                "navigate": {
-                  "href": "/manage-contract-business/business-result-metrics",
-                  "query": {
-                    "mtime": {
-                      "source": "filter",
-                      "id": "mtime",
-                      "part": "value"
-                    },
-                    "region": {
-                      "source": "filter",
-                      "id": "region"
-                    },
-                    "region.level": {
-                      "source": "filter",
-                      "id": "region",
-                      "part": "level"
-                    }
-                  }
-                }
-              },
-              {
-                "on": "click",
-                "enabledWhen": {
-                  "filter": "region",
-                  "part": "level",
-                  "op": "eq",
-                  "value": "region-dept"
-                },
-                "navigate": {
-                  "href": "/manage-contract-business/business-result-metrics",
-                  "query": {
-                    "mtime": {
-                      "source": "filter",
-                      "id": "mtime",
-                      "part": "value"
-                    },
-                    "region-dept": {
-                      "source": "filter",
-                      "id": "region"
-                    }
-                  }
-                }
-              },
-              {
-                "on": "click",
-                "enabledWhen": {
-                  "filter": "region",
-                  "part": "level",
-                  "op": "eq",
-                  "value": "office"
-                },
-                "navigate": {
-                  "href": "/operationmap/manage-contract-business/rep-business-result?business-result-tab=framework-execution-detail",
-                  "query": {
-                    "mtime": {
-                      "source": "filter",
-                      "id": "mtime",
-                      "part": "value"
-                    },
-                    "rep-office": {
-                      "source": "filter",
-                      "id": "region"
-                    },
-                    "rep-office-name": {
-                      "source": "filter",
-                      "id": "region"
-                    }
-                  }
-                }
-              }
-            ]
-          }
-        },
-        {
-          "id": "margin-card-regional-overview",
-          "type": "metricCard",
-          "layout": {
-            "span": 2
-          },
-          "data": {
-            "main": "margin-card-summary"
-          },
-          "props": {
-            "variant": "primaryDetail",
-            "rows": [
-              {
-                "label": "测算销毛与核算销毛偏差",
-                "valueField": {
-                  "data": "main",
-                  "field": "margin-gap",
-                  "format": "points-1-signed",
-                  "missingText": "--"
-                },
-                "colorRule": {
-                  "mode": "sign",
-                  "positive": "green",
-                  "negative": "red"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "id": "closure-card-regional-overview",
-          "type": "metricCard",
-          "layout": {
-            "span": 2
-          },
-          "data": {
-            "main": "closure-card-summary"
-          },
-          "props": {
-            "variant": "primaryDetail",
-            "rows": [
-              {
-                "label": "决策意见闭环率",
-                "valueField": {
-                  "data": "main",
-                  "field": "closed-rate",
-                  "format": "percent-1",
-                  "missingText": "--"
-                },
-                "link": true
-              }
-            ],
-            "secondaryRows": [
-              {
-                "label": "决策任务总数",
-                "valueField": {
-                  "data": "main",
-                  "field": "task-count",
-                  "format": "number-grouped",
-                  "missingText": "--"
-                }
-              },
-              {
-                "label": "无法落实率",
-                "valueField": {
-                  "data": "main",
-                  "field": "unfulfilled-rate",
-                  "format": "percent-1",
-                  "missingText": "--"
-                }
-              }
-            ],
-            "actions": [
-              {
-                "on": "click",
-                "enabledWhen": {
-                  "filter": "region",
-                  "part": "level",
-                  "op": "eq",
-                  "value": "geo"
-                },
-                "navigate": {
-                  "href": "/manage-contract-business/governance-compliance?sdt-duration-site=%E5%9B%BD%E5%86%85&sdt-count-site=%E5%9B%BD%E5%86%85&biz-decision-site=%E5%9B%BD%E5%86%85&contract-decision-site=%E5%9B%BD%E5%86%85",
-                  "query": {
-                    "mtime": {
-                      "source": "filter",
-                      "id": "mtime",
-                      "part": "value"
-                    },
-                    "region": {
-                      "source": "filter",
-                      "id": "region"
-                    },
-                    "region.level": {
-                      "source": "filter",
-                      "id": "region",
-                      "part": "level"
-                    }
-                  }
-                }
-              },
-              {
-                "on": "click",
-                "enabledWhen": {
-                  "filter": "region",
-                  "part": "level",
-                  "op": "eq",
-                  "value": "region-dept"
-                },
-                "navigate": {
-                  "href": "/manage-contract-business/governance-compliance?sdt-duration-site=%E5%9B%BD%E5%86%85&sdt-count-site=%E5%9B%BD%E5%86%85&biz-decision-site=%E5%9B%BD%E5%86%85&contract-decision-site=%E5%9B%BD%E5%86%85",
-                  "query": {
-                    "mtime": {
-                      "source": "filter",
-                      "id": "mtime",
-                      "part": "value"
-                    },
-                    "region": {
-                      "source": "filter",
-                      "id": "region"
-                    },
-                    "region.level": {
-                      "source": "filter",
-                      "id": "region",
-                      "part": "level"
-                    }
-                  }
-                }
-              },
-              {
-                "on": "click",
-                "enabledWhen": {
-                  "filter": "region",
-                  "part": "level",
-                  "op": "eq",
-                  "value": "office"
-                },
-                "navigate": {
-                  "href": "/operationmap/manage-contract-business/rep-business-result?business-result-tab=decision-closure-detail",
-                  "query": {
-                    "mtime": {
-                      "source": "filter",
-                      "id": "mtime",
-                      "part": "value"
-                    },
-                    "rep-office": {
-                      "source": "filter",
-                      "id": "region"
-                    },
-                    "rep-office-name": {
-                      "source": "filter",
-                      "id": "region"
-                    }
-                  }
-                }
-              }
-            ]
-          }
-        },
-        {
-          "id": "risk-card-regional-overview",
-          "type": "metricCard",
-          "layout": {
-            "span": 2
-          },
-          "data": {
-            "main": "risk-card-summary"
-          },
-          "props": {
-            "variant": "primaryDetail",
-            "rows": [
-              {
-                "label": "重大／高风险合同率",
-                "valueField": {
-                  "data": "main",
-                  "field": "high-risk-rate",
-                  "format": "percent-1",
-                  "missingText": "--"
-                },
-                "link": true
-              }
-            ],
-            "secondaryRows": [
-              {
-                "label": "合同总数",
-                "valueField": {
-                  "data": "main",
-                  "field": "contract-count",
-                  "format": "number-grouped",
-                  "missingText": "--"
-                }
-              }
-            ],
-            "actions": [
-              {
-                "on": "click",
-                "enabledWhen": {
-                  "filter": "region",
-                  "part": "level",
-                  "op": "eq",
-                  "value": "geo"
-                },
-                "navigate": {
-                  "href": "/manage-contract-business/region-authorization-norms",
-                  "query": {
-                    "mtime": {
-                      "source": "filter",
-                      "id": "mtime",
-                      "part": "value"
-                    },
-                    "region": {
-                      "source": "filter",
-                      "id": "region"
-                    },
-                    "region.level": {
-                      "source": "filter",
-                      "id": "region",
-                      "part": "level"
-                    }
-                  }
-                }
-              },
-              {
-                "on": "click",
-                "enabledWhen": {
-                  "filter": "region",
-                  "part": "level",
-                  "op": "eq",
-                  "value": "region-dept"
-                },
-                "navigate": {
-                  "href": "/manage-contract-business/region-authorization-norms",
-                  "query": {
-                    "mtime": {
-                      "source": "filter",
-                      "id": "mtime",
-                      "part": "value"
-                    },
-                    "region": {
-                      "source": "filter",
-                      "id": "region"
-                    },
-                    "region.level": {
-                      "source": "filter",
-                      "id": "region",
-                      "part": "level"
-                    }
-                  }
-                }
-              },
-              {
-                "on": "click",
-                "enabledWhen": {
-                  "filter": "region",
-                  "part": "level",
-                  "op": "eq",
-                  "value": "office"
-                },
-                "navigate": {
-                  "href": "/operationmap/manage-contract-business/rep-business-result?business-result-tab=contract-risk-detail",
-                  "query": {
-                    "mtime": {
-                      "source": "filter",
-                      "id": "mtime",
-                      "part": "value"
-                    },
-                    "rep-office": {
-                      "source": "filter",
-                      "id": "region"
-                    },
-                    "rep-office-name": {
-                      "source": "filter",
-                      "id": "region"
-                    }
-                  }
-                }
-              }
-            ]
-          }
-        },
-        {
-          "id": "sdt-card-regional-overview",
-          "type": "metricCard",
-          "layout": {
-            "span": 2
-          },
-          "data": {
-            "main": "sdt-card-summary"
-          },
-          "props": {
-            "variant": "primaryDetail",
-            "rows": [
-              {
-                "label": "商务代表处SDT决策时长",
-                "valueField": {
-                  "data": "main",
-                  "field": "sdt",
-                  "format": "number-1",
-                  "missingText": "--"
-                },
-                "link": true,
-                "unit": "天"
-              }
-            ],
-            "actions": [
-              {
-                "on": "click",
-                "enabledWhen": {
-                  "filter": "region",
-                  "part": "level",
-                  "op": "eq",
-                  "value": "geo"
-                },
-                "navigate": {
-                  "href": "/manage-contract-business/governance-compliance?sdt-duration-site=%E5%9B%BD%E5%86%85&sdt-count-site=%E5%9B%BD%E5%86%85&biz-decision-site=%E5%9B%BD%E5%86%85&contract-decision-site=%E5%9B%BD%E5%86%85",
-                  "query": {
-                    "mtime": {
-                      "source": "filter",
-                      "id": "mtime",
-                      "part": "value"
-                    },
-                    "region": {
-                      "source": "filter",
-                      "id": "region"
-                    },
-                    "region.level": {
-                      "source": "filter",
-                      "id": "region",
-                      "part": "level"
-                    }
-                  }
-                }
-              },
-              {
-                "on": "click",
-                "enabledWhen": {
-                  "filter": "region",
-                  "part": "level",
-                  "op": "eq",
-                  "value": "region-dept"
-                },
-                "navigate": {
-                  "href": "/manage-contract-business/governance-compliance?sdt-duration-site=%E5%9B%BD%E5%86%85&sdt-count-site=%E5%9B%BD%E5%86%85&biz-decision-site=%E5%9B%BD%E5%86%85&contract-decision-site=%E5%9B%BD%E5%86%85",
-                  "query": {
-                    "mtime": {
-                      "source": "filter",
-                      "id": "mtime",
-                      "part": "value"
-                    },
-                    "region": {
-                      "source": "filter",
-                      "id": "region"
-                    },
-                    "region.level": {
-                      "source": "filter",
-                      "id": "region",
-                      "part": "level"
-                    }
-                  }
-                }
-              },
-              {
-                "on": "click",
-                "enabledWhen": {
-                  "filter": "region",
-                  "part": "level",
-                  "op": "eq",
-                  "value": "office"
-                },
-                "navigate": {
-                  "href": "/operationmap/manage-contract-business/rep-office-execution-efficiency",
-                  "query": {
-                    "period": {
-                      "source": "filter",
-                      "id": "mtime",
-                      "part": "value"
-                    },
-                    "rep-office-name": {
-                      "source": "filter",
-                      "id": "region"
-                    }
-                  }
-                }
-              }
-            ]
-          }
-        },
-        {
-          "id": "regional-map",
-          "type": "mapChart",
-          "layout": {
-            "span": 9
-          },
-          "data": {
-            "main": "offices"
-          },
-          "props": {
-            "map": "world",
-            "scatter": "point",
-            "legend": {
-              "title": "净商务折扣",
-              "bands": [
-                {
-                  "label": "30%以下",
-                  "from": 0
-                },
-                {
-                  "label": "30%–40%",
-                  "from": 30
-                },
-                {
-                  "label": "40%–50%",
-                  "from": 40
-                },
-                {
-                  "label": "50%以上",
-                  "from": 50
-                }
-              ]
-            },
-            "nameField": "org-key",
-            "valueField": {
-              "data": "main",
-              "field": "discount",
-              "format": "percent-1",
-              "missingText": "--"
-            },
-            "nameMap": {
-              "深圳办事处": "广东省",
-              "北京代表处": "北京市",
-              "江苏代表处": "江苏省",
-              "德国代表处": "Germany",
-              "法国代表处": "France",
-              "印度尼西亚代表处": "Indonesia",
-              "泰国代表处": "Thailand",
-              "巴西代表处": "Brazil",
-              "墨西哥代表处": "Mexico",
-              "南非代表处": "South Africa",
-              "肯尼亚代表处": "Kenya",
-              "埃及代表处": "Egypt",
-              "摩洛哥代表处": "Morocco",
-              "土耳其代表处": "Turkey",
-              "阿塞拜疆代表处": "Azerbaijan",
-              "巴基斯坦代表处": "Pakistan",
-              "阿联酋代表处": "United Arab Emirates",
-              "沙特代表处": "Saudi Arabia",
-              "伊拉克代表处": "Iraq",
-              "哈萨克斯坦代表处": "Kazakhstan"
-            },
-            "tooltipFields": [
-              {
-                "label": "折扣同比",
-                "field": {
-                  "data": "main",
-                  "field": "discount-yoy",
-                  "format": "points-1-signed",
-                  "missingText": "--"
-                }
-              },
-              {
-                "label": "净付费金额",
-                "field": {
-                  "data": "main",
-                  "field": "discount-amount",
-                  "format": "cny-adaptive",
-                  "missingText": "--"
-                }
-              },
-              {
-                "label": "金额同比",
-                "field": {
-                  "data": "main",
-                  "field": "payment-yoy",
-                  "format": "percent-1",
-                  "missingText": "--"
-                }
-              },
-              {
-                "label": "框架执行率",
-                "field": {
-                  "data": "main",
-                  "field": "framework-rate",
-                  "format": "percent-1",
-                  "missingText": "--"
-                }
-              }
-            ],
-            "hierarchyFilter": "region",
-            "parentField": "region-key",
-            "codeField": "org-key",
-            "variant": "regionalOverview"
           }
         },
         {
@@ -3534,6 +2944,23 @@
                 "align": "right"
               },
               {
+                "title": "测算销毛与核算销毛偏差",
+                "field": {
+                  "data": "main",
+                  "field": "margin-gap",
+                  "format": "points-1-signed",
+                  "missingText": "--"
+                },
+                "colorRule": {
+                  "mode": "sign",
+                  "positive": "green",
+                  "negative": "red"
+                },
+                "width": 150,
+                "sortable": true,
+                "align": "right"
+              },
+              {
                 "title": "框架执行率",
                 "field": {
                   "data": "main",
@@ -3568,11 +2995,62 @@
                 "width": 104,
                 "sortable": true,
                 "align": "right"
+              },
+              {
+                "title": "代表处SDT决策时长",
+                "field": {
+                  "data": "main",
+                  "field": "sdt-duration",
+                  "format": "number-1",
+                  "missingText": "--"
+                },
+                "unit": "天",
+                "width": 104,
+                "sortable": true,
+                "align": "right"
               }
             ],
             "subtitle": "",
             "title": "代表处指标明细",
             "expand": true
+          },
+          "visibleWhen": {
+            "all": [
+              {
+                "not": {
+                  "any": [
+                    {
+                      "filter": "region",
+                      "part": "level",
+                      "op": "eq",
+                      "value": "geo"
+                    },
+                    {
+                      "filter": "region",
+                      "part": "values",
+                      "op": "isEmpty"
+                    },
+                    {
+                      "filter": "region",
+                      "part": "values",
+                      "op": "containsAny",
+                      "values": [
+                        "全球"
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "fact": "regionDepartment",
+                "op": "isNotNull"
+              },
+              {
+                "fact": "regionDepartment",
+                "op": "ne",
+                "value": "中国地区部"
+              }
+            ]
           }
         }
       ],

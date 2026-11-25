@@ -1,0 +1,27 @@
+{
+  "case": "map-overrides-invalid-zoom",
+  "invariant": "map-geography-overrides",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must be > 0",
+      "paths": [
+        "/mapOverrides/world/region-dept/欧洲地区部/viewport/zoom"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "mapOverrides": {
+      "world": {
+        "region-dept": {
+          "欧洲地区部": {
+            "viewport": {
+              "zoom": -1
+            }
+          }
+        }
+      }
+    }
+  },
+  "fullInput": "page/conformance/invalid/map-overrides-invalid-zoom.json"
+}

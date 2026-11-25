@@ -1,3 +1,4 @@
+import {createRegionDepartmentFacts} from './region-department-facts.mjs';
 const departments = [
   { 'org-key': '欧洲地区部', discount: 38.5 },
   { 'org-key': '中国地区部', discount: 31.2 },
@@ -8,6 +9,7 @@ const offices = [
   { 'org-key': '德国代表处', 'region-key': '欧洲地区部', discount: 35.7 },
   { 'org-key': '法国代表处', 'region-key': '欧洲地区部', discount: 41.4 },
   { 'org-key': '北京代表处', 'region-key': '中国地区部', discount: 29.8 },
+  { 'org-key': '上海代表处', 'region-key': '中国地区部', discount: 27.4 },
   { 'org-key': '深圳办事处', 'region-key': '中国地区部', discount: 32.6 },
   { 'org-key': '巴西代表处', 'region-key': '拉美地区部', discount: 45.2 }
 ];
@@ -40,10 +42,10 @@ function queryRows(query) {
 }
 
 /** @param {typeof import('@metriccanvas/engine').withOperationMapRegion} withOperationMapRegion */
-export function createRegionMapFixture(withOperationMapRegion, { focus = true, delay = 0 } = {}) {
+export function createRegionMapFixture(withOperationMapRegion, { focus = true, delay = 0, initialSearch = '', baseGateway } = {}) {
   const queries = [];
   const viewRequests = [];
-  const dataGateway = withOperationMapRegion({
+  const dataGateway = withOperationMapRegion(baseGateway ?? {
     async fetchData(query) {
       queries.push(query.filterValues);
       const rows = queryRows(query);
@@ -59,6 +61,17 @@ export function createRegionMapFixture(withOperationMapRegion, { focus = true, d
 
   /** @type {import('@metriccanvas/engine/ui').RegionMapAdapter} */
   const regionMap = {
+    geography: {
+      world: {
+        'region-dept': {
+          欧洲地区部: {point:{lngLat:[21,52.13]}, ...(focus && {viewport:{center:[20.7129,60.166],zoom:3}})},
+          中国地区部: {point:{feature:'China'}},
+          拉美地区部: {point:{lngLat:[-62,-15]},features:['Brazil','Argentina']}
+        },
+        office:{德国代表处:{point:{feature:'Germany'}},法国代表处:{point:{feature:'France'}},巴西代表处:{point:{feature:'Brazil'}}}
+      },
+      china:{office:{北京代表处:{point:{feature:'北京市'}},上海代表处:{point:{feature:'上海市'}},深圳办事处:{point:{feature:'广东省'}}}}
+    },
     async resolveViewport(request, { signal }) {
       const record = { ...request, aborted: false };
       viewRequests.push(record);
@@ -68,5 +81,5 @@ export function createRegionMapFixture(withOperationMapRegion, { focus = true, d
       if (focus && request.basemap === 'world') return viewports[request.level]?.[request.value];
     }
   };
-  return { dataGateway, regionMap, queries, viewRequests };
+  return { dataGateway, regionMap, queries, viewRequests, ...createRegionDepartmentFacts([...regionNodes,...officeNodes], initialSearch) };
 }

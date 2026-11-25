@@ -2,7 +2,7 @@
 
 ## 合同商务总览
 
-入口 `/pages/contract-business-overview`。[页面 JSON](contract-business-overview.json)。选择全球时检查地区部指标明细，选择地区部时检查所属代表处，选择代表处时检查所选代表处。表格使用 DQE 返回的组织行。普通 Playground 需要接入业务 DQE 和 IOC Region 候选；本地合同总览预览可以使用合成候选与 DQE Sim。
+入口 `/pages/contract-business-overview`。[页面 JSON](contract-business-overview.json)。选择全球或清空区域时检查地区部指标明细，选择地区部时检查所属代表处，选择代表处时检查所选代表处。从地区部或代表处清空后刷新，表格仍按地区部展示。正文共用六张指标卡。当前地图和七列表格使用同一份 DQE 组织明细，包含测算销毛与核算销毛偏差和代表处 SDT 决策时长。普通 Playground 需要接入业务 DQE 和 IOC Region 候选；本地合同总览预览可以使用合成候选与 DQE Sim。
 
 点击五张指标卡的主指标检查目标地址与统计期间。全球和地区部使用既有业务结果指标、行权效率和行权规范入口。代表处的净商务折扣、框架执行率、决策意见闭环率和重大／高风险合同率进入 `/pages/rep-business-result`，并通过 `business-result-tab` 定位对应页签；SDT 决策时长进入 `/pages/rep-office-execution-efficiency`。测算销毛与核算销毛偏差只展示数值。普通点击与新标签页应携带相同参数。模拟结果只用于检查本地交互。
 
@@ -30,3 +30,5 @@ DQE_SIM_PORT=18387 pnpm --filter playground dev --host 127.0.0.1 --port 5187 --s
 此页需包含记录成员独立消费参数修复的引擎／校验器。生产 DQE 字段、权限、数据与稳定分页未由 Sim 证明。浏览器证据见 `docs/evidence/2026-11-02-record-join-query-params/business-page/`。
 
 商务类型使用6.80列声明 `enumValues`：字符串0显示项目商务框架，字符串1显示项目非框架；表头是前端完整枚举，不请求动态候选，筛选仍提交原编码。单元格与Excel均显示中文。需要本轮支持列枚举的引擎；此能力不改变审批人参数或既有分页。
+
+合同商务总览地理资料由 Operation Map 统一接入，部署时同步提供 regionDepartment 展示事实。详见 [OM 地图接入](../../../../../docs/operation-map-geography.md)。

@@ -45,14 +45,14 @@
       if (!response.ok) throw new Error('无法加载页面文档');
       const document = await response.json();
       const fixture = createRegionMapFixture(api.withOperationMapRegion, {
-        focus, delay: params.get('viewport') === 'slow' ? 1400 : 0
+        initialSearch:location.search, focus, delay: params.get('viewport') === 'slow' ? 1400 : 0
       });
       const {dataGateway, regionMap, queries, viewRequests} = fixture;
       const events = [];
       api.mount('#dashboard', {
-        document, dataGateway, regionMap,
+        document, dataGateway, regionMap, displayInputs:fixture.displayInputs,
         navigation: { preserveSearchParams: ['entry', 'viewport'] },
-        onEvent: event => events.push(event)
+        onEvent: event => { events.push(event); if(event.type === "filter-change") fixture.setSelection(event.search,event.filterRevision); }
       });
       window.regionMapDemo = { queries, viewRequests, events };
     } catch (error) {

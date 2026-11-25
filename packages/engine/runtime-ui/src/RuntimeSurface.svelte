@@ -196,8 +196,14 @@
     execution
   }: RuntimeSurfaceProps = $props();
 
+  const liveViewports = new Map<string, () => import('./region-map').MapViewport | undefined>();
   setContext<RegionMapContext>(REGION_MAP_CONTEXT, {
     adapter: () => regionMap,
+    overrides: () => pageState.phase === 'ready' ? pageState.page.mapOverrides : undefined,
+    capture(key,read) {
+      liveViewports.set(key,read);
+      return () => { if (liveViewports.get(key) === read) liveViewports.delete(key); };
+    },
     selection: currentRegionMapSelection
   });
 
@@ -280,7 +286,7 @@
     }));
     if (Object.keys(page.dataSources).some(id=>sourceBlocked(page,id))) throw new ExportViewError('EXPORT_NOT_READY','筛选待确认或候选未就绪，暂不能导出页面');
     const sourceCandidates=structuredClone(new Map(declarations.flatMap(filter=>filter.type==='dimension'&&filter.candidates?[[filter.id,sourceFilterCandidates(filter)] as const]:[])));
-    const state={page,sourceCandidates,now:new Date(),displaySnapshot:structuredClone(displaySnapshot),filterRevision,currentYear:stream.captureComputeYear(),filters:structuredClone(new Map(filterValues)),snapshots:structuredClone(new Map(snapshots)),tables:JSON.parse(JSON.stringify(tableViews)),headerFilters:JSON.parse(JSON.stringify(appliedTableHeaderFilters)),summaries,sourceViews:stream.captureViews()};
+    const state={page,sourceCandidates,regionSelection:currentRegionMapSelection(),geography:structuredClone(regionMap?.geography),viewports:new Map(Array.from(liveViewports,([key,read]) => [key,read()] as const)),now:new Date(),displaySnapshot:structuredClone(displaySnapshot),filterRevision,currentYear:stream.captureComputeYear(),filters:structuredClone(new Map(filterValues)),snapshots:structuredClone(new Map(snapshots)),tables:JSON.parse(JSON.stringify(tableViews)),headerFilters:JSON.parse(JSON.stringify(appliedTableHeaderFilters)),summaries,sourceViews:stream.captureViews()};
     const queries=stream.captureQueries();
     const program=stream.getSourceProgram();
     return exportController.run(pageExportTask, controller => withReportView({state,queries,gateway:activeGateway,sourceRoot:surfaceRoot,controller,program,scale},consume));
@@ -1341,7 +1347,7 @@
   }
 
   function regionMapActive() {
-    return !!regionMap && pageState.phase === 'ready' && usesIocRegion(pageState.page);
+    return pageState.phase === 'ready' && !!(regionMap || pageState.page.mapOverrides) && usesIocRegion(pageState.page);
   }
 
   function currentRegionMapSelection() {

@@ -97,6 +97,10 @@ export type DefinitionName='DraftRef'|'CandidateRef'|'TemplateRef'|'OperationCon
 export function buildPublicationSchema(pageSchema: JsonSchema): JsonSchema {
   function relocate(value:any):any {
     if(Array.isArray(value))return value.map(relocate);
+    if (record(value) && Array.isArray(value.items)) {
+      const {items, additionalItems = true, ...rest} = value;
+      return {...relocate(rest),prefixItems:relocate(items),items:relocate(additionalItems)};
+    }
     if(record(value))return Object.fromEntries(Object.entries(value).filter(([key])=>key!=='$schema'&&key!=='$id').map(([key,child])=>[key,key==='$ref'&&typeof child==='string'&&child.startsWith('#/')?`#/$defs/Page/${child.slice(2)}`:relocate(child)]));
     return value;
   }

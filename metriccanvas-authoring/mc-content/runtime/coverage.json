@@ -853,6 +853,11 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/valid/ioc-region-map-demo.json",
+      "target": "product-contracts/page/conformance/valid/ioc-region-map-demo.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/valid/number-default-grouping.json",
       "target": "product-contracts/page/conformance/valid/number-default-grouping.json",
       "scope": "exact product contract"
@@ -1085,11 +1090,6 @@
     {
       "source": "product:page/conformance/valid/ioc-region-url-demo.json",
       "target": "product-contracts/page/conformance/valid/ioc-region-url-demo.json",
-      "scope": "exact product contract"
-    },
-    {
-      "source": "product:page/conformance/valid/ioc-region-map-demo.json",
-      "target": "product-contracts/page/conformance/valid/ioc-region-map-demo.json",
       "scope": "exact product contract"
     },
     {
@@ -1600,6 +1600,16 @@
     {
       "source": "product:page/conformance/invalid/ioc-auto-back-unknown.json",
       "target": "product-contracts/page/conformance/invalid/ioc-auto-back-unknown.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/map-overrides-version.json",
+      "target": "product-contracts/page/conformance/invalid/map-overrides-version.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/map-overrides-invalid-zoom.json",
+      "target": "product-contracts/page/conformance/invalid/map-overrides-invalid-zoom.json",
       "scope": "exact product contract"
     },
     {
@@ -4915,6 +4925,16 @@
     {
       "source": "product:page/reference/errors/ioc-auto-back-unknown.json",
       "target": "references/page-metadata/errors/ioc-auto-back-unknown.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/map-overrides-version.json",
+      "target": "references/page-metadata/errors/map-overrides-version.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/map-overrides-invalid-zoom.json",
+      "target": "references/page-metadata/errors/map-overrides-invalid-zoom.json",
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
@@ -9339,11 +9359,11 @@
     }
   ],
   "counts": {
-    "product": 1835,
+    "product": 1839,
     "authoring": 32,
     "modules": 36,
-    "topics": 335,
-    "nodes": 2776,
+    "topics": 336,
+    "nodes": 2799,
     "tools": 9,
     "components": 20
   },

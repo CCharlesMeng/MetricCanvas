@@ -1003,7 +1003,9 @@
         "mapLegend",
         "mapLegendBand",
         "mapTooltipField",
-        "mapPinnedSummary"
+        "mapPinnedSummary",
+        "mapGeographyEntry",
+        "mapGeographyLevels"
       ],
       "keywords": [
         "components/mapChart",
@@ -1014,7 +1016,8 @@
         "ioc-region-map-demo",
         "reference-branches-page",
         "chart-constant-values-page",
-        "chart-constant-branches"
+        "chart-constant-branches",
+        "ioc-region-map-demo"
       ],
       "sources": [
         "packages/page/src/schema/components/map-chart.ts",
@@ -2009,7 +2012,19 @@
     "#/definitions/barChartComponent/properties/props/properties/order/properties/direction": "类别次序，asc 升序，desc 降序，空值均排末尾。",
     "#/definitions/tableComponent/properties/props/properties/defaultSort/items/properties/direction": "默认排序方向：asc 升序，desc 降序；null 均排末尾。",
     "#/definitions/tableColumn/properties/filterable/anyOf/0/properties/showSearch": "6.112：true 显示候选搜索，false 或省略隐藏；静态枚举与动态候选均支持。旧版本动态搜索保留，显式升级写入 true。",
-    "#/definitions/pagedJoinSource/properties/pagination": "仅 pageSize 保持历史路径；query 显式查询分页并沿用最后操作成员；6.118 auto 在 records 下自动选择基准查询分页或保留条件的完整关联。"
+    "#/definitions/pagedJoinSource/properties/pagination": "仅 pageSize 保持历史路径；query 显式查询分页并沿用最后操作成员；6.118 auto 在 records 下自动选择基准查询分页或保留条件的完整关联。",
+    "#/properties/mapOverrides": "本页按实际底图和组织覆盖共享地理资料。",
+    "#/properties/mapOverrides/properties/world": "世界底图的组织地理资料。",
+    "#/properties/mapOverrides/properties/china": "中国底图的组织地理资料。",
+    "#/definitions/mapGeographyLevels/properties/office": "按代表处业务值查找本页覆盖。",
+    "#/definitions/mapGeographyLevels/properties/region-dept": "按地区部业务值查找本页覆盖。",
+    "#/definitions/mapGeographyEntry/properties/point": "散点使用独立经纬度或底图要素中心。",
+    "#/definitions/mapGeographyEntry/properties/point/anyOf/0/properties/lngLat": "WGS84 经度、纬度坐标对。",
+    "#/definitions/mapGeographyEntry/properties/point/anyOf/1/properties/feature": "当前底图中的精确区域名。",
+    "#/definitions/mapGeographyEntry/properties/features": "本行指标着色的底图要素，整体替换，空数组清除。",
+    "#/definitions/mapGeographyEntry/properties/viewport": "选中组织后显示的镜头，按子字段覆盖。",
+    "#/definitions/mapGeographyEntry/properties/viewport/properties/center": "选中组织后视口中心的经纬度。",
+    "#/definitions/mapGeographyEntry/properties/viewport/properties/zoom": "当前底图适用的有限正数缩放。"
   },
   "enumNotes": {
     "#/properties/schemaVersion=\"6.124\"": "联动清空时，原本不限的可选平面维度或金额范围可在新范围校验后自动继续。",
@@ -2448,7 +2463,8 @@
     "#/properties/schemaVersion=\"6.135\"": "IOC 页头可用 filterRows 为已认领的筛选声明独立行与小标题。",
     "#/properties/schemaVersion=\"6.136\"": "指标卡的主、次指标行可为各自的变化项声明 visibleWhen。",
     "#/properties/schemaVersion=\"6.137\"": "正文分区顶层表格可声明 expand，展开时占满分区整行。",
-    "#/properties/schemaVersion=\"6.138\"": "指标卡主指标行可用 colorRule 给主值着色。"
+    "#/properties/schemaVersion=\"6.138\"": "指标卡主指标行可用 colorRule 给主值着色。",
+    "#/properties/schemaVersion=\"6.139\"": "组织地图共享地理资料与页面级覆盖。"
   },
   "branchExceptions": {
     "#/properties/iocHeader/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/0": {
@@ -3669,6 +3685,7 @@
     ],
     "components/mapChart.md": [
       "IOC Region 宿主视口",
+      "组织地图地理资料（6.139）",
       "查阅方式",
       "常量取值（6.59）"
     ],

@@ -27,7 +27,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  */
 export const UNRESTRICTED_FILTER_CLEAR_MINOR = 124;
 export const INDEPENDENT_EXCLUSION_CANDIDATES_MINOR = 125;
-const CURRENT_MINOR = 138;
+const CURRENT_MINOR = 139;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -82,6 +82,10 @@ function bindingOperatorUsed(query:Record<string,unknown>|undefined):boolean {
 }
 
 export const pageCapabilities = {
+  'map-geography-overrides': {
+    minor: 139, legacyReadable: false, description: '页面可覆盖组织地图地理资料',
+    usedAt: document => has(record(document), 'mapOverrides') ? ['/mapOverrides'] : []
+  },
   'metric-card-value-color-rule': {
     minor: 138,
     legacyReadable: false,

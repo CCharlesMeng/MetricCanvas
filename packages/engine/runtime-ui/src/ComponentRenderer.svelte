@@ -346,15 +346,16 @@
         />
       {:else if component.type === 'mapChart'}
         <RegionMapViewport
-          enabled={!exportMode && component.props.hierarchyFilter === 'region'}
+          enabled={component.props.hierarchyFilter === 'region'}
           basemap={map ?? component.props.map}
         >
-          {#snippet children(viewport)}
+          {#snippet children(viewport, geography)}
             <MapChart
               data={mainData}
               props={component.props}
               {map}
               {viewport}
+              {geography}
               onregionclick={onchartclick && (({ row }) => onchartclick?.(row))}
             />
           {/snippet}

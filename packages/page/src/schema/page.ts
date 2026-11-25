@@ -1,3 +1,4 @@
+import { mapGeographyZ } from './map-geography';
 import { visibilityShape } from './condition';
 import { z } from 'zod';
 import { iocHeaderZ } from './ioc-header';
@@ -129,6 +130,7 @@ export const pageDocumentSchemaZ: z.ZodType = z
       filters: z.array(idZ).min(1).meta({ uniqueItems: true }).optional(),
       components: z.array(componentZ).min(1)
     }).strict()).min(1).optional(),
+    mapOverrides: mapGeographyZ.optional(),
     sectionGroups: z.array(z.object({ id: idZ, ...visibilityShape, label: z.string().min(1), sectionIds: z.array(idZ).min(1).meta({ uniqueItems: true }) }).strict()).min(1).optional(),
     defaultSectionGroup: idZ.optional(),
     sectionGroupParam: idZ.optional(),

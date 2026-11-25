@@ -1,3 +1,4 @@
+import {mapRows} from './geography';
 import { resolveComponentValue } from '../../shared/component-value';
 import type { MapChartProps, Row } from '@metriccanvas/page/internal';
 import type { EChartsOption } from 'echarts';
@@ -77,12 +78,13 @@ export function mapOption(
   compact = false,
   scale?: ColorList,
   /** 地域概览定位针由 Svelte 资源管线解析，纯 option 层只消费 URL。 */
-  regionalPinUrl?: string
+  regionalPinUrl?: string,
+  geography?: ReturnType<typeof mapRows>
 ): EChartsOption {
   const rows = data.main.snapshot.rows;
   const name = resolveField(props.nameField, data);
   const value = resolveComponentValue(props, data, props.emptyBehavior);
-  const geoName = (row: Row) => geoRegionName(row, name.field, props.nameMap);
+  const locations = geography ?? mapRows(rows, name.field, props);
   const values = rows.map((row) => finiteNumber(value.read(row)) ?? 0);
   const rawMin = values.length > 0 ? Math.min(...values) : 0;
   const rawMax = values.length > 0 ? Math.max(...values) : 0;
@@ -97,7 +99,8 @@ export function mapOption(
      而 name 用原始维度值——否则 8 个中文地区部经 nameMap 映射到底图区域后,
      标签与 tooltip 会显示英文底图名。 */
   const scatterData = rows.flatMap((row) => {
-    const cp = centers.get(geoName(row));
+    const point = locations.placements.get(row)!.point;
+    const cp = 'lngLat' in point ? point.lngLat : centers.get(point.feature);
     if (!cp) return [];
     const rawName = String(row[name.field] ?? '');
     const pinned =
@@ -135,19 +138,13 @@ export function mapOption(
     };
   });
   // 区域着色系列上抛底图区域名,散点系列上抛原始维度值,两种都要能查回行
-  const rowByName = new Map<string, Row>();
-  for (const row of rows) {
-    rowByName.set(geoName(row), row);
-    rowByName.set(String(row[name.field] ?? ''), row);
-  }
-
   return {
     tooltip:
       tooltipFields.length > 0
         ? {
             trigger: 'item',
             formatter: (params: unknown) => {
-              const hovered = rowByName.get(itemName(params));
+              const hovered = (isScatterItem(params) ? locations.points : locations.areas).get(itemName(params));
               const title = hovered
                 ? String(hovered[name.field] ?? '')
                 : itemName(params);
@@ -215,10 +212,7 @@ export function mapOption(
         type: 'map',
         map: props.map,
         geoIndex: 0,
-        data: rows.map((row) => ({
-          name: geoName(row),
-          value: finiteNumber(value.read(row)) ?? 0
-        }))
+        data: mapSeriesRows(rows, locations, props, name.field, value.read)
       },
       ...(props.scatter
         ? [
@@ -283,4 +277,13 @@ function itemName(params: unknown): string {
 function mapFormatterValue(value: unknown): string | number | null | undefined {
   if (Array.isArray(value)) return formatterValue(value.at(-1));
   return formatterValue(value);
+}
+
+function isScatterItem(params: unknown) {
+  return (params as {seriesIndex?: number} | null)?.seriesIndex === 1;
+}
+
+function mapSeriesRows(rows: Row[], locations: ReturnType<typeof mapRows>, props: MapChartProps, field: string, read: (row: Row) => Parameters<typeof finiteNumber>[0]) {
+  if (!locations.shared) return rows.map(row => ({name:geoRegionName(row,field,props.nameMap),value:finiteNumber(read(row)) ?? 0}));
+  return Array.from(locations.areas).flatMap(([name,row]) => row ? [{name,value:finiteNumber(read(row)) ?? 0}] : []);
 }

@@ -123,3 +123,5 @@ export {supportsNativePreparation,nativeIocFilters,nativeIocBindingTargets,nativ
 
 export {independentExclusionFilterIds} from './exclusion-filters';
 export { metricCardTipAnchor } from './metric-card';
+
+export { mapGeographyEntryZ, type MapGeography, type MapGeographyEntry } from './schema/map-geography';

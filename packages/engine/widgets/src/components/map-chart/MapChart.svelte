@@ -11,13 +11,14 @@
   import { formatValue } from '../../shared/value-format';
   import { formatChartNumber } from '../../shared/chart-option';
   import {
-    geoRegionName,
+
     mapOption,
     projectionRect,
     withMapViewport,
     type MapViewport,
     type MapSafeArea
   } from './options';
+  import { mapRows, type GeographyInput } from './geography';
   import { mapLegendFrameStyle, mapLegendLevels } from './legend';
   import { ensureBasemap, type BasemapMeta, type BasemapName } from './basemap';
   import { regionalOverviewFrameStyle } from './regional-overview';
@@ -35,11 +36,12 @@
     /** 层级下钻后的底图,缺省用 props.map */
     map?: 'china' | 'world';
     viewport?: MapViewport;
+    geography?: GeographyInput;
     /** 区域/散点点击,携带该区域对应的数据行 */
     onregionclick?: (context: { row: Row }) => void;
   }
 
-  let { data, props, map, viewport, onregionclick }: Props = $props();
+  let { data, props, map, viewport, geography, onregionclick }: Props = $props();
   const staticExport=getContext<boolean>(STATIC_EXPORT_CONTEXT)??false;
   const basemapId = $derived(map ?? props.map);
 
@@ -70,18 +72,10 @@
    * 上抛的 name 是底图区域名,而散点系列上抛的是原始维度值(见 options.ts 的
    * 「双名」注释)。只收一种的话,另一种点击会静默找不到行。
    */
-  const rowByRegionName = $derived.by(() => {
-    const nameField = resolveField(props.nameField, data).field;
-    const index = new Map<string, Row>();
-    for (const row of data.main.snapshot.rows) {
-      index.set(geoRegionName(row, nameField, props.nameMap), row);
-      index.set(String(row[nameField] ?? ''), row);
-    }
-    return index;
-  });
+  const locations = $derived(mapRows(data.main.snapshot.rows, resolveField(props.nameField, data).field, chartProps, geography));
 
-  function handleClick(_dataIndex: number, name?: string) {
-    const row = name ? rowByRegionName.get(name) : undefined;
+  function handleClick(_dataIndex: number, name?: string, seriesIndex?: number) {
+    const row = name && (seriesIndex === 1 ? locations.points : locations.areas).get(name);
     if (row) onregionclick?.({ row });
   }
 
@@ -224,7 +218,7 @@
           projection,
           false,
           mapScale,
-          regionalPinUrl
+          regionalPinUrl, locations
         ), basemap.id === basemapId ? viewport : undefined)}
         onitemclick={onregionclick ? handleClick : undefined}
       />

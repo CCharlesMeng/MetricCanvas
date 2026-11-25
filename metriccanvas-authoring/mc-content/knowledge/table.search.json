@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.138",
+  "schemaVersion": "6.139",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "table.search"
@@ -387,7 +387,7 @@
           "sections"
         ],
         "title": "页面",
-        "$id": "https://metriccanvas/page/v6.138",
+        "$id": "https://metriccanvas/page/v6.139",
         "properties": {
           "schemaVersion": "#/properties/schemaVersion",
           "id": "#/properties/id",
@@ -401,6 +401,7 @@
           "dataSources": "#/properties/dataSources",
           "filters": "#/properties/filters",
           "detailViews": "#/properties/detailViews",
+          "mapOverrides": "#/properties/mapOverrides",
           "sectionGroups": "#/properties/sectionGroups",
           "defaultSectionGroup": "#/properties/defaultSectionGroup",
           "sectionGroupParam": "#/properties/sectionGroupParam",
