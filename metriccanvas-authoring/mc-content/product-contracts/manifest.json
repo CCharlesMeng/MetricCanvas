@@ -1165,11 +1165,11 @@
     },
     {
       "file": "page/conformance/invalid/metric-card-value-color-secondary.json",
-      "sha256": "610fb98066d2b69106c50ab4978f6ac4ee3ab7cb1b47563ee0ee5079796c9b7c"
+      "sha256": "90273afe8081c4e462952c577543956a72ca2d9ee14e23d3498ae007ed1e3f2d"
     },
     {
       "file": "page/conformance/invalid/metric-card-value-color-version.json",
-      "sha256": "6af98282216e13b054fd4db542d3a0a3f3d66b153cfddb2bd25f80a54c4044a8"
+      "sha256": "c2b6f82dd4bcf067939e48e9156c01f74b8d2a9d2b877f07f9bb33f1f1895a9f"
     },
     {
       "file": "page/conformance/invalid/metric-change-visibility-filter.json",
@@ -3089,7 +3089,7 @@
     },
     {
       "file": "page/conformance/valid/metric-card-value-color.json",
-      "sha256": "ed66c7609aa3e070ec53f83c702d5af85add509261870e5f45f113e58788dcbb"
+      "sha256": "1e26421bdf84968335aedf8e4d0743e177fac93b400ad756834fc0e727860b43"
     },
     {
       "file": "page/conformance/valid/million-formats-page.json",
@@ -3637,7 +3637,7 @@
     },
     {
       "file": "page/conformance/valid/yoy-p-format-demo.json",
-      "sha256": "d4bd1b7896a251206ee76cb03eb82971dfdc837bd316cc21e4ef8bc4acbb2af4"
+      "sha256": "04da4d43435456a0de4b0071a1b83d3136e64354b05ec2b3b12abf0b0363d79d"
     },
     {
       "file": "page/error-types.json",
@@ -3649,7 +3649,7 @@
     },
     {
       "file": "page/reference/actions-and-navigation.md",
-      "sha256": "5f17ef621fc9d6acfde8fed0d9884af0b0356fada9826b23a0a22476335d1905"
+      "sha256": "6a905d24431dd872dbd26455a890e31e55c5ea5c797eb01118f560e3a35b728c"
     },
     {
       "file": "page/reference/authoring-analysis-rebind.md",
@@ -3669,7 +3669,7 @@
     },
     {
       "file": "page/reference/components/barChart.md",
-      "sha256": "3bd83c6f326f01752cf907106066c010c84e8956cfbd259dffe413ee6a0d8ffa"
+      "sha256": "a40c21c745cb148bb57efba6c149782bb903bc1c610639f61dbda623fb552155"
     },
     {
       "file": "page/reference/components/button.md",
@@ -3693,7 +3693,7 @@
     },
     {
       "file": "page/reference/components/gauge.md",
-      "sha256": "624fca3732fef0a39d33af99bda49d5d65f0ec897a60e699b563d180d4ea1df2"
+      "sha256": "9fb5b8c3b63ea69f316a57a52df482275223dec2d656cdc7359411fb6995edb9"
     },
     {
       "file": "page/reference/components/iocHeader.md",
@@ -3705,11 +3705,11 @@
     },
     {
       "file": "page/reference/components/lineChart.md",
-      "sha256": "cff58492c18fefe534d8a7fd0dfa4a48437e3e8a40edf1e27ceb1e5d69c97662"
+      "sha256": "71d982cdc8bd32f11a6c74182bad2295d6cb5c7238caa9b310f0c1bf933b033b"
     },
     {
       "file": "page/reference/components/mapChart.md",
-      "sha256": "f9a0c87d64e0018f6a1cd8590a2429526475a1957e0093793b6cdcd199fb5280"
+      "sha256": "7958fcfae0858a1898206f99e6fdd5d425901143ef08a45817cf79653b551627"
     },
     {
       "file": "page/reference/components/metricCard.md",
@@ -3717,7 +3717,7 @@
     },
     {
       "file": "page/reference/components/pieChart.md",
-      "sha256": "8919d9089b902ee268153b55758aa11daf25cb2ed42c0f1d2d1c580d40f60593"
+      "sha256": "cf46c1509b5a64a8542c73bf758ff11a86bc8b8cd3b810f012758f56ada74b41"
     },
     {
       "file": "page/reference/components/rankingCard.md",
@@ -3725,7 +3725,7 @@
     },
     {
       "file": "page/reference/components/rankingDetailCard.md",
-      "sha256": "eb4e08da953e7948feed489d5af1e4067eb502787b9d4c37af4aa9e000039040"
+      "sha256": "da50000c78cb9da97447fe8a5f70a1693c303193b52f0cd953d03459577ae3b3"
     },
     {
       "file": "page/reference/components/README.md",
@@ -6405,7 +6405,7 @@
     },
     {
       "file": "page/reference/examples/component-metricCard-primaryDetail.json",
-      "sha256": "d92a7472e1611db7bf66ff3333b372a1233ad7b51e08a6b3106cc941eda035bf"
+      "sha256": "87814f61c0d21e73fab466d00ddc45aee7ed94cf9f79cdfdcc446a431270f451"
     },
     {
       "file": "page/reference/examples/component-metricCard-summary.json",
@@ -6777,7 +6777,7 @@
     },
     {
       "file": "page/reference/examples/metric-card-value-color.json",
-      "sha256": "ed66c7609aa3e070ec53f83c702d5af85add509261870e5f45f113e58788dcbb"
+      "sha256": "1e26421bdf84968335aedf8e4d0743e177fac93b400ad756834fc0e727860b43"
     },
     {
       "file": "page/reference/examples/million-formats-page.json",
@@ -7309,15 +7309,15 @@
     },
     {
       "file": "page/reference/examples/yoy-p-format-demo.json",
-      "sha256": "d4bd1b7896a251206ee76cb03eb82971dfdc837bd316cc21e4ef8bc4acbb2af4"
+      "sha256": "04da4d43435456a0de4b0071a1b83d3136e64354b05ec2b3b12abf0b0363d79d"
     },
     {
       "file": "page/reference/field-bindings-and-formats.md",
-      "sha256": "09123d1d7b54e239ad98b5b0f34b76b789c69a5c34b581723a1a15129afeca26"
+      "sha256": "dc4af305649f4ded9b0017c18e9805159a2adeebe1003f931aed10452cd3d978"
     },
     {
       "file": "page/reference/fields.md",
-      "sha256": "2dae2b6af0d6df7ddc48fc3c93a7e4d272b3fc6adafeb7c41ff86853d01be274"
+      "sha256": "28b8ad0ea8e6868a3cf4df8fc8b2ebaebffaaa17943e692ad62211eafc59eefb"
     },
     {
       "file": "page/reference/filters.md",
@@ -7325,7 +7325,7 @@
     },
     {
       "file": "page/reference/index.json",
-      "sha256": "0450454ed3ac1e6a64857c03fce1000c1bfbea40870b0a5b7e45fbe499139fcf"
+      "sha256": "65b2c248c5300e0e306dc8e40eb7994508f8634fe6edd68f5fe7f1f3de450f4d"
     },
     {
       "file": "page/reference/page.md",
@@ -7333,7 +7333,7 @@
     },
     {
       "file": "page/reference/params-and-text-values.md",
-      "sha256": "5509eca748314333be1d7dd2983e1bf59035a4a556d7c15efcc2dd5c1aff0860"
+      "sha256": "01de4a8051ce4818450e70711a959cd2413c5e598879d41e135f138383ff2a54"
     },
     {
       "file": "page/reference/queries-and-bindings.md",

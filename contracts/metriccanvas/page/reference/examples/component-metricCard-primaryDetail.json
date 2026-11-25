@@ -21,6 +21,14 @@
           "type": "number",
           "role": "measure",
           "nullable": true
+        },
+        "yoy": {
+          "type": "number",
+          "role": "measure"
+        },
+        "mom": {
+          "type": "number",
+          "role": "measure"
         }
       },
       "source": {
@@ -30,7 +38,9 @@
             "gain": 2.4,
             "loss": -1.2,
             "flat": 0,
-            "missing": null
+            "missing": null,
+            "yoy": 500.01,
+            "mom": -500.01
           }
         ]
       }

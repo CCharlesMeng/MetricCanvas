@@ -91,6 +91,30 @@
             "yoy": null,
             "rawYoy": null,
             "defaultYoy": null
+          },
+          {
+            "name": "正好 500P",
+            "yoy": 5,
+            "rawYoy": 5,
+            "defaultYoy": 5
+          },
+          {
+            "name": "正好 -500P",
+            "yoy": -5,
+            "rawYoy": -5,
+            "defaultYoy": -5
+          },
+          {
+            "name": "超过 500P",
+            "yoy": 5.001,
+            "rawYoy": 5.001,
+            "defaultYoy": 5.001
+          },
+          {
+            "name": "低于 -500P",
+            "yoy": -5.001,
+            "rawYoy": -5.001,
+            "defaultYoy": -5.001
           }
         ]
       }
@@ -155,7 +179,13 @@
                   "negative": "green"
                 }
               }
-            ]
+            ],
+            "toolbar": {
+              "export": {
+                "format": "xlsx",
+                "filename": "同比 P 格式"
+              }
+            }
           }
         }
       ]
