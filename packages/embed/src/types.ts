@@ -8,6 +8,7 @@ export interface RuntimeInput {
   execution?: import('@metriccanvas/engine').ExecutionBootstrap;
   /** 主查询执行必备;维度候选值端口可选,缺席即筛选候选值不可用。 */
   dataGateway?: RuntimeDataGateway;
+  regionMap?: import('@metriccanvas/engine/ui').RegionMapAdapter;
   aiSummary?: AiSummaryConfig;
   filterEditing?: { readOnly: boolean; reason?: string };
   /** 查询串；省略时读取当前 window 的 search 和 hash 路由 query。空串禁用自动读取。 */

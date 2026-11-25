@@ -14,6 +14,8 @@
     geoRegionName,
     mapOption,
     projectionRect,
+    withMapViewport,
+    type MapViewport,
     type MapSafeArea
   } from './options';
   import { mapLegendFrameStyle, mapLegendLevels } from './legend';
@@ -32,11 +34,12 @@
     props: MapChartProps;
     /** 层级下钻后的底图,缺省用 props.map */
     map?: 'china' | 'world';
+    viewport?: MapViewport;
     /** 区域/散点点击,携带该区域对应的数据行 */
     onregionclick?: (context: { row: Row }) => void;
   }
 
-  let { data, props, map, onregionclick }: Props = $props();
+  let { data, props, map, viewport, onregionclick }: Props = $props();
   const staticExport=getContext<boolean>(STATIC_EXPORT_CONTEXT)??false;
   const basemapId = $derived(map ?? props.map);
 
@@ -214,7 +217,7 @@
     >
       <EChart
         loading={data.main.sourceStatus === 'loading'}
-        option={mapOption(
+        option={withMapViewport(mapOption(
           data,
           chartProps,
           basemap.meta.centers,
@@ -222,7 +225,7 @@
           false,
           mapScale,
           regionalPinUrl
-        )}
+        ), basemap.id === basemapId ? viewport : undefined)}
         onitemclick={onregionclick ? handleClick : undefined}
       />
       {#if props.variant === 'regionalOverview' && pinnedSummary}

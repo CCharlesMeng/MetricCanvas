@@ -68,6 +68,7 @@
     type TableRenderBinding
   } from './component-render';
   import Self from './ComponentRenderer.svelte';
+  import RegionMapViewport from './RegionMapViewport.svelte';
 
   const presentation=getContext<PresentationReader|undefined>(PRESENTATION_CONTEXT);
   const optionPaths = getContext<() => Map<string, string>>(CHART_OPTION_PATHS);
@@ -344,12 +345,20 @@
           linkHref={table.linkHref}
         />
       {:else if component.type === 'mapChart'}
-        <MapChart
-          data={mainData}
-          props={component.props}
-          {map}
-          onregionclick={onchartclick && (({ row }) => onchartclick?.(row))}
-        />
+        <RegionMapViewport
+          enabled={!exportMode && component.props.hierarchyFilter === 'region'}
+          basemap={map ?? component.props.map}
+        >
+          {#snippet children(viewport)}
+            <MapChart
+              data={mainData}
+              props={component.props}
+              {map}
+              {viewport}
+              onregionclick={onchartclick && (({ row }) => onchartclick?.(row))}
+            />
+          {/snippet}
+        </RegionMapViewport>
       {/if}
     {/snippet}
   </WidgetHost>

@@ -18,6 +18,7 @@
   // Injected application session identity must survive Svelte's per-root deep proxies.
   let summaryConfig = $state.raw(untrack(() => initialInput.aiSummary));
   let gateway = $state.raw(untrack(() => initialInput.dataGateway));
+  let regionMap = $state.raw(untrack(() => initialInput.regionMap));
   let facts = $state.raw(untrack(() => initialInput.displayInputs));
   let authHandler = $state.raw(untrack(() => initialInput.onAuthRequired));
   let previousInput = untrack(() => initialInput);
@@ -34,6 +35,7 @@
     if (onlyAuthChanged) return;
     summaryConfig = next.aiSummary;
     gateway = next.dataGateway;
+    regionMap = next.regionMap;
     facts = next.displayInputs;
     input = next;
   }
@@ -44,6 +46,7 @@
   document={input.document}
   execution={input.execution}
   dataGateway={gateway}
+  {regionMap}
   aiSummary={summaryConfig}
   initialSearch={input.initialSearch}
   navigation={input.navigation}

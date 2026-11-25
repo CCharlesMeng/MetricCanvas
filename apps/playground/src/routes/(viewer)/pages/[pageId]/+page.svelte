@@ -60,7 +60,8 @@
   import { page } from '$app/state';
   import PageDocument from '$lib/PageDocument.svelte';
   import { documentLayoutForm, documentUsesRuntimeBackToolbar } from '@metriccanvas/page/internal';
-  import {projectNavigationInputs,type DataGateway} from '@metriccanvas/engine';
+  import {projectNavigationInputs,withOperationMapRegion,type DataGateway} from '@metriccanvas/engine';
+  import {createRegionMapFixture} from '../../../../../../../packages/embed/examples/ioc-region-map-fixture.mjs';
   import {
     RuntimeView,
     type RuntimeNavigation, type RuntimeViewEvent
@@ -90,6 +91,7 @@
   let pageRevisionId = $state<string | undefined>(undefined);
   let activeURL = '';
   let loadSession = 0;
+  const regionMapPreview = createRegionMapFixture(withOperationMapRegion);
   /** 页面外框在校验之前就要定下来,因此按原始文档结构读布局形态。 */
   const layoutForm = $derived(
     pageState.phase === 'ready' ? documentLayoutForm(pageState.document) : 'report'
@@ -138,6 +140,7 @@
   }
 
   function regionQueryGateway(input: ReturnType<typeof pageExternalInputs>): DataGateway | undefined {
+    if(input==='region-map')return regionMapPreview.dataGateway;
     if(input==='region-url')return createRegionURLGateway();
     if(input==='ioc-region'||input==='ioc-region-dept')return withIocRegionCandidates(dataGateway,input==='ioc-region');
   }
@@ -277,6 +280,7 @@
       displayInputs={activeDisplayInputs}
       document={pageState.document}
       dataGateway={pageState.dataGateway}
+      regionMap={pageExternalInputs(page.params.pageId)==='region-map'?regionMapPreview.regionMap:undefined}
       {aiSummary}
       onevent={recordSharedFilters}
       {initialSearch}

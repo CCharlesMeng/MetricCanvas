@@ -305,6 +305,25 @@ const handle = mount('#dashboard', { document: pageDocument, dataGateway });
 
 页面只写 `{ "id":"region-control", "type":"regionFilter" }`，不再复制 Region 定义；业务 `filterBindings.region` 仍保留原字段映射。现有 `initialSearch`、URL 和选择事件接线不变，不新增实时同步或默认全球选择。尚未安装 Adapter 的页面沿用既有候选能力缺失诊断；封装不会制造候选或跨权限回退。合成验收 `/pages/ioc-header-controls`，真实接口须在集成应用验证。
 
+## Operation Map 地图视口接入
+
+集成应用可在 `mount` 或 `RuntimeView` 注入可选的 `regionMap`，与 `withOperationMapRegion` 候选接线独立。
+
+```ts
+import { mount, type RegionMapAdapter } from '@metriccanvas/embed';
+
+const regionMap: RegionMapAdapter = {
+  async resolveViewport({ level, value, basemap }, { signal }) {
+    return hostMapData.viewport({ level, value, basemap }, { signal });
+  }
+};
+mount('#dashboard', { document, dataGateway, regionMap });
+```
+
+`level` 为 `region-dept` 或 `office`，`value` 为当前授权候选的业务值，`basemap` 为引擎实际选择的 `world` 或 `china`。回执为 `{ center: [longitude, latitude], zoom }`，中心经纬度有效范围分别为 ±180°、±90°，缩放为有限正值，以请求底图为基准。无匹配返回 `undefined`。宿主向上游传递取消信号，负责业务组织映射与参数发布。引擎隔离迟到回执、校验回执并应用视口，缺失、无效或失败时保留默认视角。切换全球恢复默认视角。
+
+启用后，标准 IOC Region 地图的显式写入动作及地区部内代表处地图点击依据当前候选树接入页头选择。代表处地图通过已声明的 `codeField` 与 `parentField` 读取组织值与父级。地图资料只影响地图呈现，业务查询继续按现有筛选绑定。可用 `packages/embed/examples/ioc-region-map.html` 查看独立合成宿主。
+
 ## 定稿日期查询
 
 6.120 页面支持结构先呈现、相关查询等待异步时间条件；旧页面保持原初始化路径。Dashboard 期间筛选声明 `default.finalizationName` 时，明确输入的月份也要等待定稿日期校验。端口及字段映射沿用下述约定。

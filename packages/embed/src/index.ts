@@ -33,6 +33,7 @@ export type {
   RuntimeDataGateway
 } from '@metriccanvas/engine';
 export type { AuthRequiredEvent, AiSummaryConfig, NavigationInputContract, RuntimeNavigation, RuntimeNavigationTarget } from '@metriccanvas/engine/ui';
+export type { MapViewport, RegionMapAdapter, RegionMapViewportRequest } from '@metriccanvas/engine/ui';
 
 interface EmbedRootExports {
   update(input: RuntimeInput): void;
@@ -147,6 +148,7 @@ function runtimeInput(input: RuntimeInput, navigation: RuntimeInput['navigation'
     document: input.document,
     onAuthRequired: input.onAuthRequired,
     ...(input.displayInputs!==undefined?{displayInputs:input.displayInputs}:{}),
+    ...(input.regionMap !== undefined ? { regionMap: input.regionMap } : {}),
     ...(input.execution !== undefined ? {execution:input.execution} : {}),
     ...(input.filterEditing !== undefined ? { filterEditing: input.filterEditing } : {}),
     navigation,

@@ -117,6 +117,7 @@ export interface RuntimeViewProps {
 
   execution?: import('../../runtime/src').ExecutionBootstrap;
   dataGateway?: RuntimeDataGateway;
+  regionMap?: import('./region-map').RegionMapAdapter;
   aiSummary?: import('./ai-summary').AiSummaryConfig;
   filterEditing?: { readOnly: boolean; reason?: string };
   initialSearch?: string;
