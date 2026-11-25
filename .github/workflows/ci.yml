@@ -119,6 +119,9 @@ jobs:
       - name: 验证 Embed 挂载和 ES/global 完整接入
         run: pnpm --filter @metriccanvas/embed exec playwright test mount-lifecycle.spec.ts distribution.spec.ts --workers=1
 
+      - name: 验证 Embed 定稿月缓存与表格渐进渲染
+        run: pnpm --filter @metriccanvas/embed exec playwright test finalization-progressive-table.spec.ts --workers=1
+
   ci:
     if: ${{ always() }}
     needs: [architecture, authoring, tests, types, build]
