@@ -1,4 +1,4 @@
-import { expect, test, type Locator, type Page } from '@playwright/test';
+import { expect, test, type Locator, type Page, type Route } from '@playwright/test';
 import {
   discountMetric, finalizationName, finalizationProgressiveTable, monthTitle
 } from '../fixtures/finalization-progressive-table';
@@ -10,13 +10,19 @@ const selectedMonth = '2026-10';
 type QueryItem = {
   output_dims: string[];
   output_metrics: string[];
-  filter?: { time?: { period?: string; start?: string; end?: string } };
+  filter?: { time?: { period?: string; start?: string; end?: string }; dims?: { dim_name: string; dim_value_list: string[] }[] };
 };
 
 function gate() {
   let release!: () => void;
   const pending = new Promise<void>(resolve => { release = resolve; });
   return { pending, release };
+}
+
+function fulfillRow(route: Route, row: Record<string, string | number | undefined>) {
+  return route.fulfill({ json: {
+    retCode: 'CBC.0000', results: [{ code: 'SUCCESS', total_count: 1, data: [row] }]
+  } });
 }
 
 async function routeQueries(page: Page) {
@@ -27,10 +33,7 @@ async function routeQueries(page: Page) {
     const { dsl_list: items } = route.request().postDataJSON() as { dsl_list: QueryItem[] };
     expect(items).toHaveLength(1);
     const [item] = items;
-    const row = await reply(item);
-    await route.fulfill({ json: {
-      retCode: 'CBC.0000', results: [{ code: 'SUCCESS', total_count: 1, data: [row] }]
-    } });
+    await fulfillRow(route, await reply(item));
   });
   return { calls, finalization, discount };
 
@@ -126,4 +129,51 @@ test('finalization gates queries while discounts preserve displayed rows and a n
   await mountTable(page, 'finalization-progressive-next-day');
   await expect(discountCell).toContainText('2.37');
   expect(queries.calls.finalizations).toBe(2);
+});
+
+test('a filtered total starts loading with the details and can finish before them', async ({ page }) => {
+  const queries = await routeQueries(page);
+  const detail = gate();
+  const summary = gate();
+  let summaryRequested = false;
+  await page.route(`**${endpoint}`, async route => {
+    const { dsl_list: [item] } = route.request().postDataJSON() as { dsl_list: QueryItem[] };
+    const customer = item.filter?.dims?.find(dim => dim.dim_name === '客户级别');
+    if (!customer?.dim_value_list.includes('核心NA')) return route.fallback();
+    if (item.output_dims.length === 0) {
+      summaryRequested = true;
+      await summary.pending;
+      return fulfillRow(route, { [discountMetric]: 4.81 });
+    }
+    await detail.pending;
+    return fulfillRow(route, { 区域: regionName, 金额: 84, [discountMetric]: 4.81 });
+  });
+  queries.finalization.release();
+  queries.discount.release();
+
+  await mountTable(page, finalizationProgressiveTable.id);
+  const table = page.getByRole('table');
+  const total = table.locator('[data-pinned-top]');
+  const totalDiscount = total.getByRole('cell').last();
+  const bodyLoading = table.locator('.skeleton-row').first();
+  await expect(totalDiscount).toHaveText('2.37');
+  await expect(bodyLoading).toHaveCount(0);
+  await page.getByRole('button', { name: '客户分类', exact: true }).press('ArrowDown');
+  await page.getByRole('option', { name: '核心NA', exact: true }).click();
+
+  try {
+    await expect.poll(() => summaryRequested).toBe(true);
+    await expect(bodyLoading).toBeVisible();
+    await expect(total.getByRole('cell', { name: '合计', exact: true })).toBeVisible();
+    await expect(totalDiscount.locator('.skeleton')).toBeVisible();
+
+    summary.release();
+    await expect(totalDiscount).toHaveText('4.81');
+    await expect(bodyLoading).toBeVisible();
+  } finally {
+    summary.release();
+    detail.release();
+  }
+  await expect(table.getByRole('cell', { name: '84', exact: true })).toBeVisible();
+  await expect(totalDiscount).toHaveText('4.81');
 });
