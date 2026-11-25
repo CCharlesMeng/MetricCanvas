@@ -14,9 +14,18 @@ function demo(page: Page) {
 }
 
 test('ES 宿主使用公开入口接入候选、查询与地图资料', async ({ page }) => {
-  await page.goto(example);
+  await page.addInitScript(() => {
+    const fillText = CanvasRenderingContext2D.prototype.fillText;
+    CanvasRenderingContext2D.prototype.fillText = function (...args) {
+      if (args[0].trim() === '中国区') document.documentElement.dataset.mapAliasDrawn = 'true';
+      fillText.apply(this, args);
+    };
+  });
+  await page.goto(example + '?mapLabels=short');
   const header = page.locator('[data-filter-id="region"]');
   await expect(header.getByRole('button', { name: '区域', exact: true })).toHaveText('全球');
+  await expect(page.locator('html')).toHaveAttribute('data-map-alias-drawn', 'true');
+  await expect(page.getByRole('table').getByText('中国地区部', { exact: true })).toBeVisible();
   await chooseTree(header, '欧洲地区部');
   await expect(page.getByRole('table').getByText('德国代表处', { exact: true })).toBeVisible();
   await expect.poll(() => demo(page)).toMatchObject({

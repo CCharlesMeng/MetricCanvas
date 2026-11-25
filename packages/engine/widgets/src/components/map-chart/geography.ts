@@ -1,10 +1,12 @@
 import {fieldName, mapGeographyEntryZ, type MapGeography, type MapGeographyEntry, type MapChartProps, type Row} from '@metriccanvas/page/internal';
 
 export type OrganizationLevel = 'region-dept' | 'office';
+export type RegionMapDisplayNames = Readonly<Partial<Record<OrganizationLevel, Readonly<Record<string, string>>>>>;
 type Entry = MapGeographyEntry;
 export interface GeographyInput {
   host?: MapGeography;
   page?: MapGeography;
+  displayNames?: RegionMapDisplayNames;
 }
 
 function organizationBinding(props: MapChartProps): {level:OrganizationLevel; field:string} | undefined {
@@ -52,19 +54,30 @@ export function resolvePlacement(host: Entry | undefined, page: Entry | undefine
   return {point:point ?? {feature:value}, features};
 }
 
+function organizationDisplayName(names: Readonly<Record<string, string>> | undefined, value: string) {
+  if (!value) return;
+  const name = names && Object.hasOwn(names, value) ? names[value] : undefined;
+  return typeof name === 'string' ? name.trim() || undefined : undefined;
+}
+
 export function mapRows(rows: Row[], nameField: string, props: MapChartProps, input?: GeographyInput) {
   const points = new Map<string, Row>();
   const areas = new Map<string, Row | undefined>();
   const placements = new Map<Row, ReturnType<typeof resolvePlacement>>();
+  const displayNames = new Map<Row, string>();
   const binding = organizationBinding(props);
+  const organizationNames = binding && input?.displayNames?.[binding.level];
   const shared = Boolean(binding && (input?.host || input?.page));
   for (const row of rows) {
     const name = String(row[nameField] ?? '');
-    const entries = binding && input ? organizationEntries(input, props.map, binding.level, String(row[binding.field] ?? '')) : {host:undefined, page:undefined};
+    const organization = String(row[binding?.field ?? nameField] ?? '');
+    const entries = binding && input ? organizationEntries(input, props.map, binding.level, organization) : {host:undefined, page:undefined};
     const placement = resolvePlacement(entries.host, entries.page, props.nameMap?.[name], name);
+    const displayName = organizationDisplayName(organizationNames, organization);
+    if (displayName) displayNames.set(row, displayName);
     placements.set(row, placement);
     points.set(name,row);
     for (const feature of placement.features) areas.set(feature,shared && areas.has(feature) ? undefined : row);
   }
-  return {points, areas, placements, shared};
+  return {points, areas, placements, shared, displayNames};
 }

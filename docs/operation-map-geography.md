@@ -2,6 +2,8 @@
 
 目标版本为支持合同商务总览 Schema 6.141 的 MC Embed。交付时请从同一份构建复制入口和全部 chunks。OM 负责提供当前身份的组织候选、查询网关及共享地理字典。MC 按页面配置分区，绘制底图及业务行，并将点击回写至页头 Region。浏览器可执行的接线示例见 [独立集成页](../packages/embed/examples/ioc-region-map.html)、[模拟数据网关及地图适配器](../packages/embed/examples/ioc-region-map-fixture.mjs) 与 [所属地区部展示事实](../packages/embed/examples/region-department-facts.mjs)。模拟网关应替换为 OM 已有网关。
 
+组织简称通过 Embed 的可选挂载参数 `regionMap.displayNames` 提供，按 `region-dept`、`office` 分组，以原业务值作键，例如 `{ "region-dept": {"中国地区部":"中国区"}, "office": {"德国代表处":"德国"} }`。OM 可以集中维护字典，按页面决定是否传入。地图的散点文字和对应数据行的悬浮标题使用命中的非空显示名。页头候选 `label` 应继续传完整组织名称。点击回写、DQE 维度值和底图地理匹配继续使用原值。
+
 ## 第一步　整理数据
 
 | 资料 | OM 到哪里取 | 交给 MC 的结构 |

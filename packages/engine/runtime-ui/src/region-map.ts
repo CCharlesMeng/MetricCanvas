@@ -1,6 +1,7 @@
 import type { MapGeography } from '@metriccanvas/page/internal';
-import {organizationEntries, type GeographyInput} from '../../widgets/src/components/map-chart/geography';
+import {organizationEntries, type GeographyInput, type RegionMapDisplayNames} from '../../widgets/src/components/map-chart/geography';
 export type {MapGeography} from '@metriccanvas/page/internal';
+export type {RegionMapDisplayNames} from '../../widgets/src/components/map-chart/geography';
 import type { MapViewport } from '../../widgets/src/components/map-chart/options';
 import type { DimensionValuesSnapshot, FilterValue } from '../../runtime/src';
 
@@ -12,10 +13,16 @@ export interface RegionMapViewportRequest {
 
 export interface RegionMapAdapter {
   geography?: MapGeography;
+  displayNames?: RegionMapDisplayNames;
   resolveViewport?(
     request: RegionMapViewportRequest,
     options: { signal: AbortSignal }
   ): Promise<MapViewport | undefined>;
+}
+
+export function hasRegionMapRouting(adapter: RegionMapAdapter | undefined): boolean {
+  // A mount that supplies only display names keeps its existing Region selection path.
+  return !!adapter && (adapter.displayNames === undefined || !!adapter.geography || !!adapter.resolveViewport);
 }
 
 export type { MapViewport };

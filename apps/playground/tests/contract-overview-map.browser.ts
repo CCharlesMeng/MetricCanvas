@@ -3,6 +3,7 @@ import { fileURLToPath } from 'node:url';
 
 const charts = '/@fs' + fileURLToPath(new URL('../../../packages/engine/widgets/src/shared/echarts-runtime.ts', import.meta.url));
 const region = '欧洲地区部';
+const mapDisplayName = '欧洲';
 const metrics: Record<string, number> = {
   '净商务折扣（原价）': 36.4,
   '净商务折扣（原价）年变化': -1.2,
@@ -75,23 +76,24 @@ test('合同商务地图先显示点位，再显示折扣和同一组织的四�
   await page.route('**/rest/cdi/cdinl2databuilderservice/v1/dsl/execute', respond);
   try {
     await page.setViewportSize({width: 1600, height: 950});
-    await page.goto('/pages/contract-business-overview');
+    await page.goto('/pages/contract-business-overview?mapLabels=short');
     const chart = page.locator('[data-component="overview-content/world-map"] [_echarts_instance_]');
     const table = page.locator('[data-component="overview-content/global-overview-table"]');
     const card = page.locator('[data-component="overview-content/discount-card-overview"]');
     await expect(chart).toBeVisible({timeout: 15_000});
-    await expect.poll(() => mapPoint(chart)).toMatchObject({label: region, value: null, coloredAreas: 0});
+    await expect.poll(() => mapPoint(chart)).toMatchObject({label: mapDisplayName, value: null, coloredAreas: 0});
     expect(pending).toEqual(new Set(['discount', 'margin']));
     await expect(table.getByText(region, {exact: true})).toBeVisible();
     const heading = page.locator('[data-map-tooltip-heading]');
     const rows = page.locator('[data-map-tooltip-row]');
     await hoverPoint(chart);
+    await expect(heading).toHaveText(mapDisplayName);
     await expect(rows.nth(2)).toHaveText(/框架执行率\s+74\.6%/);
     await expect(rows.first()).toHaveText(/净商务折扣\s+—\s*同比\s+—/);
 
     discount.resolve();
     await expect.poll(() => mapPoint(chart)).toMatchObject({
-      label: `${region} {metric|36.4%}`, value: 36.4, metricLabel: {fontWeight: 'bold', color: '#000'}
+      label: `${mapDisplayName} {metric|36.4%}`, value: 36.4, metricLabel: {fontWeight: 'bold', color: '#000'}
     });
     await expect(card.locator('.change-label')).toHaveText('同比');
     await expect(card.locator('.change-value')).toHaveText('-1.2P');
@@ -101,7 +103,7 @@ test('合同商务地图先显示点位，再显示折扣和同一组织的四�
     expect(pending.has('margin')).toBe(true);
     await page.mouse.move(5, 5);
     await hoverPoint(chart);
-    await expect(heading).toHaveText(region);
+    await expect(heading).toHaveText(mapDisplayName);
     await expect(heading).toHaveCSS('font-size', '18px');
     await expect(heading.locator('..')).toHaveCSS('border-top-width', '0px');
     await expect(rows).toHaveText([
