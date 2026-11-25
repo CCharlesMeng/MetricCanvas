@@ -1603,6 +1603,16 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/invalid/finalization-name-list-version.json",
+      "target": "product-contracts/page/conformance/invalid/finalization-name-list-version.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/finalization-name-list-empty.json",
+      "target": "product-contracts/page/conformance/invalid/finalization-name-list-empty.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/invalid/map-overrides-version.json",
       "target": "product-contracts/page/conformance/invalid/map-overrides-version.json",
       "scope": "exact product contract"
@@ -4925,6 +4935,16 @@
     {
       "source": "product:page/reference/errors/ioc-auto-back-unknown.json",
       "target": "references/page-metadata/errors/ioc-auto-back-unknown.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/finalization-name-list-version.json",
+      "target": "references/page-metadata/errors/finalization-name-list-version.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/finalization-name-list-empty.json",
+      "target": "references/page-metadata/errors/finalization-name-list-empty.json",
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
@@ -9359,11 +9379,11 @@
     }
   ],
   "counts": {
-    "product": 1839,
+    "product": 1843,
     "authoring": 32,
     "modules": 36,
-    "topics": 336,
-    "nodes": 2799,
+    "topics": 337,
+    "nodes": 2802,
     "tools": 9,
     "components": 20
   },

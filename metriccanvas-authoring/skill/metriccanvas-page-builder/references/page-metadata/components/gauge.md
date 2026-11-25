@@ -13,7 +13,7 @@
 本组件的数据配置项支持字段或常量来源，声明互斥、格式单位、空态和限制见[组件取值](../field-bindings-and-formats.md#chart-constant-values)。示例路由为 `/pages/chart-constant-values-page`。常量沿本组件原有行集或单值语义使用，不新增查询结果或业务身份。
 
 
-页面协议 6.139。结构真源为本册[schema.json](../schema.json)，SHA256 `51454666e5be3d15087cf43505c6e85cf446dd5a8abdd3c72dc5237b4102cece`。字段表自动生成；可选不等于有默认值。
+页面协议 6.140。结构真源为本册[schema.json](../schema.json)，SHA256 `e63ac5e9265706b6508600a77a489c4d8f0e7b60be7e71666860f8834b820779`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

@@ -134,7 +134,7 @@ Schema 6.131 起，`urlParams: false` 的维度筛选器没有本页 URL 输入�
 6.106 起，列动作和组件动作的 `openDetail.title` 可声明固定标题或 `{parts:[固定文字,{field:当前行字段,format:可选格式},…]}`。快照与查询详情共用同一取值规则；旧 `titleField` 继续读取，与 `title` 互斥。完整声明、空值与版本边界见[详情组合标题](components/table.md#detail-composed-title)，合成场景 `/pages/partner-health-interactions` 包含组合标题的表格入口与固定标题的图表入口。
 
 
-页面协议 6.139。结构真源为本册[schema.json](schema.json)，SHA256 `51454666e5be3d15087cf43505c6e85cf446dd5a8abdd3c72dc5237b4102cece`。字段表自动生成；可选不等于有默认值。
+页面协议 6.140。结构真源为本册[schema.json](schema.json)，SHA256 `e63ac5e9265706b6508600a77a489c4d8f0e7b60be7e71666860f8834b820779`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

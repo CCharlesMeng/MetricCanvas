@@ -1,5 +1,7 @@
 # MetricCanvas 页面元数据规范
 
+Schema 6.140 支持 Dashboard 自然期间在 `default.finalizationName` 传入非空定稿名称数组。引擎一次查询，取有效当年日期中的最早月份，全部不可用时沿用当前月。见[多个定稿名称](docs/page-metadata/filters.md#multiple-finalization-names)与合成入口 `/pages/finalization-default-time`。
+
 IOC Region 地图可由集成应用注入视口资料。地图点击使用当前候选节点切换页头 Region，查询和地图继续消费同一筛选状态。页面沿用现有声明，见[宿主地图视口](docs/page-metadata/components/mapChart.md#ioc-region-map-viewport)与合成入口 `/pages/ioc-region-map-demo`。
 
 Schema 6.139 支持页面根级 `mapOverrides`，按底图、组织层级和组织值覆盖集成应用的地理资料。参见[地图地理资料](docs/page-metadata/components/mapChart.md#map-geography)。

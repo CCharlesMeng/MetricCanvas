@@ -53,6 +53,18 @@ test('shows post-finalization months greyed out as soon as the panel opens', asy
   await expect(month).toHaveValue('2026-10');
 });
 
+test('uses the available cutoff when one configured name is missing', async ({page}) => {
+  await page.goto('/pages/finalization-default-time?state=partial&period-filter=month:2026-10');
+  const period = page.locator('[data-period-filter]');
+  const month = period.getByRole('combobox');
+  await expect(month).toHaveValue('2026-09');
+  await expect(page.getByText('2026-09 至 2026-09；定稿查询 1 次', {exact: true})).toBeVisible();
+  await month.click();
+  await expect(page.getByRole('button', {name: '2026-10', exact: true})).toBeDisabled();
+  await page.getByRole('button', {name: '近一年', exact: true}).click();
+  await expect(page.getByText('2025-10 至 2026-09；定稿查询 1 次', {exact: true})).toBeVisible();
+});
+
 test('defaults to and restores a rolling window ending in the finalized month', async ({page}) => {
   await page.goto('/pages/finalization-default-time-detail');
   await expect(page.getByText('2025-11 至 2026-10；定稿查询 1 次', {exact: true})).toBeVisible();

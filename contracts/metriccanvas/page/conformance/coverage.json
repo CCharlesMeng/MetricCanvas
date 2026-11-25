@@ -73,6 +73,18 @@
       ]
     },
     {
+      "id": "finalization-name-list",
+      "description": "6.140 Dashboard 自然期间可用多个定稿名称选择定稿月",
+      "valid": [
+        "finalization-default-time",
+        "finalization-default-time-detail"
+      ],
+      "invalid": [
+        "finalization-name-list-version",
+        "finalization-name-list-empty"
+      ]
+    },
+    {
       "id": "map-geography-overrides",
       "description": "组织地图资料支持页面覆盖",
       "valid": [

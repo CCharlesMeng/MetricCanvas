@@ -1,7 +1,8 @@
 import { validateCalendarTimeRange, type TimeRangeValue } from './filter';
+import { isFinalizationDefault, type FinalizationName } from './finalization-default';
 
 export type PeriodMode = 'year' | 'quarter' | 'month' | 'last12Months';
-export type PeriodSelection = { mode: 'year' | 'quarter' | 'month'; value?: string; finalizationName?: string } | { mode: 'last12Months'; finalizationName?: string; anchor?: string };
+export type PeriodSelection = { mode: 'year' | 'quarter' | 'month'; value?: string; finalizationName?: FinalizationName } | { mode: 'last12Months'; finalizationName?: FinalizationName; anchor?: string };
 export type AppliedPeriodSelection = { mode: 'year' | 'quarter' | 'month'; value: string } | { mode: 'last12Months'; anchor?: string };
 export type PeriodRange = TimeRangeValue & { selection: AppliedPeriodSelection };
 const pad = (n: number) => String(n).padStart(2, '0');
@@ -72,7 +73,7 @@ export function periodRangeLabel(range: TimeRangeValue): string {
 }
 
 function validPeriodAnchor(value: Record<string, unknown>): boolean {
-  if (value.finalizationName !== undefined && (typeof value.finalizationName !== 'string' || !value.finalizationName.trim() || value.value !== undefined)) return false;
+  if (value.finalizationName !== undefined && (value.value !== undefined || !isFinalizationDefault(value))) return false;
   if (value.anchor === undefined) return true;
   return value.mode === 'last12Months' && typeof value.anchor === 'string' && validateCalendarTimeRange({from:value.anchor,to:value.anchor}, 'month').length === 0;
 }

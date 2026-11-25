@@ -2464,7 +2464,8 @@
     "#/properties/schemaVersion=\"6.136\"": "指标卡的主、次指标行可为各自的变化项声明 visibleWhen。",
     "#/properties/schemaVersion=\"6.137\"": "正文分区顶层表格可声明 expand，展开时占满分区整行。",
     "#/properties/schemaVersion=\"6.138\"": "指标卡主指标行可用 colorRule 给主值着色。",
-    "#/properties/schemaVersion=\"6.139\"": "组织地图共享地理资料与页面级覆盖。"
+    "#/properties/schemaVersion=\"6.139\"": "组织地图共享地理资料与页面级覆盖。",
+    "#/properties/schemaVersion=\"6.140\"": "Dashboard 自然期间可从多个定稿名称选取当年最早的有效定稿月。"
   },
   "branchExceptions": {
     "#/properties/iocHeader/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/0": {
@@ -3381,7 +3382,8 @@
         "#/definitions/periodSelection/anyOf/2"
       ],
       "headings": [
-        "定稿日期默认值（6.104）"
+        "定稿日期默认值（6.104）",
+        "多个定稿名称（6.140）"
       ],
       "dependencies": []
     },
@@ -3549,7 +3551,8 @@
       "维度筛选器关闭 URL 同步（6.131）",
       "内联层级候选（6.122）",
       "候选查询分页",
-      "定稿日期默认值（6.104）"
+      "定稿日期默认值（6.104）",
+      "多个定稿名称（6.140）"
     ],
     "sections-and-layout.md": [
       "Report 与 Dashboard 标题",

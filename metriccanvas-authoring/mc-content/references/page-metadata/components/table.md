@@ -606,7 +606,7 @@ sign 模式的零、负零及缺失不显示箭头；fixed 模式与固定颜色
 配置示例见 [table-expand](../examples/table-expand.json)，Playground 入口 `/pages/table-expand`。
 
 
-页面协议 6.139。结构真源为本册[schema.json](../schema.json)，SHA256 `51454666e5be3d15087cf43505c6e85cf446dd5a8abdd3c72dc5237b4102cece`。字段表自动生成；可选不等于有默认值。
+页面协议 6.140。结构真源为本册[schema.json](../schema.json)，SHA256 `e63ac5e9265706b6508600a77a489c4d8f0e7b60be7e71666860f8834b820779`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

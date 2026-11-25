@@ -1,0 +1,26 @@
+{
+  "case": "finalization-name-list-version",
+  "invariant": "finalization-name-list",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "自然期间可按多个定稿名称选择当年最早的可用定稿月 由 6.140 引入，文档声明的是 6.139",
+      "paths": [
+        "/filters/0/default/finalizationName"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      {
+        "default": {
+          "finalizationName": [
+            "合同数据",
+            "经营数据"
+          ]
+        }
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/finalization-name-list-version.json"
+}

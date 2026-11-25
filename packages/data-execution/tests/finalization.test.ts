@@ -100,6 +100,45 @@ describe('page-scoped finalization initialization', () => {
     const declaration: FilterDeclaration = {id:'period',type:'timeRange',display:'period',precision:'month',default:{mode:'last12Months',finalizationName:'经营数据'}};
     expect(initialFilterValues([declaration], now, undefined, 0, new Map([['经营数据','0001-01-01']])).get('period')).toMatchObject({from:'2025-12',to:'2026-11'});
   });
+  it('uses the earliest valid date this year regardless of array and response order', async () => {
+    const declaration: FilterDeclaration = {
+      id: 'period', type: 'timeRange', display: 'period', precision: 'month',
+      default: {mode: 'month', finalizationName: ['收入', '去年', '无效', ' 利润 ', '缺失']}
+    };
+    const base = gateway([
+      {name: '收入', date: '2026-10-18'}, {name: '无效', date: '2026-02-30'},
+      {name: '利润', date: '2026-09-30'}, {name: '去年', date: '2025-12-31'}
+    ]);
+    const point: FilterDeclaration = {id: 'date', type: 'timePoint', granularity: 'date', default: {finalizationName: '缺失'}};
+    const declarations = [declaration, point];
+    const dates = await resolveFinalizationDates({...page, filters: declarations}, base, now);
+    expect(base.fetchData).toHaveBeenCalledTimes(1);
+    expect(dates.has('缺失')).toBe(false);
+    const values = initialFilterValues(declarations, now, undefined, 0, dates);
+    expect(values.get('period')).toMatchObject({from: '2026-09', to: '2026-09'});
+    expect(values.get('date')).toMatchObject({value: '2026-11-09'});
+  });
+  it('falls back to the current month when no name has a valid date this year', async () => {
+    const declaration: FilterDeclaration = {id:'period',type:'timeRange',display:'period',precision:'month',default:{mode:'last12Months',finalizationName:['去年', '缺失']}};
+    const base = gateway([{name: '去年', date: '2025-12-31'}]);
+    const dates = await resolveFinalizationDates({...page, filters: [declaration]}, base, now);
+    expect(initialFilterValues([declaration], now, undefined, 0, dates).get('period')).toMatchObject({from:'2025-12',to:'2026-11'});
+  });
+  it('shares the array cutoff with one-shot prefetch when a name is absent', async () => {
+    const metadata = document();
+    metadata.schemaVersion = '6.140';
+    metadata.filters = [{
+      id: 'period-filter', type: 'timeRange', display: 'period', precision: 'month',
+      default: {mode: 'month', finalizationName: ['收入', '利润', '缺失']}
+    }];
+    const base: RuntimeDataGateway = {...gateway(), fetchData: vi.fn(async query => query.fieldMappings.name
+      ? {rows: [{name: '收入', date: '2026-10-18'}, {name: '利润', date: '2026-09-30'}]}
+      : {rows: []})};
+    await createPageDataExecutor({gateway: base, now}).execute(metadata);
+    const calls = vi.mocked(base.fetchData).mock.calls;
+    expect(calls.filter(([query]) => query.fieldMappings.name)).toHaveLength(1);
+    expect(calls.some(([query]) => query.filterValues.some(value => value.target === 'time' && value.value.from.startsWith('2026-09')))).toBe(true);
+  });
   it('uses the configured DQE transport and normalizes external name/date fields', async () => {
     const fetchImpl = vi.fn(async () => new Response(JSON.stringify({retCode:'CBC.0000', results:[{code:'SUCCESS', data:[{'名称':'经营数据','截止日期':'2026-10-18'}], total_count:1}]}), {headers:{'content-type':'application/json'}}));
     const base = createDqeGateway({endpoint:'https://example.test/dqe', finalizationSource:source, fetchImpl});

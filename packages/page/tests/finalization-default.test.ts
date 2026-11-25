@@ -42,6 +42,40 @@ describe('finalization default contract', () => {
   it.each(['5.0','5.4','6.98','6.100'])('requires the capability floor even through %s compatibility reading', schemaVersion => {
     expect(capabilityFloorErrors({schemaVersion, filters:[{id:'point',type:'timePoint',granularity:'date',default:{finalizationName:'经营数据'}}]})).toEqual(expect.arrayContaining([expect.objectContaining({path:'/filters/0/default/finalizationName'})]));
   });
+  it.each(['month', 'quarter', 'year', 'last12Months'])('accepts a non-empty name array for a %s default', mode => {
+    const value = page();
+    value.schemaVersion = '6.140';
+    value.filters[0].default = {mode, finalizationName: ['合同数据', ' 经营数据 ']};
+    expect(parsePage(value).ok).toBe(true);
+  });
+  it.each([[], [''], ['经营数据', 9], ['经营数据', '  ']].map(value => [value]))('rejects an invalid name array %j', finalizationName => {
+    const value = page();
+    value.schemaVersion = '6.140';
+    value.filters[0].default = {mode: 'month', finalizationName};
+    expect(parsePage(value).ok).toBe(false);
+  });
+  it('requires 6.140 for a name array at the existing field path', () => {
+    const value = page();
+    value.schemaVersion = '6.139';
+    value.filters[0].default.finalizationName = ['经营数据'];
+    const parsed = parsePage(value);
+    expect(parsed.ok).toBe(false);
+    if (!parsed.ok) expect(parsed.errors).toEqual(expect.arrayContaining([expect.objectContaining({path: '/filters/0/default/finalizationName'})]));
+  });
+  it.each([
+    {layout: 'report', filter: {type: 'timeRange', display: 'period', default: {mode: 'month'}}},
+    {layout: 'dashboard', filter: {type: 'timeRange', precision: 'month', default: {}}},
+    {layout: 'dashboard', filter: {type: 'timePoint', granularity: 'month', default: {}}}
+  ])('rejects an array outside Dashboard natural periods %j', ({layout, filter}) => {
+    const value = page();
+    value.schemaVersion = '6.140';
+    value.layout = layout;
+    value.filters[0] = {id: 'period-filter', ...filter, default: {...filter.default, finalizationName: ['经营数据']}};
+    value.dataSources = {};
+    delete value.iocHeader;
+    value.sections = [{id: 'body', components: [{id: 'note', type: 'text', layout: {span: 12}, props: {body: '定稿名称'}}]}];
+    expect(parsePage(value).ok).toBe(false);
+  });
   it('keeps relative defaults out of parameter extraction', () => {
     const result = extractPageParams(page(), {baseline: 'finalization'});
     expect(result.ok).toBe(true);

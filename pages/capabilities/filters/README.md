@@ -363,9 +363,9 @@
 
 入口：`/pages/finalization-default-time` 与 `/pages/finalization-default-time-detail`。启动 `pnpm dev:playground` 后直接访问；使用确定性合成网关，不需要 DQE Sim。
 
-页面主时间筛选声明 `default:{mode:"month",finalizationName:"经营数据"}`。合成截止日期为2026-10-18，首次选择 10 月，明细显示实际查询期间和“定稿查询1次”。打开月份面板，10 月可选，11 月及以后立即置灰，已禁选的当前月也不会显示深色描边；手输 2026-11 后回车，查询仍为 10 月。直接打开带 `?period-filter=month:2026-11` 的链接也回到 10 月。切到「季」可选择完整 Q4。将月份改为 2026-08，再点「近一年」。查询范围为 2025-11 至 2026-10，定稿查询计数仍为 1。点击「查看同期间下钻页」后保留已应用模式和起止。直接打开明细页，或在来源页使用 `?period-filter=last12Months`，均以定稿月计算范围。页头使用首section首组件iocHeader。
+总览页使用 `default:{mode:"month",finalizationName:["合同数据","经营数据"]}`，明细页使用单名称字符串。合成截止日期分别为 2026-11-08 和 2026-10-18。浏览器时钟在 2026 年 11 月时，总览页首次选择 10 月，明细显示实际查询期间和“定稿查询1次”。打开月份面板，10 月可选，11 月及以后立即置灰，已禁选的当前月也不会显示深色描边；手输 2026-11 后回车，查询仍为 10 月。直接打开带 `?period-filter=month:2026-11` 的链接也回到 10 月。切到「季」可选择完整 Q4。将月份改为 2026-08，再点「近一年」。查询范围为 2025-11 至 2026-10，定稿查询计数仍为 1。点击「查看同期间下钻页」后保留已应用模式和起止。直接打开明细页，或在来源页使用 `?period-filter=last12Months`，均以定稿月计算范围。页头使用首section首组件iocHeader。
 
-`?state=error` 模拟请求失败，missing无记录、invalid非法日期、conflict同名不同日期、timeout超时；各入口均回退执行环境当前月。切换近一年后，比如当时为 2026-11，查询范围为 2025-12 至 2026-11。URL明确传入例如 `?period-filter=month%3A2026-08` 时，定稿查询仍执行一次，再由既有导航流程应用8月。
+`?state=partial` 仅返回合同数据的 2026-09-30，总览页选 9 月、禁选 10 月，「近一年」查询 2025-10 至 2026-09，定稿查询仍为 1 次。`?state=error` 模拟请求失败，missing 无记录、invalid 非法日期、conflict 同名不同日期、timeout 超时；无可用日期时回退执行环境当前月。切换近一年后，比如当时为 2026-11，查询范围为 2025-12 至 2026-11。URL明确传入例如 `?period-filter=month%3A2026-08` 时，定稿查询仍执行一次，再由既有导航流程应用8月。
 
 浏览器自动验收：`pnpm --filter playground exec playwright test tests/finalization-default.browser.ts`。场景仅证明协议与引擎，不证明真实截止表、DQE、Relay或生产权限接入。
 

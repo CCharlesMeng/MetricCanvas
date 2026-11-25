@@ -117,6 +117,19 @@ export const invariants: InvariantDefinition[] = [
     {case:'ioc-auto-back-unknown',base:'ioc-auto-back-page',expect:/must/,mutate:d=>{firstComponent(d).props.back='history';}}
   ]},
   {
+    id: 'finalization-name-list',
+    description: '6.140 Dashboard 自然期间可用多个定稿名称选择定稿月',
+    valid: ['finalization-default-time', 'finalization-default-time-detail'],
+    cases: [
+      {case: 'finalization-name-list-version', base: 'finalization-default-time', expect: /由 6.140 引入/, mutate: document => {
+        document.schemaVersion = '6.139';
+      }},
+      {case: 'finalization-name-list-empty', base: 'finalization-default-time', expect: /finalizationName/, mutate: document => {
+        document.filters[0].default.finalizationName = [];
+      }}
+    ]
+  },
+  {
     id: 'map-geography-overrides', description:'组织地图资料支持页面覆盖', valid:['ioc-region-map-demo'],
     cases:[{case:'map-overrides-version',base:'ioc-region-map-demo',expect:/由 6.139 引入/,mutate: document => {document.schemaVersion='6.138';}},
       {case:'map-overrides-invalid-zoom',base:'ioc-region-map-demo',expect:/zoom|大于|greater|>/i,mutate: document => {document.mapOverrides.world['region-dept']['欧洲地区部'].viewport.zoom=-1;}}]
