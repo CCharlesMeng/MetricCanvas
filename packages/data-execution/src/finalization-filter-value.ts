@@ -1,5 +1,5 @@
 import {
-  calendarDateClock, finalizationDate, finalizationName, isPeriodSelection, localCalendarDate, resolvePeriodSelection,
+  calendarDateClock, finalizationName, isPeriodSelection, localCalendarDate, resolvedFinalizationDate, resolvePeriodSelection,
   type FilterDeclaration
 } from '@metriccanvas/page/internal';
 import type { FilterValue } from './filter-values';
@@ -10,7 +10,7 @@ export function finalizationFilterValue(
   const name = finalizationName(declaration);
   if (!name) return;
   const fallback = localCalendarDate(now);
-  const date = finalizationDate(dates?.get(name)) ?? fallback;
+  const date = resolvedFinalizationDate(name, dates, now) ?? fallback;
   const month = declaration.type === 'timeRange' && declaration.display === 'period'
     && isPeriodSelection(declaration.default) && declaration.default.mode === 'month';
   if (month && date.slice(0, 7) > fallback.slice(0, 7)) return valueAtDate(declaration, fallback);

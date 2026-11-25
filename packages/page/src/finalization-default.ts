@@ -3,31 +3,56 @@ import type { AppliedPeriodSelection } from './period-filter';
 
 /** Business lookup name; the resolved date belongs to the page instance. */
 export interface FinalizationDefault { finalizationName: string }
+export type FinalizationName = string | string[];
 
-export function isFinalizationDefault(value: unknown): value is FinalizationDefault {
-  return !!value && typeof value === 'object' && 'finalizationName' in value && typeof value.finalizationName === 'string';
+function isFinalizationNameText(value: unknown): value is string {
+  return typeof value === 'string' && /\S/.test(value);
 }
 
-export function finalizationName(filter: FilterDeclaration): string | undefined {
+function isFinalizationName(value: unknown): value is FinalizationName {
+  if (!Array.isArray(value)) return isFinalizationNameText(value);
+  return value.length > 0 && value.every(isFinalizationNameText);
+}
+
+export function isFinalizationDefault(value: unknown): value is { finalizationName: FinalizationName } {
+  return !!value && typeof value === 'object' && 'finalizationName' in value && isFinalizationName(value.finalizationName);
+}
+
+export function finalizationName(filter: FilterDeclaration): FinalizationName | undefined {
   if (filter.type !== 'timeRange' && filter.type !== 'timePoint') return;
-  return isFinalizationDefault(filter.default) ? filter.default.finalizationName.trim() : undefined;
+  const value: unknown = filter.default;
+  if (!isFinalizationDefault(value)) return;
+  const name = value.finalizationName;
+  return typeof name === 'string' ? name.trim() : name.map(item => item.trim());
 }
 
-export function rollingFinalizationName(filter: FilterDeclaration): string | undefined {
+export function rollingFinalizationName(filter: FilterDeclaration): FinalizationName | undefined {
   if (filter.type !== 'timeRange' || filter.display !== 'period') return;
   if (filter.periodModes && !filter.periodModes.includes('last12Months')) return;
   return finalizationName(filter);
 }
 
-export function monthFinalizationName(filter: FilterDeclaration): string | undefined {
+export function monthFinalizationName(filter: FilterDeclaration): FinalizationName | undefined {
   if (filter.type !== 'timeRange' || filter.display !== 'period') return;
   if (filter.periodModes && !filter.periodModes.includes('month')) return;
   return finalizationName(filter);
 }
 
-export function finalizationMonthLimit(name: string | undefined, dates: ReadonlyMap<string, string> | undefined, now = new Date()): string | undefined {
-  if (!name) return;
-  const month = dates?.get(name)?.slice(0, 7);
+export function resolvedFinalizationDate(name: FinalizationName | undefined, dates: ReadonlyMap<string, string> | undefined, now = new Date()): string | undefined {
+  if (!name || !dates) return;
+  if (typeof name === 'string') return finalizationDate(dates.get(name));
+  const year = localCalendarDate(now).slice(0, 4);
+  let earliest: string | undefined;
+  for (const item of name) {
+    const date = finalizationDate(dates.get(item));
+    if (!date?.startsWith(year + '-')) continue;
+    if (earliest === undefined || date < earliest) earliest = date;
+  }
+  return earliest;
+}
+
+export function finalizationMonthLimit(name: FinalizationName | undefined, dates: ReadonlyMap<string, string> | undefined, now = new Date()): string | undefined {
+  const month = resolvedFinalizationDate(name, dates, now)?.slice(0, 7);
   const current = localCalendarDate(now).slice(0, 7);
   return month && month > current ? current : month;
 }

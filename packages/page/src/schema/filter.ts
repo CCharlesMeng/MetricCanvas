@@ -72,7 +72,7 @@ const relativeTimeExpressionZ = z
 
 const finalizationNameZ = z.string().min(1).regex(/\S/);
 const finalizationDefaultZ = z.object({finalizationName:finalizationNameZ}).strict();
-const periodSelectionZ = z.union([z.object({mode:z.enum(['year','quarter','month']),value:z.string().optional()}).strict(),z.object({mode:z.literal('last12Months')}).strict(),z.object({mode:z.enum(['year','quarter','month','last12Months']),finalizationName:finalizationNameZ}).strict()]).meta({id:'periodSelection'});
+const periodSelectionZ = z.union([z.object({mode:z.enum(['year','quarter','month']),value:z.string().optional()}).strict(),z.object({mode:z.literal('last12Months')}).strict(),z.object({mode:z.enum(['year','quarter','month','last12Months']),finalizationName:z.union([finalizationNameZ,z.array(finalizationNameZ).min(1)])}).strict()]).meta({id:'periodSelection'});
 
 const availabilityZ=z.object({fact:idZ,initial:z.enum(['latest','latestComplete']).optional(),max:z.enum(['latest','latestComplete']),blockMissing:z.literal(true).optional()}).strict();
 const calendarExtras={min:z.string().optional(),max:z.string().optional(),blockedRanges:z.array(timeRangeValueZ).optional(),availability:availabilityZ.optional()};

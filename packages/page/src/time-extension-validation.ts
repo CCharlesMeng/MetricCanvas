@@ -12,7 +12,7 @@ export function timeExtensionErrors(page:Page):TypedError[]{
   const path=`/filters/${i}`;
   if(filter.type==='dimension'&&filter.candidateWindow&&(filter.options||filter.hierarchy))fail(path,'月份窗口仅用于动态平面年月维度');
   if(filter.type!=='timeRange'&&filter.type!=='timePoint')continue;
-  finalizationDeclarationErrors(filter,path,fail);
+  finalizationDeclarationErrors(filter,page.layout,path,fail);
   if(filter.availability?.initial&&(filter.default!==undefined||filter.initialParam))fail(path,'availability.initial与default/initialParam互斥');
   if(filter.type==='timeRange'){
    if(filter.display==='modes'){
@@ -44,9 +44,10 @@ function headerFactErrors(page:Page):TypedError[] {
  return errors;
 }
 
-function finalizationDeclarationErrors(filter:Extract<import('./filter').FilterDeclaration,{type:'timeRange'|'timePoint'}>,path:string,fail:(path:string,message:string)=>void):void {
+function finalizationDeclarationErrors(filter:Extract<import('./filter').FilterDeclaration,{type:'timeRange'|'timePoint'}>,layout:Page['layout'],path:string,fail:(path:string,message:string)=>void):void {
   if(!isFinalizationDefault(filter.default))return;
+  if(Array.isArray(filter.default.finalizationName)&&layout!=='dashboard')fail(`${path}/default/finalizationName`,'多个定稿名称仅用于 Dashboard 自然期间筛选');
   if(filter.initialParam)fail(`${path}/default`,'定稿默认值与initialParam互斥');
   if(filter.type==='timeRange'&&(filter.display==='modes'||filter.precision==='datetime'))fail(`${path}/default`,'定稿默认值仅支持自然期间及日/月范围');
-  if(filter.type==='timeRange'&&filter.display!=='period'&&isFinalizationDefault(filter.default)&&'mode' in filter.default)fail(`${path}/default/mode`,'期间模式只用于display:period');
+  if(filter.type==='timeRange'&&filter.display!=='period'&&'mode' in filter.default)fail(`${path}/default/mode`,'期间模式只用于display:period');
 }

@@ -24,11 +24,17 @@ export async function resolveFinalizationDates(
   signal?: AbortSignal
 ): Promise<ReadonlyMap<string, string>> {
   const dates = await lookupFinalizationDates(page, gateway, signal);
+  const names = (page.filters ?? []).map(finalizationName);
+  const candidates = new Set(names.filter(Array.isArray).flat());
   const current = localCalendarDate(now);
-  return new Map((page.filters ?? []).flatMap(filter => {
-    const name = finalizationName(filter);
-    return name ? [[name, dates.get(name) ?? current]] : [];
-  }));
+  const resolved = new Map<string, string>();
+  for (const name of names.flat()) {
+    if (name === undefined) continue;
+    // A missing array candidate must stay absent even when a single-name filter also uses it.
+    const date = dates.get(name) ?? (candidates.has(name) ? undefined : current);
+    if (date !== undefined) resolved.set(name, date);
+  }
+  return resolved;
 }
 
 /** Successful dates only. Consumers apply the clock appropriate to their operation. */
@@ -38,7 +44,7 @@ export async function lookupFinalizationDates(
   signal?: AbortSignal
 ): Promise<ReadonlyMap<string, string>> {
   signal?.throwIfAborted();
-  const names = new Set((page.filters ?? []).map(finalizationName).filter((name): name is string => !!name));
+  const names = new Set((page.filters ?? []).flatMap(filter => finalizationName(filter) ?? []));
   if (!names.size) return new Map();
   try {
     const load=()=>queryFinalizations(gateway,page.id,signal);

@@ -3,7 +3,7 @@
   import type { PeriodRange } from '@metriccanvas/page/internal';
 </script>
 <script lang="ts">
-  import {finalizationMonthLimit,monthFinalizationName,rollingFinalizationName} from '@metriccanvas/page/internal';
+  import {finalizationMonthLimit,monthFinalizationName,resolvedFinalizationDate,rollingFinalizationName} from '@metriccanvas/page/internal';
   import {getContext} from 'svelte';
   import {SOURCE_FILTER_CONTEXT,type SourceFilterReader} from '../dashboard/source-filter-context';
   const sourceFilters=getContext<SourceFilterReader|undefined>(SOURCE_FILTER_CONTEXT);
@@ -179,7 +179,7 @@
       {@const monthFinalization = monthFinalizationName(declaration)}
       <PeriodFilter
         initialMode={initialPeriodMode(declaration)}
-        rollingMonth={timeContext.finalizationDates?.get(finalization ?? '')?.slice(0,7)}
+        rollingMonth={resolvedFinalizationDate(finalization,timeContext.finalizationDates)?.slice(0,7)}
         rollingPending={!!finalization && !timeContext.finalizationDates}
         finalizationMonth={finalizationMonthLimit(monthFinalization,timeContext.finalizationDates)}
         monthPending={!!monthFinalization && !timeContext.finalizationDates}

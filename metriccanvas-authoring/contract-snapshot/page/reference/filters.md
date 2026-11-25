@@ -404,7 +404,7 @@ Playground 入口 `/pages/business-result-metrics?region=&mtime=month:2026-10&cl
 
 ## 定稿日期默认值（6.104）
 
-页面的主时间筛选器在 `default.finalizationName` 声明统一截止表中的定稿名称。名称是非空字符串，可使用中文，首尾空白忽略，其余精确匹配；它表示默认日期的查询键。页面只声明名称与时间选择形态，固定 DQE 查询定义由集成应用配置，引擎负责执行。能力下限为6.104，5.x只读兼容也不能使用。首版支持自然期间、普通日/月范围和 timePoint，不支持 datetime 或 display:modes。
+页面的主时间筛选器在 `default.finalizationName` 声明统一截止表中的定稿名称。单个名称使用非空字符串，可使用中文，首尾空白忽略，其余精确匹配；它表示默认日期的查询键。页面只声明名称与时间选择形态，固定 DQE 查询定义由集成应用配置，引擎负责执行。能力下限为6.104，5.x只读兼容也不能使用。首版支持自然期间、普通日/月范围和 timePoint，不支持 datetime 或 display:modes。
 
 ```json
 {
@@ -433,8 +433,18 @@ Dashboard 的 `display:"period"` 声明定稿名称后，月模式默认禁选�
 
 合成入口为 `/pages/finalization-default-time` 与 `/pages/finalization-default-time-detail`，`?period-filter=month:2026-11` 验证晚于定稿月时回到 2026-10，`?state=error|missing|invalid|conflict|timeout` 验证回退。集成应用通过数据网关的finalizationSource提供固定DQE请求体、nameField与dateField映射，页面作者不填写端点、凭据或表结构。这些场景不证明真实截止表或生产DQE已接入。
 
+<a id="multiple-finalization-names"></a>
 
-页面协议 6.139。结构真源为本册[schema.json](schema.json)，SHA256 `51454666e5be3d15087cf43505c6e85cf446dd5a8abdd3c72dc5237b4102cece`。字段表自动生成；可选不等于有默认值。
+## 多个定稿名称（6.140）
+
+Dashboard 的 `display:"period"` 可在同一 `default.finalizationName` 传入非空数组，例如 `default:{"mode":"month","finalizationName":["合同数据","经营数据"]}`。数组每项使用原有定稿名称的匹配规则，与固定 `value` 互斥。单个字符串沿用 6.104 的声明和行为。
+
+引擎在同一次定稿查询的结果中，按当前本地日历年取最早的有效定稿日期。数组顺序不影响结果。缺失、无效、同名不同日期以及不属于当年的日期跳过。若合同数据定稿日期为 2026-11-08，经营数据为 2026-10-18，则 2026 年的定稿月是 10 月；若其中一个名称缺失，则采用剩余有效日期中最早的月份。全组无可用日期时沿用当前日期回退。定稿月用于初始化自然期间、限制月模式可选月份，以及确定「近一年」的截止月。
+
+合成入口 `/pages/finalization-default-time` 演示最早月份；`?state=partial` 仅返回合同数据的 2026-09-30，定稿月为 9 月；`?state=missing` 演示回退。
+
+
+页面协议 6.140。结构真源为本册[schema.json](schema.json)，SHA256 `e63ac5e9265706b6508600a77a489c4d8f0e7b60be7e71666860f8834b820779`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -2002,7 +2012,37 @@ Schema位置：`#/definitions/periodSelection/anyOf/2/properties/finalizationNam
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支必填 | minLength=1; pattern="\\S" | Schema未设默认；装配/运行时默认见语义说明 | 按名称查询默认日期；失败用当前日期，用户可改。 |
+| anyOf联合 | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 按名称查询默认日期；失败用当前日期，用户可改。 |
+
+<a id="schema-232f646566696e6974696f6e732f706572696f6453656c656374696f6e2f616e794f662f322f70726f706572746965732f66696e616c697a6174696f6e4e616d652f616e794f662f30"></a>
+
+### `@periodSelection · anyOf[2].finalizationName · anyOf[0]`
+
+Schema位置：`#/definitions/periodSelection/anyOf/2/properties/finalizationName/anyOf/0`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 独立分支（不合并required） | minLength=1; pattern="\\S" | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f706572696f6453656c656374696f6e2f616e794f662f322f70726f706572746965732f66696e616c697a6174696f6e4e616d652f616e794f662f31"></a>
+
+### `@periodSelection · anyOf[2].finalizationName · anyOf[1]`
+
+Schema位置：`#/definitions/periodSelection/anyOf/2/properties/finalizationName/anyOf/1`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 独立分支（不合并required） | minItems=1 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f706572696f6453656c656374696f6e2f616e794f662f322f70726f706572746965732f66696e616c697a6174696f6e4e616d652f616e794f662f312f6974656d73"></a>
+
+### `@periodSelection · anyOf[2].finalizationName · anyOf[1][]`
+
+Schema位置：`#/definitions/periodSelection/anyOf/2/properties/finalizationName/anyOf/1/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 每个数组项 | minLength=1; pattern="\\S" | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f74696d6552616e676546696c7465722f70726f706572746965732f64656661756c742f616e794f662f34"></a>
 
@@ -3369,6 +3409,8 @@ Schema位置：`#/definitions/searchFilter/properties/default`。
 - `#/definitions/periodSelection/anyOf/0`：[合法完整页面](examples/ioc-header-page.json)，JSON Pointer `#/filters/0/default`。
 - `#/definitions/periodSelection/anyOf/1`：[合法完整页面](examples/sdt-period-aggregation.json)，JSON Pointer `#/filters/0/default`。
 - `#/definitions/periodSelection/anyOf/2`：[合法完整页面](examples/finalization-default-time.json)，JSON Pointer `#/filters/0/default`。
+- `#/definitions/periodSelection/anyOf/2/properties/finalizationName/anyOf/0`：[合法完整页面](examples/finalization-default-time-detail.json)，JSON Pointer `#/filters/0/default/finalizationName`。
+- `#/definitions/periodSelection/anyOf/2/properties/finalizationName/anyOf/1`：[合法完整页面](examples/finalization-default-time.json)，JSON Pointer `#/filters/0/default/finalizationName`。
 - `#/definitions/timeRangeFilter/properties/default/anyOf/4`：[合法完整页面](examples/finalization-date-defaults.json)，JSON Pointer `#/filters/2/default`。
 - `#/definitions/timePointFilter/properties/default/anyOf/0`：[合法完整页面](examples/ioc-header-incentives.json)，JSON Pointer `#/filters/0/default`。
 - `#/definitions/timePointFilter/properties/default/anyOf/1`：[合法完整页面](examples/finalization-date-defaults.json)，JSON Pointer `#/filters/0/default`。

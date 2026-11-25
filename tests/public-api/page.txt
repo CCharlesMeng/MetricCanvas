@@ -114,6 +114,7 @@ FilterInteractionExtension
 FilterTextValueReference
 FilterTextValueUsage
 FinalizationDefault
+FinalizationName
 GaugeComponent
 GaugeProps
 GrandTotalOperator
@@ -559,6 +560,7 @@ resolvePeriodSelection
 resolveRelativeTime
 resolveTextValues
 resolveTimeWindow
+resolvedFinalizationDate
 restoreCellFallbacks
 resultSourceIds
 rollingFinalizationName

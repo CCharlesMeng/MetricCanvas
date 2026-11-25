@@ -1,8 +1,13 @@
 {
   "major": 6,
-  "minor": 139,
-  "current": "6.139",
+  "minor": 140,
+  "current": "6.140",
   "capabilities": {
+    "finalization-name-list": {
+      "minor": 140,
+      "description": "自然期间可按多个定稿名称选择当年最早的可用定稿月",
+      "legacyReadable": false
+    },
     "map-geography-overrides": {
       "minor": 139,
       "description": "页面可覆盖组织地图地理资料",
@@ -1179,6 +1184,7 @@
     "6.136",
     "6.137",
     "6.138",
-    "6.139"
+    "6.139",
+    "6.140"
   ]
 }

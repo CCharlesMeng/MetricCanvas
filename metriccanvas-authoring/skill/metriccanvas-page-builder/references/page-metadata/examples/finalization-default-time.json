@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.104",
+  "schemaVersion": "6.140",
   "id": "finalization-default-time",
   "layout": "dashboard",
   "filters": [
@@ -12,7 +12,7 @@
       "required": true,
       "default": {
         "mode": "month",
-        "finalizationName": "经营数据"
+        "finalizationName": ["合同数据", "经营数据"]
       }
     }
   ],

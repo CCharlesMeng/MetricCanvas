@@ -404,7 +404,7 @@ Playground 入口 `/pages/business-result-metrics?region=&mtime=month:2026-10&cl
 
 ## 定稿日期默认值（6.104）
 
-页面的主时间筛选器在 `default.finalizationName` 声明统一截止表中的定稿名称。名称是非空字符串，可使用中文，首尾空白忽略，其余精确匹配；它表示默认日期的查询键。页面只声明名称与时间选择形态，固定 DQE 查询定义由集成应用配置，引擎负责执行。能力下限为6.104，5.x只读兼容也不能使用。首版支持自然期间、普通日/月范围和 timePoint，不支持 datetime 或 display:modes。
+页面的主时间筛选器在 `default.finalizationName` 声明统一截止表中的定稿名称。单个名称使用非空字符串，可使用中文，首尾空白忽略，其余精确匹配；它表示默认日期的查询键。页面只声明名称与时间选择形态，固定 DQE 查询定义由集成应用配置，引擎负责执行。能力下限为6.104，5.x只读兼容也不能使用。首版支持自然期间、普通日/月范围和 timePoint，不支持 datetime 或 display:modes。
 
 ```json
 {
@@ -432,3 +432,13 @@ Dashboard 的 `display:"period"` 声明定稿名称后，月模式默认禁选�
 缓存限于单页实例：并发消费者共用一次查询，刷新数据复用当前期间，完整重载重新查询；页面销毁与权限会话更换取消在途请求并清理实例状态，6.120 及以后版本可按异步条件准备的缓存规则复用同一网关会话的成功查询结果。缺少条件证明的预取 initial 不复用；可信执行快照中的月份同样先经定稿月校验。一次性服务端取数与浏览器使用相同的定稿查询和日期适配模块。
 
 合成入口为 `/pages/finalization-default-time` 与 `/pages/finalization-default-time-detail`，`?period-filter=month:2026-11` 验证晚于定稿月时回到 2026-10，`?state=error|missing|invalid|conflict|timeout` 验证回退。集成应用通过数据网关的finalizationSource提供固定DQE请求体、nameField与dateField映射，页面作者不填写端点、凭据或表结构。这些场景不证明真实截止表或生产DQE已接入。
+
+<a id="multiple-finalization-names"></a>
+
+## 多个定稿名称（6.140）
+
+Dashboard 的 `display:"period"` 可在同一 `default.finalizationName` 传入非空数组，例如 `default:{"mode":"month","finalizationName":["合同数据","经营数据"]}`。数组每项使用原有定稿名称的匹配规则，与固定 `value` 互斥。单个字符串沿用 6.104 的声明和行为。
+
+引擎在同一次定稿查询的结果中，按当前本地日历年取最早的有效定稿日期。数组顺序不影响结果。缺失、无效、同名不同日期以及不属于当年的日期跳过。若合同数据定稿日期为 2026-11-08，经营数据为 2026-10-18，则 2026 年的定稿月是 10 月；若其中一个名称缺失，则采用剩余有效日期中最早的月份。全组无可用日期时沿用当前日期回退。定稿月用于初始化自然期间、限制月模式可选月份，以及确定「近一年」的截止月。
+
+合成入口 `/pages/finalization-default-time` 演示最早月份；`?state=partial` 仅返回合同数据的 2026-09-30，定稿月为 9 月；`?state=missing` 演示回退。

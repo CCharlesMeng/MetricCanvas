@@ -1,0 +1,203 @@
+{
+  "case": "finalization-name-list-empty",
+  "invariant": "finalization-name-list",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 dimension",
+      "paths": [
+        "/filters/0/dimension"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 precision(拼写错误?)",
+      "paths": [
+        "/filters/0/precision",
+        "/filters/0/precision",
+        "/filters/0/precision",
+        "/filters/0/precision",
+        "/filters/0/precision"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 required(拼写错误?)",
+      "paths": [
+        "/filters/0/required",
+        "/filters/0/required",
+        "/filters/0/required",
+        "/filters/0/required"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must be equal to constant",
+      "paths": [
+        "/filters/0/type",
+        "/filters/0/default/mode",
+        "/filters/0/type",
+        "/filters/0/type",
+        "/filters/0/type",
+        "/filters/0/type"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "取值不在允许范围:[\"select\",\"tabs\",\"tree\",\"search\"]",
+      "paths": [
+        "/filters/0/display"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must be array",
+      "paths": [
+        "/filters/0/default"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must be string",
+      "paths": [
+        "/filters/0/default",
+        "/filters/0/default/finalizationName",
+        "/filters/0/default/finalizationName",
+        "/filters/0/default",
+        "/filters/0/default/finalizationName",
+        "/filters/0/default"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "取值不在允许范围:[\"today\",\"last7d\",\"last30d\",\"last90d\"]",
+      "paths": [
+        "/filters/0/default"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 from",
+      "paths": [
+        "/filters/0/default/from"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 to",
+      "paths": [
+        "/filters/0/default/to"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 mode(拼写错误?)",
+      "paths": [
+        "/filters/0/default/mode",
+        "/filters/0/default/mode",
+        "/filters/0/default/mode",
+        "/filters/0/default/mode",
+        "/filters/0/default/mode"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 finalizationName(拼写错误?)",
+      "paths": [
+        "/filters/0/default/finalizationName",
+        "/filters/0/default/finalizationName",
+        "/filters/0/default/finalizationName",
+        "/filters/0/default/finalizationName",
+        "/filters/0/default/finalizationName"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 unit",
+      "paths": [
+        "/filters/0/default/unit"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 range",
+      "paths": [
+        "/filters/0/default/range"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 includeCurrent",
+      "paths": [
+        "/filters/0/default/includeCurrent"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must NOT have fewer than 1 items",
+      "paths": [
+        "/filters/0/default/finalizationName"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must match a schema in anyOf",
+      "paths": [
+        "/filters/0/default/finalizationName",
+        "/filters/0/default",
+        "/filters/0/default",
+        "/filters/0/default"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 granularity",
+      "paths": [
+        "/filters/0/granularity"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 display(拼写错误?)",
+      "paths": [
+        "/filters/0/display",
+        "/filters/0/display",
+        "/filters/0/display",
+        "/filters/0/display"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must be boolean",
+      "paths": [
+        "/filters/0/default"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must match exactly one schema in oneOf",
+      "paths": [
+        "/filters/0"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      {
+        "id": "period-filter",
+        "type": "timeRange",
+        "display": "period",
+        "precision": "date",
+        "label": "统计期间",
+        "required": true,
+        "default": {
+          "mode": "month",
+          "finalizationName": [
+            "…（共0项）"
+          ]
+        }
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

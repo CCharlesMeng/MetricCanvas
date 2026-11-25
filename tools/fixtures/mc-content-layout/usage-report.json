@@ -204,8 +204,8 @@
     "status": "ok",
     "gaps": [],
     "schema": {
-      "declaredVersion": "6.137",
-      "targetVersion": "6.137",
+      "declaredVersion": "6.140",
+      "targetVersion": "6.140",
       "readableVersions": [
         "5.0",
         "5.1",
@@ -339,7 +339,10 @@
         "6.134",
         "6.135",
         "6.136",
-        "6.137"
+        "6.137",
+        "6.138",
+        "6.139",
+        "6.140"
       ],
       "readable": true,
       "requiredVersion": "6.1",
