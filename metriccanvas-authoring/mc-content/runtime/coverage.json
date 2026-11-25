@@ -1613,6 +1613,31 @@
       "scope": "exact product contract"
     },
     {
+      "source": "product:page/conformance/invalid/map-tooltip-rows-version.json",
+      "target": "product-contracts/page/conformance/invalid/map-tooltip-rows-version.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/map-tooltip-rows-conflict.json",
+      "target": "product-contracts/page/conformance/invalid/map-tooltip-rows-conflict.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/map-tooltip-comparison-field.json",
+      "target": "product-contracts/page/conformance/invalid/map-tooltip-comparison-field.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/map-point-label-version.json",
+      "target": "product-contracts/page/conformance/invalid/map-point-label-version.json",
+      "scope": "exact product contract"
+    },
+    {
+      "source": "product:page/conformance/invalid/map-point-label-unknown.json",
+      "target": "product-contracts/page/conformance/invalid/map-point-label-unknown.json",
+      "scope": "exact product contract"
+    },
+    {
       "source": "product:page/conformance/invalid/map-overrides-version.json",
       "target": "product-contracts/page/conformance/invalid/map-overrides-version.json",
       "scope": "exact product contract"
@@ -4945,6 +4970,31 @@
     {
       "source": "product:page/reference/errors/finalization-name-list-empty.json",
       "target": "references/page-metadata/errors/finalization-name-list-empty.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/map-tooltip-rows-version.json",
+      "target": "references/page-metadata/errors/map-tooltip-rows-version.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/map-tooltip-rows-conflict.json",
+      "target": "references/page-metadata/errors/map-tooltip-rows-conflict.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/map-tooltip-comparison-field.json",
+      "target": "references/page-metadata/errors/map-tooltip-comparison-field.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/map-point-label-version.json",
+      "target": "references/page-metadata/errors/map-point-label-version.json",
+      "scope": "current normalized reference; frozen vectors remain separate"
+    },
+    {
+      "source": "product:page/reference/errors/map-point-label-unknown.json",
+      "target": "references/page-metadata/errors/map-point-label-unknown.json",
       "scope": "current normalized reference; frozen vectors remain separate"
     },
     {
@@ -9379,11 +9429,11 @@
     }
   ],
   "counts": {
-    "product": 1843,
+    "product": 1853,
     "authoring": 32,
     "modules": 36,
-    "topics": 337,
-    "nodes": 2802,
+    "topics": 338,
+    "nodes": 2814,
     "tools": 9,
     "components": 20
   },

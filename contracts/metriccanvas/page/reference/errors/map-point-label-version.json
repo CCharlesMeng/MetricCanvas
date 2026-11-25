@@ -1,0 +1,28 @@
+{
+  "case": "map-point-label-version",
+  "invariant": "map-point-label-value",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "地图点位标签可同时显示名称和指标值 由 6.141 引入，文档声明的是 6.140",
+      "paths": [
+        "/sections/1/components/0/props/pointLabel"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      "…",
+      {
+        "components": [
+          {
+            "props": {
+              "pointLabel": "nameAndValue"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/map-point-label-version.json"
+}

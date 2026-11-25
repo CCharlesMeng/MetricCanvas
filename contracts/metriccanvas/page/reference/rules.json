@@ -85,6 +85,29 @@
       ]
     },
     {
+      "id": "map-tooltip-rows",
+      "description": "6.141 地图按指标行呈现同排对比值",
+      "valid": [
+        "ioc-region-map-demo"
+      ],
+      "invalid": [
+        "map-tooltip-rows-version",
+        "map-tooltip-rows-conflict",
+        "map-tooltip-comparison-field"
+      ]
+    },
+    {
+      "id": "map-point-label-value",
+      "description": "6.141 地图散点同时显示名称与指标值",
+      "valid": [
+        "ioc-region-map-demo"
+      ],
+      "invalid": [
+        "map-point-label-version",
+        "map-point-label-unknown"
+      ]
+    },
+    {
       "id": "map-geography-overrides",
       "description": "组织地图资料支持页面覆盖",
       "valid": [

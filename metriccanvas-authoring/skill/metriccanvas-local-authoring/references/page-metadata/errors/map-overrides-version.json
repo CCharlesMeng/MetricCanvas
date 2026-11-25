@@ -4,6 +4,20 @@
   "expected": [
     {
       "type": "SCHEMA_ERROR",
+      "message": "地图提示框可声明指标与同排对比值 由 6.141 引入，文档声明的是 6.138",
+      "paths": [
+        "/sections/1/components/0/props/tooltipRows"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "地图点位标签可同时显示名称和指标值 由 6.141 引入，文档声明的是 6.138",
+      "paths": [
+        "/sections/1/components/0/props/pointLabel"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
       "message": "页面可覆盖组织地图地理资料 由 6.139 引入，文档声明的是 6.138",
       "paths": [
         "/mapOverrides"
@@ -11,6 +25,24 @@
     }
   ],
   "inputExcerpt": {
+    "sections": [
+      "…",
+      {
+        "components": [
+          {
+            "props": {
+              "tooltipRows": [
+                {
+                  "label": "净商务折扣",
+                  "field": "discount"
+                }
+              ],
+              "pointLabel": "nameAndValue"
+            }
+          }
+        ]
+      }
+    ],
     "mapOverrides": {
       "world": {
         "region-dept": {

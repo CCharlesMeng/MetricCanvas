@@ -1,0 +1,33 @@
+{
+  "case": "map-tooltip-rows-conflict",
+  "invariant": "map-tooltip-rows",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "tooltipRows 与 tooltipFields 不能同时声明",
+      "paths": [
+        "/sections/1/components/0/props/tooltipRows"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      "…",
+      {
+        "components": [
+          {
+            "props": {
+              "tooltipRows": [
+                {
+                  "label": "净商务折扣",
+                  "field": "discount"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

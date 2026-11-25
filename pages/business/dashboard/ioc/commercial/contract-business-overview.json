@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.139",
+  "schemaVersion": "6.141",
   "id": "contract-business-overview",
   "layout": "dashboard",
   "meta": {
@@ -763,6 +763,11 @@
           "role": "dimension",
           "queryField": "代表处"
         },
+        "region-key": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "地区部"
+        },
         "discount": {
           "type": "number",
           "role": "measure",
@@ -827,11 +832,6 @@
           "nullable": true,
           "queryField": "商审SDT平均决策时长",
           "defaultFormat": "number-1"
-        },
-        "region-key": {
-          "type": "string",
-          "role": "dimension",
-          "queryField": "地区部"
         },
         "settlement-rate": {
           "type": "number",
@@ -1475,109 +1475,6 @@
     {
       "id": "overview-content",
       "container": "plain",
-      "visibleWhen": {
-        "any": [
-          {
-            "any": [
-              {
-                "filter": "region",
-                "part": "level",
-                "op": "eq",
-                "value": "geo"
-              },
-              {
-                "filter": "region",
-                "part": "values",
-                "op": "isEmpty"
-              },
-              {
-                "filter": "region",
-                "part": "values",
-                "op": "containsAny",
-                "values": [
-                  "全球"
-                ]
-              }
-            ]
-          },
-          {
-            "all": [
-              {
-                "not": {
-                  "any": [
-                    {
-                      "filter": "region",
-                      "part": "level",
-                      "op": "eq",
-                      "value": "geo"
-                    },
-                    {
-                      "filter": "region",
-                      "part": "values",
-                      "op": "isEmpty"
-                    },
-                    {
-                      "filter": "region",
-                      "part": "values",
-                      "op": "containsAny",
-                      "values": [
-                        "全球"
-                      ]
-                    }
-                  ]
-                }
-              },
-              {
-                "fact": "regionDepartment",
-                "op": "isNotNull"
-              },
-              {
-                "fact": "regionDepartment",
-                "op": "eq",
-                "value": "中国地区部"
-              }
-            ]
-          },
-          {
-            "all": [
-              {
-                "not": {
-                  "any": [
-                    {
-                      "filter": "region",
-                      "part": "level",
-                      "op": "eq",
-                      "value": "geo"
-                    },
-                    {
-                      "filter": "region",
-                      "part": "values",
-                      "op": "isEmpty"
-                    },
-                    {
-                      "filter": "region",
-                      "part": "values",
-                      "op": "containsAny",
-                      "values": [
-                        "全球"
-                      ]
-                    }
-                  ]
-                }
-              },
-              {
-                "fact": "regionDepartment",
-                "op": "isNotNull"
-              },
-              {
-                "fact": "regionDepartment",
-                "op": "ne",
-                "value": "中国地区部"
-              }
-            ]
-          }
-        ]
-      },
       "components": [
         {
           "id": "discount-card-overview",
@@ -1603,15 +1500,6 @@
                 "changes": [
                   {
                     "label": "同比",
-                    "visibleWhen": {
-                      "filter": "mtime",
-                      "part": "mode",
-                      "op": "in",
-                      "values": [
-                        "year",
-                        "quarter"
-                      ]
-                    },
                     "field": {
                       "data": "main",
                       "field": "discount-yoy",
@@ -1620,28 +1508,8 @@
                     },
                     "colorRule": {
                       "mode": "sign",
-                      "positive": "red",
-                      "negative": "green"
-                    }
-                  },
-                  {
-                    "label": "环比",
-                    "visibleWhen": {
-                      "filter": "mtime",
-                      "part": "mode",
-                      "op": "eq",
-                      "value": "month"
-                    },
-                    "field": {
-                      "data": "main",
-                      "field": "discount-mom",
-                      "format": "points-1-signed",
-                      "missingText": "--%"
-                    },
-                    "colorRule": {
-                      "mode": "sign",
-                      "positive": "red",
-                      "negative": "green"
+                      "positive": "green",
+                      "negative": "red"
                     }
                   }
                 ],
@@ -2290,14 +2158,32 @@
               "format": "percent-1",
               "missingText": "--"
             },
-            "tooltipFields": [
+            "actions": [
               {
-                "label": "折扣同比",
+                "on": "click",
+                "writeFilter": "region",
+                "field": "org-key",
+                "level": "region-dept"
+              }
+            ],
+            "variant": "regionalOverview",
+            "tooltipRows": [
+              {
+                "label": "净商务折扣",
                 "field": {
                   "data": "main",
-                  "field": "discount-yoy",
-                  "format": "points-1-signed",
+                  "field": "discount",
+                  "format": "percent-1",
                   "missingText": "--"
+                },
+                "comparison": {
+                  "label": "同比",
+                  "field": {
+                    "data": "main",
+                    "field": "discount-yoy",
+                    "format": "points-1-signed",
+                    "missingText": "--"
+                  }
                 }
               },
               {
@@ -2307,15 +2193,15 @@
                   "field": "discount-amount",
                   "format": "cny-adaptive",
                   "missingText": "--"
-                }
-              },
-              {
-                "label": "金额同比",
-                "field": {
-                  "data": "main",
-                  "field": "payment-yoy",
-                  "format": "percent-1",
-                  "missingText": "--"
+                },
+                "comparison": {
+                  "label": "同比",
+                  "field": {
+                    "data": "main",
+                    "field": "payment-yoy",
+                    "format": "percent-1",
+                    "missingText": "--"
+                  }
                 }
               },
               {
@@ -2326,17 +2212,18 @@
                   "format": "percent-1",
                   "missingText": "--"
                 }
-              }
-            ],
-            "actions": [
+              },
               {
-                "on": "click",
-                "writeFilter": "region",
-                "field": "org-key",
-                "level": "region-dept"
+                "label": "测算销毛与核算销毛偏差",
+                "field": {
+                  "data": "main",
+                  "field": "margin-gap",
+                  "format": "points-1-signed",
+                  "missingText": "--"
+                }
               }
             ],
-            "variant": "regionalOverview"
+            "pointLabel": "nameAndValue"
           },
           "visibleWhen": {
             "any": [
@@ -2358,6 +2245,308 @@
                 "values": [
                   "全球"
                 ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "china-department-map",
+          "type": "mapChart",
+          "layout": {
+            "span": 9
+          },
+          "data": {
+            "main": "offices"
+          },
+          "props": {
+            "map": "china",
+            "scatter": "point",
+            "legend": {
+              "title": "净商务折扣",
+              "bands": [
+                {
+                  "label": "30%以下",
+                  "from": 0
+                },
+                {
+                  "label": "30%–40%",
+                  "from": 30
+                },
+                {
+                  "label": "40%–50%",
+                  "from": 40
+                },
+                {
+                  "label": "50%以上",
+                  "from": 50
+                }
+              ]
+            },
+            "nameField": "org-key",
+            "valueField": {
+              "data": "main",
+              "field": "discount",
+              "format": "percent-1",
+              "missingText": "--"
+            },
+            "hierarchyFilter": "region",
+            "parentField": "region-key",
+            "codeField": "org-key",
+            "variant": "regionalOverview",
+            "tooltipRows": [
+              {
+                "label": "净商务折扣",
+                "field": {
+                  "data": "main",
+                  "field": "discount",
+                  "format": "percent-1",
+                  "missingText": "--"
+                },
+                "comparison": {
+                  "label": "同比",
+                  "field": {
+                    "data": "main",
+                    "field": "discount-yoy",
+                    "format": "points-1-signed",
+                    "missingText": "--"
+                  }
+                }
+              },
+              {
+                "label": "净付费金额",
+                "field": {
+                  "data": "main",
+                  "field": "discount-amount",
+                  "format": "cny-adaptive",
+                  "missingText": "--"
+                },
+                "comparison": {
+                  "label": "同比",
+                  "field": {
+                    "data": "main",
+                    "field": "payment-yoy",
+                    "format": "percent-1",
+                    "missingText": "--"
+                  }
+                }
+              },
+              {
+                "label": "框架执行率",
+                "field": {
+                  "data": "main",
+                  "field": "framework-rate",
+                  "format": "percent-1",
+                  "missingText": "--"
+                }
+              },
+              {
+                "label": "测算销毛与核算销毛偏差",
+                "field": {
+                  "data": "main",
+                  "field": "margin-gap",
+                  "format": "points-1-signed",
+                  "missingText": "--"
+                }
+              }
+            ],
+            "pointLabel": "nameAndValue"
+          },
+          "visibleWhen": {
+            "all": [
+              {
+                "all": [
+                  {
+                    "filter": "region",
+                    "part": "level",
+                    "op": "eq",
+                    "value": "region-dept"
+                  },
+                  {
+                    "not": {
+                      "any": [
+                        {
+                          "filter": "region",
+                          "part": "level",
+                          "op": "eq",
+                          "value": "geo"
+                        },
+                        {
+                          "filter": "region",
+                          "part": "values",
+                          "op": "isEmpty"
+                        },
+                        {
+                          "filter": "region",
+                          "part": "values",
+                          "op": "containsAny",
+                          "values": [
+                            "全球"
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              {
+                "filter": "region",
+                "part": "values",
+                "op": "containsAny",
+                "values": [
+                  "中国地区部"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "regional-department-map",
+          "type": "mapChart",
+          "layout": {
+            "span": 9
+          },
+          "data": {
+            "main": "offices"
+          },
+          "props": {
+            "map": "world",
+            "scatter": "point",
+            "legend": {
+              "title": "净商务折扣",
+              "bands": [
+                {
+                  "label": "30%以下",
+                  "from": 0
+                },
+                {
+                  "label": "30%–40%",
+                  "from": 30
+                },
+                {
+                  "label": "40%–50%",
+                  "from": 40
+                },
+                {
+                  "label": "50%以上",
+                  "from": 50
+                }
+              ]
+            },
+            "nameField": "org-key",
+            "valueField": {
+              "data": "main",
+              "field": "discount",
+              "format": "percent-1",
+              "missingText": "--"
+            },
+            "hierarchyFilter": "region",
+            "parentField": "region-key",
+            "codeField": "org-key",
+            "variant": "regionalOverview",
+            "tooltipRows": [
+              {
+                "label": "净商务折扣",
+                "field": {
+                  "data": "main",
+                  "field": "discount",
+                  "format": "percent-1",
+                  "missingText": "--"
+                },
+                "comparison": {
+                  "label": "同比",
+                  "field": {
+                    "data": "main",
+                    "field": "discount-yoy",
+                    "format": "points-1-signed",
+                    "missingText": "--"
+                  }
+                }
+              },
+              {
+                "label": "净付费金额",
+                "field": {
+                  "data": "main",
+                  "field": "discount-amount",
+                  "format": "cny-adaptive",
+                  "missingText": "--"
+                },
+                "comparison": {
+                  "label": "同比",
+                  "field": {
+                    "data": "main",
+                    "field": "payment-yoy",
+                    "format": "percent-1",
+                    "missingText": "--"
+                  }
+                }
+              },
+              {
+                "label": "框架执行率",
+                "field": {
+                  "data": "main",
+                  "field": "framework-rate",
+                  "format": "percent-1",
+                  "missingText": "--"
+                }
+              },
+              {
+                "label": "测算销毛与核算销毛偏差",
+                "field": {
+                  "data": "main",
+                  "field": "margin-gap",
+                  "format": "points-1-signed",
+                  "missingText": "--"
+                }
+              }
+            ],
+            "pointLabel": "nameAndValue"
+          },
+          "visibleWhen": {
+            "all": [
+              {
+                "all": [
+                  {
+                    "filter": "region",
+                    "part": "level",
+                    "op": "eq",
+                    "value": "region-dept"
+                  },
+                  {
+                    "not": {
+                      "any": [
+                        {
+                          "filter": "region",
+                          "part": "level",
+                          "op": "eq",
+                          "value": "geo"
+                        },
+                        {
+                          "filter": "region",
+                          "part": "values",
+                          "op": "isEmpty"
+                        },
+                        {
+                          "filter": "region",
+                          "part": "values",
+                          "op": "containsAny",
+                          "values": [
+                            "全球"
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              {
+                "not": {
+                  "filter": "region",
+                  "part": "values",
+                  "op": "containsAny",
+                  "values": [
+                    "中国地区部"
+                  ]
+                }
               }
             ]
           }
@@ -2402,14 +2591,27 @@
               "format": "percent-1",
               "missingText": "--"
             },
-            "tooltipFields": [
+            "hierarchyFilter": "region",
+            "parentField": "region-key",
+            "codeField": "org-key",
+            "variant": "regionalOverview",
+            "tooltipRows": [
               {
-                "label": "折扣同比",
+                "label": "净商务折扣",
                 "field": {
                   "data": "main",
-                  "field": "discount-yoy",
-                  "format": "points-1-signed",
+                  "field": "discount",
+                  "format": "percent-1",
                   "missingText": "--"
+                },
+                "comparison": {
+                  "label": "同比",
+                  "field": {
+                    "data": "main",
+                    "field": "discount-yoy",
+                    "format": "points-1-signed",
+                    "missingText": "--"
+                  }
                 }
               },
               {
@@ -2419,15 +2621,15 @@
                   "field": "discount-amount",
                   "format": "cny-adaptive",
                   "missingText": "--"
-                }
-              },
-              {
-                "label": "金额同比",
-                "field": {
-                  "data": "main",
-                  "field": "payment-yoy",
-                  "format": "percent-1",
-                  "missingText": "--"
+                },
+                "comparison": {
+                  "label": "同比",
+                  "field": {
+                    "data": "main",
+                    "field": "payment-yoy",
+                    "format": "percent-1",
+                    "missingText": "--"
+                  }
                 }
               },
               {
@@ -2438,39 +2640,55 @@
                   "format": "percent-1",
                   "missingText": "--"
                 }
+              },
+              {
+                "label": "测算销毛与核算销毛偏差",
+                "field": {
+                  "data": "main",
+                  "field": "margin-gap",
+                  "format": "points-1-signed",
+                  "missingText": "--"
+                }
               }
             ],
-            "hierarchyFilter": "region",
-            "parentField": "region-key",
-            "codeField": "org-key",
-            "variant": "regionalOverview"
+            "pointLabel": "nameAndValue"
           },
           "visibleWhen": {
             "all": [
               {
-                "not": {
-                  "any": [
-                    {
-                      "filter": "region",
-                      "part": "level",
-                      "op": "eq",
-                      "value": "geo"
-                    },
-                    {
-                      "filter": "region",
-                      "part": "values",
-                      "op": "isEmpty"
-                    },
-                    {
-                      "filter": "region",
-                      "part": "values",
-                      "op": "containsAny",
-                      "values": [
-                        "全球"
+                "all": [
+                  {
+                    "filter": "region",
+                    "part": "level",
+                    "op": "eq",
+                    "value": "office"
+                  },
+                  {
+                    "not": {
+                      "any": [
+                        {
+                          "filter": "region",
+                          "part": "level",
+                          "op": "eq",
+                          "value": "geo"
+                        },
+                        {
+                          "filter": "region",
+                          "part": "values",
+                          "op": "isEmpty"
+                        },
+                        {
+                          "filter": "region",
+                          "part": "values",
+                          "op": "containsAny",
+                          "values": [
+                            "全球"
+                          ]
+                        }
                       ]
                     }
-                  ]
-                }
+                  }
+                ]
               },
               {
                 "fact": "regionDepartment",
@@ -2524,14 +2742,27 @@
               "format": "percent-1",
               "missingText": "--"
             },
-            "tooltipFields": [
+            "hierarchyFilter": "region",
+            "parentField": "region-key",
+            "codeField": "org-key",
+            "variant": "regionalOverview",
+            "tooltipRows": [
               {
-                "label": "折扣同比",
+                "label": "净商务折扣",
                 "field": {
                   "data": "main",
-                  "field": "discount-yoy",
-                  "format": "points-1-signed",
+                  "field": "discount",
+                  "format": "percent-1",
                   "missingText": "--"
+                },
+                "comparison": {
+                  "label": "同比",
+                  "field": {
+                    "data": "main",
+                    "field": "discount-yoy",
+                    "format": "points-1-signed",
+                    "missingText": "--"
+                  }
                 }
               },
               {
@@ -2541,15 +2772,15 @@
                   "field": "discount-amount",
                   "format": "cny-adaptive",
                   "missingText": "--"
-                }
-              },
-              {
-                "label": "金额同比",
-                "field": {
-                  "data": "main",
-                  "field": "payment-yoy",
-                  "format": "percent-1",
-                  "missingText": "--"
+                },
+                "comparison": {
+                  "label": "同比",
+                  "field": {
+                    "data": "main",
+                    "field": "payment-yoy",
+                    "format": "percent-1",
+                    "missingText": "--"
+                  }
                 }
               },
               {
@@ -2560,39 +2791,55 @@
                   "format": "percent-1",
                   "missingText": "--"
                 }
+              },
+              {
+                "label": "测算销毛与核算销毛偏差",
+                "field": {
+                  "data": "main",
+                  "field": "margin-gap",
+                  "format": "points-1-signed",
+                  "missingText": "--"
+                }
               }
             ],
-            "hierarchyFilter": "region",
-            "parentField": "region-key",
-            "codeField": "org-key",
-            "variant": "regionalOverview"
+            "pointLabel": "nameAndValue"
           },
           "visibleWhen": {
             "all": [
               {
-                "not": {
-                  "any": [
-                    {
-                      "filter": "region",
-                      "part": "level",
-                      "op": "eq",
-                      "value": "geo"
-                    },
-                    {
-                      "filter": "region",
-                      "part": "values",
-                      "op": "isEmpty"
-                    },
-                    {
-                      "filter": "region",
-                      "part": "values",
-                      "op": "containsAny",
-                      "values": [
-                        "全球"
+                "all": [
+                  {
+                    "filter": "region",
+                    "part": "level",
+                    "op": "eq",
+                    "value": "office"
+                  },
+                  {
+                    "not": {
+                      "any": [
+                        {
+                          "filter": "region",
+                          "part": "level",
+                          "op": "eq",
+                          "value": "geo"
+                        },
+                        {
+                          "filter": "region",
+                          "part": "values",
+                          "op": "isEmpty"
+                        },
+                        {
+                          "filter": "region",
+                          "part": "values",
+                          "op": "containsAny",
+                          "values": [
+                            "全球"
+                          ]
+                        }
                       ]
                     }
-                  ]
-                }
+                  }
+                ]
               },
               {
                 "fact": "regionDepartment",
@@ -2863,38 +3110,47 @@
           "visibleWhen": {
             "all": [
               {
-                "not": {
-                  "any": [
-                    {
-                      "filter": "region",
-                      "part": "level",
-                      "op": "eq",
-                      "value": "geo"
-                    },
-                    {
-                      "filter": "region",
-                      "part": "values",
-                      "op": "isEmpty"
-                    },
-                    {
-                      "filter": "region",
-                      "part": "values",
-                      "op": "containsAny",
-                      "values": [
-                        "全球"
+                "all": [
+                  {
+                    "filter": "region",
+                    "part": "level",
+                    "op": "eq",
+                    "value": "region-dept"
+                  },
+                  {
+                    "not": {
+                      "any": [
+                        {
+                          "filter": "region",
+                          "part": "level",
+                          "op": "eq",
+                          "value": "geo"
+                        },
+                        {
+                          "filter": "region",
+                          "part": "values",
+                          "op": "isEmpty"
+                        },
+                        {
+                          "filter": "region",
+                          "part": "values",
+                          "op": "containsAny",
+                          "values": [
+                            "全球"
+                          ]
+                        }
                       ]
                     }
-                  ]
-                }
+                  }
+                ]
               },
               {
-                "fact": "regionDepartment",
-                "op": "isNotNull"
-              },
-              {
-                "fact": "regionDepartment",
-                "op": "eq",
-                "value": "中国地区部"
+                "filter": "region",
+                "part": "values",
+                "op": "containsAny",
+                "values": [
+                  "中国地区部"
+                ]
               }
             ]
           }
@@ -3017,6 +3273,177 @@
           "visibleWhen": {
             "all": [
               {
+                "all": [
+                  {
+                    "filter": "region",
+                    "part": "level",
+                    "op": "eq",
+                    "value": "region-dept"
+                  },
+                  {
+                    "not": {
+                      "any": [
+                        {
+                          "filter": "region",
+                          "part": "level",
+                          "op": "eq",
+                          "value": "geo"
+                        },
+                        {
+                          "filter": "region",
+                          "part": "values",
+                          "op": "isEmpty"
+                        },
+                        {
+                          "filter": "region",
+                          "part": "values",
+                          "op": "containsAny",
+                          "values": [
+                            "全球"
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              {
+                "not": {
+                  "filter": "region",
+                  "part": "values",
+                  "op": "containsAny",
+                  "values": [
+                    "中国地区部"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "office-overview-table",
+          "type": "table",
+          "layout": {
+            "span": 3
+          },
+          "data": {
+            "main": "offices"
+          },
+          "props": {
+            "rowKey": "org-key",
+            "defaultSort": [
+              {
+                "field": "framework-rate",
+                "direction": "desc"
+              }
+            ],
+            "pagination": {
+              "mode": "none"
+            },
+            "columns": [
+              {
+                "title": "区域",
+                "field": {
+                  "data": "main",
+                  "field": "org-key",
+                  "missingText": "--"
+                },
+                "width": 118,
+                "sortable": false,
+                "fixed": "left"
+              },
+              {
+                "title": "净商务折扣（公网region）",
+                "field": {
+                  "data": "main",
+                  "field": "discount",
+                  "format": "percent-1",
+                  "missingText": "--"
+                },
+                "width": 108,
+                "sortable": true,
+                "align": "right"
+              },
+              {
+                "title": "测算销毛与核算销毛偏差",
+                "field": {
+                  "data": "main",
+                  "field": "margin-gap",
+                  "format": "points-1-signed",
+                  "missingText": "--"
+                },
+                "colorRule": {
+                  "mode": "sign",
+                  "positive": "green",
+                  "negative": "red"
+                },
+                "width": 150,
+                "sortable": true,
+                "align": "right"
+              },
+              {
+                "title": "框架执行率",
+                "field": {
+                  "data": "main",
+                  "field": "framework-rate",
+                  "format": "percent-1",
+                  "missingText": "--"
+                },
+                "width": 88,
+                "sortable": true,
+                "align": "right"
+              },
+              {
+                "title": "决策意见闭环率",
+                "field": {
+                  "data": "main",
+                  "field": "closed-rate",
+                  "format": "percent-1",
+                  "missingText": "--"
+                },
+                "width": 95,
+                "sortable": true,
+                "align": "right"
+              },
+              {
+                "title": "重大／高风险合同率",
+                "field": {
+                  "data": "main",
+                  "field": "high-risk-rate",
+                  "format": "percent-1",
+                  "missingText": "--"
+                },
+                "width": 104,
+                "sortable": true,
+                "align": "right"
+              },
+              {
+                "title": "代表处SDT决策时长",
+                "field": {
+                  "data": "main",
+                  "field": "sdt-duration",
+                  "format": "number-1",
+                  "missingText": "--"
+                },
+                "unit": "天",
+                "width": 104,
+                "sortable": true,
+                "align": "right"
+              }
+            ],
+            "subtitle": "",
+            "title": "代表处指标明细",
+            "expand": true
+          },
+          "visibleWhen": {
+            "all": [
+              {
+                "filter": "region",
+                "part": "level",
+                "op": "eq",
+                "value": "office"
+              },
+              {
                 "not": {
                   "any": [
                     {
@@ -3040,15 +3467,6 @@
                     }
                   ]
                 }
-              },
-              {
-                "fact": "regionDepartment",
-                "op": "isNotNull"
-              },
-              {
-                "fact": "regionDepartment",
-                "op": "ne",
-                "value": "中国地区部"
               }
             ]
           }

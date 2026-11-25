@@ -22,6 +22,12 @@ DQE 请求及引擎内置读取超时默认且最少为180秒（180000毫秒）�
 
 无需新增页面字段或升级 Schema。合成场景 `/pages/loading-structure-demo`、`/pages/metric-card-loading` 覆盖独立请求、首次加载、筛选、查询翻页、展开明细与 Tab 切换，操作与证据边界见 `pages/capabilities/layout/README.md`。
 
+<a id="progressive-map-data"></a>
+
+### 地图渐进展示
+
+绑定普通查询源度量的地图可以复用当前轮次的渐进回执。保持行域的计算仍在执行时，只要组织行与定位、层级所需字段已就绪，即可显示可定位的组织点。地图指标尚未完成时，点位仍可悬浮查看同一行已就绪的指标；分档着色和散点数值随地图指标补齐。未就绪值按缺失格式展示。动作在正式结果完成后启用。完整结果继续负责查询执行、导出、终态错误和筛选代次隔离。无需为渐进展示声明新字段。延迟验证见 `/pages/contract-business-overview`。
+
 <a id="progressive-table-columns"></a>
 
 ### 级联表格渐进补列

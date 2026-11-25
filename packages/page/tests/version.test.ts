@@ -21,6 +21,8 @@ const introducedAt: Record<string, number> = {
   'metric-card-value-color-rule':138,
   'map-geography-overrides':139,
   'finalization-name-list':140,
+  'map-tooltip-rows':141,
+  'map-point-label-value':141,
   'filter-source-candidate-levels':122,
   'native-ioc-filter-preparation':120,
   'table-absolute-display-limit':119,

@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "d4d4a633bce4facac2eacc1886f42426ea7ae1de5df579325887a3a43be6733b",
+  "sha256": "1593750befcd1c47c18ccd1f0b6728df937d41f1afda70d675d2b2e7606d3bd2",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -76,11 +76,11 @@
     },
     {
       "file": "docs/page-metadata/components/mapChart.md",
-      "sha256": "1173987647e37d9caa5c60b95b7fd40b4380e18c01096551a56f484b827de4d1"
+      "sha256": "fedb4e553457c7ab224e1557991813514fbccf1fbd63319784443b268dc8ea44"
     },
     {
       "file": "docs/page-metadata/components/metricCard.md",
-      "sha256": "a261fff4a8ce1e94225cc9b2a3a394171461b8f0a9be912a66f219f568bdbe09"
+      "sha256": "26745d6b3c992f36e9b9f6daa0cb122116179ba84aa450fda3bc094de675631d"
     },
     {
       "file": "docs/page-metadata/components/pieChart.md",
@@ -120,7 +120,7 @@
     },
     {
       "file": "docs/page-metadata/data-sources.md",
-      "sha256": "99aa483bbbad484402471c28a4b436424d2552e8a384f825cca6d06149e239b5"
+      "sha256": "d10c0fe900d4c7ac0b5f1baa7456d6de8ebf9c55f30f26dbd075c874d428320a"
     },
     {
       "file": "docs/page-metadata/examples/README.md",
@@ -160,7 +160,7 @@
     },
     {
       "file": "docs/page-metadata/reference-map.json",
-      "sha256": "bc9cb0dbb2746faf5ab6efbe49918c2a04d1a14638ec782954449faddadce40c"
+      "sha256": "ad70171b69ab3f811177e69679da1b9e0078a3f793c55da9a17c7327403ab9dd"
     },
     {
       "file": "docs/page-metadata/sections-and-layout.md",
@@ -1952,7 +1952,7 @@
     },
     {
       "file": "packages/page/src/schema/components/map-chart.ts",
-      "sha256": "b35cb210fceb789feef36c0c532df76094c9add7163fe410d4023d0eb3b0b207"
+      "sha256": "3efca07f1d41cb1353cb5a0e857e99e98d866f81b00407f30ac7a529624ccfb2"
     },
     {
       "file": "packages/page/src/schema/components/metric-card.ts",
@@ -2212,11 +2212,11 @@
     },
     {
       "file": "packages/page/src/validate.ts",
-      "sha256": "e81a46a6e8341d9376d3a91b9fcb5746fa0f8648c5864dc180c924689a91a737"
+      "sha256": "018b8ad8469585e1a227c13631c0e5c8f56dda1e9c4c44b8039614ade3f3647e"
     },
     {
       "file": "packages/page/src/version.ts",
-      "sha256": "35b686843f3a02569cdc6954c8cee75dc34c4d8d7f623371b3878cb183992373"
+      "sha256": "a756ccc29b19ccfb4971af9b8955977ade5cdda02ddb314b05fb1e04b6e86e36"
     },
     {
       "file": "packages/page/src/write-version.ts",
@@ -2264,7 +2264,7 @@
     },
     {
       "file": "pages/business/dashboard/ioc/commercial/README.md",
-      "sha256": "220ebdb1c8daf6fc058dd30d31e318fd0d8465b52472abe851d4166b847a505e"
+      "sha256": "91847f1bfcd0bb884a51c066b2c2ce75a2c40eee9189550aa1700b4f4f5f82c1"
     },
     {
       "file": "pages/business/dashboard/ioc/commercial/business-decision-all-details.json",
@@ -2272,7 +2272,7 @@
     },
     {
       "file": "pages/business/dashboard/ioc/commercial/contract-business-overview.json",
-      "sha256": "bc328e19527a1dfbeff6838dcf0d75d1bc438735c4d6bd932be3e9d1ac83ef1f"
+      "sha256": "b3ca5f5452d586bfcb335038832cc6dfd4e24639ce4a0e52cf3f2fc6022a0c78"
     },
     {
       "file": "pages/business/dashboard/ioc/opportunity/README.md",
@@ -2756,11 +2756,11 @@
     },
     {
       "file": "pages/capabilities/ioc-header/region-map/README.md",
-      "sha256": "e9c4b9c608bc08a431d017c4c4d2a06b3aa4f8f5d8b1043be8123694605746a7"
+      "sha256": "82a1190558394a0fed45f913d2f5e0d7a9f815768381cebb1ab17ad926b8efc5"
     },
     {
       "file": "pages/capabilities/ioc-header/region-map/ioc-region-map-demo.json",
-      "sha256": "a233611ee8ec5a82c48be11b7c5b9c76d3f2e2259bed53e7bca5dc065a7044dd"
+      "sha256": "a888768d15b1ce4af46842f33098f2182cb42468cb424fb278006b69953808e0"
     },
     {
       "file": "pages/capabilities/ioc-header/scenarios/README.md",
@@ -2952,7 +2952,7 @@
     },
     {
       "file": "pages/capabilities/layout/schema-upgrade-demo.json",
-      "sha256": "ece2d723713954c1f0ce8fc052a694d4147a33b7e11f348d1d95d820ab728fc8"
+      "sha256": "c9601970c93437c58ced9c961bc3387214b04cf1b7cfb1d13433cd14815e3b0d"
     },
     {
       "file": "pages/capabilities/layout/tab-mixed-content-report.json",
@@ -3956,7 +3956,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "2da1c409d688d82362b8a14535a65485c12482af88627824e380d7b497d32e50"
+      "sha256": "77c8025bbc5d1704ae0f408caac523662577598b70e4d5c42b84be76cc559594"
     },
     {
       "file": "tools/scripts/page-files.d.mts",

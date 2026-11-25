@@ -1,15 +1,15 @@
 import {mapRows} from './geography';
-import { resolveComponentValue } from '../../shared/component-value';
+import { resolveComponentValue, type ResolvedComponentValue } from '../../shared/component-value';
 import type { MapChartProps, Row } from '@metriccanvas/page/internal';
 import type { EChartsOption } from 'echarts';
 import type { MainDataSlots } from '../../shared/component-data';
-import { fieldLabel, resolveField } from '../../shared/component-data';
+import { resolveField } from '../../shared/component-data';
 import { formatChartNumber } from '../../shared/chart-option';
 import { finiteNumber } from '../../shared/value-format';
 import { formatterValue } from '../../shared/chart-option';
 import type { ColorList } from '../../shared/chart-palette';
 import { mapLegendLevels, mapLegendPieces } from './legend';
-import { mapTooltipMarkup, mapTooltipRows, type MapTooltipField } from './tooltip';
+import { groupedMapTooltip, mapTooltipMarkup, mapTooltipRows, type MapTooltipField } from './tooltip';
 
 /**
  * 维度值 → 底图区域名。页面文档经 props.nameMap 声明式改名,
@@ -61,6 +61,17 @@ export interface MapViewport {
   zoom: number;
 }
 
+function geoLayout(projection?: MapProjectionRect) {
+  if (!(projection && projection.width > 0 && projection.height > 0)) return;
+  return {
+    layoutCenter: [
+      `${projection.x + projection.width / 2}px`,
+      `${projection.y + projection.height / 2}px`
+    ] as [string, string],
+    layoutSize: projection.width
+  };
+}
+
 /**
  * 地图:nameField 的值定位底图区域,valueField 驱动着色;
  * 散点叠加坐标取底图资产的区域中心点(centers,见 basemap.ts)。
@@ -85,6 +96,7 @@ export function mapOption(
   const name = resolveField(props.nameField, data);
   const value = resolveComponentValue(props, data, props.emptyBehavior);
   const locations = geography ?? mapRows(rows, name.field, props);
+  const pendingValue = mapValuePending(props, data);
   const values = rows.map((row) => finiteNumber(value.read(row)) ?? 0);
   const rawMin = values.length > 0 ? Math.min(...values) : 0;
   const rawMax = values.length > 0 ? Math.max(...values) : 0;
@@ -108,65 +120,24 @@ export function mapOption(
       row[pinnedMatch.field] === props.pinnedSummary?.matchValue;
     return [{
       name: rawName,
-      value: [...cp, finiteNumber(value.read(row)) ?? 0],
+      value: [...cp, pendingValue ? null : (finiteNumber(value.read(row)) ?? 0)],
       ...(pinned ? { label: { show: false }, emphasis: { label: { show: false } } } : {})
     }];
   });
-
-  const projected = projection && projection.width > 0 && projection.height > 0
-    ? {
-        layoutCenter: [
-          `${projection.x + projection.width / 2}px`,
-          `${projection.y + projection.height / 2}px`
-        ] as [string, string],
-        layoutSize: projection.width
-      }
-    : undefined;
 
   /* 档位既是图例的档,也是着色的档:声明了 `legend` 就按档位取色,不再把取值
      区间均分。没有分档色板(报表形态)时档位无色可配,退回原来的连续渐变。 */
   const levels = props.legend ? mapLegendLevels(props.legend.bands, scale) : undefined;
   const pieces = levels && scale ? mapLegendPieces(levels) : undefined;
 
-  const tooltipFields: MapTooltipField[] = (props.tooltipFields ?? []).map((entry) => {
-    const resolved = resolveComponentValue(entry, data, props.emptyBehavior);
-    return {
-      label: entry.label, unit: resolved.unit,
-      read: resolved.read,
-      ...(resolved.format === undefined ? {} : { format: resolved.format }),
-      missingText: resolved.missingText
-    };
-  });
-  // 区域着色系列上抛底图区域名,散点系列上抛原始维度值,两种都要能查回行
+  const pointLabel = mapPointLabel(props, value, locations.points);
   return {
-    tooltip:
-      tooltipFields.length > 0
-        ? {
-            trigger: 'item',
-            formatter: (params: unknown) => {
-              const hovered = (isScatterItem(params) ? locations.points : locations.areas).get(itemName(params));
-              const title = hovered
-                ? String(hovered[name.field] ?? '')
-                : itemName(params);
-              return mapTooltipMarkup(title, [
-                {
-                  label: value.label,
-                  value: formatChartNumber(hovered ? value.read(hovered) : undefined, value.format, value.missingText, value.unit)
-                },
-                ...mapTooltipRows(hovered, tooltipFields)
-              ]);
-            }
-          }
-        : {
-            trigger: 'item',
-            valueFormatter: (raw: unknown) =>
-              formatChartNumber(mapFormatterValue(raw), value.format ?? 'number', value.missingText, value.unit)
-          },
+    tooltip: mapTooltip(data, props, name.field, value, locations),
     // geo 组件承载底图(散点叠加需要 geo 坐标系),map 系列经 geoIndex 挂靠其上
     geo: {
       map: props.map,
       roam: true,
-      ...(projected ?? {}),
+      ...geoLayout(projection),
       label: { show: false },
       itemStyle: { borderColor: '#d4d4d8', areaColor: '#fafafa' },
       emphasis: {
@@ -212,7 +183,7 @@ export function mapOption(
         type: 'map',
         map: props.map,
         geoIndex: 0,
-        data: mapSeriesRows(rows, locations, props, name.field, value.read)
+        data: pendingValue ? [] : mapSeriesRows(rows, locations, props, name.field, value.read)
       },
       ...(props.scatter
         ? [
@@ -227,11 +198,10 @@ export function mapOption(
                   }
                 : { symbolSize: 10 }),
               itemStyle: { color: regionalOverview ? '#6177e4' : '#f59e0b' },
-              // `{b}` 取数据项的 name,即上面的原始维度值
               label: regionalOverview
                 ? {
                     show: true,
-                    formatter: '{b}',
+                    ...pointLabel,
                     position: 'top' as const,
                     distance: 2,
                     padding: [2, 8],
@@ -243,7 +213,7 @@ export function mapOption(
                     borderWidth: 1,
                     borderRadius: 11
                   }
-                : { show: !compact, formatter: '{b}', position: 'top' as const },
+                : { show: !compact, ...pointLabel, position: 'top' as const },
               emphasis: regionalOverview
                 ? {
                     scale: 1.12,
@@ -260,6 +230,56 @@ export function mapOption(
         : [])
     ]
   };
+}
+
+function mapValuePending(props: MapChartProps, data: MainDataSlots): boolean {
+  const pending = data.main.progress?.pendingFields;
+  return props.valueField !== undefined && pending?.includes(resolveField(props.valueField, data).field) === true;
+}
+
+function mapPointLabel(props: MapChartProps, value: ResolvedComponentValue, points: ReadonlyMap<string, Row>) {
+  if (props.pointLabel !== 'nameAndValue') return { formatter: '{b}' };
+  return {
+    rich: { metric: { fontWeight: 'bold' as const, color: '#000' } },
+    formatter: (params: unknown) => {
+      const name = itemName(params);
+      const row = points.get(name);
+      if (!row) return name;
+      const metric = value.read(row);
+      if (finiteNumber(metric) === undefined) return name;
+      return `${name} {metric|${formatChartNumber(metric, value.format, value.missingText, value.unit)}}`;
+    }
+  };
+}
+
+function mapTooltip(
+  data: MainDataSlots, props: MapChartProps, nameField: string, value: ResolvedComponentValue,
+  locations: ReturnType<typeof mapRows>
+): EChartsOption['tooltip'] {
+  const hovered = (params: unknown) => (isScatterItem(params) ? locations.points : locations.areas).get(itemName(params));
+  const title = (row?: Row) => String(row?.[nameField] ?? '');
+  if (props.tooltipRows) {
+    const markup = groupedMapTooltip(props.tooltipRows, data, props.emptyBehavior);
+    return { trigger: 'item', borderWidth: 0, formatter: (params: unknown) => {
+      const row = hovered(params);
+      return row ? markup(title(row), row) : '';
+    } };
+  }
+  const fields: MapTooltipField[] = (props.tooltipFields ?? []).map(entry => ({
+    ...resolveComponentValue(entry, data, props.emptyBehavior), label: entry.label
+  }));
+  if (!fields.length) return {
+    trigger: 'item',
+    valueFormatter: (raw: unknown) =>
+      formatChartNumber(mapFormatterValue(raw), value.format ?? 'number', value.missingText, value.unit)
+  };
+  return { trigger: 'item', formatter: (params: unknown) => {
+    const row = hovered(params);
+    return mapTooltipMarkup(row ? title(row) : itemName(params), [
+      { label: value.label, value: formatChartNumber(row ? value.read(row) : undefined, value.format, value.missingText, value.unit) },
+      ...mapTooltipRows(row, fields)
+    ]);
+  } };
 }
 
 /** A resolved viewport is a rendering input, independent of the page and metric rows. */

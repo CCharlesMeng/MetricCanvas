@@ -1,17 +1,17 @@
 {
   "skill": "metriccanvas-local-authoring",
-  "schemaVersion": "6.140",
+  "schemaVersion": "6.141",
   "productContractVersion": "1.0.0-rc.4",
   "node": ">=22",
-  "schemaSha256": "e63ac5e9265706b6508600a77a489c4d8f0e7b60be7e71666860f8834b820779",
+  "schemaSha256": "c40184a8d67e0d0d991d75179dffd3e5fa36e94fa121b5a46b2574e8ee3da1fb",
   "files": [
     {
       "file": "assets/layouts/overview-map-led.json",
-      "sha256": "b93d010b6664b163e002eed8f112c279cd24fd24e5b45a9d73aff5486e2a80be"
+      "sha256": "3a128616169bb2b38404e0e39fd392541aa4ec53200f9ff4c1769b8b741b398c"
     },
     {
       "file": "references/authoring-knowledge/model.json",
-      "sha256": "8a0c9f52e257a66ee52b4817342817f0cdf102c1a885fe96c3bb615be6aea5a9"
+      "sha256": "67955272a2ab5077578975bab6ca2961faeadfd854659ea96f8d8d29c7d68a5e"
     },
     {
       "file": "references/example-guides/bar-category-order/bar-category-order.md",
@@ -91,83 +91,83 @@
     },
     {
       "file": "references/page-metadata/actions-and-navigation.md",
-      "sha256": "ef4503cabf86c9fef130431e1743ea2eaf511e50f96506a06bd0cf4835fbb786"
+      "sha256": "9d17367b5ad6f7ed61fdbb2b921e9110e0fbe57f8a9c6adea7b0d421beeff18c"
     },
     {
       "file": "references/page-metadata/authoring-analysis-rebind.md",
-      "sha256": "1d60a688c2695755e5f75a9a9179e5a71452cf7391c04b91e7cd55a3bdfadc5c"
+      "sha256": "e16f8b4d24488a3b115bf6c34d7f9c15fe64644a9b63f62df2bba52ec3d5ce26"
     },
     {
       "file": "references/page-metadata/authoring-presentation.md",
-      "sha256": "cb830f951a8ae8d25dc3b4c777465c245e86558e37de152e36119925a20d47a8"
+      "sha256": "d8eb1681a3bbf04fa050e83b8f06c1ed21794297d7335cb8d218b4239cfa6609"
     },
     {
       "file": "references/page-metadata/chart-option.md",
-      "sha256": "754b194f394e305c3f779578d8fa70ab479db58e137c6a9023dec94cfb8a53d5"
+      "sha256": "d7e6b36765154ad176888a8e8668dd33db6eeeb1d7b58be93f85a13a08fa12d0"
     },
     {
       "file": "references/page-metadata/components/aiSummary.md",
-      "sha256": "5c0200ed868333aa5fa35f9960bf61a047c87b46f26e507e65d045f337f65518"
+      "sha256": "dd84a2bb4663e35f569f84c8ae70452fd4c002dbecc86e81345bf69a2851a8fb"
     },
     {
       "file": "references/page-metadata/components/barChart.md",
-      "sha256": "a27c83c8327cd77d4b1926582dacac94e7a0a6fad7761af5f2b47b720cf0bfc6"
+      "sha256": "2a42fcb3070a8a2fb60ac820de32c71e24dd8d9e182e9ccdcced94d2e35d4b92"
     },
     {
       "file": "references/page-metadata/components/button.md",
-      "sha256": "e04c72db04a39c51a14c3853502062c6edb02fd9c92d0559f238ebaf0af33118"
+      "sha256": "7ae53d92398403b74413b34f4f0f0e6c58e96ad9e9d5cddb5e11c1ce72e81df6"
     },
     {
       "file": "references/page-metadata/components/categoryBreakdown.md",
-      "sha256": "11090806702df8aa90c24d7c4f14f2132d91c3978658b0cd600c5caf68296b53"
+      "sha256": "3307cdc6f4ec6d59299aec7f8afb48ac8a786102dcf2a9a14a6f5bf8fa4a7526"
     },
     {
       "file": "references/page-metadata/components/compositeCard.md",
-      "sha256": "7606728f5c142d7d49853e146574c42e38b45abb2680668c9558cc269de6cb26"
+      "sha256": "03f601f28d76adfdd2bca91bb6af4f8408e2ce507bc24f66f694ff39895120ef"
     },
     {
       "file": "references/page-metadata/components/fieldText.md",
-      "sha256": "99a09efe40a7e9918b8095c795405937039214dacdec46f957ef7531a0616a74"
+      "sha256": "cc4c4f4e949a148fbd3f34a11eb449790739396e4e4fa504eaccb2db022d119e"
     },
     {
       "file": "references/page-metadata/components/filterGroup.md",
-      "sha256": "582f18159bd3aa527b455b0d77c24d03f9359c53b5130d381339dd7d59c92dd1"
+      "sha256": "0cfcf334c88dca1bc68c927d2de19d0ad749d4854365a0f31536916710962b05"
     },
     {
       "file": "references/page-metadata/components/gauge.md",
-      "sha256": "f98a6d2ebe98b2427b45c9d34bfff162e1ed8147a95a323e3660e60cb59f8bbe"
+      "sha256": "ca02264cdbf242c6b3a210b77516b69284c4904db75b9b7aca7aadde3b888b1f"
     },
     {
       "file": "references/page-metadata/components/iocHeader.md",
-      "sha256": "06fbb0ffdb60b18655f4a27361356b51977e11badb1f52dd1bb9913dfe4c345d"
+      "sha256": "49792002008d5331b8c6899dc610a0d096261fbbb4b078788e944028700d51be"
     },
     {
       "file": "references/page-metadata/components/keyValuePanel.md",
-      "sha256": "de4fa527684a6d7522325af53c924f6d463f94ff39a81ead1580ff40e2180aad"
+      "sha256": "69b4f9669f59a525db154d3c19ceb0898c905ad78c3b73806d3f991960052d80"
     },
     {
       "file": "references/page-metadata/components/lineChart.md",
-      "sha256": "366508ba78dc37958566691eea1380c12e7ce4146dc93dd48da1c9717680fc20"
+      "sha256": "c953b463bda68e38f46a16f3bbbfb6d7ed15f19afba3db54d485b462267b6246"
     },
     {
       "file": "references/page-metadata/components/mapChart.md",
-      "sha256": "064d35871f3b493c99b0ea72a8e93e53b004a43fa55e40a559a4a09a746dcbd2"
+      "sha256": "000282215d83807ba428629e2a2a525201699be22b178b258dac9edc3f13712a"
     },
     {
       "file": "references/page-metadata/components/metricCard.md",
-      "sha256": "6925785be65ad34b9bc73ce0e98681f7856f93ebb396649ccd89fe383afb44ce"
+      "sha256": "3ac9930e3c580288afad071ce737e328ff9b13b889e05e3e68e0bf82156f89a6"
     },
     {
       "file": "references/page-metadata/components/pieChart.md",
-      "sha256": "1eda0f3829b17d60d37fbe045d8a923eca2cf3e7492fefc02aaf43b5b2572ae7"
+      "sha256": "5847cc59e2cb7aa1584e2b1c637b79b3e0c89cddfaa276aa856913d443901b4c"
     },
     {
       "file": "references/page-metadata/components/rankingCard.md",
-      "sha256": "6841e0f9538662506cc6431a450492d41c9b2f7d3a0f59163dbdb66dfc2c3faf"
+      "sha256": "7978e7dc020d99599edc8284877395eb2737f77968c234c9b6aebb21956ba8fa"
     },
     {
       "file": "references/page-metadata/components/rankingDetailCard.md",
-      "sha256": "309d25c2cf7a6e9b3637f485bb730f10cbcf62df85da3fd719bdb11cae64c1f6"
+      "sha256": "b9bee867f400cd62f2bacac280b412c91c654a05b215ec983b91fc11d48e66a4"
     },
     {
       "file": "references/page-metadata/components/README.md",
@@ -175,31 +175,31 @@
     },
     {
       "file": "references/page-metadata/components/reportHeader.md",
-      "sha256": "dc2a2b8b06b8e10c3ecea2b38d9112ea976ff6b35978cab5f30b1451db916c2b"
+      "sha256": "71585378bcbb9e9b5098721419f0da3917ddd4b85677eadb99c463844ad61ccf"
     },
     {
       "file": "references/page-metadata/components/tabContainer.md",
-      "sha256": "d1db5e9c0d959d4c99d27e2ca3df2d4245ee5c14a2dae1ba3990444457064de3"
+      "sha256": "81e9bc0beb167cd92a872918e74a3db68128fe2f6e93a8e401085cea2ba36464"
     },
     {
       "file": "references/page-metadata/components/table.md",
-      "sha256": "834dd4319b6b1fb6a75cf012eaa5cdb415782efa3dd8098e0dca8479a1639ea0"
+      "sha256": "d0855a4325df27334a199b07d9958927f8b97ac05488d12aeed2b335c46cba50"
     },
     {
       "file": "references/page-metadata/components/text.md",
-      "sha256": "8ae8262395235f1e43dbf1c064ab20e2e600d819f955dd476451be4cdf4f2a59"
+      "sha256": "de08af86ed37a5b149aba0788e0bd23a1a80aa358ce5dd6d95d6560da7307190"
     },
     {
       "file": "references/page-metadata/compute.md",
-      "sha256": "b7aef2d0a9a9bb14a8143c9bf66e6d60bcfb3cf21513e06d6c2c2bf604dd0e5b"
+      "sha256": "2a89219655938cd4646c171c9328fbf921d1ac8f68bb29a4c12f1ac4292564dc"
     },
     {
       "file": "references/page-metadata/conditions.md",
-      "sha256": "b7f9f4d2b714ee9ee978ae7bf639716c3e86f7b7ceed18ae86723ee095297f73"
+      "sha256": "2b832989b595be2c37907b06e3432ff73ecd6ae26ac9d00681a7322d32e456ec"
     },
     {
       "file": "references/page-metadata/data-sources.md",
-      "sha256": "ea7ca5dd6d0185e60414ef02eab7c4c2785fd76f62a19b551dde79bef3257818"
+      "sha256": "984a84b6bec9ee727a6fcc2c7f63763b9f13af3f6fba3b04f64b5bfbaf1afa36"
     },
     {
       "file": "references/page-metadata/errors/actual-after-captured-month.json",
@@ -943,7 +943,7 @@
     },
     {
       "file": "references/page-metadata/errors/independent-exclusion-version-ahead.json",
-      "sha256": "1b0b014afd5feb678f9a20257d3371424476228863da18082236dc6449243a70"
+      "sha256": "68d66f2def5d4b7117679d1edf05bb7a73b302f583d68744215d004a15465a48"
     },
     {
       "file": "references/page-metadata/errors/initial-row-date-object.json",
@@ -1219,7 +1219,7 @@
     },
     {
       "file": "references/page-metadata/errors/layout-before-6.1.json",
-      "sha256": "ffcfa40b8c297497422dc99de2ab46262d2b97b926ab583c2e39e3ce6fb6ccb7"
+      "sha256": "39b3444f56080fa56ecf4c59e61106deac12131f51f599cdf553a2a833e2092a"
     },
     {
       "file": "references/page-metadata/errors/layout-dual-conflict.json",
@@ -1275,7 +1275,7 @@
     },
     {
       "file": "references/page-metadata/errors/map-overrides-version.json",
-      "sha256": "40ec8b99ae6304d5aeeb76f0108107831647fefde72ff4ea94c1d4f6b7b55135"
+      "sha256": "9cd5656e5055e16d52711d69cbe8aa09591273fa17e93c49f798edbd59f3c3f0"
     },
     {
       "file": "references/page-metadata/errors/map-pinned-summary-duplicate-label.json",
@@ -1288,6 +1288,26 @@
     {
       "file": "references/page-metadata/errors/map-pinned-summary-wrong-variant.json",
       "sha256": "77348e3d9b9150b5d7954ef8346e2c9b44241bdff4cec4b0fa959f4d488f61db"
+    },
+    {
+      "file": "references/page-metadata/errors/map-point-label-unknown.json",
+      "sha256": "cdbad766e711a7f4dfadfb516a11ddcf91fd579584c2b311872df92d7aa272ce"
+    },
+    {
+      "file": "references/page-metadata/errors/map-point-label-version.json",
+      "sha256": "2a4390dbe776cf95fb2206f18604687dfadfc6fc03970e35e57d2bf623023bb9"
+    },
+    {
+      "file": "references/page-metadata/errors/map-tooltip-comparison-field.json",
+      "sha256": "3e8103a4372457ebe34c846206b77e17ef29f0d8e1d04743efc55c472275bfa8"
+    },
+    {
+      "file": "references/page-metadata/errors/map-tooltip-rows-conflict.json",
+      "sha256": "a4df24e6fa7de5767c592f771d0fd004ad185f1fb84529230d354e759be64dc8"
+    },
+    {
+      "file": "references/page-metadata/errors/map-tooltip-rows-version.json",
+      "sha256": "d75de5728c501b95c63aa83001f19117e079eb04040cc9a175a1e265f2a9b2d1"
     },
     {
       "file": "references/page-metadata/errors/match-field-not-dimension.json",
@@ -2607,7 +2627,7 @@
     },
     {
       "file": "references/page-metadata/errors/unrestricted-filter-clear-version-ahead.json",
-      "sha256": "07057185f248080c12e0cb318afeae4a4b29429ab3d271ebcfee206401df3834"
+      "sha256": "0bb0dd80880a9d00153962101f7447b9dd15c4b81675b599e26a118ee15c9535"
     },
     {
       "file": "references/page-metadata/errors/value-label-bar-conflict.json",
@@ -2619,11 +2639,11 @@
     },
     {
       "file": "references/page-metadata/errors/version-major-unsupported.json",
-      "sha256": "f5288fb23bdbda85edb687a3fb7228c9cbae92419263780db3a90d923e3fb041"
+      "sha256": "baaf2c854c6f213ec2b399495d165fd4ad87464a33092c0c37721e225184b921"
     },
     {
       "file": "references/page-metadata/errors/version-minor-ahead.json",
-      "sha256": "12a6be426325b4d2a34c51ecb40fa591bfefcd821103e2def454650d842832d4"
+      "sha256": "8e5d0ece59585493322475ecb978b7ae8d145fae8c968e762f3b772a4b2698fd"
     },
     {
       "file": "references/page-metadata/errors/write-filter-non-dimension.json",
@@ -3187,7 +3207,7 @@
     },
     {
       "file": "references/page-metadata/examples/ioc-region-map-demo.json",
-      "sha256": "a233611ee8ec5a82c48be11b7c5b9c76d3f2e2259bed53e7bca5dc065a7044dd"
+      "sha256": "a888768d15b1ce4af46842f33098f2182cb42468cb424fb278006b69953808e0"
     },
     {
       "file": "references/page-metadata/examples/ioc-region-url-demo.json",
@@ -3775,31 +3795,31 @@
     },
     {
       "file": "references/page-metadata/field-bindings-and-formats.md",
-      "sha256": "d8d7bd783688f7a6eab0fd2a4853a26a4d2d0ddd9137fd6a82bc579e14dec774"
+      "sha256": "f300c2d4f06d4a6daafa3216a02c43540622b1766e63e6fc8fd26263a3257b8b"
     },
     {
       "file": "references/page-metadata/fields.md",
-      "sha256": "f3265d24704ea320d362a7585848c8e3517314dec72e3067d808673bbc122c82"
+      "sha256": "178ad2c83ecc396afdc6ee053b8d496277ef9bfb86b2df8ddacb4e148c12c039"
     },
     {
       "file": "references/page-metadata/filters.md",
-      "sha256": "fd6fe54e457db93a0d970c07ee5b40c85f4124b16c2ebdbb8c6e9d9ca61a75f3"
+      "sha256": "913a1827e7e030fbb7e05ebe26c9576a0907d9e44e1debba3537f76aef06f218"
     },
     {
       "file": "references/page-metadata/index.json",
-      "sha256": "7292132e159d354e75703f00f2d7299bdd254eb81d7f212144c948666a1948b3"
+      "sha256": "b059570be1823660d4b749e5136d637d8aa2110e417cfb26d7a4c814c1d76ef3"
     },
     {
       "file": "references/page-metadata/page.md",
-      "sha256": "d8814ec114740edc6b9fdd03454fda7e402487e832155583ed666b88a662ff6b"
+      "sha256": "9819546fb2df3fcd60659f192dd3413f552efdf133aeacc2e6e190128d7d9a01"
     },
     {
       "file": "references/page-metadata/params-and-text-values.md",
-      "sha256": "3543bee6307fac403042b98c8cebea3e39c1857ed46f06d7274822b3e1e87a5c"
+      "sha256": "8d5bd010f58169531b304f4809aeef625d232c8d0fea5d8e12f0b8ba43da83fe"
     },
     {
       "file": "references/page-metadata/queries-and-bindings.md",
-      "sha256": "a6b44cc00722e411c00185268d4b25922b83a2b3eb171f410e605d3573f5f288"
+      "sha256": "4b5f6faee896c706f7aeecb01dd547bcde97ac35894dc1ad9c696a2437b5fadc"
     },
     {
       "file": "references/page-metadata/README.md",
@@ -3807,23 +3827,23 @@
     },
     {
       "file": "references/page-metadata/rules.json",
-      "sha256": "f77443b1a26f607f990c968e79f29b524ce0c310726e19a1a936adfc830a02c7"
+      "sha256": "e51cba51acecbaa9abaa2fefe48c3df2c6d62caa28f168324a652d29209ec7eb"
     },
     {
       "file": "references/page-metadata/schema.json",
-      "sha256": "e63ac5e9265706b6508600a77a489c4d8f0e7b60be7e71666860f8834b820779"
+      "sha256": "c40184a8d67e0d0d991d75179dffd3e5fa36e94fa121b5a46b2574e8ee3da1fb"
     },
     {
       "file": "references/page-metadata/sections-and-layout.md",
-      "sha256": "2f56a5d74bbe6dabb2613a681deb37ce9dfd504f563a4a58023c36ff574699ed"
+      "sha256": "820fb3bcb92d0fca80334ae223d107e8837bfcb17fbeed3d63d5c66b736b296b"
     },
     {
       "file": "references/page-metadata/semantic-html.md",
-      "sha256": "fc760682349b53e8d67dccabe8206114600f07fa4863659438587250033e8900"
+      "sha256": "518e8ae97677a768f5fe4bd5dadc8251b1e7f60d062d86f271dba6d9dd3a2f56"
     },
     {
       "file": "references/page-metadata/validation.md",
-      "sha256": "d9c8d5ae9b0043275d50fbdd60afda1564fe0ad56d0ddee77db89825700cabb1"
+      "sha256": "d469e0c21c63c5bdbb4ad6957a8d0bf0a691a78f8de3333031b3c3eab90c5539"
     },
     {
       "file": "references/page-patterns/dashboard-analysis.json",
@@ -3855,15 +3875,15 @@
     },
     {
       "file": "scripts/analyze-data.mjs",
-      "sha256": "4d964460231cc824501bcf2374b14f82df818ca6c1602963ec284a5b059dfc11"
+      "sha256": "b3cdca36a3400109e774b8cb224ddab100efa477a6994328925c68b1699a70cd"
     },
     {
       "file": "scripts/associate-data.mjs",
-      "sha256": "66b6d394c807c1b4e414ab3439155f0dd0ecee123aba05933371bbbf717de96f"
+      "sha256": "efd67c488a1ba89c2b3ac0e856173eb52a7e14417c87302ccd2fd10f5e30cae2"
     },
     {
       "file": "scripts/configure-metric-tips.mjs",
-      "sha256": "c1e7dc97654dd6231a93e3db02302ff298293ed5292c31302ef2bdcea634244f"
+      "sha256": "17dea61a84c452ae0013d08adda9149c43a3dd5a8030e5ac3c5b2ec8105d713a"
     },
     {
       "file": "scripts/read-knowledge.mjs",
@@ -3875,11 +3895,11 @@
     },
     {
       "file": "scripts/upgrade-page.mjs",
-      "sha256": "212e92351eace2856a9f13fbdd685612efe64de782a2c6ac2e9590473c28e1f5"
+      "sha256": "e9ffc35ddf094839e3e7619957c4ad93c3dcc11d346be29d1d24fc36b58ee16a"
     },
     {
       "file": "scripts/validate-page.mjs",
-      "sha256": "41f3966bc75a443fe9e6ced232b20663505d9e08907c0054d0ab89891e9804b7"
+      "sha256": "0281ef1b6d766790273acc185fb4449b3b368eb1844de0171e430618779812ac"
     }
   ]
 }
