@@ -25,7 +25,7 @@ test('installed runtime projects the actual hierarchy page', async ({ page }) =>
   await expect(host.locator('[data-section-id="extra"]')).toBeVisible();
 });
 
-test('installed runtime keeps permission invalidation across a replaced source', async ({ page }) => {
+test('installed runtime applies display updates from a replaced source in place', async ({ page }) => {
   const document = await featureDocument('page-visibility-inputs');
   await page.goto('/examples/inline.html');
   await page.evaluate(document => {
@@ -34,7 +34,7 @@ test('installed runtime keeps permission invalidation across a replaced source',
     const options = { document, displayInputs: { getSnapshot: () => snapshot, subscribe: () => () => {} } };
     window.runtime = MetricCanvas.mount('#dashboard', options);
     Object.assign(window, { replacePresentationSource() {
-      snapshot = { ...snapshot, permissionRevision: 'installed-2' };
+      snapshot = { ...snapshot, permissionRevision: 'installed-2', permissions: { 'department.read': { status: 'ready', value: false } } };
       options.displayInputs = { getSnapshot: () => snapshot, subscribe: () => () => {} };
       window.runtime.update(options);
     } });
@@ -42,7 +42,7 @@ test('installed runtime keeps permission invalidation across a replaced source',
   const host = page.locator('[data-metriccanvas-runtime]');
   await expect(host.locator('[data-section-id="protected"]')).toBeVisible();
   await page.evaluate(() => (window as unknown as { replacePresentationSource(): void }).replacePresentationSource());
-  await expect(host.getByText('权限会话已变化，请以当前身份重新初始化页面', { exact: true })).toBeVisible();
+  await expect(host.locator('[data-section-id="intro"]')).toBeVisible();
   await expect(host.locator('[data-section-id="protected"]')).toHaveCount(0);
 });
 

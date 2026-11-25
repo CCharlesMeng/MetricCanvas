@@ -274,7 +274,7 @@
         <button onclick={()=>visibilityDemo.publish('deny')}>拒绝</button>
         <button onclick={()=>visibilityDemo.publish('pending')}>等待</button>
         <button onclick={()=>visibilityDemo.publish('error')}>输入错误</button>
-        <button onclick={()=>visibilityDemo.publish('revoke')}>更换权限会话</button>
+        <button onclick={()=>visibilityDemo.publish('revision')}>更新权限修订号</button>
         <button onclick={()=>visibilityInstance++}>重新初始化</button>
       </div>
     {/if}
