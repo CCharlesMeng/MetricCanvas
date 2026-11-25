@@ -1,0 +1,33 @@
+{
+  "case": "map-tooltip-rows-version",
+  "invariant": "map-tooltip-rows",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "地图提示框可声明指标与同排对比值 由 6.141 引入，文档声明的是 6.140",
+      "paths": [
+        "/sections/1/components/0/props/tooltipRows"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      "…",
+      {
+        "components": [
+          {
+            "props": {
+              "tooltipRows": [
+                {
+                  "label": "净商务折扣",
+                  "field": "discount"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/map-tooltip-rows-version.json"
+}

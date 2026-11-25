@@ -126,7 +126,9 @@
 
   // Display receipts are isolated from the current execution snapshots.
   const gate=$derived(presentation?.()?.component(component.id));
-  const progressing = $derived(exportMode ? undefined : progressiveSlotData(component, data, requestedTable?.view));
+  const progressing = $derived(exportMode ? undefined : data.main?.progress
+    ? data
+    : progressiveSlotData(component, data, requestedTable?.view));
   const screen = $derived(exportMode ? { data, retained: false, table: undefined }
     : retainedScreenData.read(component, progressing ?? data, snapshot, requestedTable));
   const table = $derived(requestedTable ? { ...requestedTable, ...screen.table } : undefined);
@@ -356,7 +358,7 @@
               {map}
               {viewport}
               {geography}
-              onregionclick={onchartclick && (({ row }) => onchartclick?.(row))}
+              onregionclick={onchartclick && !mainData.main.progress ? ({ row }) => onchartclick?.(row) : undefined}
             />
           {/snippet}
         </RegionMapViewport>

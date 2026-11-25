@@ -1,8 +1,18 @@
 {
   "major": 6,
-  "minor": 140,
-  "current": "6.140",
+  "minor": 141,
+  "current": "6.141",
   "capabilities": {
+    "map-tooltip-rows": {
+      "minor": 141,
+      "description": "地图提示框可声明指标与同排对比值",
+      "legacyReadable": false
+    },
+    "map-point-label-value": {
+      "minor": 141,
+      "description": "地图点位标签可同时显示名称和指标值",
+      "legacyReadable": false
+    },
     "finalization-name-list": {
       "minor": 140,
       "description": "自然期间可按多个定稿名称选择当年最早的可用定稿月",
@@ -1185,6 +1195,7 @@
     "6.137",
     "6.138",
     "6.139",
-    "6.140"
+    "6.140",
+    "6.141"
   ]
 }

@@ -33,7 +33,7 @@
   "knowledge": "mapChart.overview",
   "reference": "references/page-metadata/components/mapChart.md",
   "versionPolicy": "protocol/version-policy",
-  "currentWriter": "6.140",
+  "currentWriter": "6.141",
   "exampleVersionRequirements": [
     {
       "file": "references/page-metadata/examples/map-page.json",
@@ -89,8 +89,18 @@
     },
     {
       "file": "references/page-metadata/examples/ioc-region-map-demo.json",
-      "requiredVersion": "6.139",
+      "requiredVersion": "6.141",
       "capabilities": [
+        {
+          "id": "map-tooltip-rows",
+          "minor": 141,
+          "description": "地图提示框可声明指标与同排对比值"
+        },
+        {
+          "id": "map-point-label-value",
+          "minor": 141,
+          "description": "地图点位标签可同时显示名称和指标值"
+        },
         {
           "id": "map-geography-overrides",
           "minor": 139,
@@ -262,8 +272,18 @@
     },
     {
       "file": "references/page-metadata/examples/ioc-region-map-demo.json",
-      "requiredVersion": "6.139",
+      "requiredVersion": "6.141",
       "capabilities": [
+        {
+          "id": "map-tooltip-rows",
+          "minor": 141,
+          "description": "地图提示框可声明指标与同排对比值"
+        },
+        {
+          "id": "map-point-label-value",
+          "minor": 141,
+          "description": "地图点位标签可同时显示名称和指标值"
+        },
         {
           "id": "map-geography-overrides",
           "minor": 139,

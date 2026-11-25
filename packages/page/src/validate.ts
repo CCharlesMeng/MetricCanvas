@@ -1833,6 +1833,14 @@ function componentErrors(
     (component.props.tooltipFields ?? []).forEach((item, index) =>
       checkValue(item, `${componentPath}/props/tooltipFields/${index}`, 'field')
     );
+    if (component.props.tooltipFields && component.props.tooltipRows) {
+      errors.push(schemaError(`${componentPath}/props/tooltipRows`, 'tooltipRows 与 tooltipFields 不能同时声明'));
+    }
+    component.props.tooltipRows?.forEach((item, index) => {
+      const path = `${componentPath}/props/tooltipRows/${index}`;
+      checkValue(item, path, 'field', 'measure');
+      if (item.comparison) checkValue(item.comparison, `${path}/comparison`, 'field', 'measure');
+    });
     if (component.props.pinnedSummary) {
       check(
         component.props.pinnedSummary.matchField,

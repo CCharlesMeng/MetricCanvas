@@ -270,7 +270,9 @@
     gap: 4px;
   }
   .primary-detail > .metric-content .row-value {
+    color: #000;
     font-size: 28px;
+    font-weight: 700;
     line-height: 34px;
   }
   .primary-detail > .metric-content .changes {
@@ -292,6 +294,7 @@
     line-height: 20px;
   }
   .primary-detail > .metric-content .change-value {
+    font-weight: 700;
     line-height: 17px;
   }
   .primary-detail > .metric-panel {
@@ -332,7 +335,7 @@
   }
   .primary-detail > .metric-panel .row-value,
   .primary-detail > .metric-panel .unit {
-    color: rgba(0, 0, 0, 0.8);
+    color: #000;
     font-size: 14px;
     font-weight: 400;
     line-height: 17px;

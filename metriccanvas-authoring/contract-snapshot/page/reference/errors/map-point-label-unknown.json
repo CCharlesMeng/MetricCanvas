@@ -1,0 +1,385 @@
+{
+  "case": "map-point-label-unknown",
+  "invariant": "map-point-label-value",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 data(拼写错误?)",
+      "paths": [
+        "/sections/1/components/0/data",
+        "/sections/1/components/0/data",
+        "/sections/1/components/0/data",
+        "/sections/1/components/0/data",
+        "/sections/1/components/0/data",
+        "/sections/1/components/0/data",
+        "/sections/1/components/0/data",
+        "/sections/1/components/0/data"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must be equal to constant",
+      "paths": [
+        "/sections/1/components/0/type",
+        "/sections/1/components/0/type",
+        "/sections/1/components/0/type",
+        "/sections/1/components/0/type",
+        "/sections/1/components/0/type",
+        "/sections/1/components/0/type",
+        "/sections/1/components/0/props/pointLabel",
+        "/sections/1/components/0/props/pointLabel",
+        "/sections/1/components/0/type",
+        "/sections/1/components/0/type",
+        "/sections/1/components/0/type",
+        "/sections/1/components/0/type",
+        "/sections/1/components/0/type",
+        "/sections/1/components/0/type",
+        "/sections/1/components/0/type",
+        "/sections/1/components/0/type",
+        "/sections/1/components/0/type",
+        "/sections/1/components/0/type",
+        "/sections/1/components/0/type",
+        "/sections/1/components/0/type",
+        "/sections/1/components/0/type"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 map(拼写错误?)",
+      "paths": [
+        "/sections/1/components/0/props/map",
+        "/sections/1/components/0/props/map",
+        "/sections/1/components/0/props/map",
+        "/sections/1/components/0/props/map",
+        "/sections/1/components/0/props/map",
+        "/sections/1/components/0/props/map",
+        "/sections/1/components/0/props/map",
+        "/sections/1/components/0/props/map",
+        "/sections/1/components/0/props/map",
+        "/sections/1/components/0/props/map",
+        "/sections/1/components/0/props/map",
+        "/sections/1/components/0/props/map",
+        "/sections/1/components/0/props/map",
+        "/sections/1/components/0/props/map",
+        "/sections/1/components/0/props/map",
+        "/sections/1/components/0/props/map",
+        "/sections/1/components/0/props/map",
+        "/sections/1/components/0/props/map",
+        "/sections/1/components/0/props/map",
+        "/sections/1/components/0/props/map",
+        "/sections/1/components/0/props/map"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 scatter(拼写错误?)",
+      "paths": [
+        "/sections/1/components/0/props/scatter",
+        "/sections/1/components/0/props/scatter",
+        "/sections/1/components/0/props/scatter",
+        "/sections/1/components/0/props/scatter",
+        "/sections/1/components/0/props/scatter",
+        "/sections/1/components/0/props/scatter",
+        "/sections/1/components/0/props/scatter",
+        "/sections/1/components/0/props/scatter",
+        "/sections/1/components/0/props/scatter",
+        "/sections/1/components/0/props/scatter",
+        "/sections/1/components/0/props/scatter",
+        "/sections/1/components/0/props/scatter",
+        "/sections/1/components/0/props/scatter",
+        "/sections/1/components/0/props/scatter",
+        "/sections/1/components/0/props/scatter",
+        "/sections/1/components/0/props/scatter",
+        "/sections/1/components/0/props/scatter",
+        "/sections/1/components/0/props/scatter",
+        "/sections/1/components/0/props/scatter",
+        "/sections/1/components/0/props/scatter",
+        "/sections/1/components/0/props/scatter"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 nameField(拼写错误?)",
+      "paths": [
+        "/sections/1/components/0/props/nameField",
+        "/sections/1/components/0/props/nameField",
+        "/sections/1/components/0/props/nameField",
+        "/sections/1/components/0/props/nameField",
+        "/sections/1/components/0/props/nameField",
+        "/sections/1/components/0/props/nameField",
+        "/sections/1/components/0/props/nameField",
+        "/sections/1/components/0/props/nameField",
+        "/sections/1/components/0/props/nameField",
+        "/sections/1/components/0/props/nameField",
+        "/sections/1/components/0/props/nameField",
+        "/sections/1/components/0/props/nameField",
+        "/sections/1/components/0/props/nameField",
+        "/sections/1/components/0/props/nameField",
+        "/sections/1/components/0/props/nameField",
+        "/sections/1/components/0/props/nameField",
+        "/sections/1/components/0/props/nameField",
+        "/sections/1/components/0/props/nameField",
+        "/sections/1/components/0/props/nameField"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 valueField(拼写错误?)",
+      "paths": [
+        "/sections/1/components/0/props/valueField",
+        "/sections/1/components/0/props/valueField",
+        "/sections/1/components/0/props/valueField",
+        "/sections/1/components/0/props/valueField",
+        "/sections/1/components/0/props/valueField",
+        "/sections/1/components/0/props/valueField",
+        "/sections/1/components/0/props/valueField",
+        "/sections/1/components/0/props/valueField",
+        "/sections/1/components/0/props/valueField",
+        "/sections/1/components/0/props/valueField",
+        "/sections/1/components/0/props/valueField",
+        "/sections/1/components/0/props/valueField",
+        "/sections/1/components/0/props/valueField",
+        "/sections/1/components/0/props/valueField",
+        "/sections/1/components/0/props/valueField"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 pointLabel(拼写错误?)",
+      "paths": [
+        "/sections/1/components/0/props/pointLabel",
+        "/sections/1/components/0/props/pointLabel",
+        "/sections/1/components/0/props/pointLabel",
+        "/sections/1/components/0/props/pointLabel",
+        "/sections/1/components/0/props/pointLabel",
+        "/sections/1/components/0/props/pointLabel",
+        "/sections/1/components/0/props/pointLabel",
+        "/sections/1/components/0/props/pointLabel",
+        "/sections/1/components/0/props/pointLabel",
+        "/sections/1/components/0/props/pointLabel",
+        "/sections/1/components/0/props/pointLabel",
+        "/sections/1/components/0/props/pointLabel",
+        "/sections/1/components/0/props/pointLabel",
+        "/sections/1/components/0/props/pointLabel",
+        "/sections/1/components/0/props/pointLabel",
+        "/sections/1/components/0/props/pointLabel",
+        "/sections/1/components/0/props/pointLabel",
+        "/sections/1/components/0/props/pointLabel",
+        "/sections/1/components/0/props/pointLabel",
+        "/sections/1/components/0/props/pointLabel",
+        "/sections/1/components/0/props/pointLabel"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 tooltipRows(拼写错误?)",
+      "paths": [
+        "/sections/1/components/0/props/tooltipRows",
+        "/sections/1/components/0/props/tooltipRows",
+        "/sections/1/components/0/props/tooltipRows",
+        "/sections/1/components/0/props/tooltipRows",
+        "/sections/1/components/0/props/tooltipRows",
+        "/sections/1/components/0/props/tooltipRows",
+        "/sections/1/components/0/props/tooltipRows",
+        "/sections/1/components/0/props/tooltipRows",
+        "/sections/1/components/0/props/tooltipRows",
+        "/sections/1/components/0/props/tooltipRows",
+        "/sections/1/components/0/props/tooltipRows",
+        "/sections/1/components/0/props/tooltipRows",
+        "/sections/1/components/0/props/tooltipRows",
+        "/sections/1/components/0/props/tooltipRows",
+        "/sections/1/components/0/props/tooltipRows",
+        "/sections/1/components/0/props/tooltipRows",
+        "/sections/1/components/0/props/tooltipRows",
+        "/sections/1/components/0/props/tooltipRows",
+        "/sections/1/components/0/props/tooltipRows",
+        "/sections/1/components/0/props/tooltipRows",
+        "/sections/1/components/0/props/tooltipRows"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 actions(拼写错误?)",
+      "paths": [
+        "/sections/1/components/0/props/actions",
+        "/sections/1/components/0/props/actions",
+        "/sections/1/components/0/props/actions",
+        "/sections/1/components/0/props/actions",
+        "/sections/1/components/0/props/actions",
+        "/sections/1/components/0/props/actions",
+        "/sections/1/components/0/props/actions",
+        "/sections/1/components/0/props/actions",
+        "/sections/1/components/0/props/actions",
+        "/sections/1/components/0/props/actions",
+        "/sections/1/components/0/props/actions",
+        "/sections/1/components/0/props/actions"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 rows",
+      "paths": [
+        "/sections/1/components/0/props/rows"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 categoryField",
+      "paths": [
+        "/sections/1/components/0/props/categoryField",
+        "/sections/1/components/0/props/categoryField",
+        "/sections/1/components/0/props/categoryField",
+        "/sections/1/components/0/props/categoryField"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 series",
+      "paths": [
+        "/sections/1/components/0/props/series",
+        "/sections/1/components/0/props/series"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 xField",
+      "paths": [
+        "/sections/1/components/0/props/xField"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 value",
+      "paths": [
+        "/sections/1/components/0/props/value",
+        "/sections/1/components/0/props/value",
+        "/sections/1/components/0/props/value"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must NOT be valid",
+      "paths": [
+        "/sections/1/components/0/props/valueField",
+        "/sections/1/components/0/props/valueField",
+        "/sections/1/components/0/props/valueField"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must match a schema in anyOf",
+      "paths": [
+        "/sections/1/components/0/props",
+        "/sections/1/components/0/props",
+        "/sections/1/components/0/props"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 columns",
+      "paths": [
+        "/sections/1/components/0/props/columns",
+        "/sections/1/components/0/props/columns"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 tabs",
+      "paths": [
+        "/sections/1/components/0/props/tabs"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 components",
+      "paths": [
+        "/sections/1/components/0/props/components"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 items",
+      "paths": [
+        "/sections/1/components/0/props/items"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 field",
+      "paths": [
+        "/sections/1/components/0/props/field"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 label",
+      "paths": [
+        "/sections/1/components/0/props/label"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 action",
+      "paths": [
+        "/sections/1/components/0/props/action"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "存在未定义字段 title(拼写错误?)",
+      "paths": [
+        "/sections/1/components/0/props/title",
+        "/sections/1/components/0/props/title",
+        "/sections/1/components/0/props/title"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "缺少必填字段 filterId",
+      "paths": [
+        "/sections/1/components/0/props/filterId"
+      ]
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "must match exactly one schema in oneOf",
+      "paths": [
+        "/sections/1/components/0"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      "…",
+      {
+        "components": [
+          {
+            "id": "world-map",
+            "type": "mapChart",
+            "layout": {
+              "span": 8
+            },
+            "data": {
+              "main": "regions"
+            },
+            "props": {
+              "map": "world",
+              "title": "全球地区部",
+              "scatter": "point",
+              "nameField": "org-key",
+              "valueField": "discount",
+              "pointLabel": "valueOnly",
+              "tooltipRows": [
+                "…（共1项）"
+              ],
+              "actions": [
+                "…（共1项）"
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/map-point-label-unknown.json"
+}

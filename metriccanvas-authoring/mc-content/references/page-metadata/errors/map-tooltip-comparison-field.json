@@ -1,0 +1,34 @@
+{
+  "case": "map-tooltip-comparison-field",
+  "invariant": "map-tooltip-rows",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "字段 missing-comparison 不在数据槽 main 的数据源 regions 中",
+      "paths": [
+        "/sections/1/components/0/props/tooltipRows/0/comparison/field"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      "…",
+      {
+        "components": [
+          {
+            "props": {
+              "tooltipRows": [
+                {
+                  "comparison": {
+                    "field": "missing-comparison"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "note": "仅含错误触发片段，不是完整页面；使用独立校验脚本验证实际文档。"
+}

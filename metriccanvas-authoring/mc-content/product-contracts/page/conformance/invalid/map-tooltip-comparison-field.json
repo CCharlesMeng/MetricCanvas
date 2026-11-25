@@ -1,0 +1,456 @@
+{
+  "case": "map-tooltip-comparison-field",
+  "invariant": "map-tooltip-rows",
+  "input": {
+    "schemaVersion": "6.141",
+    "id": "ioc-region-map-demo",
+    "layout": "dashboard",
+    "meta": {
+      "title": "合同商务总览 · Region 地图演示"
+    },
+    "dataSources": {
+      "regions": {
+        "fields": {
+          "org-key": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "地区部"
+          },
+          "discount": {
+            "type": "number",
+            "role": "measure",
+            "queryField": "净商务折扣",
+            "defaultFormat": "percent-1"
+          }
+        },
+        "source": {
+          "type": "query",
+          "resultScope": "complete",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "地区部"
+                  ],
+                  "output_metrics": [
+                    "净商务折扣"
+                  ],
+                  "filter": {
+                    "time": {
+                      "period": "month",
+                      "is_aggregate": true
+                    },
+                    "dims": [],
+                    "metrics": []
+                  }
+                }
+              ]
+            },
+            "filterBindings": {
+              "region": {
+                "target": "dimension",
+                "levelQueryFields": {
+                  "geo": "geo_pc_code",
+                  "region-dept": "地区部",
+                  "office": "代表处"
+                }
+              }
+            }
+          }
+        }
+      },
+      "offices": {
+        "fields": {
+          "org-key": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "代表处"
+          },
+          "discount": {
+            "type": "number",
+            "role": "measure",
+            "queryField": "净商务折扣",
+            "defaultFormat": "percent-1"
+          },
+          "region-key": {
+            "type": "string",
+            "role": "dimension",
+            "queryField": "地区部"
+          }
+        },
+        "source": {
+          "type": "query",
+          "resultScope": "complete",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "代表处",
+                    "地区部"
+                  ],
+                  "output_metrics": [
+                    "净商务折扣"
+                  ],
+                  "filter": {
+                    "time": {
+                      "period": "month",
+                      "is_aggregate": true
+                    },
+                    "dims": [],
+                    "metrics": []
+                  }
+                }
+              ]
+            },
+            "filterBindings": {
+              "region": {
+                "target": "dimension",
+                "levelQueryFields": {
+                  "geo": "geo_pc_code",
+                  "region-dept": "地区部",
+                  "office": "代表处"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "region-header",
+        "components": [
+          {
+            "id": "region-map-header",
+            "type": "iocHeader",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "identity": {
+                "title": "合同商务总览 · Region 地图演示"
+              },
+              "presentation": {
+                "layout": "inline"
+              },
+              "components": [
+                {
+                  "id": "region-control",
+                  "type": "regionFilter"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "global-overview",
+        "visibleWhen": {
+          "any": [
+            {
+              "filter": "region",
+              "part": "level",
+              "op": "eq",
+              "value": "geo"
+            },
+            {
+              "filter": "region",
+              "part": "values",
+              "op": "isEmpty"
+            },
+            {
+              "filter": "region",
+              "part": "values",
+              "op": "containsAny",
+              "values": [
+                "全球"
+              ]
+            }
+          ]
+        },
+        "components": [
+          {
+            "id": "world-map",
+            "type": "mapChart",
+            "layout": {
+              "span": 8
+            },
+            "data": {
+              "main": "regions"
+            },
+            "props": {
+              "map": "world",
+              "title": "全球地区部",
+              "scatter": "point",
+              "nameField": "org-key",
+              "valueField": "discount",
+              "pointLabel": "nameAndValue",
+              "tooltipRows": [
+                {
+                  "label": "净商务折扣",
+                  "field": "discount",
+                  "comparison": {
+                    "label": "同比",
+                    "field": "missing-comparison"
+                  }
+                }
+              ],
+              "actions": [
+                {
+                  "on": "click",
+                  "writeFilter": "region",
+                  "field": "org-key",
+                  "level": "region-dept"
+                }
+              ]
+            }
+          },
+          {
+            "id": "global-regions",
+            "type": "table",
+            "layout": {
+              "span": 4
+            },
+            "data": {
+              "main": "regions"
+            },
+            "props": {
+              "title": "地区部列表",
+              "pagination": {
+                "mode": "none"
+              },
+              "rowKey": "org-key",
+              "columns": [
+                {
+                  "field": "org-key",
+                  "title": "组织"
+                },
+                {
+                  "field": "discount",
+                  "title": "净商务折扣"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "china-overview",
+        "visibleWhen": {
+          "all": [
+            {
+              "not": {
+                "any": [
+                  {
+                    "filter": "region",
+                    "part": "level",
+                    "op": "eq",
+                    "value": "geo"
+                  },
+                  {
+                    "filter": "region",
+                    "part": "values",
+                    "op": "isEmpty"
+                  },
+                  {
+                    "filter": "region",
+                    "part": "values",
+                    "op": "containsAny",
+                    "values": [
+                      "全球"
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "fact": "regionDepartment",
+              "op": "isNotNull"
+            },
+            {
+              "fact": "regionDepartment",
+              "op": "eq",
+              "value": "中国地区部"
+            }
+          ]
+        },
+        "components": [
+          {
+            "id": "china-map",
+            "type": "mapChart",
+            "layout": {
+              "span": 8
+            },
+            "data": {
+              "main": "offices"
+            },
+            "props": {
+              "map": "china",
+              "title": "中国代表处",
+              "scatter": "point",
+              "nameField": "org-key",
+              "valueField": "discount",
+              "hierarchyFilter": "region",
+              "parentField": "region-key",
+              "codeField": "org-key"
+            }
+          },
+          {
+            "id": "china-offices",
+            "type": "table",
+            "layout": {
+              "span": 4
+            },
+            "data": {
+              "main": "offices"
+            },
+            "props": {
+              "title": "代表处列表",
+              "pagination": {
+                "mode": "none"
+              },
+              "rowKey": "org-key",
+              "columns": [
+                {
+                  "field": "org-key",
+                  "title": "组织"
+                },
+                {
+                  "field": "discount",
+                  "title": "净商务折扣"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "regional-overview",
+        "visibleWhen": {
+          "all": [
+            {
+              "not": {
+                "any": [
+                  {
+                    "filter": "region",
+                    "part": "level",
+                    "op": "eq",
+                    "value": "geo"
+                  },
+                  {
+                    "filter": "region",
+                    "part": "values",
+                    "op": "isEmpty"
+                  },
+                  {
+                    "filter": "region",
+                    "part": "values",
+                    "op": "containsAny",
+                    "values": [
+                      "全球"
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "fact": "regionDepartment",
+              "op": "isNotNull"
+            },
+            {
+              "fact": "regionDepartment",
+              "op": "ne",
+              "value": "中国地区部"
+            }
+          ]
+        },
+        "components": [
+          {
+            "id": "regional-map",
+            "type": "mapChart",
+            "layout": {
+              "span": 8
+            },
+            "data": {
+              "main": "offices"
+            },
+            "props": {
+              "map": "world",
+              "title": "海外代表处",
+              "scatter": "point",
+              "nameField": "org-key",
+              "valueField": "discount",
+              "hierarchyFilter": "region",
+              "parentField": "region-key",
+              "codeField": "org-key"
+            }
+          },
+          {
+            "id": "regional-offices",
+            "type": "table",
+            "layout": {
+              "span": 4
+            },
+            "data": {
+              "main": "offices"
+            },
+            "props": {
+              "title": "代表处列表",
+              "pagination": {
+                "mode": "none"
+              },
+              "rowKey": "org-key",
+              "columns": [
+                {
+                  "field": "org-key",
+                  "title": "组织"
+                },
+                {
+                  "field": "discount",
+                  "title": "净商务折扣"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "mapOverrides": {
+      "world": {
+        "region-dept": {
+          "欧洲地区部": {
+            "viewport": {
+              "zoom": 6.4
+            }
+          },
+          "拉美地区部": {
+            "point": {
+              "lngLat": [
+                -62,
+                -15
+              ]
+            }
+          }
+        },
+        "office": {
+          "法国代表处": {
+            "point": {
+              "feature": "France"
+            }
+          }
+        }
+      }
+    }
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/1/components/0/props/tooltipRows/0/comparison/field",
+      "message": "字段 missing-comparison 不在数据槽 main 的数据源 regions 中"
+    }
+  ]
+}

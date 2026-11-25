@@ -41,6 +41,11 @@ const mapTooltipFieldZ = z.union([
   displayConstantSourceZ.extend(tooltipShape).strict()
 ]).meta({ id: 'mapTooltipField' });
 
+const mapTooltipMetricZ = z.object({ ...tooltipShape, field: fieldBindingZ }).strict();
+const mapTooltipRowZ = mapTooltipMetricZ.extend({
+  comparison: mapTooltipMetricZ.optional()
+}).strict().meta({ id: 'mapTooltipRow' });
+
 const mapPinnedSummaryZ = z
   .object({
     matchField: fieldBindingZ,
@@ -77,6 +82,8 @@ const mapPropsShape = {
         legend: mapLegendZ.optional(),
         /** tooltip 在地域名与 valueField 之外追加的字段;每项一个标签与一个字段绑定。 */
         tooltipFields: z.array(mapTooltipFieldZ).min(1).optional(),
+        tooltipRows: z.array(mapTooltipRowZ).min(1).optional(),
+        pointLabel: z.literal('nameAndValue').optional(),
         /** 按稳定字段值固定展示一条地域摘要，不按显示名称或页面 id 分支。 */
         pinnedSummary: mapPinnedSummaryZ.optional(),
         actions: actionsZ.optional()

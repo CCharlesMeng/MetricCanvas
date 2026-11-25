@@ -22,6 +22,12 @@ DQE 请求及引擎内置读取超时默认且最少为180秒（180000毫秒）�
 
 无需新增页面字段或升级 Schema。合成场景 `/pages/loading-structure-demo`、`/pages/metric-card-loading` 覆盖独立请求、首次加载、筛选、查询翻页、展开明细与 Tab 切换，操作与证据边界见 `pages/capabilities/layout/README.md`。
 
+<a id="progressive-map-data"></a>
+
+### 地图渐进展示
+
+绑定普通查询源度量的地图可以复用当前轮次的渐进回执。保持行域的计算仍在执行时，只要组织行与定位、层级所需字段已就绪，即可显示可定位的组织点。地图指标尚未完成时，点位仍可悬浮查看同一行已就绪的指标；分档着色和散点数值随地图指标补齐。未就绪值按缺失格式展示。动作在正式结果完成后启用。完整结果继续负责查询执行、导出、终态错误和筛选代次隔离。无需为渐进展示声明新字段。延迟验证见 `/pages/contract-business-overview`。
+
 <a id="progressive-table-columns"></a>
 
 ### 级联表格渐进补列
@@ -272,7 +278,7 @@ Excel 允许缺项，数据工作表导出整理后的全部匹配行，而非�
 合成入口 `/pages/table-data-recovery` 同时展示缺字段、对象值、不规则行、重复来源 key 与重复补充记录；`?recoveryState=ready` 演示数据准备好后恢复无告警。页面位于 `pages/capabilities/table/table-data-recovery.json`，模拟数据与故障注入在 `apps/playground/fixtures/table-recovery.ts`；无需 DQE Sim。真实 DQE/Relay 行为须另验。
 
 
-页面协议 6.140。结构真源为本册[schema.json](schema.json)，SHA256 `e63ac5e9265706b6508600a77a489c4d8f0e7b60be7e71666860f8834b820779`。字段表自动生成；可选不等于有默认值。
+页面协议 6.141。结构真源为本册[schema.json](schema.json)，SHA256 `c40184a8d67e0d0d991d75179dffd3e5fa36e94fa121b5a46b2574e8ee3da1fb`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
