@@ -709,7 +709,7 @@ DQE 数据网关请求及引擎内置读取超时默认且最少为180秒，页�
 导航可显式配置`validateTargetInputs:true`，集成应用提供目标输入投影；校验row/param/filter映射，拒绝缺必需值、类型/粒度不兼容及无目标能力，普通URL兼容。目标独立校验并等待当前候选；显式开启`strictURLInputs:true`时，非法筛选URL不回退默认查询。见[交互与导航](docs/page-metadata/actions-and-navigation.md)。无视图恢复，B6挂起。
 
 `strictURLInputs:true`由页面显式开启，兼容规范化升版本不自动开启。来源和目标可分别选择该策略；本批三个验收页均开启。受控编辑使用`set_url_input_validation`，enabled=false仅删除该标记。
-条件呈现与动作资格见[条件规则](docs/page-metadata/conditions.md)：6.35就地声明visibleWhen/enabledWhen，父级约束后代，子项不反推父级。
+条件呈现与动作资格见[条件规则](docs/page-metadata/conditions.md)：6.35就地声明visibleWhen/enabledWhen，父级约束后代，子项不反推父级。统一运行时在当前页面实例应用新的展示输入，更新权限修订号时页面继续渲染。
 
 表格静态搜索选项（6.42）：`props.toolbar.search.options` 声明静态枚举、每项单文本字段与 placeholder，`defaultValue` 可选。切换保留关键词并立即按所选字段做包含匹配；清空保留选项；与既有条件 AND，导出沿用已提交状态。`fields/placeholder` 按任一字段包含匹配。已有页面 JSON 可直接沿用。声明与限制见[明细表](docs/page-metadata/components/table.md#静态搜索选项642)，可观察页面见[字段切换示例](pages/capabilities/table/table-search-options-demo.json)。
 

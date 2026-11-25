@@ -36,16 +36,17 @@ try{
  await page.getByRole('tab',{name:'地区部',exact:true}).first().click();
  await expect(section('retained-container')).toBeVisible();await expect(section('department-norms')).toHaveCount(0);
  await page.screenshot({path:path.join(output,'narrow.png'),fullPage:true});
- // Fact inputs update the existing instance; a new permission revision invalidates it.
+ // Fact and revision updates keep the existing instance.
  await page.goto(`${base}/pages/page-visibility-inputs`);
  await expect(section('intro')).toBeVisible();await expect(section('protected')).toHaveCount(0);
  await page.getByRole('button',{name:'允许',exact:true}).click();await expect(section('protected')).toBeVisible();await expect(section('fact')).toBeVisible();
  await page.getByRole('button',{name:'拒绝',exact:true}).click();await expect(section('protected')).toHaveCount(0);await expect(section('intro')).toBeVisible();
  await page.getByRole('button',{name:'输入错误',exact:true}).click();await expect(section('fact')).toHaveCount(0);await expect(section('intro')).toBeVisible();
  await page.getByRole('button',{name:'允许',exact:true}).click();await expect(section('protected')).toBeVisible();
- await page.getByRole('button',{name:'更换权限会话',exact:true}).click();await expect(section('intro')).toHaveCount(0);
- await expect(page.getByText('权限会话已变化，请以当前身份重新初始化页面',{exact:true})).toBeVisible();
- await page.getByRole('button',{name:'重新初始化',exact:true}).click();await expect(section('protected')).toBeVisible();
+ await page.getByRole('button',{name:'更新权限修订号',exact:true}).click();
+ await expect(section('intro')).toBeVisible();await expect(section('protected')).toBeVisible();
+ await page.getByRole('button',{name:'拒绝',exact:true}).click();await expect(section('protected')).toHaveCount(0);
+ await page.getByRole('button',{name:'允许',exact:true}).click();await expect(section('protected')).toBeVisible();
  await page.setViewportSize({width:1440,height:1000});
  await page.goto(`${base}/pages/page-visibility-report?organization.level=department`);
  await expect(section('department-norms')).toHaveCount(0);
@@ -68,14 +69,15 @@ try{
  await page.getByRole('tab',{name:'地区部',exact:true}).first().click();
  download=page.waitForEvent('download');await page.getByRole('button',{name:'下载条件PNG',exact:true}).click();await(await download).saveAs(path.join(output,'visibility.png'));
  download=page.waitForEvent('download');await page.locator('[data-component="rows-and-tabs/projected-table"]').getByRole('button',{name:'导出',exact:true}).click();await(await download).saveAs(path.join(output,'visibility.xlsx'));
- // Cancel at the actual worker seam after a new permission revision.
+ // A revision-only update during PDF generation leaves the captured export running.
  await page.goto(`${base}/pages/page-visibility-inputs`);await page.getByRole('button',{name:'允许',exact:true}).click();
- let canceledDownload=false;const markDownload=()=>canceledDownload=true;page.on('download',markDownload);
- await page.evaluate(()=>{const Original=window.Worker;window.visibilityWorker=Original;window.Worker=class extends Original{constructor(...args){super(...args);queueMicrotask(()=>[...document.querySelectorAll('[data-sim-facts] button')].find(button=>button.textContent==='更换权限会话')?.click());}};});
+ await page.evaluate(()=>{const Original=window.Worker;window.visibilityWorker=Original;window.Worker=class extends Original{constructor(...args){super(...args);queueMicrotask(()=>[...document.querySelectorAll('[data-sim-facts] button')].find(button=>button.textContent==='更新权限修订号')?.click());}};});
+ download=page.waitForEvent('download');
  await page.getByRole('button',{name:'导出Sim权限PDF',exact:true}).click();
- await expect(page.getByText('权限会话已变化，请以当前身份重新初始化页面',{exact:true})).toBeVisible();
+ const revisedPdf=await download;
+ expect((await readFile(await revisedPdf.path())).subarray(0,4).toString()).toBe('%PDF');
+ await expect(section('intro')).toBeVisible();
  await expect(page.locator('[data-report-export-frame]')).toHaveCount(0);
- expect(canceledDownload).toBe(false);page.off('download',markDownload);
  await page.evaluate(()=>window.Worker=window.visibilityWorker);
  // Public JS API receives the same source, without Playground-specific wiring.
  await page.goto(`${base}/pages/page-visibility-region-linkage`);
@@ -89,7 +91,7 @@ try{
   const source={getSnapshot:()=>snapshot,subscribe:run=>{listeners.add(run);return()=>listeners.delete(run);}};
   const events=[];
   const options={document:metadata,displayInputs:source,onEvent:event=>events.push(event)};
-  let handle=mount(host,options);
+  const handle=mount(host,options);
   window.visibilityEmbed={publish(allowed,revision='public-1'){
    snapshot={permissionRevision:revision,permissions:{'department.read':{status:'ready',value:allowed}},values:{ready:{status:'ready',value:allowed}}};
    for(const run of listeners)run(snapshot);
@@ -97,7 +99,7 @@ try{
    snapshot={permissionRevision:'public-2',permissions:{'department.read':{status:'ready',value:false}},values:{ready:{status:'ready',value:false}}};
    options.displayInputs={getSnapshot:()=>snapshot,subscribe:run=>{listeners.add(run);return()=>listeners.delete(run);}};
    handle.update(options);
-  },remount(){handle.destroy();handle=mount(host,options);},destroy(){handle.destroy();host.remove();},events};
+  },destroy(){handle.destroy();host.remove();},events};
  },{document:inputDocument,embedModule});
  const embed=page.locator('#public-embed');
  await expect(embed.locator('[data-section-id="intro"]')).toBeVisible();
@@ -105,12 +107,12 @@ try{
  await page.evaluate(()=>window.visibilityEmbed.publish(true));
  await expect(embed.locator('[data-section-id="protected"]')).toBeVisible();
  await page.evaluate(()=>window.visibilityEmbed.replaceSource());
- await expect(embed.getByText('权限会话已变化，请以当前身份重新初始化页面',{exact:true})).toBeVisible();
- await page.evaluate(()=>window.visibilityEmbed.remount());
  await expect(embed.locator('[data-section-id="intro"]')).toBeVisible();
  await expect(embed.locator('[data-section-id="protected"]')).toHaveCount(0);
+ await page.evaluate(()=>window.visibilityEmbed.publish(true,'public-2'));
+ await expect(embed.locator('[data-section-id="protected"]')).toBeVisible();
  await page.evaluate(()=>window.visibilityEmbed.destroy());
  expect(errors).toEqual([]);
- const result={status:'pass',browser:browser.version(),scenarios:['level-only-switch','parent-retained','tab-fallback','conditional-parts','url-level-restore','fixed-filter-buttons','wide-and-narrow','fact-inputs','permission-invalidation','pdf-frozen-content','png-export','xlsx-export','permission-cancels-download','public-js-display-inputs','section-group-fallback-and-empty','replaced-source-keeps-permission-boundary'],errors};
+ const result={status:'pass',browser:browser.version(),scenarios:['level-only-switch','parent-retained','tab-fallback','conditional-parts','url-level-restore','fixed-filter-buttons','wide-and-narrow','fact-inputs','permission-revision-update','pdf-frozen-content','png-export','xlsx-export','revision-keeps-download','public-js-display-inputs','section-group-fallback-and-empty','replaced-source-updates-visibility'],errors};
  await writeFile(path.join(output,'result.json'),JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result));
 }finally{await browser.close();}

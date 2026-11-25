@@ -330,12 +330,9 @@
   });
   let refreshPeriodFacts:((snapshot:DisplaySnapshot|undefined)=>void)|undefined;
   function clearDisplaySnapshot(){retainedScreenData.clear();displaySnapshot=undefined;untrack(()=>refreshPeriodFacts?.(undefined));}
-  let permissionRevision:string|undefined;
-  let permissionInvalidated=false;
   let authInvalidated=false;
   let authNotified=false;
   let authPageId='';
-  function runtimeInvalidated(){return permissionInvalidated||authInvalidated;}
   function receiveAuthRequired(event:AuthRequiredEvent){
     if(authInvalidated)return;
     const callback=untrack(()=>onAuthRequired);
@@ -359,17 +356,12 @@
   }
   $effect(()=>{
     const source=displayInputs;
-    if(!source){if(permissionRevision!==undefined)clearDisplaySnapshot();return;}
+    if(!source){clearDisplaySnapshot();return;}
     let stopped=false;
     const update=(snapshot:DisplaySnapshot)=>{
-      if(stopped||runtimeInvalidated())return;
+      if(stopped||authInvalidated)return;
       if(!snapshot||typeof snapshot.permissionRevision!=='string'||!snapshot.permissionRevision){clearDisplaySnapshot();return;}
-      if(permissionRevision!==undefined&&permissionRevision!==snapshot.permissionRevision){
-        stopped=true;permissionInvalidated=true;retainedScreenData.clear();dispose();snapshots=new Map();displaySnapshot=undefined;
-        const error={code:'DISPLAY_PERMISSION_CHANGED' as const,message:'权限会话已变化，请以当前身份重新初始化页面'};
-        pageState={phase:'configuration-error',error};onevent?.({type:'configuration-error',...error});return;
-      }
-      permissionRevision=snapshot.permissionRevision;displaySnapshot=snapshot;untrack(()=>refreshPeriodFacts?.(snapshot));
+      displaySnapshot=snapshot;untrack(()=>refreshPeriodFacts?.(snapshot));
     };
     let unsubscribe=()=>{};
     try {
@@ -550,7 +542,7 @@
     revisionId: string | undefined,
     bootstrap: import('../../runtime/src').ExecutionBootstrap | undefined
   ) {
-    if(runtimeInvalidated())return;
+    if(authInvalidated)return;
     exportController.reset(); tableController?.dispose(); tableController=undefined;
     const mySession = ++session;
     filterRevision=0;
@@ -568,7 +560,7 @@
 
     // 保持异步初始化接缝，避免外层 effect 把初始化中的状态读取纳入依赖。
     await Promise.resolve();
-    if (session !== mySession || runtimeInvalidated()) return;
+    if (session !== mySession || authInvalidated) return;
     candidateClock=new Date();
 
     if (bootstrap && canonicalizeJson(raw) !== canonicalizeJson(bootstrap.document)) {
@@ -870,7 +862,7 @@
 
   async function prepareInitialNavigation(page: Page, redirect: NavigationTarget | undefined, preparation: ReturnType<typeof createFinalizationPreparation>, defaults: Map<string, FilterValue>, mySession: number) {
     const finalizationDates = await (redirect && preparation.unresolved.size ? preparation.resolve() : preparation.initialDates());
-    if (mySession !== session || runtimeInvalidated()) return;
+    if (mySession !== session || authInvalidated) return;
     const restored = finalizationDates ? preparation.values(finalizationDates) : [];
     const initialFilters = new Map([...defaults, ...restored, ...preparation.immediate]);
     if (redirect) {
