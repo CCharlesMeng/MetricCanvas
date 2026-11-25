@@ -13,6 +13,7 @@ test('colors only configured primary values and stacks primary-detail changes by
   const changes = card('gain').locator('.changes');
   await expect(changes).toHaveCSS('flex-direction', 'column');
   await expect(changes.locator('.change-label')).toHaveText(['同比', '环比']);
+  await expect(changes.locator('.change-value')).toHaveText(['>500P', '<-500P']);
   for (const label of await changes.locator('.change-label').all()) {
     await expect(label).toHaveCSS('color', 'rgb(113, 113, 122)');
   }
