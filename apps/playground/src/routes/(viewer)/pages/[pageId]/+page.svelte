@@ -107,7 +107,7 @@
 
   const returnHref=$derived.by(()=>{returnRevision;page.url.href;return returns.current()?.sourceHref;});
   const navigation: RuntimeNavigation = {
-      preserveSearchParams: ['revision', 'state', 'supplementKey', 'sourceFailure', 'rowFailure', 'recoveryState'],
+      preserveSearchParams: ['revision', 'state', 'supplementKey', 'sourceFailure', 'rowFailure', 'recoveryState', 'mapLabels'],
       ...createPlaygroundNavigation(pageRepository, {
         baseURL: () => location.href,
         visit: (href, replace) => goto(href, { replaceState: replace }),

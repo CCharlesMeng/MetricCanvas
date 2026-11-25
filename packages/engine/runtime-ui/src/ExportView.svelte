@@ -23,7 +23,7 @@
   let {state:inputState,width,padding,gap,scale=2}: {state:ExportRenderState;width:number;padding:string;gap:string;scale?:number}=$props();
   const state=$derived({...inputState,page:projectFieldSelections({...inputState.page,detailViews:undefined},inputState.filters)});
   const presentation=$derived(compilePresentation(state.page).evaluate({filters:state.filters,filterRevision:state.filterRevision,displaySnapshot:state.displaySnapshot}));
-  const frozenMap = $derived({geography:state.geography});
+  const frozenMap = $derived({geography:state.geography,displayNames:state.displayNames});
   setContext<RegionMapContext>(REGION_MAP_CONTEXT, {
     adapter:()=>frozenMap, overrides:()=>state.page.mapOverrides, selection:()=>state.regionSelection,
     frozenViewport:key=>state.viewports?.get(key)

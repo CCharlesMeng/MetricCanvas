@@ -10,6 +10,8 @@ IOC Region 地图可由集成应用注入视口资料。地图点击使用当前
 
 Schema 6.139 支持页面根级 `mapOverrides`，按底图、组织层级和组织值覆盖集成应用的地理资料。参见[地图地理资料](docs/page-metadata/components/mapChart.md#map-geography)。
 
+集成应用可通过 Embed 挂载参数 `regionMap.displayNames` 为 Region 地图提供组织显示名。配置方法见[地图悬浮提示与散点标签](docs/page-metadata/components/mapChart.md#map-tooltip-rows)。
+
 Schema 6.138 支持在 `metricCard.props.rows[].colorRule` 复用正负与固定颜色规则给主值着色。`primaryDetail` 主指标的变化项默认纵排。见[主值着色](docs/page-metadata/components/metricCard.md#metric-card-value-color)与合成入口 `/pages/metric-card-value-color`。
 
 对当前引擎支持的 6.x 页面，实际配置可执行时，能力引入版本高于页面声明仅作为调试诊断。独立校验、保存和发布继续严格检查能力下限。本次沿用现有页面字段与 Schema 版本。见[运行时兼容读取](docs/page-metadata/validation.md#runtime-capability-floor)与合成入口 `/pages/bar-category-order`。

@@ -125,7 +125,7 @@
     resolveMapBasemap,
     resolveMapClick
   } from './map-hierarchy';
-  import { REGION_MAP_CONTEXT, regionMapCandidate, regionMapSelection, type RegionMapContext } from './region-map';
+  import { REGION_MAP_CONTEXT, hasRegionMapRouting, regionMapCandidate, regionMapSelection, type RegionMapContext } from './region-map';
   import { collectDataErrors } from './data-error-events';
   import { runtimeVersionError } from './version-error';
   import { headerPeriod } from './report-date-header';
@@ -289,7 +289,9 @@
     }));
     if (Object.keys(page.dataSources).some(id=>sourceBlocked(page,id))) throw new ExportViewError('EXPORT_NOT_READY','筛选待确认或候选未就绪，暂不能导出页面');
     const sourceCandidates=structuredClone(new Map(declarations.flatMap(filter=>filter.type==='dimension'&&filter.candidates?[[filter.id,sourceFilterCandidates(filter)] as const]:[])));
-    const state={page,sourceCandidates,regionSelection:currentRegionMapSelection(),geography:structuredClone(regionMap?.geography),viewports:new Map(Array.from(liveViewports,([key,read]) => [key,read()] as const)),now:new Date(),displaySnapshot:structuredClone(displaySnapshot),filterRevision,currentYear:stream.captureComputeYear(),filters:structuredClone(new Map(filterValues)),snapshots:structuredClone(new Map(snapshots)),tables:JSON.parse(JSON.stringify(tableViews)),headerFilters:JSON.parse(JSON.stringify(appliedTableHeaderFilters)),summaries,sourceViews:stream.captureViews()};
+    const state={page,sourceCandidates,regionSelection:currentRegionMapSelection(),
+      geography:structuredClone(regionMap?.geography),displayNames:structuredClone(regionMap?.displayNames),
+      viewports:new Map(Array.from(liveViewports,([key,read]) => [key,read()] as const)),now:new Date(),displaySnapshot:structuredClone(displaySnapshot),filterRevision,currentYear:stream.captureComputeYear(),filters:structuredClone(new Map(filterValues)),snapshots:structuredClone(new Map(snapshots)),tables:JSON.parse(JSON.stringify(tableViews)),headerFilters:JSON.parse(JSON.stringify(appliedTableHeaderFilters)),summaries,sourceViews:stream.captureViews()};
     const queries=stream.captureQueries();
     const program=stream.getSourceProgram();
     return exportController.run(pageExportTask, controller => withReportView({state,queries,gateway:activeGateway,sourceRoot:surfaceRoot,controller,program,scale},consume));
@@ -1371,7 +1373,7 @@
   }
 
   function regionMapActive() {
-    return pageState.phase === 'ready' && !!(regionMap || pageState.page.mapOverrides) && usesIocRegion(pageState.page);
+    return pageState.phase === 'ready' && (hasRegionMapRouting(regionMap) || !!pageState.page.mapOverrides) && usesIocRegion(pageState.page);
   }
 
   function currentRegionMapSelection() {
