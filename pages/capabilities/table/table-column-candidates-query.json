@@ -35,6 +35,7 @@
       "data": { "main": "records" },
       "props": {
         "rowKey": "id",
+        "toolbar": { "export": { "format": "xlsx", "filename": "记录明细" } },
         "columns": [
           { "field": "id", "title": "编号" },
           { "field": "region", "title": "区域", "filterable": { "mode": "select", "showSelectAll": true } },

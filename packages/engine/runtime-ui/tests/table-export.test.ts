@@ -40,22 +40,25 @@ it('preserves multi-level headers, aligned secondary slots, raw numeric scales a
   expect(sheet.getCell('C4').value).toBe(11); expect(sheet.getCell('C5').value).toBe(22);
   expect(sheet.getCell('D4').value).toBe('=HYPERLINK("x")');
 });
-it('completes a paginated table export across all pages and rejects changing totals', async () => {
+it.each([10, 500])('exports every row in batches of 200 with a screen page size of %i', async pageSize => {
   const input = JSON.parse(readFileSync(new URL('../../../page/fixtures/contract-valid/table-toolbar-page.json', import.meta.url), 'utf8'));
   const rows = Array.from({length:10001}, (_,i) => ({name:String(i), value:i}));
   input.dataSources.records.fields.name.queryField = 'name'; input.dataSources.records.fields.value.queryField = 'value';
-  input.dataSources.records.source = { type: 'query', query: { language: 'dqe', body: { dsl_list: [{ output_dims: ['name'], output_metrics: ['value'], order: { offset: 0, limit: 500 } }] } } };
+  input.dataSources.records.source = { type: 'query', query: { language: 'dqe', body: { dsl_list: [{ output_dims: ['name'], output_metrics: ['value'], order: { offset: 0, limit: pageSize } }] } } };
   input.sections[0].components[0].props.pagination = { mode: 'query' };
   const parsed = parsePage(input); if (!parsed.ok) throw new Error(JSON.stringify(parsed.errors)); const page = parsed.page;
   const component = page.sections[0].components[0] as TableComponent;
-  const query: EffectiveQuery = { language: 'dqe', body: { dsl_list: [{}] }, fieldMappings: page.dataSources.records.fields, pagination: { offset: 500, limit: 500 }, filterValues: [] };
+  const query: EffectiveQuery = { language: 'dqe', body: { dsl_list: [{}] }, fieldMappings: page.dataSources.records.fields, pagination: { offset: pageSize, limit: pageSize }, filterValues: [] };
   const state = { currentYear: 2026, filters: new Map(), tables: {}, headerFilters: {} };
-  const calls: number[] = [];
+  const calls: Array<{ offset: number; limit: number }> = [];
   const run = (changing = false) => prepareTableExport({ page, component, state, queries: new Map([['records', query]]), controller: new AbortController(), gateway: { async fetchData(query) {
-    const offset = query.pagination!.offset; calls.push(offset); return { rows: rows.slice(offset, offset + query.pagination!.limit), totalCount: changing && offset ? rows.length - 1 : rows.length };
+    const { offset, limit } = query.pagination!;
+    calls.push({ offset, limit });
+    return { rows: rows.slice(offset, offset + limit), totalCount: changing && offset ? rows.length - 1 : rows.length };
   } } });
   expect((await run()).main!.snapshot.rows).toEqual(rows);
-  expect(calls).toEqual(Array.from({length:21}, (_,i) => i * 500));
+  expect(calls).toEqual(Array.from({ length: 51 }, (_, i) => ({ offset: i * 200, limit: 200 })));
+  expect(query.pagination).toEqual({ offset: pageSize, limit: pageSize });
   await expect(run(true)).rejects.toMatchObject({ code: 'EXPORT_INCOMPLETE_DATA' });
 });
 it('preserves an upstream page window and executes only the selected table dependency chain', async () => {

@@ -2,7 +2,7 @@
 name: metriccanvas-local-authoring
 description: 解答 MetricCanvas 看板、报表和 IOC 的功能与配置问题，在本地新建、接数、调试或调整页面，包括按指标说明批量补配指标定义气泡。附协议知识、数据分析、升级与校验工具。
 metadata:
-  version: "1.101.4"
+  version: "1.101.5"
 ---
 
 # 本地页面创作

@@ -58,6 +58,7 @@ export interface SourceRead {
   strictComplete?: boolean;
   completeReadTimeoutMs?: number;
   completeReadMaxRows?: number;
+  ordinaryQueryBatchSize?: number;
   displayInputs?:DisplayInputsSnapshot;filterRevision?:number;now?:Date;
   roots: readonly string[]; conditions: FilterValues;
   views?: ReadonlyMap<string, TableQueryView>;
@@ -360,7 +361,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
             fetchComplete(query, execution, scope, signal, diagnostics, {
               trustedComplete: source.source.resultScope === 'complete', describeSource: () => describeExportSource(page, id),
               allowPartial: !comparison && request.allowPartial, allowZeroTotal: !comparison && request.purpose !== 'complete',
-              strictComplete: request.strictComplete, maxRows: request.completeReadMaxRows
+              strictComplete: request.strictComplete, maxRows: request.completeReadMaxRows, batchSize: request.ordinaryQueryBatchSize
             }));
         }
         async function executeCombined(id: string, source: PagedJoinDataSource | PagedUnionDataSource, view: TableQueryView): Promise<void> {
