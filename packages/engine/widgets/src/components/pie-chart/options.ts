@@ -14,6 +14,7 @@ import {
 } from '../../shared/chart-palette';
 
 export const PIE_PLOT_EDGE_INSET = 8;
+const TABLE_RING_OUTER_RADIUS = 64;
 const DEFAULT_RING_THICKNESS = 16;
 
 interface PiePlot {
@@ -29,11 +30,20 @@ export function pieTableLegendGeometry(ring: PieChartProps['ring'], plot: PiePlo
   legendOffset: number;
 } {
   const halfSize = Math.min(plot.width, plot.height) / 2;
-  const inner = Number.parseInt(ring ?? '0', 10) / 100 * halfSize;
-  const outerLimit = halfSize * 0.72;
-  const hasRing = inner > 0 && inner < outerLimit;
-  const radius = hasRing ? Math.min(outerLimit, inner + DEFAULT_RING_THICKNESS) : outerLimit;
-  const outerRadius = Math.max(radius, inner);
+  // Side-by-side rings can occupy less than the original 240px minimum plot.
+  // Use its reference size for the band so fitting the pair does not thin the ring.
+  const bandHalfSize = plot.legendEdge === 'right'
+    ? Math.min(Math.max(240, plot.width), plot.height) / 2 : halfSize;
+  const inner = Number.parseInt(ring ?? '0', 10) / 100 * bandHalfSize;
+  const outerLimit = bandHalfSize * 0.72;
+  const outerRadius = inner > 0 ? Math.min(TABLE_RING_OUTER_RADIUS, halfSize) : halfSize * 0.72;
+  // Keep the existing visible band, including percentages at or beyond the 72% radius limit.
+  const thickness = inner <= outerLimit
+    ? Math.min(DEFAULT_RING_THICKNESS, outerLimit - inner)
+    : inner - outerLimit;
+  const radius: PieSeriesOption['radius'] = inner > 0
+    ? [Math.max(0, outerRadius - thickness), outerRadius]
+    : outerRadius;
   const edgeInset = outerRadius + PIE_PLOT_EDGE_INSET;
   const center: [number, number] = [plot.width / 2, plot.height / 2];
   let legendOffset = 0;
@@ -46,7 +56,7 @@ export function pieTableLegendGeometry(ring: PieChartProps['ring'], plot: PiePlo
     legendOffset = direction * (plot.width - nearEdge - outerRadius) / 2;
     center[0] += direction * (nearEdge - outerRadius) / 2;
   }
-  return { series: { radius: ring ? [ring, radius] : radius, center }, legendOffset };
+  return { series: { radius, center }, legendOffset };
 }
 
 function pieGeometry(props: PieChartProps, tableGeometry?: PieGeometry): PieGeometry {

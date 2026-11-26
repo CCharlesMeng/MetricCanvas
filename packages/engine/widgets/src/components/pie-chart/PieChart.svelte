@@ -33,9 +33,11 @@
   let legendSize = $state<DOMRectReadOnly>();
   const tightPlot = $derived(!!legend && !props.labelLine && !props.echartsOption);
   const layoutGap = $derived(tightPlot ? 16 - PIE_PLOT_EDGE_INSET : 16);
+  const rightRingLegend = $derived(tightPlot && Number.parseInt(props.ring ?? '0', 10) > 0 && props.legend?.position !== 'left');
+  const columnGap = $derived(rightRingLegend ? 56 - PIE_PLOT_EDGE_INSET : layoutGap);
   // Flex wraps based on the space used by both items. Allow for fractional layout rounding.
   const stacked = $derived(layoutSize && plotSize && legendSize
-    && plotSize.width + legendSize.width + layoutGap > layoutSize.width + 0.5);
+    && plotSize.width + legendSize.width + columnGap > layoutSize.width + 0.5);
   const legendEdge = $derived<'left' | 'right' | 'bottom'>(stacked ? 'bottom' : props.legend?.position ?? 'right');
   const tableGeometry = $derived(tightPlot && plotSize && plotSize.width > 0 && plotSize.height > 0
     ? pieTableLegendGeometry(props.ring, {
@@ -52,7 +54,9 @@
     class:loading={data.main.sourceStatus === 'loading'}
     class:legend-left={props.legend?.position === 'left'}
     class:tight-plot={tightPlot}
+    class:right-ring-legend={rightRingLegend}
     style:--pie-layout-gap={`${layoutGap}px`}
+    style:--pie-column-gap={`${columnGap}px`}
     bind:contentRect={layoutSize}
   >
     <div class="pie-plot" bind:contentRect={plotSize}>
@@ -101,7 +105,7 @@
   .has-table-legend { container-type: inline-size; }
   .has-table-legend .pie-layout {
     flex-wrap: wrap;
-    gap: var(--pie-layout-gap);
+    gap: var(--pie-layout-gap) var(--pie-column-gap);
     justify-content: center;
     align-content: flex-start;
     width: 100%;
@@ -115,6 +119,10 @@
   .has-table-legend .tight-plot .pie-plot {
     max-width: 320px;
     min-height: min(320px, 100cqw);
+  }
+  .has-table-legend .right-ring-legend .pie-plot {
+    /* The ring and its two 8px plot insets fit before the full chart canvas would. */
+    flex-basis: min(144px, 100%);
   }
   .pie-legend {
     position: relative;

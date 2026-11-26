@@ -161,8 +161,8 @@ describe('pie table legend', () => {
     const plot = { width: 400, height: 300 };
     const right = pieTableLegendGeometry(config.ring, { ...plot, legendEdge: 'right' });
     const left = pieTableLegendGeometry(config.ring, { ...plot, legendEdge: 'left' });
-    expect(right).toEqual({ series: { radius: ['46%', 85], center: [196, 150] }, legendOffset: -111 });
-    expect(left).toEqual({ series: { radius: ['46%', 85], center: [204, 150] }, legendOffset: 111 });
+    expect(right).toEqual({ series: { radius: [48, 64], center: [196, 150] }, legendOffset: -132 });
+    expect(left).toEqual({ series: { radius: [48, 64], center: [204, 150] }, legendOffset: 132 });
     expect(pieOption(data, config, undefined, right.series).series).toMatchObject([right.series]);
     expect(pieOption(data, config).series).toMatchObject([{ radius: ['46%', '72%'] }]);
     expect(pieTableLegendGeometry(undefined, { ...plot, legendEdge: 'right' }).series)
@@ -172,13 +172,16 @@ describe('pie table legend', () => {
   it('moves no legend on the stacked row and keeps the radius limit', () => {
     const plot = { width: 400, height: 300, legendEdge: 'bottom' } as const;
     expect(pieTableLegendGeometry('46%', plot))
-      .toEqual({ series: { radius: ['46%', 85], center: [200, 207] }, legendOffset: 0 });
-    expect(pieTableLegendGeometry('70%', plot).series.radius).toEqual(['70%', 108]);
+      .toEqual({ series: { radius: [48, 64], center: [200, 228] }, legendOffset: 0 });
+    expect(pieTableLegendGeometry('70%', plot).series.radius).toEqual([61, 64]);
     expect(pieTableLegendGeometry('99%', plot).series)
-      .toEqual({ radius: ['99%', 108], center: [200, 150] });
+      .toEqual({ radius: [23.5, 64], center: [200, 228] });
 
     const wideRing = pieTableLegendGeometry('96%', { width: 250, height: 300, legendEdge: 'right' });
-    expect(wideRing.series.center).toEqual([122.5, 150]);
-    expect(wideRing.legendOffset).toEqual(-2.5);
+    expect(wideRing.series.radius).toEqual([34, 64]);
+    expect(wideRing.series.center).toEqual([121, 150]);
+    expect(wideRing.legendOffset).toBe(-57);
+    expect(pieTableLegendGeometry('58%', { width: 100, height: 200, legendEdge: 'bottom' }).series.radius)
+      .toEqual([43, 50]);
   });
 });

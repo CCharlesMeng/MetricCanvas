@@ -10,7 +10,8 @@ async function measurePie(chart: Locator, position: 'left' | 'right') {
     const legend = card.querySelector<HTMLElement>('.pie-legend')!.getBoundingClientRect();
     const instance = echarts.getInstanceByDom(plot);
     const sector = instance?.getModel().getSeriesByIndex(0).getData().getItemLayout(0);
-    if (!sector) return null;
+    // ECharts updates the layout model before the painted sectors finish resizing.
+    if (!sector || !instance.getZr().animation.isFinished()) return null;
 
     const frame = card.getBoundingClientRect();
     const plotBox = plot.getBoundingClientRect();
@@ -29,6 +30,8 @@ async function measurePie(chart: Locator, position: 'left' | 'right') {
     const angle = (sector.startAngle + sector.endAngle) / 2;
     const sliceRadius = (sector.r + sector.r0) / 2;
     return {
+      diameter: sector.r * 2,
+      thickness: sector.r - sector.r0,
       stacked,
       centered,
       gap: Math.round(gap),
@@ -37,9 +40,9 @@ async function measurePie(chart: Locator, position: 'left' | 'right') {
   }, { position, runtimeUrl });
 }
 
-async function expectCentered(chart: Locator, position: 'left' | 'right', stacked: boolean) {
+async function expectCentered(chart: Locator, position: 'left' | 'right', stacked: boolean, gap: number) {
   await expect(chart.locator('[_echarts_instance_]')).toBeVisible({ timeout: 15000 });
-  await expect.poll(() => measurePie(chart, position)).toMatchObject({ stacked, centered: true, gap: 16 });
+  await expect.poll(() => measurePie(chart, position)).toMatchObject({ stacked, centered: true, gap });
 }
 
 test('centers the visible ring and legend with either side and stacks on narrow cards', async ({ page }) => {
@@ -47,15 +50,27 @@ test('centers the visible ring and legend with either side and stacks on narrow 
   await page.goto('/pages/pie-table-legend');
   const right = page.locator('[data-component="centered-pair/execution-distribution"] .pie-chart');
   const left = page.locator('[data-component="left/left-pie"] .pie-chart');
-  await expectCentered(right, 'right', false);
-  await expectCentered(left, 'left', false);
+  await expectCentered(right, 'right', false, 56);
+  await expectCentered(left, 'left', false, 16);
+  expect(await measurePie(right, 'right')).toMatchObject({ diameter: 128, thickness: 16 });
+  const bar = page.locator('[data-component="centered-pair/execution-by-interval"] [_echarts_instance_]');
+  await expect(bar).toBeVisible();
+  const barBox = (await bar.boundingBox())!;
+  const ringBox = (await right.boundingBox())!;
+  expect(barBox.x).toBeGreaterThanOrEqual(ringBox.x + ringBox.width);
+  expect(barBox.y).toBeLessThan(ringBox.y + ringBox.height);
+  expect(barBox.y + barBox.height).toBeGreaterThan(ringBox.y);
+
+  await page.setViewportSize({ width: 960, height: 900 });
+  await expectCentered(right, 'right', false, 56);
+  expect(await measurePie(right, 'right')).toMatchObject({ diameter: 128, thickness: 16 });
 
   await page.setViewportSize({ width: 470, height: 900 });
-  await expectCentered(right, 'right', true);
-  await expectCentered(left, 'left', true);
+  await expectCentered(right, 'right', true, 16);
+  await expectCentered(left, 'left', true, 16);
 
   await page.setViewportSize({ width: 1440, height: 900 });
-  await expectCentered(right, 'right', false);
+  await expectCentered(right, 'right', false, 56);
   await right.scrollIntoViewIfNeeded();
   const { slice } = (await measurePie(right, 'right'))!;
   await page.mouse.click(slice.x, slice.y);
