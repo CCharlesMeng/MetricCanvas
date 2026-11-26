@@ -7,7 +7,7 @@ function snapshots(entries: Record<string, DataSnapshot>): Map<string, DataSnaps
 }
 
 describe('嵌入事件面:数据快照错误 → data-error 事件(表驱动,issue #51)', () => {
-  it('每个稳定分类原样进入事件,宿主不解析错误字符串', () => {
+  it('取消静默结束，其余查询失败按分类上报', () => {
     for (const code of [...QUERY_ERROR_CODES, 'UNKNOWN'] as const) {
       const events = collectDataErrors(
         new Map(),
@@ -15,7 +15,7 @@ describe('嵌入事件面:数据快照错误 → data-error 事件(表驱动,iss
           sales: { status: 'error', error: { code, message: `分类 ${code}` } }
         })
       );
-      expect(events).toEqual([
+      expect(events).toEqual(code === 'DQE_CANCELLED' ? [] : [
         { type: 'data-error', dataSourceId: 'sales', code, message: `分类 ${code}` }
       ]);
     }

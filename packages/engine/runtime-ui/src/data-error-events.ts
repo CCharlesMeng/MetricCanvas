@@ -23,7 +23,7 @@ export function collectDataErrors(
 ): DataErrorEvent[] {
   const events: DataErrorEvent[] = [];
   for (const [dataSourceId, snapshot] of snapshots) {
-    if (snapshot.status !== 'error') {
+    if (snapshot.status !== 'error' || snapshot.error.code === 'DQE_CANCELLED') {
       emitted.delete(dataSourceId);
       continue;
     }

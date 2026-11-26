@@ -248,7 +248,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
 
         const reportedErrors = new Map<string, string>();
         function reportError(id: string, snapshot: DataSnapshot): void {
-          if (snapshot.status !== 'error') return;
+          if (snapshot.status !== 'error' || snapshot.error.code === 'DQE_CANCELLED') return;
           const fingerprint = `${snapshot.error.code}\n${snapshot.error.message}`;
           if (reportedErrors.get(id) === fingerprint) return;
           reportedErrors.set(id, fingerprint);
