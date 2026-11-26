@@ -10,11 +10,11 @@ import type { WorkbookTable } from './workbook-sheet';
 export async function prepareHierarchyExport(input:Parameters<typeof prepareTableExport>[0]&{params:HierarchyContext['params']}):Promise<WorkbookTable[]>{
   const page=JSON.parse(JSON.stringify(input.page)) as Page;
   const table=JSON.parse(JSON.stringify(input.component)) as TableComponent;
-  const context:HierarchyContext={filters:structuredClone(new Map(input.state.filters)),params:structuredClone(new Map(input.params)),displaySnapshot:structuredClone(input.state.displaySnapshot),filterRevision:input.state.filterRevision};
+  const context:HierarchyContext={completeReadTimeoutMs:EXPORT_PREPARATION_TIMEOUT_MS,filters:structuredClone(new Map(input.state.filters)),params:structuredClone(new Map(input.params)),displaySnapshot:structuredClone(input.state.displaySnapshot),filterRevision:input.state.filterRevision};
   const state={...input.state,filters:context.filters,tables:JSON.parse(JSON.stringify(input.state.tables)),headerFilters:JSON.parse(JSON.stringify(input.state.headerFilters))};
   const queries=structuredClone(new Map(input.queries));
   const {signal}=input.controller;
-  const timer=setTimeout(()=>input.controller.abort(new ExportViewError('EXPORT_TIMEOUT','父子导出准备超过 5 分钟')),EXPORT_PREPARATION_TIMEOUT_MS);
+  const timer=setTimeout(()=>input.controller.abort(new ExportViewError('EXPORT_TIMEOUT',`父子导出准备超过 ${EXPORT_PREPARATION_TIMEOUT_MS / 60_000} 分钟`)),EXPORT_PREPARATION_TIMEOUT_MS);
   let count=0;
   const gateway:RuntimeDataGateway={...input.gateway,async fetchData(query,diagnostics,requestSignal){
     const result=await input.gateway.fetchData(query,diagnostics,requestSignal);

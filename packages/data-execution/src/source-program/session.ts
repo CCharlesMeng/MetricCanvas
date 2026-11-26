@@ -42,7 +42,7 @@ import { rawSnapshot } from '../snapshots';
 import { queryRowsFromPageRows } from '../query-rows';
 import { computedSnapshots } from '../compute/snapshots';
 import { compileSources, executionSourceIds, activeSourceIds, visibleSourceIds } from './compiler';
-import { reportInitialSnapshotWarnings, reportInitialWarnings, reusableInitialSnapshot, checkOrdinaryRange, isBusinessSelection, correctedPageIndex, fetchComplete, SourceRangeError, EXPORT_PREPARATION_TIMEOUT_MS } from './range-policy';
+import { reportInitialSnapshotWarnings, reportInitialWarnings, reusableInitialSnapshot, checkOrdinaryRange, isBusinessSelection, correctedPageIndex, fetchComplete, SourceRangeError, COMPLETE_READ_TIMEOUT_MS } from './range-policy';
 import { automaticQueryPageSize } from './table-pagination';
 import { describeExportSource } from './export-diagnostics';
 import { presentationQuerySources, projectCapturedQuery } from '../query-projection';
@@ -55,6 +55,7 @@ export interface SourceRead {
   /** Speculative reads share caches but yield execution priority to interactive reads. */
   background?: boolean;
   strictComplete?: boolean;
+  completeReadTimeoutMs?: number;
   displayInputs?:DisplayInputsSnapshot;filterRevision?:number;now?:Date;
   roots: readonly string[]; conditions: FilterValues;
   views?: ReadonlyMap<string, TableQueryView>;
@@ -123,7 +124,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
     return [...conditionSourceIds(page,id)].some(key=>defaultPeriodSources.has(key)||sourceFilterIds(page.dataSources[key]).some(id=>overridden.has(id)));
   }
   function readSignals(controller: AbortController, input: SourceRead): AbortSignal[] {
-    return [controller.signal, ...(input.signal ? [input.signal] : []), ...(input.purpose === 'complete' ? [AbortSignal.timeout(EXPORT_PREPARATION_TIMEOUT_MS)] : [])];
+    return [controller.signal, ...(input.signal ? [input.signal] : []), ...(input.purpose === 'complete' ? [AbortSignal.timeout(input.completeReadTimeoutMs ?? COMPLETE_READ_TIMEOUT_MS)] : [])];
   }
   function freezeReadRequest(input: SourceRead, signals: AbortSignal[]) {
     return { ...input, now: input.now ?? config.now ?? config.clock?.() ?? new Date(), conditions: structuredClone(new Map(input.conditions)), views: input.views && structuredClone(new Map(input.views)), signal: AbortSignal.any(signals) };
@@ -349,7 +350,9 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
         }
         function completeQuerySnapshot(id: string, source: QueryDataSource, query: EffectiveQuery, diagnostics: QueryDiagnosticContext): Promise<DataSnapshot> {
           const comparison = hasPeriodComparison(source.source.query);
-          const signal = comparison ? AbortSignal.any([request.signal, AbortSignal.timeout(request.purpose === 'complete' ? EXPORT_PREPARATION_TIMEOUT_MS : MIN_DQE_TIMEOUT_MS)]) : request.signal;
+          const signal = comparison && request.purpose !== 'complete'
+            ? AbortSignal.any([request.signal, AbortSignal.timeout(MIN_DQE_TIMEOUT_MS)])
+            : request.signal;
           return fetchComplete(query, execution, scope, signal, diagnostics, source.source.resultScope === 'complete', () => describeExportSource(page, id), comparison ? false : request.allowPartial, comparison ? false : request.purpose !== 'complete',request.strictComplete);
         }
         async function executeCombined(id: string, source: PagedJoinDataSource | PagedUnionDataSource, view: TableQueryView): Promise<void> {
@@ -370,7 +373,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
         async function executeUnion(id: string, source: PagedUnionDataSource, view: TableQueryView): Promise<void> {
           const plan = compileUnion(page, id, request.conditions, view, request.now);
           const complete = request.purpose === 'complete';
-          const signal = AbortSignal.any([request.signal, AbortSignal.timeout(complete ? EXPORT_PREPARATION_TIMEOUT_MS : MIN_DQE_TIMEOUT_MS)]);
+          const signal = complete ? request.signal : AbortSignal.any([request.signal, AbortSignal.timeout(MIN_DQE_TIMEOUT_MS)]);
           const result = await withTableRecovery(() => currentUnion.read(plan, scope, signal, complete),
             () => recoverUnion(plan, execution, scope, signal, complete), signal);
           const applied = result.viewCorrection ?? plan.view;

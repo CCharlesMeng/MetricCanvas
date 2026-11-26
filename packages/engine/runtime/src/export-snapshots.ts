@@ -1,4 +1,4 @@
-import { createSourceProgram, visibleSourceIds, SourceRangeError, type SourceProgram } from '@metriccanvas/data-execution/runtime';
+import { createSourceProgram, visibleSourceIds, SourceRangeError, EXPORT_PREPARATION_TIMEOUT_MS, type SourceProgram } from '@metriccanvas/data-execution/runtime';
 import type { Page, DataSnapshot, EffectiveQuery, TableQueryView } from '@metriccanvas/page/internal';
 import type { DataGateway, QueryDiagnosticContext } from './ports';
 import type { FilterValues } from './filter-state';
@@ -11,12 +11,12 @@ export async function prepareExportSnapshots(page: Page, gateway: DataGateway, q
   const program = sharedProgram ?? createSourceProgram(page, { gateway, diagnostics: diagnosticBase });
   const result = new Map<string, DataSnapshot>();
   try {
-    for await (const update of program.read({ roots: [...visibleSourceIds(page, {declarations:page.filters??[],filters,displaySnapshot:options.displayInputs,filterRevision:options.filterRevision},views)], presentation: {sections:page.sections,detailViews:page.detailViews}, conditions: filters, queries, views, purpose: 'complete', freshness: exportFreshness(sharedProgram, views), signal, currentYear, completeSources, allowPartial: options.allowPartial,displayInputs:options.displayInputs,filterRevision:options.filterRevision,now:options.now })) result.set(update.sourceId, update.snapshot);
+    for await (const update of program.read({ roots: [...visibleSourceIds(page, {declarations:page.filters??[],filters,displaySnapshot:options.displayInputs,filterRevision:options.filterRevision},views)], presentation: {sections:page.sections,detailViews:page.detailViews}, conditions: filters, queries, views, purpose: 'complete', completeReadTimeoutMs: EXPORT_PREPARATION_TIMEOUT_MS, freshness: exportFreshness(sharedProgram, views), signal, currentYear, completeSources, allowPartial: options.allowPartial,displayInputs:options.displayInputs,filterRevision:options.filterRevision,now:options.now })) result.set(update.sourceId, update.snapshot);
     if (!options.allowPartial) for (const value of result.values()) if (value.status === 'error' || value.status === 'loading') throw new ExportViewError('EXPORT_INCOMPLETE_DATA', '导出查询或数据计算未完成');
     return result;
   } catch (cause) {
     if (cause instanceof SourceRangeError) throw new ExportViewError(cause.code, cause.message);
-    if (cause instanceof Error && cause.name==='TimeoutError') throw new ExportViewError('EXPORT_TIMEOUT','导出准备超过 5 分钟');
+    if (cause instanceof Error && cause.name==='TimeoutError') throw new ExportViewError('EXPORT_TIMEOUT',`导出准备超过 ${EXPORT_PREPARATION_TIMEOUT_MS / 60_000} 分钟`);
     if (!signal.aborted && !(cause instanceof ExportViewError)) throw new ExportViewError('EXPORT_INCOMPLETE_DATA', '导出查询或数据计算未完成');
     throw cause;
   } finally { if (!sharedProgram) program.dispose(); }

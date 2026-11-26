@@ -11,6 +11,7 @@ export interface HierarchySelection {
 }
 export interface HierarchyContext {
   filters:FilterValues; params:PageParamValues; blocked?:readonly string[];
+  completeReadTimeoutMs?:number;
   displaySnapshot?:DisplaySnapshot; filterRevision?:number;
 }
 export function hierarchyChoice(table:TableComponent,filters:FilterValues,page:Page):HierarchySelection {
@@ -44,7 +45,7 @@ export async function resolveHierarchySelection(page:Page,table:TableComponent,g
   const program=createSourceProgram(scope,{gateway});
   let snapshot:DataSnapshot|undefined;
   try{
-    for await(const update of program.read({roots:[lookup.source],conditions:filters,purpose:'complete',freshness:'refresh',signal,displayInputs:context.displaySnapshot,filterRevision:context.filterRevision}))snapshot=update.snapshot;
+    for await(const update of program.read({roots:[lookup.source],conditions:filters,purpose:'complete',completeReadTimeoutMs:context.completeReadTimeoutMs,freshness:'refresh',signal,displayInputs:context.displaySnapshot,filterRevision:context.filterRevision}))snapshot=update.snapshot;
     signal.throwIfAborted();
     if(!snapshot||snapshot.status==='loading'||snapshot.status==='error')throw new Error('父级定位查询失败或无权限');
     const rows=snapshot.status==='ready'?snapshot.rows:[];

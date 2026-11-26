@@ -15,10 +15,14 @@ async function candidates(state='ready'){
  return {result,requests:preview.requests};
 }
 it('reads every query page, deduplicates the output and preserves query metrics',async()=>{
- const {result,requests}=await candidates();
- expect(result).toEqual({kind:'values',candidates:[{value:'direct',label:'直营'},{value:'partner',label:'伙伴'},{value:'online',label:'线上'}]});
- expect(requests.map(query=>query.pagination?.offset)).toEqual([0,2,4]);
- expect(requests.map(query=>query.body.dsl_list[0].output_metrics)).toEqual([['weight'],['weight'],['weight']]);
+ const timeout=vi.spyOn(AbortSignal,'timeout');
+ try {
+  const {result,requests}=await candidates();
+  expect(timeout).toHaveBeenCalledWith(5 * 60_000);
+  expect(result).toEqual({kind:'values',candidates:[{value:'direct',label:'直营'},{value:'partner',label:'伙伴'},{value:'online',label:'线上'}]});
+  expect(requests.map(query=>query.pagination?.offset)).toEqual([0,2,4]);
+  expect(requests.map(query=>query.body.dsl_list[0].output_metrics)).toEqual([['weight'],['weight'],['weight']]);
+ } finally { timeout.mockRestore(); }
 });
 it('reads static inline tree nodes without HTTP and keeps parent values independent',async()=>{
  const p=page(),fetchData=vi.fn(),gateway=sourceCandidatesGateway(p,{fetchData});

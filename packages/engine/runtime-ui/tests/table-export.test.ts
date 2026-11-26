@@ -94,8 +94,9 @@ it('cancels preparation even when a gateway ignores the abort signal', async () 
 
 it.each([
   { delay: 61_000, deadline: 61_000, timesOut: false },
-  { delay: 300_001, deadline: 300_000, timesOut: true }
-])('allows export preparation until five minutes ($delay ms response)', async ({ delay, deadline, timesOut }) => {
+  { delay: 1_799_999, deadline: 1_799_999, timesOut: false },
+  { delay: 1_800_001, deadline: 1_800_000, timesOut: true }
+])('allows export preparation until thirty minutes ($delay ms response)', async ({ delay, deadline, timesOut }) => {
   vi.useFakeTimers();
   vi.spyOn(AbortSignal, 'timeout').mockImplementation(milliseconds => {
     const controller = new AbortController();
@@ -118,7 +119,7 @@ it.each([
     expect(settled).not.toHaveBeenCalled();
     await vi.advanceTimersByTimeAsync(deadline - 60_000);
     const result = await promise;
-    if (timesOut) expect(result.error).toMatchObject({ code: 'EXPORT_TIMEOUT', message: '导出准备超过 5 分钟' });
+    if (timesOut) expect(result.error).toMatchObject({ code: 'EXPORT_TIMEOUT', message: '导出准备超过 30 分钟' });
     else expect(result.data?.main?.snapshot.rows).toEqual([{ name: '客户', value: 1 }]);
   } finally {
     vi.restoreAllMocks();

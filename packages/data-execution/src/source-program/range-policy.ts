@@ -7,7 +7,8 @@ import { rawSnapshot } from '../snapshots';
 import type { ExportSourceDetails } from './export-diagnostics';
 
 export const EXPORT_MAX_ROWS = 10_000;
-export const EXPORT_PREPARATION_TIMEOUT_MS = 5 * 60_000;
+export const COMPLETE_READ_TIMEOUT_MS = 5 * 60_000;
+export const EXPORT_PREPARATION_TIMEOUT_MS = 30 * 60_000;
 export class SourceRangeError extends Error {
   constructor(public readonly code: 'EXPORT_ROW_LIMIT' | 'EXPORT_INCOMPLETE_DATA', message: string) { super(message); }
 }
