@@ -30,6 +30,11 @@
           "nullable": true,
           "defaultFormat": "compact-wan-1"
         },
+        "literal": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": true
+        },
         "custom": {
           "type": "number",
           "role": "measure",
@@ -45,35 +50,40 @@
             "amount": 50,
             "rate": 50,
             "compact": 500000,
-            "custom": 50
+            "custom": 50,
+            "literal": "-"
           },
           {
             "case": "小数",
             "amount": 12.5,
             "rate": 12.5,
             "compact": 125000.0,
-            "custom": 12.5
+            "custom": 12.5,
+            "literal": "—"
           },
           {
             "case": "零",
             "amount": 0,
             "rate": 0,
             "compact": 0,
-            "custom": 0
+            "custom": 0,
+            "literal": "–"
           },
           {
             "case": "负整数",
             "amount": -12,
             "rate": -12,
             "compact": -120000,
-            "custom": -12
+            "custom": -12,
+            "literal": null
           },
           {
             "case": "缺失",
             "amount": null,
             "rate": null,
             "compact": null,
-            "custom": null
+            "custom": null,
+            "literal": "--"
           }
         ]
       }
@@ -194,8 +204,15 @@
                   "missingText": "未提供"
                 },
                 "title": "自定义缺失"
+              },
+              {
+                "field": "literal",
+                "title": "原始文本"
               }
             ],
+            "toolbar": {
+              "export": { "format": "xlsx" }
+            },
             "pagination": {
               "mode": "none"
             }

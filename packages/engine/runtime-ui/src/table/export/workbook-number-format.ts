@@ -1,7 +1,12 @@
 import type { CellObject, SheetData } from 'write-excel-file/universal';
 import { basicNumberFormat, type ValueFormat } from '@metriccanvas/page/internal';
 
-const precisions = new WeakMap<CellObject, number>();
+const MAX_CUSTOM_NUMBER_FORMATS = 200;
+const MAX_NUMBER_FORMAT_LENGTH = 254;
+
+interface PrecisionStyle { digits: number; factor: number; integer: string; zero: string }
+const precisions = new WeakMap<CellObject, PrecisionStyle>();
+const fallbacks = new WeakMap<CellObject, string>();
 
 export function basicWorkbookNumberFormat(format: ValueFormat | undefined, value?: number): string | undefined {
   const options = basicNumberFormat(format);
@@ -14,17 +19,52 @@ export function basicWorkbookNumberFormat(format: ValueFormat | undefined, value
   return `${options.signed ? '+' : ''}${base};-${base};0`;
 }
 
-/** Metadata stays outside the writer's public cell shape and follows the final physical worksheet. */
-export function registerWorkbookPrecision(cell: CellObject, format: ValueFormat | undefined, displayUnit?: string): CellObject {
-  if (typeof cell.value !== 'number' || displayUnit) return cell;
-  const options = basicNumberFormat(format);
-  if (!options || String(cell.format).includes('E+')) return cell;
-  const digits = options.digits ?? (options.grouped ? 30 : 0);
-  if (digits) precisions.set(cell, digits);
+function* formattedCells(sheets: readonly { data: SheetData }[], signal: AbortSignal) {
+  for (const sheet of sheets) for (const row of sheet.data) {
+    signal.throwIfAborted();
+    for (const cell of row) {
+      if (cell && typeof cell === 'object' && 'value' in cell && cell.format) yield cell;
+    }
+  }
+}
+
+/** Reserve dates and standard ratio formats before spending the workbook-wide format budget. */
+export function limitWorkbookFormats(sheets: readonly { data: SheetData }[], signal: AbortSignal): number {
+  const formats = new Set<string>();
+  for (const cell of formattedCells(sheets, signal)) {
+    if (cell.value instanceof Date) formats.add(cell.format!);
+    const fallback = fallbacks.get(cell);
+    if (fallback) formats.add(fallback);
+  }
+  for (const cell of formattedCells(sheets, signal)) {
+    const code = cell.format!;
+    if (formats.has(code)) continue;
+    if (code.length <= MAX_NUMBER_FORMAT_LENGTH && formats.size < MAX_CUSTOM_NUMBER_FORMATS) {
+      formats.add(code);
+      continue;
+    }
+    cell.format = fallbacks.get(cell);
+    precisions.delete(cell);
+  }
+  return MAX_CUSTOM_NUMBER_FORMATS - formats.size;
+}
+
+export function registerWorkbookFallback(cell: CellObject, code: string | undefined): CellObject {
+  if (code) fallbacks.set(cell, code);
   return cell;
 }
 
-interface PrecisionGroup { column: string; rows: number[]; digits: number; format: string }
+/** Metadata stays outside the writer's public cell shape and follows the final physical worksheet. */
+export function registerWorkbookPrecision(cell: CellObject, code: string, digits: number | undefined, factor: number, decorate: (code: string) => string): CellObject {
+  if (digits === undefined) return cell;
+  const integer = code.replace(/\.[#0]+/g, '');
+  const unsigned = integer.replace(/[+\-](?=(?:#,##)?(?:0|General))/g, '');
+  const zero = unsigned.includes(';') ? unsigned : `${unsigned};${unsigned};${unsigned}`;
+  precisions.set(cell, { digits, factor, integer: decorate(integer), zero: decorate(zero) });
+  return cell;
+}
+
+interface PrecisionGroup { column: string; rows: number[]; precision: PrecisionStyle }
 
 function columnName(index: number): string {
   let name = '';
@@ -35,10 +75,11 @@ function columnName(index: number): string {
 function precisionGroups(data: SheetData): PrecisionGroup[] {
   const groups = new Map<string, PrecisionGroup>();
   data.forEach((row, rowIndex) => row.forEach((cell, column) => {
-    if (!cell || typeof cell !== 'object' || !('value' in cell) || !precisions.has(cell)) return;
-    const digits = precisions.get(cell)!;
-    const key = JSON.stringify([column, digits, cell.format]);
-    const group = groups.get(key) ?? { column: columnName(column), rows: [], digits, format: String(cell.format) };
+    if (!cell || typeof cell !== 'object' || !('value' in cell) || !cell.format) return;
+    const precision = precisions.get(cell);
+    if (!precision) return;
+    const key = JSON.stringify([column, precision]);
+    const group = groups.get(key) ?? { column: columnName(column), rows: [], precision };
     group.rows.push(rowIndex + 1); groups.set(key, group);
   }));
   return [...groups.values()];
@@ -67,15 +108,15 @@ function appendElements(xml: string, tag: string, elements: string[], before: st
   const contents = existing?.match(/^[^>]*>([\s\S]*)<\/[^>]+>$/)?.[1] ?? '';
   const count = Number(existing?.match(/count="(\d+)"/)?.[1] ?? 0) + elements.length;
   const replacement = `<${tag} count="${count}">${contents}${elements.join('')}</${tag}>`;
-  return existing ? xml.replace(existing, replacement) : xml.replace(before, `${replacement}${before}`);
+  return existing ? xml.replace(existing, () => replacement) : xml.replace(before, () => `${replacement}${before}`);
 }
 
 function precisionRules(group: PrecisionGroup, style: (format: string) => number, priority: () => number): string {
   const reference = `${group.column}${group.rows[0]}`;
-  const integer = group.format.replace(/\.#+/g, '');
-  const zero = integer.replace(/[+\-](?=(?:#,##)?(?:0|General))/g, '');
+  const { digits, factor, zero, integer } = group.precision;
+  const round = `ROUND(${factor === 1 ? reference : `${reference}*${factor}`},${digits})`;
   const rule = (formula: string, format: string) => `<cfRule type="expression" dxfId="${style(format)}" priority="${priority()}" stopIfTrue="1"><formula>${xmlText(formula)}</formula></cfRule>`;
-  return `<conditionalFormatting sqref="${references(group)}">${rule(`ROUND(${reference},${group.digits})=0`, zero)}${rule(`MOD(ROUND(${reference},${group.digits}),1)=0`, integer)}</conditionalFormatting>`;
+  return `<conditionalFormatting sqref="${references(group)}">${rule(`${round}=0`, zero)}${digits ? rule(`MOD(${round},1)=0`, integer) : ''}</conditionalFormatting>`;
 }
 
 function insertRules(xml: string, rules: string): string {
@@ -86,7 +127,8 @@ function insertRules(xml: string, rules: string): string {
 }
 
 /** Native conditional number formats remove the decimal point and signed zero after edits too. */
-export async function applyWorkbookPrecision(bytes: Uint8Array<ArrayBuffer>, sheets: readonly { data: SheetData }[], signal: AbortSignal): Promise<Uint8Array<ArrayBuffer>> {
+export async function applyWorkbookPrecision(bytes: Uint8Array<ArrayBuffer>, sheets: readonly { data: SheetData }[], remainingFormats: number, signal: AbortSignal): Promise<Uint8Array<ArrayBuffer>> {
+  if (!remainingFormats) return bytes;
   const groups = sheets.map(sheet => precisionGroups(sheet.data));
   if (!groups.some(group => group.length)) return bytes;
   signal.throwIfAborted();
@@ -112,8 +154,16 @@ export async function applyWorkbookPrecision(bytes: Uint8Array<ArrayBuffer>, she
     if (!group.length) return;
     let priority = 0;
     const key = `xl/worksheets/sheet${index + 1}.xml`;
-    files[key] = strToU8(insertRules(strFromU8(files[key]!), group.map(item => precisionRules(item, style, () => ++priority)).join('')));
+    const rules = group.map(item => {
+      const { digits, zero, integer } = item.precision;
+      const codes = digits ? new Set([zero, integer]) : new Set([zero]);
+      const additions = [...codes].filter(code => !formats.has(code));
+      if (numberFormats.length + additions.length > remainingFormats || additions.some(code => code.length > MAX_NUMBER_FORMAT_LENGTH)) return '';
+      return precisionRules(item, style, () => ++priority);
+    }).join('');
+    if (rules) files[key] = strToU8(insertRules(strFromU8(files[key]!), rules));
   });
+  if (!numberFormats.length) return bytes;
   styles = appendElements(styles, 'numFmts', numberFormats, '<fonts');
   styles = appendElements(styles, 'dxfs', dxfs, styles.includes('<tableStyles') ? '<tableStyles' : '</styleSheet>');
   files['xl/styles.xml'] = strToU8(styles);

@@ -35,7 +35,8 @@ it('preserves multi-level headers, aligned secondary slots, raw numeric scales a
   const bytes = await encodeTableWorkbook(component, data, new AbortController().signal);
   const workbook = new ExcelJS.Workbook(); await workbook.xlsx.load(bytes.buffer); const sheet = workbook.worksheets[0];
   expect(sheet.getCell('A1').value).toBe('编码'); expect(sheet.getCell('B1').value).toBe('指标');
-  expect(sheet.getCell('B4').value).toBe(25000); expect(sheet.getCell('B4').numFmt).toBe('"2.5万"');
+  expect(sheet.getCell('B4').value).toBe(25000); expect(sheet.getCell('B2').value).toBe('金额（原值）');
+  expect(sheet.getCell('B4').numFmt).toBe('#,##0.##############################;-#,##0.##############################;0');
   expect(sheet.getCell('C4').value).toBe(11); expect(sheet.getCell('C5').value).toBe(22);
   expect(sheet.getCell('D4').value).toBe('=HYPERLINK("x")');
 });
@@ -141,7 +142,7 @@ it('exports generated row numbers across all sorted matches with a merged header
   expect(data.main?.snapshot.rows[0]).not.toHaveProperty('rowNumber');
 });
 
-it('freezes semantic display units while preserving raw numeric values in Excel', async () => {
+it('uses original units for unsupported scales and keeps percentage values numeric', async () => {
   const component: TableComponent = { id: 'semantic', type: 'table', layout: { span: 12 }, data: { main: 'main' }, props: {
     columns: ['amount', 'storage', 'billing', 'rate'].map(field => ({ field }))
   } };
@@ -155,5 +156,6 @@ it('freezes semantic display units while preserving raw numeric values in Excel'
   const workbook = new ExcelJS.Workbook(); await workbook.xlsx.load(bytes.buffer);
   const sheet = workbook.worksheets[0]!;
   expect(['A2', 'B2', 'C2', 'D2'].map(cell => sheet.getCell(cell).value)).toEqual([12345, 1024, 3666, 12.345]);
-  expect(['A2', 'B2', 'C2', 'D2'].map(cell => sheet.getCell(cell).numFmt)).toEqual(['"1.23万"', '"1 TB"', '"1.02小时"', '"12.3%"']);
+  expect(['A1', 'B1', 'C1'].map(cell => sheet.getCell(cell).value)).toEqual(['amount（元）', 'storage（GB）', 'billing（秒）']);
+  expect(sheet.getCell('D2').numFmt).toBe('0.#"%"');
 });

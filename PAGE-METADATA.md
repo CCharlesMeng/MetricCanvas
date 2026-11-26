@@ -77,6 +77,8 @@ IOC Header 期间控件分别记忆年、季、月最近已应用的完整期间
 
 按需 `pagedJoin` 复用 `toolbar.search`，由搜索字段所属成员搜索并分页，暂停其他成员排序、清除其列头条件；清空搜索回到第一页并恢复默认排序。搜索、分页和 Excel 统一执行，不新增 JSON 字段、不扫描完整匹配键；单字段包含搜索由默认 DQE 数据网关编码，多字段 OR 仍需搜索适配。见[组合查询成员搜索](docs/page-metadata/data-sources.md#paged-join-member-search)，合成入口 `/pages/paged-join-search`。
 
+Excel 表格导出复用数字格式并限制全工作簿自定义格式总量。数值、比例刻度、横杠文本与空值各自保留。无法原生缩放的数值按原始单位导出，列标题标注。见[数值与缺失值导出](docs/page-metadata/field-bindings-and-formats.md#numeric-value-display)和 `/pages/numeric-value-display`。
+
 Excel 基础数字精度统一：number-0 至 number-5 及已有带符号/千分位格式保留原值和数值类型，按最多小数位去尾零，编辑后数字格式继续生效；原生条件格式处理整数小数点及舍入零符号。页面基础数字同样统一负零为0，无新增字段或版本。见[数字精度](docs/page-metadata/field-bindings-and-formats.md#numeric-value-display)，合成入口 `/pages/number-precision-five`、`/pages/numeric-value-display`。
 
 柱图、折线图、柱线混合图及横向条形图统一数值轴单位：非百分比单位默认在数值轴末端水平显示，纵向左轴单位与刻度数字右对齐、右轴左对齐，默认字号下与下方最高刻度数字净距16px；百分号直接跟随每个刻度值（如 `10%`、`20%`），不再单独显示在轴顶；自适应格式整轴使用同一缩放档位，提示与标签保留原格式。旧页面随引擎采用新默认，显式 ECharts 配置优先，无新增字段或 Schema 版本。见[数值轴规则](docs/page-metadata/field-bindings-and-formats.md#chart-number-format)，合成入口 `/pages/chart-axis-unit`。

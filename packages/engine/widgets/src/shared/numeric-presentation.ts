@@ -17,7 +17,7 @@ export function adaptivePercent(value: number, signed = false): string {
   return `${sign}${text}%`;
 }
 
-function percentDigits(magnitude: number): number {
+export function percentDigits(magnitude: number): number {
   if (magnitude >= 100) return 0;
   if (magnitude >= 10) return 1;
   if (magnitude === 0) return 2;

@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "74515c95c62f0a26cc4611d3eeff48136d2ffe78bed9f7b82286f1d8c154e649",
+  "sha256": "18264c60e198d0955f1e22a480d89c274464eed0be4652bda20c43e3e4b2ecf4",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -128,7 +128,7 @@
     },
     {
       "file": "docs/page-metadata/field-bindings-and-formats.md",
-      "sha256": "9d5ed16e802aab6b58673a4ac9c11c4a606d79c977db98515bd8b4f6474ad348"
+      "sha256": "524f8ee935e0ea6858ce69444253ba867a30353f87a0b6cb580bd731eb1ad44d"
     },
     {
       "file": "docs/page-metadata/fields.md",
@@ -2468,7 +2468,7 @@
     },
     {
       "file": "pages/capabilities/data/README.md",
-      "sha256": "ba197031bb0f9995f4a4ca01cbec1db3cbae56e51b63425cefc67e357c452172"
+      "sha256": "60fa1b7344be531ad5b3709499863f5af2bbf78d71cbc5f6a56f84b47f17f3dd"
     },
     {
       "file": "pages/capabilities/data/authoring-percent-coverage.json",
@@ -2500,7 +2500,7 @@
     },
     {
       "file": "pages/capabilities/data/numeric-value-display.json",
-      "sha256": "6f8d7a4fa3f7ea62921a49cddebbed04d6bc99bb8cc18998beaae2faeaa7a200"
+      "sha256": "5bc6dcc714146157e946bba8daa89f8a0ab32f0a07c93b981b7cf4eee7039444"
     },
     {
       "file": "pages/capabilities/data/operation-money-formats.json",

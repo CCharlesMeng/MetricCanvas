@@ -73,7 +73,7 @@ it('does not gate body on optional pinned loading/errors and leaves its sequence
   const projectedBytes = await encodeTableWorkbook(visible, data, new AbortController().signal);
   const projectedBook = new ExcelJS.Workbook(); await projectedBook.xlsx.load(projectedBytes.buffer);
   const projectedSheet = projectedBook.worksheets[0];
-  expect(projectedSheet.getRow(1).values).toEqual([undefined, '序号', '地区', '完成金额', '完成率']);
+  expect(projectedSheet.getRow(1).values).toEqual([undefined, '序号', '地区', '完成金额（元）', '完成率']);
   expect(projectedSheet.getCell('B2').value).toBe('中国区');
   expect(projectedSheet.getCell('C2').value).toBe(800);
   data.china.snapshot.rows.push({ ...data.china.snapshot.rows[0] });

@@ -1,30 +1,14 @@
 import { absoluteDisplayText } from '../../../../widgets/src/shared/absolute-display-limit';
 import { tableValueColor } from '../../../../widgets/src/shared/value-color';
-import { appendDisplayUnit } from '../../../../widgets/src/shared/display-unit';
-import type { FieldDefinition, FieldValue, TableColumn, TimeValueFormat, ValueFormat } from '@metriccanvas/page/internal';
+import type { FieldDefinition, FieldValue, TableColumn, TimeValueFormat } from '@metriccanvas/page/internal';
 import type { Cell, CellObject } from 'write-excel-file/universal';
 import type { NamedDataSlots } from '../../../../widgets/src/shared/component-data';
 import { resolveField } from '../../../../widgets/src/shared/component-data';
 import { alignedFallback, alignedFieldValue, alignedCellText, alignedCellArrow, tableRowColumn, type AlignedTableRow } from '../../../../widgets/src/components/table/rows';
 import { compatibleTableFormat, formatTableCell } from '../../../../widgets/src/components/table/cell-presentation';
 import { tableEnumLabel } from '../../../../widgets/src/components/table/enum-values';
-import { resolvedUnit } from '../../../../widgets/src/shared/field-presentation';
 import { formatValue, hasDisplayValue } from '../../../../widgets/src/shared/value-format';
-import { basicWorkbookNumberFormat, registerWorkbookPrecision } from './workbook-number-format';
-
-/** Numbers retain raw values; scale formats display the frozen presentation. */
-function numberFormat(value: number, format?: ValueFormat, unit?: string, displayUnit?: string): string {
-  if (displayUnit) return `"${appendDisplayUnit(formatValue(value, format, undefined, { unit }), value, displayUnit, format).replaceAll('"', '""')}"`;
-  if (typeof format === 'object') return `"${formatValue(value, format)}"`;
-  const basic = basicWorkbookNumberFormat(format ?? 'number', value);
-  if (basic !== undefined) return basic;
-  if (!format || format === 'number') return 'General';
-  if (/^percent-[012]$/.test(format)) {
-    const precision = Number(format.slice(-1));
-    return `0${precision ? `.${'0'.repeat(precision)}` : ''}"%"`;
-  }
-  return `"${formatValue(value, format, undefined, { unit }).replaceAll('"', '""')}"`;
-}
+import { literalWorkbookFormat, numericWorkbookCell } from './workbook-numeric-cell';
 
 function plainText(html: string): string {
   if (typeof DOMParser !== 'undefined') return new DOMParser().parseFromString(html.replace(/<br\s*\/?\s*>/gi, '\n'), 'text/html').body.textContent ?? '';
@@ -37,8 +21,7 @@ function dateCell(value: unknown, type: 'date' | 'datetime'): CellObject {
   return { value: date, type: Date, format: type === 'date' ? 'yyyy-mm-dd' : 'yyyy-mm-dd hh:mm:ss' };
 }
 
-function valueCell(value: unknown, type: FieldDefinition['type'] | undefined, format: ValueFormat | undefined, unit?: string, displayUnit?: string): CellObject {
-  if (typeof value === 'number') return { value, type: Number, format: numberFormat(value, format, unit, displayUnit) };
+function valueCell(value: unknown, type: FieldDefinition['type'] | undefined): CellObject {
   if (typeof value === 'boolean') return { value, type: Boolean };
   if (type === 'semanticHtml') return { value: plainText(String(value)), type: String };
   if (type === 'date' || type === 'datetime') return dateCell(value, type);
@@ -59,21 +42,8 @@ export function tableWorkbookCell(bodyColumn: TableColumn, row: AlignedTableRow,
   if (resolved.format && !compatibleTableFormat(value, resolved.format)) {
     return { value: formatTableCell(value, resolved.format), type: String };
   }
-  const cell = valueCell(value, resolved.definition?.type, resolved.format, resolvedUnit(resolved), column.unit);
-  const arrow = alignedCellArrow(column, data, row);
-  return decorateWorkbookNumber(cell, column, arrow, resolved.format);
-}
-
-function decorateWorkbookNumber(cell: CellObject, column: TableColumn, arrow: string, format?: ValueFormat): CellObject {
-  const preset = format ?? 'number';
-  const native = !column.unit && basicWorkbookNumberFormat(preset) !== undefined;
-  const arrowFormat = arrowNumberFormat(cell.format ?? 'General', arrow, column.arrowRule?.position === 'after', native);
-  const decorated = typeof cell.value === 'number' && arrow ? { ...cell, format: arrowFormat } : cell;
-  return registerWorkbookPrecision(decorated, preset, column.unit);
-}
-
-function arrowNumberFormat(format: string, arrow: string, after: boolean, native: boolean): string {
-  return (native ? format.split(';') : [format]).map(section => after ? `${section}" ${arrow}"` : `"${arrow} "${section}`).join(';');
+  if (typeof value === 'number') return numericWorkbookCell(value, resolved, column.unit, alignedCellArrow(column, data, row), column.arrowRule?.position === 'after');
+  return valueCell(value, resolved.definition?.type);
 }
 
 /** Time exports are text, so authored arrows join the same text instead of a numeric format. */
@@ -88,5 +58,5 @@ function limitedNumberCell(column: TableColumn, row: AlignedTableRow, data: Name
   const arrow = alignedCellArrow(column, data, row);
   const display = !arrow ? text : column.arrowRule?.position === 'after' ? `${text} ${arrow}` : `${arrow} ${text}`;
   const color = tableValueColor(value, column);
-  return { value, type: Number, format: `"${display.replaceAll('"', '""')}"`, textColor: color === 'green' ? '#52C41A' : color === 'red' ? '#F5222D' : undefined };
+  return { value, type: Number, format: literalWorkbookFormat(display), textColor: color === 'green' ? '#52C41A' : color === 'red' ? '#F5222D' : undefined };
 }

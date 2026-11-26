@@ -7,6 +7,7 @@ import { buildTableColumnLayout, type TableColumnLayout } from '../../../../widg
 import { projectTableRows } from '../../../../widgets/src/components/table/rows';
 import { tableDataWarnings } from '../../../../widgets/src/components/table/warnings';
 import { tableWorkbookCell } from './workbook-cell';
+import { workbookColumnUnit } from './workbook-numeric-cell';
 
 export interface WorkbookTable { component: TableComponent; data: NamedDataSlots; name: string; children?: readonly WorkbookTable[] }
 export interface WorkbookSheet {
@@ -20,7 +21,9 @@ function columnTitle(binding: FieldBinding, data: NamedDataSlots, given?: string
   const resolved = resolveField(binding, data);
   const definition = resolved.definition;
   const text = given ?? definition?.label ?? resolved.field;
-  const unit = explicitUnit ?? (definition && 'unit' in definition ? definition.unit : undefined);
+  const { raw, unit } = workbookColumnUnit(resolved, explicitUnit);
+  if (raw && !unit) return `${text}（原值）`;
+  if (raw && !text.endsWith(`（${unit}）`)) return `${text}（${unit}）`;
   return unit && !text.includes(unit) ? `${text}（${unit}）` : text;
 }
 

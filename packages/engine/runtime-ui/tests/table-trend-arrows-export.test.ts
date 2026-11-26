@@ -18,11 +18,11 @@ it('exports arrows in numeric formats without changing values, precision, zero o
   const workbook = new ExcelJS.Workbook(); await workbook.xlsx.load(bytes.buffer);
   const sheet = workbook.worksheets[0];
   expect(sheet.getCell('A2').value).toBe(2.5);
-  expect(sheet.getCell('A2').numFmt).toBe('"↓ ""+2.5 天"');
+  expect(sheet.getCell('A2').numFmt).toBe('"↓ "+#,##0.#" 天";"↓ "-#,##0.#" 天";"↓ "0" 天"');
   expect(sheet.getCell('A3').value).toBe(-1.2);
-  expect(sheet.getCell('A3').numFmt).toBe('"↑ ""-1.2 天"');
+  expect(sheet.getCell('A3').numFmt).toBe('"↑ "+#,##0.#" 天";"↑ "-#,##0.#" 天";"↑ "0" 天"');
   expect(sheet.getCell('A4').value).toBe(0.04);
-  expect(sheet.getCell('A4').numFmt).toBe('"0 天"');
+  expect(sheet.getCell('A4').numFmt).toBe('+#,##0.#" 天";-#,##0.#" 天";0" 天"');
   expect(sheet.getCell('B2').numFmt).toBe('#,##0.##############################" ↓";-#,##0.##############################" ↓";0" ↓"');
   expect(sheet.getCell('B3').numFmt).toBe('#,##0.##############################" ↓";-#,##0.##############################" ↓";0" ↓"');
   expect(sheet.getCell('B4').value).toBe(0);

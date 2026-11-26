@@ -2,7 +2,7 @@ import type { TableComponent } from '@metriccanvas/page/internal';
 import type { NamedDataSlots } from '../../../../widgets/src/shared/component-data';
 import { tableWorkbookSheet, warningWorkbookSheet, type WorkbookTable } from './workbook-sheet';
 import { hierarchyWorkbookSheet } from './workbook-hierarchy';
-import { applyWorkbookPrecision } from './workbook-number-format';
+import { applyWorkbookPrecision, limitWorkbookFormats } from './workbook-number-format';
 
 export function tableExportFilename(component: TableComponent): string {
   const name = component.props.toolbar?.export?.filename || component.props.title || '表格数据';
@@ -38,10 +38,11 @@ export async function encodeWorkbookTables(tables: readonly WorkbookTable[], sig
   const sheets = workbookSheets(tables, signal);
   const warnings = warningWorkbookSheet(tables, sheets);
   if (warnings) sheets.push(warnings);
+  const remainingFormats = limitWorkbookFormats(sheets, signal);
   const blob = await writeExcelFile(sheets, { fontFamily: 'Calibri', fontSize: 11 }).toBlob();
   const buffer = await blob.arrayBuffer();
   signal.throwIfAborted();
-  return applyWorkbookPrecision(new Uint8Array(buffer), sheets, signal);
+  return applyWorkbookPrecision(new Uint8Array(buffer), sheets, remainingFormats, signal);
 }
 
 export async function downloadTableWorkbook(component: TableComponent, data: NamedDataSlots, signal: AbortSignal): Promise<void> {
