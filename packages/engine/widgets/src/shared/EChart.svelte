@@ -146,7 +146,8 @@
       if (resizeFrame !== undefined) cancelAnimationFrame(resizeFrame);
       resizeFrame = requestAnimationFrame(() => {
         resizeFrame = undefined;
-        if (stopped || mode === 'failed') return;
+        // 同行表格放大时容器会暂时隐藏，恢复尺寸后再调整图表。
+        if (stopped || mode === 'failed' || el.clientWidth === 0 || el.clientHeight === 0) return;
         // Repaint the selected mode: resizing never re-enables a failed extension.
         try { instance?.resize(); } catch (cause) {
           dispose();

@@ -7,8 +7,10 @@ const mapDisplayName = '欧洲';
 const metrics: Record<string, number> = {
   '净商务折扣（原价）': 36.4,
   '净商务折扣（原价）年变化': -1.2,
+  '净商务折扣（原价）月变化': -0.6,
   '净付费金额': 1_250_000,
   '净付费金额年同比': 8.4,
+  '净付费金额月环比': 3.2,
   '框架执行率': 74.6,
   '区域结算价毛利率(付费口径)': 18.5,
   '测算销毛率': 13.5
@@ -100,14 +102,14 @@ test('合同商务地图先显示点位，再显示折扣和同一组织的四�
     await hoverPoint(chart);
     await expect(heading).toHaveText(mapDisplayName);
     await expect(rows.nth(2)).toHaveText(/框架执行率\s+74\.6%/);
-    await expect(rows.first()).toHaveText(/净商务折扣\s+—\s*同比\s+—/);
+    await expect(rows.first()).toHaveText(/净商务折扣\s+—\s*环比\s+—/);
 
     discount.resolve();
     await expect.poll(() => mapPoint(chart)).toMatchObject({
       label: `${mapDisplayName} {metric|36.4%}`, value: 36.4, metricLabel: {fontWeight: 400, color: '#000'}
     });
-    await expect(card.locator('.change-label')).toHaveText('同比');
-    await expect(card.locator('.change-value')).toHaveText('-1.2P');
+    await expect(card.locator('.change-label')).toHaveText('环比');
+    await expect(card.locator('.change-value')).toHaveText('-0.6P');
     await expect(card.locator('.change-value')).toHaveCSS('color', 'rgb(245, 34, 45)');
     await expect(card.locator('.row-value')).toHaveCSS('color', 'rgb(0, 0, 0)');
     await expect(card.locator('.row-value')).toHaveCSS('font-weight', '400');
@@ -119,8 +121,8 @@ test('合同商务地图先显示点位，再显示折扣和同一组织的四�
     await expect(heading).toHaveCSS('font-weight', '400');
     await expect(heading.locator('..')).toHaveCSS('border-top-width', '0px');
     await expect(rows).toHaveText([
-      /净商务折扣\s+36\.4%\s*同比\s+-1\.2/,
-      /净付费金额\s+.*同比\s+\+?8\.4%/,
+      /净商务折扣\s+36\.4%\s*环比\s+-0\.6/,
+      /净付费金额\s+.*环比\s+\+?3\.2%/,
       /框架执行率\s+74\.6%/,
       /测算销毛与核算销毛偏差\s+—/
     ]);
@@ -138,6 +140,13 @@ test('合同商务地图先显示点位，再显示折扣和同一组织的四�
     await expect(rows.last()).toHaveText(/测算销毛与核算销毛偏差\s+\+5P/);
     await expect(rows.last().locator('[data-map-tooltip-value]')).toHaveCSS('color', 'rgb(82, 196, 26)');
     await page.screenshot({path: info.outputPath('contract-overview-map-tooltip.png')});
+    await table.getByRole('button', { name: '放大表格' }).click();
+    await expect(chart).toBeHidden();
+    await page.evaluate(() => new Promise<void>(done => requestAnimationFrame(() => requestAnimationFrame(() => done()))));
+    await table.getByRole('button', { name: '还原表格' }).click();
+    await expect(chart).toBeVisible();
+    await hoverPoint(chart);
+    await expect(rows.last()).toHaveText(/偏差.*\+5P/);
     expect(errors).toEqual([]);
   } finally {
     discount.resolve();
@@ -185,4 +194,33 @@ async function hoverPoint(chart: Locator) {
     await chart.hover({position: {x: point.x, y: point.y}});
     await expect(page.locator('[data-map-tooltip-heading]')).toHaveText(mapDisplayName, {timeout: 500});
   }).toPass({timeout: 5_000});
+}
+
+for (const [mtime, mapId, comparisons] of [
+  ['quarter:2026-Q3', 'world-map-year-quarter', ['-1.2P', '8.4%']],
+  ['year:2026', 'world-map-year-quarter', ['-1.2P', '8.4%']],
+  ['last12Months', 'world-map-rolling', []]
+] as const) {
+  test(`合同商务总览按 ${mtime} 展示折扣卡与地图的比较值`, async ({ page }) => {
+    await page.route('**/v1/dsl/execute', route => {
+      const items: DqeItem[] = route.request().postDataJSON().dsl_list;
+      return route.fulfill({ json: { retCode: 'CBC.0000', results: items.map(item => syntheticResult(item)) } });
+    });
+    await page.goto('/pages/contract-business-overview?' + new URLSearchParams({ mtime, mapLabels: 'short' }));
+    const card = page.locator('[data-component="overview-content/discount-card-overview"]');
+    const chart = page.locator(`[data-component="overview-content/${mapId}"] [_echarts_instance_]`);
+    await expect.poll(() => mapPoint(chart)).toMatchObject({ value: 36.4 });
+    await hoverPoint(chart);
+    const rows = page.locator('[data-map-tooltip-row]');
+    await expect(rows).toHaveCount(4);
+    await expect(card.locator('.change-label')).toHaveText(comparisons.length ? ['同比'] : []);
+    for (const [index, row] of [rows.first(), rows.nth(1)].entries()) {
+      const values = row.locator('[data-map-tooltip-value]');
+      await expect(values).toHaveCount(comparisons.length ? 2 : 1);
+      if (comparisons.length) {
+        await expect(row).toContainText('同比');
+        await expect(values.last()).toContainText(comparisons[index]!);
+      }
+    }
+  });
 }
