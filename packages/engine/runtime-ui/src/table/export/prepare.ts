@@ -23,7 +23,7 @@ export async function prepareTableExport(input: {
   const { signal } = input.controller;
   const timer = setTimeout(() => input.controller.abort(new ExportViewError('EXPORT_TIMEOUT', `导出准备超过 ${EXPORT_PREPARATION_TIMEOUT_MS / 60_000} 分钟`)), EXPORT_PREPARATION_TIMEOUT_MS);
   try {
-    const snapshots = await abortable(prepareExportSnapshots(page, input.gateway, queries, state.filters, signal, undefined, state.currentYear, Object.values(component.data), input.views && structuredClone(new Map(input.views)), input.program,{completeReadMaxRows:EXPORT_MAX_ROWS,displayInputs:state.displaySnapshot,filterRevision:state.filterRevision,now:state.now}), signal);
+    const snapshots = await abortable(prepareExportSnapshots(page, input.gateway, queries, state.filters, signal, undefined, state.currentYear, Object.values(component.data), input.views && structuredClone(new Map(input.views)), input.program,{ordinaryQueryBatchSize:200,completeReadMaxRows:EXPORT_MAX_ROWS,displayInputs:state.displaySnapshot,filterRevision:state.filterRevision,now:state.now}), signal);
     signal.throwIfAborted();
     assertPinnedExport(component, snapshots);
     if(input.hierarchy){

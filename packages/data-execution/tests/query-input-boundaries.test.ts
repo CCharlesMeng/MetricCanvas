@@ -70,3 +70,15 @@ it('checks cancellation after a response before using it or describing a source'
   expect(describe).not.toHaveBeenCalled();
   expect(warn).not.toHaveBeenCalled();
 });
+
+it.each([false, true])('selects the first export window for an unpaged query with trustedComplete=%s', async trustedComplete => {
+  const input = query();
+  delete input.pagination;
+  delete input.body.dsl_list[0].order;
+  const source = runner();
+  const rows = [{ id: 'A' }];
+  source.run.mockResolvedValue({ status: 'ready', rows, totalCount: trustedComplete ? undefined : 1 });
+  const result = await fetchComplete(input, source, 'scope', undefined, {}, { batchSize: 200, trustedComplete });
+  expect(result).toMatchObject({ status: 'ready', rows });
+  expect(source.run.mock.calls.map(([request]) => request.pagination)).toEqual([trustedComplete ? undefined : { offset: 0, limit: 200 }]);
+});

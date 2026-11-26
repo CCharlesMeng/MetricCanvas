@@ -39,6 +39,8 @@
 
 1. 查看顶部筛选与更多筛选中的条件。
 2. 点击项目入口进入详情，再返回清单，核对上下文。
+3. 表格导出读取宿主 `displayInputs` 的 `permissions.canExport`。只有 `{status:"ready",value:true}` 显示 Excel 导出按钮。宿主通过订阅推送新快照，可在同一页面切换权限。
+4. 本地对照使用 Embed 示例。运行 `pnpm --filter @metriccanvas/embed build` 和 `pnpm --filter @metriccanvas/embed preview:examples`，打开 [机会点导出权限对照](http://127.0.0.1:4175/examples/navigation.html?page=ioc-opportunity-list&region.level=geo&region=全球&mtime=2026-04)。从「等待权限」切到「允许导出」后可下载当前月份的 10 条合成机会点；切到「禁止导出」后按钮消失。
 
 数据是带合成内嵌初始行的查询源；真实查询分页、权限和业务数据需独立验收。
 

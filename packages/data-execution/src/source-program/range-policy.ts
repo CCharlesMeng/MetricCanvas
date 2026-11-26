@@ -65,12 +65,13 @@ interface CompleteQueryOptions {
   allowZeroTotal?: boolean;
   strictComplete?: boolean;
   maxRows?: number;
+  batchSize?: number;
 }
 export async function fetchComplete(query: EffectiveQuery, runner: QueryRunner, scope: string, signal: AbortSignal | undefined, diagnostics: QueryDiagnosticContext, options: CompleteQueryOptions): Promise<DataSnapshot> {
   const { trustedComplete, describeSource, allowPartial, allowZeroTotal, strictComplete, maxRows } = options;
-  const { frozen, declared, limit } = exportReadWindow(query);
+  const { frozen, initiallyPaged, limit } = exportReadWindow(query, options);
   const strict = strictComplete || isObjectDqeItem(query.body.dsl_list[0]);
-  let paged = declared !== undefined, offset = 0, expected: number | undefined;
+  let paged = initiallyPaged, offset = 0, expected: number | undefined;
   const rows: Row[] = [];
   while (true) {
     signal?.throwIfAborted();
@@ -133,11 +134,12 @@ function changedInitialView(view: TableQueryView): boolean {
 function totalCountMismatch(count: number, total: number, resultScope: 'complete' | undefined, diagnostics: QueryDiagnosticContext & { pagination?: EffectiveQuery['pagination'] }): boolean {
   return (count > 0 && total < (diagnostics.pagination?.offset ?? 0) + count) || (resultScope === 'complete' && total !== count);
 }
-function exportReadWindow(query: EffectiveQuery) {
+function exportReadWindow(query: EffectiveQuery, options: CompleteQueryOptions) {
   const frozen = structuredClone(query);
   const declared = frozen.pagination?.limit ?? declaredPaginationLimit({ language: frozen.language, body: frozen.body });
-  const limit = Math.min(declared ?? 500, 500);
-  return { frozen, declared, limit };
+  const limit = options.batchSize ?? Math.min(declared ?? 500, 500);
+  const initiallyPaged = declared !== undefined || (options.batchSize !== undefined && !options.trustedComplete);
+  return { frozen, initiallyPaged, limit };
 }
 function assertExportTotal(total: number | undefined, expected: number | undefined, maxRows?: number): void {
   if (total !== undefined && (!Number.isSafeInteger(total) || total < 0)) throw new SourceRangeError('EXPORT_INCOMPLETE_DATA', '导出结果总数不合法');
