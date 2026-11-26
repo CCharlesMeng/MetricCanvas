@@ -39,10 +39,10 @@ function transport(data: ReturnType<typeof fixture>) {
 function view(page: ReturnType<typeof fixture>['page']): TableQueryView {
   return { ...defaultSourceView(page, 'main'), search: { data: 'basic', fields: ['owner'], query: 'target', match: 'equals' } };
 }
-async function read(program: ReturnType<typeof createSourceProgram>, applied: TableQueryView, complete = false, freshness?: 'refresh') {
+async function read(program: ReturnType<typeof createSourceProgram>, applied: TableQueryView, complete = false, freshness?: 'refresh', completeReadMaxRows?: number) {
   const snapshots = new Map<string, DataSnapshot>();
   for await (const update of program.read({ roots: ['main', 'basic'], conditions: new Map(), views: new Map([['main', applied]]), freshness,
-    ...(complete ? { purpose: 'complete', completeSources: ['main', 'basic'] } : {}) })) snapshots.set(update.sourceId, update.snapshot);
+    ...(complete ? { purpose: 'complete', completeReadMaxRows, completeSources: ['main', 'basic'] } : {}) })) snapshots.set(update.sourceId, update.snapshot);
   return snapshots;
 }
 
@@ -124,11 +124,13 @@ describe('materialized supplementary search', () => {
     finally { program.dispose(); }
   });
 
-  it('retains the separate export row limit after a successful large screen search', async () => {
+  it('exports the entire large search result while preserving the default read budget', async () => {
     const data = fixture(5001), network = transport(data), program = createSourceProgram(data.page, { gateway: network.gateway });
     try {
       expect((await read(program, view(data.page))).get('main')).toMatchObject({ totalCount: 10002 });
       await expect(read(program, view(data.page), true)).rejects.toMatchObject({ code: 'EXPORT_ROW_LIMIT' });
+      const result=(await read(program,view(data.page),true,undefined,Infinity)).get('main');
+      expect(result?.status==='ready' && result.rows.length).toBe(10002);
     } finally { program.dispose(); }
   });
 

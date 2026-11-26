@@ -1,17 +1,17 @@
 import type { Row } from '@metriccanvas/page/internal';
 import { unionRow, type UnionPlan } from '../paged-union/plan';
 import type { QueryRunner } from '../query-runner';
-import { EXPORT_MAX_ROWS, EXPORT_PREPARATION_TIMEOUT_MS } from '../source-program/range-policy';
+import { DEFAULT_COMPLETE_READ_MAX_ROWS, EXPORT_PREPARATION_TIMEOUT_MS } from '../source-program/range-policy';
 import { recoveryContext, recoveryRows, recoveryView, warn } from './read';
 
 /** Complete normalization precedes deduplication, global sorting, counting and paging. */
-export async function recoverUnion(plan: UnionPlan, runner: QueryRunner, scope: string, signal: AbortSignal, complete: boolean) {
+export async function recoverUnion(plan: UnionPlan, runner: QueryRunner, scope: string, signal: AbortSignal, complete: boolean, maxRows = DEFAULT_COMPLETE_READ_MAX_ROWS) {
   const context = recoveryContext(plan.page.id, plan.id, signal, complete ? EXPORT_PREPARATION_TIMEOUT_MS : undefined);
   try {
-    context.maxScan = complete ? EXPORT_MAX_ROWS : 100_000;
+    context.maxScan = complete ? maxRows : 100_000;
     const rows: Row[] = [];
     for (const member of [...plan.members].sort((left, right) => left.id < right.id ? -1 : 1)) {
-      const input = await recoveryRows(member.query, runner, scope, context, member.member.source, complete ? EXPORT_MAX_ROWS : 100_000);
+      const input = await recoveryRows(member.query, runner, scope, context, member.member.source, context.maxScan);
       const seen = new Set<unknown>();
       warn(context, member.member.source, '已按可用数据重新整理；异常单元格显示为空');
       for (const [index, raw] of input.entries()) {
@@ -28,7 +28,7 @@ export async function recoverUnion(plan: UnionPlan, runner: QueryRunner, scope: 
         seen.add(key); rows.push(row);
       }
     }
-    return recoveryView(context, rows, plan.view, complete);
+    return recoveryView(context, rows, plan.view, complete, maxRows);
   } finally {
     context.dispose();
   }

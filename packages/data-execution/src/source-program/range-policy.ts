@@ -6,7 +6,8 @@ import type { QueryDiagnosticContext } from '../ports';
 import { rawSnapshot } from '../snapshots';
 import type { ExportSourceDetails } from './export-diagnostics';
 
-export const EXPORT_MAX_ROWS = 10_000;
+export const EXPORT_MAX_ROWS = Infinity;
+export const DEFAULT_COMPLETE_READ_MAX_ROWS = 10_000;
 export const COMPLETE_READ_TIMEOUT_MS = 5 * 60_000;
 export const EXPORT_PREPARATION_TIMEOUT_MS = 30 * 60_000;
 export class SourceRangeError extends Error {
@@ -57,7 +58,16 @@ export function correctedPageIndex(query: EffectiveQuery, snapshot: DataSnapshot
   if (total === undefined || (total > 0 && query.pagination.offset < total) || (total === 0 && query.pagination.offset === 0)) return undefined;
   return Math.max(0, Math.ceil(total / query.pagination.limit) - 1);
 }
-export async function fetchComplete(query: EffectiveQuery, runner: QueryRunner, scope: string, signal: AbortSignal | undefined, diagnostics: QueryDiagnosticContext, trustedComplete = false, describeSource?: () => ExportSourceDetails, allowPartial = false, allowZeroTotal?: boolean, strictComplete = false): Promise<DataSnapshot> {
+interface CompleteQueryOptions {
+  trustedComplete?: boolean;
+  describeSource?: () => ExportSourceDetails;
+  allowPartial?: boolean;
+  allowZeroTotal?: boolean;
+  strictComplete?: boolean;
+  maxRows?: number;
+}
+export async function fetchComplete(query: EffectiveQuery, runner: QueryRunner, scope: string, signal: AbortSignal | undefined, diagnostics: QueryDiagnosticContext, options: CompleteQueryOptions): Promise<DataSnapshot> {
+  const { trustedComplete, describeSource, allowPartial, allowZeroTotal, strictComplete, maxRows } = options;
   const { frozen, declared, limit } = exportReadWindow(query);
   const strict = strictComplete || isObjectDqeItem(query.body.dsl_list[0]);
   let paged = declared !== undefined, offset = 0, expected: number | undefined;
@@ -70,16 +80,16 @@ export async function fetchComplete(query: EffectiveQuery, runner: QueryRunner, 
       return failedPage(result);
     }
     const chunk = result.status === 'ready' ? result.rows : [];
-    assertExportTotal(result.totalCount, expected);
+    assertExportTotal(result.totalCount, expected, maxRows);
     expected ??= result.totalCount;
     if (requiresPagedRead(paged, expected, chunk.length)) { paged = true; continue; }
     assertExportChunk(paged, expected, chunk.length, limit);
-    rows.push(...chunk);
-    assertExportRowLimit(rows.length);
+    assertCompleteRowLimit(rows.length + chunk.length, maxRows);
+    for (const row of chunk) rows.push(row);
     if (expected !== undefined && rows.length > expected) {
       return excessRows(chunk.length);
     }
-    assertExportCompleteness(paged, expected, trustedComplete);
+    assertExportCompleteness(paged, expected, !!trustedComplete);
     if (!paged || rows.length === expected) return rawSnapshot(rows, rows.length);
     if (!chunk.length) throw new SourceRangeError('EXPORT_INCOMPLETE_DATA', '导出分页提前结束');
     offset = rows.length;
@@ -129,9 +139,9 @@ function exportReadWindow(query: EffectiveQuery) {
   const limit = Math.min(declared ?? 500, 500);
   return { frozen, declared, limit };
 }
-function assertExportTotal(total: number | undefined, expected: number | undefined): void {
+function assertExportTotal(total: number | undefined, expected: number | undefined, maxRows?: number): void {
   if (total !== undefined && (!Number.isSafeInteger(total) || total < 0)) throw new SourceRangeError('EXPORT_INCOMPLETE_DATA', '导出结果总数不合法');
-  if (total !== undefined && total > EXPORT_MAX_ROWS) throw new SourceRangeError('EXPORT_ROW_LIMIT', '导出单表超过 10000 行');
+  if (total !== undefined) assertCompleteRowLimit(total, maxRows);
   if (expected !== undefined && total !== expected) throw new SourceRangeError('EXPORT_INCOMPLETE_DATA', '导出分页期间结果总数发生变化');
 }
 function requiresPagedRead(paged: boolean, expected: number | undefined, count: number): boolean {
@@ -141,8 +151,8 @@ function assertExportChunk(paged: boolean, expected: number | undefined, count: 
   if (paged && expected === undefined) throw new SourceRangeError('EXPORT_INCOMPLETE_DATA', '完整导出分页需要 totalCount');
   if (paged && count > limit) throw new SourceRangeError('EXPORT_INCOMPLETE_DATA', '导出分页返回行数超出请求范围');
 }
-function assertExportRowLimit(count: number): void {
-  if (count > EXPORT_MAX_ROWS) throw new SourceRangeError('EXPORT_ROW_LIMIT', '导出单表超过 10000 行');
+export function assertCompleteRowLimit(count: number, maxRows = DEFAULT_COMPLETE_READ_MAX_ROWS): void {
+  if (count > maxRows) throw new SourceRangeError('EXPORT_ROW_LIMIT', `完整读取超过 ${maxRows} 行`);
 }
 function assertExportCompleteness(paged: boolean, expected: number | undefined, trusted: boolean): void {
   if (!paged && expected === undefined && !trusted) throw new SourceRangeError('EXPORT_INCOMPLETE_DATA', '完整导出需要 totalCount 或显式完整结果契约');

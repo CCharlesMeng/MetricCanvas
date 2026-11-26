@@ -77,11 +77,12 @@ describe('record-preserving pagedJoin',()=>{
   it('propagates upstream failure without presenting a partial join',async()=>{
     const test=setup({rows:8,failure:true});try{expect(await test.read()).toMatchObject({status:'error',error:{code:'DQE_TRANSPORT_ERROR'}});}finally{test.program.dispose();}
   });
-  it('allows candidates beyond export limits while rejecting an oversized full export',async()=>{
+  it('reads all matching Excel records while preserving the default complete-read budget',async()=>{
     const test=setup({rows:10001});try{
       const candidates=await test.program.readColumnCandidates({sourceId:root,field:'life-status',conditions:test.conditions,view:defaultSourceView(test.page,root)});
       expect(candidates).toMatchObject({kind:'values',totalCount:2});
       await expect(test.read({}, {purpose:'complete'})).rejects.toMatchObject({code:'EXPORT_ROW_LIMIT'});
+      expect(rows(await test.read({}, {purpose:'complete',completeReadMaxRows:Infinity}))).toHaveLength(10001);
     }finally{test.program.dispose();}
   });
   it.each(['truncated','changed-total'] as const)('warns about %s during the main scan',async fault=>{

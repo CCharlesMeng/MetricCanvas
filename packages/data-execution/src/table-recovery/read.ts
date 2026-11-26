@@ -5,7 +5,7 @@ import type { DataSnapshot, DataWarning, EffectiveQuery, Row, TableQueryView } f
 import type { QueryRunner } from '../query-runner';
 import { rawSnapshot } from '../snapshots';
 import { evaluateTableView } from '../table-view';
-import { EXPORT_MAX_ROWS, SourceRangeError } from '../source-program/range-policy';
+import { assertCompleteRowLimit } from '../source-program/range-policy';
 
 export interface RecoveryContext {
   pageId: string; sourceId: string; signal: AbortSignal;
@@ -78,11 +78,11 @@ function checkRecoveryCount(context: RecoveryContext, sourceId: string, total: n
 }
 function validTotal(total: number | undefined): total is number { return total !== undefined && Number.isSafeInteger(total) && total >= 0; }
 function recoveryLimit(): Error { return Object.assign(new Error('异常数据整理超过行数上限，请缩小筛选范围'), {code:'DQE_QUERY_REJECTED'}); }
-export function recoveryView(context: RecoveryContext, rows: Row[], view: TableQueryView, complete: boolean): { snapshot: DataSnapshot; viewCorrection?: TableQueryView } {
+export function recoveryView(context: RecoveryContext, rows: Row[], view: TableQueryView, complete: boolean, maxRows?: number): { snapshot: DataSnapshot; viewCorrection?: TableQueryView } {
   context.signal.throwIfAborted();
   checkRecoveryBudget(context, 0, rows, Infinity);
   const result = evaluateTableView(rows, view, complete);
-  if (complete && result.totalCount > EXPORT_MAX_ROWS) throw new SourceRangeError('EXPORT_ROW_LIMIT', '导出单表超过 10000 行');
+  if (complete) assertCompleteRowLimit(result.totalCount, maxRows);
   const warnings = [...context.warnings.values()];
   debugWarn('[MetricCanvas][TABLE_RESULT_RECOVERED] 表格已兼容异常数据，结果有缺项或经过整理', { pageId: context.pageId, sourceId: context.sourceId, warnings });
   const snapshot = { ...rawSnapshot(result.rows, result.totalCount), warnings };

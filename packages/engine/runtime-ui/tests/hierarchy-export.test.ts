@@ -47,12 +47,25 @@ it('rejects hidden parent association columns and ambiguous lookup results',asyn
   await expect(run()).rejects.toThrow('不可见');await expect(run('O-multi')).rejects.toThrow('不唯一');
  }finally{await sim.close();}
 });
-it('enforces one combined row budget and cancellation',async()=>{
- const {page,table,filters}=hierarchyFixture(),controller=new AbortController();
- const gateway={async fetchData(){return {rows:Array.from({length:10001},()=>({})),totalCount:10001};}};
- await expect(prepareHierarchyExport({page,component:table,gateway,state:state(new Map(filters)),params:new Map(),queries:new Map(),controller})).rejects.toThrow();expect(controller.signal.aborted).toBe(true);
- const cancelled=new AbortController();cancelled.abort();
+it('exports every child when the combined row count exceeds 10000', async () => {
+ const {page,table,filters}=hierarchyFixture(), sim=await hierarchySim();
+ const rows=Array.from({length:2501},(_,i)=>({'office-id':String(i),'office-name':String(i),amount:i}));
+ const gateway={...sim.gateway,async fetchData(...args:Parameters<typeof sim.gateway.fetchData>){
+  const [query]=args;
+  if(!query.fieldMappings['office-id'])return sim.gateway.fetchData(...args);
+  const {offset,limit}=query.pagination ?? {offset:0,limit:rows.length};
+  return {rows:rows.slice(offset,offset+limit),totalCount:rows.length};
+ }};
+ try {
+  const [parent]=await prepareHierarchyExport({page,component:table,gateway,state:state(new Map(filters)),params:new Map(),queries:new Map(),controller:new AbortController()});
+  expect(parent!.children!.map(child=>child.data.main!.snapshot.rows.length)).toEqual([2501,2501,2501,2501]);
+ } finally {await sim.close();}
+});
+it('rejects cancellation before the first parent read',async()=>{
+ const {page,table,filters}=hierarchyFixture(), cancelled=new AbortController();cancelled.abort();
+ const gateway={fetchData:vi.fn()};
  await expect(prepareHierarchyExport({page,component:table,gateway,state:state(new Map(filters)),params:new Map(),queries:new Map(),controller:cancelled})).rejects.toThrow();
+ expect(gateway.fetchData).not.toHaveBeenCalled();
 });
 it('allows an empty child and rejects an incomplete child receipt',async()=>{
  const {page,table,filters}=hierarchyFixture(),sim=await hierarchySim();let incomplete=false;

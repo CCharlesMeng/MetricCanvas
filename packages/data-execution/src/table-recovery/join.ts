@@ -11,35 +11,38 @@ import { ordinalRows } from '../paged-join/rows';
 import { EXPORT_PREPARATION_TIMEOUT_MS } from '../source-program/range-policy';
 import { recoveryContext, recoveryRows, recoveryView, warn, withTableRecovery, type RecoveryContext } from './read';
 
-export function readRecoverableJoin(plan: PagedJoinPlan, runner: QueryRunner, scope: string, signal?: AbortSignal, complete = false, allowPartial = false, progress?: ScreenProgressSink) {
-  if(plan.strategy==='queryPage' || plan.strategy==='autoPage' || progress && plan.selection)return complete?exportPagedJoin(plan,runner,scope,signal):executePagedJoin(plan,runner,scope,signal,false,progress);
+export function readRecoverableJoin(plan: PagedJoinPlan, runner: QueryRunner, scope: string, signal?: AbortSignal, complete = false, allowPartial = false, progress?: ScreenProgressSink, maxResultRows?: number) {
+  if(plan.strategy==='queryPage' || plan.strategy==='autoPage' || progress && plan.selection)return complete?exportPagedJoin(plan,runner,scope,signal,false,maxResultRows):executePagedJoin(plan,runner,scope,signal,false,progress);
   return withTableRecovery(
-    () => complete ? exportPagedJoin(plan, runner, scope, signal, allowPartial) : executePagedJoin(plan, runner, scope, signal),
-    () => recoverJoin(plan, runner, scope, signal, complete), signal);
+    () => complete ? exportPagedJoin(plan, runner, scope, signal, allowPartial, maxResultRows) : executePagedJoin(plan, runner, scope, signal),
+    () => recoverJoin(plan, runner, scope, signal, complete, maxResultRows), signal);
 }
-export async function recoverJoin(plan: PagedJoinPlan, runner: QueryRunner, scope: string, signal?: AbortSignal, complete = false) {
+export async function recoverJoin(plan: PagedJoinPlan, runner: QueryRunner, scope: string, signal?: AbortSignal, complete = false, maxResultRows?: number) {
   const records = plan.source.source.records;
   const context = recoveryContext(plan.page.id, plan.sourceId, signal, records?.timeoutMs ?? (complete ? EXPORT_PREPARATION_TIMEOUT_MS : undefined), records?.maxBytes);
   try {
     const domainId = plan.source.source.domainMember;
-    const maxRows = records ? records.maxRows ?? 100_000 : (plan.source.source.fallback?.maxRows ?? 1000);
+    const maxRows = records ? records.maxRows ?? recoveryScanRows(maxResultRows) : (plan.source.source.fallback?.maxRows ?? 1000);
     const raw = await recoveryRows(recordReadOrder(plan, domainId, memberQuery(plan, domainId)), runner, scope, context, plan.source.source.members[domainId].source, maxRows);
     const domain = recoverDomain(plan, context, raw);
     const keys = [...new Set(domain.map((row, index) => memberKey(plan, domainId, row, index)))];
     const members = new Map<string, Map<string | number, Row>>();
     for (const id of plan.members.keys()) {
-      if (id !== domainId) members.set(id, await recoverSupplement(plan, context, id, keys, runner, scope));
+      if (id !== domainId) members.set(id, await recoverSupplement(plan, context, id, keys, runner, scope, maxResultRows));
     }
     const rows = recoverProjection(plan, context, domain, members);
     const sort = [...plan.view.sort];
     if (!sort.some(rule => rule.field === plan.source.source.rowKey)) sort.push({ field: plan.source.source.rowKey, direction: 'asc' });
-    const result = recoveryView(context, rows, { ...plan.view, sort }, complete);
+    const result = recoveryView(context, rows, { ...plan.view, sort }, complete, maxResultRows);
     if (result.snapshot.status === 'ready') result.snapshot = projectSnapshotRows(result.snapshot,
       ordinalRows(plan, result.snapshot.rows, complete ? 0 : (result.viewCorrection?.pageIndex ?? plan.view.pageIndex) * plan.view.pageSize));
     return result;
   } finally {
     context.dispose();
   }
+}
+function recoveryScanRows(maxResultRows?: number): number {
+  return maxResultRows === Infinity ? Infinity : 100_000;
 }
 function recoverDomain(plan: PagedJoinPlan, context: RecoveryContext, rows: Row[]): Row[] {
   const id = plan.source.source.domainMember, seen = new Set<string | number>();
@@ -56,14 +59,14 @@ function recoverDomain(plan: PagedJoinPlan, context: RecoveryContext, rows: Row[
     }
   });
 }
-async function recoverSupplement(plan: PagedJoinPlan, context: RecoveryContext, id: string, keys: (string | number)[], runner: QueryRunner, scope: string) {
+async function recoverSupplement(plan: PagedJoinPlan, context: RecoveryContext, id: string, keys: (string | number)[], runner: QueryRunner, scope: string, maxResultRows?: number) {
   const index = new Map<string | number, Row>(), size = plan.source.source.records?.batchSize ?? 1000;
   const sourceId = plan.source.source.members[id].source;
   for (let offset = 0; offset < keys.length; offset += size) {
     const query = recordReadOrder(plan, id, memberQuery(plan, id));
     const allowed = restrictKeys(query, plan.source.source.members[id].key.queryField, keys.slice(offset, offset + size));
     if (!allowed.length) continue;
-    const rows = await recoveryRows(query, runner, scope, context, sourceId, plan.source.source.records ? 100_000 : (plan.source.source.fallback?.maxRows ?? 1000));
+    const rows = await recoveryRows(query, runner, scope, context, sourceId, plan.source.source.records ? recoveryScanRows(maxResultRows) : (plan.source.source.fallback?.maxRows ?? 1000));
     for (const [rowIndex, row] of rows.entries()) {
       let key: string | number;
       try { key = memberKey(plan, id, row, rowIndex); }

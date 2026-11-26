@@ -2,7 +2,7 @@ import { queryResultFieldContract, restoreCellFallbacks, validateContractRows, t
 import { rawSnapshot } from '../snapshots';
 import { intersectQueryFilters } from '../intersect-filters';
 import type { QueryRunner } from '../query-runner';
-import { EXPORT_MAX_ROWS, SourceRangeError } from '../source-program/range-policy';
+import { assertCompleteRowLimit } from '../source-program/range-policy';
 import { unionError, unionMemberError, unionKeyLabel, unionSortLabel, unionRow, type UnionMemberPlan, type UnionPlan } from './plan';
 import { compareUnionRows } from './order';
 
@@ -12,11 +12,11 @@ const BATCH = 200, MAX_SCAN = 100_000;
 export function createUnionReader(runner: QueryRunner) {
   const checkpoints = new Map<string, Progress>();
   let serial = 0;
-  async function read(plan: UnionPlan, scope: string, signal: AbortSignal, complete = false) {
+  async function read(plan: UnionPlan, scope: string, signal: AbortSignal, complete = false, maxRows?: number) {
     const key = `${scope}:${plan.key}`;
     for (let attempt = 0; ; attempt++) {
       const operationScope = `${scope}:union:${++serial}`;
-      try { return await readOnce(plan, key, operationScope, signal, complete); }
+      try { return await readOnce(plan, key, operationScope, signal, complete, maxRows); }
       catch (cause) {
         checkpoints.delete(key);
         if (signal.aborted) throw unionError('合并读取已取消或超时', signal.reason?.name === 'TimeoutError' ? 'DQE_TIMEOUT' : 'DQE_CANCELLED');
@@ -24,16 +24,16 @@ export function createUnionReader(runner: QueryRunner) {
       } finally { runner.forgetScope(operationScope); }
     }
   }
-  async function readOnce(plan: UnionPlan, key: string, scope: string, signal: AbortSignal, complete: boolean) {
+  async function readOnce(plan: UnionPlan, key: string, scope: string, signal: AbortSignal, complete: boolean, maxRows?: number) {
     const requested = plan.view.pageIndex * plan.view.pageSize;
     const saved = checkpoints.get(key);
     let progress = !complete && saved && saved.position <= requested ? cloneProgress(saved) : await open(plan, scope, signal);
-    assertReadSize(complete, progress.total);
+    if (complete) assertCompleteRowLimit(progress.total, maxRows);
     const pageIndex = Math.min(plan.view.pageIndex, Math.max(0, Math.ceil(progress.total / plan.view.pageSize) - 1));
     const offset = complete ? 0 : pageIndex * plan.view.pageSize;
     if (progress.position > offset) progress = await open(plan, scope, signal);
     const end = complete ? progress.total : Math.min(progress.total, offset + plan.view.pageSize);
-    assertScanSize(end);
+    if (!complete) assertScanSize(end);
     const rows: Row[] = [];
     while (progress.position < end) {
       signal.throwIfAborted();
@@ -122,9 +122,6 @@ class CountChanged extends Error {
   constructor() { super('读取中来源总数持续变化，请刷新重试'); }
 }
 
-function assertReadSize(complete: boolean, total: number): void {
-  if (complete && total > EXPORT_MAX_ROWS) throw new SourceRangeError('EXPORT_ROW_LIMIT', '合并导出超过 10000 行');
-}
 function assertScanSize(end: number): void {
   if (end > MAX_SCAN) throw unionError('首次深页扫描超过 100000 行，请缩小筛选范围', 'DQE_QUERY_REJECTED');
 }

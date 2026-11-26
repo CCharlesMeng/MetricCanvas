@@ -13,12 +13,12 @@ import type { PagedJoinPlan } from './plan';
 import { executeQueryPagedJoin } from './query-page';
 import {executeAutoPage} from './auto-page';
 
-export async function executePagedJoin(plan: PagedJoinPlan, runner: QueryRunner, scope: string, signal?: AbortSignal, complete = false, progress?: ScreenProgressSink): Promise<{ snapshot: DataSnapshot; viewCorrection?: TableQueryView }> {
+export async function executePagedJoin(plan: PagedJoinPlan, runner: QueryRunner, scope: string, signal?: AbortSignal, complete = false, progress?: ScreenProgressSink, maxRows?: number): Promise<{ snapshot: DataSnapshot; viewCorrection?: TableQueryView }> {
   signal?.throwIfAborted();
   if(plan.strategy==='queryPage')return executeQueryPagedJoin(plan,runner,scope,signal,progress);
   if(plan.strategy==='autoPage'&&!complete)return executeAutoPage(plan,runner,scope,signal,progress);
   if(plan.source.source.records)return recordJoinReader(runner).read(plan,scope,signal,complete);
-  const run = (id: string, query = memberQuery(plan, id)) => runMemberQuery(plan,id,query,runner,scope,signal);
+  const run = (id: string, query = memberQuery(plan, id)) => runMemberQuery(plan,id,query,runner,scope,signal,maxRows);
   if (!plan.selection) return executeCompleteJoin(plan,run,signal,complete);
   return executeSelectedJoin(plan,run,signal,progress);
 }
@@ -52,9 +52,9 @@ async function executeSelectedJoin(plan:PagedJoinPlan,run:(id:string,query?:Effe
     ...(pageIndex === plan.view.pageIndex ? {} : { viewCorrection: { ...plan.view, pageIndex } }) };
 }
 
-async function runMemberQuery(plan: PagedJoinPlan, id: string, query: EffectiveQuery, runner: QueryRunner, scope: string, signal?: AbortSignal): Promise<DataSnapshot> {
+async function runMemberQuery(plan: PagedJoinPlan, id: string, query: EffectiveQuery, runner: QueryRunner, scope: string, signal?: AbortSignal, maxRows?: number): Promise<DataSnapshot> {
   const diagnostics={pageId:plan.page.id,dataSourceIds:[plan.source.source.members[id].source]};
-  if(isObjectDqeItem(query.body.dsl_list[0]) && !query.pagination) return fetchComplete(query,runner,scope,signal,diagnostics,true);
+  if(isObjectDqeItem(query.body.dsl_list[0]) && !query.pagination) return fetchComplete(query,runner,scope,signal,diagnostics,{trustedComplete:true,maxRows});
   return runner.run(query,diagnostics,scope,signal);
 }
 

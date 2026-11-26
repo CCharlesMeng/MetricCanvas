@@ -4,7 +4,7 @@ import type { QueryRunner } from '../query-runner';
 export const SLOT_SEARCH_MAX_ROWS = 100_000;
 export const SLOT_SEARCH_MAX_BYTES = 64 * 1024 * 1024;
 export const SLOT_SEARCH_TIMEOUT_MS = 180_000;
-export interface SearchBudget { rows: number; bytes: number; signal: AbortSignal }
+export interface SearchBudget { maxRows?: number; rows: number; bytes: number; signal: AbortSignal }
 export const searchFailure = (message: string, code = 'DQE_QUERY_REJECTED'): never => { throw Object.assign(new Error(message), { code }); };
 
 export function searchKey(value: unknown): string | number {
@@ -16,7 +16,7 @@ export function searchKey(value: unknown): string | number {
 function charge(budget: SearchBudget, rows: Row[]): void {
   budget.rows += rows.length;
   budget.bytes += new TextEncoder().encode(JSON.stringify(rows)).byteLength;
-  if (budget.rows > SLOT_SEARCH_MAX_ROWS) searchFailure('跨槽搜索累计读取超过 100000 行，请缩小范围');
+  if (budget.rows > (budget.maxRows ?? SLOT_SEARCH_MAX_ROWS)) searchFailure('跨槽搜索累计读取超过 100000 行，请缩小范围');
   if (budget.bytes > SLOT_SEARCH_MAX_BYTES) searchFailure('跨槽搜索累计读取超过 64 MiB，请缩小范围');
 }
 
@@ -26,7 +26,7 @@ function checkedBatch(snapshot: DataSnapshot, offset: number, limit: number, exp
   const total = snapshot.totalCount, rows = snapshot.status === 'ready' ? snapshot.rows : [];
   if (total === undefined || !Number.isSafeInteger(total) || total < 0) return searchFailure('跨槽搜索缺少准确的匹配总数', 'DQE_ROW_CONTRACT_ERROR');
   if (expected !== undefined && expected !== total) return searchFailure('跨槽搜索期间匹配总数变化，请重试', 'DQE_ROW_CONTRACT_ERROR');
-  if (budget.rows + total - offset > SLOT_SEARCH_MAX_ROWS) return searchFailure('跨槽搜索累计读取超过 100000 行，请缩小范围');
+  if (budget.rows + total - offset > (budget.maxRows ?? SLOT_SEARCH_MAX_ROWS)) return searchFailure('跨槽搜索累计读取超过 100000 行，请缩小范围');
   if (rows.length !== Math.min(limit, Math.max(0, total - offset))) return searchFailure('跨槽搜索返回的分页不完整', 'DQE_ROW_CONTRACT_ERROR');
   if (snapshot.status === 'ready') restoreCellFallbacks(rows, snapshot.cellFallbacks);
   return { rows, total };

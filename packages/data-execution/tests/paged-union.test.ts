@@ -11,9 +11,9 @@ import type { DataGateway } from '../src/ports';
 
 function page(): Page { const result = parsePage(fixture); if (!result.ok) throw Error(JSON.stringify(result.errors)); return result.page; }
 function rows(snapshot: DataSnapshot | undefined): Row[] { if (snapshot?.status !== 'ready') throw Error(JSON.stringify(snapshot)); return snapshot.rows; }
-async function read(program: ReturnType<typeof createSourceProgram>, p: Page, view: Partial<TableQueryView> = {}, purpose: 'screen' | 'complete' = 'screen', signal?: AbortSignal) {
+async function read(program: ReturnType<typeof createSourceProgram>, p: Page, view: Partial<TableQueryView> = {}, purpose: 'screen' | 'complete' = 'screen', signal?: AbortSignal, completeReadMaxRows?: number) {
   let result: DataSnapshot | undefined;
-  for await (const update of program.read({ roots: ['opinions'], conditions: new Map(), views: new Map([['opinions', { ...defaultSourceView(p, 'opinions'), ...view }]]), purpose, signal })) result = update.snapshot;
+  for await (const update of program.read({ roots: ['opinions'], conditions: new Map(), views: new Map([['opinions', { ...defaultSourceView(p, 'opinions'), ...view }]]), purpose, signal, completeReadMaxRows })) result = update.snapshot;
   return result;
 }
 describe('pagedUnion through the shared SourceProgram', () => {
@@ -129,11 +129,14 @@ describe('pagedUnion through the shared SourceProgram', () => {
       try { expect(await read(program, p)).toMatchObject({ status: 'ready', totalCount: failure === 'duplicate' ? 6 : 8, warnings: expect.any(Array) }); } finally { program.dispose(); }
     }
   });
-  it('exports all matched rows and rejects over-limit exports without a partial file', async () => {
+  it('merges all matched Excel rows across sources and preserves bounded complete reads', async () => {
     const p = page(), preview = createUnionPreview({ generatedCount: 0 }), program = createSourceProgram(p, { gateway: preview.dataGateway });
     try { expect(rows(await read(program, p, { pageIndex: 1, pageSize: 3 }, 'complete'))).toHaveLength(8); } finally { program.dispose(); }
     const large = createSourceProgram(p, { gateway: createUnionPreview({ generatedCount: 5100 }).dataGateway });
-    try { await expect(read(large, p, {}, 'complete')).rejects.toMatchObject({ code: 'EXPORT_ROW_LIMIT' }); } finally { large.dispose(); }
+    try {
+      await expect(read(large, p, {}, 'complete')).rejects.toMatchObject({ code: 'EXPORT_ROW_LIMIT' });
+      expect(rows(await read(large, p, {}, 'complete', undefined, Infinity))).toHaveLength(10208);
+    } finally { large.dispose(); }
   });
   it('cancels pending source reads without publishing a successful result', async () => {
     const p = page(), preview = createUnionPreview({ delayMs: 30 }), program = createSourceProgram(p, { gateway: preview.dataGateway }), controller = new AbortController();

@@ -6,22 +6,16 @@ import { ExportViewError, EXPORT_MAX_ROWS, EXPORT_PREPARATION_TIMEOUT_MS } from 
 import type { RuntimeDataGateway } from '../../../../runtime/src';
 import { abortable, prepareTableExport } from './prepare';
 import type { WorkbookTable } from './workbook-sheet';
-/** One frozen job owns timeout, cancellation and a total row budget across all parents. */
+/** One frozen job owns timeout and cancellation across all parents. */
 export async function prepareHierarchyExport(input:Parameters<typeof prepareTableExport>[0]&{params:HierarchyContext['params']}):Promise<WorkbookTable[]>{
   const page=JSON.parse(JSON.stringify(input.page)) as Page;
   const table=JSON.parse(JSON.stringify(input.component)) as TableComponent;
-  const context:HierarchyContext={completeReadTimeoutMs:EXPORT_PREPARATION_TIMEOUT_MS,filters:structuredClone(new Map(input.state.filters)),params:structuredClone(new Map(input.params)),displaySnapshot:structuredClone(input.state.displaySnapshot),filterRevision:input.state.filterRevision};
+  const context:HierarchyContext={completeReadMaxRows:EXPORT_MAX_ROWS,completeReadTimeoutMs:EXPORT_PREPARATION_TIMEOUT_MS,filters:structuredClone(new Map(input.state.filters)),params:structuredClone(new Map(input.params)),displaySnapshot:structuredClone(input.state.displaySnapshot),filterRevision:input.state.filterRevision};
   const state={...input.state,filters:context.filters,tables:JSON.parse(JSON.stringify(input.state.tables)),headerFilters:JSON.parse(JSON.stringify(input.state.headerFilters))};
   const queries=structuredClone(new Map(input.queries));
+  const {gateway}=input;
   const {signal}=input.controller;
   const timer=setTimeout(()=>input.controller.abort(new ExportViewError('EXPORT_TIMEOUT',`父子导出准备超过 ${EXPORT_PREPARATION_TIMEOUT_MS / 60_000} 分钟`)),EXPORT_PREPARATION_TIMEOUT_MS);
-  let count=0;
-  const gateway:RuntimeDataGateway={...input.gateway,async fetchData(query,diagnostics,requestSignal){
-    const result=await input.gateway.fetchData(query,diagnostics,requestSignal);
-    count+=result.rows.length;
-    if(count>EXPORT_MAX_ROWS){const error=new ExportViewError('EXPORT_ROW_LIMIT','父子导出合计超过 10000 行');input.controller.abort(error);throw error;}
-    return result;
-  }};
   try{
     const selection=await abortable(resolveHierarchySelection(page,table,input.gateway,context,signal),signal);
     if(!['selected','unrestricted'].includes(selection.status))throw new ExportViewError('EXPORT_NOT_READY',selection.message??'父级定位未就绪');

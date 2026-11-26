@@ -23,7 +23,7 @@ export async function prepareTableExport(input: {
   const { signal } = input.controller;
   const timer = setTimeout(() => input.controller.abort(new ExportViewError('EXPORT_TIMEOUT', `导出准备超过 ${EXPORT_PREPARATION_TIMEOUT_MS / 60_000} 分钟`)), EXPORT_PREPARATION_TIMEOUT_MS);
   try {
-    const snapshots = await abortable(prepareExportSnapshots(page, input.gateway, queries, state.filters, signal, undefined, state.currentYear, Object.values(component.data), input.views && structuredClone(new Map(input.views)), input.program,{displayInputs:state.displaySnapshot,filterRevision:state.filterRevision,now:state.now}), signal);
+    const snapshots = await abortable(prepareExportSnapshots(page, input.gateway, queries, state.filters, signal, undefined, state.currentYear, Object.values(component.data), input.views && structuredClone(new Map(input.views)), input.program,{completeReadMaxRows:EXPORT_MAX_ROWS,displayInputs:state.displaySnapshot,filterRevision:state.filterRevision,now:state.now}), signal);
     signal.throwIfAborted();
     assertPinnedExport(component, snapshots);
     if(input.hierarchy){
@@ -41,7 +41,6 @@ export function detailExportData(page: Page, component: TableComponent, snapshot
     const count = snapshot?.status === 'ready' ? snapshot.rows.length : 0;
     if (!snapshot || (snapshot.status !== 'ready' && snapshot.status !== 'empty') || (snapshot.totalCount !== undefined && snapshot.totalCount !== count)) throw new ExportViewError('EXPORT_INCOMPLETE_DATA', '详情表格缺少完整结果');
     const source = page.dataSources[id];
-    if (count > EXPORT_MAX_ROWS) throw new ExportViewError('EXPORT_ROW_LIMIT', '导出单表超过 10000 行');
     if (source?.source.type === 'query' && snapshot.totalCount === undefined && source.source.resultScope !== 'complete') throw new ExportViewError('EXPORT_INCOMPLETE_DATA', '详情表格缺少完整性证明');
     return [slot, { fields: resolveDataSourceFields(source), snapshot: detailSnapshot(snapshot) }];
   }));
@@ -57,17 +56,12 @@ export function abortable<T>(work: Promise<T>, signal: AbortSignal): Promise<T> 
 }
 
 function assertPinnedExport(component: TableComponent, snapshots: ReadonlyMap<string, import('@metriccanvas/page/internal').DataSnapshot>): void {
-  const slot = component.props.pinnedTop?.data;
-  if (!slot) return;
+  if (!component.props.pinnedTop) return;
   for (const name of tablePinnedSlots(component.props)) {
     const snapshot = snapshots.get(component.data[name]);
     if (!snapshot || snapshot.status === 'loading' || pinnedSnapshotError(snapshot)) throw new ExportViewError('EXPORT_INCOMPLETE_DATA', '置顶汇总不可用，不能导出完整表格');
   }
-  const pinned = snapshots.get(component.data[slot])!;
-  const main = snapshots.get(component.data.main);
-  const bodyCount = main?.status === 'ready' ? main.rows.length : 0;
-  const pinnedCount = pinned.status === 'ready' ? pinned.rows.length : 0;
-  if (bodyCount + pinnedCount > EXPORT_MAX_ROWS) throw new ExportViewError('EXPORT_ROW_LIMIT', '导出单表超过10000行');
+
 }
 
 function detailSnapshot(snapshot: Extract<import('@metriccanvas/page/internal').DataSnapshot, {status:'ready'|'empty'}>): Extract<import('@metriccanvas/page/internal').DataSnapshot, {status:'ready'}> {

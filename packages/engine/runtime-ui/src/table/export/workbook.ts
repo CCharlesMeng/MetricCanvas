@@ -1,6 +1,7 @@
 import type { TableComponent } from '@metriccanvas/page/internal';
 import type { NamedDataSlots } from '../../../../widgets/src/shared/component-data';
 import { tableWorkbookSheet, warningWorkbookSheet, type WorkbookTable } from './workbook-sheet';
+import { paginateWorkbookSheets } from './workbook-pages';
 import { hierarchyWorkbookSheet } from './workbook-hierarchy';
 import { applyWorkbookPrecision, limitWorkbookFormats } from './workbook-number-format';
 
@@ -35,9 +36,10 @@ function workbookSheets(tables: readonly WorkbookTable[], signal: AbortSignal) {
 export async function encodeWorkbookTables(tables: readonly WorkbookTable[], signal: AbortSignal): Promise<Uint8Array<ArrayBuffer>> {
   signal.throwIfAborted();
   const { default: writeExcelFile } = await import('write-excel-file/universal');
-  const sheets = workbookSheets(tables, signal);
-  const warnings = warningWorkbookSheet(tables, sheets);
-  if (warnings) sheets.push(warnings);
+  const dataSheets = workbookSheets(tables, signal);
+  const warnings = warningWorkbookSheet(tables, dataSheets);
+  if (warnings) dataSheets.push(warnings);
+  const sheets = paginateWorkbookSheets(dataSheets);
   const remainingFormats = limitWorkbookFormats(sheets, signal);
   const blob = await writeExcelFile(sheets, { fontFamily: 'Calibri', fontSize: 11 }).toBlob();
   const buffer = await blob.arrayBuffer();

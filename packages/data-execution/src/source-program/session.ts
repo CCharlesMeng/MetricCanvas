@@ -57,6 +57,7 @@ export interface SourceRead {
   background?: boolean;
   strictComplete?: boolean;
   completeReadTimeoutMs?: number;
+  completeReadMaxRows?: number;
   displayInputs?:DisplayInputsSnapshot;filterRevision?:number;now?:Date;
   roots: readonly string[]; conditions: FilterValues;
   views?: ReadonlyMap<string, TableQueryView>;
@@ -331,7 +332,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
           const upstream = raw.get(bindings[0].source);
           if (upstream?.status !== 'ready') return false;
           const rows = await readSearchExportSlot({ page, sourceId: bindings[0].source, conditions: request.conditions, runner: execution,
-            scope: `${scope}:export-slot:${id}`, signal: request.signal, now: request.now, displayInputs: frozenInputs, filterRevision: frozenRevision }, id, upstream.rows);
+            completeReadMaxRows: request.completeReadMaxRows, scope: `${scope}:export-slot:${id}`, signal: request.signal, now: request.now, displayInputs: frozenInputs, filterRevision: frozenRevision }, id, upstream.rows);
           if (!rows) return false;
           raw.set(id, rawSnapshot(rows, rows.length));
           return true;
@@ -341,7 +342,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
           const query = composeEffectiveQuery({ page, filters: page.filters, dataSource: source, now: request.now,
             displayInputs: frozenInputs, filterRevision: frozenRevision }, request.conditions, 0, [], {});
           bindQueryResultValues(query, values);
-          const input = { page, sourceId: id, query, view, conditions: request.conditions, runner: execution, scope,
+          const input = { page, sourceId: id, query, view, completeReadMaxRows: request.completeReadMaxRows, conditions: request.conditions, runner: execution, scope,
             signal: request.signal, now: request.now, displayInputs: frozenInputs, filterRevision: frozenRevision };
           const data = await slotSearch.read(input);
           if (!data) return false;
@@ -356,7 +357,11 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
           const comparison = hasPeriodComparison(source.source.query);
           const timeout = comparison && request.purpose !== 'complete' ? AbortSignal.timeout(MIN_DQE_TIMEOUT_MS) : undefined;
           return withAbortSignals([request.signal, timeout], signal =>
-            fetchComplete(query, execution, scope, signal, diagnostics, source.source.resultScope === 'complete', () => describeExportSource(page, id), comparison ? false : request.allowPartial, comparison ? false : request.purpose !== 'complete',request.strictComplete));
+            fetchComplete(query, execution, scope, signal, diagnostics, {
+              trustedComplete: source.source.resultScope === 'complete', describeSource: () => describeExportSource(page, id),
+              allowPartial: !comparison && request.allowPartial, allowZeroTotal: !comparison && request.purpose !== 'complete',
+              strictComplete: request.strictComplete, maxRows: request.completeReadMaxRows
+            }));
         }
         async function executeCombined(id: string, source: PagedJoinDataSource | PagedUnionDataSource, view: TableQueryView): Promise<void> {
           try {
@@ -378,8 +383,8 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
           const complete = request.purpose === 'complete';
           const timeout = complete ? undefined : AbortSignal.timeout(MIN_DQE_TIMEOUT_MS);
           const result = await withAbortSignals([request.signal, timeout], signal => withTableRecovery(
-            () => currentUnion.read(plan, scope, signal, complete),
-            () => recoverUnion(plan, execution, scope, signal, complete), signal));
+            () => currentUnion.read(plan, scope, signal, complete, request.completeReadMaxRows),
+            () => recoverUnion(plan, execution, scope, signal, complete, request.completeReadMaxRows), signal));
           const applied = result.viewCorrection ?? plan.view;
           raw.set(id, result.snapshot);
           if (canonicalizeJson(applied) !== canonicalizeJson(view)) corrections.set(id, applied);
@@ -399,7 +404,7 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
           initials.set(id, { capturedAt: new Date().toISOString(), rows: snapshot.status === 'ready' ? snapshot.rows : [], ...(snapshot.status === 'ready' ? snapshotCellFallbacks(snapshot.rows) : {}), totalCount: snapshot.totalCount!, view });
         }
         function readJoined(plan: ReturnType<typeof compilePagedJoin>) {
-          return readRecoverableJoin(plan, execution, scope, request.signal, request.purpose === 'complete', request.allowPartial, request.purpose !== 'complete' && request.onProgress ? update => request.onProgress!(plan.sourceId, update) : undefined);
+          return readRecoverableJoin(plan, execution, scope, request.signal, request.purpose === 'complete', request.allowPartial, request.purpose !== 'complete' && request.onProgress ? update => request.onProgress!(plan.sourceId, update) : undefined, request.completeReadMaxRows);
         }
         function reportSourceState(id: string, snapshots: ReadonlyMap<string, DataSnapshot>): void {
           reportError(id, raw.get(id)!);

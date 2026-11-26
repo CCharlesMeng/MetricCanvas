@@ -42,19 +42,20 @@ it('preserves multi-level headers, aligned secondary slots, raw numeric scales a
 });
 it('completes a paginated table export across all pages and rejects changing totals', async () => {
   const input = JSON.parse(readFileSync(new URL('../../../page/fixtures/contract-valid/table-toolbar-page.json', import.meta.url), 'utf8'));
-  const rows = input.dataSources.records.source.rows;
+  const rows = Array.from({length:10001}, (_,i) => ({name:String(i), value:i}));
   input.dataSources.records.fields.name.queryField = 'name'; input.dataSources.records.fields.value.queryField = 'value';
-  input.dataSources.records.source = { type: 'query', query: { language: 'dqe', body: { dsl_list: [{ output_dims: ['name'], output_metrics: ['value'], order: { offset: 0, limit: 10 } }] } } };
+  input.dataSources.records.source = { type: 'query', query: { language: 'dqe', body: { dsl_list: [{ output_dims: ['name'], output_metrics: ['value'], order: { offset: 0, limit: 500 } }] } } };
   input.sections[0].components[0].props.pagination = { mode: 'query' };
   const parsed = parsePage(input); if (!parsed.ok) throw new Error(JSON.stringify(parsed.errors)); const page = parsed.page;
   const component = page.sections[0].components[0] as TableComponent;
-  const query: EffectiveQuery = { language: 'dqe', body: { dsl_list: [{}] }, fieldMappings: page.dataSources.records.fields, pagination: { offset: 20, limit: 10 }, filterValues: [] };
+  const query: EffectiveQuery = { language: 'dqe', body: { dsl_list: [{}] }, fieldMappings: page.dataSources.records.fields, pagination: { offset: 500, limit: 500 }, filterValues: [] };
   const state = { currentYear: 2026, filters: new Map(), tables: {}, headerFilters: {} };
   const calls: number[] = [];
   const run = (changing = false) => prepareTableExport({ page, component, state, queries: new Map([['records', query]]), controller: new AbortController(), gateway: { async fetchData(query) {
-    const offset = query.pagination!.offset; calls.push(offset); return { rows: rows.slice(offset, offset + 10), totalCount: changing && offset ? 24 : 25 };
+    const offset = query.pagination!.offset; calls.push(offset); return { rows: rows.slice(offset, offset + query.pagination!.limit), totalCount: changing && offset ? rows.length - 1 : rows.length };
   } } });
-  expect((await run()).main!.snapshot.rows).toHaveLength(25); expect(calls).toEqual([0, 10, 20]);
+  expect((await run()).main!.snapshot.rows).toEqual(rows);
+  expect(calls).toEqual(Array.from({length:21}, (_,i) => i * 500));
   await expect(run(true)).rejects.toMatchObject({ code: 'EXPORT_INCOMPLETE_DATA' });
 });
 it('preserves an upstream page window and executes only the selected table dependency chain', async () => {

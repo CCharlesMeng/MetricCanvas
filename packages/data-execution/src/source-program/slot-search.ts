@@ -2,9 +2,9 @@ import { linkAbortSignals } from '../abort-signals';
 import { canonicalizeJson, dqeDefaultSort, flattenPageComponents, hasQueryFieldMapping, type DataSnapshot, type Row, type TableQueryView } from '@metriccanvas/page/internal';
 import { evaluateTableView } from '../table-view';
 import { rawSnapshot } from '../snapshots';
-import { EXPORT_MAX_ROWS, SourceRangeError } from './range-policy';
+import { assertCompleteRowLimit } from './range-policy';
 import { collectSearchRows, searchPlan, type SlotSearchRead, type SearchRows } from './slot-search-read';
-import { searchFailure, searchKey, SLOT_SEARCH_TIMEOUT_MS } from './slot-search-batches';
+import { searchFailure, searchKey, SLOT_SEARCH_MAX_ROWS, SLOT_SEARCH_TIMEOUT_MS } from './slot-search-batches';
 export type { SlotSearchRead } from './slot-search-read';
 
 export function mainTableSearch(search: TableQueryView['search']): TableQueryView['search'] {
@@ -45,9 +45,10 @@ export function createTableSlotSearchReader() {
       const scope = operation.value;
       const { signal, dispose } = linkAbortSignals([timeout, input.signal]);
       try {
-        const value = await collectSearchRows({ ...input, signal, scope }, plan, { rows: 0, bytes: 0, signal });
+        const budget = { rows: 0, bytes: 0, signal, maxRows: input.completeReadMaxRows ?? SLOT_SEARCH_MAX_ROWS };
+        const value = await collectSearchRows({ ...input, signal, scope }, plan, budget);
         signal.throwIfAborted();
-        if (generation === revision) cache.set(input.sourceId, { key, value });
+        if (generation === revision && budget.rows <= SLOT_SEARCH_MAX_ROWS) cache.set(input.sourceId, { key, value });
         return value;
       } catch (cause) {
         input.signal?.throwIfAborted();
@@ -65,7 +66,7 @@ export type TableSlotSearchReader = ReturnType<typeof createTableSlotSearchReade
 export function selectSearchRows(input: SlotSearchRead, data: SearchRows, complete: boolean) {
   const sort = input.view.sort.length ? input.view.sort : defaultSort(input);
   const result = evaluateTableView(data.rows, { ...input.view, sort, search: undefined }, complete);
-  if (complete && result.totalCount > EXPORT_MAX_ROWS) throw new SourceRangeError('EXPORT_ROW_LIMIT', '导出单表超过 10000 行');
+  if (complete) assertCompleteRowLimit(result.totalCount, input.completeReadMaxRows);
   const keys = new Set(result.rows.map(row => searchKey(row[data.plan.binding.key])));
   const snapshots = new Map<string, DataSnapshot>([[input.sourceId, rawSnapshot(result.rows, result.totalCount)]]);
   for (const [id, rows] of data.slots) {

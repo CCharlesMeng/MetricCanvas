@@ -4,11 +4,12 @@ import type { QueryRunner } from '../query-runner';
 import { composeEffectiveQuery } from '../effective-query';
 import { restrictKeys } from '../paged-join/member-query';
 import { isBusinessSelection } from './range-policy';
-import { readSearchBatches, searchFailure, searchKey, type SearchBudget } from './slot-search-batches';
+import { SLOT_SEARCH_MAX_ROWS, readSearchBatches, searchFailure, searchKey, type SearchBudget } from './slot-search-batches';
 
 export interface SlotSearchRead {
   page: Page; sourceId: string; view: TableQueryView; query: EffectiveQuery;
   conditions: FilterValues; runner: QueryRunner; scope: string; signal?: AbortSignal;
+  completeReadMaxRows?: number;
   now?: Date; displayInputs?: DisplayInputsSnapshot; filterRevision?: number;
 }
 export type BoundSearchRead = Omit<SlotSearchRead, 'query' | 'view'>;
@@ -43,7 +44,7 @@ async function rowsForKeys(input: BoundSearchRead, query: EffectiveQuery, keys: 
     const found = await readSearchBatches(batch, input.runner, input.scope, budget, input.page.id, [input.sourceId]);
     const scope = new Set(allowed);
     if (found.some(row => !scope.has(searchKey(row[key])))) return searchFailure('跨槽搜索关联编号超出本批查询范围', 'DQE_ROW_CONTRACT_ERROR');
-    rows.push(...found);
+    for (const row of found) rows.push(row);
   }
   return rows;
 }
@@ -95,6 +96,6 @@ export async function readSearchExportSlot(input: BoundSearchRead, sourceId: str
   const keys = [...new Set(mainRows.map(row => searchKey(row[plan.key])))];
   if (keys.length <= bound.size) return undefined;
   const signal = input.signal ?? new AbortController().signal;
-  try { return await rowsForKeys(input, bound.query, keys, plan.key, bound.size, { rows: 0, bytes: 0, signal }); }
+  try { return await rowsForKeys(input, bound.query, keys, plan.key, bound.size, { rows: 0, bytes: 0, signal, maxRows: input.completeReadMaxRows ?? SLOT_SEARCH_MAX_ROWS }); }
   finally { input.runner.forgetScope(input.scope); }
 }

@@ -1,7 +1,7 @@
 import {canonicalizeJson,type Row,type TableQueryView} from '@metriccanvas/page/internal';
 import {evaluateTableView} from '../table-view';
 import {rawSnapshot} from '../snapshots';
-import {SourceRangeError,EXPORT_MAX_ROWS} from '../source-program/range-policy';
+import {assertCompleteRowLimit} from '../source-program/range-policy';
 import type {QueryRunner} from '../query-runner';
 import type {PagedJoinPlan} from './plan';
 import {memberQuery,restrictKeys} from './member-query';
@@ -21,7 +21,7 @@ function createRecordReader(runner:QueryRunner){
   let revision=0,serial=0;
   return {
     clear(){revision++;cache.clear();},
-    async read(plan:PagedJoinPlan,scope:string,inputSignal?:AbortSignal,complete=false,exportLimit=false){
+    async read(plan:PagedJoinPlan,scope:string,inputSignal?:AbortSignal,complete=false,maxRows?:number){
       const generation=revision;
       const signal=inputSignal??new AbortController().signal;
       const key=canonicalizeJson([scope,plan.page.id,plan.sourceId,plan.source,[...plan.conditions].sort(([a],[b])=>a.localeCompare(b)),[...plan.members.keys()].map(id=>memberQuery(plan,id))]);
@@ -35,7 +35,7 @@ function createRecordReader(runner:QueryRunner){
           if(generation===revision){cache.clear();cache.set(key,rows);}
         }
         signal.throwIfAborted();
-        return recordView(plan,rows,complete,exportLimit);
+        return recordView(plan,rows,complete,maxRows);
       }catch(cause){
         if(signal.aborted)throw Object.assign(new Error('记录关联读取已取消或超时'),{code:signal.reason?.name==='TimeoutError'?'DQE_TIMEOUT':'DQE_CANCELLED'});
         throw cause;
@@ -76,11 +76,11 @@ export async function supplementRows(plan:PagedJoinPlan,id:string,keys:(string|n
   }
   return index;
 }
-function recordView(plan:PagedJoinPlan,rows:Row[],complete:boolean,exportLimit:boolean):{snapshot:ReturnType<typeof rawSnapshot>;viewCorrection?:TableQueryView}{
+function recordView(plan:PagedJoinPlan,rows:Row[],complete:boolean,maxRows?:number):{snapshot:ReturnType<typeof rawSnapshot>;viewCorrection?:TableQueryView}{
   const sort=[...plan.view.sort];
   if(!sort.some(rule=>rule.field===plan.source.source.rowKey))sort.push({field:plan.source.source.rowKey,direction:'asc'});
   const result=evaluateTableView(rows,{...plan.view,sort},complete);
-  if(exportLimit&&result.totalCount>EXPORT_MAX_ROWS)throw new SourceRangeError('EXPORT_ROW_LIMIT','导出单表超过 10000 行');
+  if(maxRows !== undefined) assertCompleteRowLimit(result.totalCount,maxRows);
   return {snapshot:rawSnapshot(ordinalRows(plan,result.rows,complete?0:result.pageIndex*plan.view.pageSize),result.totalCount),
     ...(result.pageIndex===plan.view.pageIndex?{}:{viewCorrection:{...plan.view,pageIndex:result.pageIndex}})};
 }

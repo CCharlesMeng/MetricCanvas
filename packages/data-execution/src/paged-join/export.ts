@@ -6,13 +6,13 @@ import type { PagedJoinPlan } from './plan';
 import type { QueryRunner } from '../query-runner';
 import { executePagedJoin } from './execute';
 import { rawSnapshot } from '../snapshots';
-import { EXPORT_MAX_ROWS, SourceRangeError } from '../source-program/range-policy';
+import { assertCompleteRowLimit, DEFAULT_COMPLETE_READ_MAX_ROWS, SourceRangeError } from '../source-program/range-policy';
 import { describeExportSource } from '../source-program/export-diagnostics';
 import {mergeJoinWarnings,joinWarningSnapshot} from './warnings';
 
-export async function exportPagedJoin(plan: PagedJoinPlan, runner: QueryRunner, scope: string, signal?: AbortSignal, allowPartial = false): Promise<Awaited<ReturnType<typeof executePagedJoin>>> {
-  if(plan.source.source.records&&plan.strategy!=='queryPage')return recordJoinReader(runner).read(plan,scope,signal,true,true);
-  if (!plan.selection) return executePagedJoin(plan, runner, scope, signal, true);
+export async function exportPagedJoin(plan: PagedJoinPlan, runner: QueryRunner, scope: string, signal?: AbortSignal, allowPartial = false, maxRows?: number): Promise<Awaited<ReturnType<typeof executePagedJoin>>> {
+  if(plan.source.source.records&&plan.strategy!=='queryPage')return recordJoinReader(runner).read(plan,scope,signal,true,maxRows ?? DEFAULT_COMPLETE_READ_MAX_ROWS);
+  if (!plan.selection) return executePagedJoin(plan, runner, scope, signal, true, undefined, maxRows);
   const rows: Row[] = [], warnings:DataWarning[]=[], keys = new Set<unknown>();
   const canReturnPartial=plan.strategy!=='queryPage'&&partialAllowed(plan,allowPartial);
   let expected: number | undefined;
@@ -26,7 +26,7 @@ export async function exportPagedJoin(plan: PagedJoinPlan, runner: QueryRunner, 
   for (let pageIndex = 0; ; pageIndex++) {
     signal?.throwIfAborted();
     let result: Awaited<ReturnType<typeof executePagedJoin>>;
-    try { result = await executePagedJoin({ ...plan, view: { ...plan.view, pageIndex } }, runner, scope, signal); }
+    try { result = await executePagedJoin({ ...plan, view: { ...plan.view, pageIndex } }, runner, scope, signal, false, undefined, maxRows); }
     catch (cause) {
       signal?.throwIfAborted();
       if (canReturnPartial && rows.length) return partial();
@@ -39,7 +39,7 @@ export async function exportPagedJoin(plan: PagedJoinPlan, runner: QueryRunner, 
       throw new SourceRangeError('EXPORT_INCOMPLETE_DATA', '组合导出执行失败');
     }
     mergeJoinWarnings(warnings,snapshot.warnings);
-    expected=appendExportChunk(plan,snapshot,expected,!!result.viewCorrection,keys,rows);
+    expected=appendExportChunk(plan,snapshot,expected,!!result.viewCorrection,keys,rows,maxRows);
     if(rows.length===expected)return {snapshot:joinWarningSnapshot(rows,expected,warnings)};
   }
 }
@@ -50,10 +50,10 @@ function hasObjectMember(plan: PagedJoinPlan): boolean {
 
 function partialAllowed(plan: PagedJoinPlan, requested: boolean): boolean { return requested && !hasObjectMember(plan); }
 
-function appendExportChunk(plan:PagedJoinPlan,snapshot:Extract<DataSnapshot,{status:'ready'|'empty'}>,expected:number|undefined,corrected:boolean,keys:Set<unknown>,rows:Row[]):number{
+function appendExportChunk(plan:PagedJoinPlan,snapshot:Extract<DataSnapshot,{status:'ready'|'empty'}>,expected:number|undefined,corrected:boolean,keys:Set<unknown>,rows:Row[],maxRows?:number):number{
   const total=snapshot.totalCount;
   if(total===undefined||(expected!==undefined&&expected!==total)||corrected)throw new SourceRangeError('EXPORT_INCOMPLETE_DATA','组合导出总数或窗口发生变化');
-  if(total>EXPORT_MAX_ROWS)throw new SourceRangeError('EXPORT_ROW_LIMIT','导出单表超过 10000 行');
+  assertCompleteRowLimit(total,maxRows);
   const chunk=snapshot.status==='ready'?snapshot.rows:[];
   for(const row of chunk){
     const key=row[plan.source.source.rowKey];

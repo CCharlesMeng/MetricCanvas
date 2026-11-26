@@ -103,7 +103,7 @@ IOC 父子表层级选择复用“全球＝不限区域”：保留全部父行�
 
 表头筛选修复：所有表格变体的已生效筛选入口统一使用黑色 #191919；pagedJoin 查询分页的补充成员列支持按所属成员自动预加载候选，维度与对象 output_fields 查询均复用现有映射，不触发完整组合读取。全选继续显式配置 `filterable.showSelectAll:true`，省略或 false 隐藏。见[列筛选候选值](docs/page-metadata/components/table.md#列筛选候选值)，入口 `/pages/paged-join-on-demand`。
 
-6.109：表格搜索的 `options[].field` 支持复用 `{data,field}` 指向补充数据槽。引擎先在补充查询中完整查出匹配行键，再按每批最多1000个 ID（遵守更小的绑定 `maxValues`）分批读完主记录，统一筛选、排序、计数及分页；不反转页面 `resultBindings`。整次搜索独立限制累计100000行、64 MiB和180秒，超过1000条不再直接拒绝；完整成功结果供分页、候选和最多10000行Excel导出复用，失败不发布部分结果。本次修订不新增页面字段，普通结果绑定规则保持。见[跨槽搜索](docs/page-metadata/components/table.md#跨数据槽搜索6109)，入口 `/pages/rep-business-result` 的“合同风险率明细”。
+6.109：表格搜索的 `options[].field` 支持复用 `{data,field}` 指向补充数据槽。引擎先在补充查询中完整查出匹配行键，再按每批最多1000个 ID（遵守更小的绑定 `maxValues`）分批读完主记录，统一筛选、排序、计数及分页；不反转页面 `resultBindings`。整次搜索独立限制累计100000行、64 MiB和180秒，超过1000条不再直接拒绝；完整成功结果供分页、候选和完整 Excel 导出复用，失败不发布部分结果。本次修订不新增页面字段，普通结果绑定规则保持。见[跨槽搜索](docs/page-metadata/components/table.md#跨数据槽搜索6109)，入口 `/pages/rep-business-result` 的“合同风险率明细”。
 
 表格搜索的 `toolbar.search.options` 只有一项时，固定使用该字段，只显示输入框及其 placeholder；两项及以上才显示字段选择器。无需新增 Schema 字段。见[静态搜索选项](docs/page-metadata/components/table.md#静态搜索选项642)，验收入口 `/pages/region-auth-norms-detail` 与 `/pages/table-search-options-demo`。
 
@@ -318,7 +318,7 @@ IOC 页头默认返回（2026-11-05）：`props.back:true` 默认调用浏览器
 | 顶部切换月份或日期并联动查询与文字 | [时间参数与顶部筛选](PAGE-PARAMETERS.md#时间参数与顶部筛选) | [报告页头时间筛选页面](pages/capabilities/filters/report-date-filter-example.json)、[完整合成月报](pages/capabilities/filters/report-monthly-complete.json) |
 | 先查对象集合，再查明细并关联展示 | [级联查询](docs/cascading-queries.md) | [商务SDT报告](pages/business/report/sdt/business-sdt-cascade-example.json) |
 | 从其他页面通过 URL 打开指定 Tab（6.33） | [Tab 初值](docs/page-metadata/components/tabContainer.md#url-初始化页签633)、[链接传参](docs/page-metadata/actions-and-navigation.md#链接传参与目标页签) | [来源页](pages/capabilities/navigation/tab-url-source.json)、[目标页](pages/capabilities/navigation/tab-url-initialization.json) |
-| 配置每张表的独立搜索与完整Excel导出（准备预算30分钟） | [表格工具区](docs/table-export.md) | [表格工具区示例](packages/page/fixtures/contract-valid/table-toolbar-page.json) |
+| 配置每张表的独立搜索与完整Excel导出（全部匹配行，准备预算30分钟） | [表格工具区](docs/table-export.md) | [表格工具区示例](packages/page/fixtures/contract-valid/table-toolbar-page.json) |
 | 配置 IOC 公共页头（6.36） | [IOC 公共页头](docs/page-metadata/page.md#ioc-公共页头632) | [普通](pages/capabilities/ioc-header/scenarios/ioc-header-overview-demo.json)、[密集](pages/capabilities/ioc-header/scenarios/ioc-header-dense-filter-demo.json)、[详情](pages/capabilities/ioc-header/scenarios/ioc-header-detail-demo.json) |
 | 配置 PDF / PNG 导出按钮（6.31） | [报告页头](docs/page-metadata/components/reportHeader.md#导出按钮631) | [导出图片](pages/capabilities/export/report-png-export.json)、[单张长图](pages/capabilities/export/report-png-long-export.json) |
 | 配置 Report 工具带内置 PDF 下载与按钮文字（6.28） | [报告页头](docs/page-metadata/components/reportHeader.md#内置-pdf-下载628) | [内置PDF下载页面](pages/capabilities/export/report-pdf-export.json) |

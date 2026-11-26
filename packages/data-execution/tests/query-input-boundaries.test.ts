@@ -55,7 +55,7 @@ it.each([false, true])('preserves later-page failure handling with allowPartial=
   const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
   const source = runner();
   source.run.mockResolvedValueOnce({ status: 'ready', rows: [{ id: 'A' }, { id: 'B' }], totalCount: 3 }).mockResolvedValueOnce(forbidden);
-  const result = await fetchComplete(query(), source, 'scope', undefined, { pageId: 'page' }, false, undefined, allowPartial);
+  const result = await fetchComplete(query(), source, 'scope', undefined, { pageId: 'page' }, { allowPartial });
   expect(result).toEqual(allowPartial ? { status: 'ready', rows: [{ id: 'A' }, { id: 'B' }], totalCount: 2 } : forbidden);
   expect(source.run.mock.calls.map(([request]) => request.pagination)).toEqual([{ offset: 0, limit: 2 }, { offset: 2, limit: 2 }]);
   expect(warn).toHaveBeenCalledTimes(allowPartial ? 1 : 0);
@@ -65,7 +65,7 @@ it('checks cancellation after a response before using it or describing a source'
   const controller = new AbortController(), source = runner(), describe = vi.fn();
   const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
   source.run.mockImplementation(async () => { controller.abort(Error('cancelled after read')); return forbidden; });
-  await expect(fetchComplete(query(), source, 'scope', controller.signal, {}, false, describe, true)).rejects.toThrow('cancelled after read');
+  await expect(fetchComplete(query(), source, 'scope', controller.signal, {}, { describeSource: describe, allowPartial: true })).rejects.toThrow('cancelled after read');
   expect(source.run).toHaveBeenCalledTimes(1);
   expect(describe).not.toHaveBeenCalled();
   expect(warn).not.toHaveBeenCalled();
