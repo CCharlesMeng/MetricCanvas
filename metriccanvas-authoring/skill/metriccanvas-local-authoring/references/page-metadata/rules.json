@@ -157,6 +157,17 @@
       ]
     },
     {
+      "id": "table-height",
+      "description": "表格屏幕外框可声明正整数像素高度",
+      "valid": [
+        "table-fixed-height"
+      ],
+      "invalid": [
+        "table-height-version",
+        "table-height-zero"
+      ]
+    },
+    {
       "id": "table-expand",
       "description": "6.137 顶层表格可选择展开至分区整行",
       "valid": [

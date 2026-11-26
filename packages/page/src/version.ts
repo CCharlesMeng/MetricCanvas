@@ -27,7 +27,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  */
 export const UNRESTRICTED_FILTER_CLEAR_MINOR = 124;
 export const INDEPENDENT_EXCLUSION_CANDIDATES_MINOR = 125;
-const CURRENT_MINOR = 141;
+const CURRENT_MINOR = 142;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -82,6 +82,11 @@ function bindingOperatorUsed(query:Record<string,unknown>|undefined):boolean {
 }
 
 export const pageCapabilities = {
+  'table-height': {
+    minor: 142, legacyReadable: false, description: '表格可声明屏幕外框总高度',
+    usedAt: document => componentPaths(document, component => component.type === 'table' && has(props(component), 'height'))
+      .map(path => `${path}/props/height`)
+  },
   'map-tooltip-rows': {
     minor: 141, legacyReadable: false, description: '地图提示框可声明指标与同排对比值',
     usedAt: document => componentPaths(document, component => component.type === 'mapChart' && has(props(component), 'tooltipRows'))

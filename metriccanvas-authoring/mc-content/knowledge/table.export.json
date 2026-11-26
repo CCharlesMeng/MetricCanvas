@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.141",
+  "schemaVersion": "6.142",
   "scope": "partial; follow references or validate the complete document",
   "topics": [
     "table.export"
@@ -333,6 +333,7 @@
       "examples": [
         "references/page-metadata/examples/table-absolute-display-limit.json",
         "references/page-metadata/examples/table-expand.json",
+        "references/page-metadata/examples/table-fixed-height.json",
         "references/page-metadata/examples/table-trend-arrows.json",
         "references/page-metadata/examples/query-dashboard.json",
         "references/page-metadata/examples/reference-branches-page.json",
@@ -387,7 +388,7 @@
           "sections"
         ],
         "title": "页面",
-        "$id": "https://metriccanvas/page/v6.141",
+        "$id": "https://metriccanvas/page/v6.142",
         "properties": {
           "schemaVersion": "#/properties/schemaVersion",
           "id": "#/properties/id",
@@ -454,6 +455,7 @@
           "rowVisibleWhen": "#/definitions/tableComponent/properties/props/properties/rowVisibleWhen",
           "title": "#/definitions/tableComponent/properties/props/properties/title",
           "subtitle": "#/definitions/tableComponent/properties/props/properties/subtitle",
+          "height": "#/definitions/tableComponent/properties/props/properties/height",
           "expand": "#/definitions/tableComponent/properties/props/properties/expand",
           "toolbar": "#/definitions/tableComponent/properties/props/properties/toolbar",
           "variant": "#/definitions/tableComponent/properties/props/properties/variant",

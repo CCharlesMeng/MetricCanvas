@@ -414,10 +414,12 @@
   class:embedded={props.variant === 'embedded'}
   class:forecast-matrix={props.variant === 'forecastMatrix'}
   class:compound-inline={props.compoundCellLayout === 'inline'}
+  class:fixed-height={!staticExport && props.height !== undefined}
   class:static-export={staticExport}
   class="table-widget"
   aria-busy={data.main.sourceStatus === 'loading'}
   data-table-title={props.title}
+  style:--table-frame-height={props.height === undefined ? undefined : `${props.height}px`}
   style:--table-header-row-height={`${headerRowHeight}px`}
   style:--table-content-min-width={`${columnWidthTotal}px`}
   style:--table-fit-min-width={`${fitMinWidth}px`}
@@ -1930,6 +1932,17 @@
     height: auto;
     min-height: 0;
     max-height: var(--table-viewport-max-height);
+    overflow: auto;
+  }
+  .table-widget.fixed-height {
+    flex: none;
+    height: var(--table-frame-height);
+    overflow: auto;
+  }
+  .table-widget.fixed-height > .scroll {
+    flex: 1 1 0;
+    min-height: 0;
+    max-height: none;
     overflow: auto;
   }
   .report-compact > .content-frame { border: 0; }

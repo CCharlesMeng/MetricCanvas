@@ -1,8 +1,13 @@
 {
   "major": 6,
-  "minor": 141,
-  "current": "6.141",
+  "minor": 142,
+  "current": "6.142",
   "capabilities": {
+    "table-height": {
+      "minor": 142,
+      "description": "表格可声明屏幕外框总高度",
+      "legacyReadable": false
+    },
     "map-tooltip-rows": {
       "minor": 141,
       "description": "地图提示框可声明指标与同排对比值",
@@ -1196,6 +1201,7 @@
     "6.138",
     "6.139",
     "6.140",
-    "6.141"
+    "6.141",
+    "6.142"
   ]
 }

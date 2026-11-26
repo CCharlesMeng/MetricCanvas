@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.141",
+  "schemaVersion": "6.142",
   "id": "contract-business-overview",
   "layout": "dashboard",
   "meta": {
@@ -2393,7 +2393,7 @@
           "id": "world-map",
           "type": "mapChart",
           "layout": {
-            "span": 9
+            "span": 8
           },
           "data": {
             "main": "regions"
@@ -2534,7 +2534,7 @@
           "id": "china-department-map",
           "type": "mapChart",
           "layout": {
-            "span": 9
+            "span": 8
           },
           "data": {
             "main": "offices"
@@ -2690,7 +2690,7 @@
           "id": "regional-department-map",
           "type": "mapChart",
           "layout": {
-            "span": 9
+            "span": 8
           },
           "data": {
             "main": "offices"
@@ -2848,7 +2848,7 @@
           "id": "china-map",
           "type": "mapChart",
           "layout": {
-            "span": 9
+            "span": 8
           },
           "data": {
             "main": "offices"
@@ -3005,7 +3005,7 @@
           "id": "regional-map",
           "type": "mapChart",
           "layout": {
-            "span": 9
+            "span": 8
           },
           "data": {
             "main": "offices"
@@ -3162,7 +3162,7 @@
           "id": "world-map-year-quarter",
           "type": "mapChart",
           "layout": {
-            "span": 9
+            "span": 8
           },
           "data": {
             "main": "regions"
@@ -3306,7 +3306,7 @@
           "id": "world-map-rolling",
           "type": "mapChart",
           "layout": {
-            "span": 9
+            "span": 8
           },
           "data": {
             "main": "regions"
@@ -3429,7 +3429,7 @@
           "id": "china-department-map-year-quarter",
           "type": "mapChart",
           "layout": {
-            "span": 9
+            "span": 8
           },
           "data": {
             "main": "offices"
@@ -3588,7 +3588,7 @@
           "id": "china-department-map-rolling",
           "type": "mapChart",
           "layout": {
-            "span": 9
+            "span": 8
           },
           "data": {
             "main": "offices"
@@ -3726,7 +3726,7 @@
           "id": "regional-department-map-year-quarter",
           "type": "mapChart",
           "layout": {
-            "span": 9
+            "span": 8
           },
           "data": {
             "main": "offices"
@@ -3887,7 +3887,7 @@
           "id": "regional-department-map-rolling",
           "type": "mapChart",
           "layout": {
-            "span": 9
+            "span": 8
           },
           "data": {
             "main": "offices"
@@ -4027,7 +4027,7 @@
           "id": "china-map-year-quarter",
           "type": "mapChart",
           "layout": {
-            "span": 9
+            "span": 8
           },
           "data": {
             "main": "offices"
@@ -4187,7 +4187,7 @@
           "id": "china-map-rolling",
           "type": "mapChart",
           "layout": {
-            "span": 9
+            "span": 8
           },
           "data": {
             "main": "offices"
@@ -4326,7 +4326,7 @@
           "id": "regional-map-year-quarter",
           "type": "mapChart",
           "layout": {
-            "span": 9
+            "span": 8
           },
           "data": {
             "main": "offices"
@@ -4486,7 +4486,7 @@
           "id": "regional-map-rolling",
           "type": "mapChart",
           "layout": {
-            "span": 9
+            "span": 8
           },
           "data": {
             "main": "offices"
@@ -4625,7 +4625,7 @@
           "id": "global-overview-table",
           "type": "table",
           "layout": {
-            "span": 3
+            "span": 4
           },
           "data": {
             "main": "regions"
@@ -4734,7 +4734,8 @@
             ],
             "subtitle": "",
             "title": "地区部指标明细",
-            "expand": true
+            "expand": true,
+            "height": 576
           },
           "visibleWhen": {
             "any": [
@@ -4764,7 +4765,7 @@
           "id": "china-overview-table",
           "type": "table",
           "layout": {
-            "span": 3
+            "span": 4
           },
           "data": {
             "main": "offices"
@@ -4873,7 +4874,8 @@
             ],
             "subtitle": "",
             "title": "代表处指标明细",
-            "expand": true
+            "expand": true,
+            "height": 576
           },
           "visibleWhen": {
             "all": [
@@ -4927,7 +4929,7 @@
           "id": "regional-overview-table",
           "type": "table",
           "layout": {
-            "span": 3
+            "span": 4
           },
           "data": {
             "main": "offices"
@@ -5036,7 +5038,8 @@
             ],
             "subtitle": "",
             "title": "代表处指标明细",
-            "expand": true
+            "expand": true,
+            "height": 576
           },
           "visibleWhen": {
             "all": [
@@ -5092,7 +5095,7 @@
           "id": "office-overview-table",
           "type": "table",
           "layout": {
-            "span": 3
+            "span": 4
           },
           "data": {
             "main": "offices"
@@ -5201,7 +5204,8 @@
             ],
             "subtitle": "",
             "title": "代表处指标明细",
-            "expand": true
+            "expand": true,
+            "height": 576
           },
           "visibleWhen": {
             "all": [

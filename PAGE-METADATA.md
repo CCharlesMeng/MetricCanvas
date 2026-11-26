@@ -1,5 +1,7 @@
 # MetricCanvas 页面元数据规范
 
+Schema 6.142 支持用 `table.props.height` 指定屏幕表格的外框总高度（像素）。见[表格外框高度](docs/page-metadata/components/table.md#table-height)。
+
 Schema 6.141 的地图支持提示框按行展示指标和同排对比值，并在散点的组织名称后显示地图指标。地图可直接使用同轮数据源已经就绪的组织行，等待期间逐步补齐数值。见[地图提示与散点标签](docs/page-metadata/components/mapChart.md#map-tooltip-rows)及 `/pages/ioc-region-map-demo`。
 
 百分点格式与同比 P 格式统一在舍入前判断阈值。超过 `500P` 显示 `>500P`，低于 `-500P` 显示 `<-500P`，恰好等于 `±500P` 时正常显示。沿用现有格式声明。见[百分点差值](docs/page-metadata/field-bindings-and-formats.md#百分点差值677)与合成入口 `/pages/metric-card-value-color`、`/pages/yoy-p-format-demo`。

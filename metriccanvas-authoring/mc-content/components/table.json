@@ -25,7 +25,7 @@
   "knowledge": "table.overview",
   "reference": "references/page-metadata/components/table.md",
   "versionPolicy": "protocol/version-policy",
-  "currentWriter": "6.141",
+  "currentWriter": "6.142",
   "exampleVersionRequirements": [
     {
       "file": "references/page-metadata/examples/table-absolute-display-limit.json",
@@ -82,6 +82,28 @@
           "id": "section-column-tracks",
           "minor": 0,
           "description": "内容分区的受控列轨权重(ADR-0054)"
+        }
+      ],
+      "scope": "complete example; actual used fields determine the floor, independently of readableVersions"
+    },
+    {
+      "file": "references/page-metadata/examples/table-fixed-height.json",
+      "requiredVersion": "6.142",
+      "capabilities": [
+        {
+          "id": "table-height",
+          "minor": 142,
+          "description": "表格可声明屏幕外框总高度"
+        },
+        {
+          "id": "table-expand",
+          "minor": 137,
+          "description": "顶层表格可选择展开至分区整行"
+        },
+        {
+          "id": "page-layout",
+          "minor": 1,
+          "description": "顶层 layout:页面布局形态的规范字段"
         }
       ],
       "scope": "complete example; actual used fields determine the floor, independently of readableVersions"

@@ -63,3 +63,22 @@ test('page size, final page and search resize the viewport without truncating da
   await expect(widget.locator('tbody tr')).toHaveCount(1);
   await expect.poll(async () => (await viewportFacts(widget)).overflow).toBeLessThan(2);
 });
+
+test('固定表格外框能滚到最后一行，放大还原时保持高度，同行默认表仍按十二行计高', async ({ page }) => {
+  await page.goto('/pages/table-fixed-height');
+  const fixed = page.locator('[data-component="comparison/fixed"] .table-widget');
+  const standard = page.locator('[data-component="comparison/default"] .table-widget');
+
+  await expect(fixed).toHaveCSS('height', '320px');
+  await expect(fixed.locator('tbody tr')).toHaveCount(20);
+  await expect.poll(async () => {
+    const { height, cap } = await viewportFacts(standard);
+    return Math.abs(height - cap);
+  }).toBeLessThan(2);
+  await fixed.locator('.scroll').evaluate(scroll => { scroll.scrollTop = scroll.scrollHeight; });
+  await expect(fixed.getByRole('cell', { name: '记录 20', exact: true })).toBeInViewport();
+  await fixed.getByRole('button', { name: '放大表格' }).click();
+  await expect(fixed).toHaveCSS('height', '320px');
+  await fixed.getByRole('button', { name: '还原表格' }).click();
+  await expect(fixed).toHaveCSS('height', '320px');
+});

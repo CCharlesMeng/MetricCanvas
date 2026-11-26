@@ -1,0 +1,812 @@
+{
+  "case": "table-height-zero",
+  "invariant": "table-height",
+  "input": {
+    "schemaVersion": "6.142",
+    "id": "table-fixed-height",
+    "layout": "dashboard",
+    "meta": {
+      "title": "表格外框高度"
+    },
+    "dataSources": {
+      "records": {
+        "fields": {
+          "item": {
+            "type": "string",
+            "role": "dimension"
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "item": "记录 01"
+            },
+            {
+              "item": "记录 02"
+            },
+            {
+              "item": "记录 03"
+            },
+            {
+              "item": "记录 04"
+            },
+            {
+              "item": "记录 05"
+            },
+            {
+              "item": "记录 06"
+            },
+            {
+              "item": "记录 07"
+            },
+            {
+              "item": "记录 08"
+            },
+            {
+              "item": "记录 09"
+            },
+            {
+              "item": "记录 10"
+            },
+            {
+              "item": "记录 11"
+            },
+            {
+              "item": "记录 12"
+            },
+            {
+              "item": "记录 13"
+            },
+            {
+              "item": "记录 14"
+            },
+            {
+              "item": "记录 15"
+            },
+            {
+              "item": "记录 16"
+            },
+            {
+              "item": "记录 17"
+            },
+            {
+              "item": "记录 18"
+            },
+            {
+              "item": "记录 19"
+            },
+            {
+              "item": "记录 20"
+            }
+          ]
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "comparison",
+        "container": "plain",
+        "components": [
+          {
+            "id": "fixed",
+            "type": "table",
+            "layout": {
+              "span": 6
+            },
+            "data": {
+              "main": "records"
+            },
+            "props": {
+              "height": 0,
+              "expand": true,
+              "title": "固定高度",
+              "columns": [
+                {
+                  "field": "item",
+                  "title": "记录"
+                }
+              ]
+            }
+          },
+          {
+            "id": "default",
+            "type": "table",
+            "layout": {
+              "span": 6
+            },
+            "data": {
+              "main": "records"
+            },
+            "props": {
+              "title": "默认高度",
+              "columns": [
+                {
+                  "field": "item",
+                  "title": "记录"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/data",
+      "message": "存在未定义字段 data(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/height",
+      "message": "存在未定义字段 height(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/expand",
+      "message": "存在未定义字段 expand(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "存在未定义字段 columns(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/rows",
+      "message": "缺少必填字段 rows"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/height",
+      "message": "存在未定义字段 height(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/expand",
+      "message": "存在未定义字段 expand(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "存在未定义字段 columns(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "缺少必填字段 categoryField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/series",
+      "message": "缺少必填字段 series"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/height",
+      "message": "存在未定义字段 height(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/expand",
+      "message": "存在未定义字段 expand(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "存在未定义字段 columns(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/xField",
+      "message": "缺少必填字段 xField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/series",
+      "message": "缺少必填字段 series"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/height",
+      "message": "存在未定义字段 height(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/expand",
+      "message": "存在未定义字段 expand(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "存在未定义字段 columns(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "缺少必填字段 valueField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "缺少必填字段 categoryField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/height",
+      "message": "存在未定义字段 height(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/expand",
+      "message": "存在未定义字段 expand(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "存在未定义字段 columns(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/value",
+      "message": "缺少必填字段 value"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "缺少必填字段 categoryField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/height",
+      "message": "存在未定义字段 height(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/expand",
+      "message": "存在未定义字段 expand(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "存在未定义字段 columns(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/height",
+      "message": "must be > 0"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "缺少必填字段 valueField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/nameField",
+      "message": "缺少必填字段 nameField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/map",
+      "message": "缺少必填字段 map"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/height",
+      "message": "存在未定义字段 height(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/expand",
+      "message": "存在未定义字段 expand(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "存在未定义字段 columns(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/value",
+      "message": "缺少必填字段 value"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/nameField",
+      "message": "缺少必填字段 nameField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/map",
+      "message": "缺少必填字段 map"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/height",
+      "message": "存在未定义字段 height(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/expand",
+      "message": "存在未定义字段 expand(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "存在未定义字段 columns(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "缺少必填字段 valueField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/height",
+      "message": "存在未定义字段 height(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/expand",
+      "message": "存在未定义字段 expand(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "存在未定义字段 columns(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/value",
+      "message": "缺少必填字段 value"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/height",
+      "message": "存在未定义字段 height(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/expand",
+      "message": "存在未定义字段 expand(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "存在未定义字段 columns(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/data",
+      "message": "存在未定义字段 data(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/tabs",
+      "message": "缺少必填字段 tabs"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/height",
+      "message": "存在未定义字段 height(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/expand",
+      "message": "存在未定义字段 expand(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "存在未定义字段 columns(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/data",
+      "message": "存在未定义字段 data(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/components",
+      "message": "缺少必填字段 components"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/height",
+      "message": "存在未定义字段 height(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/expand",
+      "message": "存在未定义字段 expand(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "存在未定义字段 columns(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/nameField",
+      "message": "缺少必填字段 nameField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "缺少必填字段 valueField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/height",
+      "message": "存在未定义字段 height(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/expand",
+      "message": "存在未定义字段 expand(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "存在未定义字段 columns(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/nameField",
+      "message": "缺少必填字段 nameField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/valueField",
+      "message": "缺少必填字段 valueField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/height",
+      "message": "存在未定义字段 height(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/expand",
+      "message": "存在未定义字段 expand(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "存在未定义字段 columns(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/items",
+      "message": "缺少必填字段 items"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/height",
+      "message": "存在未定义字段 height(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/expand",
+      "message": "存在未定义字段 expand(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "must be number"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "must be number"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "must be number"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "must be number"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "must be number"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/categoryField",
+      "message": "缺少必填字段 categoryField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/height",
+      "message": "存在未定义字段 height(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/expand",
+      "message": "存在未定义字段 expand(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns/0/label",
+      "message": "缺少必填字段 label"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns/0/title",
+      "message": "存在未定义字段 title(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/field",
+      "message": "缺少必填字段 field"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/height",
+      "message": "存在未定义字段 height(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/expand",
+      "message": "存在未定义字段 expand(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "存在未定义字段 columns(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/data",
+      "message": "存在未定义字段 data(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/height",
+      "message": "存在未定义字段 height(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/expand",
+      "message": "存在未定义字段 expand(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "存在未定义字段 columns(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/data",
+      "message": "存在未定义字段 data(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/height",
+      "message": "存在未定义字段 height(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/expand",
+      "message": "存在未定义字段 expand(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "存在未定义字段 columns(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/data",
+      "message": "存在未定义字段 data(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/label",
+      "message": "缺少必填字段 label"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/action",
+      "message": "缺少必填字段 action"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/height",
+      "message": "存在未定义字段 height(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/expand",
+      "message": "存在未定义字段 expand(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/title",
+      "message": "存在未定义字段 title(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "存在未定义字段 columns(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/data",
+      "message": "存在未定义字段 data(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/filterId",
+      "message": "缺少必填字段 filterId"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/height",
+      "message": "存在未定义字段 height(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/expand",
+      "message": "存在未定义字段 expand(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/title",
+      "message": "存在未定义字段 title(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/columns",
+      "message": "存在未定义字段 columns(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0",
+      "message": "must match exactly one schema in oneOf"
+    }
+  ]
+}

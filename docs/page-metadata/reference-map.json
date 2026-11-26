@@ -911,6 +911,7 @@
       "examples": [
         "table-absolute-display-limit",
         "table-expand",
+        "table-fixed-height",
         "table-trend-arrows",
         "query-dashboard",
         "reference-branches-page",
@@ -2470,7 +2471,8 @@
     "#/properties/schemaVersion=\"6.138\"": "指标卡主指标行可用 colorRule 给主值着色。",
     "#/properties/schemaVersion=\"6.139\"": "组织地图共享地理资料与页面级覆盖。",
     "#/properties/schemaVersion=\"6.140\"": "Dashboard 自然期间可从多个定稿名称选取当年最早的有效定稿月。",
-    "#/properties/schemaVersion=\"6.141\"": "地图提示可在同一行绑定主指标与对比值，散点名称可带地图指标。"
+    "#/properties/schemaVersion=\"6.141\"": "地图提示可在同一行绑定主指标与对比值，散点名称可带地图指标。",
+    "#/properties/schemaVersion=\"6.142\"": "表格可显式指定屏幕外框总高度。"
   },
   "branchExceptions": {
     "#/properties/iocHeader/properties/components/items/oneOf/1/properties/props/properties/officeNavigate/properties/query/additionalProperties/oneOf/0": {
@@ -3303,9 +3305,10 @@
     },
     "table.height": {
       "module": "table",
-      "title": "表格十二行可视高度",
+      "title": "表格外框高度与默认十二行可视高度",
       "roots": [],
       "headings": [
+        "表格外框高度（6.142）",
         "十二行可视高度"
       ],
       "dependencies": []
@@ -3662,6 +3665,7 @@
       "当前行定位与补充数据关联",
       "单元格点击与筛选联动",
       "单元格溢出省略与悬浮提示",
+      "表格外框高度（6.142）",
       "十二行可视高度",
       "渲染外观与变体",
       "表格工具栏与搜索（6.21）",
