@@ -4,6 +4,8 @@ import type { AiSummaryConfig, RuntimeViewEvent, RuntimeNavigation } from '@metr
 export interface RuntimeInput {
   onAuthRequired?: (event: import('@metriccanvas/engine/ui').AuthRequiredEvent) => void;
   displayInputs?: import('@metriccanvas/engine').DisplayInputs;
+  /** Host-owned Excel permission for the current route. Only literal true grants export. */
+  permissions?: { canExport?: boolean; funcAuthority?: readonly unknown[] };
   document: unknown;
   execution?: import('@metriccanvas/engine').ExecutionBootstrap;
   /** 主查询执行必备;维度候选值端口可选,缺席即筛选候选值不可用。 */

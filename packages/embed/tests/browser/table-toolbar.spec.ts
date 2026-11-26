@@ -121,12 +121,20 @@ test('detail tables search and export only their scoped complete result', async 
   detail.props.toolbar = { search: { fields: ['period'] }, export: { format: 'xlsx', filename: '客户趋势' } };
   await page.goto('/examples/inline.html');
   await page.evaluate(document => {
-    window.runtime.destroy(); window.runtime = MetricCanvas.mount('#dashboard', { document, dataGateway: { async fetchData() {
+    const input = { document, dataGateway: { async fetchData() {
       return { rows: [{ period: '2026-01', value: 10 }, { period: '2026-02', value: 20 }], totalCount: 2 };
-    } } });
+    } } };
+    window.runtime.destroy();
+    window.runtime = MetricCanvas.mount('#dashboard', {...input, permissions:{canExport:false}});
+    Object.assign(window, {allowDetailExport() {
+      window.runtime.update({...input, permissions:{canExport:true}});
+    }});
   }, document);
   await page.getByRole('button', { name: '客户01', exact: true }).click();
   const search = page.getByRole('searchbox', { name: '表格搜索' });
+  await expect(search).toBeVisible();
+  await expect(page.getByRole('button', { name:'导出', exact:true })).toHaveCount(0);
+  await page.evaluate(() => Reflect.get(window, 'allowDetailExport')());
   await search.fill('2026-02');
   await expect(page.getByRole('cell', { name: '2026-02', exact: true })).toBeVisible();
   await expect(page.getByRole('cell', { name: '2026-01', exact: true })).toHaveCount(0);

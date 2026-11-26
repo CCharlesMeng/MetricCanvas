@@ -18,6 +18,8 @@
   import { TAB_SELECTION_CONTEXT, type TabSelectionContext } from './tab-selection';
   import { resolvePendingPeriodChoice, visiblePendingPeriodModes, type PendingPeriodChoice } from './filters/pending-period-mode';
   import type { PeriodMode } from '@metriccanvas/page/internal';
+  import { TABLE_EXPORT_ALLOWED } from '../../widgets/src/shared/export-context';
+  import { withExportPermission } from '../../runtime/src/display-inputs';
   import { compilePresentation, resolvePresentationRow } from '../../runtime/src/presentation';
   import type { DisplaySnapshot } from '../../runtime/src/display-inputs';
   import { PRESENTATION_CONTEXT } from './presentation-context';
@@ -185,6 +187,7 @@
 
   let {
     document,
+    hostCanExport,
     displayInputs,
     sectionsContent,
     dataGateway,
@@ -326,7 +329,9 @@
   const pendingPeriodModes = $derived(visiblePendingPeriodModes(preparingFilters, initialPeriodModes, chosenPendingPeriods));
   let filterValues = $state<FilterValues>(new Map());
   let pageParams = $state<PageParamValues>(new Map());
-  let displaySnapshot=$state.raw<DisplaySnapshot|undefined>();
+  let sourceSnapshot=$state.raw<DisplaySnapshot|undefined>();
+  const displaySnapshot=$derived(withExportPermission(sourceSnapshot, hostCanExport));
+  setContext(TABLE_EXPORT_ALLOWED, () => hostCanExport !== false);
   let filterRevision=$state(0);
   const presentationProgram=$derived(pageState.phase==='ready'?compilePresentation(pageState.page):null);
   const presentation=$derived(presentationProgram?.evaluate({filters:filterValues,filterRevision,displaySnapshot},pendingPeriodModes)??null);
@@ -336,7 +341,7 @@
     if(pageState.phase==='ready'){const page=pageState.page;untrack(()=>{stream?.syncPresentation?.();syncTableState(page);});}
   });
   let refreshPeriodFacts:((snapshot:DisplaySnapshot|undefined)=>void)|undefined;
-  function clearDisplaySnapshot(){retainedScreenData.clear();displaySnapshot=undefined;untrack(()=>refreshPeriodFacts?.(undefined));}
+  function clearDisplaySnapshot(){retainedScreenData.clear();sourceSnapshot=undefined;untrack(()=>refreshPeriodFacts?.(undefined));}
   let authInvalidated=false;
   let authNotified=false;
   let authPageId='';
@@ -357,7 +362,7 @@
     retainedScreenData.clear();summaryCapture.clear();
     snapshots=new Map();dimensionCandidates=new Map();filterValues=new Map();pageParams=new Map();
     tableViews={};appliedTableHeaderFilters={};tablePageSizes={};
-    displaySnapshot=undefined;declarationPage=undefined;declarations=[];
+    sourceSnapshot=undefined;declarationPage=undefined;declarations=[];
     blockedFilters=[];confirmationFilters=[];tabSelections={};initialTabs=new Map();
     targetInputs=new Map();activeGateway=inlineGateway;
   }
@@ -368,7 +373,7 @@
     const update=(snapshot:DisplaySnapshot)=>{
       if(stopped||authInvalidated)return;
       if(!snapshot||typeof snapshot.permissionRevision!=='string'||!snapshot.permissionRevision){clearDisplaySnapshot();return;}
-      displaySnapshot=snapshot;untrack(()=>refreshPeriodFacts?.(snapshot));
+      sourceSnapshot=snapshot;untrack(()=>refreshPeriodFacts?.(snapshot));
     };
     let unsubscribe=()=>{};
     try {
@@ -939,7 +944,7 @@
     });
   }
   async function exportTable(component: TableComponent) {
-    if(initializing)return;
+    if(initializing || hostCanExport === false)return;
     if(pageState.phase!=='ready'||!stream||!component.props.toolbar?.export||!actionAllowed(component,component.props.toolbar.export))return;
     tableController?.syncColumns(component);
     const projected=tableController?.project(component)??component;

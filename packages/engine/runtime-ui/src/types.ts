@@ -112,6 +112,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 export interface RuntimeViewProps {
   /** Opt in to terminating this page on DQE HTTP 401/403/419, then hand login to the application. */
   onAuthRequired?: (event: AuthRequiredEvent) => void;
+  hostCanExport?: boolean;
   displayInputs?: import('../../runtime/src/display-inputs').DisplayInputs;
   document: unknown;
 

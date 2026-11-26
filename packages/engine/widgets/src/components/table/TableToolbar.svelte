@@ -2,7 +2,10 @@
 <script lang="ts">
   import { tableSearchOption, type TableProps } from '@metriccanvas/page/internal';
   import { Button, Select, createSearchInput } from '@metriccanvas/ui';
+  import { getContext } from 'svelte';
+  import { TABLE_EXPORT_ALLOWED } from '../../shared/export-context';
   import TableControlIcon from './TableControlIcon.svelte';
+  const hostAllowsExport = getContext<(() => boolean) | undefined>(TABLE_EXPORT_ALLOWED);
   let { toolbar, draft = '', option, busy = false, canExport = true, searchEnabled = true, error, ondraft, onsearch, onoption, onexport, oncancel }: {
     toolbar: TableProps['toolbar']; draft?: string; busy?: boolean; canExport?: boolean; searchEnabled?: boolean; error?: string;
     ondraft?: (query: string) => void; onsearch?: (query: string) => void;
@@ -32,7 +35,7 @@
     </div>
     </div>
   {/if}
-  {#if toolbar?.export}
+  {#if toolbar?.export && hostAllowsExport?.() !== false}
     <Button disabled={!canExport || !onexport} loading={busy} onclick={onexport}>{busy ? '正在导出…' : '导出'}</Button>
     {#if busy && oncancel}<Button onclick={oncancel}>取消导出</Button>{/if}
   {/if}

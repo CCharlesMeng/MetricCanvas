@@ -45,11 +45,18 @@
     recordShared(initialSearch);
     const temporal=['ioc-header-availability-demo','ioc-header-calendar-window-demo'].includes(id);
     if(temporal){const fixture=await import('/examples/ioc-time-inputs.mjs');window.displayInputs=fixture.createTimeInputs();fixture.timeInputsPanel(window.displayInputs,()=>{window.runtime.destroy();mountPage();});}
-    if (id === 'ioc-opportunity-list' && url.pathname === '/examples/navigation.html') {
+    const exportDemo = url.pathname === '/examples/navigation.html' && url.searchParams.has('hostExportDemo');
+    let exportSource;
+    if (exportDemo || (id === 'ioc-opportunity-list' && url.pathname === '/examples/navigation.html')) {
       const { opportunityExportInputs } = await import('/examples/opportunity-export-inputs.mjs');
-      window.displayInputs = opportunityExportInputs();
+      const source = opportunityExportInputs();
+      if (exportDemo) exportSource = source;
+      else window.displayInputs = source;
     }
-    function mountPage(){window.runtime = MetricCanvas.mount('#dashboard', {
+    const hostPermissions = () => ({canExport: exportSource.getSnapshot().permissions.canExport?.value === true});
+    function mountPage(){
+      const input = {
+      ...(exportSource ? { permissions: hostPermissions() } : {}),
       document: window.pageDocument,
       displayInputs:window.displayInputs,
       dataGateway: window.dataGateway,
@@ -67,7 +74,10 @@
           // Embed 默认同步 URL；只记录共享筛选，不原样回灌 update。
         }
       }
-    });}
+      };
+      window.runtime = MetricCanvas.mount('#dashboard', input);
+      exportSource?.subscribe(() => window.runtime.update({...input, permissions:hostPermissions()}));
+    }
     mountPage();
     } catch (error) {
       const heading=document.createElement('h1'),message=document.createElement('p');

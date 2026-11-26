@@ -363,3 +363,5 @@ const runtime = mount(container, { document, navigation });
 `mount` 在本地页面校验通过后直接呈现页面声明的真实页头、内容分区、控件与表头。定稿默认值、候选和查询结果原位填充，等待期间在真实组件内部显示原有的静态骨架。页面级容器直接呈现真实结构。此呈现改造不新增 Schema 字段，也不改变旧版本的查询与默认值语义。`ready` 含义不变，不应作为显示容器的前提。
 
 集成应用收到 JSON 后即调用 `mount` 并显示容器；数据网关在调用前提供方法，方法返回的 Promise 可以继续等待会话名单或截止日期。接通名单候选端口后，符合条件的旧页同样可以移除前置 `prepareIocHeaderFilters` 等待及整页加载遮罩。定稿默认值非阻塞初始化仍从6.120启用。名单正在加载时应保持 Promise 未完成，不返回 `unconfigured`、空名单或伪装成功；真实未配置、失败与成功空结果沿现有端口区分。保留原查询映射、鉴权、AbortSignal和日期格式转换；无需在结果回来后重新 mount/update 页面。跨页定稿成功缓存由引擎会话负责，集成应用复用会话级dataGateway，身份或权限改变时重建。
+
+表格 Excel 导出可通过 mount/update 的 `permissions.canExport` 统一控制。目录权限计算、更新示例与兼容规则见 [OM 表格导出权限对接](../../docs/integrations/om-table-export-permission.md)。

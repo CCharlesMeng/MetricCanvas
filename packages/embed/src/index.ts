@@ -146,6 +146,7 @@ export function mount(
 function runtimeInput(input: RuntimeInput, navigation: RuntimeInput['navigation']): RuntimeInput {
   return {
     document: input.document,
+    permissions: input.permissions,
     onAuthRequired: input.onAuthRequired,
     ...(input.displayInputs!==undefined?{displayInputs:input.displayInputs}:{}),
     ...(input.regionMap !== undefined ? { regionMap: input.regionMap } : {}),
