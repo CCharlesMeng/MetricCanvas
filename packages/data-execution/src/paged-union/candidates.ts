@@ -1,3 +1,4 @@
+import { withAbortSignals } from '../abort-signals';
 import { MIN_DQE_TIMEOUT_MS } from '../dqe-timeout';
 import { hasQueryFieldMapping, type Page } from '@metriccanvas/page/internal';
 import type { ColumnCandidatesRead } from '../source-program/column-candidates';
@@ -7,18 +8,19 @@ import { candidateKey, candidateView } from '../column-candidates';
 import { compileUnion, unionError, type UnionMemberPlan, type UnionPlan } from './plan';
 
 export async function unionCandidates(page: Page, request: ColumnCandidatesRead, runner: QueryRunner, scope: string, inputSignal?: AbortSignal): Promise<ColumnCandidatesPage> {
-  const signal = AbortSignal.any([...(inputSignal ? [inputSignal] : []), AbortSignal.timeout(MIN_DQE_TIMEOUT_MS)]);
-  const view = candidateView(request.view, request.field);
-  const plan = compileUnion(page, request.sourceId, request.conditions, view, request.now);
-  const values = new Map<string, ColumnCandidate>();
-  for (const member of plan.members) {
-    if (!await collectMemberCandidates(plan, member, request, values, runner, scope, signal)) return { kind: 'unavailable' };
-    if (values.size > 10000) throw unionError('跨来源候选超过 10000 项，请缩小查询范围', 'DQE_QUERY_REJECTED');
-  }
-  const term = (request.candidateSearch ?? '').toLowerCase();
-  const candidates = [...values.values()].filter(value => value.label.toLowerCase().includes(term)).sort((a, b) => candidateKey(a.value).localeCompare(candidateKey(b.value), 'en'));
-  const offset = request.offset ?? 0, limit = request.pageSize ?? 50;
-  return { kind: 'values', candidates: candidates.slice(offset, offset + limit), totalCount: candidates.length };
+  return withAbortSignals([inputSignal, AbortSignal.timeout(MIN_DQE_TIMEOUT_MS)], async signal => {
+    const view = candidateView(request.view, request.field);
+    const plan = compileUnion(page, request.sourceId, request.conditions, view, request.now);
+    const values = new Map<string, ColumnCandidate>();
+    for (const member of plan.members) {
+      if (!await collectMemberCandidates(plan, member, request, values, runner, scope, signal)) return { kind: 'unavailable' };
+      if (values.size > 10000) throw unionError('跨来源候选超过 10000 项，请缩小查询范围', 'DQE_QUERY_REJECTED');
+    }
+    const term = (request.candidateSearch ?? '').toLowerCase();
+    const candidates = [...values.values()].filter(value => value.label.toLowerCase().includes(term)).sort((a, b) => candidateKey(a.value).localeCompare(candidateKey(b.value), 'en'));
+    const offset = request.offset ?? 0, limit = request.pageSize ?? 50;
+    return { kind: 'values', candidates: candidates.slice(offset, offset + limit), totalCount: candidates.length };
+  });
 }
 function addLiteral(values: Map<string, ColumnCandidate>, value: unknown): void {
   if (typeof value === 'string' || typeof value === 'number') values.set(candidateKey(value), { value, label: String(value) });

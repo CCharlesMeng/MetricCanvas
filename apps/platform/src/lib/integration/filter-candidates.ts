@@ -1,3 +1,4 @@
+import { withAbortSignals } from '@metriccanvas/engine';
 import type { FilterCandidatesGateway } from '@metriccanvas/engine';
 import type { createPlatformSession } from './session';
 
@@ -8,9 +9,11 @@ export function platformFilterCandidates(input:unknown,session:ReturnType<typeof
   const gateway=input as FilterCandidatesGateway;
   return {async fetchFilterCandidates(request,{signal}){
     if(!session.readConfig())throw Error('平台会话不可用');
-    const combined=AbortSignal.any([signal,session.signal]);combined.throwIfAborted();
-    const result=await gateway.fetchFilterCandidates(request,{signal:combined});
-    if(!session.readConfig())throw Error('平台会话已失效');
-    combined.throwIfAborted();return result;
+    return withAbortSignals([signal, session.signal], async combined => {
+      combined.throwIfAborted();
+      const result=await gateway.fetchFilterCandidates(request,{signal:combined});
+      if(!session.readConfig())throw Error('平台会话已失效');
+      combined.throwIfAborted();return result;
+    });
   }};
 }

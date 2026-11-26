@@ -1,3 +1,4 @@
+import { withAbortSignals } from './abort-signals';
 import { MIN_DQE_TIMEOUT_MS } from './dqe-timeout';
 import { hasQueryFieldMapping, type DataSnapshot, type EffectiveQuery, type PeriodAggregationCase, type Row, type TablePredicate } from '@metriccanvas/page/internal';
 import type { FilterValues } from './filter-values';
@@ -120,17 +121,18 @@ function projectResult(rows: Row[], query: EffectiveQuery): DataSnapshot {
 /** The DQE wire receives existing monthly queries only; the engine owns cross-month folding. */
 export async function executePeriodAggregation(query: EffectiveQuery, read: ReadQuery, signal?: AbortSignal): Promise<DataSnapshot> {
   const config = query.periodAggregation!;
-  const bounded = AbortSignal.any([...(signal ? [signal] : []), AbortSignal.timeout(MIN_DQE_TIMEOUT_MS)]);
-  const groups = new Map<string, Accumulator>();
-  let count = 0;
-  for (const month of monthWindows(query)) {
-    bounded.throwIfAborted();
-    const snapshot = await read(monthlyQuery(query, month), bounded);
-    bounded.throwIfAborted();
-    const rows = completeMonthlyRows(snapshot);
-    count += rows.length;
-    if (count > 10_000) invalid('期间聚合的完整月度输入超过 10000 行');
-    addMonth(groups, rows, config);
-  }
-  return projectResult(resultRows(groups, config), query);
+  return withAbortSignals([signal, AbortSignal.timeout(MIN_DQE_TIMEOUT_MS)], async bounded => {
+    const groups = new Map<string, Accumulator>();
+    let count = 0;
+    for (const month of monthWindows(query)) {
+      bounded.throwIfAborted();
+      const snapshot = await read(monthlyQuery(query, month), bounded);
+      bounded.throwIfAborted();
+      const rows = completeMonthlyRows(snapshot);
+      count += rows.length;
+      if (count > 10_000) invalid('期间聚合的完整月度输入超过 10000 行');
+      addMonth(groups, rows, config);
+    }
+    return projectResult(resultRows(groups, config), query);
+  });
 }

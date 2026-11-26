@@ -20,22 +20,26 @@ export function readRecoverableJoin(plan: PagedJoinPlan, runner: QueryRunner, sc
 export async function recoverJoin(plan: PagedJoinPlan, runner: QueryRunner, scope: string, signal?: AbortSignal, complete = false) {
   const records = plan.source.source.records;
   const context = recoveryContext(plan.page.id, plan.sourceId, signal, records?.timeoutMs ?? (complete ? EXPORT_PREPARATION_TIMEOUT_MS : undefined), records?.maxBytes);
-  const domainId = plan.source.source.domainMember;
-  const maxRows = records ? records.maxRows ?? 100_000 : (plan.source.source.fallback?.maxRows ?? 1000);
-  const raw = await recoveryRows(recordReadOrder(plan, domainId, memberQuery(plan, domainId)), runner, scope, context, plan.source.source.members[domainId].source, maxRows);
-  const domain = recoverDomain(plan, context, raw);
-  const keys = [...new Set(domain.map((row, index) => memberKey(plan, domainId, row, index)))];
-  const members = new Map<string, Map<string | number, Row>>();
-  for (const id of plan.members.keys()) {
-    if (id !== domainId) members.set(id, await recoverSupplement(plan, context, id, keys, runner, scope));
+  try {
+    const domainId = plan.source.source.domainMember;
+    const maxRows = records ? records.maxRows ?? 100_000 : (plan.source.source.fallback?.maxRows ?? 1000);
+    const raw = await recoveryRows(recordReadOrder(plan, domainId, memberQuery(plan, domainId)), runner, scope, context, plan.source.source.members[domainId].source, maxRows);
+    const domain = recoverDomain(plan, context, raw);
+    const keys = [...new Set(domain.map((row, index) => memberKey(plan, domainId, row, index)))];
+    const members = new Map<string, Map<string | number, Row>>();
+    for (const id of plan.members.keys()) {
+      if (id !== domainId) members.set(id, await recoverSupplement(plan, context, id, keys, runner, scope));
+    }
+    const rows = recoverProjection(plan, context, domain, members);
+    const sort = [...plan.view.sort];
+    if (!sort.some(rule => rule.field === plan.source.source.rowKey)) sort.push({ field: plan.source.source.rowKey, direction: 'asc' });
+    const result = recoveryView(context, rows, { ...plan.view, sort }, complete);
+    if (result.snapshot.status === 'ready') result.snapshot = projectSnapshotRows(result.snapshot,
+      ordinalRows(plan, result.snapshot.rows, complete ? 0 : (result.viewCorrection?.pageIndex ?? plan.view.pageIndex) * plan.view.pageSize));
+    return result;
+  } finally {
+    context.dispose();
   }
-  const rows = recoverProjection(plan, context, domain, members);
-  const sort = [...plan.view.sort];
-  if (!sort.some(rule => rule.field === plan.source.source.rowKey)) sort.push({ field: plan.source.source.rowKey, direction: 'asc' });
-  const result = recoveryView(context, rows, { ...plan.view, sort }, complete);
-  if (result.snapshot.status === 'ready') result.snapshot = projectSnapshotRows(result.snapshot,
-    ordinalRows(plan, result.snapshot.rows, complete ? 0 : (result.viewCorrection?.pageIndex ?? plan.view.pageIndex) * plan.view.pageSize));
-  return result;
 }
 function recoverDomain(plan: PagedJoinPlan, context: RecoveryContext, rows: Row[]): Row[] {
   const id = plan.source.source.domainMember, seen = new Set<string | number>();

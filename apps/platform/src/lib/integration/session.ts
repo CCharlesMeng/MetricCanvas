@@ -1,3 +1,4 @@
+import { withAbortSignals } from '@metriccanvas/engine';
 import { readPageAssetsRuntimeConfig, type RuntimeConfigSource } from '@metriccanvas/application-runtime';
 
 import type {PlatformEvent} from './contract';
@@ -34,12 +35,13 @@ export function createPlatformSession(options: {
   }
   const fetchImpl: typeof fetch = async (input, init) => {
     if (!readConfig() || !active) throw new Error('平台会话不可用，未发送请求。');
-    const signals = [lifetime.signal, ...(init?.signal ? [init.signal] : [])];
-    const response = await (options.fetchImpl ?? fetch)(input, {...init, signal: AbortSignal.any(signals)});
-    if (response.status === 401) options.onEvent?.({code:'login-required',message:'需要重新登录。'});
-    const body = await response.arrayBuffer();
-    if (!readConfig() || !active) throw new Error('平台会话已失效，旧请求结果不可用。');
-    return new Response([204,205,304].includes(response.status) ? null : body, {status:response.status,statusText:response.statusText,headers:response.headers});
+    return withAbortSignals([lifetime.signal, init?.signal], async signal => {
+      const response = await (options.fetchImpl ?? fetch)(input, {...init, signal});
+      if (response.status === 401) options.onEvent?.({code:'login-required',message:'需要重新登录。'});
+      const body = await response.arrayBuffer();
+      if (!readConfig() || !active) throw new Error('平台会话已失效，旧请求结果不可用。');
+      return new Response([204,205,304].includes(response.status) ? null : body, {status:response.status,statusText:response.statusText,headers:response.headers});
+    });
   };
   try { unsubscribe = options.subscribeConfig?.(() => { readConfig(); }); }
   catch (error) { invalidate(false); throw error; }

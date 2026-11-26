@@ -1,3 +1,4 @@
+import { linkAbortSignals } from '../abort-signals';
 import { canonicalizeJson, dqeDefaultSort, flattenPageComponents, hasQueryFieldMapping, type DataSnapshot, type Row, type TableQueryView } from '@metriccanvas/page/internal';
 import { evaluateTableView } from '../table-view';
 import { rawSnapshot } from '../snapshots';
@@ -38,11 +39,11 @@ export function createTableSlotSearchReader() {
       const hit = cache.get(input.sourceId);
       if (hit?.key === key) return hit.value;
       const revision = generation, timeout = AbortSignal.timeout(SLOT_SEARCH_TIMEOUT_MS);
-      const signal = AbortSignal.any([timeout, ...(input.signal ? [input.signal] : [])]);
       const operationKey = `${generation}:${key}`;
       const operation = scopes.get(operationKey) ?? { value: `${input.scope}:slot-search:${++serial}`, users: 0 };
       scopes.set(operationKey, operation); operation.users++;
       const scope = operation.value;
+      const { signal, dispose } = linkAbortSignals([timeout, input.signal]);
       try {
         const value = await collectSearchRows({ ...input, signal, scope }, plan, { rows: 0, bytes: 0, signal });
         signal.throwIfAborted();
@@ -53,6 +54,7 @@ export function createTableSlotSearchReader() {
         if (timeout.aborted) return searchFailure('跨槽搜索超过 180 秒，请缩小范围或重试', 'DQE_TIMEOUT');
         throw cause;
       } finally {
+        dispose();
         if (--operation.users === 0) { scopes.delete(operationKey); input.runner.forgetScope(scope); }
       }
     }
