@@ -1,3 +1,4 @@
+import { withAbortSignals } from '@metriccanvas/data-execution/runtime';
 import type { RuntimeDataGateway } from '../../runtime/src';
 import {observeQueryHttpError,inheritFinalizationCache,invalidateFinalizationCache,inheritMembershipCandidates} from '@metriccanvas/data-execution/runtime';
 
@@ -46,17 +47,18 @@ export function createAuthRequiredGateway(base: RuntimeDataGateway, observe: (ev
     if(status!==undefined){invalidateFinalizationCache(base);observe({type:'auth-required',status});}
   }
   async function execute<T>(operation: (signal: AbortSignal) => Promise<T>, signal?: AbortSignal): Promise<T> {
-    const combined = AbortSignal.any(signal ? [signal, lifetime.signal] : [lifetime.signal]);
-    if (combined.aborted) throw cancelled();
-    let httpObserved=false;
-    const stopObserving=observeQueryHttpError(combined,status=>{httpObserved=true;receiveStatus(status);});
-    try {
-      return await abortable(operation, combined);
-    } catch (cause) {
+    return withAbortSignals([signal, lifetime.signal], async combined => {
       if (combined.aborted) throw cancelled();
-      if(!httpObserved)receiveStatus(authStatus(cause));
-      throw cause;
-    } finally { stopObserving(); }
+      let httpObserved=false;
+      const stopObserving=observeQueryHttpError(combined,status=>{httpObserved=true;receiveStatus(status);});
+      try {
+        return await abortable(operation, combined);
+      } catch (cause) {
+        if (combined.aborted) throw cancelled();
+        if(!httpObserved)receiveStatus(authStatus(cause));
+        throw cause;
+      } finally { stopObserving(); }
+    });
   }
   const dimensions = base.fetchDimensionValues;
   const filters = base.fetchFilterCandidates;
@@ -68,8 +70,8 @@ export function createAuthRequiredGateway(base: RuntimeDataGateway, observe: (ev
     ...(dimensions ? { fetchDimensionValues: ((dimension, options) => execute(next => dimensions.call(base, dimension, { ...options, signal: next }), options?.signal)) as NonNullable<RuntimeDataGateway['fetchDimensionValues']> } : {}),
     ...(filters ? { fetchFilterCandidates: ((request, options) => execute(next => filters.call(base, request, { signal: next }), options.signal)) as NonNullable<RuntimeDataGateway['fetchFilterCandidates']> } : {}),
     ...(definitions ? { fetchMetricDefinitions: (codes, options) => {
-      const signal = AbortSignal.any(options?.signal ? [options.signal, lifetime.signal] : [lifetime.signal]);
-      return abortable(next => definitions.call(base, codes, { signal: next }), signal);
+      return withAbortSignals([options?.signal, lifetime.signal], signal =>
+        abortable(next => definitions.call(base, codes, { signal: next }), signal));
     } } : {}),
     ...(columns ? { fetchColumnCandidates: ((request, context, signal, onProgress) => execute(next => columns.call(base, request, context, next, onProgress), signal)) as NonNullable<RuntimeDataGateway['fetchColumnCandidates']> } : {})
   };

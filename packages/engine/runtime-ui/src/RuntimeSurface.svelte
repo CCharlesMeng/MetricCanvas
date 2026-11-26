@@ -1611,7 +1611,7 @@
     const pagination = resolvedTablePagination(component, snapshotsBySlot.get('main'));
     if (!pagination || pagination.mode === 'none') return undefined;
     const snapshot = usableTableProgress(component,stream?.getScreenProgress?.(component.data.main),tableController?.render(component))?.snapshot ?? snapshotsBySlot.get('main');
-    if (!snapshot || (snapshot.status !== 'ready' && snapshot.status !== 'empty')) {
+    if (!snapshot || snapshot.status === 'loading') {
       return undefined;
     }
     if (pagination.mode === 'local') {
@@ -1622,8 +1622,9 @@
       };
     }
     const pageSize = effectiveTablePageSize(loaded, component);
-    if (pageSize === undefined || snapshot.totalCount === undefined) return undefined;
-    return { pageSize, totalCount: snapshot.totalCount };
+    const totalCount = snapshot.status === 'error' ? 0 : snapshot.totalCount;
+    if (pageSize === undefined || totalCount === undefined) return undefined;
+    return { pageSize, totalCount };
   }
 
   function queryPageSize(loaded: Page, component: TableComponent): number | undefined {

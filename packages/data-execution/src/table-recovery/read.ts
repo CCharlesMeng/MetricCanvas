@@ -1,3 +1,4 @@
+import { linkAbortSignals } from '../abort-signals';
 import { debugWarn } from '../debug-warnings';
 import { dqeTimeoutMs, MIN_DQE_TIMEOUT_MS } from '../dqe-timeout';
 import type { DataSnapshot, DataWarning, EffectiveQuery, Row, TableQueryView } from '@metriccanvas/page/internal';
@@ -28,8 +29,9 @@ export async function withTableRecovery<T>(read: () => Promise<T>, recover: () =
     });
   }
 }
-export function recoveryContext(pageId: string, sourceId: string, signal?: AbortSignal, timeout = MIN_DQE_TIMEOUT_MS, maxBytes = 64 * 1024 * 1024): RecoveryContext {
-  return { pageId, sourceId, signal: AbortSignal.any([...(signal ? [signal] : []), AbortSignal.timeout(dqeTimeoutMs(timeout))]), warnings: new Map(), bytes: 0, maxBytes, scanned: 0, maxScan: Infinity };
+export function recoveryContext(pageId: string, sourceId: string, signal?: AbortSignal, timeout = MIN_DQE_TIMEOUT_MS, maxBytes = 64 * 1024 * 1024) {
+  const linked = linkAbortSignals([signal, AbortSignal.timeout(dqeTimeoutMs(timeout))]);
+  return { pageId, sourceId, ...linked, warnings: new Map<string, DataWarning>(), bytes: 0, maxBytes, scanned: 0, maxScan: Infinity };
 }
 export function warn(context: RecoveryContext, sourceId: string, message: string, count = 1): void {
   const key = JSON.stringify([sourceId, message]);

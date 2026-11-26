@@ -73,3 +73,29 @@ test('more than twelve parents include multiple expanded children in viewport he
   await assertExpandedContentFits(parent);
   await exportAndCheck(page, parent);
 });
+
+test('a source read exception leaves the authorization table visible and reports the failure to diagnostics', async ({ page }) => {
+  const diagnostics: string[] = [];
+  page.on('console', message => { if (message.type() === 'error') diagnostics.push(message.text()); });
+  await page.addInitScript(() => Object.defineProperty(AbortSignal, 'any', {
+    value() { throw new TypeError('synthetic source read exception'); }
+  }));
+  await page.goto('/pages/authorization-norms');
+  const parent = page.locator('[data-component="region-dept-auth-norms/region-dept-auth-norms-table"]');
+  await expect(parent.getByRole('columnheader', { name: '区域', exact: true })).toBeVisible();
+  await expect(parent.getByText('暂无数据', { exact: true })).toBeVisible();
+  await expect(parent).toContainText('总条数： 0');
+  await expect(parent.getByRole('alert')).toHaveCount(0);
+  await expect(parent).not.toContainText('页面取数未完成');
+  await expect.poll(() => diagnostics.some(message => message.includes('页面取数未完成'))).toBe(true);
+});
+
+test('loads the authorization parent and child and exports their rows without AbortSignal.any', async ({ page }) => {
+  await page.addInitScript(() => Object.defineProperty(AbortSignal, 'any', { value: undefined }));
+  await mockAuthorization(page);
+  await page.goto('/pages/authorization-norms');
+  const parent = page.locator('[data-component="region-dept-auth-norms/region-dept-auth-norms-table"]');
+  await expect(parent.getByRole('cell', { name: '华东地区部', exact: true })).toBeVisible();
+  await expect(parent.getByRole('cell', { name: '江苏代表处', exact: true })).toBeVisible();
+  await exportAndCheck(page, parent);
+});

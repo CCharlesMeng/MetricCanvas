@@ -164,7 +164,9 @@ test('query sort resets only its own window and retry keeps the failed target pa
   expect(calls.at(-1)).toMatchObject({ pagination: { offset: 0, limit: 10 }, sort: [{ queryField: 'row_product', direction: 'asc' }] });
   await page.evaluate(() => { (window as unknown as { rowFailNext: boolean }).rowFailNext = true; });
   await child.getByRole('button', { name: '2', exact: true }).click();
-  await expect(child.getByText('明细暂不可用')).toBeVisible();
+  await expect(child.getByRole('columnheader').first()).toBeVisible();
+  await expect(child.getByText('暂无数据', { exact: true })).toBeVisible();
+  await expect(child).not.toContainText('明细暂不可用');
   await expect(child.getByRole('cell', { name: 'C01-001', exact: true })).toHaveCount(0);
   await child.getByRole('button', { name: '重试', exact: true }).click();
   await expect(child.getByRole('cell', { name: 'C01-011', exact: true })).toBeVisible();

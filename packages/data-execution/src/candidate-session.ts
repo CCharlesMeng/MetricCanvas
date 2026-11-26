@@ -1,3 +1,4 @@
+import { linkAbortSignals } from './abort-signals';
 import { canonicalizeJson } from '@metriccanvas/page/internal';
 import { createCandidateCache } from './candidate-cache';
 import { validFilterCandidates } from './filter-candidates';
@@ -71,11 +72,12 @@ export function createCandidateRequestPool() {
 }
 
 function consumeFlight(flight: Flight, signal: AbortSignal, abandon: () => void): Promise<FilterCandidatesResult> {
-  const combined = AbortSignal.any([signal, flight.controller.signal]);
+  const { signal: combined, dispose } = linkAbortSignals([signal, flight.controller.signal]);
   flight.consumers++;
   return new Promise((resolve, reject) => {
     function release() {
       combined.removeEventListener('abort', abort);
+      dispose();
       flight.consumers--;
     }
     function abort() {
