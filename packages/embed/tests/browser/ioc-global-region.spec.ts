@@ -1,7 +1,7 @@
 import {expect,test,type Page} from '@playwright/test';
 import {readFileSync} from 'node:fs';
 import {createRequire} from 'node:module';
-const require=createRequire(import.meta.url);
+const require=createRequire(new URL('../../../engine/package.json', import.meta.url));
 const rows=(page:Page)=>page.locator('tbody tr:not(:has(.empty-row))');
 async function spreadsheet(page:Page):Promise<string> {
  const pending=page.waitForEvent('download');await page.getByRole('button',{name:'导出',exact:true}).click();
@@ -21,13 +21,23 @@ test('global Region preserves month and customer on screen and XLSX, including k
  await checkbox.uncheck();await expect(rows(page)).toHaveCount(2);
  await page.screenshot({path:info.outputPath('global-month-customer.png')});
 });
-test('native HTTP query and complete XLSX omit only global Region',async({page},info)=>{
- // The business page has no export button; enable the existing optional table toolbar for this acceptance probe.
- await page.route('**/pages/ioc-opportunity-list.json',async route=>{const response=await route.fetch(),document=await response.json();for(const section of document.sections)for(const component of section.components)if(component.type==='table')component.props.toolbar={export:{format:'xlsx'}};await route.fulfill({response,json:document});});
+test('opportunity export follows host permission changes and preserves the global Region query',async({page},info)=>{
  const items:any[]=[];
  page.on('request',request=>{if(request.method()==='POST'&&request.url().endsWith('/dsl/execute')){const body=request.postDataJSON();items.push(...(body.dsl_list??[]));}});
- await page.goto('/pages/ioc-opportunity-list?region.level=geo&region='+encodeURIComponent('全球')+'&mtime=2026-04');
+ const query = '&region.level=geo&region='+encodeURIComponent('全球')+'&mtime=2026-04';
+ await page.goto('/examples/navigation.html?page=ioc-opportunity-list' + query);
  await expect(rows(page)).toHaveCount(5);
+ const permission = page.getByLabel('模拟宿主导出权限');
+ const action = page.getByRole('button', {name:'导出', exact:true});
+ await expect(permission).toHaveValue('等待权限');
+ await expect(action).toHaveCount(0);
+ for (const choice of ['禁止导出', '缺少权限位', '权限读取失败', '无效的字符串值']) {
+   await permission.selectOption({label:'允许导出'});
+   await expect(action).toBeEnabled();
+   await permission.selectOption({label:choice});
+   await expect(action).toHaveCount(0);
+ }
+ await permission.selectOption({label:'允许导出'});
  const exported=await spreadsheet(page);
  const fixture=JSON.parse(readFileSync(new URL('../../../../tools/dqe-sim/fixtures/ioc-opportunity-list.json',import.meta.url),'utf8'));
  for(const row of fixture.rows)expect(exported).toContain(row.opportunity_code);

@@ -791,6 +791,12 @@
             "main": "opportunity-list"
           },
           "props": {
+            "toolbar": {
+              "export": {
+                "format": "xlsx",
+                "visibleWhen": { "permission": "canExport" }
+              }
+            },
             "columns": [
               {
                 "field": "opportunity-code",

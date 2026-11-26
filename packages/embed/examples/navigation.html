@@ -45,6 +45,10 @@
     recordShared(initialSearch);
     const temporal=['ioc-header-availability-demo','ioc-header-calendar-window-demo'].includes(id);
     if(temporal){const fixture=await import('/examples/ioc-time-inputs.mjs');window.displayInputs=fixture.createTimeInputs();fixture.timeInputsPanel(window.displayInputs,()=>{window.runtime.destroy();mountPage();});}
+    if (id === 'ioc-opportunity-list' && url.pathname === '/examples/navigation.html') {
+      const { opportunityExportInputs } = await import('/examples/opportunity-export-inputs.mjs');
+      window.displayInputs = opportunityExportInputs();
+    }
     function mountPage(){window.runtime = MetricCanvas.mount('#dashboard', {
       document: window.pageDocument,
       displayInputs:window.displayInputs,
