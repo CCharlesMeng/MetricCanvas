@@ -6,6 +6,7 @@
   import { createTableController } from '../controller';
   import Table from '../../../../widgets/src/components/table/Table.svelte';
   import { createRetainedScreenData } from '../../retained-screen-data';
+  import TableDataDiagnostic from './TableDataDiagnostic.svelte';
   import { usableTableProgress } from '../screen-progress';
   const retainedData = createRetainedScreenData();
   let content = $state<HTMLDivElement>();
@@ -50,21 +51,16 @@
   });
 </script>
 
+<TableDataDiagnostic pageId={instance.page.id} {table} {snapshot} />
 {#if table.props.columns.length===0}
   <Table nested view={{pageIndex:0,sort:[],headerFilters:{}}} props={table.props} data={{main:{fields:{},snapshot:{status:'ready',rows:[]}}}} />
-{:else if snapshot?.status === 'error' && !progress}
-  <div class="content-state" role="status">明细暂不可用{#if instance.stream}<button type="button" onclick={onretry}>重试</button>{/if}</div>
 {:else}
   <div bind:this={content} style="display:contents" inert={screen.retained}>
   <Table nested data={screen.data as import('../../../../widgets/src/shared/component-data').MainDataSlots}
     props={table.props} view={screen.table?.view ?? view} pagination={screen.table?.pagination ?? pagination}
     searchOption={binding.searchOption} onsearchoption={binding.onsearchoption}
     searchDraft={binding.searchDraft} onsearchdraft={binding.onsearchdraft} onsearch={binding.onsearch}
+    onemptyretry={snapshot?.status === 'error' && instance.stream && !progress ? onretry : undefined}
     onpage={changePage} onpagesize={changePageSize} onsort={binding.onsort} />
   </div>
 {/if}
-
-<style>
-  .content-state { min-height:72px; display:flex; align-items:center; justify-content:center; gap:12px; background:#fff; color:var(--mc-color-muted,#71717a); }
-  button { font:inherit; cursor:pointer; }
-</style>

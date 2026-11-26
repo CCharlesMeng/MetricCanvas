@@ -1,3 +1,4 @@
+import { linkAbortSignals, withAbortSignals } from '../abort-signals';
 import { MIN_DQE_TIMEOUT_MS } from '../dqe-timeout';
 import type { ScreenProgress } from '../screen-progress';
 import { ordinaryScreenProgress } from './screen-progress';
@@ -126,8 +127,8 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
   function readSignals(controller: AbortController, input: SourceRead): AbortSignal[] {
     return [controller.signal, ...(input.signal ? [input.signal] : []), ...(input.purpose === 'complete' ? [AbortSignal.timeout(input.completeReadTimeoutMs ?? COMPLETE_READ_TIMEOUT_MS)] : [])];
   }
-  function freezeReadRequest(input: SourceRead, signals: AbortSignal[]) {
-    return { ...input, now: input.now ?? config.now ?? config.clock?.() ?? new Date(), conditions: structuredClone(new Map(input.conditions)), views: input.views && structuredClone(new Map(input.views)), signal: AbortSignal.any(signals) };
+  function freezeReadRequest(input: SourceRead) {
+    return { ...input, now: input.now ?? config.now ?? config.clock?.() ?? new Date(), conditions: structuredClone(new Map(input.conditions)), views: input.views && structuredClone(new Map(input.views)) };
   }
   function sourceReadScope(freshness: SourceRead['freshness'], inputs: DisplayInputsSnapshot | undefined): string {
     const nextScope = inputs ? `context:${canonicalizeJson(inputs)}` : 'session';
@@ -185,10 +186,11 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
     },
     async readColumnCandidates(request: ColumnCandidatesRead) {
       const {signal:permissionSignal} = captureCurrentCandidates();
-      const signal = request.signal ? AbortSignal.any([request.signal, permissionSignal]) : permissionSignal;
-      const preparation=native.ensure(request.sourceId,request.conditions,signal);
-      if(preparation)await preparation;
-      return createColumnCandidatesReader(page, runner, value => program.read(value), compiled.limits, { ...config, slotSearch })({...request, signal});
+      return withAbortSignals([request.signal, permissionSignal], async signal => {
+        const preparation = native.ensure(request.sourceId, request.conditions, signal);
+        if (preparation) await preparation;
+        return createColumnCandidatesReader(page, runner, value => program.read(value), compiled.limits, { ...config, slotSearch })({...request, signal});
+      });
     },
     preparing(sourceId:string,conditions:FilterValues){return native.waiting(sourceId,conditions);},
     prepareInputs(sourceId:string,conditions:FilterValues) {
@@ -230,11 +232,13 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
       const now = input.now ?? config.now ?? config.clock?.() ?? new Date();
       input.signal?.throwIfAborted();
       const candidateScope = candidateSession.capture({displayInputs:frozenInputs, filterRevision:frozenRevision, now});
-      const request = freezeReadRequest({...input, now}, [...signals, candidateScope.signal]);
-      const execution = candidateQueryRunner(runner, request.background);
-      const currentUnion = candidateUnionReader(union, execution, request.background);
-      const candidates = createCandidateValidator(page, candidateScope.gateway, { displayInputs: () => frozenInputs, filterRevision: () => frozenRevision ?? 0, now: request.now });
-      const scope = sourceReadScope(request.freshness, frozenInputs);
+      const frozen = freezeReadRequest({...input, now});
+      const execution = candidateQueryRunner(runner, frozen.background);
+      const currentUnion = candidateUnionReader(union, execution, frozen.background);
+      const candidates = createCandidateValidator(page, candidateScope.gateway, { displayInputs: () => frozenInputs, filterRevision: () => frozenRevision ?? 0, now: frozen.now });
+      const scope = sourceReadScope(frozen.freshness, frozenInputs);
+      const linked = linkAbortSignals([...signals, candidateScope.signal]);
+      const request = { ...frozen, signal: linked.signal };
       try {
         const sources = presentationQuerySources(page, {declarations:page.filters??[],filters:request.conditions,displaySnapshot:frozenInputs,filterRevision:frozenRevision}, request);
         const ids = executionSourceIds(page, request.roots, sources);
@@ -350,10 +354,9 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
         }
         function completeQuerySnapshot(id: string, source: QueryDataSource, query: EffectiveQuery, diagnostics: QueryDiagnosticContext): Promise<DataSnapshot> {
           const comparison = hasPeriodComparison(source.source.query);
-          const signal = comparison && request.purpose !== 'complete'
-            ? AbortSignal.any([request.signal, AbortSignal.timeout(MIN_DQE_TIMEOUT_MS)])
-            : request.signal;
-          return fetchComplete(query, execution, scope, signal, diagnostics, source.source.resultScope === 'complete', () => describeExportSource(page, id), comparison ? false : request.allowPartial, comparison ? false : request.purpose !== 'complete',request.strictComplete);
+          const timeout = comparison && request.purpose !== 'complete' ? AbortSignal.timeout(MIN_DQE_TIMEOUT_MS) : undefined;
+          return withAbortSignals([request.signal, timeout], signal =>
+            fetchComplete(query, execution, scope, signal, diagnostics, source.source.resultScope === 'complete', () => describeExportSource(page, id), comparison ? false : request.allowPartial, comparison ? false : request.purpose !== 'complete',request.strictComplete));
         }
         async function executeCombined(id: string, source: PagedJoinDataSource | PagedUnionDataSource, view: TableQueryView): Promise<void> {
           try {
@@ -373,9 +376,10 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
         async function executeUnion(id: string, source: PagedUnionDataSource, view: TableQueryView): Promise<void> {
           const plan = compileUnion(page, id, request.conditions, view, request.now);
           const complete = request.purpose === 'complete';
-          const signal = complete ? request.signal : AbortSignal.any([request.signal, AbortSignal.timeout(MIN_DQE_TIMEOUT_MS)]);
-          const result = await withTableRecovery(() => currentUnion.read(plan, scope, signal, complete),
-            () => recoverUnion(plan, execution, scope, signal, complete), signal);
+          const timeout = complete ? undefined : AbortSignal.timeout(MIN_DQE_TIMEOUT_MS);
+          const result = await withAbortSignals([request.signal, timeout], signal => withTableRecovery(
+            () => currentUnion.read(plan, scope, signal, complete),
+            () => recoverUnion(plan, execution, scope, signal, complete), signal));
           const applied = result.viewCorrection ?? plan.view;
           raw.set(id, result.snapshot);
           if (canonicalizeJson(applied) !== canonicalizeJson(view)) corrections.set(id, applied);
@@ -541,7 +545,11 @@ export function createSourceProgram(page: Page, config: { gateway: RuntimeDataGa
           reportError(id, final.get(id)!);
           yield { ...candidateMarker(id), sourceId: id, snapshot: final.get(id)!, raw: raw.get(id)! };
         }
-      } finally { controller.abort(); if (request.freshness === 'refresh' || scope !== contextScope) runner.forgetScope(scope); }
+      } finally {
+        controller.abort();
+        linked.dispose();
+        if (request.freshness === 'refresh' || scope !== contextScope) runner.forgetScope(scope);
+      }
     },
     dispose() { if (!config.candidateSession) candidateSession.dispose(); union.clear(); slotSearch.clear(); clearRecordJoinCache(runner); runner.dispose(); }
   };

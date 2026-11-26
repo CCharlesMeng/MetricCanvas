@@ -92,6 +92,7 @@
     oncancelexport?: () => void;
     selectedCell?: TableSelectedCell;
     onpage?: (pageIndex: number) => void;
+    onemptyretry?: () => void;
     onpagesize?: (pageSize: number) => void;
     onsort?: (sort: TableSortRule[]) => void;
     sortReset?:readonly TableSortRule[];
@@ -114,7 +115,7 @@
     pagination: currentPagination,
     searchDraft, searchOption, onsearchoption, exporting, exportError, onsearchdraft, onsearch, onexport, oncancelexport,
     selectedCell,
-    onpage,
+    onpage, onemptyretry,
     onpagesize,
     onsort, sortReset,
     onheaderfilter,
@@ -801,10 +802,16 @@
         {:else if data.main.snapshot.rows.length === 0}
           <tr>
             <td class="empty-row" colspan={Math.max(leaves.length + leadingColumnCount, 1)}>
+              {#snippet emptyContent()}
+                <span>暂无数据</span>
+                {#if onemptyretry}
+                  <button type="button" class="empty-retry" aria-label="重试" title="重试" onclick={onemptyretry}><span aria-hidden="true">↻</span></button>
+                {/if}
+              {/snippet}
               {#if props.variant === 'reportCompact'}
-                <span class="empty-message">暂无数据</span>
+                <span class="empty-message">{@render emptyContent()}</span>
               {:else}
-                <div class="empty-state">暂无数据</div>
+                <div class="empty-state">{@render emptyContent()}</div>
               {/if}
             </td>
           </tr>
@@ -888,6 +895,7 @@
 </div>
 
 <style>
+  .empty-retry { border: 0; background: transparent; color: inherit; font: inherit; cursor: pointer; }
   .empty-message, .empty-state {
     display: inline-flex;
     align-items: center;

@@ -1,3 +1,4 @@
+import { linkAbortSignals } from '../abort-signals';
 import { dqeTimeoutMs } from '../dqe-timeout';
 import {restoreCellFallbacks,queryResultFieldContract,validateContractRows,type EffectiveQuery,type Row,type FieldDefinition} from '@metriccanvas/page/internal';
 import type {QueryRunner} from '../query-runner';
@@ -30,7 +31,7 @@ export function validateRecordRows(rows:Row[],fields:Record<string,FieldDefiniti
 }
 async function readRecordBatch(plan:PagedJoinPlan,id:string,query:EffectiveQuery,runner:QueryRunner,scope:string,budget:RecordBudget){
   const timeout=AbortSignal.timeout(dqeTimeoutMs(plan.source.source.records!.timeoutMs));
-  const signal=AbortSignal.any([budget.signal,timeout]);
+  const { signal, dispose } = linkAbortSignals([budget.signal, timeout]);
   try{
     const result=await runner.run(query,{pageId:plan.page.id,dataSourceIds:[plan.sourceId,plan.source.source.members[id].source]},scope,signal);
     signal.throwIfAborted();
@@ -39,6 +40,8 @@ async function readRecordBatch(plan:PagedJoinPlan,id:string,query:EffectiveQuery
     budget.signal.throwIfAborted();
     if(timeout.aborted)throw Object.assign(new Error('记录关联单批读取超时'),{code:'DQE_TIMEOUT'});
     throw cause;
+  } finally {
+    dispose();
   }
 }
 export async function readRecordBatches(plan:PagedJoinPlan,id:string,query:EffectiveQuery,runner:QueryRunner,scope:string,budget:RecordBudget,domain=false):Promise<Row[]>{

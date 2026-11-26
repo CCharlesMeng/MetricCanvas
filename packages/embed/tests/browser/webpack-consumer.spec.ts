@@ -199,7 +199,9 @@ test('Webpack 5 pure_getters compression preserves async child updates without f
     expect(await page.evaluate(() => window.webpackChildProbe.calls)).toBe(2);
     await child.getByRole('button', { name: '下一页', exact: true }).click();
     await page.evaluate(() => window.webpackChildProbe.release(true));
-    await expect(child.getByText('明细暂不可用')).toBeVisible();
+    await expect(child.getByRole('columnheader').first()).toBeVisible();
+    await expect(child.getByText('暂无数据', { exact: true })).toBeVisible();
+    await expect(child).not.toContainText('明细暂不可用');
     await child.getByRole('button', { name: '重试', exact: true }).click();
     await page.evaluate(() => window.webpackChildProbe.release());
     await expect(child.getByRole('cell', { name: 'C01-021', exact: true })).toBeVisible();

@@ -6,6 +6,7 @@
   import type { TableRenderBinding } from '../../component-render';
   import { createRowExpansionController } from '../../../../runtime/src/table/expansion';
   import Table from '../../../../widgets/src/components/table/Table.svelte';
+  import TableDataDiagnostic from './TableDataDiagnostic.svelte';
   import ScopedTableContent from './ScopedTableContent.svelte';
 
   let { component, data, binding, snapshot }: { snapshot: DataSnapshot; component: TableComponent; data: NamedDataSlots & { main: NonNullable<NamedDataSlots['main']> }; binding: TableRenderBinding } = $props();
@@ -57,7 +58,8 @@
   }; });
 </script>
 
-<div aria-busy={snapshot.status === 'loading'} inert={snapshot.status === 'loading' && !data.main.progress} hidden={Boolean(component.props.rowExpansion?.selection && snapshot.status === 'error' && !data.main.progress)}>
+<TableDataDiagnostic pageId={contextPage.id} table={component} {snapshot} />
+<div aria-busy={snapshot.status === 'loading'} inert={snapshot.status === 'loading' && !data.main.progress}>
 <Table data={safeData} props={{ ...component.props, pagination: binding.paginationConfig }} view={binding.view}
   columnCandidates={binding.columnCandidates} oncandidatepreloadvisible={binding.oncandidatepreloadvisible}
   oncandidateopen={binding.oncandidateopen} oncandidatesearch={binding.oncandidatesearch} oncandidatemore={binding.oncandidatemore} oncandidateretry={binding.oncandidateretry}
@@ -73,4 +75,3 @@
   {/snippet}
 </Table>
 </div>
-{#if snapshot.status==='error' && component.props.rowExpansion?.selection && !data.main.progress}<div role="alert">{snapshot.error.message}</div>{/if}

@@ -54,10 +54,16 @@ test('an empty parent lookup uses the table empty state and a valid selection re
   await expect(child.getByRole('cell', { name: '上海', exact: true })).toBeVisible();
 });
 
-test('ambiguous and failed parent lookups still show diagnostics', async ({ page }) => {
-  const table = page.locator('[data-component="hierarchy/region-office-table"]');
-  await page.goto('/pages/table-hierarchy-standard-region?rep-office=O-multi');
-  await expect(table.getByRole('alert')).toHaveText('所选子级的父级归属不唯一');
-  await page.goto('/pages/table-hierarchy-standard-region?rep-office=O-error');
-  await expect(table.getByRole('alert')).toHaveText('父级定位查询失败或无权限');
-});
+for (const [office, reason] of [['O-multi', '所选子级的父级归属不唯一'], ['O-error', '父级定位查询失败或无权限']] as const) {
+  test(`parent lookup for ${office} keeps the empty table and reports the reason to diagnostics`, async ({ page }) => {
+    const diagnostics: string[] = [];
+    page.on('console', message => { if (message.type() === 'error') diagnostics.push(message.text()); });
+    await page.goto(`/pages/table-hierarchy-standard-region?rep-office=${office}`);
+    const table = page.locator('[data-component="hierarchy/region-office-table"]');
+    await expect(table.getByRole('columnheader', { name: '地区部', exact: true })).toBeVisible();
+    await expect(table.getByRole('cell', { name: '暂无数据', exact: true })).toBeVisible();
+    await expect(table.getByRole('alert')).toHaveCount(0);
+    await expect(table.getByRole('region', { name: '子表格' })).toHaveCount(0);
+    await expect.poll(() => diagnostics.some(message => message.includes(reason))).toBe(true);
+  });
+}

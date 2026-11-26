@@ -1,3 +1,4 @@
+import { withAbortSignals } from '@metriccanvas/engine';
 import { effectiveDqeItem } from '../../../../packages/data-execution/src/dqe/dqe';
 import { dqeDefaultSort } from '@metriccanvas/page/internal';
 import type { DataGateway, DataGatewayResult } from '@metriccanvas/engine';
@@ -61,17 +62,18 @@ export function createDecisionOpinionPreview(options: PreviewOptions = {}) {
       const cached = pages.get(key);
       if (cached) return structuredClone(cached);
       const controller = new AbortController();
-      const signal = parentSignal ? AbortSignal.any([parentSignal, controller.signal]) : controller.signal;
-      try {
-        const result = await mergeOpinionPage({ members, sort, ...window, batchSize: 16 }, source.read, signal);
-        signal.throwIfAborted();
-        pages.set(key, structuredClone(result));
-        if (pages.size > 8) pages.delete(pages.keys().next().value!);
-        return result;
-      } catch (cause) {
-        controller.abort();
-        throw cause;
-      }
+      return withAbortSignals([parentSignal, controller.signal], async signal => {
+        try {
+          const result = await mergeOpinionPage({ members, sort, ...window, batchSize: 16 }, source.read, signal);
+          signal.throwIfAborted();
+          pages.set(key, structuredClone(result));
+          if (pages.size > 8) pages.delete(pages.keys().next().value!);
+          return result;
+        } catch (cause) {
+          controller.abort();
+          throw cause;
+        }
+      });
     }
   };
   return { dataGateway, requests: source.requests };

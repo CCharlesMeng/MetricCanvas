@@ -1,3 +1,4 @@
+export { withAbortSignals } from './abort-signals';
 /** Lockstep engine integration; one-shot callers use the root entry. */
 export {debugWarn,runtimeWarningsEnabled} from './debug-warnings';
 export {inheritFinalizationCache,invalidateFinalizationCache} from './finalization-cache';

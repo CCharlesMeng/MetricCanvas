@@ -13,8 +13,11 @@ declare global {
   }
 }
 
-for (const mode of ['classic', 'esm'] as const) {
+for (const mode of ['classic', 'esm', 'esm-without-signal-any'] as const) {
   test(`${mode} 英文宿主的标题及指标行气泡使用中文并取消过期请求`, async ({ page }) => {
+    if (mode === 'esm-without-signal-any') {
+      await page.addInitScript(() => Object.defineProperty(AbortSignal, 'any', { value: undefined }));
+    }
     await page.goto('/examples/inline.html');
     await page.evaluate(async ({ demo, mode }) => {
       document.documentElement.lang = 'en-US';

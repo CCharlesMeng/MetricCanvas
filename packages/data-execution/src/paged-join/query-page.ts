@@ -1,3 +1,4 @@
+import { linkAbortSignals } from '../abort-signals';
 import { debugWarn } from '../debug-warnings';
 import { dqeTimeoutMs, MIN_DQE_TIMEOUT_MS } from '../dqe-timeout';
 import { createJoinProgress } from './progress';
@@ -21,7 +22,7 @@ function readyRows(snapshot:DataSnapshot):Row[]{
 
 async function runPageQuery(plan:PagedJoinPlan,id:string,query:EffectiveQuery,runner:QueryRunner,scope:string,input?:AbortSignal){
   const timeout=pageQueryTimeout(plan);
-  const signal=AbortSignal.any([...(input?[input]:[]),...(timeout?[timeout]:[])]);
+  const { signal, dispose } = linkAbortSignals([input, timeout]);
   try{
     const result=await runner.run(query,{pageId:plan.page.id,dataSourceIds:[plan.source.source.members[id].source]},scope,signal);
     signal.throwIfAborted();return result;
@@ -29,6 +30,8 @@ async function runPageQuery(plan:PagedJoinPlan,id:string,query:EffectiveQuery,ru
     input?.throwIfAborted();
     if(timeout&&timeout.aborted)throw Object.assign(new Error(plan.source.source.records?'记录分页单批查询超时':'当前页比较查询超时，请重试'),{code:'DQE_TIMEOUT'});
     throw cause;
+  } finally {
+    dispose();
   }
 }
 
