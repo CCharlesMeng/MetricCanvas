@@ -196,6 +196,7 @@ export function mapOption(
             {
               type: props.scatter === 'effect' ? ('effectScatter' as const) : ('scatter' as const),
               coordinateSystem: 'geo' as const,
+              encode: { tooltip: [2] }, // [longitude, latitude, metric]
               ...mapScatterSymbol(regionalOverview, regionalPinUrl, inlinePin),
               label: regionalOverview
                 ? {

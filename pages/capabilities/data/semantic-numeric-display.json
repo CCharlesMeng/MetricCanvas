@@ -93,6 +93,10 @@
           "role": "measure",
           "nullable": true,
           "unit": "%"
+        },
+        "province": {
+          "type": "string",
+          "role": "dimension"
         }
       },
       "source": {
@@ -114,7 +118,8 @@
             "minutes": 1234,
             "messages": 12345,
             "billing": 3666,
-            "missing": null
+            "missing": null,
+            "province": "上海市"
           }
         ]
       }
@@ -389,7 +394,11 @@
             "rows": [
               {
                 "label": "高比率",
-                "valueField": "limit",
+                "valueField": {
+                  "data": "main",
+                  "field": "limit",
+                  "format": "number-1"
+                },
                 "unit": "%"
               }
             ]
@@ -687,6 +696,27 @@
             "categoryField": "category",
             "valueField": "value",
             "labelLine": true
+          }
+        },
+        {
+          "id": "rate-map",
+          "type": "mapChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "values"
+          },
+          "props": {
+            "title": "地图百分比提示",
+            "scatter": "point",
+            "map": "china",
+            "nameField": "province",
+            "valueField": {
+              "data": "main",
+              "field": "limit",
+              "format": "percent-raw"
+            }
           }
         }
       ]

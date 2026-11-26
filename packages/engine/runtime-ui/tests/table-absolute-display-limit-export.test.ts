@@ -40,3 +40,18 @@ it('exports the actual demonstration with raw numeric values, threshold text, ar
   expect(sheet.getCell('C12').value).toBeNull();
   expect(data).toEqual(before);
 });
+
+it('keeps the column override above the default percent threshold in exported numeric cells', async () => {
+  const { component, data } = fixture();
+  const field = { data: 'main', field: 'change', format: 'percent-2-signed' } as const;
+  component.props.columns = [{ field }, { field, absoluteDisplayLimit: 800 }];
+  const bytes = await encodeTableWorkbook(component, data, new AbortController().signal);
+  const book = new ExcelJS.Workbook();
+  await book.xlsx.load(bytes.buffer);
+  const row = book.worksheets[0]!.getRow(3);
+  expect(row.getCell(1).value).toBe(-650);
+  expect(row.getCell(1).numFmt).toBe('"<-500%"');
+  expect(row.getCell(2).value).toBe(-650);
+  expect(row.getCell(2).numFmt).toContain('"%"');
+  expect(row.getCell(2).numFmt).not.toContain('500');
+});

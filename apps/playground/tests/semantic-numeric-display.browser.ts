@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { fileURLToPath } from 'node:url';
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
@@ -36,7 +37,7 @@ test('growth uses original baselines, preserves the table and exposes the declar
   await page.goto(`/pages/${fixture.id}`);
   const table = page.locator('[data-component="rules/growth-table"]');
   await expect(table.locator('tbody td[data-column-field="growth"]')).toHaveText([
-    '+12.3%', '—', '—', '—', '>500%', '-50%', '>500%', '<-500%'
+    '+12.3%', '—', '—', '—', '+500%', '-50%', '>500%', '<-500%'
   ]);
   await expect(table.locator('.cell-trend-arrow')).toHaveCount(0);
   const downloaded = page.waitForEvent('download');
@@ -65,4 +66,19 @@ test('chart canvas and hover keep physical units and use the em dash placeholder
   const chart = page.locator('[data-component="rules/storage-chart"] [_echarts_instance_]');
   await chart.hover({ position: { x: 120, y: 100 } });
   await expect(chart.getByText('1 TB', { exact: true })).toBeVisible();
+});
+
+test('map tooltip applies the default limit to an explicit raw percent format', async ({ page }) => {
+  await page.goto(`/pages/${fixture.id}`);
+  const chart = page.locator('[data-component="rules/rate-map"] [_echarts_instance_]');
+  await chart.scrollIntoViewIfNeeded();
+  const runtime = '/@fs' + fileURLToPath(new URL('../../../packages/engine/widgets/src/shared/echarts-runtime.ts', import.meta.url));
+  const [x, y] = await chart.evaluate(async (element, url) => {
+    const echarts = await import(url);
+    const instance = echarts.getInstanceByDom(element);
+    const point = instance.getOption().series[1].data[0];
+    return instance.convertToPixel({ geoIndex: 0 }, point.value.slice(0, 2)) as [number, number];
+  }, runtime);
+  await chart.hover({ position: { x, y } });
+  await expect(chart.getByText('>500%', { exact: true })).toBeVisible();
 });

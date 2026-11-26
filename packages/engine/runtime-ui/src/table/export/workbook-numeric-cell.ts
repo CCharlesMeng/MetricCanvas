@@ -1,6 +1,8 @@
 import { basicNumberFormat, type ResolvedField, type ValueFormat } from '@metriccanvas/page/internal';
 import type { CellObject } from 'write-excel-file/universal';
 import { numericScale, type NumericScale } from '../../../../widgets/src/shared/numeric-scale';
+import { ratioLimitText } from '../../../../widgets/src/shared/absolute-display-limit';
+import { appendDisplayUnit } from '../../../../widgets/src/shared/display-unit';
 import { percentDigits } from '../../../../widgets/src/shared/numeric-presentation';
 import { resolvedUnit } from '../../../../widgets/src/shared/field-presentation';
 import { basicWorkbookNumberFormat, registerWorkbookFallback, registerWorkbookPrecision } from './workbook-number-format';
@@ -89,13 +91,6 @@ function ratioDecimals(digits: number, signed: boolean, placeholder: string): Nu
   return { code: signed ? `+${base};-${base};0` : base, digits, suffix: '%', fallback: '0.00"%"' };
 }
 
-function ratioLimit(format: ValueFormat | undefined, value: number): string | undefined {
-  const magnitude = Math.abs(value);
-  if ((format === 'percent-adaptive' || format === 'percent-adaptive-signed') && magnitude >= 500) return value < 0 ? '<-500%' : '>500%';
-  if ((format === 'points-1-signed' && magnitude > 500) || (format === 'yoy-p-signed' && magnitude > 5)) return value < 0 ? '<-500P' : '>500P';
-  return undefined;
-}
-
 function numberStyle(field: ResolvedField, value: number, displayUnit?: string): NumberStyle {
   const { format } = field;
   const ratio = ratioStyle(format, value);
@@ -113,11 +108,11 @@ function decorateNumber(code: string, style: NumberStyle, arrow: string, after: 
   return code.split(';').map(section => `${prefix}${section}${percent}${suffix}`).join(';');
 }
 
-export function numericWorkbookCell(value: number, field: ResolvedField, displayUnit: string | undefined, arrow: string, after: boolean): CellObject {
+export function numericWorkbookCell(value: number, field: ResolvedField, displayUnit: string | undefined, arrow: string, after: boolean, absoluteDisplayLimit?: number): CellObject {
   const style = numberStyle(field, value, displayUnit);
-  const limit = ratioLimit(field.format, value);
+  const limit = absoluteDisplayLimit === undefined ? ratioLimitText(value, field.format, displayUnit) : undefined;
   if (limit) {
-    const label = displayUnit && !limit.endsWith(displayUnit) ? `${limit} ${displayUnit}` : limit;
+    const label = appendDisplayUnit(limit, value, displayUnit, field.format);
     const text = !arrow ? label : after ? `${label} ${arrow}` : `${arrow} ${label}`;
     return registerWorkbookFallback({ value, type: Number, format: literalWorkbookFormat(text) }, style.fallback);
   }

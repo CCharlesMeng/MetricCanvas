@@ -17,7 +17,7 @@
   }
 
   let { value, loading = false, shimmer, ringPercent, label = '完成率', missingText, format = 'percent-adaptive' }: Props = $props();
-  const formatted = $derived(formatValue(value, format, missingText));
+  const formatted = $derived(formatValue(value, format, missingText, { displayUnit: '%' }));
   const display = $derived(formatted.endsWith('%') || !hasDisplayValue(value) ? formatted : `${formatted}%`);
   const percent = $derived(display.endsWith('%'));
   const option = $derived(progressRingOption(loading ? 0 : (value ?? 0), ringPercent));

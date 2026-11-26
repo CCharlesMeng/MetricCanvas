@@ -4,13 +4,14 @@ import { formatTime } from './time-format';
 import { formatAdaptiveMoney } from './adaptive-money-format';
 import { adaptiveNumericText } from './numeric-presentation';
 import { mobilePresentation } from './presentation-environment';
+import { ratioLimitText } from './absolute-display-limit';
 import { numericScale } from './numeric-scale';
 
 export type ValuePolarity = 'positive' | 'negative' | 'neutral';
 type SignedNumberFormat = Extract<ValueFormat, `number${string}-signed`>;
 
 export const DEFAULT_NULL_TEXT = '—';
-export interface ValueFormatContext { unit?: string; mobile?: boolean }
+export interface ValueFormatContext { unit?: string; mobile?: boolean; displayUnit?: string; absoluteDisplayLimit?: number }
 
 /** 是否呈现真实值；0、false 和恰好等于缺省文案的文本均有效。 */
 export function hasDisplayValue(value: FieldValue | undefined): value is NonNullable<FieldValue> {
@@ -28,7 +29,10 @@ export function formatValue(
   context: ValueFormatContext = {}
 ): string {
   if (!hasDisplayValue(value)) return missingValueText(missingText);
-  if (!format) return typeof value === 'number' ? groupNumberText(String(value)) : String(value);
+  if (!format) {
+    if (typeof value !== 'number') return String(value);
+    format = 'number';
+  }
   if (format === 'text') return String(value);
   if (typeof format === 'object') return formatTime(value, format);
   if (format === 'period') return formatPeriod(String(value));
@@ -49,6 +53,10 @@ function missingValueText(text: string): string {
 }
 
 function formatNumericValue(numeric: number, format: ValueFormatPreset, context: ValueFormatContext): string {
+  if (context.absoluteDisplayLimit === undefined) {
+    const limited = ratioLimitText(numeric, format, context.displayUnit);
+    if (limited !== undefined) return limited;
+  }
   const adaptive = adaptiveNumericText(numeric, format, context.unit, context.mobile ?? mobilePresentation());
   if (adaptive !== undefined) return adaptive;
   if (format === 'percent-raw') return `${numeric}%`;
@@ -59,8 +67,6 @@ function formatNumericValue(numeric: number, format: ValueFormatPreset, context:
 }
 
 function pointValueText(value: number, format: 'points-1-signed' | 'yoy-p-signed'): string {
-  const points = format === 'yoy-p-signed' ? value * 100 : value;
-  if (Math.abs(points) > 500) return points < 0 ? '<-500P' : '>500P';
   if (format === 'yoy-p-signed') return yoyPresentation(value).text;
   return `${signedNumberPresentation(value, 'number-1-ungrouped-signed').text}P`;
 }

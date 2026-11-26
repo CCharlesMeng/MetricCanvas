@@ -10,7 +10,6 @@ export function decimalText(value: number, digits = 0, grouped = true): string {
 
 export function adaptivePercent(value: number, signed = false): string {
   const magnitude = Math.abs(value);
-  if (magnitude >= 500) return value < 0 ? '<-500%' : '>500%';
   const digits = percentDigits(magnitude);
   const text = magnitude > 0 && magnitude < 1e-20 ? String(magnitude) : decimalText(magnitude, digits, false);
   const sign = text === '0' ? '' : value < 0 ? '-' : signed ? '+' : '';

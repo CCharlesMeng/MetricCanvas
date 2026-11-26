@@ -1,3 +1,4 @@
+import { hasRatioSuffix } from '../../shared/display-unit';
 import { formatFieldValue } from '../../shared/field-presentation';
 import type { CategoryBreakdownProps, ColorRule, FieldValue } from '@metriccanvas/page/internal';
 import type { MainDataSlots, ResolvedField } from '../../shared/component-data';
@@ -39,8 +40,8 @@ export interface CategoryColumnPresentation {
 }
 
 function columnValue(value: FieldValue | undefined, resolved: ResolvedField, unit?: string): string {
-  const text = formatFieldValue(value, resolved);
-  return unit && hasDisplayValue(value) ? `${text} ${unit}` : text;
+  const text = formatFieldValue(value, resolved, undefined, unit);
+  return unit && hasDisplayValue(value) && !hasRatioSuffix(text, unit) ? `${text} ${unit}` : text;
 }
 
 /**

@@ -42,7 +42,7 @@ export function tableWorkbookCell(bodyColumn: TableColumn, row: AlignedTableRow,
   if (resolved.format && !compatibleTableFormat(value, resolved.format)) {
     return { value: formatTableCell(value, resolved.format), type: String };
   }
-  if (typeof value === 'number') return numericWorkbookCell(value, resolved, column.unit, alignedCellArrow(column, data, row), column.arrowRule?.position === 'after');
+  if (typeof value === 'number') return numericWorkbookCell(value, resolved, column.unit, alignedCellArrow(column, data, row), column.arrowRule?.position === 'after', column.absoluteDisplayLimit);
   return valueCell(value, resolved.definition?.type);
 }
 

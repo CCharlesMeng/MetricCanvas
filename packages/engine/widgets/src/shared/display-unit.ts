@@ -1,10 +1,15 @@
 import type { FieldValue, ValueFormat } from '@metriccanvas/page/internal';
 import { finiteNumber } from './value-format';
 
+export function hasRatioSuffix(text: string | undefined, unit?: string): boolean {
+  if (unit === 'P') return text?.endsWith('P') === true;
+  return (unit === '%' || unit === '％') && text?.endsWith('%') === true;
+}
+
 /** Only declared presentation is joined; never infer or rescale a business unit. */
 export function appendDisplayUnit(text: string, value: FieldValue | undefined, unit?: string, format?: ValueFormat): string {
   if (typeof format === 'object' || !unit || finiteNumber(value) === undefined) return text;
-  if (text.endsWith(unit)) return text;
+  if (text.endsWith(unit) || hasRatioSuffix(text, unit)) return text;
   const suffix = presetUnit(format, text);
   const number = suffix && unit.startsWith(suffix) ? text.slice(0, -suffix.length) : text;
   return `${number} ${unit}`;
