@@ -43,6 +43,7 @@
       {@const resolved = resolveField(item.field, data)}
       {@const value = fieldValue(item.field, data)}
       {@const semantic = semanticHtmlFieldPresentation(resolved, value)}
+      {@const text = formatFieldValue(value, resolved, item.unit)}
       <div class="entry">
         <dt>
           {#if item.icon}
@@ -60,9 +61,9 @@
           {:else if semantic}
             <SemanticHtml source={semantic.source} format={semantic.format} inline />
           {:else}
-            {formatFieldValue(value, resolved, item.unit)}
+            {text}
           {/if}
-          {#if !loading && hasDisplayValue(value) && fieldUnitText(item.unit, resolved.format)}<span class="unit">{item.unit}</span>{/if}
+          {#if !loading && hasDisplayValue(value) && fieldUnitText(item.unit, resolved.format, text)}<span class="unit">{item.unit}</span>{/if}
         </dd>
       </div>
     {/each}

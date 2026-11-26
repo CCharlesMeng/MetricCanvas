@@ -4,7 +4,7 @@ Schema 6.142 支持用 `table.props.height` 指定屏幕表格的外框总高度
 
 Schema 6.141 的地图支持提示框按行展示指标和同排对比值，并在散点的组织名称后显示地图指标。地图可直接使用同轮数据源已经就绪的组织行，等待期间逐步补齐数值。见[地图提示与散点标签](docs/page-metadata/components/mapChart.md#map-tooltip-rows)及 `/pages/ioc-region-map-demo`。
 
-百分点格式与同比 P 格式统一在舍入前判断阈值。超过 `500P` 显示 `>500P`，低于 `-500P` 显示 `<-500P`，恰好等于 `±500P` 时正常显示。沿用现有格式声明。见[百分点差值](docs/page-metadata/field-bindings-and-formats.md#百分点差值677)与合成入口 `/pages/metric-card-value-color`、`/pages/yoy-p-format-demo`。
+百分点格式与同比 P 格式统一在舍入前判断阈值。超过 `500P` 显示 `>500P`，低于 `-500P` 显示 `<-500P`，恰好等于 `±500P` 时正常显示。百分比在指标卡、地图提示、表格等位置同样默认严格越界才显示阈值，表格可用 `absoluteDisplayLimit` 覆盖。见[百分点差值](docs/page-metadata/field-bindings-and-formats.md#百分点差值677)与合成入口 `/pages/metric-card-value-color`、`/pages/yoy-p-format-demo`。
 
 Schema 6.140 支持 Dashboard 自然期间在 `default.finalizationName` 传入非空定稿名称数组。引擎一次查询，取有效当年日期中的最早月份，全部不可用时沿用当前月。见[多个定稿名称](docs/page-metadata/filters.md#multiple-finalization-names)与合成入口 `/pages/finalization-default-time`。
 
@@ -152,7 +152,7 @@ IOC 页头返回统一使用 `props.back:true`，默认按浏览器后退能力�
 
 6.95：表格列 `selection.writes` 可用 `level` 显式选择目标维度筛选的组织层级；复用页头 Region 状态、候选校验和查询绑定。省略保持原默认层级行为。见[单元格点击与筛选联动](docs/page-metadata/components/table.md#单元格点击与筛选联动)，入口 `/pages/ioc-header-controls`。
 
-6.93：按可信字段语义全局选择金额、比率、人数、资源、存储与时长格式，组件显式格式优先；增加9个封闭预设，字段净增0。自适应百分比在原始绝对值达到500时显示阈值文案，正值为 `>500%`，负值为 `<-500%`。表格箭头由列级 `arrowRule` 声明。同比/环比基期非正或缺失返回null，普通ratio保持。系统空值统一显示单个长横线 `—`，图表与百分比同样不追加百分号或单位。见[统一语义格式](docs/page-metadata/field-bindings-and-formats.md#numeric-value-display)，合成入口 `/pages/semantic-numeric-display`。
+6.93：按可信字段语义全局选择金额、比率、人数、资源、存储与时长格式，组件显式格式优先；增加9个封闭预设，字段净增0。所有百分比在原始绝对值严格超过500时默认显示阈值文案，正值为 `>500%`，负值为 `<-500%`。表格箭头由列级 `arrowRule` 声明。同比/环比基期非正或缺失返回null，普通ratio保持。系统空值统一显示单个长横线 `—`，图表与百分比同样不追加百分号或单位。见[统一语义格式](docs/page-metadata/field-bindings-and-formats.md#numeric-value-display)，合成入口 `/pages/semantic-numeric-display`。
 
 普通查询表格首屏按 DQE `order.order_by_field/type` 回显列头方向，用户操作后沿用会话排序；不新增字段或改变查询。常量基线与指标排序可以同时使用。声明和边界见[查询默认排序](docs/page-metadata/components/table.md#查询默认排序的首屏方向)，入口 `/pages/query-sort-baseline`。
 

@@ -68,14 +68,15 @@
   {@const raw = fieldValue(row.valueField, data)}
   {@const field = resolveField(row.valueField, data)}
   {@const color = !loading && row.colorRule ? valueColor(raw, row.colorRule, field.format) : undefined}
+  {@const text = formatFieldValue(raw, field, row.unit)}
   <span class="row-value" style:color={valueColorStyle(color)}>
     {#if loading}
       {@render loadingValue()}
     {:else}
-      {formatFieldValue(raw, field, row.unit)}
+      {text}
     {/if}
   </span>
-  {@const unit = hasDisplayValue(raw) ? fieldUnitText(row.unit, field.format) : undefined}
+  {@const unit = hasDisplayValue(raw) ? fieldUnitText(row.unit, field.format, text) : undefined}
   {#if !loading && unit}<span class="unit">{unit}</span>{/if}
 {/snippet}
 
@@ -98,7 +99,7 @@
             type="button"
             class="value-line value-link"
             data-metric-row-action
-            aria-label={`${row.label} ${fieldText(row.valueField)}`}
+            aria-label={`${row.label} ${fieldText(row.valueField, row.unit)}`}
             onclick={() => onaction?.(action)}
           >
             {@render metricValue(row)}
@@ -115,7 +116,7 @@
             }}
             class="value-line value-link"
             data-metric-row-link
-            aria-label={`${row.label} ${fieldText(row.valueField)}`}
+            aria-label={`${row.label} ${fieldText(row.valueField, row.unit)}`}
             onclick={(event) => activateLink(row.valueField, event)}
           >
             {@render metricValue(row)}
@@ -128,6 +129,7 @@
             {#each row.changes as change, changeIndex (`${change.label}:${changeIndex}`)}
               {@const value = loading ? undefined : fieldValue(change.field, data)}
               {@const field = resolveField(change.field, data)}
+              {@const text = formatChangeValue(value, field, change.tone === 'positive', change.unit)}
               {@const color = changeValueColor(value, change, field.format)}
               {@const direction = change.colorRule || isSignedNumberFormat(field.format) ? valuePolarity(value, field.format) : color === 'green' ? 'positive' : color === 'red' ? 'negative' : 'neutral'}
               <span class:positive={color === 'green'} class:negative={color === 'red'} class="change">
@@ -144,7 +146,7 @@
                   {#if loading}
                     {@render loadingValue()}
                   {:else}
-                    <span>{formatChangeValue(value, field, change.tone === 'positive')}{#if hasDisplayValue(value) && fieldUnitText(change.unit, field.format)}<span class="change-unit">{change.unit}</span>{/if}</span>
+                    <span>{text}{#if hasDisplayValue(value) && fieldUnitText(change.unit, field.format, text)}<span class="change-unit">{change.unit}</span>{/if}</span>
                   {/if}
                 </span>
               </span>

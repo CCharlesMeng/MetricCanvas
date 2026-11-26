@@ -53,3 +53,13 @@ it('inherits the limit for numeric pinned values and leaves pinned labels untouc
   const label = tableRowColumn({ ...column, pinnedTop: { text: '合计' } }, pinned, slots);
   expect(alignedCellText(label.field, slots, pinned, undefined, undefined, label.absoluteDisplayLimit)).toBe('合计');
 });
+
+it.each([
+  ['percent-2-signed', -650, 800, '-650%'],
+  ['percent-adaptive', -800, 800, '-800%'],
+  ['percent-raw', -801, 800, '> 800'],
+  ['points-1-signed', 650, 800, '+650P'],
+  ['yoy-p-signed', 6.5, 8, '+650P']
+] as const)('column override replaces the default for %s', (format, value, limit, expected) => {
+  expect(text(value, { ...column, field: { data: 'main', field: 'value', format }, absoluteDisplayLimit: limit })).toBe(expected);
+});

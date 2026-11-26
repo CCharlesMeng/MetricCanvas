@@ -28,7 +28,7 @@ export const CHART_PALETTE = [
 
 /** 柱、线与混合图的数值入口：显式格式优先，缺省最多两位小数。 */
 export function formatChartNumber(value: FieldValue | undefined, format?: ValueFormat, missingText?: string, unit?: string, displayUnit?: string): string {
-  return appendDisplayUnit(formatValue(value, format ?? 'number-2', missingText, { unit }), value, displayUnit, format);
+  return appendDisplayUnit(formatValue(value, format ?? 'number-2', missingText, { unit, displayUnit }), value, displayUnit, format);
 }
 
 type AxisFormat = ValueFormat | AxisField | undefined;

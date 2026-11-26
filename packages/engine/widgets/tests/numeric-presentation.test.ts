@@ -23,14 +23,14 @@ describe('semantic numeric presentation', () => {
   it.each([
     [0.001, '0.001%'], [0.009, '0.009%'], [0.099, '0.1%'], [0.1, '0.1%'],
     [0.999, '1%'], [1, '1%'], [9.995, '10%'], [10, '10%'], [12.34, '12.3%'],
-    [99.99, '100%'], [100, '100%'], [499.9, '500%'], [500, '>500%'], [650.3, '>500%'],
-    [-499.9, '-500%'], [-500, '<-500%'], [-650.3, '<-500%'], [-0.001, '-0.001%'], [0, '0%'], [-0, '0%']
+    [99.99, '100%'], [100, '100%'], [499.9, '500%'], [500, '500%'], [650.3, '>500%'],
+    [-499.9, '-500%'], [-500, '-500%'], [-650.3, '<-500%'], [-0.001, '-0.001%'], [0, '0%'], [-0, '0%']
   ] as const)('ratio %s → %s', (value, expected) => {
     expect(formatValue(value, 'percent-adaptive')).toBe(expected);
   });
   it.each([
-    [499.9, '+500%'], [500, '>500%'], [650, '>500%'],
-    [-499.9, '-500%'], [-500, '<-500%'], [-650, '<-500%'], [0, '0%']
+    [499.9, '+500%'], [500, '+500%'], [650, '>500%'],
+    [-499.9, '-500%'], [-500, '-500%'], [-650, '<-500%'], [0, '0%']
   ] as const)('signed percentage %s → %s', (value, expected) => {
     expect(formatValue(value, 'percent-adaptive-signed')).toBe(expected);
   });
@@ -87,3 +87,18 @@ it('keeps personalized money defaults', () => {
   const field = resolveField('amount', data);
   expect(formatFieldValue(12345, field)).toBe('1.2万');
 });
+
+it.each(['percent-0', 'percent-1', 'percent-2', 'percent-2-signed', 'percent-raw'] as const)(
+  '%s limits the unrounded percentage on both sides', format => {
+    expect(formatValue(500.0001, format)).toBe('>500%');
+    expect(formatValue(-500.0001, format)).toBe('<-500%');
+    expect(formatValue(500, format)).toBe(format === 'percent-2-signed' ? '+500%' : '500%');
+    expect(formatValue(-500, format)).toBe('-500%');
+  }
+);
+
+it.each([['%', '>500%'], ['％', '>500%'], ['P', '>500P'], ['元', '650'], ['个', '650']] as const)(
+  'uses the displayed unit %s for plain numeric bindings', (displayUnit, expected) => {
+    expect(formatValue(650, 'number-1', undefined, { displayUnit })).toBe(expected);
+  }
+);

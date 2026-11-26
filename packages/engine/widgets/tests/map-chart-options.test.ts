@@ -43,6 +43,7 @@ describe('mapOption', () => {
     };
 
     expect(option.tooltip.valueFormatter([121.47, 31.23, 4.24])).toBe('+4.24%');
+    expect(option.tooltip.valueFormatter([121.47, 31.23, -650])).toBe('<-500%');
   });
 
   it('非数值的指标不污染 visualMap 的取值区间', () => {

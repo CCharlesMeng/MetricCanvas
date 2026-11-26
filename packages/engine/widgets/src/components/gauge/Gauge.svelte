@@ -30,7 +30,7 @@
   const min = $derived(props.min ?? 0);
   const max = $derived(props.max ?? 100);
   const progress = $derived(numeric === undefined ? 0 : gaugeProgress(numeric, min, max));
-  const display = $derived(formatValue(raw, resolved.format, resolved.missingText, { unit: resolved.unit }));
+  const display = $derived(formatValue(raw, resolved.format, resolved.missingText, { unit: resolved.unit, displayUnit: props.unit }));
   const track = gaugeArc(1, 36);
   const valueArc = $derived(gaugeArc(progress, 36));
 </script>
@@ -46,7 +46,7 @@
       </svg>
       <div class="reading">
         <strong>{display}</strong>
-        {#if hasDisplayValue(raw) && fieldUnitText(props.unit, resolved.format)}<span>{props.unit}</span>{/if}
+        {#if hasDisplayValue(raw) && fieldUnitText(props.unit, resolved.format, display)}<span>{props.unit}</span>{/if}
       </div>
     </button>
   {:else}
@@ -57,7 +57,7 @@
       </svg>
       <div class="reading">
         <strong>{display}</strong>
-        {#if hasDisplayValue(raw) && fieldUnitText(props.unit, resolved.format)}<span>{props.unit}</span>{/if}
+        {#if hasDisplayValue(raw) && fieldUnitText(props.unit, resolved.format, display)}<span>{props.unit}</span>{/if}
       </div>
     </div>
   {/if}

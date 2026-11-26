@@ -1,6 +1,6 @@
 import { debugWarn, runtimeWarningsEnabled } from '@metriccanvas/data-execution/runtime';
 import { fieldContractViolations, type FieldBinding, type TableColumn, type FieldValue, type ValueFormat } from '@metriccanvas/page/internal';
-import { formatValue, finiteNumber, hasDisplayValue } from '../../shared/value-format';
+import { formatValue, finiteNumber, hasDisplayValue, type ValueFormatContext } from '../../shared/value-format';
 
 import { resolveField, type NamedDataSlots } from '../../shared/component-data';
 import { timeInstant } from '../../shared/time-format';
@@ -15,8 +15,8 @@ export function compatibleTableFormat(value: FieldValue, format: ValueFormat): b
   return finiteNumber(value) !== undefined;
 }
 /** Format-only mismatch retains the typed value; the current cell displays its original text. */
-export function formatTableCell(value: FieldValue | undefined, format?: ValueFormat, missingText?: string, unit?: string): string {
-  if (!hasDisplayValue(value) || !format || compatibleTableFormat(value, format)) return formatValue(value, format, missingText, { unit });
+export function formatTableCell(value: FieldValue | undefined, format?: ValueFormat, missingText?: string, context?: ValueFormatContext): string {
+  if (!hasDisplayValue(value) || !format || compatibleTableFormat(value, format)) return formatValue(value, format, missingText, context);
   return String(value);
 }
 

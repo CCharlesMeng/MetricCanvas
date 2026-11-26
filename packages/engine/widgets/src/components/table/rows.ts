@@ -1,3 +1,4 @@
+import { resolvedUnit } from '../../shared/field-presentation';
 import { absoluteDisplayText } from '../../shared/absolute-display-limit';
 import { appendDisplayUnit } from '../../shared/display-unit';
 import { tablePinnedSlots, tableLeafColumns, restoreCellFallbacks, rowCellFallback, pinnedSnapshotError, type TableProps, type TableColumn, type FieldBinding, type FieldValue, type Row } from '@metriccanvas/page/internal';
@@ -146,7 +147,7 @@ export function alignedCellText(binding: FieldBinding, data: NamedDataSlots, row
   const limited = absoluteDisplayText(value, absoluteDisplayLimit);
   if (limited !== undefined) return appendDisplayUnit(limited, value, unit);
   const text = formatTableCell(value, resolved.format, resolved.missingText,
-    resolved.definition && 'unit' in resolved.definition ? resolved.definition.unit : undefined);
+    { unit: resolvedUnit(resolved), displayUnit: unit, absoluteDisplayLimit });
   return appendDisplayUnit(text, value, unit, resolved.format);
 }
 
