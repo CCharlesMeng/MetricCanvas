@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "6.142",
+  "id": "table-fixed-height",
+  "layout": "dashboard",
+  "meta": { "title": "表格外框高度" },
+  "dataSources": {
+    "records": {
+      "fields": { "item": { "type": "string", "role": "dimension" } },
+      "source": { "type": "inline", "rows": [
+        { "item": "记录 01" },
+        { "item": "记录 02" },
+        { "item": "记录 03" },
+        { "item": "记录 04" },
+        { "item": "记录 05" },
+        { "item": "记录 06" },
+        { "item": "记录 07" },
+        { "item": "记录 08" },
+        { "item": "记录 09" },
+        { "item": "记录 10" },
+        { "item": "记录 11" },
+        { "item": "记录 12" },
+        { "item": "记录 13" },
+        { "item": "记录 14" },
+        { "item": "记录 15" },
+        { "item": "记录 16" },
+        { "item": "记录 17" },
+        { "item": "记录 18" },
+        { "item": "记录 19" },
+        { "item": "记录 20" }
+      ] }
+    }
+  },
+  "sections": [{
+    "id": "comparison",
+    "container": "plain",
+    "components": [
+      {
+        "id": "fixed", "type": "table", "layout": { "span": 6 }, "data": { "main": "records" },
+        "props": { "height": 320, "expand": true, "title": "固定高度", "columns": [{ "field": "item", "title": "记录" }] }
+      },
+      {
+        "id": "default", "type": "table", "layout": { "span": 6 }, "data": { "main": "records" },
+        "props": { "title": "默认高度", "columns": [{ "field": "item", "title": "记录" }] }
+      }
+    ]
+  }]
+}

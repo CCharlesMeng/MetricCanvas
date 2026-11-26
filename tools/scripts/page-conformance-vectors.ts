@@ -176,6 +176,17 @@ export const invariants: InvariantDefinition[] = [
     ]
   },
   {
+    id: 'table-height', description: '表格屏幕外框可声明正整数像素高度', valid: ['table-fixed-height'],
+    cases: [
+      { case: 'table-height-version', base: 'table-fixed-height', expect: /由 6.142 引入/, mutate: document => {
+        document.schemaVersion = '6.141';
+      } },
+      { case: 'table-height-zero', base: 'table-fixed-height', expect: /height|>= 1|> 0|大于|范围/, mutate: document => {
+        firstComponent(document).props.height = 0;
+      } }
+    ]
+  },
+  {
     id: 'table-expand',
     description: '6.137 顶层表格可选择展开至分区整行',
     valid: ['table-expand'],

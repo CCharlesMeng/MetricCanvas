@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.141",
-  "schemaSha256": "c40184a8d67e0d0d991d75179dffd3e5fa36e94fa121b5a46b2574e8ee3da1fb",
+  "schemaVersion": "6.142",
+  "schemaSha256": "bcc2ecce60d25c5745cdc50babd2472597eed15ad873c3b70c8e928a6d620d05",
   "modules": {
     "page.md": {
       "title": "页面、版本与布局",
@@ -743,6 +743,7 @@
       "examples": [
         "table-absolute-display-limit",
         "table-expand",
+        "table-fixed-height",
         "table-trend-arrows",
         "query-dashboard",
         "reference-branches-page",
@@ -1427,7 +1428,8 @@
         "6.138",
         "6.139",
         "6.140",
-        "6.141"
+        "6.141",
+        "6.142"
       ]
     },
     {
@@ -14629,6 +14631,12 @@
       "ref": "#/definitions/textValue"
     },
     {
+      "pointer": "#/definitions/tableComponent/properties/props/properties/height",
+      "path": "@tableComponent.props.height",
+      "required": "本分支可选",
+      "module": "components/table.md"
+    },
+    {
       "pointer": "#/definitions/tableComponent/properties/props/properties/expand",
       "path": "@tableComponent.props.expand",
       "required": "本分支可选",
@@ -24176,5 +24184,5 @@
     "examples": [],
     "branches": []
   },
-  "semanticSourceDigest": "04dd987d9e82e57f3d3bdecd1bb8a43555a41ff57bbc60f28d6e640527a32b63"
+  "semanticSourceDigest": "e9b53ed926b0ceb5673beb6947b570299f33e9023e9b95baa2943f9ea5b55306"
 }

@@ -209,6 +209,7 @@ export const tableComponentZ = z
         rowVisibleWhen: conditionZ.optional(),
         title: textValueZ.optional(),
         subtitle: textValueZ.optional(),
+        height: z.int().positive().optional().describe('屏幕表格外框的总高度，单位为像素'),
         expand: z.boolean().optional().describe('允许表格展开至分区整行并收起同行组件'),
         toolbar: z.object({
           search: z.union([z.object({

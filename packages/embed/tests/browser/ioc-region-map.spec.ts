@@ -77,9 +77,12 @@ test('正式合同商务页从代表处 URL 恢复，按授权父级选择中国
   await expect(page.locator('[data-component="overview-content/world-map"] canvas')).toBeVisible();
   const table = page.locator('[data-component="overview-content/global-overview-table"]');
   const canvas = page.locator('[data-component="overview-content/world-map"] canvas');
+  const frame = table.locator('.table-widget');
+  await expect(frame).toHaveCSS('height', '576px');
   await table.getByRole('button', { name: '放大表格' }).click();
   await expect(canvas).toBeHidden();
   await page.evaluate(() => new Promise<void>(done => requestAnimationFrame(() => requestAnimationFrame(() => done()))));
   await table.getByRole('button', { name: '还原表格' }).click();
   await expect(canvas).toBeVisible();
+  await expect(frame).toHaveCSS('height', '576px');
 });

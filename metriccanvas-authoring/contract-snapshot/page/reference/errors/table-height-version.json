@@ -1,0 +1,27 @@
+{
+  "case": "table-height-version",
+  "invariant": "table-height",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "表格可声明屏幕外框总高度 由 6.142 引入，文档声明的是 6.141",
+      "paths": [
+        "/sections/0/components/0/props/height"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "sections": [
+      {
+        "components": [
+          {
+            "props": {
+              "height": 320
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/table-height-version.json"
+}

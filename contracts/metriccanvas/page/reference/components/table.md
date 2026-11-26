@@ -204,6 +204,12 @@ Excel、PDF、PNG共用列规则，导出开始冻结筛选、事实、有效列
 
 可观察入口：`/pages/table-long-text`，使用内联合成审批意见，覆盖四种外观、短文本、空值、不同长度、组合 Emoji 和多行原文。操作及启动方式见 `pages/capabilities/table/README.md`，不代表真实 DQE/Relay 验收。
 
+<a id="table-height"></a>
+
+## 表格外框高度（6.142）
+
+`props.height` 为可选的正整数，单位为像素。它指定屏幕上整张表格组件的高度，包含标题、工具栏、表头、表体、分页及内边距。白色卡面适用时随组件定高。记录较少时保留剩余空间，记录较多时在表内滚动。放大至分区整行时沿用此高度。省略后沿用原有布局和十二行可视上限。该属性只控制显示，取数、分页和 Excel 导出按各自原有配置运行，PDF/PNG 静态导出展开应导出的记录。示例为 `/pages/table-fixed-height`。
+
 ## 十二行可视高度
 
 所有表格（含普通、`forecastMatrix`、`embedded`、`reportCompact`、Tab、详情及行内子表）默认最多显示十二行数据的高度，不足十二行时按实际内容收缩；更多数据在表格内部纵向滚动，表头保持可见，分页条留在滚动区外。多级表头与独立置顶汇总行单独计高，不占十二行数据名额；按实际渲染行高计算，长文本换行和窗口宽度变化后重新测量。展开子表在父表的可视区域内滚动，不继续撑高父表。
@@ -606,7 +612,7 @@ sign 模式的零、负零及缺失不显示箭头；fixed 模式与固定颜色
 配置示例见 [table-expand](../examples/table-expand.json)，Playground 入口 `/pages/table-expand`。
 
 
-页面协议 6.141。结构真源为本册[schema.json](../schema.json)，SHA256 `c40184a8d67e0d0d991d75179dffd3e5fa36e94fa121b5a46b2574e8ee3da1fb`。字段表自动生成；可选不等于有默认值。
+页面协议 6.142。结构真源为本册[schema.json](../schema.json)，SHA256 `bcc2ecce60d25c5745cdc50babd2472597eed15ad873c3b70c8e928a6d620d05`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -798,6 +804,16 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/subtitl
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | 引用 #/definitions/textValue | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f686569676874"></a>
+
+### `@tableComponent.props.height`
+
+Schema位置：`#/definitions/tableComponent/properties/props/properties/height`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "integer" | 本分支可选 | exclusiveMinimum=0; maximum=9007199254740991 | Schema未设默认；装配/运行时默认见语义说明 | 屏幕表格外框的总高度，单位为像素 |
 
 <a id="schema-232f646566696e6974696f6e732f7461626c65436f6d706f6e656e742f70726f706572746965732f70726f70732f70726f706572746965732f657870616e64"></a>
 
@@ -4273,6 +4289,7 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/actions
 - [forecastMatrix](../examples/component-table-forecastMatrix.json)：独立完整页面，保留必要语义依赖。
 - [table-absolute-display-limit](../examples/table-absolute-display-limit.json)：完整合法页面；查询仅为静态契约证据。
 - [table-expand](../examples/table-expand.json)：完整合法页面；查询仅为静态契约证据。
+- [table-fixed-height](../examples/table-fixed-height.json)：完整合法页面；查询仅为静态契约证据。
 - [table-trend-arrows](../examples/table-trend-arrows.json)：完整合法页面；查询仅为静态契约证据。
 - [query-dashboard](../examples/query-dashboard.json)：完整合法页面；查询仅为静态契约证据。
 - [reference-branches-page](../examples/reference-branches-page.json)：完整合法页面；查询仅为静态契约证据。
