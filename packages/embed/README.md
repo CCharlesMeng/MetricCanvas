@@ -195,7 +195,7 @@ const runtime = MetricCanvas.mount('#dashboard', {
 
 Embed 通过事件通知筛选变化和导航。链接默认跳转；若要接管，使用 `navigation.navigate` 返回 `true`（见[集成应用契约](../../docs/host-contract.md)），不要在观察事件中重复跳转。筛选变化不会自动写入地址栏，集成应用可选择同步。查询串使用普通值，由接收页声明解释；没有私有类型前缀。
 
-`data-error` 事件在页面数据源进入错误态(或错误内容变化)时上抛一次，携带页面数据源 id、稳定查询错误分类(`DataErrorEvent['code']`，未携带分类的异常为 `UNKNOWN`)与脱值消息。集成应用按 `code` 决定重试、引导重新登录或展示失败，不要解析 `message` 字符串。
+切页、更新筛选或手动中止查询时，统一运行时静默处理 `AbortError` 和 `DQE_CANCELLED`。超时和其他查询失败通过 `data-error` 通知集成应用。事件在页面数据源进入错误态（或错误内容变化）时上抛一次，携带页面数据源 id、稳定查询错误分类(`DataErrorEvent['code']`，未携带分类的异常为 `UNKNOWN`)与脱值消息。集成应用按 `code` 决定重试、引导重新登录或展示失败，不要解析 `message` 字符串。
 
 `onAuthRequired` 是可选运行输入，适用于 DQE HTTP 401、403、419。传入后 MC 先终止当前页面请求、丢弃迟到结果并清理自身页面缓存，再通知 `auth-required {status}` 并调用一次方法；不等待登录、不重试、不更改凭据。未传方法时只通知，保留原有错误态。网关配置和页面 JSON 不变；其他错误不触发此处理。`update` 省略方法即移除，替换方法本身不重启查询；已失效实例须 `destroy` 后重新挂载。应用自行负责登录地址、凭据及自身缓存。具体范围见[集成应用契约](../../docs/host-contract.md#dqe-401--403--419-登录处理)。
 

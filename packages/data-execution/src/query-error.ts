@@ -1,15 +1,17 @@
 import { isQueryErrorCode, type QueryError } from '@metriccanvas/page/internal';
 
-/**
- * 把数据网关的拒绝保留为结构化查询错误(issue #51)。
- * 按结构判别 code(自定义数据网关不必依赖 DqeGatewayError 类,
- * 跨 realm 时 instanceof 也不可靠);封闭集之外的异常兜底为 UNKNOWN。
- * 数据快照错误态与筛选候选值错误态共用这一份保留逻辑。
- */
+/** Web APIs can reject with a DOMException from the integrating application's realm. */
+export function requestInterruptionCode(cause: unknown): 'DQE_CANCELLED' | 'DQE_TIMEOUT' | undefined {
+  if (!cause || typeof cause !== 'object' || !('name' in cause)) return;
+  if (cause.name === 'AbortError') return 'DQE_CANCELLED';
+  if (cause.name === 'TimeoutError') return 'DQE_TIMEOUT';
+}
+
+/** Keep explicit gateway classifications ahead of native request interruption names. */
 export function preservedQueryError(cause: unknown): QueryError {
-  const code = cause instanceof Error ? (cause as { code?: unknown }).code : undefined;
+  const code = cause && typeof cause === 'object' && 'code' in cause ? cause.code : undefined;
   return {
-    code: isQueryErrorCode(code) ? code : 'UNKNOWN',
+    code: isQueryErrorCode(code) ? code : requestInterruptionCode(cause) ?? 'UNKNOWN',
     message: cause instanceof Error ? cause.message : String(cause)
   };
 }

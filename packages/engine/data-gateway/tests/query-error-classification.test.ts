@@ -86,6 +86,11 @@ const cases: ClassificationCase[] = [
       })) as typeof fetch
   },
   {
+    name: '传输层超时仍须报告',
+    code: 'DQE_TIMEOUT',
+    fetchImpl: async () => { throw new DOMException('Timed out', 'TimeoutError'); }
+  },
+  {
     name: '外部中止(非超时)→ 取消',
     code: 'DQE_CANCELLED',
     fetchImpl: (async () => {

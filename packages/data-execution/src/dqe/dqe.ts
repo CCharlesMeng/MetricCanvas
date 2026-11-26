@@ -1,4 +1,5 @@
 import { identifyFinalizationCache } from '../finalization-cache';
+import { requestInterruptionCode } from '../query-error';
 import { dqeTimeoutMs } from '../dqe-timeout';
 import {intersectQueryFilters} from '../intersect-filters';
 import {reportQueryHttpError} from '../query-http-error';
@@ -678,9 +679,9 @@ function classifiedFetchError(
       timeoutMs
     });
   }
-  if (isAbortError(cause)) {
-    return new DqeGatewayError('DQE_CANCELLED', 'DQE 请求已被取消');
-  }
+  const interruption = requestInterruptionCode(cause);
+  if (interruption === 'DQE_TIMEOUT') return new DqeGatewayError(interruption, 'DQE 请求超时');
+  if (interruption === 'DQE_CANCELLED') return cancelledError();
   return new DqeGatewayError('DQE_TRANSPORT_ERROR', `DQE 请求不可达:${String(cause)}`);
 }
 
@@ -1067,13 +1068,8 @@ function cancelledError(): DqeGatewayError {
  * AbortSignal.timeout 以 TimeoutError 命名,同属外部中止。网关自身
  * 超时与外部取消分开分类,由 timedOut 旗标先行判定。
  */
-const ABORT_ERROR_NAMES = new Set(['AbortError', 'TimeoutError']);
-
 export function isAbortError(cause: unknown): boolean {
-  return (
-    (cause instanceof DOMException || cause instanceof Error) &&
-    ABORT_ERROR_NAMES.has(cause.name)
-  );
+  return requestInterruptionCode(cause) !== undefined;
 }
 
 function cloneJson<T extends JsonValue>(value: T): T {

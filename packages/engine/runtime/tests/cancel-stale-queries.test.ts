@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import type { Page } from '@metriccanvas/page';
 import type { EffectiveQuery, Row } from '@metriccanvas/page/internal';
 import { createFilterState } from '../src/filter-state';
@@ -179,6 +179,30 @@ function dedupPaginationPage(): Page {
 }
 
 describe('筛选状态变化时取消过期生效查询(issue #53)', () => {
+  it('手动取消数据网关请求时静默结束，随后修改筛选仍可取数', async () => {
+    const { gateway, calls } = controllableGateway();
+    const filters = createFilterState();
+    const pushes: PageDataSnapshots[] = [];
+    const diagnostic = vi.spyOn(console, 'error');
+    const unsubscribe = orchestrate(singleSourcePage(), gateway, filters).subscribe(value => pushes.push(value));
+    try {
+      const manual = new AbortController();
+      manual.abort();
+      calls[0]!.reject(manual.signal.reason);
+      await flush();
+      expect(diagnostic).not.toHaveBeenCalled();
+      expect(pushes.at(-1)?.get('alpha')).toMatchObject({ status: 'error', error: { code: 'DQE_CANCELLED' } });
+
+      filters.write('fa', dimension('product', ['手机']));
+      calls[1]!.resolve({ rows: [{ amount: 7 }] });
+      await flush();
+      expect(pushes.at(-1)?.get('alpha')).toMatchObject({ status: 'ready', rows: [{ amount: 7 }] });
+    } finally {
+      unsubscribe();
+      diagnostic.mockRestore();
+    }
+  });
+
   it('同一查询定义连续快速筛选:每个过期请求被真中止,取消不进入错误态,只落最终结果', async () => {
     const { gateway, calls } = controllableGateway();
     const filters = createFilterState();
