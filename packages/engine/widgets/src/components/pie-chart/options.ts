@@ -15,7 +15,7 @@ import {
 
 export const PIE_PLOT_EDGE_INSET = 8;
 const TABLE_RING_OUTER_RADIUS = 64;
-const DEFAULT_RING_THICKNESS = 16;
+const DEFAULT_RING_THICKNESS = 12;
 
 interface PiePlot {
   width: number;

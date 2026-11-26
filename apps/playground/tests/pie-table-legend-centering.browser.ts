@@ -52,7 +52,7 @@ test('centers the visible ring and legend with either side and stacks on narrow 
   const left = page.locator('[data-component="left/left-pie"] .pie-chart');
   await expectCentered(right, 'right', false, 56);
   await expectCentered(left, 'left', false, 16);
-  expect(await measurePie(right, 'right')).toMatchObject({ diameter: 128, thickness: 16 });
+  expect(await measurePie(right, 'right')).toMatchObject({ diameter: 128, thickness: 12 });
   const bar = page.locator('[data-component="centered-pair/execution-by-interval"] [_echarts_instance_]');
   await expect(bar).toBeVisible();
   const barBox = (await bar.boundingBox())!;
@@ -63,7 +63,7 @@ test('centers the visible ring and legend with either side and stacks on narrow 
 
   await page.setViewportSize({ width: 960, height: 900 });
   await expectCentered(right, 'right', false, 56);
-  expect(await measurePie(right, 'right')).toMatchObject({ diameter: 128, thickness: 16 });
+  expect(await measurePie(right, 'right')).toMatchObject({ diameter: 128, thickness: 12 });
 
   await page.setViewportSize({ width: 470, height: 900 });
   await expectCentered(right, 'right', true, 16);
