@@ -95,7 +95,8 @@ test('renders the current value and table while a separate comparison request is
     const comparison = new Promise<void>(resolve => host.addEventListener('release-comparison', () => resolve(), { once: true }));
     const gateway: RuntimeDataGateway = {
       async fetchData(query) {
-        if (query.body.dsl_list[0].output_metrics?.includes('mom')) {
+        const metrics = query.body.dsl_list[0].output_metrics;
+        if (Array.isArray(metrics) && metrics.includes('mom')) {
           host.dataset.comparison = 'pending';
           await comparison;
         }
