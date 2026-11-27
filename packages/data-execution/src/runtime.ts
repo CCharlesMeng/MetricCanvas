@@ -18,6 +18,7 @@ export * from './table-view';
 export * from './table-presentation';
 export * from './chart-series-presentation';
 export * from './chart-presentation';
+export { metricCardPresentation } from './metric-card-presentation';
 export { presentationQuerySources } from './query-projection';
 export * from './table-defaults';
 export * from './compute';

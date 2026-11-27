@@ -22,7 +22,7 @@ Schema 6.137 支持正文分区的顶层表格声明 `props.expand: true`。点�
 
 页面搜索筛选、远程下拉候选、表头动态候选和表格工具栏搜索统一在停输 300 毫秒后自动生效。中文输入法组词期间等待确认。静态候选即时筛选。分页候选在依赖条件就绪后开始取数。见[下拉搜索](docs/page-metadata/filters.md#下拉搜索与普通树643)和[表格搜索](docs/page-metadata/components/table.md#表格工具栏与搜索621)。
 
-Schema 6.136 支持指标卡在主、次指标行的 `changes[]` 上声明 `visibleWhen`。按已应用的统计期间切换同比和环比时，指标行和主值继续呈现。变化项的颜色规则应用于数值、单位和趋势箭头，标签沿用卡片的中性文字颜色。见[指标卡变化项显隐](docs/page-metadata/components/metricCard.md#metric-card-change-visibility)和 Playground 的 `/pages/metric-card-change-visibility`。
+Schema 6.136 支持指标卡在主、次指标行的 `changes[]` 上声明 `visibleWhen`。按已应用的统计期间切换同比和环比时，引擎合并卡片、地图与共享表格的字段需求，跳过无人使用的比较查询。独立槽的主值先于慢比较响应呈现。变化项的颜色规则应用于数值、单位和趋势箭头，标签沿用卡片的中性文字颜色。见[指标卡变化项显隐](docs/page-metadata/components/metricCard.md#metric-card-change-visibility)和 Playground 的 `/pages/metric-card-change-visibility`。
 
 Schema 6.135 支持 IOC 页头在 `props.filterRows` 中为已认领的筛选声明独立行和可选小标题。其余页头筛选保留首行，筛选值、默认值与查询绑定由现有声明控制。见[页头筛选行](docs/page-metadata/components/iocHeader.md#ioc-header-filter-rows)和 Playground 的 `/pages/ioc-header-filter-rows`。
 

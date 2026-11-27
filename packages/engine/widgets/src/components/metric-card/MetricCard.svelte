@@ -2,7 +2,7 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
   import type { FieldBinding, MetricCardProps, MetricCardRow, Row } from '@metriccanvas/page/internal';
-  import { metricCardTipAnchor } from '@metriccanvas/page/internal';
+  import { fieldSlot, metricCardTipAnchor } from '@metriccanvas/page/internal';
   import type { MetricDataSlots } from '../../shared/component-data';
   import { fieldRow, fieldValue, resolveField } from '../../shared/component-data';
   import { DEFAULT_NULL_TEXT, hasDisplayValue, finiteNumber, isSignedNumberFormat, valuePolarity } from '../../shared/value-format';
@@ -37,6 +37,12 @@
     return field?.role === 'measure' ? field.metricCode : undefined;
   }
 
+  function fieldLoading(binding: FieldBinding): boolean {
+    if (!loading) return false;
+    const slot = fieldSlot(binding) as keyof MetricDataSlots;
+    return (data[slot]?.sourceStatus ?? 'loading') === 'loading';
+  }
+
   function fieldText(field: FieldBinding, unit?: string): string {
     const resolved = resolveField(field, data);
     return formatFieldValue(fieldValue(field, data), resolved, unit);
@@ -67,17 +73,18 @@
   {#if row.context}<span class="row-context">{row.context}</span>{/if}
   {@const raw = fieldValue(row.valueField, data)}
   {@const field = resolveField(row.valueField, data)}
-  {@const color = !loading && row.colorRule ? valueColor(raw, row.colorRule, field.format) : undefined}
+  {@const pending = fieldLoading(row.valueField)}
+  {@const color = !pending && row.colorRule ? valueColor(raw, row.colorRule, field.format) : undefined}
   {@const text = formatFieldValue(raw, field, row.unit)}
   <span class="row-value" style:color={valueColorStyle(color)}>
-    {#if loading}
+    {#if pending}
       {@render loadingValue()}
     {:else}
       {text}
     {/if}
   </span>
   {@const unit = hasDisplayValue(raw) ? fieldUnitText(row.unit, field.format, text) : undefined}
-  {#if !loading && unit}<span class="unit">{unit}</span>{/if}
+  {#if !pending && unit}<span class="unit">{unit}</span>{/if}
 {/snippet}
 
 {#snippet metricRows(rows: MetricCardProps['rows'], accessory?: Snippet<[string]>)}
@@ -94,7 +101,7 @@
             {row.label}{@render accessory?.(row.label)}
           {/if}
         </span>
-        {#if !loading && rawValue != null && action && onaction}
+        {#if !fieldLoading(row.valueField) && rawValue != null && action && onaction}
           <button
             type="button"
             class="value-line value-link"
@@ -104,7 +111,7 @@
           >
             {@render metricValue(row)}
           </button>
-        {:else if !loading && row.link === true && rawValue != null && linkHref}
+        {:else if !fieldLoading(row.valueField) && row.link === true && rawValue != null && linkHref}
           <a
             href={linkHref?.(fieldRow(row.valueField, data) ?? {})}
             role={linkHref?.(fieldRow(row.valueField, data) ?? {}) ? undefined : 'button'}
@@ -127,7 +134,8 @@
         {#if row.changes?.length}
           <div class="changes">
             {#each row.changes as change, changeIndex (`${change.label}:${changeIndex}`)}
-              {@const value = loading ? undefined : fieldValue(change.field, data)}
+              {@const pending = fieldLoading(change.field)}
+              {@const value = pending ? undefined : fieldValue(change.field, data)}
               {@const field = resolveField(change.field, data)}
               {@const text = formatChangeValue(value, field, change.tone === 'positive', change.unit)}
               {@const color = changeValueColor(value, change, field.format)}
@@ -135,7 +143,7 @@
               <span class:positive={color === 'green'} class:negative={color === 'red'} class="change">
                 <span class="change-label">{change.label}</span>
                 <span class="change-value" style:color={change.colorRule ? valueColorStyle(color) : undefined}>
-                  {#if !loading && props.showTrendArrows && direction !== 'neutral' && !isPercentFormat(field.format)}
+                  {#if !pending && props.showTrendArrows && direction !== 'neutral' && !isPercentFormat(field.format)}
                     <span
                       class:up={direction === 'positive'}
                       class:down={direction === 'negative'}
@@ -143,7 +151,7 @@
                       aria-hidden="true"
                     >{direction === 'positive' ? '↑' : '↓'}</span>
                   {/if}
-                  {#if loading}
+                  {#if pending}
                     {@render loadingValue()}
                   {:else}
                     <span>{text}{#if hasDisplayValue(value) && fieldUnitText(change.unit, field.format, text)}<span class="change-unit">{change.unit}</span>{/if}</span>
@@ -206,7 +214,7 @@
     {/if}
     {#if props.progress}
       <div class="progress-slot">
-        <ProgressRing {loading} {shimmer} value={progressValue} format={progressFormat} missingText={progressMissingText} ringPercent={props.progress.ringPercent} label={props.progress.label ?? '完成率'} />
+        <ProgressRing loading={fieldLoading(props.progress.valueField)} {shimmer} value={progressValue} format={progressFormat} missingText={progressMissingText} ringPercent={props.progress.ringPercent} label={props.progress.label ?? '完成率'} />
       </div>
     {/if}
   {:else}
@@ -216,7 +224,7 @@
       {#if props.progress}
         <div class="progress-slot">
           <ProgressRing
-            {loading}
+            loading={fieldLoading(props.progress.valueField)}
             {shimmer}
             format={progressFormat}
             value={progressValue}
