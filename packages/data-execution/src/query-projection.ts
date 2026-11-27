@@ -8,6 +8,8 @@ import { hasConditionalChanges, metricCardFields, metricCardPresentation } from 
 /** null means hidden, undefined means an opaque consumer that needs the full source. */
 export function conditionalProjection(page: Page, component: Component, context: ConditionContext): Component | undefined | null {
   if (component.type === 'metricCard' || component.type === 'mapChart') {
+    // Cards without conditional change items retain their existing prefetch across tabs.
+    if (component.type === 'metricCard' && !hasConditionalChanges(component)) return component;
     if (evaluateCondition(component.visibleWhen, context).status !== 'allow') return null;
     if (component.type === 'mapChart') return component;
     return metricCardPresentation(component, context);
