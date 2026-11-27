@@ -365,3 +365,13 @@ const runtime = mount(container, { document, navigation });
 集成应用收到 JSON 后即调用 `mount` 并显示容器；数据网关在调用前提供方法，方法返回的 Promise 可以继续等待会话名单或截止日期。接通名单候选端口后，符合条件的旧页同样可以移除前置 `prepareIocHeaderFilters` 等待及整页加载遮罩。定稿默认值非阻塞初始化仍从6.120启用。名单正在加载时应保持 Promise 未完成，不返回 `unconfigured`、空名单或伪装成功；真实未配置、失败与成功空结果沿现有端口区分。保留原查询映射、鉴权、AbortSignal和日期格式转换；无需在结果回来后重新 mount/update 页面。跨页定稿成功缓存由引擎会话负责，集成应用复用会话级dataGateway，身份或权限改变时重建。
 
 表格 Excel 导出可通过 mount/update 的 `permissions.canExport` 统一控制。目录权限计算、更新示例与兼容规则见 [OM 表格导出权限对接](../../docs/integrations/om-table-export-permission.md)。
+
+### 单工作表导出回调
+
+在 mount 或完整的 handle.update 输入中提供可选的 `exportHandler(request)`。权限和页面导出条件沿用原规则。MC 在点击时捕获 handler 和已应用的查询视图，准备完整结果，等待回调结束。替换或移除回调从下一次导出生效。
+
+`McExportRequest` 包含去除扩展名的 `fileName`、固定的 `format: 'xlsx'`、一个工作表的 `sheets`、`meta`（pageId、componentId、rowCount）和 `signal`。工作表提供 name、多行文字 header 及 rows；合并表头的占位为空字符串，序号按数字传递，置顶行序号为空，业务单元格按屏幕展示文本传递。rowCount 为 rows 长度。普通表及详情独立表格均支持；联合父子表、附加异常说明或需要 Excel 续表的导出继续使用内置下载。
+
+回调在提交、确认拆分或主动取消时分别 resolve `{ status: 'submitted', taskId? }`、`{ status: 'split', fileCount? }`、`{ status: 'cancelled' }`。失败时抛出 Error。确认框打开时保持 busy；监听 signal 关闭确认框并阻止后续提交。已经提交的任务由集成应用管理。回调失败后显示错误，避免重复下载。
+
+运行 `pnpm --filter @metriccanvas/embed build` 和 `pnpm --filter @metriccanvas/embed preview:examples`，打开 [OM 本地模拟](http://127.0.0.1:4175/examples/table-export-handler.html)。

@@ -1,5 +1,7 @@
 # MetricCanvas 页面元数据规范
 
+表格单工作表导出支持 Embed 集成应用接收展示值，页面沿用现有导出声明。见[表格导出](docs/page-metadata/components/table.md#excel-导出621)。
+
 Schema 6.142 支持用 `table.props.height` 指定屏幕表格的外框总高度（像素）。见[表格外框高度](docs/page-metadata/components/table.md#table-height)。
 
 Schema 6.141 的地图支持提示框按行展示指标和同排对比值，并在散点的组织名称后显示地图指标。地图可直接使用同轮数据源已经就绪的组织行，等待期间逐步补齐数值。见[地图提示与散点标签](docs/page-metadata/components/mapChart.md#map-tooltip-rows)及 `/pages/ioc-region-map-demo`。

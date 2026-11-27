@@ -22,3 +22,5 @@ export type { AiSummaryGenerate, AiSummaryContextInfo, AiSummaryDataSource } fro
 
 export { createBrowserDrillReturn, preserveNavigationEntry } from './browser-drill-return';
 export type { BrowserDrillReturn, DrillReturnContext, DrillReturnBrowser } from './browser-drill-return';
+
+export type { McExportRequest, McExportSheet, McExportResult, TableExportHandler } from './table/export/host';
