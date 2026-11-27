@@ -70,6 +70,7 @@ export function alignedFieldValue(
 }
 
 interface TableRowProjection {
+  showPinned?: boolean;
   showPendingPinned?: boolean;
   showBody?: boolean;
 }
@@ -81,6 +82,7 @@ export function projectTableRows(data: NamedDataSlots, props: TableProps, option
   const slots = tablePinnedSlots(props);
   const alignedData = Object.fromEntries(Object.entries(data).filter(([name]) => !slots.includes(name)));
   const body = options.showBody === false ? [] : alignTableRows(alignedData, props.rowKey).map((row, bodyIndex) => ({ ...row, bodyIndex }));
+  if (options.showPinned === false) return body;
   const pinned = props.pinnedTop && projectPinnedRow(data, props.pinnedTop.data, slots, options.showPendingPinned === true);
   if (!pinned) return body;
   reportTableFormats(data, columns.map(column => tableRowColumn(column, pinned, data)));

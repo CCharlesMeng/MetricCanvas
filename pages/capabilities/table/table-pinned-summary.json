@@ -4,7 +4,7 @@
   "layout": "dashboard",
   "meta": {
     "title": "中国区独立汇总置顶",
-    "description": "全部使用合成数据，仅验收本仓协议与运行时行为。"
+    "description": "合成地区数据。搜索 region-2 只看华南地区部，搜索 region-missing 查看空结果，清空后恢复中国区汇总。"
   },
   "dataSources": {
     "regions": {
