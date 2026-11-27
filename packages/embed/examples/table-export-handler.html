@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>表格导出 · OM 本地模拟</title>
+<style>
+  * { box-sizing: border-box }
+  body { margin: 0; background: #f4f6f9; color: #18283b; font: 15px/1.6 system-ui, sans-serif }
+  main { max-width: 1440px; margin: auto; padding: 24px }
+  h1 { font-size: 24px; margin: 0 }
+  h2 { font-size: 16px; margin: 0 }
+  p { margin: 4px 0 12px }
+  section { margin: 16px 0; padding: 16px 20px; background: white; border: 1px solid #d5dee7; border-radius: 10px }
+  #status { color: #146452 }
+  .actions { display:flex; flex-wrap:wrap; gap:8px; margin:10px 0 }
+  [hidden] { display:none }
+  button { border: 1px solid #aebccc; border-radius: 6px; background: white; padding: 6px 14px; cursor:pointer }
+  #submit { background: #195b59; color:white; border-color:#195b59 }
+  pre { max-height: 230px; overflow: auto; background:#f5f8fa; padding: 12px; font:13px/1.6 ui-monospace, monospace }
+  summary { cursor:pointer }
+</style>
+<main>
+  <h1>表格导出 · OM 本地模拟</h1>
+  <p>点击下方 MC 表格的「导出」，查看 OM 收到的展示值，再选择任务结果。</p>
+  <section aria-label="OM 模拟任务">
+    <h2>OM 收到的任务</h2>
+    <p id="status" role="status">等待读取表格</p>
+    <p id="sample" hidden></p>
+    <div class="actions" hidden>
+      <button id="submit">模拟提交</button><button id="split">模拟确认拆分</button>
+      <button id="cancel">取消任务</button><button id="fail">模拟接口失败</button>
+    </div>
+    <details hidden><summary>完整请求</summary><pre></pre></details>
+  </section>
+  <div id="dashboard"></div>
+</main>
+<script type="module" src="./table-export-handler.mjs"></script>
+</html>

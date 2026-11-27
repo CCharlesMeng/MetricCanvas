@@ -1,6 +1,6 @@
 import type { WorkbookSheet } from './workbook-sheet';
 
-const EXCEL_SHEET_ROWS = 1_048_576;
+export const EXCEL_SHEET_ROWS = 1_048_576;
 
 // A hierarchy may contain multi-row child headers among the data rows.
 function pageEnd(sheet: WorkbookSheet, start: number, capacity: number): number {

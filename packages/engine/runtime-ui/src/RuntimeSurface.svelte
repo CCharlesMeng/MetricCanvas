@@ -18,6 +18,7 @@
   import { TAB_SELECTION_CONTEXT, type TabSelectionContext } from './tab-selection';
   import { resolvePendingPeriodChoice, visiblePendingPeriodModes, type PendingPeriodChoice } from './filters/pending-period-mode';
   import type { PeriodMode } from '@metriccanvas/page/internal';
+  import { TABLE_EXPORT_HANDLER } from './table/export/host';
   import { TABLE_EXPORT_ALLOWED } from '../../widgets/src/shared/export-context';
   import { withExportPermission } from '../../runtime/src/display-inputs';
   import { compilePresentation, resolvePresentationRow } from '../../runtime/src/presentation';
@@ -188,6 +189,7 @@
   let {
     document,
     hostCanExport,
+    exportHandler,
     displayInputs,
     sectionsContent,
     dataGateway,
@@ -331,6 +333,7 @@
   let pageParams = $state<PageParamValues>(new Map());
   let sourceSnapshot=$state.raw<DisplaySnapshot|undefined>();
   const displaySnapshot=$derived(withExportPermission(sourceSnapshot, hostCanExport));
+  setContext(TABLE_EXPORT_HANDLER, () => exportHandler);
   setContext(TABLE_EXPORT_ALLOWED, () => hostCanExport !== false);
   let filterRevision=$state(0);
   const presentationProgram=$derived(pageState.phase==='ready'?compilePresentation(pageState.page):null);
@@ -949,7 +952,7 @@
     tableController?.syncColumns(component);
     const projected=tableController?.project(component)??component;
     if(!projected.props.columns.length)return;
-    await exportVisibleTable({page:pageState.page,component:projected,stream,gateway:activeGateway,controller:exportController,params:pageParams,
+    await exportVisibleTable({exportHandler,page:pageState.page,component:projected,stream,gateway:activeGateway,controller:exportController,params:pageParams,
       blocked:sourceBlocked(pageState.page,component.data.main)||!!(component.props.rowExpansion?.selection&&blockedFilters.includes(component.props.rowExpansion.selection.filter)),
       state:{now:new Date(),displaySnapshot,filterRevision,currentYear:stream.captureComputeYear(),filters:filterValues,tables:tableViews,headerFilters:appliedTableHeaderFilters}});
   }
