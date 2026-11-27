@@ -6,11 +6,11 @@ import {ExportViewError} from '../../../../runtime/src/export-snapshots';
 import type {ExportRenderState} from '../../export-render-state';
 import type {createExportController} from '../../export-controller';
 import {prepareTableExport} from './prepare';
-import {downloadTableWorkbook} from './workbook';
+import {deliverTableExport, type TableExportHandler} from './host';
 
 type State=Pick<ExportRenderState,'filters'|'tables'|'headerFilters'|'currentYear'|'displaySnapshot'|'filterRevision'|'now'>;
 /** The authorized caller supplies one applied-state snapshot; this task freezes it before await. */
-export async function exportVisibleTable(input:{page:Page;component:TableComponent;stream:PageSnapshotStream;gateway:RuntimeDataGateway;state:State;params?:import('../../../../runtime/src').PageParamValues;blocked:boolean;controller:ReturnType<typeof createExportController>}):Promise<void>{
+export async function exportVisibleTable(input:{page:Page;component:TableComponent;stream:PageSnapshotStream;gateway:RuntimeDataGateway;state:State;params?:import('../../../../runtime/src').PageParamValues;exportHandler?:TableExportHandler;blocked:boolean;controller:ReturnType<typeof createExportController>}):Promise<void>{
  const component=JSON.parse(JSON.stringify(input.component)) as TableComponent;
  if(!component.props.columns.length)return;
  const captured={page:input.page,component,queries:input.stream.captureQueries(),views:input.stream.captureViews(),program:input.stream.getSourceProgram(),gateway:input.gateway,
@@ -23,6 +23,6 @@ export async function exportVisibleTable(input:{page:Page;component:TableCompone
     await downloadWorkbookBytes(component,bytes,controller.signal);return;
   }
   const data=await prepareTableExport({...captured,controller});controller.signal.throwIfAborted();
-  await downloadTableWorkbook(component,data,controller.signal);
+  await deliverTableExport(component,data,controller.signal,input.page.id,input.exportHandler);
  });}catch{/* Task feedback belongs to the existing export controller. */}
 }

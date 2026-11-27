@@ -113,6 +113,7 @@ export interface RuntimeViewProps {
   /** Opt in to terminating this page on DQE HTTP 401/403/419, then hand login to the application. */
   onAuthRequired?: (event: AuthRequiredEvent) => void;
   hostCanExport?: boolean;
+  exportHandler?: import('./table/export/host').TableExportHandler;
   displayInputs?: import('../../runtime/src/display-inputs').DisplayInputs;
   document: unknown;
 

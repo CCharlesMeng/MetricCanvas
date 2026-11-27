@@ -134,6 +134,9 @@ DrillReturnBrowser
 DrillReturnContext
 MapGeography
 MapViewport
+McExportRequest
+McExportResult
+McExportSheet
 NavigationInputContract
 RegionMapAdapter
 RegionMapDisplayNames
@@ -144,6 +147,7 @@ RuntimeNavigation
 RuntimeNavigationTarget
 RuntimeView
 RuntimeViewEvent
+TableExportHandler
 aiSummaryInputKey
 configurationError
 createAiSummaryTaskSession

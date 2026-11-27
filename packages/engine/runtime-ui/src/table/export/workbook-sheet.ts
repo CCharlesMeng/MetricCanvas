@@ -27,31 +27,33 @@ function columnTitle(binding: FieldBinding, data: NamedDataSlots, given?: string
   return unit && !text.includes(unit) ? `${text}（${unit}）` : text;
 }
 
-function exportColumns(nodes: TableColumnNode[], data: NamedDataSlots): TableColumnNode[] {
+export function exportColumns(nodes: TableColumnNode[], data: NamedDataSlots, titleFor = columnTitle): TableColumnNode[] {
   let groupIndex = 0;
   return nodes.map(node => {
-    if (node.kind === 'group') return { ...node, children: exportColumns(node.children, data) };
-    const title = columnTitle(node.field, data, node.title, node.unit);
+    if (node.kind === 'group') return { ...node, children: exportColumns(node.children, data, titleFor) };
+    const title = titleFor(node.field, data, node.title, node.unit);
     const extras = (['secondaryField', 'badgeField'] as const)
       .flatMap(key => node[key] ? [{ field: node[key], pinned: node.pinnedTop?.[key] }] : []);
     if (!extras.length) return { ...node, title };
     return { kind: 'group', id: `export-${groupIndex++}`, title,
-      children: [{ ...node, title: columnTitle(node.field, data, undefined, node.unit) }, ...extras.map(({ field, pinned }) => ({
-        field, title: columnTitle(field, data), ...(pinned ? { pinnedTop: { field: pinned } } : {})
+      children: [{ ...node, title: titleFor(node.field, data, undefined, node.unit) }, ...extras.map(({ field, pinned }) => ({
+        field, title: titleFor(field, data), ...(pinned ? { pinnedTop: { field: pinned } } : {})
       }))] };
   });
 }
 
-function placeHeader(rows: SheetData, row: number, column: number, cell: CellObject, rowspan: number, colspan: number): void {
+type HeaderGrid = Array<Array<CellObject | null>>;
+
+function placeHeader(rows: HeaderGrid, row: number, column: number, cell: CellObject, rowspan: number, colspan: number): void {
   for (let y = row; y < row + rowspan; y++) {
     for (let x = column; x < column + colspan; x++) rows[y]![x] = null;
   }
   rows[row]![column] = { ...cell, rowSpan: rowspan, columnSpan: colspan, fontWeight: 'bold', align: 'center', alignVertical: 'center', wrap: true };
 }
 
-function headerRows(layout: TableColumnLayout, component: TableComponent): SheetData {
+export function headerRows(layout: TableColumnLayout, component: TableComponent): HeaderGrid {
   const leading = component.props.rowNumber ? 1 : 0;
-  const rows: SheetData = Array.from({ length: layout.headerRows.length }, () => Array(layout.leaves.length + leading));
+  const rows: HeaderGrid = Array.from({ length: layout.headerRows.length }, () => Array(layout.leaves.length + leading));
   if (component.props.rowNumber) placeHeader(rows, 0, 0, { value: component.props.rowNumber.title ?? '序号' }, rows.length, 1);
   layout.headerRows.forEach((cells, row) => {
     let column = leading;
@@ -69,7 +71,7 @@ export function tableWorkbookSheet(table: WorkbookTable, signal: AbortSignal): W
   const { component, data, name } = table;
   if (!component.props.columns.length) throw new Error('当前条件下无可见列');
   const layout = buildTableColumnLayout(exportColumns(component.props.columns, data));
-  const rows = headerRows(layout, component);
+  const rows: SheetData = headerRows(layout, component);
   const stickyRowsCount = rows.length;
   const missingText = tableDataWarnings(data).length ? DEFAULT_NULL_TEXT : null;
   projectTableRows(data, component.props).forEach((row, index) => {

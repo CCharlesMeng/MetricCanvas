@@ -20,6 +20,7 @@
   let gateway = $state.raw(untrack(() => initialInput.dataGateway));
   let regionMap = $state.raw(untrack(() => initialInput.regionMap));
   let facts = $state.raw(untrack(() => initialInput.displayInputs));
+  let exportHandler = $state.raw(untrack(() => initialInput.exportHandler));
   let authHandler = $state.raw(untrack(() => initialInput.onAuthRequired));
   function readExportPermission(value: RuntimeInput['permissions']) {
     return value === undefined ? undefined : value?.canExport === true;
@@ -28,17 +29,18 @@
   let previousInput = untrack(() => initialInput);
 
   function sameRenderInput(next: RuntimeInput, previous: RuntimeInput): boolean {
-    return Object.keys({...previous,...next}).filter(key=>key!=='onAuthRequired' && key!=='permissions')
+    return Object.keys({...previous,...next}).filter(key=>key!=='onAuthRequired' && key!=='permissions' && key!=='exportHandler')
       .every(key=>next[key as keyof RuntimeInput]===previous[key as keyof RuntimeInput]);
   }
 
   export function update(next: RuntimeInput) {
     hostCanExport = readExportPermission(next.permissions);
     authHandler = next.onAuthRequired;
+    exportHandler = next.exportHandler;
     // Permissions and auth handlers have independent reactive state. Updating only these
     // must preserve the mounted session, open dialogs, filters and in-flight reads.
     const hasHostUpdate = next.permissions !== undefined || previousInput.permissions !== undefined ||
-      next.onAuthRequired !== previousInput.onAuthRequired;
+      next.onAuthRequired !== previousInput.onAuthRequired || next.exportHandler !== previousInput.exportHandler;
     const keepSession = hasHostUpdate && sameRenderInput(next, previousInput);
     previousInput = next;
     if (keepSession) return;
@@ -52,6 +54,7 @@
 
 <RuntimeView
   {hostCanExport}
+  {exportHandler}
   displayInputs={facts}
   document={input.document}
   execution={input.execution}

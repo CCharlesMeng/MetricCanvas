@@ -21,6 +21,8 @@
 
 点击导出 Excel，核对前置、后置、反向、固定和零的箭头规则与屏幕一致，原数值仍为数值。自动浏览器验收读取该页；缺少映射、错误枚举、布尔值、未知属性、文本绑定和旧版本由产品测试及 conformance 向量验证。此页仅验证合成数据的展示/导出，不代表真实 DQE/Relay。
 
+在 Embed 示例服务打开 `/examples/table-export-handler.html`，使用同一份 Playground 页面 `table-trend-arrows` 的 inline 合成数据。点击表格的「导出」，展开「完整请求」核对箭头、单位、多行表头与缺失文案，再模拟提交、拆分、取消或失败。真实任务提交由 OM 实现。
+
 ## 查询默认方向与固定基线
 
 运行 `pnpm dev:playground`，打开 `/pages/query-sort-baseline`，无需 URL 参数或 DQE 服务。该页包含合成 query 初始快照，首次打开平均决策时长列即显示降序，三个代表处依次为乙、丙、甲。点击该列循环清除、升序、降序；移开鼠标后活动方向仍可见。

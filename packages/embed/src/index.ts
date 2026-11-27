@@ -32,6 +32,7 @@ export type {
   MetricDefinition, MetricDefinitionsGateway,
   RuntimeDataGateway
 } from '@metriccanvas/engine';
+export type { McExportRequest, McExportSheet, McExportResult, TableExportHandler } from '@metriccanvas/engine/ui';
 export type { AuthRequiredEvent, AiSummaryConfig, NavigationInputContract, RuntimeNavigation, RuntimeNavigationTarget } from '@metriccanvas/engine/ui';
 export type { MapGeography, MapViewport, RegionMapAdapter, RegionMapDisplayNames, RegionMapViewportRequest } from '@metriccanvas/engine/ui';
 
@@ -148,6 +149,7 @@ function runtimeInput(input: RuntimeInput, navigation: RuntimeInput['navigation'
     document: input.document,
     permissions: input.permissions,
     onAuthRequired: input.onAuthRequired,
+    exportHandler: input.exportHandler,
     ...(input.displayInputs!==undefined?{displayInputs:input.displayInputs}:{}),
     ...(input.regionMap !== undefined ? { regionMap: input.regionMap } : {}),
     ...(input.execution !== undefined ? {execution:input.execution} : {}),

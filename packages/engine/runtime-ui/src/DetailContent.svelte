@@ -7,7 +7,7 @@
   import type {DisplaySnapshot,FilterValues} from '../../runtime/src';
   import { TABLE_EXPORT_ALLOWED } from '../../widgets/src/shared/export-context';
   import {detailExportData} from './table/export/prepare';
-  import {downloadTableWorkbook} from './table/export/workbook';
+  import {deliverTableExport, TABLE_EXPORT_HANDLER, type TableExportHandler} from './table/export/host';
   import {createTableController} from './table/controller';
   import {createExportController} from './export-controller';
   import type {Page} from '@metriccanvas/page';
@@ -27,6 +27,7 @@
   // Detail scope is complete/local; it shares the same state owner and pure rules.
   const controller=untrack(()=>createTableController(page,()=>null,()=>revision+=1,()=>filters,()=>({displayInputs:displaySnapshot,filterRevision})));
   $effect(()=>{void filters;void displaySnapshot;void filterRevision;untrack(()=>{for(const component of components)if(component.type==='table')controller.syncColumns(component);revision+=1;});});
+  const readExportHandler = getContext<(() => TableExportHandler | undefined) | undefined>(TABLE_EXPORT_HANDLER);
   const hostAllowsExport = getContext<(() => boolean) | undefined>(TABLE_EXPORT_ALLOWED);
   const exportController=createExportController(next=>exports=next);
   onDestroy(()=>{controller.dispose();exportController.reset();});
@@ -45,7 +46,7 @@
         const data=detailExportData(page,frozen,snapshots);
         const snapshot=data.main!.snapshot;
         data.main!.snapshot=structuredClone(projectSnapshotRows(snapshot,searchedRows(component,snapshot.rows)));
-        await downloadTableWorkbook(frozen,data,task.signal);
+        await deliverTableExport(frozen,data,task.signal,page.id,readExportHandler?.());
       });
     }catch{/* Export task feedback is projected by the common controller. */}
   }
