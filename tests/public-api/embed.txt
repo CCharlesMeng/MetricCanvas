@@ -24,6 +24,9 @@ LastFilterRequest
 LastFilterStatus
 MapGeography
 MapViewport
+McExportRequest
+McExportResult
+McExportSheet
 MetricDefinition
 MetricDefinitionsGateway
 MountOptions
@@ -38,6 +41,7 @@ RuntimeHandle
 RuntimeInput
 RuntimeNavigation
 RuntimeNavigationTarget
+TableExportHandler
 TypedError
 createDqeGateway
 createLastFilterRecorder
