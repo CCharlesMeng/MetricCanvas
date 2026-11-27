@@ -147,7 +147,9 @@
   const columnLayout = $derived(buildTableColumnLayout(props.columns, data.main.fields));
   const leaves = $derived(columnLayout.leaves);
   const wrapHeaders = $derived(shouldWrapTableHeaders(props.fit, leaves.length));
-  const rows = $derived(projectTableRows(data, props, { showPendingPinned: !staticExport, showBody: !bodyLoading }));
+  const rows = $derived(projectTableRows(data, props, {
+    showPinned: !view.searchQuery, showPendingPinned: !staticExport, showBody: !bodyLoading
+  }));
   const rowTiers = $derived(rows.map((row) => tableRowTier(row, props.rowKindField)));
   /** 首列合并:相邻同值折成一个单元格,rowSpan 为 0 的行不渲染该列。 */
   const rowSpans = $derived(mergeSpans(rows, props.mergeBy));

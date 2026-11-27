@@ -38,15 +38,26 @@ test('rapid typing in a query table sends a single DQE search for the final term
   expect(terms).toEqual(['星河项目二期']);
 });
 
-test('empty search keeps the independent summary and shows no-data feedback', async ({ page }) => {
+test('applied table search hides the independent summary until cleared', async ({ page }) => {
   await page.goto('/pages/table-pinned-summary');
   const table = page.locator('[data-component="main/regional-table"]');
-  await expect(table.locator('[data-pinned-top]')).toContainText('中国区');
-  await table.getByRole('searchbox').fill('region-missing');
+  const summary = table.locator('[data-pinned-top]');
+  const search = table.getByRole('searchbox');
+  await search.focus();
+  await expect(summary).toContainText('中国区');
+
+  await search.fill('region-2');
+  await expect(table.getByRole('cell', { name: '华南地区部', exact: true })).toBeVisible();
+  await expect(table.getByRole('cell', { name: '华东地区部', exact: true })).toHaveCount(0);
+  await expect.soft(summary).toHaveCount(0);
+
+  await search.fill('region-missing');
   await expect(table.getByText('暂无数据', { exact: true })).toBeVisible();
-  await expect(table.locator('[data-pinned-top]')).toContainText('中国区');
+  await expect.soft(summary).toHaveCount(0);
   await expect(table.locator('thead')).toBeVisible();
+
   await table.getByRole('button', { name: '清空表格搜索' }).click();
   await expect(table.getByText('暂无数据', { exact: true })).toHaveCount(0);
   await expect(table.getByRole('cell', { name: '华东地区部', exact: true })).toBeVisible();
+  await expect(summary).toContainText('中国区');
 });

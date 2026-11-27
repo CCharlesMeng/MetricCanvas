@@ -68,6 +68,7 @@ it('projects a screen-only summary during loading and fills its ready slots', ()
   };
   const columns = tableLeafColumns(component.props.columns);
   const [placeholder] = projectTableRows(waiting, component.props, {showPendingPinned:true, showBody:false});
+  expect(projectTableRows(waiting, component.props, {showPinned:false, showPendingPinned:true, showBody:false})).toEqual([]);
   expect(placeholder.kind).toBe('pinnedTop');
   expect(alignedCellText(tableRowColumn(columns[0], placeholder, waiting).field, waiting, placeholder)).toBe('合计');
   const pending = tableRowColumn(columns[3], placeholder, waiting).field;
