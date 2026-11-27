@@ -1,4 +1,6 @@
 import { expect, test } from '@playwright/test';
+import type { RuntimeDataGateway } from '@metriccanvas/engine';
+import cardDemand from '../../../packages/engine/runtime/tests/fixtures/card-comparison-demand.json' with { type: 'json' };
 import { readFile } from 'node:fs/promises';
 import example from '../../../pages/capabilities/layout/metric-card-change-visibility.json' with { type: 'json' };
 
@@ -80,4 +82,36 @@ test('PDF and PNG use the projected change items for the captured period', async
       changeLabels, metricValues: ['82%', '91%']
     });
   }
+});
+
+test('renders the current value and table while a separate comparison request is pending', async ({ page }) => {
+  await page.goto('/pages/' + example.id);
+  await page.evaluate(async document => {
+    const fixtureUrl = '/tests/report-pdf-runtime-fixture.ts';
+    const { mountPdfRuntimeFixture } = await import(fixtureUrl);
+    const host = window.document.createElement('div');
+    host.id = 'comparison-demand';
+    window.document.body.append(host);
+    const comparison = new Promise<void>(resolve => host.addEventListener('release-comparison', () => resolve(), { once: true }));
+    const gateway: RuntimeDataGateway = {
+      async fetchData(query) {
+        const metrics = query.body.dsl_list[0].output_metrics;
+        if (Array.isArray(metrics) && metrics.includes('mom')) {
+          host.dataset.comparison = 'pending';
+          await comparison;
+        }
+        return { rows: [{ name: '中国', rate: 36, change: 1, mom: -2 }], totalCount: 1 };
+      }
+    };
+    const cover = { id: 'cover', components: [{ id: 'cover', type: 'reportHeader', layout: { span: 12 }, props: { title: '查询回归' } }] };
+    mountPdfRuntimeFixture(host, { ...document, layout: 'report', sections: [document.sections[0], cover, document.sections[1]] }, gateway);
+  }, cardDemand);
+  const host = page.locator('#comparison-demand');
+  const card = host.locator('[data-component="metrics/rate"]');
+  await expect(host).toHaveAttribute('data-comparison', 'pending');
+  await expect(card.locator('.row-value')).toHaveText('36');
+  await expect(host.getByRole('cell', { name: '36', exact: true })).toBeVisible();
+  await expect(card.locator('.change-value .skeleton')).toBeVisible();
+  await host.dispatchEvent('release-comparison');
+  await expect(card.locator('.change-value')).toHaveText('-2');
 });

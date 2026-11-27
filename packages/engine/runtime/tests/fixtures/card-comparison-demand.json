@@ -1,0 +1,64 @@
+{
+  "schemaVersion": "6.142",
+  "id": "card-comparison-demand",
+  "layout": "dashboard",
+  "meta": { "title": "指标卡比较查询" },
+  "filters": [
+    { "id": "period", "type": "timeRange", "display": "period", "precision": "date", "label": "统计期间", "default": { "mode": "month" } }
+  ],
+  "dataSources": {
+    "current": {
+      "fields": {
+        "name": { "type": "string", "role": "dimension", "queryField": "name" },
+        "rate": { "type": "number", "role": "measure", "queryField": "rate" },
+        "change": { "type": "number", "role": "measure" },
+        "paidChange": { "type": "number", "role": "measure" }
+      },
+      "source": { "type": "query", "resultScope": "complete", "query": { "language": "dqe", "body": { "dsl_list": [
+        { "output_dims": ["name"], "output_metrics": ["rate"], "filter": { "dims": [], "metrics": [], "time": {} }, "order": {} }
+      ] } } },
+      "compute": [
+        { "op": "joinAggregate", "source": "by-region", "keys": [{ "local": "name", "foreign": "name" }], "values": [
+          { "field": "change", "output": "change", "aggregate": "unique" },
+          { "field": "paidChange", "output": "paidChange", "aggregate": "unique" }
+        ], "onMissing": "null" }
+      ]
+    },
+    "by-region": {
+      "fields": {
+        "name": { "type": "string", "role": "dimension", "queryField": "name" },
+        "change": { "type": "number", "role": "measure", "queryField": "change" },
+        "paidChange": { "type": "number", "role": "measure", "queryField": "paidChange" }
+      },
+      "source": { "type": "query", "resultScope": "complete", "query": { "language": "dqe", "body": { "dsl_list": [
+        { "output_dims": ["name"], "output_metrics": ["change", "paidChange"], "filter": { "dims": [], "metrics": [], "time": {} }, "order": {} }
+      ] } } }
+    },
+    "comparisons": {
+      "fields": {
+        "rate": { "type": "number", "role": "measure", "queryField": "unused" },
+        "yoy": { "type": "number", "role": "measure", "queryField": "yoy" },
+        "mom": { "type": "number", "role": "measure", "queryField": "mom" }
+      },
+      "source": { "type": "query", "resultScope": "complete", "query": { "language": "dqe", "body": { "dsl_list": [
+        { "output_dims": [], "output_metrics": ["unused", "yoy", "mom"], "filter": { "dims": [], "metrics": [], "time": {} }, "order": {} }
+      ] } } }
+    }
+  },
+  "sections": [
+    { "id": "header", "components": [{ "id": "periods", "type": "iocHeader", "layout": { "span": 12 }, "props": { "identity": { "title": "指标卡比较查询" }, "filterIds": ["period"] } }] },
+    { "id": "metrics", "components": [
+      { "id": "rate", "type": "metricCard", "layout": { "span": 6 }, "data": { "main": "current", "compare": "comparisons" }, "props": {
+        "variant": "primaryDetail", "rows": [{ "label": "本期", "valueField": "rate", "changes": [
+          { "label": "同比", "field": { "data": "compare", "field": "yoy" }, "visibleWhen": { "filter": "period", "part": "mode", "op": "in", "values": ["year", "quarter"] } },
+          { "label": "环比", "field": { "data": "compare", "field": "mom" }, "visibleWhen": { "filter": "period", "part": "mode", "op": "eq", "value": "month" } }
+        ] }]
+      } },
+      { "id": "map", "type": "mapChart", "layout": { "span": 6 }, "data": { "main": "current" },
+        "visibleWhen": { "filter": "period", "part": "mode", "op": "eq", "value": "month" },
+        "props": { "map": "world", "nameField": "name", "valueField": "change" } },
+      { "id": "table", "type": "table", "layout": { "span": 12 }, "data": { "main": "current" },
+        "props": { "columns": [{ "field": "name", "title": "地区" }, { "field": "rate", "title": "本期" }] } }
+    ] }
+  ]
+}

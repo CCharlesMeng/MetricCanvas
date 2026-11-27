@@ -1,6 +1,6 @@
 # 条件显隐与动作资格
 
-6.136 将 `visibleWhen` 扩展到指标卡主、次指标行的 [变化项](components/metricCard.md#metric-card-change-visibility)。变化项没有行上下文，显隐影响对应项的展示及 PDF/PNG 导出，指标行、主值与数据槽保持原有语义。
+6.136 将 `visibleWhen` 扩展到指标卡主、次指标行的 [变化项](components/metricCard.md#metric-card-change-visibility)。变化项没有行上下文，条件同时作用于屏幕、PDF/PNG 导出和字段需求；隐藏项独占的查询可以跳过，其他组件或计算仍需的字段继续取数。
 
 6.89 将既有 `visibleWhen` 扩展到柱状图（含组合图）和折线图的 `props.series[]`。系列没有行上下文；复用已有类型、来源、错误/等待与组合条件规则。系列、图例、提示项及无使用者的数值轴同步显隐，父图表标题和容器保留。表格列与图表系列显隐参与依赖分析：无其他消费者或执行依赖的数据停止取数，共享查询保留类别粒度及必要依赖，重新显示按当前筛选恢复；不新增字段。声明与保守保留边界见[列显隐](components/table.md#table-column-visibility)及[系列条件显隐](components/barChart.md#chart-series-visibility)，入口 `/pages/chart-series-visibility`、`/pages/conditional-query-demand`。
 
@@ -28,7 +28,7 @@ text的props.parts可声明{id,text,visibleWhen?}，与body/bodyFormat互斥，�
 
 集成应用可提供 displayInputs 的 getSnapshot/subscribe，携带 permissionRevision、permissions、values 及依赖筛选的 filterRevision。筛选条件页无需外部输入。统一运行时在同一页面实例接收新的展示输入并重新求值。仅更新 permissionRevision 时页面继续渲染，已开始的页面导出继续执行。实际身份切换时，由集成应用管理页面及数据网关的会话生命周期。
 
-PDF/PNG导出捕获当前条件和筛选，展开所有允许的分区/Tab，不受当前选项限制；条件禁止的内容不导出，允许的空父容器保留。XLSX使用同一表格行投影。导出继续使用捕获时的筛选和展示条件。一般节点隐藏仍不自动停查，表格列与图表系列按上述依赖规则裁剪取数。
+PDF/PNG导出捕获当前条件和筛选，展开所有允许的分区/Tab，不受当前选项限制；条件禁止的内容不导出，允许的空父容器保留。XLSX使用同一表格行投影。导出继续使用捕获时的筛选和展示条件。表格列、图表系列、指标卡变化项以及地图组件的显隐参与按需取数。含条件变化项的指标卡也按自身显隐取数，普通指标卡沿用既有的预取行为。
 
 验收入口：[层级联动](examples/page-visibility-region-linkage.json)、[外部事实Sim](examples/page-visibility-inputs.json)。示例使用明确的本地演示输入；内联数据与Sim事实不能替代真实CloudIOC/DQE联调。
 

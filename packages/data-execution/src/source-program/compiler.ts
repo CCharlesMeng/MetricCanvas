@@ -1,16 +1,13 @@
 import { aiSummaryRelatedData, activePageComponents, type TabSelections, declaredPaginationLimit, flattenPageComponents, resultSourceIds, type Page, type DataSource } from '@metriccanvas/page/internal';
 import { automaticQueryTableSources } from './table-pagination';
 import type { Component, ConditionContext } from '@metriccanvas/page/internal';
-import { tableColumnPresentation } from '../table-presentation';
-import { chartPresentation } from '../chart-presentation';
-import { presentationQuerySources } from '../query-projection';
+import { conditionalProjection, presentationQuerySources } from '../query-projection';
 import type { TableQueryView } from '@metriccanvas/page/internal';
 
 function componentSources(page: Page, component: Component, context?: ConditionContext): string[] {
-  let projected = component;
-  if (context && component.type === 'table') projected = tableColumnPresentation(page, component, context).component;
-  if (context && (component.type === 'barChart' || component.type === 'lineChart')) projected = chartPresentation(page, component, context);
-  return Object.values(projected.data ?? {});
+  const projected = context && conditionalProjection(page, component, context);
+  if (projected === null) return [];
+  return Object.values((projected ?? component).data ?? {});
 }
 
 export function compileSources(page: Page) {

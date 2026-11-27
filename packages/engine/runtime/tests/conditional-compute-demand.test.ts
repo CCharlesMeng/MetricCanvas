@@ -1,4 +1,5 @@
 import { expect, it } from 'vitest';
+import cardDemand from './fixtures/card-comparison-demand.json';
 import example from '../../../../pages/capabilities/data/conditional-compute-demand.json';
 import { parsePage } from '@metriccanvas/page';
 import { resolvePeriodSelection, type DataSnapshot, type EffectiveQuery, type Page } from '@metriccanvas/page/internal';
@@ -162,4 +163,44 @@ it('keeps the category domain when all computed series are hidden', async () => 
   expect(requests[0].body.dsl_list[0].output_metrics).toEqual([]);
   expect(latest.get('trend')).toMatchObject({status:'ready',rows:[{name:'合成组织'}]});
   dispose();
+});
+
+function cardDemandPage(): Page {
+  const parsed = parsePage(cardDemand);
+  if (!parsed.ok) throw Error(JSON.stringify(parsed.errors));
+  return parsed.page;
+}
+
+it('keeps only the table-owned comparison when the rolling-year card and map hide theirs', () => {
+  const page = cardDemandPage();
+  const conditions = initialFilterValues(page.filters ?? [], now);
+  conditions.set('period', { type: 'timeRange', ...resolvePeriodSelection({ mode: 'last12Months' }, now, 'date') });
+  const table = page.sections[1].components.find(component => component.type === 'table')!;
+  table.props.columns.push({ title: '付费同比', field: 'paidChange' });
+  const program = createSourceProgram(page, { gateway: gateway([]), now });
+  try {
+    const queries = program.captureQueries(conditions, new Map(), new Map());
+    expect(queries.has('comparisons')).toBe(false);
+    expect(queries.get('by-region')?.body.dsl_list[0].output_metrics).toEqual(['paidChange']);
+    expect(queries.get('current')?.body.dsl_list[0].output_metrics).toEqual(['rate']);
+  } finally {
+    program.dispose();
+  }
+});
+
+it.each([
+  ['month', 'mom'], ['quarter', 'yoy'], ['year', 'yoy']
+] as const)('requests the visible %s comparison and keeps identically named fields in separate slots', (mode, metric) => {
+  const page = cardDemandPage();
+  const filters = initialFilterValues(page.filters ?? [], now);
+  filters.set('period', period(mode));
+  const program = createSourceProgram(page, { gateway: gateway([]), now });
+  try {
+    const queries = program.captureQueries(filters, new Map(), new Map());
+    expect(queries.get('comparisons')?.body.dsl_list[0].output_metrics).toEqual([metric]);
+    expect(queries.get('current')?.body.dsl_list[0].output_metrics).toEqual(['rate']);
+    expect(queries.get('by-region')?.body.dsl_list[0].output_metrics).toEqual(mode === 'month' ? ['change'] : undefined);
+  } finally {
+    program.dispose();
+  }
 });

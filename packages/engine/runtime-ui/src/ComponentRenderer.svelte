@@ -129,10 +129,12 @@
   const progressing = $derived(exportMode ? undefined : data.main?.progress
     ? data
     : progressiveSlotData(component, data, requestedTable?.view));
-  const screen = $derived(exportMode ? { data, retained: false, table: undefined }
+  // During a card refresh each current slot can resolve independently.
+  const loadingCard = $derived(!exportMode && component.type === 'metricCard' && snapshot.status === 'loading');
+  const screen = $derived(exportMode || loadingCard ? { data, retained: false, table: undefined }
     : retainedScreenData.read(component, progressing ?? data, snapshot, requestedTable));
   const table = $derived(requestedTable ? { ...requestedTable, ...screen.table } : undefined);
-  const visibleData = $derived(progressing ?? (screen.retained ? screen.data : snapshot.status === 'error' || snapshot.status === 'loading'
+  const visibleData = $derived(loadingCard ? data : progressing ?? (screen.retained ? screen.data : snapshot.status === 'error' || snapshot.status === 'loading'
     ? Object.fromEntries(Object.keys(component.data ?? {}).map(slot => [slot, {
       fields: data[slot]?.fields ?? {}, diagnostics: data[slot]?.diagnostics, sourceStatus: snapshot.status, snapshot: { status: 'ready' as const, rows: [] }
     }])) : data));

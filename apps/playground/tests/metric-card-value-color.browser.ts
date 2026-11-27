@@ -7,7 +7,7 @@ test('colors only configured primary values and stacks primary-detail changes by
   await expect(card('loss').locator('.row-value')).toHaveCSS('color', 'rgb(245, 34, 45)');
 
   for (const id of ['flat', 'missing', 'default']) {
-    await expect(card(id).locator('.row-value')).toHaveCSS('color', 'rgb(15, 26, 77)');
+    await expect(card(id).locator('.row-value')).toHaveCSS('color', 'rgb(0, 0, 0)');
   }
 
   const changes = card('gain').locator('.changes');
