@@ -11,7 +11,7 @@ import { filterBlockedIds, initialFilterValues, type FilterState, type FilterVal
 import type { DataGateway, QueryDiagnosticContext } from './ports';
 import { createTableSession, type TableSession } from './table/session';
 import {isPagedJoinQuery} from '@metriccanvas/page/internal';
-import { presentationQuerySources, supportsMembershipCandidates } from '@metriccanvas/data-execution/runtime';
+import { createTableUnionProgress, presentationQuerySources, supportsMembershipCandidates } from '@metriccanvas/data-execution/runtime';
 
 export type PageDataSnapshots = ReadonlyMap<string, DataSnapshot>;
 export interface Subscribable<T> { subscribe(run: (value: T) => void): () => void; }
@@ -47,6 +47,7 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
   let active: ReturnType<typeof start> | undefined;
   function notify(run: (value: PageDataSnapshots) => void, value: PageDataSnapshots) { try { run(value); } catch (cause) { console.error('数据快照订阅方回调抛出异常（已隔离）：', cause); } }
   function start() {
+    const unionProgress = createTableUnionProgress(page);
     const progress = new Map<string, ScreenProgress>();
     let progressTimer: ReturnType<typeof setTimeout> | undefined;
     function cancelProgressPublish() { clearTimeout(progressTimer); progressTimer = undefined; }
@@ -157,6 +158,7 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
     function screenSnapshots(): Map<string, DataSnapshot> {
       const sources = computeSources();
       const next = computedSnapshots(sources, raw, context(), {allowZeroTotal: true});
+      unionProgress.update(sources, next, progress);
       for (const id of ids) {
         if (sources.has(id)) continue;
         const snapshot = raw.get(id);
@@ -194,7 +196,7 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
       }
       const capturedTokens = new Map(tokens), generations = new Map([...tables].map(([id, session]) => [id, session.generation]));
       const seeds = new Map(raw);
-      for (const id of targets) { progress.delete(id); seeds.delete(id); if (!firstRead) raw.set(id, { status: 'loading' }); }
+      for (const id of targets) { unionProgress.reset(id); progress.delete(id); seeds.delete(id); if (!firstRead) raw.set(id, { status: 'loading' }); }
       if (!firstRead) publish();
       fetchTargets();
       function fetchTargets(): void {

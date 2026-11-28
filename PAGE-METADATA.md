@@ -18,6 +18,8 @@
 - **IOC 页头组件化**：新页面统一在首分区首位使用 `type: "iocHeader"`（业务属性在 `props`），旧根级 `iocHeader` 与 `dashboardToolbar` 仅保留兼容读取；详见[分区页头](docs/page-metadata/page.md#ioc-页头进入分区681)。
 - **按需取数与条件裁剪**：隐藏表格列、图表系列与无消费者的关联计算自动跳过取数，详见[条件显隐](docs/page-metadata/conditions.md)。
 
+单张期间明细表可用已有的 `rowKey`、`unionKeys` 与 `joinAggregate` 先显示已返回的组织，再补列、追加行。适用条件见[期间明细表渐进显示](docs/page-metadata/compute.md#period-detail-union)。
+
 ## 文档结构与维护分工
 
 本文件维护页面协议概览、版本边界与阅读导航。使用步骤与跨字段示例由专题文档维护，字段语义由模块维护，精确结构表从 Schema 生成；同一规则在所属文档维护后由其他入口引用。
