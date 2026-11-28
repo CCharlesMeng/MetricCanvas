@@ -1,8 +1,7 @@
 <svelte:options css="injected" />
 <script lang="ts">
   import { getContext, onDestroy, setContext } from 'svelte';
-  import { STATIC_EXPORT_CONTEXT } from '../../widgets/src/shared/export-context';
-  import { TABLE_EXPAND_CONTEXT, type TableExpandControl } from '../../widgets/src/shared/table-expand-context';
+  import { STATIC_EXPORT_CONTEXT, TABLE_EXPAND_CONTEXT, type TableExpandControl } from '../../widgets/src/internal';
   const staticExport = Boolean(getContext(STATIC_EXPORT_CONTEXT));
   import {
     isChartComponent,

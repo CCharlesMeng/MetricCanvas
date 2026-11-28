@@ -1,5 +1,5 @@
 import {filterURLKeys,usesIocRegion,type Page} from '@metriccanvas/page/internal';
-import {filterInputIssue} from '../../runtime/src/navigation-inputs';
+import {filterInputIssue} from '../../runtime/src/internal';
 
 /** Strict URL errors are resolved before asynchronous default requests start. */
 export function initialFilterInputIssue(page:Page,search:string,clock:Date):string|undefined {

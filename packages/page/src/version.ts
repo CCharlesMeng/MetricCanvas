@@ -7,32 +7,26 @@ import { isObjectDqeItem, dqeRecord } from './dqe-object';
 import {chartOptionScopes} from './chart-option';
 import type { TypedError } from './errors';
 import {declaredNavigationTargets} from './navigate';
-import type {Page} from './page';
+import type {Page} from './page-types';
 import { collectTextValueReferences, collectTextValueCompositions } from './page-param';
 import { collectFilterTextValueReferences } from './filter-text-value';
 import { walkDocumentComponents } from './component-walk';
 import { hasNumericDimensionMeasure } from './query-output-measures';
+import {
+  CURRENT_MINOR,
+  INDEPENDENT_EXCLUSION_CANDIDATES_MINOR,
+  LEGACY_READABLE_PAGE_SCHEMA_VERSIONS,
+  PAGE_SCHEMA_MAJOR,
+  UNRESTRICTED_FILTER_CLEAR_MINOR,
+  supportedVersionsFor,
+} from './version-bounds';
 
-/**
- * 页面协议版本策略(ADR-0051):`schemaVersion` 是 `MAJOR.MINOR`。
- *
- * 2026-09-18 用户确认收窄读取策略：6.x 支持 6.5 与 6.6，5.x 只读例外不变。
- * 能力表保留协议演进信息，不再表示旧 6.x 版本获得读取支持。
- */
-
-export const PAGE_SCHEMA_MAJOR = 6;
-/**
- * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
- * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
- */
-export const UNRESTRICTED_FILTER_CLEAR_MINOR = 124;
-export const INDEPENDENT_EXCLUSION_CANDIDATES_MINOR = 125;
-const CURRENT_MINOR = 142;
-/**
- * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
- * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
- */
-export const LEGACY_READABLE_PAGE_SCHEMA_VERSIONS = ['5.0', '5.1', '5.2', '5.3', '5.4'] as const;
+export {
+  INDEPENDENT_EXCLUSION_CANDIDATES_MINOR,
+  LEGACY_READABLE_PAGE_SCHEMA_VERSIONS,
+  PAGE_SCHEMA_MAJOR,
+  UNRESTRICTED_FILTER_CLEAR_MINOR,
+};
 
 function officeNavigationPaths(document: unknown): string[] {
   return headerDeclarations(document).flatMap(({ props, path }) => {
@@ -1035,14 +1029,7 @@ export const versionPolicy: VersionPolicy = {
  * 能力引入历史仍可查询，但不代表旧 6.x 文档可读。
  */
 export function supportedVersions(policy: VersionPolicy = versionPolicy): string[] {
-  const readableMinors = [5];
-  for (let minor = 11; minor < policy.minor; minor++) readableMinors.push(minor);
-  const currentMajor = policy.major === PAGE_SCHEMA_MAJOR && policy.minor >= 6
-    ? [...new Set([...readableMinors.map(minor => `${policy.major}.${minor}`), policy.current])]
-    : [policy.current];
-  return policy.major === PAGE_SCHEMA_MAJOR
-    ? [...LEGACY_READABLE_PAGE_SCHEMA_VERSIONS, ...currentMajor]
-    : currentMajor;
+  return supportedVersionsFor(policy);
 }
 
 function containsPresentationKey(value: unknown, key: string): boolean {

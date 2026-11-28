@@ -1,27 +1,44 @@
-import { seriesDisplayName, chartLegendVisible } from '../../shared/display-unit';
-import { chartDeclaration, chartSeriesAxis, chartSeriesIndex, chartRoleIndex, chartAxisFormats, explicitChartAxes } from '../../../../runtime/src/chart-series-state';
-import { chartSeriesColor } from '../../shared/chart-series-presentation';
-import { resolveBarSeriesValue } from './series-value';
-import { resolveComponentValue } from '../../shared/component-value';
+import {
+  chartAxisFormats,
+  chartDeclaration,
+  chartRoleIndex,
+  chartSeriesAxis,
+  chartSeriesIndex,
+  explicitChartAxes,
+  sortTableRows,
+} from '@metriccanvas/data-execution/runtime';
 import type { BarChartProps, Row, ValueFormat } from '@metriccanvas/page/internal';
-import { sortTableRows } from '@metriccanvas/data-execution/runtime';
 import type { BarSeriesOption, EChartsOption, LabelLayoutOptionCallbackParams } from 'echarts';
+import { chartAxisField } from '../../shared/chart-axis-presentation';
+import {
+  alignedSecondaryAxis,
+  CHART_PALETTE,
+  categoryWindow,
+  dualOrSingleAxis,
+  formatChartNumber,
+  formattedValueAxis,
+  formatterValue,
+  GRID,
+} from '../../shared/chart-option';
+import { type ColorList, serialColor } from '../../shared/chart-palette';
+import {
+  categoryLabelOption,
+  pointValueLabel,
+  valueLabelLayout,
+} from '../../shared/chart-presentation';
+import { chartSeriesColor } from '../../shared/chart-series-presentation';
+import { chartTooltip, seriesTooltipValue } from '../../shared/chart-tooltip';
 import type { MainDataSlots } from '../../shared/component-data';
 import { resolveField } from '../../shared/component-data';
-import { chartAxisField } from '../../shared/chart-axis-presentation';
+import { resolveComponentValue } from '../../shared/component-value';
+import { chartLegendVisible, seriesDisplayName } from '../../shared/display-unit';
 import { finiteNumber, formatValue } from '../../shared/value-format';
-import { CHART_PALETTE, GRID, alignedSecondaryAxis, categoryWindow, dualOrSingleAxis, formattedValueAxis, formatterValue, formatChartNumber } from '../../shared/chart-option';
-import { serialColor, type ColorList } from '../../shared/chart-palette';
-import { categoryLabelOption, pointValueLabel, valueLabelLayout } from '../../shared/chart-presentation';
-import { chartTooltip, seriesTooltipValue } from '../../shared/chart-tooltip';
+import { resolveBarSeriesValue } from './series-value';
 
 const DEFAULT_BAR_WIDTH = 16;
 const MARKER_COLORS = { red: '#f5222d', green: '#52c41a' } as const;
 const REPORT_COLORS = ['#1476ff', '#0cb8b2'] as const;
-const REPORT_FORECAST_COLORS = [
-  'rgba(20, 118, 255, 0.2)',
-  'rgba(12, 184, 178, 0.2)'
-] as const;
+const REPORT_FORECAST_COLORS = ['rgba(20, 118, 255, 0.2)', 'rgba(12, 184, 178, 0.2)'] as const;
 const FLOATING_LABEL_MIN_LENGTH = 7;
 
 type LegendSelection = Readonly<Record<string, boolean>>;
@@ -43,24 +60,36 @@ export function barOption(
   data: MainDataSlots,
   props: BarChartProps,
   palette?: ColorList,
-  rows: readonly Row[] = barDisplayRows(data, props.order)
+  rows: readonly Row[] = barDisplayRows(data, props.order),
 ): EChartsOption {
   if (explicitChartAxes(props)) return mixedOption(data, props, palette);
   const categories = barCategories(data, props, rows);
-  const categoryAxis = { type: 'category' as const, data: categories,
+  const categoryAxis = {
+    type: 'category' as const,
+    data: categories,
     ...(props.horizontal ? { inverse: true } : {}),
-    ...categoryLabelOption(props.categoryLabels, props.showValueLabels) };
+    ...categoryLabelOption(props.categoryLabels, props.showValueLabels),
+  };
   const declaredEntries = props.series.map((series, originalIndex) => ({
-    series, originalIndex, roleIndex: chartRoleIndex(props, originalIndex),
-    field: resolveBarSeriesValue(series, data, props.emptyBehavior)
+    series,
+    originalIndex,
+    roleIndex: chartRoleIndex(props, originalIndex),
+    field: resolveBarSeriesValue(series, data, props.emptyBehavior),
   }));
-  const valueAxis = dualOrSingleAxis(props.dualAxis, chartDeclaration(props).series.length, false,
-    chartAxisFormats(props, declaredEntries.map(({ field, series }) => chartAxisField(field, rows, series.unit))));
+  const valueAxis = dualOrSingleAxis(
+    props.dualAxis,
+    chartDeclaration(props).series.length,
+    false,
+    chartAxisFormats(
+      props,
+      declaredEntries.map(({ field, series }) => chartAxisField(field, rows, series.unit)),
+    ),
+  );
   const horizontalAxis = Array.isArray(valueAxis)
     ? valueAxis.map(horizontalValueLabels)
     : horizontalValueLabels(valueAxis);
   const reportForecast = props.variant === 'reportForecast';
-  const seriesEntries = barSeriesOrder(props).map(index => declaredEntries[index]!);
+  const seriesEntries = barSeriesOrder(props).map((index) => declaredEntries[index]!);
   const topEntryByGroup = new Map<string, (typeof seriesEntries)[number]>();
   for (const entry of seriesEntries) {
     topEntryByGroup.set(entry.series.role ?? 'default', entry);
@@ -73,7 +102,11 @@ export function barOption(
     grid: {
       ...GRID,
       ...(reportForecast ? { top: 44, right: 0, bottom: 20, left: 0 } : {}),
-      ...(rows.length > 20 && props.categoryLabels?.mode !== 'all' ? (props.horizontal ? { right: 40 } : { bottom: 36 }) : {})
+      ...(rows.length > 20 && props.categoryLabels?.mode !== 'all'
+        ? props.horizontal
+          ? { right: 40 }
+          : { bottom: 36 }
+        : {}),
     },
     tooltip: chartTooltip(seriesEntries, props.echartsOption?.tooltip),
     ...barLegend(props, legendData),
@@ -87,21 +120,17 @@ export function barOption(
           ? undefined
           : reportForecast
             ? REPORT_COLORS[roleIndex % REPORT_COLORS.length]
-            : (serialColor(palette, roleIndex) ??
-              CHART_PALETTE[roleIndex % CHART_PALETTE.length]);
+            : (serialColor(palette, roleIndex) ?? CHART_PALETTE[roleIndex % CHART_PALETTE.length]);
       const forecastColor =
         roleIndex === undefined || !reportForecast
           ? roleColor
           : REPORT_FORECAST_COLORS[roleIndex % REPORT_FORECAST_COLORS.length];
-      const isTopSeries =
-        !props.stacked || topEntryByGroup.get(series.role ?? 'default') === entry;
+      const isTopSeries = !props.stacked || topEntryByGroup.get(series.role ?? 'default') === entry;
       const itemStyle = {
         color: chartSeriesColor(props, originalIndex, palette),
         ...(props.rounded
           ? {
-              borderRadius: isTopSeries
-                ? roundedCorners(props)
-                : [0, 0, 0, 0]
+              borderRadius: isTopSeries ? roundedCorners(props) : [0, 0, 0, 0],
             }
           : {}),
         ...(series.role === 'actual' ? { color: roleColor } : {}),
@@ -111,25 +140,40 @@ export function barOption(
               ...(!reportForecast ? { opacity: 0.35 } : {}),
               borderColor: roleColor,
               borderType: 'dashed' as const,
-              borderWidth: 1
+              borderWidth: 1,
             }
-          : {})
+          : {}),
       };
       const values = rows.map((row) => finiteNumber(field.read(row)));
       const segmentLabelFormatter = valueLabelFormatter(field.format, field.unit, series.unit);
-      const displayedValues = props.showValueLabels ? values.map(value => value === undefined ? null : {
-        value, label: { position: props.horizontal ? (value < 0 ? 'left' as const : 'right' as const) : (value < 0 ? 'bottom' as const : 'top' as const) }
-      }) : props.showSegmentLabels
-        ? values.map((value) => {
-            if (value === undefined) return undefined;
-            return isFloatingLabel(segmentLabelFormatter({ value }))
-              ? {
+      const displayedValues = props.showValueLabels
+        ? values.map((value) =>
+            value === undefined
+              ? null
+              : {
                   value,
-                  label: floatingLabelStyle(roleColor)
-                }
-              : value;
-          })
-        : values;
+                  label: {
+                    position: props.horizontal
+                      ? value < 0
+                        ? ('left' as const)
+                        : ('right' as const)
+                      : value < 0
+                        ? ('bottom' as const)
+                        : ('top' as const),
+                  },
+                },
+          )
+        : props.showSegmentLabels
+          ? values.map((value) => {
+              if (value === undefined) return undefined;
+              return isFloatingLabel(segmentLabelFormatter({ value }))
+                ? {
+                    value,
+                    label: floatingLabelStyle(roleColor),
+                  }
+                : value;
+            })
+          : values;
       return {
         name: seriesDisplayName(series.label ?? field.label, series.unit),
         type: 'bar' as const,
@@ -137,7 +181,12 @@ export function barOption(
         barWidth: DEFAULT_BAR_WIDTH,
         ...barAxisIndex(props, originalIndex),
         ...(Object.keys(itemStyle).length > 0 ? { itemStyle } : {}),
-        ...(props.showValueLabels ? { label: pointValueLabel(field.format, field.missingText, field.unit, series.unit), labelLayout: valueLabelLayout(values, false, props.horizontal) } : {}),
+        ...(props.showValueLabels
+          ? {
+              label: pointValueLabel(field.format, field.missingText, field.unit, series.unit),
+              labelLayout: valueLabelLayout(values, false, props.horizontal),
+            }
+          : {}),
         ...(props.showSegmentLabels
           ? {
               // 短金额保持柱内居中；长金额才横向避让，避免在画布边缘被截断。
@@ -147,8 +196,8 @@ export function barOption(
                 position: 'inside' as const,
                 color: series.role === 'forecast' ? roleColor : '#fff',
                 fontSize: 12,
-                formatter: segmentLabelFormatter
-              }
+                formatter: segmentLabelFormatter,
+              },
             }
           : {}),
         ...stackLabels.get(originalIndex),
@@ -158,26 +207,26 @@ export function barOption(
                 color: roleColor,
                 opacity: 0.35,
                 type: 'dashed' as const,
-                width: 1
-              }
+                width: 1,
+              },
             }
           : {}),
         tooltip: {
-          valueFormatter: (value: unknown) => seriesTooltipValue(entry, value)
+          valueFormatter: (value: unknown) => seriesTooltipValue(entry, value),
         },
-        data: displayedValues
+        data: displayedValues,
       };
-    })
+    }),
   };
 }
 
 function barCategories(data: MainDataSlots, props: BarChartProps, rows: readonly Row[]): string[] {
   const category = resolveField(props.categoryField, data);
-  return rows.map(row => formatValue(row[category.field], category.format, category.missingText));
+  return rows.map((row) => formatValue(row[category.field], category.format, category.missingText));
 }
 
 function barSeriesNames(data: MainDataSlots, props: BarChartProps): string[] {
-  return props.series.map(series => {
+  return props.series.map((series) => {
     const field = resolveBarSeriesValue(series, data, props.emptyBehavior);
     return seriesDisplayName(series.label ?? field.label, series.unit);
   });
@@ -186,7 +235,7 @@ function barSeriesNames(data: MainDataSlots, props: BarChartProps): string[] {
 function barLegend(props: BarChartProps, names: string[]): Pick<EChartsOption, 'legend'> {
   if (!chartLegendVisible(chartDeclaration(props).series)) return {};
   if (props.variant !== 'reportForecast') return { legend: { top: 0, left: 0 } };
-  const data = props.series.some(series => series.stackOrder !== undefined) ? names : undefined;
+  const data = props.series.some((series) => series.stackOrder !== undefined) ? names : undefined;
   return { legend: { top: 0, right: 0, ...(data ? { data } : {}) } };
 }
 
@@ -196,54 +245,88 @@ export function barLegendProjection(
   data: MainDataSlots,
   props: BarChartProps,
   selection: LegendSelection | undefined,
-  rows: readonly Row[]
+  rows: readonly Row[],
 ): EChartsOption {
   const legend = option.legend;
   if (!legend || Array.isArray(legend) || !Array.isArray(option.series)) return option;
   const selected = selection ?? legend.selected;
   if (!selected) return option;
   const order = barSeriesOrder(props);
-  const labels = barStackLabels(data, props, rows, barCategories(data, props, rows), barSeriesNames(data, props), selected);
-  return { ...option, legend: { ...legend, selected }, series: option.series.map((series, index) => ({
-    ...series, markPoint: labels.get(order[index]!)?.markPoint
-  })) };
+  const labels = barStackLabels(
+    data,
+    props,
+    rows,
+    barCategories(data, props, rows),
+    barSeriesNames(data, props),
+    selected,
+  );
+  return {
+    ...option,
+    legend: { ...legend, selected },
+    series: option.series.map((series, index) => ({
+      ...series,
+      markPoint: labels.get(order[index]!)?.markPoint,
+    })),
+  };
 }
 
 type StackLabel = Required<Pick<BarSeriesOption, 'markPoint'>>;
 
 function barStackLabels(
-  data: MainDataSlots, props: BarChartProps, rows: readonly Row[], categories: string[], names: string[], selected?: LegendSelection
+  data: MainDataSlots,
+  props: BarChartProps,
+  rows: readonly Row[],
+  categories: string[],
+  names: string[],
+  selected?: LegendSelection,
 ): Map<number, StackLabel> {
   const labels = new Map<number, StackLabel>();
   if (!props.showStackTotalLabels) return labels;
   const order = barSeriesOrder(props);
-  const shown = order.filter(index => selected?.[names[index]!] !== false);
+  const shown = order.filter((index) => selected?.[names[index]!] !== false);
   const groups = stackLabelGroups(props, shown);
-  const fields = props.series.map(series => resolveComponentValue(series, data, props.emptyBehavior));
-  const displayed = props.series.map(series => resolveBarSeriesValue(series, data, props.emptyBehavior));
-  const totals = rows.map(row => fields.reduce((total, field) => total + (finiteNumber(field.read(row)) ?? 0), 0));
+  const fields = props.series.map((series) =>
+    resolveComponentValue(series, data, props.emptyBehavior),
+  );
+  const displayed = props.series.map((series) =>
+    resolveBarSeriesValue(series, data, props.emptyBehavior),
+  );
+  const totals = rows.map((row) =>
+    fields.reduce((total, field) => total + (finiteNumber(field.read(row)) ?? 0), 0),
+  );
   for (const group of groups) {
     const owner = group.at(-1)!;
     const series = props.series[owner]!;
     const field = resolveBarSeriesValue(series, data, props.emptyBehavior);
     const points = rows.flatMap((row, index) => {
-      if (!group.some(member => finiteNumber(displayed[member]!.read(row)) !== undefined)) return [];
+      if (!group.some((member) => finiteNumber(displayed[member]!.read(row)) !== undefined))
+        return [];
       const anchorFields = props.stacked ? displayed : fields;
-      const visible = shown.map(member => finiteNumber(anchorFields[member]!.read(row)) ?? 0);
+      const visible = shown.map((member) => finiteNumber(anchorFields[member]!.read(row)) ?? 0);
       return [stackTotalPoint(categories[index]!, totals[index]!, visible, props.horizontal)];
     });
-    labels.set(owner, { markPoint: {
-      symbol: 'circle', symbolSize: 0, silent: true,
-      label: { show: true, position: 'top', distance: 8, color: '#121e3b', fontSize: 12,
-        formatter: valueLabelFormatter(field.format, field.unit, series.unit) },
-      data: points
-    } });
+    labels.set(owner, {
+      markPoint: {
+        symbol: 'circle',
+        symbolSize: 0,
+        silent: true,
+        label: {
+          show: true,
+          position: 'top',
+          distance: 8,
+          color: '#121e3b',
+          fontSize: 12,
+          formatter: valueLabelFormatter(field.format, field.unit, series.unit),
+        },
+        data: points,
+      },
+    });
   }
   return labels;
 }
 
 function stackLabelGroups(props: BarChartProps, shown: number[]): number[][] {
-  if (!props.stacked) return shown.map(index => [index]);
+  if (!props.stacked) return shown.map((index) => [index]);
   const groups = new Map<string, number[]>();
   for (const index of shown) {
     const key = props.series[index]!.role ?? 'default';
@@ -259,7 +342,7 @@ function stackTotalPoint(category: string, value: number, amounts: number[], hor
   const positive = amounts.reduce((sum, amount) => sum + Math.max(amount, 0), 0);
   const negative = amounts.reduce((sum, amount) => sum + Math.min(amount, 0), 0);
   const end = positive > 0 ? positive : negative;
-  const position = horizontal ? (end < 0 ? 'left' : 'right') : (end < 0 ? 'bottom' : 'top');
+  const position = horizontal ? (end < 0 ? 'left' : 'right') : end < 0 ? 'bottom' : 'top';
   const label: { position: 'left' | 'right' | 'top' | 'bottom' } = { position };
   return { name: category, coord: horizontal ? [end, category] : [category, end], value, label };
 }
@@ -267,9 +350,17 @@ function stackTotalPoint(category: string, value: number, amounts: number[], hor
 /** Keep long formatted ticks inside narrow horizontal drawing areas. All data
  * remain in the series and tooltip; only colliding automatic ticks are omitted. */
 function horizontalValueLabels<T extends { axisLabel?: object }>(axis: T) {
-  return { ...axis, nameGap: 12, nameTextStyle: { align: 'left' as const, padding: 0 },
-    axisLabel: { ...axis.axisLabel, hideOverlap: true,
-    alignMinLabel: 'left' as const, alignMaxLabel: 'right' as const } };
+  return {
+    ...axis,
+    nameGap: 12,
+    nameTextStyle: { align: 'left' as const, padding: 0 },
+    axisLabel: {
+      ...axis.axisLabel,
+      hideOverlap: true,
+      alignMinLabel: 'left' as const,
+      alignMaxLabel: 'right' as const,
+    },
+  };
 }
 
 function valueLabelFormatter(format?: ValueFormat, unit?: string, displayUnit?: string) {
@@ -281,9 +372,7 @@ function valueLabelFormatter(format?: ValueFormat, unit?: string, displayUnit?: 
 }
 
 function floatingLabelLayout({ text }: LabelLayoutOptionCallbackParams) {
-  return isFloatingLabel(text)
-    ? { moveOverlap: 'shiftX' as const }
-    : {};
+  return isFloatingLabel(text) ? { moveOverlap: 'shiftX' as const } : {};
 }
 
 function isFloatingLabel(text: string): boolean {
@@ -295,7 +384,7 @@ function floatingLabelStyle(color?: string) {
     color: color ?? '#121e3b',
     backgroundColor: 'rgba(255, 255, 255, 0.88)',
     borderRadius: 2,
-    padding: [1, 3]
+    padding: [1, 3],
   };
 }
 
@@ -308,39 +397,69 @@ function roundedCorners(props: BarChartProps): number[] {
 export function barSeriesOrder(props: BarChartProps): number[] {
   const indices = props.series.map((_, index) => index);
   if (explicitChartAxes(props)) return indices;
-  return indices.sort((left, right) => (props.series[left]!.stackOrder ?? chartSeriesIndex(props, left)) - (props.series[right]!.stackOrder ?? chartSeriesIndex(props, right)) || left - right);
+  return indices.sort(
+    (left, right) =>
+      (props.series[left]!.stackOrder ?? chartSeriesIndex(props, left)) -
+        (props.series[right]!.stackOrder ?? chartSeriesIndex(props, right)) || left - right,
+  );
 }
 
 /** 显式系列只翻译封闭角色和轴声明；不接受外部 ECharts option。 */
-function mixedOption(data: MainDataSlots, props: BarChartProps, palette?: ColorList): EChartsOption {
+function mixedOption(
+  data: MainDataSlots,
+  props: BarChartProps,
+  palette?: ColorList,
+): EChartsOption {
   const rows = data.main.snapshot.rows;
   const category = resolveField(props.categoryField, data);
-  const entries = props.series.map(series => ({ series, field: resolveBarSeriesValue(series, data, props.emptyBehavior) }));
+  const entries = props.series.map((series) => ({
+    series,
+    field: resolveBarSeriesValue(series, data, props.emptyBehavior),
+  }));
   const axis = (name: 'primary' | 'secondary') => {
-    const fields = entries.filter(({ series }) => (series.axis ?? 'primary') === name)
+    const fields = entries
+      .filter(({ series }) => (series.axis ?? 'primary') === name)
       .map(({ field, series }) => chartAxisField(field, rows, series.unit));
     return formattedValueAxis(fields);
   };
   return {
-    color: [...(palette ?? CHART_PALETTE)], grid: GRID,
-    legend: { top: 0, left: 0 }, tooltip: chartTooltip(entries, props.echartsOption?.tooltip),
-    xAxis: { type: 'category', data: rows.map(row => formatValue(row[category.field], category.format, category.missingText)), ...categoryLabelOption(props.categoryLabels, props.showValueLabels) },
-    yAxis: props.dualAxis ? [axis('primary'), alignedSecondaryAxis(axis('secondary'))] : axis('primary'),
+    color: [...(palette ?? CHART_PALETTE)],
+    grid: GRID,
+    legend: { top: 0, left: 0 },
+    tooltip: chartTooltip(entries, props.echartsOption?.tooltip),
+    xAxis: {
+      type: 'category',
+      data: rows.map((row) =>
+        formatValue(row[category.field], category.format, category.missingText),
+      ),
+      ...categoryLabelOption(props.categoryLabels, props.showValueLabels),
+    },
+    yAxis: props.dualAxis
+      ? [axis('primary'), alignedSecondaryAxis(axis('secondary'))]
+      : axis('primary'),
     series: entries.map((entry, index) => {
       const { series, field } = entry;
-      const markerColorRule = series.kind === 'line' && 'markerColorRule' in series ? series.markerColorRule : undefined;
+      const markerColorRule =
+        series.kind === 'line' && 'markerColorRule' in series ? series.markerColorRule : undefined;
       return {
-        type: series.kind ?? 'bar', name: seriesDisplayName(series.label ?? field.label, series.unit),
+        type: series.kind ?? 'bar',
+        name: seriesDisplayName(series.label ?? field.label, series.unit),
         yAxisIndex: chartSeriesAxis(props, index),
         itemStyle: { color: chartSeriesColor(props, index, palette) },
         ...(series.kind === 'line' ? { connectNulls: false } : { barWidth: DEFAULT_BAR_WIDTH }),
         ...(markerColorRule ? { symbol: 'circle', showSymbol: true, showAllSymbol: true } : {}),
-        ...(props.showValueLabels ? {
-          label: pointValueLabel(field.format, field.missingText, field.unit, series.unit), labelLayout: valueLabelLayout(rows.map(row => finiteNumber(field.read(row))), series.kind === 'line'),
-          ...(series.kind === 'line' ? { showAllSymbol: true } : {})
-        } : {}),
+        ...(props.showValueLabels
+          ? {
+              label: pointValueLabel(field.format, field.missingText, field.unit, series.unit),
+              labelLayout: valueLabelLayout(
+                rows.map((row) => finiteNumber(field.read(row))),
+                series.kind === 'line',
+              ),
+              ...(series.kind === 'line' ? { showAllSymbol: true } : {}),
+            }
+          : {}),
         tooltip: { valueFormatter: (value: unknown) => seriesTooltipValue(entry, value) },
-        data: rows.map(row => {
+        data: rows.map((row) => {
           const value = finiteNumber(field.read(row));
           if (value === undefined) return null;
           if (markerColorRule) {
@@ -348,10 +467,11 @@ function mixedOption(data: MainDataSlots, props: BarChartProps, palette?: ColorL
             return { value, itemStyle: { color: MARKER_COLORS[color] } };
           }
           return props.showValueLabels && series.kind !== 'line'
-            ? { value, label: { position: value < 0 ? 'bottom' as const : 'top' as const } } : value;
-        })
+            ? { value, label: { position: value < 0 ? ('bottom' as const) : ('top' as const) } }
+            : value;
+        }),
       };
-    })
+    }),
   };
 }
 

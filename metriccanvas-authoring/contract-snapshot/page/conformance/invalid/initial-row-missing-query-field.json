@@ -99,7 +99,7 @@
   },
   "expected": [
     {
-      "type": "SCHEMA_ERROR",
+      "type": "FIELD_CONTRACT_ERROR",
       "path": "/dataSources/grouped/source/initial/rows/0/customer_name",
       "message": "DQE 内嵌初始行缺少映射字段:customer_name"
     }

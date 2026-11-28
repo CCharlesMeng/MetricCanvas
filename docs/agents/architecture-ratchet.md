@@ -1,6 +1,6 @@
 # 源码依赖门禁
 
-`pnpm architecture:check` 对基准提交和候选源码使用同一套规则，出现新增循环或跨层依赖时退出 1，并打印从导入者到被导入者的文件路径。CI 的 `architecture` 任务参与总门禁。PR 比较目标分支 SHA 与候选合并结果，推送 main 比较推送前的 SHA 与推送结果。本地默认比较 HEAD 与工作树，包括维护目录里的未跟踪源码。复验已提交的分支时可指定基准：
+`pnpm architecture:check` 对基准提交和候选源码使用同一套规则，**当前已锁定在 0 存量**：只要候选源码存在任何循环依赖、跨层违规或跨层深路径绕过入口导入（`current.size > 0`），检查即退出 1 并打印从导入者到被导入者的文件路径。CI 的 `architecture` 任务参与总门禁。PR 比较目标分支 SHA 与候选合并结果，推送 main 比较推送前的 SHA 与推送结果。本地默认比较 HEAD 与工作树，包括维护目录里的未跟踪源码。复验已提交的分支时可指定基准：
 
 ```sh
 METRICCANVAS_ARCHITECTURE_BASE=origin/main pnpm architecture:check
@@ -24,13 +24,27 @@ node tools/architecture/check.mjs --list
 
 跨层违规按起点层、禁止目标和途经的有向边记录。因此在已有路径旁边加一条通往同一目标的绕路也会失败。该门禁检查静态模块依赖；构建产物隔离仍由打包与独立消费者检查负责。动态模块注册、CSS 和资源引用不在源码图内。
 
-## 首次盘点与退出条件
+## 跨层深路径绕过（`deep import`）
 
-在 `e8ce59f70` 实测 531 个模块，以下存量可通过 `--list` 展开至具体边。检查直接读取 Git 基准，无需维护一份可调高的额度文件。存量收敛归属[架构主干事项 #95](https://github.com/CCharlesMeng/MetricCanvas/issues/95)。
+除上述值依赖跨层方向约束外，门禁还对**值导入与类型导入（`import type` / `export type` / `import(...)`）**统一检查跨层入口边界：只要模块 `from` 导入了另一层 `targetLayer` 的源码文件，目标文件必须是 `targetLayer` 显式声明的入口模块之一，禁止跨层直连私有内部路径：
 
-- 共享取数中 `source-program/session` 与 `source-candidates` 互相调用，占 2 条成环边。退出条件是完整候选读取与取数会话单向协作，并通过候选完整读取、取消和释放的行为回归。
-- 页面领域层的查询、参数引用与表头参数形成 7 条成环边。退出条件是共享查询字段与参数规则能单向复用，参数绑定和查询校验回归通过。
-- `ComponentRenderer.svelte` 通过自身渲染嵌套组件，占 1 条自引用边。此处保留已有的递归行为，其他组件加入循环会触发检查。
-- 柱图、折线图和共享展示代码在三处直接读取 `runtime/src/chart-series-state.ts`，连同上游引用共 11 条路径边。退出条件是图表展示通过归属明确的共享计算或输入获取序列状态，并保留图表行为回归。
+- `page`：`index.ts`、`internal.ts`
+- `data-execution`：`index.ts`、`runtime.ts`、`dqe/index.ts`、`node.ts`
+- `ui`：`index.ts`
+- `runtime`：`index.ts`、`internal.ts`
+- `widgets`：`index.ts`、`internal.ts`、`internal-skeleton.ts`、`internal-summary.ts`
+- `data-gateway`：`index.ts`
+- `runtime-ui`：`index.ts`、`types.ts`、`composition.ts`、`browser-drill-return.ts`、`ai-summary/adapters/yunbao-assistant.ts`
+
+同层内部导入（如 `runtime-ui/src/a.ts -> runtime-ui/src/sub/b.ts`）不受此限制；跨层绕过入口记录为 `deep import: <from> -> <to>`，同样锁定在 0 存量。
+
+## 首次盘点与清零收口
+
+在 `e8ce59f70` 首次实测 531 个模块时存在 21 条存量违规边，现已全部清零，门禁永久锁定在 0 违规（`current.size > 0` 即失败）：
+
+- 共享取数 `source-program/session` 与 `source-candidates` 之间的 2 条成环边已消除：核心执行下沉至 `source-program/core.ts` / `read.ts` / `read-sources.ts`，`source-candidates` 仅单向调用 `createCoreSourceProgram`。
+- 页面领域层的查询、参数引用与表头参数之间的 7 条成环边已消除：筛选绑定纯函数抽离至叶模块 `packages/page/src/query-bindings.ts`，`query.ts` 保持兼容重导出。
+- `ComponentRenderer.svelte` 的 1 条自引用边已消除：改用 Svelte 5 递归 `{#snippet renderComponent(...)}` 渲染嵌套组件。
+- 柱图、折线图和共享展示代码直连 `runtime/src/chart-series-state.ts` 产生的 11 条 `widgets -> runtime` 路径边已消除：移除 10 个 `runtime` 单行转发壳及 3 个 `data-gateway` 内部转发壳，统一改为直连 `@metriccanvas/data-execution/runtime` / `@metriccanvas/data-execution/dqe`。
 
 分层依据见 [ADR-0076](../adr/0076-formal-architecture-contract-scope-and-enforcement.md) 和[当前包边界](../adr/topics/domain-modeling-and-package-boundaries.md)。

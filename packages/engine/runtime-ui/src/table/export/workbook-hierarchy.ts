@@ -1,5 +1,5 @@
 import type { SheetData } from 'write-excel-file/universal';
-import { projectTableRows } from '../../../../widgets/src/components/table/rows';
+import { projectTableRows } from '../../../../widgets/src/internal';
 import { tableWorkbookSheet, type WorkbookSheet, type WorkbookTable } from './workbook-sheet';
 
 /** Child blocks share a worksheet with their parent and start one physical column later. */

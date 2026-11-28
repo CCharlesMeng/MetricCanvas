@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { debugWarn } from '@metriccanvas/data-execution/runtime';
+  import { debugWarn } from '../../shared/debug-warnings';
   import type { DataWarning } from '@metriccanvas/page/internal';
   let { warnings }: { warnings: DataWarning[] } = $props();
 

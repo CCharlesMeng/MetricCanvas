@@ -1,6 +1,6 @@
 import { walkDocumentComponents } from './component-walk';
 import type { TypedError } from './errors';
-import type { JsonObject } from './query';
+import type { JsonObject } from './query-primitives';
 
 export const chartOptionTypes = ['barChart', 'lineChart', 'pieChart'] as const;
 export type ExtensibleChartType = typeof chartOptionTypes[number];

@@ -2,7 +2,7 @@ import { sourceFilterIds } from '@metriccanvas/page/internal';
 import type { Page } from '@metriccanvas/page';
 import { flattenPageComponents, conditionSourceIds, type Row } from '@metriccanvas/page/internal';
 import type { FilterValues } from '../../../runtime/src';
-import type { TableHeaderFilterValue, TableViewState } from '../../../widgets/src/components/table/view-state';
+import type { TableHeaderFilterValue, TableViewState } from '../../../widgets/src/internal';
 export function changedFilters(previous: FilterValues, next: FilterValues): Set<string> {
     return new Set([...new Set([...previous.keys(), ...next.keys()])].filter(id => JSON.stringify(previous.get(id)) !== JSON.stringify(next.get(id))));
 }

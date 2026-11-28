@@ -1,7 +1,9 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
+
 afterEach(() => vi.useRealTimers());
+
 import type { EffectiveQuery, JsonObject, QueryErrorCode } from '@metriccanvas/page/internal';
-import { createDqeGateway, DqeGatewayError } from '../src/dqe';
+import { createDqeGateway, DqeGatewayError } from '../src/index';
 
 /** 敏感哨兵值:错误序列化里检索到即视为泄漏(issue #47/#51)。 */
 const FILTER_SENTINEL = '筛选哨兵值-华东机密';
@@ -14,20 +16,18 @@ function sentinelQuery(): EffectiveQuery {
     filter: {
       time: { period: 'month', is_aggregate: true, start: '2026-07', end: '2026-07' },
       dims: [{ dim_name: '客户级别', dim_value_list: [FILTER_SENTINEL] }],
-      metrics: []
+      metrics: [],
     },
-    order: {}
+    order: {},
   };
   return {
     language: 'dqe',
     body: { dsl_list: [item] },
     fieldMappings: {
       'customer-level': { queryField: '客户级别', type: 'string', role: 'dimension' },
-      'na-customer-count': { queryField: 'NA客户数', type: 'number', role: 'measure' }
+      'na-customer-count': { queryField: 'NA客户数', type: 'number', role: 'measure' },
     },
-    filterValues: [
-      { target: 'dimension', queryField: '客户级别', values: [FILTER_SENTINEL] }
-    ]
+    filterValues: [{ target: 'dimension', queryField: '客户级别', values: [FILTER_SENTINEL] }],
   };
 }
 
@@ -37,7 +37,7 @@ function envelope(results: unknown[]): Response {
 
 function abortError(): Error {
   return Object.assign(new Error('The operation was aborted.'), {
-    name: 'AbortError'
+    name: 'AbortError',
   });
 }
 
@@ -57,24 +57,24 @@ const cases: ClassificationCase[] = [
   {
     name: 'HTTP 401 → 需要登录',
     code: 'DQE_AUTH_REQUIRED',
-    fetchImpl: (async () => new Response('login required', { status: 401 })) as typeof fetch
+    fetchImpl: (async () => new Response('login required', { status: 401 })) as typeof fetch,
   },
   {
     name: 'HTTP 403 → 无权限',
     code: 'DQE_FORBIDDEN',
-    fetchImpl: (async () => new Response('forbidden', { status: 403 })) as typeof fetch
+    fetchImpl: (async () => new Response('forbidden', { status: 403 })) as typeof fetch,
   },
   {
     name: 'HTTP 500 → 上游失败(传输)',
     code: 'DQE_TRANSPORT_ERROR',
-    fetchImpl: (async () => new Response('upstream broke', { status: 500 })) as typeof fetch
+    fetchImpl: (async () => new Response('upstream broke', { status: 500 })) as typeof fetch,
   },
   {
     name: '网络不可达 → 上游失败(传输)',
     code: 'DQE_TRANSPORT_ERROR',
     fetchImpl: (async () => {
       throw new TypeError('fetch failed');
-    }) as typeof fetch
+    }) as typeof fetch,
   },
   {
     name: '网关超时旗标触发的中止 → 超时',
@@ -83,37 +83,39 @@ const cases: ClassificationCase[] = [
     fetchImpl: ((_input: unknown, init?: RequestInit) =>
       new Promise((_resolve, reject) => {
         init?.signal?.addEventListener('abort', () => reject(abortError()));
-      })) as typeof fetch
+      })) as typeof fetch,
   },
   {
     name: '传输层超时仍须报告',
     code: 'DQE_TIMEOUT',
-    fetchImpl: async () => { throw new DOMException('Timed out', 'TimeoutError'); }
+    fetchImpl: async () => {
+      throw new DOMException('Timed out', 'TimeoutError');
+    },
   },
   {
     name: '外部中止(非超时)→ 取消',
     code: 'DQE_CANCELLED',
     fetchImpl: (async () => {
       throw abortError();
-    }) as typeof fetch
+    }) as typeof fetch,
   },
   {
     name: '信封 retCode 失败 → 上游失败(信封)',
     code: 'DQE_ENVELOPE_ERROR',
     fetchImpl: (async () =>
       new Response(
-        JSON.stringify({ retCode: 'CBC.9999', retDesc: `内部错误:${ROW_SENTINEL}` })
-      )) as typeof fetch
+        JSON.stringify({ retCode: 'CBC.9999', retDesc: `内部错误:${ROW_SENTINEL}` }),
+      )) as typeof fetch,
   },
   {
     name: 'results 数量不一致 → 上游失败(信封)',
     code: 'DQE_ENVELOPE_ERROR',
-    fetchImpl: (async () => envelope([])) as typeof fetch
+    fetchImpl: (async () => envelope([])) as typeof fetch,
   },
   {
     name: '查询项结果不是对象 → 上游失败(查询项)',
     code: 'DQE_ITEM_ERROR',
-    fetchImpl: (async () => envelope(['not-an-object'])) as typeof fetch
+    fetchImpl: (async () => envelope(['not-an-object'])) as typeof fetch,
   },
   {
     name: '查询项 code 非 SUCCESS → 查询被拒绝',
@@ -124,9 +126,9 @@ const cases: ClassificationCase[] = [
           code: 'DQE_SIM_UNSUPPORTED_QUERY',
           retDesc: `仅支持 ${ROW_SENTINEL}`,
           data: [],
-          total_count: 0
-        }
-      ])) as typeof fetch
+          total_count: 0,
+        },
+      ])) as typeof fetch,
   },
   {
     name: '成功项 total_count 非法 → 上游失败(查询项)',
@@ -136,17 +138,15 @@ const cases: ClassificationCase[] = [
         {
           code: 'SUCCESS',
           data: [{ 客户级别: '卓越NA', NA客户数: 1 }],
-          total_count: 'not-a-number'
-        }
-      ])) as typeof fetch
+          total_count: 'not-a-number',
+        },
+      ])) as typeof fetch,
   },
   {
     name: '响应缺少维度映射字段 → 结果字段契约不匹配(映射)',
     code: 'DQE_FIELD_MAPPING_ERROR',
     fetchImpl: (async () =>
-      envelope([
-        { code: 'SUCCESS', data: [{ NA客户数: 1 }], total_count: 1 }
-      ])) as typeof fetch
+      envelope([{ code: 'SUCCESS', data: [{ NA客户数: 1 }], total_count: 1 }])) as typeof fetch,
   },
   {
     name: '字段类型不符合契约 → 结果字段契约不匹配(行)',
@@ -156,10 +156,10 @@ const cases: ClassificationCase[] = [
         {
           code: 'SUCCESS',
           data: [{ 客户级别: { invalid: ROW_SENTINEL }, NA客户数: 1 }],
-          total_count: 1
-        }
-      ])) as typeof fetch
-  }
+          total_count: 1,
+        },
+      ])) as typeof fetch,
+  },
 ];
 
 describe('查询错误分类:上游状况 → 稳定可判别分类(表驱动,issue #51)', () => {
@@ -168,14 +168,14 @@ describe('查询错误分类:上游状况 → 稳定可判别分类(表驱动,is
       vi.useFakeTimers();
       const gateway = createDqeGateway({
         fetchImpl: testCase.fetchImpl,
-        ...(testCase.timeoutMs !== undefined ? { timeoutMs: testCase.timeoutMs } : {})
+        ...(testCase.timeoutMs !== undefined ? { timeoutMs: testCase.timeoutMs } : {}),
       });
 
       const pending = gateway.fetchData(sentinelQuery()).then(
         () => {
           throw new Error('该场景必须拒绝');
         },
-        (cause: unknown) => cause as DqeGatewayError
+        (cause: unknown) => cause as DqeGatewayError,
       );
 
       await vi.advanceTimersByTimeAsync(180_000);
@@ -186,7 +186,7 @@ describe('查询错误分类:上游状况 → 稳定可判别分类(表驱动,is
       const serialized = JSON.stringify({
         code: caught.code,
         message: caught.message,
-        detail: caught.detail
+        detail: caught.detail,
       });
       expect(serialized).not.toContain(FILTER_SENTINEL);
       expect(serialized).not.toContain(ROW_SENTINEL);
@@ -197,12 +197,12 @@ describe('查询错误分类:上游状况 → 稳定可判别分类(表驱动,is
     const gateway = createDqeGateway({
       fetchImpl: (async () => {
         throw new Error('不应发起请求');
-      }) as typeof fetch
+      }) as typeof fetch,
     });
     const query = sentinelQuery();
     (query as { language: string }).language = 'sql';
     await expect(gateway.fetchData(query)).rejects.toMatchObject({
-      code: 'DQE_CONFIG_ERROR'
+      code: 'DQE_CONFIG_ERROR',
     });
   });
 
@@ -210,15 +210,13 @@ describe('查询错误分类:上游状况 → 稳定可判别分类(表驱动,is
     const gateway = createDqeGateway({
       fetchImpl: (async () => {
         throw new Error('不应发起请求');
-      }) as typeof fetch
+      }) as typeof fetch,
     });
     const query = sentinelQuery();
     delete ((query.body!.dsl_list[0] as JsonObject).filter as JsonObject).time;
-    query.filterValues = [
-      { target: 'time', value: { from: '2026-01', to: '2026-06' } }
-    ];
+    query.filterValues = [{ target: 'time', value: { from: '2026-01', to: '2026-06' } }];
     await expect(gateway.fetchData(query)).rejects.toMatchObject({
-      code: 'DQE_FILTER_BINDING_ERROR'
+      code: 'DQE_FILTER_BINDING_ERROR',
     });
   });
 });

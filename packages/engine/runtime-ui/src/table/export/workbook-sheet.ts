@@ -1,11 +1,14 @@
-import { DEFAULT_NULL_TEXT } from '../../../../widgets/src/shared/value-format';
 import type { FieldBinding, TableComponent, TableColumnNode } from '@metriccanvas/page/internal';
 import type { CellObject, SheetData } from 'write-excel-file/universal';
-import type { NamedDataSlots } from '../../../../widgets/src/shared/component-data';
-import { resolveField } from '../../../../widgets/src/shared/component-data';
-import { buildTableColumnLayout, type TableColumnLayout } from '../../../../widgets/src/components/table/columns';
-import { projectTableRows } from '../../../../widgets/src/components/table/rows';
-import { tableDataWarnings } from '../../../../widgets/src/components/table/warnings';
+import {
+  buildTableColumnLayout,
+  DEFAULT_NULL_TEXT,
+  projectTableRows,
+  resolveField,
+  tableDataWarnings,
+  type NamedDataSlots,
+  type TableColumnLayout,
+} from '../../../../widgets/src/internal';
 import { tableWorkbookCell } from './workbook-cell';
 import { workbookColumnUnit } from './workbook-numeric-cell';
 

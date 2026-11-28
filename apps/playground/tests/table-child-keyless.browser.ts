@@ -1,17 +1,24 @@
-import { expect, test, type Page } from '@playwright/test';
 import { createRequire } from 'node:module';
-import { chooseTree, closeSelection } from '../../../packages/embed/tests/browser/selection-actions';
-const ExcelJS: typeof import('../../../packages/engine/node_modules/exceljs') = createRequire(import.meta.url)('../../../packages/engine/node_modules/exceljs');
+import { expect, type Page, test } from '@playwright/test';
+import {
+  chooseTree,
+  closeSelection,
+} from '../../../packages/embed/tests/browser/selection-actions';
+
+const ExcelJS: typeof import('../../../packages/engine/node_modules/exceljs') = createRequire(
+  import.meta.url,
+)('../../../packages/engine/node_modules/exceljs');
 async function workbook(page: Page) {
   const pending = page.waitForEvent('download');
   await page.getByRole('button', { name: '导出', exact: true }).click();
-  const file = await pending, book = new ExcelJS.Workbook();
+  const file = await pending,
+    book = new ExcelJS.Workbook();
   await book.xlsx.readFile((await file.path())!);
   return book;
 }
 function counts(book: InstanceType<typeof ExcelJS.Workbook>) {
   const result = [0, 0];
-  expect(book.worksheets.map(sheet => sheet.name)).toEqual(['父子表格']);
+  expect(book.worksheets.map((sheet) => sheet.name)).toEqual(['父子表格']);
   book.worksheets[0]!.eachRow((row, number) => {
     if (number === 1) return;
     if (row.getCell(1).value !== null) result[0]++;
@@ -19,19 +26,26 @@ function counts(book: InstanceType<typeof ExcelJS.Workbook>) {
   });
   return result;
 }
-test('keyless query and inline children keep duplicates, paging, folds and complete exports', async ({ page }) => {
+test('keyless query and inline children keep duplicates, paging, folds and complete exports', async ({
+  page,
+}) => {
   await page.setViewportSize({ width: 1440, height: 1100 });
   await page.goto('/pages/table-child-keyless');
   const parent = page.locator('[data-component="hierarchy/keyless-query-table"]');
   await expect(parent.getByRole('cell', { name: '华东', exact: true })).toBeVisible();
   const initial = await workbook(page);
   expect(counts(initial)).toEqual([4, 18]);
-  expect([initial.worksheets[0]!.getCell('C4').value, initial.worksheets[0]!.getCell('C5').value]).toEqual([360, 999]);
+  expect([
+    initial.worksheets[0]!.getCell('C4').value,
+    initial.worksheets[0]!.getCell('C5').value,
+  ]).toEqual([360, 999]);
   await parent.getByRole('button', { name: '展开子表格', exact: true }).first().click();
   const child = parent.getByRole('region', { name: '子表格', exact: true });
-  const defaultSubtitle = '— 代表本周期没有合同单/商务单';
-  await expect(parent.getByText(defaultSubtitle, { exact: true })).toHaveCount(1);
-  await expect(child.getByText(defaultSubtitle, { exact: true })).toHaveCount(0);
+  const removedBusinessSubtitle = '— 代表本周期没有合同单/商务单';
+  await expect(parent.getByText(removedBusinessSubtitle, { exact: true })).toHaveCount(0);
+  await expect(child.getByText(removedBusinessSubtitle, { exact: true })).toHaveCount(0);
+  await expect(parent.locator('.subtitle')).toHaveCount(0);
+  await expect(child.locator('.subtitle')).toHaveCount(0);
   await expect(child.getByRole('cell', { name: '上海', exact: true })).toHaveCount(2);
   await expect(child.getByRole('cell', { name: '999', exact: true })).toBeInViewport();
   await child.getByRole('button', { name: '下一页', exact: true }).click();
@@ -44,7 +58,8 @@ test('keyless query and inline children keep duplicates, paging, folds and compl
   await expect(child.getByRole('cell', { name: '上海', exact: true })).toHaveCount(2);
   expect(counts(await workbook(page))).toEqual([4, 18]);
   const region = page.locator('[data-filter-id="region"]');
-  await chooseTree(region, '上海'); await closeSelection(region);
+  await chooseTree(region, '上海');
+  await closeSelection(region);
   await expect(child.getByRole('cell', { name: '上海', exact: true })).toHaveCount(2);
   expect(counts(await workbook(page))).toEqual([1, 2]);
   const inline = page.locator('[data-component="inline-keyless/keyless-inline-table"]');
@@ -52,11 +67,16 @@ test('keyless query and inline children keep duplicates, paging, folds and compl
   await expect(inline.getByRole('cell', { name: '20', exact: true })).toBeVisible();
 });
 
-test('a one-row page stays collapsed when the parent result spans multiple pages', async ({ page }) => {
+test('a one-row page stays collapsed when the parent result spans multiple pages', async ({
+  page,
+}) => {
   await page.goto('/pages/table-row-expansion-inline');
-  const table = page.locator('[data-component]').filter({
-    has: page.getByRole('heading', { name: '父行自带明细 · 默认干净呈现' })
-  }).last();
+  const table = page
+    .locator('[data-component]')
+    .filter({
+      has: page.getByRole('heading', { name: '父行自带明细 · 默认干净呈现' }),
+    })
+    .last();
   await table.getByRole('button', { name: '下一页', exact: true }).click();
   await expect(table.getByRole('button', { name: '展开子表格', exact: true })).toHaveCount(1);
   await expect(table.getByRole('region', { name: '子表格', exact: true })).toHaveCount(0);

@@ -17,7 +17,7 @@
 
 控件放在 Dashboard 通用顶部 filter 中。原型的独立筛选行只表达归属；正式排布服从现有 `DashboardToolbar → FilterBar`，包括普通／compact 形态、更多筛选、容器宽度与只读模式。作为一个筛选器计数，不把四个选项拆成四项筛选。
 
-原型：[源码](../../packages/ui/prototypes/dashboard-time/README.md)，[近一年截图](../../packages/ui/prototypes/dashboard-time/evidence/filter-rolling-range.jpg)，[季度截图](../../packages/ui/prototypes/dashboard-time/evidence/quarter-q-labels.jpg)。图表与指标仍是静态示例，原型未证明真实取数。
+原型：[源码](../../../tools/prototypes/dashboard-time/README.md)，[近一年截图](../../../tools/prototypes/dashboard-time/evidence/filter-rolling-range.jpg)，[季度截图](../../../tools/prototypes/dashboard-time/evidence/quarter-q-labels.jpg)。图表与指标仍是静态示例，原型未证明真实取数。
 
 ## 当前能力与缺口
 

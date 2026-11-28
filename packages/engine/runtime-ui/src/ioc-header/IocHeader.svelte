@@ -5,9 +5,10 @@
   import { onMount } from 'svelte';
   import type { ResolvedIocHeader } from './model';
   import type { ResolvedHeaderFilterRow } from './filter-groups';
+  import type { TextBlockLink } from '../../../widgets/src';
   import { headerBackAction, type BrowserReturn } from './back';
   let {model, titleLink, filterIds, overflowIds=[], filterRows, controls, returnContext, onback, readOnly=false, note, staticView=false}: {
-    titleLink?:import('../../../widgets/src/components/text/links').TextBlockLink;
+    titleLink?:TextBlockLink;
     model:ResolvedIocHeader;filterIds:string[];overflowIds?:string[];controls:Snippet<[string,boolean]>;
     filterRows?:ResolvedHeaderFilterRow[];
     returnContext?:{entryId:string;label?:string;back?:()=>void};onback?:()=>void;readOnly?:boolean;note?:string;staticView?:boolean;

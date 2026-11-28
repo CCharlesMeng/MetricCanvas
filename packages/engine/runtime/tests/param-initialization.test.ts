@@ -1,60 +1,106 @@
 import { readFileSync } from 'node:fs';
-import { expect, it } from 'vitest';
+import { effectiveDqeItem } from '@metriccanvas/data-execution/dqe';
 import { parsePage } from '@metriccanvas/page';
-import { createFilterState, initialFilterValues, initializePageParams, orchestrate, pageParamSearch, resolvePageParams } from '../src';
-import { effectiveDqeItem } from '../../data-gateway/src/dqe';
-const document = () => JSON.parse(readFileSync('packages/page/fixtures/contract-valid/dimension-params-page.json','utf8'));
+import { expect, it } from 'vitest';
+import {
+  createFilterState,
+  initialFilterValues,
+  initializePageParams,
+  orchestrate,
+  pageParamSearch,
+  resolvePageParams,
+} from '../src';
+
+const document = () =>
+  JSON.parse(
+    readFileSync('packages/page/fixtures/contract-valid/dimension-params-page.json', 'utf8'),
+  );
 it('参数仅初始化：部分共享/缺值/文本保留，后续修改与清空筛选不复活初值', async () => {
-  const raw = document(), before = JSON.stringify(raw);
-  const parsed = parsePage(raw); if (!parsed.ok) throw new Error(JSON.stringify(parsed.errors));
+  const raw = document(),
+    before = JSON.stringify(raw);
+  const parsed = parsePage(raw);
+  if (!parsed.ok) throw new Error(JSON.stringify(parsed.errors));
   const params = resolvePageParams('?regions=EU&regions=NA', parsed.page.params ?? []);
   const page = initializePageParams(parsed.page, params.values);
   const filters = createFilterState(initialFilterValues(page.filters ?? []));
   const queries: any[] = [];
-  const stream = orchestrate(page, { fetchData: async q => { queries.push(effectiveDqeItem(q)); return {rows:[{region:JSON.stringify(effectiveDqeItem(q).filter),gmv:1}],totalCount:1}; } }, filters);
+  const stream = orchestrate(
+    page,
+    {
+      fetchData: async (q) => {
+        queries.push(effectiveDqeItem(q));
+        return {
+          rows: [{ region: JSON.stringify(effectiveDqeItem(q).filter), gmv: 1 }],
+          totalCount: 1,
+        };
+      },
+    },
+    filters,
+  );
   let snapshots: any;
-  const dispose = stream.subscribe(s => { snapshots = s; });
-  await new Promise(r=>setTimeout(r,0));
+  const dispose = stream.subscribe((s) => {
+    snapshots = s;
+  });
+  await new Promise((r) => setTimeout(r, 0));
   expect(queries).toHaveLength(3);
-  expect(queries.some(q=>JSON.stringify(q.filter.dims) === JSON.stringify([{dim_name:'region',dim_value_list:['EU','NA']}]))).toBe(true);
-  filters.write('region-filter',{type:'dimension',dimension:'region',values:['APAC']});
-  await new Promise(r=>setTimeout(r,0));
-  expect(queries.at(-1).filter.dims).toEqual([{dim_name:'region',dim_value_list:['APAC']}]);
-  filters.write('region-filter',null);
-  await new Promise(r=>setTimeout(r,0));
+  expect(
+    queries.some(
+      (q) =>
+        JSON.stringify(q.filter.dims) ===
+        JSON.stringify([{ dim_name: 'region', dim_value_list: ['EU', 'NA'] }]),
+    ),
+  ).toBe(true);
+  filters.write('region-filter', { type: 'dimension', dimension: 'region', values: ['APAC'] });
+  await new Promise((r) => setTimeout(r, 0));
+  expect(queries.at(-1).filter.dims).toEqual([{ dim_name: 'region', dim_value_list: ['APAC'] }]);
+  filters.write('region-filter', null);
+  await new Promise((r) => setTimeout(r, 0));
   expect(JSON.parse(snapshots.get('sales').rows[0].region).dims).toEqual([]);
   expect(page.dataSources.shared.source.type).toBe('query');
   expect(JSON.stringify(raw)).toBe(before);
   dispose();
 });
 it('多值URL使用重复键；缺值和畸形输入遵循required/default，旧标量不变', () => {
-  const multi = [{id:'regions',type:'dimension',multiple:true,required:true}] as const;
-  expect(resolvePageParams('',multi).missing).toEqual(['regions']);
-  expect(resolvePageParams('regions=&regions=EU',multi).missing).toEqual(['regions']);
-  expect(resolvePageParams('regions=EU&regions=EU',multi).missing).toEqual(['regions']);
-  const values = new Map([['regions',['A&B','C,D']]]);
-  expect(resolvePageParams(pageParamSearch(values),multi).values).toEqual(values);
-  expect(resolvePageParams('regions=EU&regions=NA',[{...multi[0],multiple:false}]).missing).toEqual(['regions']);
-  expect(resolvePageParams('',[{...multi[0],required:false}]).values.size).toBe(0);
-  expect(resolvePageParams('regions=',[{...multi[0],default:['APAC']}]).values.get('regions')).toEqual(['APAC']);
+  const multi = [{ id: 'regions', type: 'dimension', multiple: true, required: true }] as const;
+  expect(resolvePageParams('', multi).missing).toEqual(['regions']);
+  expect(resolvePageParams('regions=&regions=EU', multi).missing).toEqual(['regions']);
+  expect(resolvePageParams('regions=EU&regions=EU', multi).missing).toEqual(['regions']);
+  const values = new Map([['regions', ['A&B', 'C,D']]]);
+  expect(resolvePageParams(pageParamSearch(values), multi).values).toEqual(values);
+  expect(
+    resolvePageParams('regions=EU&regions=NA', [{ ...multi[0], multiple: false }]).missing,
+  ).toEqual(['regions']);
+  expect(resolvePageParams('', [{ ...multi[0], required: false }]).values.size).toBe(0);
+  expect(
+    resolvePageParams('regions=', [{ ...multi[0], default: ['APAC'] }]).values.get('regions'),
+  ).toEqual(['APAC']);
 });
 it('响应式维度初值在进入请求快照前归运行态所有，不保留页面数组代理', async () => {
-  const parsed = parsePage(document()); if (!parsed.ok) throw new Error('fixture');
+  const parsed = parsePage(document());
+  if (!parsed.ok) throw new Error('fixture');
   const params = resolvePageParams('?regions=EU&regions=NA', parsed.page.params ?? []);
   const page = initializePageParams(parsed.page, params.values);
-  const declaration = page.filters![0]; if (declaration.type !== 'dimension') throw new Error('dimension');
-  const pageDefaults = new Proxy(['EU','NA'], {});
+  const declaration = page.filters![0];
+  if (declaration.type !== 'dimension') throw new Error('dimension');
+  const pageDefaults = new Proxy(['EU', 'NA'], {});
   declaration.default = pageDefaults;
   const values = initialFilterValues(page.filters ?? []);
   const state = createFilterState(values);
-  const stream = orchestrate(page, {fetchData: async () => ({rows:[{region:'EU|NA',gmv:1}],totalCount:1})}, state);
+  const stream = orchestrate(
+    page,
+    { fetchData: async () => ({ rows: [{ region: 'EU|NA', gmv: 1 }], totalCount: 1 }) },
+    state,
+  );
   let snapshots: import('../src').PageDataSnapshots = new Map();
-  const dispose = stream.subscribe(value => snapshots = value);
+  const dispose = stream.subscribe((value) => (snapshots = value));
   try {
-    await new Promise(resolve => setTimeout(resolve, 0));
-    expect(snapshots.get('sales')).toMatchObject({status:'ready',rows:[{region:'EU|NA'}]});
-    const selected = values.get('region-filter'); if (selected?.type !== 'dimension') throw new Error('value');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(snapshots.get('sales')).toMatchObject({ status: 'ready', rows: [{ region: 'EU|NA' }] });
+    const selected = values.get('region-filter');
+    if (selected?.type !== 'dimension') throw new Error('value');
     selected.values.push('APAC');
-    expect(pageDefaults).toEqual(['EU','NA']);
-  } finally { dispose(); }
+    expect(pageDefaults).toEqual(['EU', 'NA']);
+  } finally {
+    dispose();
+  }
 });

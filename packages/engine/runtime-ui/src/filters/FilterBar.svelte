@@ -12,7 +12,7 @@
   import {PRESENTATION_CONTEXT,type PresentationReader} from '../presentation-context';
   const presentation=getContext<PresentationReader|undefined>(PRESENTATION_CONTEXT);
   import {selectedCase,appliedAmountRange} from '@metriccanvas/page/internal';
-  import { candidateScopeKey } from '../../../runtime/src/dimension-values';
+  import { candidateScopeKey } from '../../../runtime/src/internal';
   /**
    * 筛选栏:页面筛选器声明 → 对应控件的唯一分发点。
    *

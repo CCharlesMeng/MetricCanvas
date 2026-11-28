@@ -1,11 +1,9 @@
 import { tablePinnedSlots, restoreCellFallbacks, snapshotCellFallbacks, pinnedSnapshotError } from '@metriccanvas/page/internal';
-import { compilePresentation, projectPresentationRows } from '../../runtime/src/presentation';
-import type { DisplaySnapshot } from '../../runtime/src/display-inputs';
+import { compilePresentation, projectPresentationRows } from '../../runtime/src/internal';
 import type { Page, Component, DataSnapshot, Row } from '@metriccanvas/page/internal';
 import { resolveDataSourceFields } from '@metriccanvas/page/internal';
-import type { PageDataSnapshots, FilterValues } from '../../runtime/src';
-import type { NamedDataSlots } from '../../widgets/src/shared/component-data';
-import type { TableViewState, TableHeaderFilterValue } from '../../widgets/src/components/table/view-state';
+import type { DisplaySnapshot, PageDataSnapshots, FilterValues } from '../../runtime/src';
+import type { NamedDataSlots, TableViewState, TableHeaderFilterValue } from '../../widgets/src/internal';
 import { applyTableSearch } from './table/search';
 import { applySearchFilters } from './filters/inline-search';
 import { filterMapRows, isHierarchyDeclaration, resolveMapBasemap } from './map-hierarchy';

@@ -1,8 +1,12 @@
-import {daysInGregorianMonth,validateCalendarTimeRange,validateTimePointValue,type FilterDeclaration,type TimeRangeValue} from './filter';
-export type DataPeriodFact=({status:'ready';granularity:'month'|'date';latest:string;latestComplete?:string;missingRanges?:TimeRangeValue[];refreshedAt?:string;generatedAt?:string}|{status:'loading'|'empty'|'unavailable'|'error'})&{filterRevision?:number};
-/** Neutral, immutable, trusted input. Never part of Page/URL/parameter values. */
-export type DisplayInputsSnapshot=import('./condition').DisplaySnapshot;
-export interface DisplayInputsSource {getSnapshot():DisplayInputsSnapshot;subscribe(listener:(snapshot:DisplayInputsSnapshot)=>void):()=>void}
+import { daysInGregorianMonth, validateCalendarTimeRange, validateTimePointValue } from './filter';
+import type { FilterDeclaration } from './filter-types';
+import type {
+  DataPeriodFact,
+  DisplayInputsSnapshot,
+  DisplayInputsSource,
+} from './condition-types';
+
+export type { DataPeriodFact, DisplayInputsSnapshot, DisplayInputsSource };
 export function periodFact(snapshot:DisplayInputsSnapshot|undefined,id:string,revision?:number):DataPeriodFact {
  const fact=snapshot?.periods?.[id];if(!snapshot||!fact)return {status:'unavailable'};
  if(typeof snapshot.permissionRevision!=='string'||!snapshot.permissionRevision.trim()||typeof snapshot.timeZone!=='string'||!snapshot.timeZone.trim())return {status:'error'};

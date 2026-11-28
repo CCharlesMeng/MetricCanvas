@@ -1,9 +1,12 @@
-import { validateTimePointValue, type FilterDeclaration } from './filter';
-import type { AppliedPeriodSelection } from './period-filter';
+import { validateTimePointValue } from './filter';
+import type {
+  AppliedPeriodSelection,
+  FilterDeclaration,
+  FinalizationDefault,
+  FinalizationName,
+} from './filter-types';
 
-/** Business lookup name; the resolved date belongs to the page instance. */
-export interface FinalizationDefault { finalizationName: string }
-export type FinalizationName = string | string[];
+export type { FinalizationDefault, FinalizationName };
 
 function isFinalizationNameText(value: unknown): value is string {
   return typeof value === 'string' && /\S/.test(value);

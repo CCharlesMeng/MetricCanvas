@@ -10,7 +10,7 @@
       ]
     },
     {
-      "type": "SCHEMA_ERROR",
+      "type": "FIELD_CONTRACT_ERROR",
       "message": "行缺少字段:gap",
       "paths": [
         "/dataSources/targets/source/rows/0/gap",

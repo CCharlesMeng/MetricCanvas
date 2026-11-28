@@ -1,8 +1,7 @@
 import {prepareHierarchyExport} from './hierarchy';
 import {encodeWorkbookTables,downloadWorkbookBytes} from './workbook';
 import type {Page, TableComponent} from '@metriccanvas/page/internal';
-import type {PageSnapshotStream,RuntimeDataGateway} from '../../../../runtime/src';
-import {ExportViewError} from '../../../../runtime/src/export-snapshots';
+import {ExportViewError,type PageSnapshotStream,type RuntimeDataGateway} from '../../../../runtime/src';
 import type {ExportRenderState} from '../../export-render-state';
 import type {createExportController} from '../../export-controller';
 import {prepareTableExport} from './prepare';

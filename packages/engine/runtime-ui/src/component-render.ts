@@ -1,7 +1,16 @@
 import { partialDataNotices } from './widget-host-state';
 import type { Component, DataSnapshot, Row, TableColumn, TableComponent } from '@metriccanvas/page/internal';
-import type {NamedDataSlots} from '../../widgets/src/shared/component-data';
-import type {TableHeaderFilterValue,TablePaginationState,TableSelectedCell,TableSortRule,TableViewState} from '../../widgets/src/components/table/view-state';
+import type {
+  NamedDataSlots,
+  TableHeaderFilterValue,
+  TablePaginationState,
+  TableSelectedCell,
+  TableSortRule,
+  TableViewState,
+  TextBlockLink
+} from '../../widgets/src/internal';
+import type { DimensionValuesSnapshot, FilterValues, PageParamValues, RuntimeDataGateway } from '../../runtime/src';
+import type { ColumnCandidatesSnapshot, HierarchySelection } from '../../runtime/src/internal';
 
 /**
  * 表格交互契约:视图状态与回调由统一运行时持有,组件分发只做转发。
@@ -11,11 +20,11 @@ export interface TableRenderBinding {
   oncandidatepreloadvisible?: (visible: boolean) => void;
   failureNotice?: string;
   onretry?: () => void;
-  expansion?: { page: import('@metriccanvas/page').Page; gateway: import('../../runtime/src').RuntimeDataGateway;
-    selection?: import('../../runtime/src/table/hierarchy-selection').HierarchySelection;
+  expansion?: { page: import('@metriccanvas/page').Page; gateway: RuntimeDataGateway;
+    selection?: HierarchySelection;
     defaultExpansion?: { row: Row; snapshot: DataSnapshot };
     displaySnapshot?: import('@metriccanvas/page/internal').DisplaySnapshot; filterRevision?: number;
-    filters: import('../../runtime/src').FilterValues; params: import('../../runtime/src').PageParamValues; instanceId: string };
+    filters: FilterValues; params: PageParamValues; instanceId: string };
   searchDraft?: string;
   searchOption?: string;
   onsearchoption?: (value: string) => void;
@@ -28,13 +37,13 @@ export interface TableRenderBinding {
   view: TableViewState;
   sortReset?:readonly TableSortRule[];
   selectedCell?: TableSelectedCell;
-  columnCandidates?: Record<string, import('../../runtime/src/table/column-candidates').ColumnCandidatesSnapshot>;
+  columnCandidates?: Record<string, ColumnCandidatesSnapshot>;
   oncandidateopen?: (field: string, open: boolean) => void;
   oncandidatesearch?: (field: string, query: string) => void;
   oncandidatemore?: (field: string) => void;
   oncandidateretry?: (field: string) => void;
   filterOptions: Record<string, string[]>;
-  filterOptionsStatus?:Record<string,import('../../runtime/src/dimension-values').DimensionValuesSnapshot['status']>;
+  filterOptionsStatus?:Record<string,DimensionValuesSnapshot['status']>;
   pagination?: TablePaginationState;
   paginationConfig?: TableComponent['props']['pagination'];
   onpage: (pageIndex: number) => void;
@@ -50,7 +59,7 @@ export interface TableRenderBinding {
 
 /** Tab 容器递归分发时,子组件的数据与交互仍由统一运行时提供。 */
 export interface NestedComponentRender {
-  textLinks?(component: Component): import('../../widgets/src/components/text/links').TextBlockLink[];
+  textLinks?(component: Component): TextBlockLink[];
   summarySnapshot?(component: Component): import('./ai-summary').AiSummarySnapshot | undefined;
   data(component: Component): NamedDataSlots;
   snapshot(component: Component): DataSnapshot;

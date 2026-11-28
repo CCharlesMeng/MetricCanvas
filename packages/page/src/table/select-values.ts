@@ -1,4 +1,4 @@
-import type { Page, TableColumn, TableColumnNode } from '../page';
+import type { Page, TableColumn, TableColumnNode } from '../page-types';
 import type { TableQueryView } from './query-view';
 import { resolveDataSourceFields } from '../data-source';
 import { mainColumnField, tableColumnLeaves } from './columns';

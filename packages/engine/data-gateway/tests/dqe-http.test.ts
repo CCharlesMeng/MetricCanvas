@@ -1,25 +1,22 @@
 import type { AddressInfo } from 'node:net';
-import { afterEach, describe, expect, it } from 'vitest';
+import { createDqeSimServer, DQE_EXECUTE_PATH } from '@metriccanvas/dqe-sim';
 import type { EffectiveQuery, JsonObject } from '@metriccanvas/page/internal';
-import {
-  createDqeSimServer,
-  DQE_EXECUTE_PATH
-} from '@metriccanvas/dqe-sim';
-import {
-  createDqeGateway,
-  createInMemoryDqeDiagnostics
-} from '../src/dqe';
+import { afterEach, describe, expect, it } from 'vitest';
+import { createDqeGateway, createInMemoryDqeDiagnostics } from '../src/index';
 
 const servers: ReturnType<typeof createDqeSimServer>[] = [];
 
 afterEach(async () => {
   await Promise.all(
-    servers.splice(0).filter((server) => server.listening).map(
-      (server) =>
-        new Promise<void>((resolve, reject) => {
-          server.close((error) => (error ? reject(error) : resolve()));
-        })
-    )
+    servers
+      .splice(0)
+      .filter((server) => server.listening)
+      .map(
+        (server) =>
+          new Promise<void>((resolve, reject) => {
+            server.close((error) => (error ? reject(error) : resolve()));
+          }),
+      ),
   );
 });
 
@@ -32,21 +29,21 @@ describe('DQE 数据网关真实 HTTP 集成', () => {
     const diagnostics = createInMemoryDqeDiagnostics();
     const gateway = createDqeGateway({
       endpoint: `http://127.0.0.1:${address.port}${DQE_EXECUTE_PATH}`,
-      diagnostics
+      diagnostics,
     });
 
     await expect(
       gateway.fetchData(query(), {
         pageId: 'na-customers',
-        dataSourceIds: ['na-count-by-level']
-      })
+        dataSourceIds: ['na-count-by-level'],
+      }),
     ).resolves.toEqual({
       rows: [
         { 'customer-level': '卓越NA', 'na-customer-count': 15 },
         { 'customer-level': '战略NA', 'na-customer-count': 12 },
-        { 'customer-level': '核心NA', 'na-customer-count': 9 }
+        { 'customer-level': '核心NA', 'na-customer-count': 9 },
       ],
-      totalCount: 3
+      totalCount: 3,
     });
     const records = diagnostics.records();
     expect(records).toHaveLength(1);
@@ -58,7 +55,7 @@ describe('DQE 数据网关真实 HTTP 集成', () => {
       dataSourceIds: ['na-count-by-level'],
       status: 'success',
       rowCount: 3,
-      totalCount: 3
+      totalCount: 3,
     });
     expect(typeof records[0]!.durationMs).toBe('number');
     // 诊断默认不保留业务数据行:真实往返后检索不到任何行值与筛选值。
@@ -74,16 +71,16 @@ describe('DQE 数据网关真实 HTTP 集成', () => {
     await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
     const address = server.address() as AddressInfo;
     const gateway = createDqeGateway({
-      endpoint: `http://127.0.0.1:${address.port}${DQE_EXECUTE_PATH}`
+      endpoint: `http://127.0.0.1:${address.port}${DQE_EXECUTE_PATH}`,
     });
 
     await expect(gateway.fetchData(top100Query())).resolves.toEqual({
       rows: [
         { 'customer-level': '卓越NA', 'top100-customer-count': 12 },
         { 'customer-level': '战略NA', 'top100-customer-count': 36 },
-        { 'customer-level': '核心NA', 'top100-customer-count': 39 }
+        { 'customer-level': '核心NA', 'top100-customer-count': 39 },
       ],
-      totalCount: 3
+      totalCount: 3,
     });
   });
 
@@ -95,46 +92,48 @@ describe('DQE 数据网关真实 HTTP 集成', () => {
     const diagnostics = createInMemoryDqeDiagnostics();
     const gateway = createDqeGateway({
       endpoint: `http://127.0.0.1:${address.port}${DQE_EXECUTE_PATH}`,
-      diagnostics
+      diagnostics,
     });
 
     // 仿真语义面之外的指标组合会得到 DQE_SIM_UNSUPPORTED_QUERY 拒答信封。
     const rejected: EffectiveQuery = {
       language: 'dqe',
       body: {
-        dsl_list: [{
-          output_metrics: ['仿真面外指标'],
-          output_dims: [],
-          filter: { dims: [], metrics: [] },
-          order: {}
-        }]
+        dsl_list: [
+          {
+            output_metrics: ['仿真面外指标'],
+            output_dims: [],
+            filter: { dims: [], metrics: [] },
+            order: {},
+          },
+        ],
       },
       fieldMappings: {
-        value: { queryField: '仿真面外指标', type: 'number', role: 'measure' }
+        value: { queryField: '仿真面外指标', type: 'number', role: 'measure' },
       },
-      filterValues: []
+      filterValues: [],
     };
 
     const caught = await gateway.fetchData(rejected).then(
       () => {
         throw new Error('拒答信封必须拒绝');
       },
-      (cause: unknown) => cause as { code: string; message: string; detail?: unknown }
+      (cause: unknown) => cause as { code: string; message: string; detail?: unknown },
     );
 
     expect(caught).toMatchObject({
       code: 'DQE_QUERY_REJECTED',
-      detail: { resultCode: 'DQE_SIM_UNSUPPORTED_QUERY' }
+      detail: { resultCode: 'DQE_SIM_UNSUPPORTED_QUERY' },
     });
     expect(diagnostics.records()[0]).toMatchObject({
       status: 'error',
-      errorCode: 'DQE_QUERY_REJECTED'
+      errorCode: 'DQE_QUERY_REJECTED',
     });
     // 仿真 retDesc 是上游响应正文,不得进入错误对象与诊断记录。
     const serialized = JSON.stringify({
       message: caught.message,
       detail: caught.detail,
-      records: diagnostics.records()
+      records: diagnostics.records(),
     });
     expect(serialized).not.toContain('不支持的 output_metrics/output_dims 组合');
   });
@@ -145,7 +144,7 @@ describe('DQE 数据网关真实 HTTP 集成', () => {
     await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
     const address = server.address() as AddressInfo;
     const gateway = createDqeGateway({
-      endpoint: `http://127.0.0.1:${address.port}${DQE_EXECUTE_PATH}`
+      endpoint: `http://127.0.0.1:${address.port}${DQE_EXECUTE_PATH}`,
     });
 
     // 语义面声明的维度取值域(闭集)确定性返回,声明顺序即输出顺序。
@@ -153,20 +152,21 @@ describe('DQE 数据网关真实 HTTP 集成', () => {
       kind: 'values',
       candidates: ['卓越', '战略', '核心', '成长'].map((value) => ({
         value,
-        label: value
-      }))
+        label: value,
+      })),
     });
     await expect(gateway.fetchDimensionValues('区域')).resolves.toEqual({
       kind: 'values',
-      candidates: ['华东', '华南', '华北', '西南', '华中', '东北', '西北'].map(
-        (value) => ({ value, label: value })
-      )
+      candidates: ['华东', '华南', '华北', '西南', '华中', '东北', '西北'].map((value) => ({
+        value,
+        label: value,
+      })),
     });
     const iocDimensions = {
       'cloud-class': [{ value: '公有云', label: '公有云' }],
       'project-initiation-level': ['L1', 'L2', 'L3', 'L4'].map((value) => ({
         value,
-        label: value
+        label: value,
       })),
       'geo-pc-code': [
         { value: 'R05', label: '欧洲' },
@@ -176,7 +176,7 @@ describe('DQE 数据网关真实 HTTP 集成', () => {
         { value: 'R99', label: '中国' },
         { value: 'TBD-LATAM', label: '拉美' },
         { value: 'TBD-SAF', label: '南部非洲' },
-        { value: 'TBD-RU', label: '俄罗斯' }
+        { value: 'TBD-RU', label: '俄罗斯' },
       ],
       'region-dept-code': [
         { value: 'CN-BJ', label: '北京' },
@@ -186,7 +186,7 @@ describe('DQE 数据网关真实 HTTP 集成', () => {
         { value: 'CN-NORTH', label: '华北地区部' },
         { value: 'CN-SOUTH', label: '华南地区部' },
         { value: 'CN-WEST', label: '西部地区部' },
-        { value: 'APAC', label: '亚太地区部' }
+        { value: 'APAC', label: '亚太地区部' },
       ],
       'rep-office-code': [
         { value: 'SH-01', label: '上海代表处' },
@@ -199,18 +199,18 @@ describe('DQE 数据网关真实 HTTP 集成', () => {
         { value: 'TJ-01', label: '天津代表处' },
         { value: 'XA-01', label: '西安代表处' },
         { value: 'GZ-01', label: '广州代表处' },
-        { value: 'NJ-01', label: '南京代表处' }
-      ]
+        { value: 'NJ-01', label: '南京代表处' },
+      ],
     } as const;
     for (const [dimension, candidates] of Object.entries(iocDimensions)) {
       await expect(gateway.fetchDimensionValues(dimension)).resolves.toEqual({
         kind: 'values',
-        candidates
+        candidates,
       });
     }
     // 语义面外维度得到拒答信封 → 该维度候选值能力不可用,而不是空结果。
     await expect(gateway.fetchDimensionValues('仿真面外维度')).resolves.toEqual({
-      kind: 'unavailable'
+      kind: 'unavailable',
     });
   });
 
@@ -222,7 +222,7 @@ describe('DQE 数据网关真实 HTTP 集成', () => {
     await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
     const address = server.address() as AddressInfo;
     const gateway = createDqeGateway({
-      endpoint: `http://127.0.0.1:${address.port}${DQE_EXECUTE_PATH}`
+      endpoint: `http://127.0.0.1:${address.port}${DQE_EXECUTE_PATH}`,
     });
 
     const all = await gateway.fetchDimensionValues('sub-industry-level2');
@@ -231,29 +231,29 @@ describe('DQE 数据网关真实 HTTP 集成', () => {
 
     await expect(
       gateway.fetchDimensionValues('sub-industry-level2', {
-        constraints: { 'sub-industry-level1': ['零售'] }
-      })
+        constraints: { 'sub-industry-level1': ['零售'] },
+      }),
     ).resolves.toEqual({
       kind: 'values',
       candidates: [
         { value: '零售-连锁', label: '零售-连锁' },
-        { value: '零售-外贸', label: '零售-外贸' }
-      ]
+        { value: '零售-外贸', label: '零售-外贸' },
+      ],
     });
 
     // 空选集合等同不约束,不发一条空的 dim_value_list 让上游去猜。
     await expect(
       gateway.fetchDimensionValues('sub-industry-level2', {
-        constraints: { 'sub-industry-level1': [] }
-      })
+        constraints: { 'sub-industry-level1': [] },
+      }),
     ).resolves.toEqual(all);
 
     // 上游不是该维度登记的父维度 → 上游拒答 → 能力不可用,
     // 而不是忽略约束把全量候选冒充成收窄结果。
     await expect(
       gateway.fetchDimensionValues('sub-industry-level2', {
-        constraints: { 'cloud-class': ['公有云'] }
-      })
+        constraints: { 'cloud-class': ['公有云'] },
+      }),
     ).resolves.toEqual({ kind: 'unavailable' });
   });
 
@@ -262,18 +262,18 @@ describe('DQE 数据网关真实 HTTP 集成', () => {
     const server = createDqeSimServer({
       logger(message) {
         requests.push(message);
-      }
+      },
     });
     servers.push(server);
     await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
     const address = server.address() as AddressInfo;
     const gateway = createDqeGateway({
-      endpoint: `http://127.0.0.1:${address.port}${DQE_EXECUTE_PATH}`
+      endpoint: `http://127.0.0.1:${address.port}${DQE_EXECUTE_PATH}`,
     });
 
     const [naRows, top100Rows] = await Promise.all([
       gateway.fetchData(query()),
-      gateway.fetchData(top100Query())
+      gateway.fetchData(top100Query()),
     ]);
 
     expect(naRows.rows).toHaveLength(3);
@@ -294,35 +294,35 @@ function query(): EffectiveQuery {
         period: 'month',
         is_aggregate: true,
         start: '2026-07',
-        end: '2026-07'
+        end: '2026-07',
       },
       dims: [
         { dim_name: '地区部', dim_value_list: ['中国地区部'] },
         {
           dim_name: '客户级别',
-          dim_value_list: ['卓越NA', '战略NA', '核心NA']
-        }
+          dim_value_list: ['卓越NA', '战略NA', '核心NA'],
+        },
       ],
-      metrics: []
+      metrics: [],
     },
-    order: {}
+    order: {},
   };
   return {
     language: 'dqe',
     body: { dsl_list: [item] },
     fieldMappings: {
-        'customer-level': {
-          queryField: '客户级别',
-          type: 'string',
-          role: 'dimension'
-        },
-        'na-customer-count': {
-          queryField: 'NA客户数',
-          type: 'number',
-          role: 'measure'
-        }
+      'customer-level': {
+        queryField: '客户级别',
+        type: 'string',
+        role: 'dimension',
       },
-    filterValues: []
+      'na-customer-count': {
+        queryField: 'NA客户数',
+        type: 'number',
+        role: 'measure',
+      },
+    },
+    filterValues: [],
   };
 }
 
@@ -335,36 +335,36 @@ function top100Query(): EffectiveQuery {
         period: 'month',
         is_aggregate: true,
         start: '2026-07',
-        end: '2026-07'
+        end: '2026-07',
       },
       dims: [
         { dim_name: '地区部', dim_value_list: ['中国地区部'] },
         {
           dim_name: '客户级别',
-          dim_value_list: ['卓越NA', '战略NA', '核心NA']
+          dim_value_list: ['卓越NA', '战略NA', '核心NA'],
         },
         { dim_name: '是否TOP100项目客户', dim_value_list: ['是'] },
-        { dim_name: '是否NA', dim_value_list: ['是'] }
+        { dim_name: '是否NA', dim_value_list: ['是'] },
       ],
-      metrics: []
+      metrics: [],
     },
-    order: {}
+    order: {},
   };
   return {
     language: 'dqe',
     body: { dsl_list: [item] },
     fieldMappings: {
-        'customer-level': {
-          queryField: '客户级别',
-          type: 'string',
-          role: 'dimension'
-        },
-        'top100-customer-count': {
-          queryField: '数量',
-          type: 'number',
-          role: 'measure'
-        }
+      'customer-level': {
+        queryField: '客户级别',
+        type: 'string',
+        role: 'dimension',
       },
-    filterValues: []
+      'top100-customer-count': {
+        queryField: '数量',
+        type: 'number',
+        role: 'measure',
+      },
+    },
+    filterValues: [],
   };
 }

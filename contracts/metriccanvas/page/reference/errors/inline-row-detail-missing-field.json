@@ -3,7 +3,7 @@
   "invariant": "inline-rows-contract",
   "expected": [
     {
-      "type": "SCHEMA_ERROR",
+      "type": "FIELD_CONTRACT_ERROR",
       "message": "嵌套明细项缺少字段:value",
       "paths": [
         "/dataSources/notes/source/rows/0/items/0/value"

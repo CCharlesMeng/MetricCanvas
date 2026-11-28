@@ -184,12 +184,7 @@
     {:else}
       <div class="metric-values placeholder-values" aria-label={`${title ?? '指标'}数据待补充`}>
         <div class="metric-row">
-          <span class="row-label">年累计</span><span class="row-value">{@render pendingOrMissing()}</span>
-          <span class="change"><span class="change-label">同比</span>{@render pendingOrMissing()}</span>
-        </div>
-        <div class="metric-row">
-          <span class="row-label">本月</span><span class="row-value">{@render pendingOrMissing()}</span>
-          <span class="change"><span class="change-label">环比</span>{@render pendingOrMissing()}</span>
+          <span class="row-value">{@render pendingOrMissing()}</span>
         </div>
       </div>
     {/if}
@@ -604,8 +599,7 @@
     color: #f23030;
     background: rgb(242 48 48 / 0.08);
   }
-  .metric-panel .placeholder-values .row-value,
-  .metric-panel .placeholder-values .change {
+  .metric-panel .placeholder-values .row-value {
     color: var(--mc-color-muted, #71717a);
   }
   /* responsive-contract: metric-panel-local-compact */

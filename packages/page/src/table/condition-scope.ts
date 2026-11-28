@@ -1,4 +1,4 @@
-import type { Page, TableColumnNode } from '../page';
+import type { Page, TableColumnNode } from '../page-types';
 import type { TypedError } from '../errors';
 import { conditionLeaves } from '../condition';
 import { walkPageComponents } from '../component-walk';

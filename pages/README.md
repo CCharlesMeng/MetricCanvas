@@ -673,7 +673,7 @@ Embed 自动读取 URL（含 hash 路由）：[账号参数场景](capabilities/
 - [IOC 页头筛选行](capabilities/ioc-header/section-component/README.md)：`/pages/ioc-header-filter-rows`，展示多条带标题的独立筛选行和条件显隐。
 - [IOC Header 子控件](capabilities/ioc-header/controls/README.md)：`/pages/ioc-header-controls`，显式 RegionFilter、应用级 Adapter 与原查询绑定。
 - [IOC Region 代表处下钻](capabilities/ioc-header/controls/README.md#office-navigation)：`/pages/ioc-office-drill-overview` 到 `/pages/ioc-office-drill-detail`，覆盖期间传递、概览返回和直达替换历史。
-数值显示：[整数与缺失值](capabilities/data/numeric-value-display.json)，入口 `/pages/numeric-value-display`；合成数据覆盖整数百分比、单位缩放、真实零、自定义缺失、指标卡进度环和表格副标题默认、覆盖及关闭，步骤见[数据场景说明](capabilities/data/README.md#整数与缺失值显示)。
+数值显示：[整数与缺失值](capabilities/data/numeric-value-display.json)，入口 `/pages/numeric-value-display`；合成数据覆盖整数百分比、单位缩放、真实零、自定义缺失、指标卡进度环和表格显式副标题（有标题、无标题、自定义与空字符串关闭），步骤见[数据场景说明](capabilities/data/README.md#整数与缺失值显示)。
 
 全局语义数值规范：[semantic-numeric-display](capabilities/data/semantic-numeric-display.json)，入口 `/pages/semantic-numeric-display`，涵盖移动/PC金额、比率、数量、资源、存储与计费及例外，见[数据场景](capabilities/data/README.md#全局语义数值规范)。
 

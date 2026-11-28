@@ -3,7 +3,7 @@
   "invariant": "query-field-mapping",
   "expected": [
     {
-      "type": "SCHEMA_ERROR",
+      "type": "FIELD_CONTRACT_ERROR",
       "message": "行缺少字段:extra",
       "paths": [
         "/dataSources/orders/source/initial/rows/0/extra",

@@ -3,7 +3,7 @@
   "invariant": "query-initial-rows-normalize",
   "expected": [
     {
-      "type": "SCHEMA_ERROR",
+      "type": "FIELD_CONTRACT_ERROR",
       "message": "DQE 嵌套明细项缺少映射字段:event_title",
       "paths": [
         "/dataSources/customers/source/initial/rows/0/events/0/event_title"

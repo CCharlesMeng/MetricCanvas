@@ -3,14 +3,14 @@
   "invariant": "compute-output-not-in-rows",
   "expected": [
     {
-      "type": "SCHEMA_ERROR",
+      "type": "FIELD_CONTRACT_ERROR",
       "message": "算子产出字段 rate 不得出现在数据行中，它由计算阶段产出",
       "paths": [
         "/dataSources/targets/source/rows/0/rate"
       ]
     },
     {
-      "type": "SCHEMA_ERROR",
+      "type": "FIELD_CONTRACT_ERROR",
       "message": "行包含未声明字段:rate",
       "paths": [
         "/dataSources/targets/source/rows/0/rate"

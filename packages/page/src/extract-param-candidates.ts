@@ -7,7 +7,7 @@ import { matchesParamDeclaration, pageParamDeclarations, type PageParamDeclarati
 import type { PageDocument } from './page-document';
 import type { FilterDeclaration } from './filter';
 import type { DqeQueryDefinition } from './query';
-import type { ExtractionContext, PageParamExtraction, ParameterCandidate } from './extract-page-params';
+import type { ExtractionContext, PageParamExtraction, ParameterCandidate } from './edit/param-extraction-types';
 
 type AddCandidate = (identity: string, declaration: PageParamDeclaration, value: PageParamValue, location: ParameterCandidate['locations'][number]) => void;
 type Skipped = PageParamExtraction['skipped'];

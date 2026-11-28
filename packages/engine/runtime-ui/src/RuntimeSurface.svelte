@@ -1,6 +1,5 @@
 <script module lang="ts">
-  import { tableColumnNavigation } from '@metriccanvas/page/internal';
- import {selectTimeQuery} from '@metriccanvas/page/internal';
+  import { selectTimeQuery, tableColumnNavigation } from '@metriccanvas/page/internal';
 </script>
 <svelte:options css="injected" />
 <script lang="ts">
@@ -8,10 +7,10 @@
   import {createAuthRequiredGateway, notifyAuthRequired, type AuthRequiredEvent} from './auth-required';
   import {invalidateAiSummaryPage} from './ai-summary/runtime/session';
   import {debugWarn,createFinalizationPreparation,inheritFinalizationCache,supportsMembershipCandidates} from '@metriccanvas/data-execution/runtime';
+  import {classifyRuntimeError,warnRuntimeFallback} from './runtime-errors';
   import {preparationBlocksPage,preparationBlocksFilter,discardPreparingData} from './preparation-blocked';
   import { isOfficeNavigationFeedback, officeNavigationInput, officeNavigationTarget, sameNavigationAddress, type OfficeNavigationInput } from './ioc-header/office-navigation';
-  import {nativeSourceFilterIds,nativeIocRuntimePage} from '@metriccanvas/page/internal';
-  import { hierarchyLevelOf } from '@metriccanvas/page/internal';
+  import {hierarchyLevelOf,nativeIocRuntimePage,nativeSourceFilterIds} from '@metriccanvas/page/internal';
   import { projectSnapshotRows, snapshotCellFallbacks, tablePinnedSlots, restoreCellFallbacks, pinnedSnapshotError } from '@metriccanvas/page/internal';
   import { AI_SUMMARY_RUNTIME_CONTEXT, type AiSummaryRuntimeReader } from './ai-summary';
   import { initialTabSelections, tabSearch } from '@metriccanvas/page/internal';
@@ -19,20 +18,15 @@
   import { resolvePendingPeriodChoice, visiblePendingPeriodModes, type PendingPeriodChoice } from './filters/pending-period-mode';
   import type { PeriodMode } from '@metriccanvas/page/internal';
   import { TABLE_EXPORT_HANDLER } from './table/export/host';
-  import { TABLE_EXPORT_ALLOWED } from '../../widgets/src/shared/export-context';
-  import { withExportPermission } from '../../runtime/src/display-inputs';
-  import { compilePresentation, resolvePresentationRow } from '../../runtime/src/presentation';
-  import type { DisplaySnapshot } from '../../runtime/src/display-inputs';
+  import { CHART_OPTION_PATHS, TABLE_EXPORT_ALLOWED } from '../../widgets/src/internal';
+  import { candidateScopeKey, compilePresentation, detailViewInput, requestsRollingFinalization, resolvePresentationRow, singleExpandableParent, withExportPermission } from '../../runtime/src/internal';
   import { PRESENTATION_CONTEXT } from './presentation-context';
   import { chartOptionPaths, isChartOptionError } from '@metriccanvas/page/internal';
-  import { CHART_OPTION_PATHS } from '../../widgets/src/shared/chart-option-extension';
   import {createSourceCandidateSession,sourceCandidateWindow,withSourceCandidateSelection} from '@metriccanvas/data-execution/runtime';
   import type {CandidatePageReader} from './filters/candidate-paging';
   let candidateSession:ReturnType<typeof createSourceCandidateSession>|undefined;
   import {initialFilterInputIssue} from './initial-filter-input';
-  import {requestsRollingFinalization} from '../../runtime/src/filter-state';
-  import { filterCandidatesRequest } from '../../runtime/src/filter-candidates';
-  import { candidateScopeKey } from '../../runtime/src/dimension-values';
+  import { filterCandidatesRequest } from '@metriccanvas/data-execution/runtime';
   import { createIocRegionDefault, pendingIocRegionURL, resolveIocRegionURL } from './ioc-region-default';
   import { createTableController } from './table/controller';
   import { createExportController } from './export-controller';
@@ -40,7 +34,6 @@
   import { applyTableSearch, remoteTableSearch } from './table/search';
   import { exportVisibleTable } from './table/export/task';
   import { tablePagination } from './table/pagination';
-  import { singleExpandableParent } from '../../runtime/src/table/expansion';
   import { tick, untrack, setContext, onDestroy } from 'svelte';
   const rowScopeInstanceId = $props.id();
   import { initialSectionGroup, selectedSectionGroup, sectionGroupFor, visibleSections } from './section-navigation';
@@ -59,7 +52,7 @@
     dataSourceMode,
     derivePageCapabilities,
     fieldName,
-    filterURLKeys,
+    filterURLKeys, IOC_REGION_FILTER_ID, IOC_REGION_LEVELS, isIocOrganizationLevel, isIocRegionFilterId,
     isChartComponent,
     resolveDataSourceFields,
     flattenPageComponents,
@@ -69,7 +62,7 @@
     type ComponentCapabilities,
     type DataSnapshot,
     type FieldReference,
-    type FilterDeclaration,
+    type FilterDeclaration, type IocOrganizationLevel,
     type MapChartProps,
     type OpenDetailAction,
     type Row,
@@ -82,7 +75,9 @@
   import {
     createDimensionValuesLoader,
     createFilterState,
+    ExportViewError,
     resolveNavigationTarget,
+    type DisplaySnapshot,
     type NavigationInputContract,
     parseFilterSearch,
     type PageParamValues,
@@ -114,12 +109,10 @@
   import { REPORT_EXPORT_CONTEXT, reportExportFilename, downloadReportBlob, type ReportExportContext } from './report-export-context';
   import { downloadReportPdf } from './report-pdf-client';
   import { SUMMARY_EXPORT_CAPTURE, type SummaryCapture } from './export-render-state';
-  import { ExportViewError } from '../../runtime/src/export-snapshots';
   import ComponentRenderer from './ComponentRenderer.svelte';
   import { initialTabsFromSearch } from './initial-tabs';
   import { initializeURLSearch, pageURLSearch, replaceRuntimeSearch } from './url-search';
   import DetailContent from './DetailContent.svelte';
-  import { detailViewInput } from '../../runtime/src/detail-view';
   import { detailTitle } from './detail-title';
   import type { NestedComponentRender, TableRenderBinding } from './component-render';
   import {
@@ -140,7 +133,7 @@
   import { hierarchyTreeSnapshot } from './filters/hierarchy-tree';
   import FilterBar from './filters/FilterBar.svelte';
   import { compatibilityHeaderSection, leadingHeaderSectionId } from './ioc-header/render-plan';
-  import { usesIocRegion } from '@metriccanvas/page/internal';
+  import { resolvePageCompatibility, usesIocRegion } from '@metriccanvas/page/internal';
   import {resolvePageHeader,pageFiltersReadOnly} from './ioc-header/page-header';
   import {
     cascadeConstraints,
@@ -318,7 +311,7 @@
     const controller=new AbortController();targetInputs=new Map();
     if(provider)for(const href of hrefs)void Promise.resolve().then(()=>provider(href,{signal:controller.signal})).then(contract=>{
       if(!controller.signal.aborted&&contract)targetInputs=new Map(targetInputs).set(href,structuredClone(contract));
-    }).catch(()=>{/* Unavailable target contracts keep guarded links closed. */});
+    }).catch((cause)=>{if(!controller.signal.aborted)warnRuntimeFallback('NAVIGATION_TARGET_INPUTS','读取目标页面输入契约失败',{href,cause});});
     return()=>controller.abort();
   });
 
@@ -382,8 +375,8 @@
     try {
       unsubscribe=source.subscribe(update);
       update(source.getSnapshot());
-    } catch {
-      clearDisplaySnapshot();
+    } catch (cause) {
+      warnRuntimeFallback('DISPLAY_INPUTS','订阅展示上下文快照失败',cause);clearDisplaySnapshot();
     }
     return ()=>{stopped=true;unsubscribe();};
   });
@@ -405,7 +398,7 @@
     return declarations.every(filter => {
       if (!dependencies.includes(filter.id)) return true;
       if (filterValues.has(filter.id)) return true;
-      if (filter.id === 'region') {
+      if (isIocRegionFilterId(filter.id)) {
         const key = filterURLKeys(filter, !!declarationPage && usesIocRegion(declarationPage)).value;
         return key !== undefined && new URLSearchParams(appliedInput?.initialSearch).get(key) === '';
       }
@@ -530,11 +523,11 @@
     for (const [id, options] of optionsById) {
       const value = values.get(id);
       if (value && !singleOptionSelected(value, options)) {
-        if (strict) return {type:'SCHEMA_ERROR',path:'/filters/'+id,message:'目标筛选取值不在可用候选中'};
+        if (strict) return {type:'DATA_CONTEXT_ERROR',path:'/filters/'+id,message:'目标筛选取值不在可用候选中'};
         values.delete(id);
       }
       if (bootstrap && !singleOptionSelected(bootstrap.filters.get(id), options))
-        return {type:'SCHEMA_ERROR',path:'/filters',message:'执行快照中的筛选按钮组值不在候选项中'};
+        return {type:'DATA_CONTEXT_ERROR',path:'/filters',message:'执行快照中的筛选按钮组值不在候选项中'};
     }
   }
 
@@ -542,9 +535,9 @@
     return value?.type === 'dimension' && value.values.length === 1 && options.includes(value.values[0]!);
   }
 
-  function failTimeInitialization(mySession:number, signal:AbortSignal, emit:((event:RuntimeViewEvent)=>void)|undefined) {
+  function failTimeInitialization(mySession:number, signal:AbortSignal, emit:((event:RuntimeViewEvent)=>void)|undefined, cause?:unknown) {
     if(session!==mySession||signal.aborted)return;
-    pageState={phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters',message:'时间默认值或可信初始期间不符合声明精度和边界'}]};
+    pageState={phase:'invalid',errors:[classifyRuntimeError(cause,'/filters','时间默认值或可信初始期间不符合声明精度和边界')]};
     emit?.({type:'invalid',errors:pageState.errors});
   }
 
@@ -581,7 +574,7 @@
     candidateClock=new Date();
 
     if (bootstrap && canonicalizeJson(raw) !== canonicalizeJson(bootstrap.document)) {
-      pageState = {phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/',message:'执行快照与页面文档不匹配'}]};
+      pageState = {phase:'invalid',errors:[{type:'DATA_CONTEXT_ERROR',path:'/',message:'执行快照与页面文档不匹配'}]};
       emit?.({type:'invalid',errors:pageState.errors});
       return;
     }
@@ -619,8 +612,8 @@
     try {
       loaded = nativeIocRuntimePage(initializeRenderablePage(parsed.page, params.values, params.missing),supportsMembershipCandidates(gatewayOverride));
       selectedGroup = initialSectionGroup(loaded, params.values);
-    } catch {
-      pageState = {phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/params',message:'页面参数无法生成合法查询条件或内容组，请检查输入值与窗口范围'}]};
+    } catch (cause) {
+      pageState = {phase:'invalid',errors:[classifyRuntimeError(cause,'/params','页面参数无法生成合法查询条件或内容组，请检查输入值与窗口范围')]};
       emit?.({type:'invalid',errors:pageState.errors});
       return;
     }
@@ -660,12 +653,12 @@
     declarations = loaded.filters ?? [];
 
     const message=initialFilterInputIssue(loaded,search,candidateClock);
-    if(message){pageState={phase:'input-invalid',message};emit?.({type:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters',message}]});return;}
+    if(message){pageState={phase:'input-invalid',message};emit?.({type:'invalid',errors:[{type:'DATA_CONTEXT_ERROR',path:'/filters',message}]});return;}
     // 旧数组参数的显式 value 固定本次输入；分组参数仍允许 URL 参数与独立筛选初始化。
     let fromURL:Map<string,FilterValue>, rollingInputs:ReadonlySet<string>, pendingRegion:ReturnType<typeof pendingIocRegionURL>;
     try{({fromURL,rollingInputs,pendingRegion}=readInitialFilterURL(loaded,search,candidateClock,
       capabilities.filters && !paramDeclarations.some(p => !p.path && p.value !== undefined),bootstrap));}
-    catch{pageState={phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters',message:'时间模式URL必须为合法完整mode/from/to'}]};emit?.({type:'invalid',errors:pageState.errors});return;}
+    catch(cause){pageState={phase:'invalid',errors:[classifyRuntimeError(cause,'/filters','时间模式URL必须为合法完整mode/from/to')]};emit?.({type:'invalid',errors:pageState.errors});return;}
     const explicit=bootstrap?.filters??fromURL;
     const preparation=createFinalizationPreparation(loaded,activeGateway,explicit,candidateClock,finalizationController.signal,displaySnapshot,rollingInputs);
     const localOptions = filterGroupOptions(loaded);
@@ -676,12 +669,12 @@
       return;
     }
     let fromDeclarations:Map<string,FilterValue>;
-    try{fromDeclarations=initialFilterValues((loaded.filters??[]).filter(needsInitialFilterValue),candidateClock,displaySnapshot,0,undefined,explicit);}catch{failTimeInitialization(mySession,finalizationController.signal,emit);return;}
+    try{fromDeclarations=initialFilterValues((loaded.filters??[]).filter(needsInitialFilterValue),candidateClock,displaySnapshot,0,undefined,explicit);}catch(cause){failTimeInitialization(mySession,finalizationController.signal,emit,cause);return;}
     function needsInitialFilterValue(filter: FilterDeclaration): boolean {
-      return !fromURL.has(filter.id) && !preparation.unresolved.has(filter.id) && !(pendingRegion && filter.id === 'region');
+      return !fromURL.has(filter.id) && !preparation.unresolved.has(filter.id) && !(pendingRegion && isIocRegionFilterId(filter.id));
     }
     filterValues=new Map([...fromDeclarations,...preparation.immediate]);
-    const officeRedirect = officeNavigationTarget(loaded, filterValues.get('region'));
+    const officeRedirect = officeNavigationTarget(loaded, filterValues.get(IOC_REGION_FILTER_ID));
     initialPeriodModes = preparation.periodModes;
     preparingFilters=[...preparation.unresolved];
     tableController=createTableController(loaded,()=>stream,()=>syncTableState(loaded),()=>filterValues,candidateTimeContext,()=>({gateway:activeGateway,filters:filterValues,params:pageParams,blocked:initializing?declarations.map(filter=>filter.id):blockedFilters,displaySnapshot,filterRevision}));
@@ -693,19 +686,19 @@
       if (!prepared) return;
       ({ finalizationDates, initialFilters } = prepared);
       resolvedFinalizationDates = finalizationDates;
-    } catch {failTimeInitialization(mySession,finalizationController.signal,emit);return;}
+    } catch (cause) {failTimeInitialization(mySession,finalizationController.signal,emit,cause);return;}
     let state:ReturnType<typeof createFilterState>;
     try {
-      state = createFilterState(initialFilters, declarations, localOptions, { schemaVersion:loaded.schemaVersion, iocRegion:usesIocRegion(loaded), candidates:true, displayInputs:()=>displaySnapshot,finalizationDates:()=>resolvedFinalizationDates,readOnly: () => filterEditing?.readOnly === true || pageFiltersReadOnly(loaded) });
-    } catch {
-      pageState={phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters',message:'筛选初始化值不符合声明或日期边界'}]};
+      state = createFilterState(initialFilters, declarations, localOptions, { unrestrictedFilterClear:resolvePageCompatibility(loaded).unrestrictedFilterClear, iocRegion:usesIocRegion(loaded), candidates:true, displayInputs:()=>displaySnapshot,finalizationDates:()=>resolvedFinalizationDates,readOnly: () => filterEditing?.readOnly === true || pageFiltersReadOnly(loaded) });
+    } catch (cause) {
+      pageState={phase:'invalid',errors:[classifyRuntimeError(cause,'/filters','筛选初始化值不符合声明或日期边界')]};
       emit?.({type:'invalid',errors:pageState.errors});return;
     }
     state.configurePage(loaded);
     primePendingFilters();
     function primePendingFilters() {
       for (const id of preparation.pending) state.preparing(id, true);
-      if (pendingRegion) state.preparing('region', true);
+      if (pendingRegion) state.preparing(IOC_REGION_FILTER_ID, true);
     }
     filterState = state;
     initializing=false;
@@ -715,7 +708,7 @@
     function loadCandidates(loader: NonNullable<typeof candidatesLoader>, values: FilterValues) {
       for (const declaration of declarations) {
         if (declaration.type !== 'dimension' || localOptions.has(declaration.id) || declaration.options) continue;
-        if (declaration.candidates && regionDefault.waiting() && preparationBlocksFilter(declaration,declarations,['region'])) continue;
+        if (declaration.candidates && regionDefault.waiting() && preparationBlocksFilter(declaration,declarations,[IOC_REGION_FILTER_ID])) continue;
         loadDimensionCandidates(loader, declaration, values);
       }
     }
@@ -726,11 +719,11 @@
           resolvePendingRegion(pendingRegion, next);
           return;
         }
-        const region = declarations.find(declaration => declaration.id === 'region');
+        const region = declarations.find(declaration => isIocRegionFilterId(declaration.id));
         if (region?.type === 'dimension') {
           const waiting = regionDefault.waiting();
           const value = regionDefault.take(next, cascadeContext(region, declarations, filterValues, filterCandidateContext()));
-          if (value) state.commit({ type: 'initialize', values: new Map([...filterValues, ['region', value]]) });
+          if (value) state.commit({ type: 'initialize', values: new Map([...filterValues, [IOC_REGION_FILTER_ID, value]]) });
           else if (waiting && !regionDefault.waiting() && candidatesLoader) loadCandidates(candidatesLoader,filterValues);
         }
     }
@@ -750,7 +743,7 @@
     }
 
     function resolvePendingRegion(input: NonNullable<typeof pendingRegion>, next: DimensionValuesSnapshots) {
-      if (!state.preparation().has('region') || redirectingRegion) return;
+      if (!state.preparation().has(IOC_REGION_FILTER_ID) || redirectingRegion) return;
       const context = cascadeContext(input.declaration, declarations, filterValues, filterCandidateContext());
       const resolved = resolveIocRegionURL(input, next, context);
       regionURLIssue = resolved && 'issue' in resolved ? resolved.issue : '';
@@ -759,16 +752,16 @@
       if (target) {
         if ([...preparation.pending].some(id => state.preparation().has(id))) return;
         redirectingRegion = true;
-        navigateOffice(target, new Map([...filterValues, ['region', resolved.value]]), { replace: true, sourcePageId: loaded.id }, true);
+        navigateOffice(target, new Map([...filterValues, [IOC_REGION_FILTER_ID, resolved.value]]), { replace: true, sourcePageId: loaded.id }, true);
         return;
       }
-      state.completePreparation(new Map([['region', resolved.value]]));
+      state.completePreparation(new Map([[IOC_REGION_FILTER_ID, resolved.value]]));
     }
 
     let primed = false;
     function reconcileRegionInitialization(previous: FilterValues, values: FilterValues) {
-      regionDefault.cancel(primed, changedFilters(previous, values).has('region'));
-      if (!state.preparation().has('region')) regionURLIssue = '';
+      regionDefault.cancel(primed, changedFilters(previous, values).has(IOC_REGION_FILTER_ID));
+      if (!state.preparation().has(IOC_REGION_FILTER_ID)) regionURLIssue = '';
     }
     disposers.push(
       state.subscribe((values) => {
@@ -790,7 +783,7 @@
           search = nextSearch;
           replaceRuntimeSearch(navigationAdapter, nextSearch);
           emit?.({ type: 'filter-change', search: nextSearch,filterRevision:state.revision });
-          try { bootstrap?.recordFilters?.(values); } catch { /* 记录失败不能回滚当前筛选或中止查询 */ }
+          try { bootstrap?.recordFilters?.(values); } catch (cause) { warnRuntimeFallback('BOOTSTRAP_RECORD_FILTERS','记录筛选快照失败（已忽略）',cause); }
           if (changedFilters(previous, values).size > 0) closeDetail(false);
           for (const component of flattenPageComponents({sections:loaded.sections})) if(component.type==='table') tableController?.reset(component,previous,values);
         }
@@ -830,9 +823,9 @@
       applyPendingPeriods(state, loaded, dates);
       state.completePreparation(preparation.values(dates, state.preparation()));
       emit?.({type:'ready',pageId:loaded.id});
-    }).catch(()=>{
+    }).catch((cause)=>{
       if(session!==mySession||finalizationController.signal.aborted)return;
-      const errors:TypedError[]=[{type:'SCHEMA_ERROR',path:'/filters',message:'定稿日期无法生成合法的时间默认值'}];
+      const errors:TypedError[]=[classifyRuntimeError(cause,'/filters','定稿日期无法生成合法的时间默认值')];
       pageState={phase:'invalid',errors};emit?.({type:'invalid',errors});
     });
     const pendingInitial=new Set(declarations.filter(f=>(f.type==='timePoint'||f.type==='timeRange')&&f.availability?.initial&&!filterValues.has(f.id)&&!fromURL.has(f.id)).map(f=>f.id));
@@ -842,7 +835,7 @@
       const key=canonicalizeJson([next?.periods??{},next?.timeZone??null]);if(key===periodKey)return;periodKey=key;
       // Invalidate authorizing receipts before publishing a new fact context.
       for(const declaration of declarations)if(declaration.type==='dimension'&&declaration.candidateWindow)state.candidate(declaration.id,'loading');
-      let defaults:Map<string,FilterValue>;try{defaults=initialFilterValues(declarations,new Date(),displaySnapshot,state.revision,finalizationDates);}catch{defaults=new Map();}
+      let defaults:Map<string,FilterValue>;try{defaults=initialFilterValues(declarations,new Date(),displaySnapshot,state.revision,finalizationDates);}catch(cause){warnRuntimeFallback('PERIOD_FACTS','刷新统计期间默认值失败，回退空默认值',cause);defaults=new Map();}
       const seeded=new Map(filterValues);
       for(const id of pendingInitial){if(filterValues.has(id)){pendingInitial.delete(id);continue;}const value=defaults.get(id);if(value){seeded.set(id,value);pendingInitial.delete(id);}}
       if(seeded.size!==filterValues.size)state.commit({type:'initialize',values:seeded});
@@ -1021,7 +1014,7 @@
     const rollingInputs=new Set<string>(), query=new URLSearchParams(search);
     const pendingRegion = bootstrap ? undefined : pendingIocRegionURL(page, search);
     const filters=(page.filters??[]).filter(filter=>{
-      if (pendingRegion && filter.id === 'region') return false;
+      if (pendingRegion && isIocRegionFilterId(filter.id)) return false;
       if(bootstrap||!requestsRollingFinalization(filter,query))return true;
       rollingInputs.add(filter.id);
       return false;
@@ -1055,11 +1048,11 @@
   }
 
   function selectHeaderDimension(declaration: Extract<FilterDeclaration, { type: 'dimension' }>, values: string[], level?: string) {
-    if (pageState.phase === 'ready' && declaration.id === 'region') {
+    if (pageState.phase === 'ready' && isIocRegionFilterId(declaration.id)) {
       const region: FilterValue = { type: 'dimension', dimension: declaration.dimension, values, level };
       const target = officeNavigationTarget(pageState.page, region);
       if (target) {
-        navigateOffice(target, new Map([...filterValues, ['region', region]]));
+        navigateOffice(target, new Map([...filterValues, [IOC_REGION_FILTER_ID, region]]));
         return;
       }
     }
@@ -1138,7 +1131,8 @@
         let request:ReturnType<typeof filterCandidatesRequest>;
         try {
           request = withSourceCandidateSelection(input.page,declaration,values,filterCandidatesRequest(declaration,declarations,values,level,input));
-        } catch {
+        } catch (cause) {
+          warnRuntimeFallback('FILTER_CANDIDATES','构造筛选候选请求失败，标记候选不可用',{filterId:declaration.id,level,cause});
           const dimension = declaration.hierarchy?.find(item=>item.id===level)?.dimension ?? declaration.dimension;
           loader.unavailable(dimension,{filterId:declaration.id,level,context});
           continue;
@@ -1345,12 +1339,12 @@
         detailFilters=input.filters;
         if (view?.mode === 'query') {
           const generation = detailGeneration;
-          detailDispose = orchestrate(input.page, activeGateway, createFilterState(input.filters, input.page.filters ?? [], new Map(), {schemaVersion:input.page.schemaVersion})).subscribe(value => {
+          detailDispose = orchestrate(input.page, activeGateway, createFilterState(input.filters, input.page.filters ?? [], new Map(), {unrestrictedFilterClear:resolvePageCompatibility(input.page).unrestrictedFilterClear})).subscribe(value => {
             if (generation === detailGeneration && openDetail) detailSnapshots = value;
           });
         } else detailSnapshots = snapshots;
-      } catch {
-        openDetail = { ...openDetail, error: '详情参数不完整或无效，请重新选择。' };
+      } catch (cause) {
+        warnRuntimeFallback('DETAIL_VIEW','打开详情视图失败',{componentId:component.id,cause});openDetail = { ...openDetail, error: '详情参数不完整或无效，请重新选择。' };
       }
     }
   }
@@ -1386,16 +1380,16 @@
 
   function currentRegionMapSelection() {
     if (pageState.phase !== 'ready' || !usesIocRegion(pageState.page)) return;
-    const selected = regionMapSelection(filterValues.get('region'));
+    const selected = regionMapSelection(filterValues.get(IOC_REGION_FILTER_ID));
     if (!selected) return;
-    const declaration = declarations.find(item => item.id === 'region');
+    const declaration = declarations.find(item => isIocRegionFilterId(item.id));
     if (!isHierarchyDeclaration(declaration)) return;
     if (regionMapCandidate(sourceFilterCandidates(declaration), selected.level, selected.value)) return selected;
   }
 
   function selectRegionFromMap(
     declaration: Extract<FilterDeclaration, { type: 'dimension' }>,
-    level: 'region-dept' | 'office',
+    level: IocOrganizationLevel,
     value: unknown,
     parent?: { value: unknown }
   ) {
@@ -1410,9 +1404,9 @@
     const declaration = declarations.find(item => item.id === props.hierarchyFilter);
     if (!isHierarchyDeclaration(declaration)) return false;
     const value = filterValues.get(declaration.id);
-    if (declaration.id === 'region' && regionMapActive() && props.parentField && props.codeField &&
-        value?.type === 'dimension' && (value.level === 'region-dept' || value.level === 'office')) {
-      selectRegionFromMap(declaration, 'office', row[fieldName(props.codeField)], { value: row[fieldName(props.parentField)] });
+    if (isIocRegionFilterId(declaration.id) && regionMapActive() && props.parentField && props.codeField &&
+        value?.type === 'dimension' && isIocOrganizationLevel(value.level)) {
+      selectRegionFromMap(declaration, IOC_REGION_LEVELS.office, row[fieldName(props.codeField)], { value: row[fieldName(props.parentField)] });
       return true;
     }
     const decision = resolveMapClick(props, declaration, value, row);
@@ -1429,8 +1423,8 @@
     const target = declarations.find(declaration => declaration.id === action.writeFilter);
     if (clicked == null || target?.type !== 'dimension') return;
     const level = action.level;
-    if (component.type === 'mapChart' && target.id === 'region' && regionMapActive() &&
-        (level === 'region-dept' || level === 'office')) {
+    if (component.type === 'mapChart' && isIocRegionFilterId(target.id) && regionMapActive() &&
+        isIocOrganizationLevel(level)) {
       selectRegionFromMap(target, level, clicked);
       return;
     }
@@ -1453,10 +1447,10 @@
   }
 
   function targetResult(target:NavigationTarget,row:Row={},filters=filterValues,verifiedRegion=false) {
-    if(target.validateTargetInputs&&Object.values(target.query??{}).some(b=>b.source==='filter'&&blockedFilters.includes(b.id)&&!(verifiedRegion&&b.id==='region')))return {ok:false as const,code:'NAVIGATION_INPUT_INVALID' as const,message:'来源筛选尚未通过当前候选确认'};
+    if(target.validateTargetInputs&&Object.values(target.query??{}).some(b=>b.source==='filter'&&blockedFilters.includes(b.id)&&!(verifiedRegion&&isIocRegionFilterId(b.id))))return {ok:false as const,code:'NAVIGATION_INPUT_INVALID' as const,message:'来源筛选尚未通过当前候选确认'};
     const result=resolveNavigationTarget(target,filters,pageParams,row,targetInputs.get(target.href),candidateClock);
     if(!result.ok)return result;
-    try{return {ok:true as const,href:navigation?.resolveHref?.(result.href)??result.href};}catch{return {ok:false as const,code:'NAVIGATION_INPUT_UNAVAILABLE' as const,message:'目标页面路由不可用'};}
+    try{return {ok:true as const,href:navigation?.resolveHref?.(result.href)??result.href};}catch(cause){warnRuntimeFallback('NAVIGATION_RESOLVE','解析目标页面路由失败',{href:result.href,cause});return {ok:false as const,code:'NAVIGATION_INPUT_UNAVAILABLE' as const,message:'目标页面路由不可用'};}
   }
   function targetHref(target:NavigationTarget,row:Row={}) {const result=targetResult(target,row);return result.ok?result.href:undefined;}
   function navigateTarget(target:NavigationTarget,row:Row={},event?:MouseEvent){
@@ -1478,7 +1472,7 @@
       return;
     }
     navigationMessage = '';
-    const office = entry ? undefined : dimensionValueOf(filters, 'region').values[0];
+    const office = entry ? undefined : dimensionValueOf(filters, IOC_REGION_FILTER_ID).values[0];
     navigate(result.href, undefined, entry, office ? officeNavigationInput(target, office) : undefined);
   }
 
@@ -1561,10 +1555,10 @@
     if (snapshot.status === 'ready') restoreCellFallbacks(snapshot.rows, snapshot.cellFallbacks);
     return snapshot;
   }
-  const reportedPinned = new WeakSet<object>();
+  const reportedPinned = new Map<string, DataSnapshot>();
   function reportPinnedIssue(component: TableComponent, sourceId: string, snapshot: DataSnapshot): void {
-    if (reportedPinned.has(snapshot)) return;
-    reportedPinned.add(snapshot);
+    const key = `${component.id}\0${sourceId}`;
+    if (reportedPinned.get(key) === snapshot) return; reportedPinned.set(key, snapshot);
     debugWarn('[MetricCanvas][TABLE_PINNED_RESULT_INVALID] 置顶结果不可用', { componentId: component.id, dataSourceIds: [sourceId], reason: pinnedSnapshotError(snapshot) });
   }
 
@@ -1789,12 +1783,13 @@
     {/if}
   {:else}
     {@const readyPage = pageState.page}
+    {@const compat = resolvePageCompatibility(readyPage)}
     {@const header = resolvePageHeader(readyPage,presentation?.filters??declarations)}
     {@const pageReadOnly = filterEditing?.readOnly || header.readOnly}
-    {@const layoutForm = readyPage.layout ?? 'report'}
+    {@const layoutForm = compat.layout}
     {@const firstComponent = readyPage.sections[0]?.components[0]}
     {@const leadingDateToolbar = layoutForm === 'report' && !readyPage.sections[0]?.title && firstComponent?.type === 'reportHeader' && firstComponent.layout.span === 12 && (!!firstComponent.props.filterIds?.length || !!firstComponent.props.exportButtons?.length || !!firstComponent.props.pdfExport || !!firstComponent.props.pngExport)}
-    {@const dashboardToolbar = usesIocRegion(readyPage)?'hidden':readyPage.dashboardToolbar??(header.model?'visible':'hidden')}
+    {@const toolbarMode = compat.dashboardHeader.toolbarMode}
     {@const compatibleHeader = compatibilityHeaderSection(readyPage)}
     {@const leadingId = leadingHeaderSectionId(readyPage)}
     {@const projectedSections = presentation?.sections ?? readyPage.sections}
@@ -1802,12 +1797,10 @@
     <div
       class:layout-dashboard={layoutForm === 'dashboard'}
       class:with-report-date-toolbar={leadingDateToolbar}
-      class:dashboard-toolbar-hidden={
-        layoutForm === 'dashboard' && dashboardToolbar === 'hidden'
-      }
+      class:dashboard-toolbar-hidden={layoutForm === 'dashboard' && toolbarMode === 'hidden'}
       class="page-content"
       data-page-layout-form={layoutForm}
-      data-dashboard-toolbar={typeof dashboardToolbar==='string'?dashboardToolbar:dashboardToolbar.variant}
+      data-dashboard-toolbar={toolbarMode}
     >
       {#snippet headerControls(ids: string[])}
         <FilterBar confirmationIds={confirmationFilters} {timeContext} onretry={retryCandidates} readOnly={filterEditing?.readOnly} declarations={ids.flatMap(id=>presentation?.filters.find(f=>f.id===id)??[])} values={filterValues}
@@ -1835,7 +1828,7 @@
             const declaration = declarations.find(item => item.id === component.props.filterId);
             if (declaration?.type === 'dimension') writeDimension(declaration, [value]);
           }}
-          headerPeriod={(header)=>headerPeriod(header.props,declarations,filterValues,readyPage.schemaVersion)}
+          headerPeriod={(header)=>headerPeriod(header.props,declarations,filterValues,compat.legacyReportHeaderPeriod)}
           data={componentData(readyPage, component, slots)}
           snapshot={hostRenderSnapshot(component, slots)}
           pageSnapshots={snapshots}

@@ -1,6 +1,6 @@
 # MetricCanvas 架构治理、AI-Native 升级与技术债清理主计划
 
-> **状态**：Wave 0 已合入 `main`（PR #199 @ `560b1d968`）；Wave 1A（`W1-1` ~ `W1-4`）本地实施完成并待独立验真与交付，下一步推进 Wave 1B（`W1-5` 镜像收敛与 4 层闭环）  
+> **状态**：Wave 0 已合入 `main`（PR #199 @ `560b1d968`）；Wave 1A（`W1-1` ~ `W1-4`）已合入 `main`（PR #200 @ `5e41ea766`，CI 8/8 全绿）；`W1-5` 已拍板延后并与 `W4-1` 合并推进（按 D1 执行）；Wave 2（`W2-1` ~ `W2-6`）本地已完成（PR #201 @ `e5deb5dcd`、PR #202 @ `16ac8cfd5`、PR #203 @ `1fa55eced`、PR #204 @ `14abc12c0` 已合入 `main`；`W2-6` 待独立验真/PR）  
 > **立项日期**：2026-11-27  
 > **基线提交**：`origin/main` @ `8ce2dd52eaabc179bf195000cf3592e6b0f1b8f3`  
 > **唯一执行主入口**：本文为本轮“开发态转维护态”长周期治理的唯一主计划与进度台账。跨会话推进时就地更新勾选状态、提交 SHA 与复测指标，不再另起分稿。
@@ -180,7 +180,7 @@ flowchart LR
   - **范围**：`AGENTS.md`、`docs/agents/*.md`、新增根级 `ARCHITECTURE.md`（127 行 / 10.3 KB）。
   - **动作**：精简 `AGENTS.md`（对齐 `.agents/skills/` 清单、指向自动化门禁与 `ARCHITECTURE.md`）；编写维护者架构图、职责边界、变更定位决策树与按包验证命令矩阵；核心入口+治理文档全集从 **343.7 KB 降至 277.3 KB（-19.3%，其中 `PAGE-METADATA.md` -78.7%）**。
   - **验收**：`pnpm verify:fast` 通过，核心入口锚点全部保留。
-- [ ] **`W1-5` 5 份生成镜像收敛与 4 层构建验证闭环**（负责：`mirror-delivery-engineer`）
+- [ ] **`W1-5` 5 份生成镜像收敛与 4 层构建验证闭环**（已拍板延后并与 `W4-1` 合并推进；负责：`mirror-delivery-engineer`）
   - **范围**：`tools/scripts/export-authoring-contracts.ts`、`package.json`、`contracts/`、`metriccanvas-authoring/`、`.gitignore`、`.github/workflows/ci.yml`、`.github/workflows/ci-full.yml` 及相关测试。
   - **动作**：
     - 新增幂等集成构建入口（`pnpm authoring:materialize`），支持集成方从任意提交一键构建所需分发内容；
@@ -193,7 +193,7 @@ flowchart LR
 
 ### Wave 2｜架构边界收口、清零违规与统一 ACL（目标：清晰分层、零倒灌、纯渲染组件无业务污染）
 
-- [ ] **`W2-1` 清零 `architecture:check` 21 条基线违规与浅薄转发空壳**（负责：`boundary-architect`）
+- [x] **`W2-1` 清零 `architecture:check` 21 条基线违规与浅薄转发空壳**（负责：`boundary-architect`）
   - **范围**：`packages/engine/widgets/src/`、`packages/engine/runtime/src/`、`packages/engine/data-gateway/`、`packages/data-execution/src/`、`packages/page/src/`、`packages/ui/prototypes/`、`apps/platform/src/lib/workbench/publication-fixture.ts`。
   - **动作**：
     - 消除 11 处 `widgets → runtime` 倒灌（消除 `runtime/src/chart-series-state.ts` 等 10 个单行转发壳与 `engine/data-gateway/src/` 纯空壳，按包导出兼容策略调整指向）；
@@ -201,29 +201,29 @@ flowchart LR
     - 移出混在生产源码中的 `pie-chart/prototype/`、`packages/ui/prototypes/` 与跨仓引用 `metriccanvas-authoring` 的 `publication-fixture.ts`；
     - 将 `packages/data-execution/src/debug-warnings.ts` 对 `import.meta.env.DEV` 的耦合改为可注入 logger/sink，切断 `widgets → data-execution` 的日志耦合。
   - **验收**：`pnpm architecture:check` 报告 **0 条违规**（并将棘轮锁死为 0），`pnpm packages:check` 与 `pnpm test` 绿。
-- [ ] **`W2-2` 清零 `runtime-ui` 93 处深路径越权导入**（负责：`boundary-architect`）
+- [x] **`W2-2` 清零 `runtime-ui` 93 处深路径越权导入**（负责：`boundary-architect`）
   - **范围**：`packages/engine/runtime-ui/src/`、`packages/engine/widgets/src/`、`packages/engine/runtime/src/`、`tools/architecture/`。
-  - **动作**：为 `widgets` 和 `runtime` 定义清晰的包内内部出口（如显式分组的 `internal-runtime.ts` / `internal-widgets.ts`），把 53 处 `widgets` 和 40 处 `runtime` 深路径导入全部收敛；在 `tools/architecture/` 新增禁止跨子目录绕过入口的校验规则。
+  - **动作**：为 `widgets` 和 `runtime` 定义清晰的包内内部出口（`runtime/src/internal.ts`、`widgets/src/internal.ts` 及按资产隔离的 `widgets/src/internal-skeleton.ts` / `internal-summary.ts`），把全部 102 条跨层深路径导入边（含值导入与 `import type`/模板类型引用）收敛至显式入口；在 `tools/architecture/` 新增覆盖值导入与类型导入的 `deep import` 跨层绕过门禁规则并锁定 0 存量。
   - **验收**：`pnpm architecture:check`、Embed 构建门禁（`pnpm --filter @metriccanvas/embed check:dist`）与全部单测绿。
-- [ ] **`W2-3` 拆分 `@metriccanvas/page` 内部子域并收窄 `internal.ts`**（负责：`boundary-architect`）
+- [x] **`W2-3` 拆分 `@metriccanvas/page` 内部子域并收窄 `internal.ts`**（负责：`boundary-architect`）
   - **范围**：`packages/page/src/`、`packages/embed/src/types.ts`、`packages/engine/runtime-ui/src/index.ts`。
   - **动作**：
     - 将 `packages/page/src/` 内部按变化原因整理为清晰子域（`schema/`、`normalize/`、`validate/`、`query/`、`edit/`），打散 48 文件静态类型环；
     - 把 `DisplayInputsSource`、`DisplayInputsSnapshot`、`DataPeriodFact` 等真正对外稳定的类型提升到 `@metriccanvas/page` 公共入口，彻底禁止 `embed` 与 `engine` 公开重导出 `@metriccanvas/page/internal`；
     - 为 `packages/page/src/data-source.ts` 与 `filter.ts` 补齐与 Zod Schema 的双向编译期等价断言（或改用 `z.infer`）。
   - **验收**：`pnpm packages:check`、`pnpm compatibility:check`、`pnpm check`、`pnpm test:page` 全绿。
-- [ ] **`W2-4` 建立统一入口反腐败层（ACL）收拢历史兼容**（负责：`boundary-architect`）
+- [x] **`W2-4` 建立统一入口反腐败层（ACL）收拢历史兼容**（负责：`boundary-architect`）
   - **范围**：`packages/page/src/normalize/`（整合 `legacy-compatibility.ts`、`layout-compatibility.ts`、`ioc-header-normalization.ts`、`header-binding.ts` 等）、`packages/engine/runtime/`、`packages/engine/runtime-ui/`、`packages/engine/widgets/`。
   - **动作**：在 `normalizePageDocument()` 入口一次性完成 `layoutForm`、`dashboardToolbar`、根 `iocHeader`、`back: 'auto'`、`tab.component`、`6.13/6.14` 日期、`legacyCandidateSearch`、`< 6.124` 清空确认等兼容归一化并产出显式规范态结构；移除 `ioc-header-normalization.ts` 的模块级全局 `WeakSet`，清空 `runtime-ui` / `widgets` 中的版本号分支判断。
   - **验收**：全部历史兼容测试（含 `5.x`/`6.x` 夹具回归）与 `pnpm test` 全绿。
-- [ ] **`W2-5` 剥离通用纯渲染组件与执行引擎中的特定业务硬编码**（负责：`boundary-architect`）
+- [x] **`W2-5` 剥离通用纯渲染组件与执行引擎中的特定业务硬编码**（负责：`boundary-architect`）
   - **范围**：`packages/engine/widgets/src/components/table/Table.svelte`、`packages/engine/widgets/src/components/metric-card/MetricCard.svelte`、`packages/data-execution/src/source-program/session.ts`、`packages/engine/runtime/src/orchestrator.ts`、`packages/engine/runtime-ui/src/RuntimeSurface.svelte`。
   - **动作**：
     - 移除 `Table.svelte:126` 通用表格硬编码副标题 `"— 代表本周期没有合同单/商务单"`（核对现有业务页/测试，确需展示的页面显式配置或由兼容层按旧版本注入）；
     - 移除 `MetricCard.svelte:175-184` 硬编码 `"年累计/同比/本月/环比"` 占位文案；
     - 将 `'region' / 'region-dept' / 'office' / 'rep-office'` 筛选规则收拢为显式策略模块，不再散落硬编码于执行引擎与渲染壳。
   - **验收**：组件单测 + Playground/Embed 浏览器回归全绿。
-- [ ] **`W2-6` 统一错误传播契约与修复错误吞没**（负责：`boundary-architect`）
+- [x] **`W2-6` 统一错误传播契约与修复错误吞没**（负责：`boundary-architect`）
   - **范围**：`packages/page/src/errors.ts`、`packages/page/src/validate.ts`、`packages/engine/runtime/src/orchestrator.ts`、`packages/data-execution/src/source-program/session.ts`、`packages/engine/runtime-ui/src/RuntimeSurface.svelte`。
   - **动作**：清理 `RuntimeSurface.svelte` 10+ 处把异步定稿期/数据网关失败误报成 `SCHEMA_ERROR` 的裸 `catch`；修复 `orchestrator.ts:239` 吞没为 `UNKNOWN` 的问题；保留 `session.ts` 原始错误诊断；对齐 `ERROR_TYPES`（对真实字段契约错误发射 `FIELD_CONTRACT_ERROR`，清理或补齐从未使用的成员）。
   - **验收**：新增错误处理特征测试（覆盖异步定稿失败、查询异常、字段契约报错），全量测试通过。
@@ -284,4 +284,9 @@ flowchart LR
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | 2026-11-27 | 立项 | `coordinator` + 5 路只读探查 | 基线 `8ce2dd52` | 完成阶段 0 量化基线采集、4 项架构决策拍板、主计划落盘 | 已立项 |
 | 2026-11-28 | `W0-1`~`W0-5` | 3 路 `guardrail-engineer` + `verifier-auditor` + `delivery-runner` | PR #199 (`560b1d968`) | 远端 CI 8/8 全绿（含 Biome、`hygiene:check`、`packages:check`、Python `radon` + `subtreeCC`/`fileSize` 棘轮），已合入 `main` 并清理旧分支 | 已合入 `main` |
-| 2026-11-28 | `W1-1`~`W1-4` | 3 路 `repo-docs-curator`（2×`flash` + 1×`inherit`） | 本地分支 `chore/wave1-repo-docs-hygiene` | 清理 36 个误提交/临时文件、归档 22 份计划、`PAGE-METADATA.md` -78.7%、新增 `ARCHITECTURE.md`，`authoring:contracts:check` 绿，待独立验真与提交 | 本地完成（待验真/PR） |
+| 2026-11-28 | `W1-1`~`W1-4` | 3 路 `repo-docs-curator`（2×`flash` + 1×`inherit`） | PR #200 (`5e41ea766`) | 清理 36 个误提交/临时文件、归档 22 份计划、`PAGE-METADATA.md` -78.7%、新增 `ARCHITECTURE.md`，远端 CI 8/8 全绿，已合入 `main` | 已合入 `main` |
+| 2026-11-28 | `W2-1` + `W2-5` | 4 路 `boundary-architect`（3×`inherit` + 1×`flash`）+ `verifier-auditor`（`flash`） | PR #201 (`e5deb5dcd`) | `architecture:check` 21→0 锁死、13 个转发空壳与 3 组原型/夹具迁出、`debug-warnings` 解耦 Vite、顺带平铺 `session.ts`（`subtreeCC` 266→16）、清除 `Table`/`MetricCard` 硬编码并抽离 `ioc-region-policy.ts`，远端 CI 8/8 全绿，已合入 `main` | 已合入 `main` |
+| 2026-11-28 | `W2-2` | `boundary-architect` | PR #202 (`16ac8cfd5`) | 新增 `runtime/src/internal.ts`、`widgets/src/internal.ts`（纯 TS，不含 `.svelte` 与 ECharts 图表）及 `widgets/src/internal-skeleton.ts`/`internal-summary.ts`（零公开 API 变更），清零 `runtime-ui` 全部 102 条跨层深路径导入边，并在 `tools/architecture/` 落地值+类型 `deep import` 0 违规门禁与单测，远端 CI 8/8 全绿，已合入 `main` | 已合入 `main` |
+| 2026-11-28 | `W2-3` | `boundary-architect` | PR #203 (`1fa55eced`) | 提升 `DisplayInputsSource`/`DisplayInputsSnapshot`/`DataPeriodFact` 至 `@metriccanvas/page` 公开入口，清零 `embed`/`engine` 公开入口对 `@metriccanvas/page/internal` 的重导出并在 `tools/architecture/` 与 `tests/public-api.test.ts` 落地 `public internal leak` 门禁；抽离 8 个纯叶类型/常量模块将 `packages/page/src/` 静态类型 SCC 从 54+3 清零至 0，建立 `normalize/`、`validate/`、`query/`、`edit/` 子域入口并按子域重组 `internal.ts`；新增 `schema/type-parity.ts` 与 `schema-type-parity.test.ts` 锁定 `filter.ts`/`data-source.ts` 与 Zod Schema 的双向编译期等价断言，远端 CI 8/8 全绿，已合入 `main` | 已合入 `main` |
+| 2026-11-28 | `W2-4` | `boundary-architect` | PR #204 (`14abc12c0`) | 移除 `ioc-header-normalization.ts` 模块级全局 `WeakSet`（改为浅拷贝非可枚举 `Symbol.for('metriccanvas.officeNavigationProjection')` 标记，零输入变更、幂等重解析）；在 `packages/page/src/normalize/compatibility.ts` 建立统一入口 ACL（`resolvePageCompatibility`、`resolveDashboardHeaderConfig`、`usesLegacyReportHeaderPeriod`），清空 `runtime-ui` / `runtime` / `widgets` 中的版本号分支、`dashboardToolbar` 直接读取、`tab.component` 分支与 `WeakSet`；新增 `normalize-acl.test.ts`（15 用例），零 Schema 变更与零公开入口变更，远端 CI 8/8 全绿，已合入 `main` | 已合入 `main` |
+| 2026-11-28 | `W2-6` | `boundary-architect` | 分支 `refactor/wave2b-w26-error-propagation` | 修复 `orchestrator.ts:239` 吞没为 `UNKNOWN`（改为 `preservedQueryError(cause, '页面取数未完成')`）并为 `orchestrator.ts` 与 `source-program/` 全部裸 `catch` 补齐 `debugWarn` 诊断及候选校验原始诊断保留；新增 `packages/engine/runtime-ui/src/runtime-errors.ts` 精确区分 `DQE_EXECUTION_ERROR` 与 `DATA_CONTEXT_ERROR`，清零 `RuntimeSurface.svelte` 全部裸 `catch` 与误报 `SCHEMA_ERROR`；对齐 `ERROR_TYPES` 分层归属并将数据行字段契约校验（`validate.ts`、`materialize.ts` 及 `page_validation.py`）切换为发射 `FIELD_CONTRACT_ERROR`（同步拆分 `queryRowIssueError` 消除复杂度债并收紧 `validate.ts` 行数 2701→2659）；新增 3 份错误处理特征测试，零 Schema 变更与零公开 API 变更 | 本地完成（待验真/PR） |

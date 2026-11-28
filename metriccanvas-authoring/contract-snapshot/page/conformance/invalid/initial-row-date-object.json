@@ -364,7 +364,7 @@
   },
   "expected": [
     {
-      "type": "SCHEMA_ERROR",
+      "type": "FIELD_CONTRACT_ERROR",
       "path": "/dataSources/orders/source/initial/rows/0/stat_date",
       "message": "DQE 字段 stat_date 不符合页面字段 stat-date 的类型 date"
     }

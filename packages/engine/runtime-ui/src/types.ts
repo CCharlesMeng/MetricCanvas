@@ -1,5 +1,5 @@
 import type { TypedError } from '@metriccanvas/page';
-import type { RuntimeDataGateway } from '../../runtime/src';
+import type { DisplayInputs, NavigationInputContract, RuntimeDataGateway } from '../../runtime/src';
 import type { DataErrorEvent } from './data-error-events';
 import type { AuthRequiredEvent } from './auth-required';
 export type { AuthRequiredEvent } from './auth-required';
@@ -17,12 +17,12 @@ export interface RuntimeNavigationTarget {
 }
 
 /** Canvas 等宿主在统一运行时导航接缝上的适配器。 */
-export type {NavigationInputContract} from '../../runtime/src/navigation-inputs';
+export type {NavigationInputContract} from '../../runtime/src';
 export interface RuntimeNavigation {
   /** Integrating application may translate a logical page URL into its deployed route. */
   resolveHref?(href:string):string;
   /** Trusted target declaration projection; never loads authorization candidates. */
-  resolveTargetInputs?(href:string,options:{signal:AbortSignal}):import('../../runtime/src/navigation-inputs').NavigationInputContract|undefined|Promise<import('../../runtime/src/navigation-inputs').NavigationInputContract|undefined>;
+  resolveTargetInputs?(href:string,options:{signal:AbortSignal}):NavigationInputContract|undefined|Promise<NavigationInputContract|undefined>;
   /** Optional source metadata/label; does not gate IOC return. */
   returnContext?: {
     entryId: string;
@@ -114,7 +114,7 @@ export interface RuntimeViewProps {
   onAuthRequired?: (event: AuthRequiredEvent) => void;
   hostCanExport?: boolean;
   exportHandler?: import('./table/export/host').TableExportHandler;
-  displayInputs?: import('../../runtime/src/display-inputs').DisplayInputs;
+  displayInputs?: DisplayInputs;
   document: unknown;
 
   execution?: import('../../runtime/src').ExecutionBootstrap;

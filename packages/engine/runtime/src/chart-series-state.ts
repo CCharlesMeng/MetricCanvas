@@ -1,1 +1,0 @@
-export { projectChartSeries, chartDeclaration, chartSeriesIndex, explicitChartAxes, chartSeriesAxis, chartAxisFormats, chartRoleIndex, type CartesianChartProps } from '@metriccanvas/data-execution/runtime';

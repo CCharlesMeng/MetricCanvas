@@ -1,12 +1,19 @@
 import { hasQueryFieldMapping, type QueryDataSourceFieldDefinition } from './field';
 import { matchesFieldValue } from './result-field-contract';
-import type { QueryResultWhere } from './query';
-import type { Row } from './snapshot';
+import {
+  MAX_QUERY_RESULT_WHERE_DEPTH,
+  MAX_QUERY_RESULT_WHERE_LEAVES,
+  MAX_QUERY_RESULT_WHERE_VALUES,
+  type QueryResultWhere,
+} from './query-primitives';
+import type { Row } from './snapshot-types';
 import type { TypedError } from './errors';
 
-export const MAX_QUERY_RESULT_WHERE_DEPTH = 4;
-export const MAX_QUERY_RESULT_WHERE_LEAVES = 64;
-export const MAX_QUERY_RESULT_WHERE_VALUES = 1000;
+export {
+  MAX_QUERY_RESULT_WHERE_DEPTH,
+  MAX_QUERY_RESULT_WHERE_LEAVES,
+  MAX_QUERY_RESULT_WHERE_VALUES,
+};
 
 /** Semantic checks shared by page validation and execution; literals never get coerced. */
 export function queryResultWhereErrors(

@@ -124,7 +124,7 @@
   },
   "expected": [
     {
-      "type": "SCHEMA_ERROR",
+      "type": "FIELD_CONTRACT_ERROR",
       "path": "/dataSources/samples/source/initial/rows/0/样例",
       "message": "DQE 内嵌初始行缺少映射字段:样例"
     }

@@ -1,4 +1,4 @@
-import type { Component, MetricCardProps, MetricCardRow, Page } from './page';
+import type { Component, MetricCardProps, MetricCardRow, Page } from './page-types';
 import type { TypedError } from './errors';
 import { walkPageComponents } from './component-walk';
 import { fieldBindingLeaves, fieldName, fieldSlot } from './field';

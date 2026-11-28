@@ -1,15 +1,13 @@
-import { daysInGregorianMonth, validateCalendarTimeRange, type TimeRangeValue } from './filter';
-import { calendarEndpoint, periodFact, type DisplayInputsSnapshot } from './period-facts';
-import { resolvePeriodSelection, type PeriodRange } from './period-filter';
+import { daysInGregorianMonth, validateCalendarTimeRange } from './filter';
+import type { PeriodComparison, PeriodRange, TimeRangeValue } from './filter-types';
+import { calendarEndpoint, periodFact } from './period-facts';
+import type { DisplayInputsSnapshot } from './condition-types';
+import { resolvePeriodSelection } from './period-filter';
 import { queryLeaves } from './query-selection';
-import type { DqeQueryDefinition } from './query';
-import type { Page } from './page';
+import type { DqeQueryDefinition } from './query-primitives';
+import type { Page } from './page-types';
 
-export interface PeriodComparison {
-  kind: 'current' | 'previousPeriod' | 'previousYear';
-  /** Optional trusted cutoff. Omit to compare the full applied selection without host inputs. */
-  fact?: string;
-}
+export type { PeriodComparison };
 function rejected(message: string): never {
   throw Object.assign(new Error(message), {code:'DQE_QUERY_REJECTED'});
 }
