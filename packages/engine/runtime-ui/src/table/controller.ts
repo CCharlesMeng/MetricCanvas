@@ -3,7 +3,7 @@ import { declaredQuerySort } from './query-sort';
 import { createHierarchySelectionSession, hierarchyRows, type HierarchyContext, type HierarchySelection } from '../../../runtime/src/table/hierarchy-selection';
 import {normalizeTableSelectView,columnBindingKey,mainColumnField,tableColumnLeaves,type TableColumn} from '@metriccanvas/page/internal';
 import { flattenPageComponents, hasColumnConditions, type TableComponent as DeclaredTable } from '@metriccanvas/page/internal';
-import { tableColumnPresentation } from '../../../runtime/src/table/column-presentation';
+import { tableColumnPresentation } from '@metriccanvas/data-execution/runtime';
 import { fieldSelectionIds, sourceFilterIds, canonicalizeJson, conditionSourceIds, tableHeaders, tableSearchOption, tableSearchValue, type Page, type TableHeaderFilters, type TableQueryView, type TableComponent } from '@metriccanvas/page/internal';
 import { createColumnCandidatesSession } from '../../../runtime/src/table/column-candidates';
 import type { TableRenderBinding } from '../component-render';

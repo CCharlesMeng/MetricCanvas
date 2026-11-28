@@ -124,7 +124,7 @@
     interactionGate, toolbarEnabled, linkHref
   }: Props = $props();
 
-  const subtitle = $derived(props.subtitle ?? (nested ? undefined : `${DEFAULT_NULL_TEXT} 代表本周期没有合同单/商务单`));
+  const subtitle = $derived(props.subtitle);
   const loading = $derived(data.main.sourceStatus === 'loading');
   const bodyLoading = $derived(loading && !data.main.progress && !staticExport);
   let previousPagination = $state.raw<TablePaginationState>();

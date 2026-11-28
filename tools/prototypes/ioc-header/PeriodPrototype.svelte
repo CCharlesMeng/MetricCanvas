@@ -1,8 +1,8 @@
 <script lang="ts">
   // Prototype adapter: preserve the user's month anchor without modifying the production control.
   import { untrack } from 'svelte';
-  import PeriodFilter from '../../../engine/runtime-ui/src/filters/PeriodFilter.svelte';
-  import { resolvePeriodSelection, type PeriodRange } from '../../../page/src/period-filter';
+  import PeriodFilter from '../../../packages/engine/runtime-ui/src/filters/PeriodFilter.svelte';
+  import { resolvePeriodSelection, type PeriodRange } from '../../../packages/page/src/period-filter';
   let {value,onchange,readOnly=false,anchor}:{value:PeriodRange;onchange:(v:PeriodRange,anchor:string)=>void;readOnly?:boolean;anchor?:string}=$props();
   let remembered=$state(untrack(()=>anchor??value.from.slice(0,7)));
   $effect(()=>{if(anchor)remembered=anchor;else if(value.selection.mode==='month')remembered=value.selection.value;});

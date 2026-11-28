@@ -39,7 +39,7 @@
 
 使用 prototype 技能的UI分支。用户已经选定内部视觉方向，围绕该方向提供可切换场景和必要布局比较，不重新发散成无关视觉风格。原型使用本地演示数据和内存状态，明确标记未接真实DQE、权限和后端。所有拟实现协议均标为草案，原型变量不直接变成正式页面协议。
 
-优先参考既有 [Dashboard时间原型](../../packages/ui/prototypes/dashboard-time/README.md) 的Svelte/Vite组织和启动方式。新IOC原型建议在当前仓库独立prototype目录组织，具体位置按现有约定核对；IOC业务组合正式归引擎，放在UI原型目录不改变中性UI包的产品职责。尽量复用现有UI，保持单条启动命令和README入口，原型不进入正式包导出或生产页面目录。
+优先参考既有 [Dashboard时间原型](../../tools/prototypes/dashboard-time/README.md) 的Svelte/Vite组织和启动方式。新IOC原型建议在当前仓库独立prototype目录组织，具体位置按现有约定核对；IOC业务组合正式归引擎，放在UI原型目录不改变中性UI包的产品职责。尽量复用现有UI，保持单条启动命令和README入口，原型不进入正式包导出或生产页面目录。
 
 ### 必须可切换的场景
 
@@ -113,7 +113,7 @@
 | 场景 | 资料 |
 |---|---|
 | 所有阶段 | AGENTS.md、CONTEXT.md、功能主计划 |
-| 原型形态与来源尺寸 | 主计划第3/6/8节；[完整调查报告](../../调查报告/页头/页头完整调查报告.md)；[既有时间原型](../../packages/ui/prototypes/dashboard-time/README.md) |
+| 原型形态与来源尺寸 | 主计划第3/6/8节；[完整调查报告](../../调查报告/页头/页头完整调查报告.md)；[既有时间原型](../../tools/prototypes/dashboard-time/README.md) |
 | 追查原有行为 | 同目录下[页头整体](../../调查报告/页头/页头整体.md)、[功能详情](../../调查报告/页头/功能详情.md)、[行为补充报告](../../调查报告/页头/行为补充报告.md)；四报告相互矛盾时优先主计划已裁明的证据限制 |
 | 组件API和正式契约 | [UI说明](../../packages/ui/README.md)、[筛选文档](../page-metadata/filters.md)、[reportHeader文档](../page-metadata/components/reportHeader.md)、docs/adr/README.md及相关topic |
 | 正式编码与分发 | 主计划第9–11节、[验收要求](../agents/feature-acceptance.md)、[Skill维护](../agents/local-authoring-skill-maintenance.md) |

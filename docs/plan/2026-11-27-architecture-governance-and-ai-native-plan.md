@@ -1,6 +1,6 @@
 # MetricCanvas 架构治理、AI-Native 升级与技术债清理主计划
 
-> **状态**：Wave 0 已合入 `main`（PR #199 @ `560b1d968`）；Wave 1A（`W1-1` ~ `W1-4`）本地实施完成并待独立验真与交付，下一步推进 Wave 1B（`W1-5` 镜像收敛与 4 层闭环）  
+> **状态**：Wave 0 已合入 `main`（PR #199 @ `560b1d968`）；Wave 1A（`W1-1` ~ `W1-4`）已合入 `main`（PR #200 @ `5e41ea766`，CI 8/8 全绿）；`W1-5` 已拍板延后并与 `W4-1` 合并推进（按 D1 执行）；当前正在推进 Wave 2  
 > **立项日期**：2026-11-27  
 > **基线提交**：`origin/main` @ `8ce2dd52eaabc179bf195000cf3592e6b0f1b8f3`  
 > **唯一执行主入口**：本文为本轮“开发态转维护态”长周期治理的唯一主计划与进度台账。跨会话推进时就地更新勾选状态、提交 SHA 与复测指标，不再另起分稿。
@@ -180,7 +180,7 @@ flowchart LR
   - **范围**：`AGENTS.md`、`docs/agents/*.md`、新增根级 `ARCHITECTURE.md`（127 行 / 10.3 KB）。
   - **动作**：精简 `AGENTS.md`（对齐 `.agents/skills/` 清单、指向自动化门禁与 `ARCHITECTURE.md`）；编写维护者架构图、职责边界、变更定位决策树与按包验证命令矩阵；核心入口+治理文档全集从 **343.7 KB 降至 277.3 KB（-19.3%，其中 `PAGE-METADATA.md` -78.7%）**。
   - **验收**：`pnpm verify:fast` 通过，核心入口锚点全部保留。
-- [ ] **`W1-5` 5 份生成镜像收敛与 4 层构建验证闭环**（负责：`mirror-delivery-engineer`）
+- [ ] **`W1-5` 5 份生成镜像收敛与 4 层构建验证闭环**（已拍板延后并与 `W4-1` 合并推进；负责：`mirror-delivery-engineer`）
   - **范围**：`tools/scripts/export-authoring-contracts.ts`、`package.json`、`contracts/`、`metriccanvas-authoring/`、`.gitignore`、`.github/workflows/ci.yml`、`.github/workflows/ci-full.yml` 及相关测试。
   - **动作**：
     - 新增幂等集成构建入口（`pnpm authoring:materialize`），支持集成方从任意提交一键构建所需分发内容；
@@ -193,7 +193,7 @@ flowchart LR
 
 ### Wave 2｜架构边界收口、清零违规与统一 ACL（目标：清晰分层、零倒灌、纯渲染组件无业务污染）
 
-- [ ] **`W2-1` 清零 `architecture:check` 21 条基线违规与浅薄转发空壳**（负责：`boundary-architect`）
+- [x] **`W2-1` 清零 `architecture:check` 21 条基线违规与浅薄转发空壳**（负责：`boundary-architect`）
   - **范围**：`packages/engine/widgets/src/`、`packages/engine/runtime/src/`、`packages/engine/data-gateway/`、`packages/data-execution/src/`、`packages/page/src/`、`packages/ui/prototypes/`、`apps/platform/src/lib/workbench/publication-fixture.ts`。
   - **动作**：
     - 消除 11 处 `widgets → runtime` 倒灌（消除 `runtime/src/chart-series-state.ts` 等 10 个单行转发壳与 `engine/data-gateway/src/` 纯空壳，按包导出兼容策略调整指向）；
@@ -216,7 +216,7 @@ flowchart LR
   - **范围**：`packages/page/src/normalize/`（整合 `legacy-compatibility.ts`、`layout-compatibility.ts`、`ioc-header-normalization.ts`、`header-binding.ts` 等）、`packages/engine/runtime/`、`packages/engine/runtime-ui/`、`packages/engine/widgets/`。
   - **动作**：在 `normalizePageDocument()` 入口一次性完成 `layoutForm`、`dashboardToolbar`、根 `iocHeader`、`back: 'auto'`、`tab.component`、`6.13/6.14` 日期、`legacyCandidateSearch`、`< 6.124` 清空确认等兼容归一化并产出显式规范态结构；移除 `ioc-header-normalization.ts` 的模块级全局 `WeakSet`，清空 `runtime-ui` / `widgets` 中的版本号分支判断。
   - **验收**：全部历史兼容测试（含 `5.x`/`6.x` 夹具回归）与 `pnpm test` 全绿。
-- [ ] **`W2-5` 剥离通用纯渲染组件与执行引擎中的特定业务硬编码**（负责：`boundary-architect`）
+- [x] **`W2-5` 剥离通用纯渲染组件与执行引擎中的特定业务硬编码**（负责：`boundary-architect`）
   - **范围**：`packages/engine/widgets/src/components/table/Table.svelte`、`packages/engine/widgets/src/components/metric-card/MetricCard.svelte`、`packages/data-execution/src/source-program/session.ts`、`packages/engine/runtime/src/orchestrator.ts`、`packages/engine/runtime-ui/src/RuntimeSurface.svelte`。
   - **动作**：
     - 移除 `Table.svelte:126` 通用表格硬编码副标题 `"— 代表本周期没有合同单/商务单"`（核对现有业务页/测试，确需展示的页面显式配置或由兼容层按旧版本注入）；
@@ -284,4 +284,5 @@ flowchart LR
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | 2026-11-27 | 立项 | `coordinator` + 5 路只读探查 | 基线 `8ce2dd52` | 完成阶段 0 量化基线采集、4 项架构决策拍板、主计划落盘 | 已立项 |
 | 2026-11-28 | `W0-1`~`W0-5` | 3 路 `guardrail-engineer` + `verifier-auditor` + `delivery-runner` | PR #199 (`560b1d968`) | 远端 CI 8/8 全绿（含 Biome、`hygiene:check`、`packages:check`、Python `radon` + `subtreeCC`/`fileSize` 棘轮），已合入 `main` 并清理旧分支 | 已合入 `main` |
-| 2026-11-28 | `W1-1`~`W1-4` | 3 路 `repo-docs-curator`（2×`flash` + 1×`inherit`） | 本地分支 `chore/wave1-repo-docs-hygiene` | 清理 36 个误提交/临时文件、归档 22 份计划、`PAGE-METADATA.md` -78.7%、新增 `ARCHITECTURE.md`，`authoring:contracts:check` 绿，待独立验真与提交 | 本地完成（待验真/PR） |
+| 2026-11-28 | `W1-1`~`W1-4` | 3 路 `repo-docs-curator`（2×`flash` + 1×`inherit`） | PR #200 (`5e41ea766`) | 清理 36 个误提交/临时文件、归档 22 份计划、`PAGE-METADATA.md` -78.7%、新增 `ARCHITECTURE.md`，远端 CI 8/8 全绿，已合入 `main` | 已合入 `main` |
+| 2026-11-28 | `W2-1` + `W2-5` | 4 路 `boundary-architect`（3×`inherit` + 1×`flash`）+ `verifier-auditor`（`flash`） | 分支 `refactor/wave2a-architecture-boundary` | `architecture:check` 21→0 锁死、13 个转发空壳与 3 组原型/夹具迁出、`debug-warnings` 解耦 Vite、顺带平铺 `session.ts`（`subtreeCC` 266→16）、清除 `Table`/`MetricCard` 硬编码并抽离 `ioc-region-policy.ts`，待独立验真与 PR 交付 | 本地完成（待验真/PR） |

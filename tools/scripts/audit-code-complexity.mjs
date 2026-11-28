@@ -1,7 +1,7 @@
 /** Repository inventory. The AST counting contract stays metriccanvas-ts-ast/1. */
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
@@ -98,7 +98,9 @@ function inventory(repository) {
     ],
     gitOptions,
   );
-  return [...new Set((tracked + added).split('\0'))].filter(supported).sort();
+  return [...new Set((tracked + added).split('\0'))]
+    .filter((file) => supported(file) && existsSync(resolve(repository, file)))
+    .sort();
 }
 function baselineMetadata(repository, ref) {
   const tree = execFileSync('git', ['ls-tree', '-r', '-z', '--format=%(objectname) %(path)', ref], {

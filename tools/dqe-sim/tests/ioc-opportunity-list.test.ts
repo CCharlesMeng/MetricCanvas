@@ -1,21 +1,20 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import fixture from '../fixtures/ioc-opportunity-list.json';
-import { executeDqeItem } from '../src/execute';
 import {
   DQE_EXECUTE_PATH,
-  executeFixtureItem
+  executeFixtureItem,
 } from '../../../packages/embed/tests/dqe-fixture-endpoint.mjs';
-import { DEFAULT_DQE_ENDPOINT } from '../../../packages/engine/data-gateway/src/dqe';
+import { DEFAULT_DQE_ENDPOINT } from '../../../packages/engine/data-gateway/src/index';
 import { parsePage } from '../../../packages/page/src';
+import fixture from '../fixtures/ioc-opportunity-list.json';
+import { executeDqeItem } from '../src/execute';
 
-const page = JSON.parse(readFileSync('pages/business/dashboard/ioc/opportunity/ioc-opportunity-list.json', 'utf8'));
+const page = JSON.parse(
+  readFileSync('pages/business/dashboard/ioc/opportunity/ioc-opportunity-list.json', 'utf8'),
+);
 const pageItem = page.dataSources['opportunity-list'].source.query.body!.dsl_list[0];
 
-function query(
-  dims: Array<Record<string, unknown>> = [],
-  order: Record<string, unknown> = {}
-) {
+function query(dims: Array<Record<string, unknown>> = [], order: Record<string, unknown> = {}) {
   return { ...pageItem, filter: { dims, metrics: [] }, order };
 }
 
@@ -31,33 +30,28 @@ describe('DQE Sim 机会点清单', () => {
     const counts = (['geo_pc_code', 'region_dept_code', 'rep_office_code'] as const).map(
       (field, index) => {
         const value = ['R99', 'CN-EAST', 'SH-01'][index]!;
-        const result = executeDqeItem(
-          query([{ dim_name: field, dim_value_list: [value] }])
-        );
+        const result = executeDqeItem(query([{ dim_name: field, dim_value_list: [value] }]));
         expect(result.code).toBe('SUCCESS');
         return result.total_count;
-      }
+      },
     );
     expect(counts).toEqual([9, 3, 1]);
     // 上层编码送到下层字段上就是空集：字段选错不会悄悄换出一批别的行。
     expect(
-      executeDqeItem(query([{ dim_name: 'rep_office_code', dim_value_list: ['R99'] }]))
-        .total_count
+      executeDqeItem(query([{ dim_name: 'rep_office_code', dim_value_list: ['R99'] }])).total_count,
     ).toBe(0);
   });
 
   it('只投影声明的输出字段，谓词专用列不外溢到结果行', () => {
     const [row] = executeDqeItem(query()).data;
     expect(Object.keys(row!).sort()).toEqual(
-      [...fixture.output_dims, ...fixture.output_metrics].sort()
+      [...fixture.output_dims, ...fixture.output_metrics].sort(),
     );
     expect(row).not.toHaveProperty('rep_office_code');
   });
 
   it('面外维度明确拒答，不用空结果冒充不支持', () => {
-    const result = executeDqeItem(
-      query([{ dim_name: 'unsupported_dim', dim_value_list: ['x'] }])
-    );
+    const result = executeDqeItem(query([{ dim_name: 'unsupported_dim', dim_value_list: ['x'] }]));
     expect(result.code).toBe('DQE_SIM_UNSUPPORTED_QUERY');
     expect(result.retDesc).toContain('unsupported_dim');
   });
@@ -72,7 +66,7 @@ describe('DQE Sim 机会点清单', () => {
       [],
       [{ dim_name: 'rep_office_code', dim_value_list: ['SH-01'] }],
       [{ dim_name: 'region_dept_code', dim_value_list: ['CN-EAST'] }],
-      [{ dim_name: 'cloud_class', dim_value_list: ['公有云'] }]
+      [{ dim_name: 'cloud_class', dim_value_list: ['公有云'] }],
     ]) {
       expect(executeFixtureItem(query(dims))).toEqual(executeDqeItem(query(dims)));
     }
@@ -81,26 +75,24 @@ describe('DQE Sim 机会点清单', () => {
   // 服务端排序与表头区间筛选(ADR-0086)：分页下本地排序只能排到当前页。
   it('order_by_field/type 单字段排序，表头区间筛选走带 operator 的维度谓词', () => {
     const descending = executeDqeItem(
-      query([], { order_by_field: 'bidding_amount', type: 'desc' })
+      query([], { order_by_field: 'bidding_amount', type: 'desc' }),
     );
     expect(descending.code).toBe('SUCCESS');
     expect(descending.data.map((row) => row.bidding_amount)).toEqual(
-      [...descending.data.map((row) => row.bidding_amount as number)].sort((a, b) => b - a)
+      [...descending.data.map((row) => row.bidding_amount as number)].sort((a, b) => b - a),
     );
     expect(descending.data[0]!.opportunity_code).toBe('OPP202604004');
 
     const ranged = executeDqeItem(
-      query([{ dim_name: 'create_time', dim_value_list: ['2025-12'], operator: '>=' }])
+      query([{ dim_name: 'create_time', dim_value_list: ['2025-12'], operator: '>=' }]),
     );
     expect(ranged.code).toBe('SUCCESS');
-    expect(
-      ranged.data.every((row) => String(row.create_time) >= '2025-12')
-    ).toBe(true);
+    expect(ranged.data.every((row) => String(row.create_time) >= '2025-12')).toBe(true);
     expect(ranged.total_count).toBeLessThan(10);
 
-    expect(
-      executeDqeItem(query([], { order_by_field: 'bidding_amount', type: '随便' })).code
-    ).toBe('DQE_SIM_UNSUPPORTED_QUERY');
+    expect(executeDqeItem(query([], { order_by_field: 'bidding_amount', type: '随便' })).code).toBe(
+      'DQE_SIM_UNSUPPORTED_QUERY',
+    );
   });
 
   it('候选值查询两侧也一致，含级联收窄与越界约束的拒答', () => {
@@ -108,20 +100,18 @@ describe('DQE Sim 机会点清单', () => {
       output_dims: [dimension],
       output_metrics: [],
       filter: { dims, metrics: [] },
-      order: {}
+      order: {},
     });
     for (const item of [
       candidates('sub-industry-level2'),
       candidates('sub-industry-level2', [
-        { dim_name: 'sub-industry-level1', dim_value_list: ['零售'] }
+        { dim_name: 'sub-industry-level1', dim_value_list: ['零售'] },
       ]),
       candidates('rep-office-code', [
-        { dim_name: 'region-dept-code', dim_value_list: ['CN-EAST'] }
+        { dim_name: 'region-dept-code', dim_value_list: ['CN-EAST'] },
       ]),
       // 越界约束两侧都拒答，不是一侧静默放行。
-      candidates('sub-industry-level2', [
-        { dim_name: 'cloud-class', dim_value_list: ['公有云'] }
-      ])
+      candidates('sub-industry-level2', [{ dim_name: 'cloud-class', dim_value_list: ['公有云'] }]),
     ]) {
       expect(executeFixtureItem(item)).toEqual(executeDqeItem(item));
     }

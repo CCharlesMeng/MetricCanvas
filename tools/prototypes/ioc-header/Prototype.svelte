@@ -1,14 +1,14 @@
 <script lang="ts">
   // PROTOTYPE ONLY: local state and sample data. No Page/engine protocol is introduced here.
   import {onMount,tick} from 'svelte';
-  import DatePicker from '../../src/components/date-picker/DatePicker.svelte';
+  import DatePicker from '../../../packages/ui/src/components/date-picker/DatePicker.svelte';
   import Select from './SelectPrototype.svelte';
-  import Button from '../../src/components/button/Button.svelte';
+  import Button from '../../../packages/ui/src/components/button/Button.svelte';
   import MultiSelect from './MultiSelect.svelte';
   import TreeSelect from './TreeSelectPrototype.svelte';
   import PeriodPrototype from './PeriodPrototype.svelte';
   import TimeControl from './TimeControlPrototype.svelte';
-  import {resolvePeriodSelection,periodRangeLabel,type PeriodRange} from '../../../page/src/period-filter';
+  import {resolvePeriodSelection,periodRangeLabel,type PeriodRange} from '../../../packages/page/src/period-filter';
   import {regionNodes,industryNodes,stateChoices,stateText,actionChoices,entityAt,tagTone,type Entity} from './demo-data';
   import {coverageFor} from './coverage';
   import features from './features.json';

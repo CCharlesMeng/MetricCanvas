@@ -1,8 +1,8 @@
 <!-- PROTOTYPE: UI Select visual with focus/scroll isolation; production file untouched. -->
 <svelte:options css="injected" />
 <script lang="ts">
- import {popoverPosition,observePopover,movePopoverFocus} from '../../src/shared/popover';
- import Theme from '../../src/shared/Theme.svelte';import type {UiOption} from '../../src/types';import Icon from '../../src/components/date-picker/DatePickerIcon.svelte';
+ import {popoverPosition,observePopover,movePopoverFocus} from '../../../packages/ui/src/shared/popover';
+ import Theme from '../../../packages/ui/src/shared/Theme.svelte';import type {UiOption} from '../../../packages/ui/src/types';import Icon from '../../../packages/ui/src/components/date-picker/DatePickerIcon.svelte';
  let {value='',options,onchange,disabled=false,label,placeholder='请选择'}:{value?:string;options:UiOption[];onchange?:(value:string)=>void;disabled?:boolean;label:string;placeholder?:string}=$props();
  let trigger:HTMLButtonElement;let popup:HTMLDivElement;let open=$state(false);let left=$state(0);let top=$state(0);let width=$state(0);
  function place(){const rect=popoverPosition(trigger,popup);left=rect.left;top=rect.top;width=rect.width;}

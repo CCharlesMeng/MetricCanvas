@@ -1,16 +1,16 @@
 # IOC 公共页头：可交互原型
 
-当前阶段：**第一阶段原型已补齐，供用户体验和反馈。** 第二阶段正式组件 API 审查、第三阶段生产编码尚未开始。功能范围仍以 [88项主计划](../../../../docs/plan/2026-10-16-ioc-header-feature-plan.md) 为唯一真源，执行顺序见 [交接](../../../../docs/plan/2026-10-19-ioc-header-handoff.md)。
+当前阶段：**第一阶段原型已补齐，供用户体验和反馈。** 第二阶段正式组件 API 审查、第三阶段生产编码尚未开始。功能范围仍以 [88项主计划](../../../docs/plan/2026-10-16-ioc-header-feature-plan.md) 为唯一真源，执行顺序见 [交接](../../../docs/plan/2026-10-19-ioc-header-handoff.md)。
 
 ## 启动与入口
 
 仓库根目录执行：
 
 ```sh
-pnpm --filter @metriccanvas/ui exec vite --host 127.0.0.1 --port 4184 --strictPort
+pnpm --filter @metriccanvas/ui exec vite --host 127.0.0.1 --port 4184 --strictPort ../../tools/prototypes
 ```
 
-[打开原型](http://127.0.0.1:4184/prototypes/ioc-header/index.html?scene=overview&variant=A)。顶部切换8个场景，底部切换 A 标准上下排 / B 身份筛选并排 / C 筛选优先；场景与布局可通过 URL 分享。业务选择、草稿和返回栈均保存在内存中。
+[打开原型](http://127.0.0.1:4184/ioc-header/index.html?scene=overview&variant=A)。顶部切换8个场景，底部切换 A 标准上下排 / B 身份筛选并排 / C 筛选优先；场景与布局可通过 URL 分享。业务选择、草稿和返回栈均保存在内存中。
 
 顶部「演示设置」属于实验控制区：配置时间形态、候选响应、身份信息和可选动作。业务页头保持内部视觉 A 的方向。右上「观察状态」显示已应用值、有效维度、模拟请求、草稿、候选、来源视图和任务快照；「88项规划」为每个编号提供状态、说明、步骤与场景跳转，不再用默认标签推断已完成。
 
@@ -45,7 +45,7 @@ pnpm --filter @metriccanvas/ui exec vite --host 127.0.0.1 --port 4184 --strictPo
 ## 本地验证
 
 ```sh
-pnpm --filter @metriccanvas/ui exec svelte-check --tsconfig ./prototypes/ioc-header/tsconfig.json
+pnpm --filter @metriccanvas/ui exec svelte-check --tsconfig ../../tools/prototypes/ioc-header/tsconfig.json
 ```
 
 [验证记录与现行截图](evidence/verification.md)，[46条浏览器操作观察](evidence/completion-observations.json)。初版截图保留为历史步骤记录；当前外观与覆盖以 `complete-*` 截图及本次记录为准。原系统像素等价、真实 DQE/CloudIOC/Relay/模型/导出/CI/部署均未验收。

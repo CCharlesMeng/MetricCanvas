@@ -1,5 +1,5 @@
 <script lang="ts">
-  import {popoverPosition,observePopover} from '../../src/shared/popover';
+  import {popoverPosition,observePopover} from '../../../packages/ui/src/shared/popover';
   export type TreeNode={id:string;label:string;children:TreeNode[]};
   let {label,nodes,value,onchange,disabled=false,reason=''}:{label:string;nodes:TreeNode[];value:string[];onchange:(v:string[])=>void;disabled?:boolean;reason?:string}=$props();
   let trigger:HTMLButtonElement;let panel:HTMLDivElement;

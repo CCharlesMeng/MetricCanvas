@@ -28,7 +28,7 @@
   import { CHART_OPTION_PATHS } from '../../widgets/src/shared/chart-option-extension';
   import ExpandableTable from './table/views/ExpandableTable.svelte';
   import ReportHeaderView from './ReportHeaderView.svelte';
-  import { isChartComponent, type Component, type DataSnapshot, type Row } from '@metriccanvas/page/internal';
+  import { isChartComponent, isIocRegionMapHierarchyFilter, type Component, type DataSnapshot, type Row } from '@metriccanvas/page/internal';
   import type { PageDataSnapshots } from '../../runtime/src';
   import {
     BarChart,
@@ -67,7 +67,6 @@
     type NestedComponentRender,
     type TableRenderBinding
   } from './component-render';
-  import Self from './ComponentRenderer.svelte';
   import RegionMapViewport from './RegionMapViewport.svelte';
 
   const presentation=getContext<PresentationReader|undefined>(PRESENTATION_CONTEXT);
@@ -107,46 +106,95 @@
   }
 
   let {
-    component, iocHeader,
+    component: rootComponent,
+    iocHeader: rootIocHeader,
     initialTabs,
-    exportMode = false, filterGroupReadOnly = false, filterGroupValue, onfiltergroup, headerControls, headerPeriod, summarySnapshot,
-    data,
-    snapshot,
+    exportMode = false, filterGroupReadOnly = false, filterGroupValue, onfiltergroup, headerControls, headerPeriod,
+    summarySnapshot: rootSummarySnapshot,
+    data: rootData,
+    snapshot: rootSnapshot,
     pageSnapshots,
     aiSummary,
-    textLinks = [],
-    onchartclick,
-    onmetriclink,
-    metricHref,
+    textLinks: rootTextLinks = [],
+    onchartclick: rootOnchartclick,
+    onmetriclink: rootOnmetriclink,
+    metricHref: rootMetricHref,
     onback,
-    table: requestedTable,
-    map,
+    table: rootTable,
+    map: rootMap,
     nested
   }: Props = $props();
 
-  // Display receipts are isolated from the current execution snapshots.
-  const gate=$derived(presentation?.()?.component(component.id));
-  const progressing = $derived(exportMode ? undefined : data.main?.progress
-    ? data
-    : progressiveSlotData(component, data, requestedTable?.view));
-  // During a card refresh each current slot can resolve independently.
-  const loadingCard = $derived(!exportMode && component.type === 'metricCard' && snapshot.status === 'loading');
-  const screen = $derived(exportMode || loadingCard ? { data, retained: false, table: undefined }
-    : retainedScreenData.read(component, progressing ?? data, snapshot, requestedTable));
-  const table = $derived(requestedTable ? { ...requestedTable, ...screen.table } : undefined);
-  const visibleData = $derived(loadingCard ? data : progressing ?? (screen.retained ? screen.data : snapshot.status === 'error' || snapshot.status === 'loading'
-    ? Object.fromEntries(Object.keys(component.data ?? {}).map(slot => [slot, {
-      fields: data[slot]?.fields ?? {}, diagnostics: data[slot]?.diagnostics, sourceStatus: snapshot.status, snapshot: { status: 'ready' as const, rows: [] }
-    }])) : data));
-  const mainData = $derived({ main: visibleData.main! } as MainDataSlots);
-  const metricData = $derived({
-    main: visibleData.main!,
-    ...(visibleData.compare ? { compare: visibleData.compare } : {}),
-    ...(visibleData.target ? { target: visibleData.target } : {})
-  } as MetricDataSlots);
-  const tableData = $derived(
-    visibleData as NamedDataSlots & { main: NonNullable<NamedDataSlots['main']> }
-  );
+  interface RenderEntry {
+    component: Component;
+    iocHeader?: IocHeaderRenderBinding;
+    data: NamedDataSlots;
+    snapshot: DataSnapshot;
+    table?: TableRenderBinding;
+    onchartclick?: (row: Row) => void;
+    onmetriclink?: (row: Row, event: MouseEvent) => void;
+    metricHref?: (row: Row) => string | undefined;
+    map?: 'china' | 'world';
+    textLinks: TextBlockLink[];
+    summarySnapshot?: import('./ai-summary').AiSummarySnapshot;
+  }
+
+  function placeholderSlots(component: Component, data: NamedDataSlots, status: 'error' | 'loading'): NamedDataSlots {
+    return Object.fromEntries(
+      Object.keys(component.data ?? {}).map(slot => [
+        slot,
+        {
+          fields: data[slot]?.fields ?? {},
+          diagnostics: data[slot]?.diagnostics,
+          sourceStatus: status,
+          snapshot: { status: 'ready' as const, rows: [] }
+        }
+      ])
+    );
+  }
+
+  function resolveVisibleData(
+    component: Component,
+    data: NamedDataSlots,
+    snapshot: DataSnapshot,
+    progressing: NamedDataSlots | undefined,
+    screen: { data: NamedDataSlots; retained: boolean },
+    loadingCard: boolean
+  ): NamedDataSlots {
+    if (loadingCard) return data;
+    if (progressing) return progressing;
+    if (screen.retained) return screen.data;
+    if (snapshot.status === 'error' || snapshot.status === 'loading') {
+      return placeholderSlots(component, data, snapshot.status);
+    }
+    return data;
+  }
+
+  function resolveRenderState(entry: RenderEntry) {
+    const { component, data, snapshot, table: requestedTable } = entry;
+    // Display receipts are isolated from the current execution snapshots.
+    const gate = presentation?.()?.component(component.id);
+    const progressing = exportMode
+      ? undefined
+      : data.main?.progress
+        ? data
+        : progressiveSlotData(component, data, requestedTable?.view);
+    // During a card refresh each current slot can resolve independently.
+    const loadingCard = !exportMode && component.type === 'metricCard' && snapshot.status === 'loading';
+    const screen = exportMode || loadingCard
+      ? { data, retained: false, table: undefined }
+      : retainedScreenData.read(component, progressing ?? data, snapshot, requestedTable);
+    const table = requestedTable ? { ...requestedTable, ...screen.table } : undefined;
+    const visibleData = resolveVisibleData(component, data, snapshot, progressing, screen, loadingCard);
+    const mainData = { main: visibleData.main! } as MainDataSlots;
+    const metricData = {
+      main: visibleData.main!,
+      ...(visibleData.compare ? { compare: visibleData.compare } : {}),
+      ...(visibleData.target ? { target: visibleData.target } : {})
+    } as MetricDataSlots;
+    const tableData = visibleData as NamedDataSlots & { main: NonNullable<NamedDataSlots['main']> };
+    return { gate, screen, table, mainData, metricData, tableData };
+  }
 </script>
 
 {#snippet emptyIocControls(_id:string,_readOnly:boolean)}{/snippet}
@@ -154,24 +202,18 @@
 <!-- 容器内的子组件递归回本组件;数据与交互仍由统一运行时按组件提供。 -->
 {#snippet child(nestedComponent: Component)}
   {#if nested}
-    <Self
-      component={nestedComponent}
-      {initialTabs}
-      {exportMode} {filterGroupReadOnly} {filterGroupValue} {onfiltergroup} {headerControls} {headerPeriod}
-      data={nested.data(nestedComponent)}
-      snapshot={nested.snapshot(nestedComponent)}
-      {pageSnapshots}
-      {aiSummary}
-      {onback}
-      table={nested.table(nestedComponent)}
-      onchartclick={nested.onchartclick(nestedComponent)}
-      onmetriclink={nested.onmetriclink(nestedComponent)}
-      metricHref={nested.metricHref(nestedComponent)}
-      map={nested.map?.(nestedComponent)}
-      textLinks={nested.textLinks?.(nestedComponent)}
-      summarySnapshot={nested.summarySnapshot?.(nestedComponent)}
-      {nested}
-    />
+    {@render renderComponent({
+      component: nestedComponent,
+      data: nested.data(nestedComponent),
+      snapshot: nested.snapshot(nestedComponent),
+      table: nested.table(nestedComponent),
+      onchartclick: nested.onchartclick(nestedComponent),
+      onmetriclink: nested.onmetriclink(nestedComponent),
+      metricHref: nested.metricHref(nestedComponent),
+      map: nested.map?.(nestedComponent),
+      textLinks: nested.textLinks?.(nestedComponent) ?? [],
+      summarySnapshot: nested.summarySnapshot?.(nestedComponent)
+    })}
   {/if}
 {/snippet}
 
@@ -183,6 +225,17 @@
   {/if}
 {/snippet}
 
+{#snippet renderComponent(entry: RenderEntry)}
+  {@const component = entry.component}
+  {@const iocHeader = entry.iocHeader}
+  {@const snapshot = entry.snapshot}
+  {@const onchartclick = entry.onchartclick}
+  {@const onmetriclink = entry.onmetriclink}
+  {@const metricHref = entry.metricHref}
+  {@const map = entry.map}
+  {@const textLinks = entry.textLinks}
+  {@const summarySnapshot = entry.summarySnapshot}
+  {@const { gate, screen, table, mainData, metricData, tableData } = resolveRenderState(entry)}
 {#if rendersWithoutWidgetHost(component)}
   {#if component.type === 'iocHeader'}
     {@const binding=iocHeader??{model:resolvedIocHeader(component.props),filterIds:component.props.filterIds??[],controls:emptyIocControls}}
@@ -350,7 +403,7 @@
         />
       {:else if component.type === 'mapChart'}
         <RegionMapViewport
-          enabled={component.props.hierarchyFilter === 'region'}
+          enabled={isIocRegionMapHierarchyFilter(component.props.hierarchyFilter)}
           basemap={map ?? component.props.map}
         >
           {#snippet children(viewport, geography, selection)}
@@ -369,6 +422,21 @@
     {/snippet}
   </WidgetHost>
 {/if}
+{/snippet}
+
+{@render renderComponent({
+  component: rootComponent,
+  iocHeader: rootIocHeader,
+  data: rootData,
+  snapshot: rootSnapshot,
+  table: rootTable,
+  onchartclick: rootOnchartclick,
+  onmetriclink: rootOnmetriclink,
+  metricHref: rootMetricHref,
+  map: rootMap,
+  textLinks: rootTextLinks,
+  summarySnapshot: rootSummarySnapshot
+})}
 
 <style>
   [data-export-tabs] > section { margin-bottom:24px; }

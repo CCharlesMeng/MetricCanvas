@@ -1,6 +1,6 @@
 <script lang="ts">
   // Throwaway multi-selection / hierarchical candidate panel, not a public UI API.
-  import { popoverPosition, observePopover } from '../../src/shared/popover';
+  import { popoverPosition, observePopover } from '../../../packages/ui/src/shared/popover';
   let { label, options, value, onchange, disabled=false, reason='', allMeansUnlimited=false }: {label:string;options:(string|{value:string;label:string})[];value:string[];onchange:(v:string[])=>void;disabled?:boolean;reason?:string;allMeansUnlimited?:boolean}=$props();
   const items=$derived(options.map(o=>typeof o==='string'?{value:o,label:o}:o));
   const allSelected=$derived(items.length>0&&items.every(o=>value.includes(o.value)));

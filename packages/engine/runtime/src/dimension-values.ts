@@ -1,14 +1,18 @@
-import { validFilterCandidates } from './filter-candidates';
+import {
+  createCandidateCache,
+  preservedQueryError,
+  validFilterCandidates,
+} from '@metriccanvas/data-execution/runtime';
 import type { QueryError } from '@metriccanvas/page/internal';
-import { createCandidateCache } from '@metriccanvas/data-execution/runtime';
 import type { Subscribable } from './orchestrator';
 import type {
   DimensionValueCandidate,
-  FilterCandidate, FilterCandidatesRequest, FilterCandidatesResult,
   DimensionValuesGateway,
-  RuntimeDataGateway
+  FilterCandidate,
+  FilterCandidatesRequest,
+  FilterCandidatesResult,
+  RuntimeDataGateway,
 } from './ports';
-import { preservedQueryError } from './query-error';
 
 /**
  * 筛选候选值快照:统一运行时按维度名维护的候选值加载状态,形状只在
@@ -39,12 +43,28 @@ export interface DimensionValuesStream extends Subscribable<DimensionValuesSnaps
    * 请求一个维度的候选值。同一会话内按维度幂等:已在加载或已有终态的
    * 维度不重复请求。约束变化时用 `reload` 重新取。
    */
-  load(dimension: string, constraints?: Readonly<Record<string, readonly string[]>>, scope?: { filterId: string; level?: string; context?: string } | string): void;
+  load(
+    dimension: string,
+    constraints?: Readonly<Record<string, readonly string[]>>,
+    scope?: { filterId: string; level?: string; context?: string } | string,
+  ): void;
   /** 丢弃该维度当前快照并按新约束重新请求。 */
-  reload(dimension: string, constraints?: Readonly<Record<string, readonly string[]>>, scope?: { filterId: string; level?: string; context?: string } | string): void;
-  loadFilter(request:FilterCandidatesRequest,context:string,levels?:readonly string[],force?:boolean):void;
+  reload(
+    dimension: string,
+    constraints?: Readonly<Record<string, readonly string[]>>,
+    scope?: { filterId: string; level?: string; context?: string } | string,
+  ): void;
+  loadFilter(
+    request: FilterCandidatesRequest,
+    context: string,
+    levels?: readonly string[],
+    force?: boolean,
+  ): void;
   /** 上游事实不可用时取消当前代次并清除其候选回执。 */
-  unavailable(dimension: string, scope: { filterId: string; level?: string; context?: string }): void;
+  unavailable(
+    dimension: string,
+    scope: { filterId: string; level?: string; context?: string },
+  ): void;
   /** 结束会话:取消全部在途候选值请求,过期结果不再发布。 */
   dispose(): void;
 }
@@ -55,16 +75,33 @@ function candidateLoadIdentity(
   dimension: string,
   constraints: Readonly<Record<string, readonly string[]>> | undefined,
   inputScope: { filterId: string; level?: string; context?: string } | string | undefined,
-  request: FilterCandidatesRequest | undefined
+  request: FilterCandidatesRequest | undefined,
 ) {
   const scope = typeof inputScope === 'object' ? inputScope : undefined;
-  const slot = typeof inputScope === 'string' ? candidateKey(dimension, inputScope)
-    : scope ? candidateScopeKey(scope.filterId, dimension, scope.level) : dimension;
-  const contextSlot = scope?.context === undefined ? undefined
-    : candidateScopeKey(scope.filterId, dimension, scope.level, scope.context);
-  const normalized = constraints && Object.fromEntries(Object.keys(constraints).sort()
-    .map(key => [key, [...new Set(constraints[key])].sort()]));
-  const key = JSON.stringify([slot, dimension, normalized ?? {}, scope?.context ?? null, request ?? null]);
+  const slot =
+    typeof inputScope === 'string'
+      ? candidateKey(dimension, inputScope)
+      : scope
+        ? candidateScopeKey(scope.filterId, dimension, scope.level)
+        : dimension;
+  const contextSlot =
+    scope?.context === undefined
+      ? undefined
+      : candidateScopeKey(scope.filterId, dimension, scope.level, scope.context);
+  const normalized =
+    constraints &&
+    Object.fromEntries(
+      Object.keys(constraints)
+        .sort()
+        .map((key) => [key, [...new Set(constraints[key])].sort()]),
+    );
+  const key = JSON.stringify([
+    slot,
+    dimension,
+    normalized ?? {},
+    scope?.context ?? null,
+    request ?? null,
+  ]);
   return { slot, contextSlot, normalized, key };
 }
 
@@ -76,15 +113,15 @@ function candidateLoadIdentity(
  * - 在途请求经 AbortSignal 可取消,dispose 后过期结果不会覆盖筛选状态;
  * - 失败保留结构化查询错误分类(issue #51),未携带分类兜底 UNKNOWN。
  */
-export function createDimensionValuesLoader(
-  gateway: RuntimeDataGateway
-): DimensionValuesStream {
+export function createDimensionValuesLoader(gateway: RuntimeDataGateway): DimensionValuesStream {
   const snapshots = new Map<string, DimensionValuesSnapshot>();
   const subscribers = new Set<(value: DimensionValuesSnapshots) => void>();
   const requests = new Map<string, AbortController>();
   const activeKeys = new Map<string, string>();
   const contextKeys = new Map<string, string>();
-  const cache = createCandidateCache<DimensionValuesSnapshot>(snapshot => snapshot.status === 'ready' ? snapshot.candidates.length : 0);
+  const cache = createCandidateCache<DimensionValuesSnapshot>((snapshot) =>
+    snapshot.status === 'ready' ? snapshot.candidates.length : 0,
+  );
   let disposed = false;
 
   function publish(slot: string, snapshot: DimensionValuesSnapshot, contextSlot?: string): void {
@@ -108,36 +145,96 @@ export function createDimensionValuesLoader(
     controller?.abort();
   }
 
-  function start(dimension: string, constraints: Readonly<Record<string, readonly string[]>> | undefined,
-    force: boolean, inputScope?: {filterId:string;level?:string;context?:string}|string, filterRequest?:FilterCandidatesRequest, levels?:readonly string[]): void {
+  function start(
+    dimension: string,
+    constraints: Readonly<Record<string, readonly string[]>> | undefined,
+    force: boolean,
+    inputScope?: { filterId: string; level?: string; context?: string } | string,
+    filterRequest?: FilterCandidatesRequest,
+    levels?: readonly string[],
+  ): void {
     if (disposed) return;
-    const { slot, contextSlot, normalized, key } = candidateLoadIdentity(dimension, constraints, inputScope, filterRequest);
+    const { slot, contextSlot, normalized, key } = candidateLoadIdentity(
+      dimension,
+      constraints,
+      inputScope,
+      filterRequest,
+    );
     if (!force && activeKeys.get(slot) === key) return;
-    activeKeys.set(slot,key);
+    activeKeys.set(slot, key);
     cancel(slot);
     if (force) cache.delete(key);
     const cached = cache.get(key);
-    if (cached) { publish(slot, cached, contextSlot); return; }
-    if(filterRequest && Object.values(filterRequest.constraints.dimensions).some(values=>values.length===0)){publish(slot,{status:'empty'},contextSlot);return;}
+    if (cached) {
+      publish(slot, cached, contextSlot);
+      return;
+    }
+    if (
+      filterRequest &&
+      Object.values(filterRequest.constraints.dimensions).some((values) => values.length === 0)
+    ) {
+      publish(slot, { status: 'empty' }, contextSlot);
+      return;
+    }
     const fetch = filterRequest ? gateway.fetchFilterCandidates : capability(gateway);
-    if (!fetch) { publish(slot, {status:'unavailable'}, contextSlot); return; }
+    if (!fetch) {
+      publish(slot, { status: 'unavailable' }, contextSlot);
+      return;
+    }
     const controller = new AbortController();
-    requests.set(slot,controller);
-    publish(slot,{status:'loading'}, contextSlot);
+    requests.set(slot, controller);
+    publish(slot, { status: 'loading' }, contextSlot);
     function settle(snapshot: DimensionValuesSnapshot) {
       if (requests.get(slot) !== controller) return;
-      requests.delete(slot); cache.set(key,snapshot); publish(slot,snapshot,contextSlot);
+      requests.delete(slot);
+      cache.set(key, snapshot);
+      publish(slot, snapshot, contextSlot);
     }
-    let pending: Promise<FilterCandidatesResult | Awaited<ReturnType<DimensionValuesGateway['fetchDimensionValues']>>>;
-    try { pending = filterRequest ? gateway.fetchFilterCandidates!(filterRequest,{signal:controller.signal}) : capability(gateway)!(dimension,{signal:controller.signal,constraints:normalized}); }
-    catch (cause) { settle({status:'error',error:preservedQueryError(cause)}); return; }
-    pending.then(result => {
-      if(!result||!['values','unavailable','denied','unconfigured'].includes(result.kind)){settle({status:'error',error:{code:'DQE_ROW_CONTRACT_ERROR',message:'候选回执形状无效'}});return;}
-      if(result.kind!=='values'){settle({status:result.kind});return;}
-      if(filterRequest && (!Array.isArray(result.candidates)||!validFilterCandidates(result.candidates,levels))){settle({status:'error',error:{code:'DQE_QUERY_REJECTED',message:'候选结构不符合声明'}});return;}
-      const candidates = filterRequest ? result.candidates : [...new Map(result.candidates.map(candidate => [candidate.value,candidate])).values()];
-      settle(candidates.length ? {status:'ready',candidates} : {status:'empty'});
-    }, cause => settle({status:'error',error:preservedQueryError(cause)}));
+    let pending: Promise<
+      FilterCandidatesResult | Awaited<ReturnType<DimensionValuesGateway['fetchDimensionValues']>>
+    >;
+    try {
+      pending = filterRequest
+        ? gateway.fetchFilterCandidates!(filterRequest, { signal: controller.signal })
+        : capability(gateway)!(dimension, { signal: controller.signal, constraints: normalized });
+    } catch (cause) {
+      settle({ status: 'error', error: preservedQueryError(cause) });
+      return;
+    }
+    pending.then(
+      (result) => {
+        if (!result || !['values', 'unavailable', 'denied', 'unconfigured'].includes(result.kind)) {
+          settle({
+            status: 'error',
+            error: { code: 'DQE_ROW_CONTRACT_ERROR', message: '候选回执形状无效' },
+          });
+          return;
+        }
+        if (result.kind !== 'values') {
+          settle({ status: result.kind });
+          return;
+        }
+        if (
+          filterRequest &&
+          (!Array.isArray(result.candidates) || !validFilterCandidates(result.candidates, levels))
+        ) {
+          settle({
+            status: 'error',
+            error: { code: 'DQE_QUERY_REJECTED', message: '候选结构不符合声明' },
+          });
+          return;
+        }
+        const candidates = filterRequest
+          ? result.candidates
+          : [
+              ...new Map(
+                result.candidates.map((candidate) => [candidate.value, candidate]),
+              ).values(),
+            ];
+        settle(candidates.length ? { status: 'ready', candidates } : { status: 'empty' });
+      },
+      (cause) => settle({ status: 'error', error: preservedQueryError(cause) }),
+    );
   }
 
   return {
@@ -152,9 +249,39 @@ export function createDimensionValuesLoader(
     reload(dimension, constraints, scope) {
       start(dimension, constraints, true, scope);
     },
-    loadFilter(request,context,levels,force=false) {
-      const normalized={...request,constraints:{...(request.constraints.booleans?{booleans:Object.fromEntries(Object.keys(request.constraints.booleans).sort().map(id=>[id,request.constraints.booleans![id]!]))}:{}),dimensions:Object.fromEntries(Object.keys(request.constraints.dimensions).sort().map(id=>[id,[...new Set(request.constraints.dimensions[id])].sort()])),times:Object.fromEntries(Object.keys(request.constraints.times).sort().map(id=>[id,request.constraints.times[id]]))}};
-      start(request.dimension,normalized.constraints.dimensions,force,{filterId:request.filterId,level:request.level,context},normalized,levels);
+    loadFilter(request, context, levels, force = false) {
+      const normalized = {
+        ...request,
+        constraints: {
+          ...(request.constraints.booleans
+            ? {
+                booleans: Object.fromEntries(
+                  Object.keys(request.constraints.booleans)
+                    .sort()
+                    .map((id) => [id, request.constraints.booleans![id]!]),
+                ),
+              }
+            : {}),
+          dimensions: Object.fromEntries(
+            Object.keys(request.constraints.dimensions)
+              .sort()
+              .map((id) => [id, [...new Set(request.constraints.dimensions[id])].sort()]),
+          ),
+          times: Object.fromEntries(
+            Object.keys(request.constraints.times)
+              .sort()
+              .map((id) => [id, request.constraints.times[id]]),
+          ),
+        },
+      };
+      start(
+        request.dimension,
+        normalized.constraints.dimensions,
+        force,
+        { filterId: request.filterId, level: request.level, context },
+        normalized,
+        levels,
+      );
     },
     unavailable(dimension, scope) {
       if (disposed) return;
@@ -162,7 +289,13 @@ export function createDimensionValuesLoader(
       cancel(slot);
       activeKeys.delete(slot);
       for (const key of cache.keys()) if (JSON.parse(key)[0] === slot) cache.delete(key);
-      publish(slot, { status: 'unavailable' }, scope.context === undefined ? undefined : candidateScopeKey(scope.filterId, dimension, scope.level, scope.context));
+      publish(
+        slot,
+        { status: 'unavailable' },
+        scope.context === undefined
+          ? undefined
+          : candidateScopeKey(scope.filterId, dimension, scope.level, scope.context),
+      );
     },
     dispose() {
       if (disposed) return;
@@ -173,20 +306,21 @@ export function createDimensionValuesLoader(
       contextKeys.clear();
       snapshots.clear();
       subscribers.clear();
-    }
+    },
   };
 }
 
 /** 便于消费方取快照缺省值:未请求过的维度视为 idle。 */
 export function dimensionValuesSnapshot(
   snapshots: DimensionValuesSnapshots,
-  dimension: string, consumerId?:string
+  dimension: string,
+  consumerId?: string,
 ): DimensionValuesSnapshot {
-  return snapshots.get(candidateKey(dimension,consumerId)) ?? IDLE;
+  return snapshots.get(candidateKey(dimension, consumerId)) ?? IDLE;
 }
 
 function capability(
-  gateway: RuntimeDataGateway
+  gateway: RuntimeDataGateway,
 ): DimensionValuesGateway['fetchDimensionValues'] | undefined {
   return typeof gateway.fetchDimensionValues === 'function'
     ? gateway.fetchDimensionValues.bind(gateway)
@@ -195,7 +329,7 @@ function capability(
 
 function notify(
   run: (value: DimensionValuesSnapshots) => void,
-  snapshots: DimensionValuesSnapshots
+  snapshots: DimensionValuesSnapshots,
 ): void {
   try {
     run(snapshots);
@@ -205,8 +339,21 @@ function notify(
 }
 
 /** Page filters and table-column candidates have distinct slots, even for the same dimension. */
-export function candidateScopeKey(filterId: string, dimension: string, level?: string, context?: string): string {
-  return JSON.stringify(['filter', filterId, dimension, level ?? null, ...(context === undefined ? [] : [context])]);
+export function candidateScopeKey(
+  filterId: string,
+  dimension: string,
+  level?: string,
+  context?: string,
+): string {
+  return JSON.stringify([
+    'filter',
+    filterId,
+    dimension,
+    level ?? null,
+    ...(context === undefined ? [] : [context]),
+  ]);
 }
 
-export function candidateKey(dimension:string,consumerId?:string):string {return consumerId ? `${consumerId}:${dimension}` : dimension;}
+export function candidateKey(dimension: string, consumerId?: string): string {
+  return consumerId ? `${consumerId}:${dimension}` : dimension;
+}

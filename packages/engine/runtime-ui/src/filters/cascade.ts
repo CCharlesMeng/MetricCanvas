@@ -1,10 +1,11 @@
-import { filterDependencies } from '@metriccanvas/page/internal';
-import {overriddenFilterIds,isUnrestrictedIocRegion} from '@metriccanvas/page/internal';
-import { candidateContextKey } from '../../../runtime/src/filter-candidates';
+import { candidateContextKey } from '@metriccanvas/data-execution/runtime';
 import {
-  dimensionOfLevel,
   type DimensionFilterDeclaration,
-  type FilterDeclaration
+  dimensionOfLevel,
+  type FilterDeclaration,
+  filterDependencies,
+  isUnrestrictedIocRegion,
+  overriddenFilterIds,
 } from '@metriccanvas/page/internal';
 import type { FilterValue, FilterValues } from '../../../runtime/src';
 
@@ -16,41 +17,53 @@ export function cascadeConstraints(
   declaration: DimensionFilterDeclaration,
   declarations: readonly FilterDeclaration[],
   values: FilterValues,
-  page?:import('@metriccanvas/page/internal').Page
+  page?: import('@metriccanvas/page/internal').Page,
 ): Readonly<Record<string, readonly string[]>> | undefined {
   if (!declaration.dependsOn) return undefined;
-  if(overriddenFilterIds(declarations,values).has(declaration.dependsOn))return undefined;
+  if (overriddenFilterIds(declarations, values).has(declaration.dependsOn)) return undefined;
   const upstream = declarations.find((item) => item.id === declaration.dependsOn);
   if (upstream?.type !== 'dimension') return undefined;
   const current = values.get(upstream.id);
-  if (current?.type !== 'dimension' || current.values.length === 0||isUnrestrictedIocRegion(page,upstream.id,current)) return undefined;
+  if (
+    current?.type !== 'dimension' ||
+    current.values.length === 0 ||
+    isUnrestrictedIocRegion(page, upstream.id, current)
+  )
+    return undefined;
   return { [dimensionOfLevel(upstream, current.level)]: current.values };
 }
 
 /** 上游筛选器变化时,依赖它的下游应被清掉——候选已经变了。 */
 export function dependentFilterIds(
   declarations: readonly FilterDeclaration[],
-  parentId: string
+  parentId: string,
 ): string[] {
   const result = new Set<string>();
   const queue = [parentId];
-  for (const parent of queue) for (const declaration of declarations) {
-    if (!filterDependencies(declaration).includes(parent) || declaration.id === parentId || result.has(declaration.id)) continue;
-    result.add(declaration.id); queue.push(declaration.id);
-  }
+  for (const parent of queue)
+    for (const declaration of declarations) {
+      if (
+        !filterDependencies(declaration).includes(parent) ||
+        declaration.id === parentId ||
+        result.has(declaration.id)
+      )
+        continue;
+      result.add(declaration.id);
+      queue.push(declaration.id);
+    }
   return [...result];
 }
 
 export function clearDependentUpdates(
   declarations: readonly FilterDeclaration[],
-  parentId: string
+  parentId: string,
 ): Array<readonly [string, null]> {
   return dependentFilterIds(declarations, parentId).map((id) => [id, null] as const);
 }
 
 export function dimensionValueOf(
   values: FilterValues,
-  filterId: string
+  filterId: string,
 ): { values: string[]; level?: string } {
   const value = values.get(filterId);
   if (value?.type !== 'dimension') return { values: [] };
@@ -62,6 +75,16 @@ export function filterValueOf(values: FilterValues, filterId: string): FilterVal
 }
 
 /** Identity includes the full ancestry even though the legacy port accepts direct-parent constraints only. */
-export function cascadeContext(declaration: DimensionFilterDeclaration, declarations: readonly FilterDeclaration[], values: FilterValues,context:{page?:import('@metriccanvas/page/internal').Page;displayInputs?:import('@metriccanvas/page/internal').DisplayInputsSnapshot;filterRevision?:number;now?:Date}={}): string {
-  return candidateContextKey(declaration,declarations,values,context);
+export function cascadeContext(
+  declaration: DimensionFilterDeclaration,
+  declarations: readonly FilterDeclaration[],
+  values: FilterValues,
+  context: {
+    page?: import('@metriccanvas/page/internal').Page;
+    displayInputs?: import('@metriccanvas/page/internal').DisplayInputsSnapshot;
+    filterRevision?: number;
+    now?: Date;
+  } = {},
+): string {
+  return candidateContextKey(declaration, declarations, values, context);
 }
