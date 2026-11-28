@@ -11,8 +11,8 @@ import {
   type PageParamDeclaration,
   type PageParamValue,
   pageParamDeclarations,
-} from './page-param';
-import type { PageQuery } from './query';
+} from './page-param-types';
+import type { PageQuery } from './query-primitives';
 import { bindingQueryFields } from './query-bindings';
 import { ordinaryQuery, queryLeaves, querySelection } from './query-selection';
 import { timeWindowZ } from './schema/data-source';

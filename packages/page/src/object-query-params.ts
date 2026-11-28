@@ -1,7 +1,7 @@
 import { dqeRecord, type ObjectTimeFormat, objectDateBoundary } from './dqe-object';
 import type { TypedError } from './errors';
-import type { PageParamDeclaration, PageParamValue } from './page-param';
-import type { JsonObject, PageQuery } from './query';
+import type { PageParamDeclaration, PageParamValue } from './page-param-types';
+import type { JsonObject, PageQuery } from './query-primitives';
 import { bindingQueryFields } from './query-bindings';
 import { timeWindowZ } from './schema/data-source';
 import { resolveTimeWindow, type TimeWindow, timeWindowCompatible } from './time-param';

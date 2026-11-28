@@ -1,5 +1,5 @@
 import type { RuntimeDataGateway } from '@metriccanvas/engine';
-import type { AiSummaryConfig, RuntimeViewEvent, RuntimeNavigation } from '@metriccanvas/engine/ui';
+import type { AiSummaryConfig, RuntimeNavigation, RuntimeViewEvent } from '@metriccanvas/engine/ui';
 
 export interface RuntimeInput {
   onAuthRequired?: (event: import('@metriccanvas/engine/ui').AuthRequiredEvent) => void;
@@ -36,4 +36,8 @@ export interface RuntimeHandle {
   destroy(): void;
 }
 
-export type {DisplayInputsSource,DisplayInputsSnapshot,DataPeriodFact} from '@metriccanvas/page/internal';
+export type {
+  DataPeriodFact,
+  DisplayInputsSnapshot,
+  DisplayInputsSource,
+} from '@metriccanvas/page';

@@ -1,10 +1,10 @@
 import {hasPeriodComparison} from './period-comparison';
 import {hasBindingConditions} from './query-binding-when';
-import {isRelativeTimeExpression,resolveRelativeTime,validateCalendarTimeRange,type TimeRangeFilterDeclaration,type TimeRangeValue} from './filter';
-import type {DqeQueryDefinition} from './query';
+import {isRelativeTimeExpression,resolveRelativeTime,validateCalendarTimeRange} from './filter';
+import type {FilterDeclaration,ModeRange,TimeMode,TimeRangeFilterDeclaration,TimeRangeValue} from './filter-types';
+import type {DqeQueryDefinition} from './query-primitives';
 import {queryLeaves,hasQuerySelection} from './query-selection';
-export type TimeMode='day'|'month'|'isoWeek';
-export interface ModeRange extends TimeRangeValue {mode?:TimeMode}
+export type {ModeRange,TimeMode};
 export function modeRangeIssue(declaration:TimeRangeFilterDeclaration,range:ModeRange):string|undefined {
  if(declaration.display!=='modes')return range.mode?'普通日期范围不得带模式':undefined;
  if('selection' in range&&range.selection!==undefined)return '模式范围不得混用自然期间选择';
@@ -28,15 +28,15 @@ export function initialModeRange(declaration:TimeRangeFilterDeclaration,mode:Tim
 // Historical internal names retain the same shared static-query selection implementation.
 export {ordinaryQuery,selectQuery as selectTimeQuery,queryLeaves as timeQueryLeaves,queryVariants as timeQueryVariants} from './query-selection';
 /** Unannotated receipts cannot establish the time/period-fact context for these queries. */
-export function requiresTimeValidation(filter:import('./filter').FilterDeclaration):boolean {
+export function requiresTimeValidation(filter:FilterDeclaration):boolean {
  return (filter.type==='timeRange'||filter.type==='timePoint')&&!!(filter.availability||filter.max||filter.blockedRanges||filter.type==='timeRange'&&(filter.display==='modes'||filter.min!==undefined||filter.disableFuture!==undefined));
 }
-export function hasTimeConstraints(query:DqeQueryDefinition,declarations:readonly import('./filter').FilterDeclaration[]=[]):boolean {
+export function hasTimeConstraints(query:DqeQueryDefinition,declarations:readonly FilterDeclaration[]=[]):boolean {
  const ids=new Set(queryLeaves(query).flatMap(leaf=>Object.keys(leaf.filterBindings??{})));
  return !!query.timeModes||declarations.some(filter=>ids.has(filter.id)&&requiresTimeValidation(filter));
 }
 
 /** Query receipts must prove both the selected branch and constrained input context. */
-export function requiresQueryContext(query:DqeQueryDefinition,declarations:readonly import('./filter').FilterDeclaration[]=[]):boolean {
+export function requiresQueryContext(query:DqeQueryDefinition,declarations:readonly FilterDeclaration[]=[]):boolean {
  return !!query.periodAggregation||hasPeriodComparison(query)||hasQuerySelection(query)||hasTimeConstraints(query,declarations)||hasBindingConditions(query);
 }

@@ -8,6 +8,7 @@ const exec = 'packages/data-execution/src/';
 const runtime = 'packages/engine/runtime/src/';
 const widgets = 'packages/engine/widgets/src/';
 const view = 'packages/engine/runtime-ui/src/';
+const embed = 'packages/embed/src/';
 const manifest = (name, exports) => JSON.stringify({ name, exports });
 const scan = (files) => {
   const { graph, allImports } = dependencyGraph(new Map(files));
@@ -171,6 +172,46 @@ test('rejects value and type-only cross-layer deep imports while allowing declar
       [runtime + 'index.ts', 'export const c = 3;'],
       [runtime + 'internal.ts', 'export type D = 4;'],
       [view + 'sub/b.ts', 'export const e = 5;'],
+    ]).size,
+    0,
+  );
+});
+
+test('forbids @metriccanvas/engine and @metriccanvas/embed public entries from importing or re-exporting @metriccanvas/page/internal', () => {
+  const pageManifest = [
+    'packages/page/package.json',
+    manifest('@metriccanvas/page', { '.': './src/index.ts', './internal': './src/internal.ts' }),
+  ];
+  const pageEntries = [
+    [page + 'index.ts', 'export type Stable = number;'],
+    [page + 'internal.ts', 'export type Internal = string;'],
+  ];
+  assert.deepEqual(
+    [
+      ...scan([
+        pageManifest,
+        ...pageEntries,
+        [view + 'index.ts', "export type { Internal } from '@metriccanvas/page/internal';"],
+      ]).values(),
+    ],
+    [{ rule: 'public internal leak', path: [view + 'index.ts', page + 'internal.ts'] }],
+  );
+  assert.deepEqual(
+    [
+      ...scan([
+        pageManifest,
+        ...pageEntries,
+        [embed + 'types.ts', "export type { Internal } from '@metriccanvas/page/internal';"],
+      ]).values(),
+    ],
+    [{ rule: 'public internal leak', path: [embed + 'types.ts', page + 'internal.ts'] }],
+  );
+  assert.equal(
+    scan([
+      pageManifest,
+      ...pageEntries,
+      [view + 'index.ts', "export type { Stable } from '@metriccanvas/page';"],
+      [embed + 'types.ts', "export type { Stable } from '@metriccanvas/page';"],
     ]).size,
     0,
   );

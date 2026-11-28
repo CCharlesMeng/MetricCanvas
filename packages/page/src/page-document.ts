@@ -1,6 +1,6 @@
 import type { PagedUnionDataSource } from './paged-union';
 import type { PagedJoinDataSource } from './paged-join';
-import type { GroupedPageParams, PageParamDeclaration } from './page-param';
+import type { GroupedPageParams, PageParamDeclaration } from './page-param-types';
 import type {
   InlineDataSource,
   QueryDataSource,
@@ -12,7 +12,7 @@ import type {
   QueryScalarFieldDefinition,
   QueryStandardScalarFieldDefinition
 } from './field';
-import type { Page, PageLayoutForm } from './page';
+import type { Page, PageLayoutForm } from './page-types';
 
 /** 与查询定义一起保存的 DQE 原始执行结果，字段键使用 DQE 输出字段名。 */
 export interface EmbeddedInitialRowsDocument {

@@ -5,6 +5,7 @@ const directories = new Map([
   ['packages/page/src/', 'page'],
   ['packages/data-execution/src/', 'data-execution'],
   ['packages/ui/src/', 'ui'],
+  ['packages/embed/src/', 'embed'],
   ...['runtime', 'runtime-ui', 'widgets', 'data-gateway'].map((layer) => [
     'packages/engine/' + layer + '/src/',
     layer,

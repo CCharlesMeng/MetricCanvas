@@ -1,11 +1,14 @@
-import type { Row } from './snapshot';
+import type { DataSources } from './data-source';
+import type {
+  CellFallbacks,
+  DataSnapshot,
+  QueryRowNormalizationWarning,
+  Row,
+  RowCellFallbacks,
+  ScalarDisplayFallback,
+} from './snapshot-types';
 
-export interface ScalarDisplayFallback {
-  raw: string | number | boolean;
-  reason: 'TYPE_MISMATCH' | 'INVALID_NUMERIC_VALUE';
-}
-export type RowCellFallbacks = Record<string, ScalarDisplayFallback>;
-export type CellFallbacks = Record<number, RowCellFallbacks>;
+export type { CellFallbacks, RowCellFallbacks, ScalarDisplayFallback };
 
 // Transient row transport only. Every snapshot/serialization boundary also emits cellFallbacks.
 const evidence = new WeakMap<Row, RowCellFallbacks>();
@@ -46,7 +49,7 @@ export function copyFieldFallback(source: Row | undefined, from: string, target:
 }
 
 /** Attach runtime evidence after document structure/invariants have been validated. */
-export function attachInitialFallbacks(page: Pick<import('./page').Page, 'dataSources'>, cells?: Record<string, CellFallbacks>, warnings?: Record<string, import('./query-rows').QueryRowNormalizationWarning[]>): void {
+export function attachInitialFallbacks(page: { dataSources: DataSources }, cells?: Record<string, CellFallbacks>, warnings?: Record<string, QueryRowNormalizationWarning[]>): void {
   const ids = new Set([...Object.keys(cells ?? {}), ...Object.keys(warnings ?? {})]);
   for (const id of ids) {
     const source = page.dataSources[id];
@@ -57,7 +60,7 @@ export function attachInitialFallbacks(page: Pick<import('./page').Page, 'dataSo
 }
 
 /** Re-index serializable evidence whenever a ready snapshot selects or reorders rows. */
-export function projectSnapshotRows(snapshot: Extract<import('./snapshot').DataSnapshot, {status:'ready'}>, rows: readonly Row[]): Extract<import('./snapshot').DataSnapshot, {status:'ready'}> {
+export function projectSnapshotRows(snapshot: Extract<DataSnapshot, {status:'ready'}>, rows: readonly Row[]): Extract<DataSnapshot, {status:'ready'}> {
   restoreCellFallbacks(snapshot.rows, snapshot.cellFallbacks);
   return {...snapshot,rows:[...rows],cellFallbacks:snapshotCellFallbacks(rows).cellFallbacks};
 }

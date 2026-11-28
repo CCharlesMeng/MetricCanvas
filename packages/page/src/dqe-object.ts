@@ -1,7 +1,15 @@
-import type { DqeQueryDefinition, DqeFilterBinding, DqeRequestBody, JsonObject, JsonValue } from './query';
+import type {
+  DqeFilterBinding,
+  DqeQueryDefinition,
+  DqeRequestBody,
+  JsonObject,
+  JsonValue,
+  ObjectTimeFormat,
+  ObjectTimeTarget,
+  QueryPeriod,
+} from './query-primitives';
 
-export type ObjectTimeFormat = 'iso' | 'compact' | 'datetime';
-export interface ObjectTimeTarget { queryField?: string; valueFormat?: ObjectTimeFormat }
+export type { ObjectTimeFormat, ObjectTimeTarget };
 
 /** A period binding owns the standard object ledger; explicit field bindings stay custom. */
 export function isObjectPeriodBinding(binding: DqeFilterBinding): boolean {
@@ -9,7 +17,7 @@ export function isObjectPeriodBinding(binding: DqeFilterBinding): boolean {
 }
 
 /** Object ledger codes differ from metric filter.time, especially YYYYQn quarters. */
-export function setObjectPeriod(item: JsonObject, period: import('./period-query').QueryPeriod, from: string, to: string): void {
+export function setObjectPeriod(item: JsonObject, period: QueryPeriod, from: string, to: string): void {
   const kinds = { month: 'monthly', quarter: 'quarterly', year: 'yearly' };
   if (period === 'day') throw Object.assign(new Error('对象账期仅支持年、季、月；日范围请显式声明时间字段'), {code:'DQE_QUERY_REJECTED'});
   setObjectFieldValues(item, '周期类型', [kinds[period]]);

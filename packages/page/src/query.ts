@@ -1,14 +1,30 @@
 import {
   isObjectDqeItem,
-  type ObjectTimeTarget,
   setObjectFieldValues,
   setObjectTimeRange,
 } from './dqe-object';
-import type { QueryDataSourceFieldDefinition } from './field';
-import type { TimeRangeValue } from './filter';
-import type { PageParamValue } from './page-param';
-import { bindingQueryFields, type DqeFilterBinding } from './query-bindings';
+import type { TimeRangeValue } from './filter-types';
+import type { PageParamValue } from './page-param-types';
+import { bindingQueryFields } from './query-bindings';
 import { resolveQueryParamReferences } from './query-param-references';
+import {
+  QUERY_LANGUAGES,
+  isDqeQueryDefinition,
+  isQueryLanguage,
+  type DqeEffectiveQuery,
+  type DqeFilterBinding,
+  type DqeQueryCase,
+  type DqeQueryDefinition,
+  type DqeQueryModeCase,
+  type DqeRequestBody,
+  type EffectiveQuery,
+  type JsonObject,
+  type JsonValue,
+  type PageQuery,
+  type QueryLanguage,
+  type QueryResultBinding,
+  type QueryResultWhere,
+} from './query-primitives';
 import { ordinaryQuery, queryLeaves, querySelection } from './query-selection';
 import { resolveTimeWindow, type TimeWindow } from './time-param';
 
@@ -23,88 +39,24 @@ export {
   isLevelDimensionBinding,
   timePointPredicateValue,
 } from './query-bindings';
-
-export type JsonValue =
-  | string
-  | number
-  | boolean
-  | null
-  | JsonValue[]
-  | { [key: string]: JsonValue };
-
-export type JsonObject = { [key: string]: JsonValue };
-
-/**
- * 查询协议闭集的唯一声明(ADR-0034/issue #79)。
- *
- * `language` 是页面查询定义与生效查询的判别符;新增协议(GraphQL/REST)
- * 时在此登记并为 PageQuery/EffectiveQuery 各补一支判别分支,消费方
- * (zod schema、数据网关分发、边界校验)全部从这里派生,不得另列闭集。
- */
-export const QUERY_LANGUAGES = ['dqe'] as const;
-
-export type QueryLanguage = (typeof QUERY_LANGUAGES)[number];
-
-export function isQueryLanguage(value: unknown): value is QueryLanguage {
-  return (QUERY_LANGUAGES as readonly unknown[]).includes(value);
-}
-
-export interface DqeRequestBody {
-  /**
-   * 一个页面数据源表示一个命名数据集，因此页面内恰好一项；
-   * 数据网关可以在传输层合并多个逻辑查询。
-   */
-  dsl_list: [JsonObject];
-}
-
-export { MAX_QUERY_RESULT_VALUES } from './query-result-limits';
-
-/** Raw normalized query dimensions become bounded downstream predicates. */
-export interface QueryResultBinding {
-  source: string;
-  field: string;
-  target: 'dimension';
-  queryField: string;
-  maxValues: number;
-  /** Select rows from this binding's raw upstream result without changing that result. */
-  where?: QueryResultWhere;
-}
-
-export type QueryResultWhere =
-  | { all: QueryResultWhere[] }
-  | { any: QueryResultWhere[] }
-  | { field: string; op: 'eq' | 'ne'; value: string | number | boolean }
-  | { field: string; op: 'in' | 'notIn'; values: Array<string | number | boolean> }
-  | { field: string; op: 'gt' | 'gte' | 'lt' | 'lte'; value: number }
-  | { field: string; op: 'isNull' | 'isNotNull' };
-
-export interface DqeQueryCase {
-  body: DqeRequestBody;
-  filterBindings: Record<string, DqeFilterBinding>;
-}
-
-export interface DqeQueryModeCase extends DqeQueryCase {
-  /** 页面字段 id → 本分支的原始响应字段；属于页面元数据，不发送给 DQE。 */
-  fieldMappings?: Record<string, string>;
-}
-
-export interface DqeQueryDefinition {
-  periodAggregation?: import('./period-aggregation').PeriodAggregation;
-  resultBindings?: QueryResultBinding[];
-  language: 'dqe';
-  body?: DqeRequestBody;
-  timeModes?: {
-    filterId: string;
-    cases: Partial<Record<import('./time-mode').TimeMode, DqeQueryCase>>;
-  };
-  queryModes?: { filterId: string; cases: Record<string, DqeQueryModeCase> };
-  filterBindings?: Record<string, DqeFilterBinding>;
-  paramBindings?: Record<
-    string,
-    | { target: 'dimension'; queryField: string }
-    | ({ target: 'time'; window: TimeWindow } & ObjectTimeTarget)
-  >;
-}
+export {
+  MAX_QUERY_RESULT_VALUES,
+  QUERY_LANGUAGES,
+  isDqeQueryDefinition,
+  isQueryLanguage,
+  type DqeEffectiveQuery,
+  type DqeQueryCase,
+  type DqeQueryDefinition,
+  type DqeQueryModeCase,
+  type DqeRequestBody,
+  type EffectiveQuery,
+  type JsonObject,
+  type JsonValue,
+  type PageQuery,
+  type QueryLanguage,
+  type QueryResultBinding,
+  type QueryResultWhere,
+} from './query-primitives';
 
 /** Produces a DQE-safe copy; the saved Page keeps its references. */
 export function resolveInlineQueryParams(
@@ -115,86 +67,6 @@ export function resolveInlineQueryParams(
   resolveQueryParamReferences(result, values);
   return result;
 }
-
-/**
- * 页面查询定义:以 `language` 为判别符的判别联合(ADR-0034)。
- * 当前闭集仅 dqe 一支;各协议分支自行声明本协议的查询体与筛选绑定形状。
- */
-export type PageQuery = DqeQueryDefinition;
-
-export function isDqeQueryDefinition(query: unknown): query is DqeQueryDefinition {
-  return (
-    typeof query === 'object' &&
-    query !== null &&
-    (query as { language?: unknown }).language === 'dqe'
-  );
-}
-
-/** 统一运行时交给数据网关的一次确定性 DQE 执行请求(生效查询的 dqe 分支)。 */
-export interface DqeEffectiveQuery {
-  /** Internal whole-period plan; consumed before sending monthly DQE requests. */
-  periodAggregation?: import('./period-aggregation').PeriodAggregationCase;
-  language: 'dqe';
-  /** Internal execution proof of an explicitly empty authorized membership, never a cleared control. */
-  matchNone?: true;
-  /** Internal bounded composition recovery; never part of the DQE wire body. */
-  resultPolicy?: 'display';
-  body: DqeRequestBody;
-  fieldMappings: Record<string, QueryDataSourceFieldDefinition>;
-  /** Omitted match preserves literal substring search; equals uses native dimension equality. */
-  search?: { queryFields: string[]; query: string; match?: 'equals' };
-  pagination?: {
-    offset: number;
-    limit: number;
-  };
-  /**
-   * 服务端排序(ADR-0086):数组序即优先级。分页开启时排序必须由上游执行,
-   * 本地排序只能排到当前页,那是错的语义而不是降级。
-   */
-  sort?: Array<{ queryField: string; direction: 'asc' | 'desc' }>;
-  /**
-   * 生效查询携带的是**已解析的谓词**,不是绑定声明:timePoint 与 boolean
-   * 在编排层就化成维度谓词,因此这里只比页面协议多一支数值区间。
-   */
-  /** Business predicates before table-local narrowing; filterValues remains the complete legacy view. */
-  bindingValues?: DqeEffectiveQuery['filterValues'];
-  /** Additional table predicates narrow the already-bound business query. */
-  tableFilters?: DqeEffectiveQuery['filterValues'];
-  filterValues: Array<
-    | {
-        target: 'dimension';
-        queryField: string;
-        values: Array<string | number>;
-        operator?: '=' | '!=';
-      }
-    | {
-        target: 'time';
-        queryField?: string;
-        valueFormat?: import('./dqe-object').ObjectTimeFormat;
-        value: TimeRangeValue;
-        period?: import('./period-query').QueryPeriod;
-      }
-    | {
-        target: 'metricRange';
-        metric: string;
-        from?: number;
-        to?: number;
-      }
-    /** 表头筛选:区间端点各自可缺席,`>=` / `<=` 由端点存在与否决定。 */
-    | {
-        target: 'dimensionRange';
-        queryField: string;
-        from?: string;
-        to?: string;
-      }
-  >;
-}
-
-/**
- * 生效查询:与 PageQuery 同一判别符的判别联合(ADR-0034)。
- * 统一运行时按数据源分支透传 language,不感知协议内部结构。
- */
-export type EffectiveQuery = DqeEffectiveQuery;
 
 /** 判别联合分支与协议闭集互相覆盖的编译期守护:任一侧漂移即报错。 */
 type _BranchLanguage = PageQuery['language'] | EffectiveQuery['language'];

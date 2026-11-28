@@ -1,6 +1,6 @@
 import {queryFilterIds} from './amount-filter';
 import type { DataSource, DataSources } from './data-source';
-import type { Page } from './page';
+import type { Page } from './page-types';
 import { computeDependencies } from './compute';
 import { queryResultDependencies } from './query-dependencies';
 import { flattenPageComponents } from './component-walk';

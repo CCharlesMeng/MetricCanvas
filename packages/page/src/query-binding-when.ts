@@ -1,8 +1,8 @@
 import {declaredFilterSample} from './filter-condition-sample';
 import {conditionDepth,conditionLeaves,conditionTestTypeError} from './condition';
 import type {Condition} from './schema/condition';
-import type {DqeFilterBinding,DqeQueryDefinition} from './query';
-import type {Page} from './page';
+import type {DqeFilterBinding,DqeQueryDefinition} from './query-primitives';
+import type {Page} from './page-types';
 import type {TypedError} from './errors';
 
 export function bindingConditionFilterIds(binding:DqeFilterBinding):string[] {

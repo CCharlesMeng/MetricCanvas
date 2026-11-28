@@ -1,7 +1,7 @@
 import { fieldSeriesSourceZ, constantSeriesSourceZ, fieldValueSourceZ, constantValueSourceZ, chartEmptyBehaviorZ } from '../chart-value';
 import { visibilityShape } from '../condition';
 import { z } from 'zod';
-import type { JsonValue } from '../../query';
+import type { JsonValue } from '../../query-primitives';
 import {
   componentIdZ,
   componentLayoutZ,

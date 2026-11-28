@@ -8,7 +8,8 @@ import {
   type QueryDataSourceFieldDefinition,
   type ResolvedFieldDefinition
 } from './field';
-import type { PageQuery } from './query';
+import type { PageQuery } from './query-primitives';
+import type { CellFallbacks, QueryRowNormalizationWarning } from './snapshot-types';
 
 export interface InlineSource {
   type: 'inline';
@@ -16,8 +17,8 @@ export interface InlineSource {
 }
 
 export interface EmbeddedInitialRows {
-  cellFallbacks?: import('./cell-fallback').CellFallbacks;
-  warnings?: import('./query-rows').QueryRowNormalizationWarning[];
+  cellFallbacks?: CellFallbacks;
+  warnings?: QueryRowNormalizationWarning[];
   /** PageDocument 解析后已经按 queryField 归一化为稳定页面字段。 */
   capturedAt: string;
   rows: DataRow[];

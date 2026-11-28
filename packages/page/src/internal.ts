@@ -1,3 +1,12 @@
+/**
+ * `@metriccanvas/page/internal` — 仓内自用的完整内部契约面，按 5 个子域与共享领域原语分区组织。
+ * 对外集成应用只消费 `@metriccanvas/page`（见 `./index.ts`），`@metriccanvas/engine` 与
+ * `@metriccanvas/embed` 的公开入口禁止导入或重导出本入口。
+ */
+
+// ---------------------------------------------------------------------------
+// Shared domain primitives (page, document, field, filter, condition, table, snapshot, version)
+// ---------------------------------------------------------------------------
 export * from './ai-summary';
 export * from './amount-filter';
 export * from './bar-forecast-boundary';
@@ -14,10 +23,17 @@ export {
 } from './component-walk';
 export * from './compute';
 export * from './condition';
+
+// ---------------------------------------------------------------------------
+// Subdomain: query (`./query/`)
+// ---------------------------------------------------------------------------
 export * from './data-source';
 export * from './data-source-references';
 export * from './display-query-rows';
 export * from './dqe-object';
+// ---------------------------------------------------------------------------
+// Subdomain: validate (`./validate/`)
+// ---------------------------------------------------------------------------
 export * from './errors';
 export { independentExclusionFilterIds } from './exclusion-filters';
 export * from './field';
@@ -40,6 +56,9 @@ export {
 } from './filter-overrides';
 export * from './filter-text-value';
 export * from './finalization-default';
+// ---------------------------------------------------------------------------
+// Subdomain: normalize (`./normalize/`)
+// ---------------------------------------------------------------------------
 export * from './header-binding';
 export { assertNoQueryParamReferences } from './inline-query-params';
 export {
@@ -76,6 +95,9 @@ export { pagedJoinHasComparison, pagedJoinProjectionFields } from './paged-join-
 export * from './paged-join-view';
 export type { PagedUnionDataSource, PagedUnionMember, PagedUnionSource } from './paged-union';
 export { unionMemberKeyFields, validUnionKeyPart } from './paged-union-identity';
+// ---------------------------------------------------------------------------
+// Subdomain: edit (`./edit/`)
+// ---------------------------------------------------------------------------
 export { type ParameterProgramRequest, runPageParameterProgram } from './parameter-program';
 export type { PeriodAggregation, PeriodAggregationCase } from './period-aggregation';
 export * from './period-comparison';
@@ -102,6 +124,9 @@ export { normalizeQueryTime, QueryTimeRangeError } from './query-time';
 export { reportExportScale } from './report-export';
 export * from './resolve-page-params';
 export * from './result-field-contract';
+// ---------------------------------------------------------------------------
+// Subdomain: schema (`./schema/`)
+// ---------------------------------------------------------------------------
 export { pageSchema } from './schema';
 export { compositeCardChildTypes } from './schema/component';
 export type { Condition, ConditionScalar } from './schema/condition';
@@ -118,7 +143,6 @@ export * from './snapshot';
 export * from './source-candidates';
 export * from './tab-state';
 export { legacyTableCandidateSearch } from './table/candidate-search';
-
 export * from './table/columns';
 export * from './table/expansion';
 export {

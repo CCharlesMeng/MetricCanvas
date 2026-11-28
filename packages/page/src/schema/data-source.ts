@@ -1,12 +1,15 @@
-import { QUERY_PERIODS } from '../period-query';
+import {
+  MAX_QUERY_RESULT_WHERE_LEAVES,
+  MAX_QUERY_RESULT_WHERE_VALUES,
+  QUERY_PERIODS,
+  type QueryResultWhere,
+} from '../query-primitives';
 import {conditionZ} from './condition';
 import { periodAggregationZ } from './period-aggregation';
 import { pagedUnionDataSourceZ } from './paged-union';
 import { pagedJoinDataSourceZ } from './paged-join';
 import { MAX_QUERY_RESULT_VALUES } from '../query-result-limits';
 import { z } from 'zod';
-import type { QueryResultWhere } from '../query';
-import { MAX_QUERY_RESULT_WHERE_LEAVES, MAX_QUERY_RESULT_WHERE_VALUES } from '../query-result-where';
 import { computeZ } from './compute';
 import {
   fieldNameZ,
@@ -60,58 +63,83 @@ export const queryResultWhereZ: z.ZodType<QueryResultWhere> = z.lazy(() => z.uni
 
 const bindingWhenZ=conditionZ.optional().describe('只读取同页筛选条件；允许时应用该维度谓词，拒绝时暂停谓词并保留筛选状态；错误或等待拒绝查询，省略沿用原行为');
 const dimensionOperatorZ=z.enum(['=', '!=']).optional().describe('维度绑定包含或排除所选值；省略保持现有包含行为，多值 != 排除整个集合，清空不生成条件');
-function filterBindingsSchema(includePeriodPolicy:boolean){return z
-      .record(
-        idZ,
-        z
-          .union([
-            z
-              .object({ target: z.literal('dimension'), queryField: z.string().min(1), operator: dimensionOperatorZ, when: bindingWhenZ })
-              .strict(),
-            // 层级维度筛选器逐级声明谓词字段(ADR-0084);层级 id 为键。
-            z
-              .object({
-                target: z.literal('dimension'),
-                operator: dimensionOperatorZ,
-                when: bindingWhenZ,
-                levelQueryFields: z
-                  .record(idZ, z.string().min(1))
-                  .meta({ minProperties: 2 })
-              })
-              .strict(),
-            z.object({ target: z.literal('time'), periodComparison: z.object({kind:z.enum(['current','previousPeriod','previousYear']),fact:idZ.optional()}).strict().optional(), window: timeWindowZ.optional(), queryField: z.string().min(1).describe('显式日期范围字段；对象期间省略字段与格式时默认生成周期类型和账期').optional(), valueFormat: z.enum(['iso', 'compact', 'datetime']).optional(), ...(includePeriodPolicy?{periodPolicy: z.union([
-              z.object({kind:z.literal('fixed'),period:z.enum(QUERY_PERIODS).describe('固定消费期间的查询粒度；季/年允许扩大到完整自然季/年')}).strict(),
-              z.object({kind:z.literal('selection'),supportedPeriods:z.array(z.enum(QUERY_PERIODS)).min(1).meta({uniqueItems:true}).describe('作者确认的数据源可用粒度；不支持所选周期时拒绝，不回退')}).strict()
-            ]).describe('独立消费已应用的期间选择，独占查询 period/start/end；普通 display=period 时间绑定省略时默认跟随选择；对象查询生成周期类型与账期，单期等值、多期闭区间，仅支持年季月；自定义字段与非期间绑定保留原行为').optional()}: {}) }).strict(),
-            // 非维度筛选器的三支谓词(ADR-0085)。
-            z
-              .object({
-                target: z.literal('timePoint'),
-                queryField: z.string().min(1),
-                valueFormat: z.enum(['iso', 'compact']).optional()
-              })
-              .strict(),
-            z
-              .object({
-                target: z.literal('boolean'),
-                queryField: z.string().min(1),
-                whenTrue: z.array(z.string().min(1)),
-                whenFalse: z.array(z.string().min(1)).min(1).optional()
-              })
-              .strict(),
-            z
-              .object({ target: z.literal('numberRange'), metric: z.string().min(1).optional(), metricByFilter:z.object({filterId:idZ,cases:z.record(z.string().min(1),z.string().min(1))}).strict().optional() })
-              .strict()
-          ])
-      );
-}
-const filterBindingsZ=filterBindingsSchema(true);
+const timeFilterBindingBaseShape = {
+  target: z.literal('time'),
+  periodComparison: z.object({kind:z.enum(['current','previousPeriod','previousYear']),fact:idZ.optional()}).strict().optional(),
+  window: timeWindowZ.optional(),
+  queryField: z.string().min(1).describe('显式日期范围字段；对象期间省略字段与格式时默认生成周期类型和账期').optional(),
+  valueFormat: z.enum(['iso', 'compact', 'datetime']).optional()
+};
+const periodPolicyZ = z.union([
+  z.object({kind:z.literal('fixed'),period:z.enum(QUERY_PERIODS).describe('固定消费期间的查询粒度；季/年允许扩大到完整自然季/年')}).strict(),
+  z.object({kind:z.literal('selection'),supportedPeriods:z.array(z.enum(QUERY_PERIODS)).min(1).meta({uniqueItems:true}).describe('作者确认的数据源可用粒度；不支持所选周期时拒绝，不回退')}).strict()
+]).describe('独立消费已应用的期间选择，独占查询 period/start/end；普通 display=period 时间绑定省略时默认跟随选择；对象查询生成周期类型与账期，单期等值、多期闭区间，仅支持年季月；自定义字段与非期间绑定保留原行为').optional();
+
+const nonTimeFilterBindingBranches = [
+  z
+    .object({ target: z.literal('dimension'), queryField: z.string().min(1), operator: dimensionOperatorZ, when: bindingWhenZ })
+    .strict(),
+  // 层级维度筛选器逐级声明谓词字段(ADR-0084);层级 id 为键。
+  z
+    .object({
+      target: z.literal('dimension'),
+      operator: dimensionOperatorZ,
+      when: bindingWhenZ,
+      levelQueryFields: z
+        .record(idZ, z.string().min(1))
+        .meta({ minProperties: 2 })
+    })
+    .strict(),
+  // 非维度筛选器的三支谓词(ADR-0085)。
+  z
+    .object({
+      target: z.literal('timePoint'),
+      queryField: z.string().min(1),
+      valueFormat: z.enum(['iso', 'compact']).optional()
+    })
+    .strict(),
+  z
+    .object({
+      target: z.literal('boolean'),
+      queryField: z.string().min(1),
+      whenTrue: z.array(z.string().min(1)),
+      whenFalse: z.array(z.string().min(1)).min(1).optional()
+    })
+    .strict(),
+  z
+    .object({ target: z.literal('numberRange'), metric: z.string().min(1).optional(), metricByFilter:z.object({filterId:idZ,cases:z.record(z.string().min(1),z.string().min(1))}).strict().optional() })
+    .strict()
+] as const;
+
+const filterBindingsZ = z.record(
+  idZ,
+  z.union([
+    nonTimeFilterBindingBranches[0],
+    nonTimeFilterBindingBranches[1],
+    z.object({ ...timeFilterBindingBaseShape, periodPolicy: periodPolicyZ }).strict(),
+    nonTimeFilterBindingBranches[2],
+    nonTimeFilterBindingBranches[3],
+    nonTimeFilterBindingBranches[4]
+  ])
+);
+
+const timeModeFilterBindingsZ = z.record(
+  idZ,
+  z.union([
+    nonTimeFilterBindingBranches[0],
+    nonTimeFilterBindingBranches[1],
+    z.object(timeFilterBindingBaseShape).strict(),
+    nonTimeFilterBindingBranches[2],
+    nonTimeFilterBindingBranches[3],
+    nonTimeFilterBindingBranches[4]
+  ])
+);
 
 const queryCasesZ = z.object({
   filterId: idZ,
   cases: z.record(z.string().min(1), z.object({
     body: z.object({dsl_list: z.array(dslItemZ).length(1)}).strict(),
-    filterBindings: filterBindingsSchema(false)
+    filterBindings: timeModeFilterBindingsZ
   }).strict()).meta({minProperties: 1})
 }).strict();
 

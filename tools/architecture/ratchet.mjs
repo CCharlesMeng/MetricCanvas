@@ -12,6 +12,7 @@ const declaredEntries = new Map([
   ['page', new Set(['index.ts', 'internal.ts'])],
   ['data-execution', new Set(['index.ts', 'runtime.ts', 'dqe/index.ts', 'dqe.ts', 'node.ts'])],
   ['ui', new Set(['index.ts'])],
+  ['embed', new Set(['index.ts', 'types.ts'])],
   ['runtime', new Set(['index.ts', 'internal.ts'])],
   ['widgets', new Set(['index.ts', 'internal.ts', 'internal-skeleton.ts', 'internal-summary.ts'])],
   ['data-gateway', new Set(['index.ts'])],
@@ -25,6 +26,22 @@ const declaredEntries = new Map([
       'ai-summary/adapters/yunbao-assistant.ts',
     ]),
   ],
+]);
+const publicEntriesForbiddingPageInternal = new Set([
+  'packages/embed/src/index.ts',
+  'packages/embed/src/types.ts',
+  'packages/engine/runtime/src/index.ts',
+  'packages/engine/widgets/src/index.ts',
+  'packages/engine/runtime-ui/src/index.ts',
+  'packages/engine/runtime-ui/src/types.ts',
+  'packages/engine/runtime-ui/src/composition.ts',
+  'packages/engine/runtime-ui/src/browser-drill-return.ts',
+  'packages/engine/runtime-ui/src/ai-summary/adapters/yunbao-assistant.ts',
+  'packages/engine/data-gateway/src/index.ts',
+]);
+const pageInternalTargets = new Set([
+  'packages/page/src/internal.ts',
+  'npm:@metriccanvas/page/internal',
 ]);
 const presentationPackages =
   /^npm:(?:svelte|echarts|exceljs|write-excel-file|html2canvas|jspdf)(?:\/|$)/;
@@ -118,11 +135,24 @@ function deepImportEdges(allImports, findings) {
   }
 }
 
+function publicInternalLeakEdges(allImports, findings) {
+  for (const from of publicEntriesForbiddingPageInternal) {
+    for (const to of allImports.get(from) ?? []) {
+      if (!pageInternalTargets.has(to)) continue;
+      findings.set(JSON.stringify(['public internal leak', from, to]), {
+        rule: 'public internal leak',
+        path: [from, to],
+      });
+    }
+  }
+}
+
 export function findingsFor(graph, allImports = graph) {
   const findings = new Map();
   cycleEdges(graph, reverse(graph), findings);
   for (const [origin, allowed] of allowedLayers) boundaryEdges(graph, origin, allowed, findings);
   deepImportEdges(allImports, findings);
+  publicInternalLeakEdges(allImports, findings);
   return findings;
 }
 

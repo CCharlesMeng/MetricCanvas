@@ -1,7 +1,7 @@
 import {queryLeaves,querySelection,selectQuery,type QuerySelectorValue} from './query-selection';
 import {bindingConditionFilterIds} from './query-binding-when';
 import type {FilterDeclaration,NumberRangeFilterDeclaration,NumberRangeValue} from './filter';
-import type {DqeQueryDefinition} from './query';
+import type {DqeQueryDefinition} from './query-primitives';
 
 export function numberRangeIssue(declaration:NumberRangeFilterDeclaration,range:NumberRangeValue):string|undefined {
   for(const value of [range.from,range.to])if(value!==undefined&&(!Number.isFinite(value)||(!!declaration.units&&value<0)||(declaration.constraints?.min!==undefined&&value<declaration.constraints.min)||(declaration.constraints?.max!==undefined&&value>declaration.constraints.max)))return '数值范围不符合有限数字或声明上下限';
