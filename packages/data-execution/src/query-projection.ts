@@ -1,3 +1,4 @@
+import { projectPeriodKeyUnions } from './table-key-union';
 import { evaluateCondition, aiSummaryRelatedData, activePageComponents, flattenPageComponents, hasColumnConditions, hasPeriodComparison, hasQueryFieldMapping, type Component, type ConditionContext, type DataSource, type DqeQueryDefinition, type EffectiveQuery, type Page, type QueryDataSource, type TabSelections, type TableQueryView } from '@metriccanvas/page/internal';
 import { chartPresentation } from './chart-presentation';
 import { tableColumnPresentation } from './table-presentation';
@@ -72,6 +73,7 @@ export function presentationQuerySources(page: Page, context: ConditionContext, 
     explicit.forEach(root => full.add(root));
     projected = projectComputeDemand(sources, required, full, options.views);
   }
+  projectPeriodKeyUnions(page, projected.sources, context);
   // A conditional consumer may read a joined measure. Propagate eligibility
   // along retained joins, then use the union of field requirements at each leaf.
   for (const id of metrics) {

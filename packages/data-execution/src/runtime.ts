@@ -48,3 +48,4 @@ export {createFinalizationPreparation} from './finalization-preparation';
 
 export type { ScreenProgress } from './screen-progress';
 export { observeQueryHttpError } from './query-http-error';
+export { createTableUnionProgress } from './table-union-progress';

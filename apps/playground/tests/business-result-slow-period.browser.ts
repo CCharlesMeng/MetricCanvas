@@ -23,10 +23,14 @@ function receipt(query: Query) {
   const region = query.output_dims.includes('地区部');
   const office = query.output_dims.includes('代表处');
   const names = region || office ? ['A', 'B', 'C'] : ['A'];
+  if (office && query.output_metrics.includes(monthlyMetric)) names.push('D');
   const data = names.map(name => Object.fromEntries([
     ...query.output_dims.map(dim => [dim, dimensionValue(dim, name)]),
     ...query.output_metrics.map(metric => [metric, metric === monthlyMetric ? 2.37 : 42])
   ]));
+  if (office && query.output_dims.includes('决策业务类型')) {
+    data.push(...data.map(row => ({ ...row, 决策业务类型: '合同' })));
+  }
   return { code: 'SUCCESS', data, total_count: data.length };
 }
 
@@ -68,6 +72,11 @@ function heading(page: Page, mode: keyof typeof periodHeadings) {
 }
 
 test('shows the selected month heading while finalization waits and fills slow discount cells in place', async ({ page }) => {
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  page.on('console', message => {
+    if (message.type() === 'error' || /DQE_QUERY_REJECTED|TABLE_PINNED_RESULT_INVALID/.test(message.text())) errors.push(message.text());
+  });
   const dqe = await installDqe(page, { holdDate: true, holdMonth: true });
   await page.goto(pageUrl);
   await expect.poll(dqe.dates, { timeout: 15000 }).toBe(1);
@@ -88,10 +97,16 @@ test('shows the selected month heading while finalization waits and fills slow d
     return !!cell.querySelector('.skeleton');
   }));
   expect(cells).toEqual([true, true]);
+  const offices = tables.nth(1).locator('tbody tr').filter({ hasText: '合成代表处' });
+  await expect(offices).toHaveCount(3);
   dqe.month.release();
   await expect(tables.nth(0).locator('tbody')).toContainText('+2.37');
   await expect(tables.nth(1).locator('tbody')).toContainText('+2.4');
   await expect(tables.locator('tr[data-repro-row] td[data-repro-cell]')).toHaveCount(2);
+  await expect(offices).toHaveCount(4);
+  await expect(offices.last()).toContainText('合成代表处D');
+  await expect(offices.last()).toContainText('—');
+  expect(errors).toEqual([]);
 });
 
 test('switches year, quarter and back to month while finalization is pending', async ({ page }) => {
@@ -139,4 +154,18 @@ test('reuses finalization through a new browser page until the calendar day or i
   await next.clock.setFixedTime(new Date('2026-11-26T00:00:00Z'));
   await next.reload();
   await expect.poll(subsequent.dates).toBe(1);
+});
+
+test('a late month reply cannot append an office after switching to quarter', async ({ page }) => {
+  const dqe = await installDqe(page, { holdMonth: true });
+  await page.goto(pageUrl + '&mtime=month:2026-10');
+  const table = page.locator('.table-widget').nth(1);
+  await expect.poll(() => dqe.business.some(query => query.output_metrics.includes(monthlyMetric))).toBe(true);
+  await expect(table.locator('tbody')).toContainText('合成代表处A');
+  await page.locator('[data-filter-id="mtime"]').getByRole('button', { name: '季', exact: true }).click();
+  await expect(table.locator('thead')).toContainText(periodHeadings.quarter);
+  await expect(table.locator('tbody')).toContainText('合成代表处C');
+  dqe.month.release();
+  await expect(table.locator('tbody')).toContainText('+42');
+  await expect(table.locator('tbody')).not.toContainText('合成代表处D');
 });
