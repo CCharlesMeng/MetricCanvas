@@ -5,7 +5,6 @@ import {
 } from '@metriccanvas/data-execution/runtime';
 import {
   type Component,
-  type Condition,
   type ConditionContext,
   type ConditionResult,
   evaluateCondition,
@@ -13,7 +12,10 @@ import {
   type PageSection,
   type PolicyNode,
   type Row,
+  type TabContentComponent,
+  type TabItem,
   type TableComponent,
+  tabChildren,
 } from '@metriccanvas/page/internal';
 export interface PresentationGate {
   eligible: boolean;
@@ -109,18 +111,11 @@ export function compilePresentation(page: Page) {
               tabs: node.props.tabs.flatMap((tab) => {
                 const tabGate = policyGate(tab, context, gate);
                 if (!tabGate.eligible) return [];
-                if ('components' in tab)
-                  return [
-                    {
-                      ...tab,
-                      components: tab.components.flatMap(
-                        (child) => component(child, tabGate) ?? [],
-                      ) as typeof tab.components,
-                    },
-                  ];
-                const child = component(tab.component, tabGate);
+                const projected = tabChildren(tab).flatMap(
+                  (child) => component(child, tabGate) ?? [],
+                ) as TabContentComponent[];
                 // Empty content is permitted in the render projection; the declared tab remains available.
-                return [{ ...tab, components: child ? [child as typeof tab.component] : [] }];
+                return [{ ...tab, components: projected } as TabItem];
               }),
             },
           };

@@ -1,4 +1,4 @@
-import {isPagedJoinQuery,pagedJoinCandidateView,pagedJoinPausedFields,legacyTableCandidateSearch,type PagedJoinDataSource} from '@metriccanvas/page/internal';
+import {isPagedJoinQuery,pagedJoinCandidateView,pagedJoinPausedFields,resolvePageCompatibility,type PagedJoinDataSource} from '@metriccanvas/page/internal';
 import { declaredQuerySort } from './query-sort';
 import { createColumnCandidatesSession, createHierarchySelectionSession, createTableSession, hierarchyRows, type HierarchyContext, type HierarchySelection, type TableSession } from '../../../runtime/src/internal';
 import {normalizeTableSelectView,columnBindingKey,mainColumnField,tableColumnLeaves,type TableColumn} from '@metriccanvas/page/internal';
@@ -27,6 +27,7 @@ function renderHeaders(headers: TableHeaderFilters): Record<string, TableHeaderF
 }
 /** Draft ownership and event adaptation; committed values live exclusively in TableSession. */
 export function createTableController(page: Page, stream: () => PageSnapshotStream | null, changed: () => void, conditions: () => FilterValues = () => new Map(), candidateContext: () => Pick<ColumnCandidatesRead, 'now' | 'displayInputs' | 'filterRevision'> = () => ({}), hierarchyContext?: () => HierarchyContext & {gateway:DataGateway}) {
+    const compat = resolvePageCompatibility(page);
     const declarations = new Map(flattenPageComponents(page).filter((node): node is DeclaredTable => node.type === 'table').map(node => [node.id, node]));
     const context = () => ({ declarations: page.filters ?? [], filters: conditions(), displaySnapshot: candidateContext().displayInputs, filterRevision: candidateContext().filterRevision });
     const columns = (table: TableComponent) => tableColumnPresentation(page, declarations.get(table.id) ?? table, context());
@@ -206,7 +207,7 @@ export function createTableController(page: Page, stream: () => PageSnapshotStre
         render(table: TableComponent): TableViewState {
             const committed = view(table);
             const sort = committed.sort.length || sortTouched.has(table.id) ? committed.sort : declaredQuerySort(page.dataSources[table.data.main], conditions());
-            return { legacyCandidateSearch:legacyTableCandidateSearch(page.schemaVersion), pausedFields:pausedFields(table), operationNotice:notices.get(table.id), pageIndex: committed.pageIndex, sort, searchQuery: committed.search?.query, search: committed.search,
+            return { legacyCandidateSearch:compat.legacyCandidateSearch, pausedFields:pausedFields(table), operationNotice:notices.get(table.id), pageIndex: committed.pageIndex, sort, searchQuery: committed.search?.query, search: committed.search,
                 headerFilters: { ...renderHeaders(tableHeaders(committed.predicates)), ...headers.get(table.id) } };
         },
         headers(table: TableComponent) { return tableHeaders(view(table).predicates); },

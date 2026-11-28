@@ -66,7 +66,9 @@ ConditionInput
 ConditionResult
 ConditionScalar
 ConditionValue
+DashboardHeaderConfig
 DashboardToolbar
+DashboardToolbarMode
 DataComponent
 DataPeriodFact
 DataRow
@@ -198,6 +200,7 @@ PageParamValue
 PageParseOptions
 PageParseResult
 PageQuery
+PageRuntimeCompatibility
 PageSection
 PagedJoinDataSource
 PagedJoinMember
@@ -569,11 +572,13 @@ reportExportScale
 requiredMinorVersion
 requiresQueryContext
 requiresTimeValidation
+resolveDashboardHeaderConfig
 resolveDataSourceFields
 resolveField
 resolveFilterTextValue
 resolveHeaderBinding
 resolveInlineQueryParams
+resolvePageCompatibility
 resolvePageParams
 resolveParamTextValues
 resolvePeriodComparison
@@ -647,6 +652,7 @@ toLocalTime
 unionMemberKeyFields
 urlInputErrors
 usesIocRegion
+usesLegacyReportHeaderPeriod
 validUnionKeyPart
 validate
 validateCalendarTimeRange

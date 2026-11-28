@@ -85,6 +85,7 @@ export {
   tableColumnNavigation,
   urlInputErrors,
 } from './navigate';
+export * from './normalize/compatibility';
 export { basicNumberFormat } from './number-format';
 export * from './page';
 export * from './page-document';

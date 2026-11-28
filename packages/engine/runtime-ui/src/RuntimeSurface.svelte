@@ -134,7 +134,7 @@
   import { hierarchyTreeSnapshot } from './filters/hierarchy-tree';
   import FilterBar from './filters/FilterBar.svelte';
   import { compatibilityHeaderSection, leadingHeaderSectionId } from './ioc-header/render-plan';
-  import { usesIocRegion } from '@metriccanvas/page/internal';
+  import { resolvePageCompatibility, usesIocRegion } from '@metriccanvas/page/internal';
   import {resolvePageHeader,pageFiltersReadOnly} from './ioc-header/page-header';
   import {
     cascadeConstraints,
@@ -690,7 +690,7 @@
     } catch {failTimeInitialization(mySession,finalizationController.signal,emit);return;}
     let state:ReturnType<typeof createFilterState>;
     try {
-      state = createFilterState(initialFilters, declarations, localOptions, { schemaVersion:loaded.schemaVersion, iocRegion:usesIocRegion(loaded), candidates:true, displayInputs:()=>displaySnapshot,finalizationDates:()=>resolvedFinalizationDates,readOnly: () => filterEditing?.readOnly === true || pageFiltersReadOnly(loaded) });
+      state = createFilterState(initialFilters, declarations, localOptions, { unrestrictedFilterClear:resolvePageCompatibility(loaded).unrestrictedFilterClear, iocRegion:usesIocRegion(loaded), candidates:true, displayInputs:()=>displaySnapshot,finalizationDates:()=>resolvedFinalizationDates,readOnly: () => filterEditing?.readOnly === true || pageFiltersReadOnly(loaded) });
     } catch {
       pageState={phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters',message:'筛选初始化值不符合声明或日期边界'}]};
       emit?.({type:'invalid',errors:pageState.errors});return;
@@ -1339,7 +1339,7 @@
         detailFilters=input.filters;
         if (view?.mode === 'query') {
           const generation = detailGeneration;
-          detailDispose = orchestrate(input.page, activeGateway, createFilterState(input.filters, input.page.filters ?? [], new Map(), {schemaVersion:input.page.schemaVersion})).subscribe(value => {
+          detailDispose = orchestrate(input.page, activeGateway, createFilterState(input.filters, input.page.filters ?? [], new Map(), {unrestrictedFilterClear:resolvePageCompatibility(input.page).unrestrictedFilterClear})).subscribe(value => {
             if (generation === detailGeneration && openDetail) detailSnapshots = value;
           });
         } else detailSnapshots = snapshots;
@@ -1555,10 +1555,10 @@
     if (snapshot.status === 'ready') restoreCellFallbacks(snapshot.rows, snapshot.cellFallbacks);
     return snapshot;
   }
-  const reportedPinned = new WeakSet<object>();
+  const reportedPinned = new Map<string, DataSnapshot>();
   function reportPinnedIssue(component: TableComponent, sourceId: string, snapshot: DataSnapshot): void {
-    if (reportedPinned.has(snapshot)) return;
-    reportedPinned.add(snapshot);
+    const key = `${component.id}\0${sourceId}`;
+    if (reportedPinned.get(key) === snapshot) return; reportedPinned.set(key, snapshot);
     debugWarn('[MetricCanvas][TABLE_PINNED_RESULT_INVALID] 置顶结果不可用', { componentId: component.id, dataSourceIds: [sourceId], reason: pinnedSnapshotError(snapshot) });
   }
 
@@ -1783,12 +1783,13 @@
     {/if}
   {:else}
     {@const readyPage = pageState.page}
+    {@const compat = resolvePageCompatibility(readyPage)}
     {@const header = resolvePageHeader(readyPage,presentation?.filters??declarations)}
     {@const pageReadOnly = filterEditing?.readOnly || header.readOnly}
-    {@const layoutForm = readyPage.layout ?? 'report'}
+    {@const layoutForm = compat.layout}
     {@const firstComponent = readyPage.sections[0]?.components[0]}
     {@const leadingDateToolbar = layoutForm === 'report' && !readyPage.sections[0]?.title && firstComponent?.type === 'reportHeader' && firstComponent.layout.span === 12 && (!!firstComponent.props.filterIds?.length || !!firstComponent.props.exportButtons?.length || !!firstComponent.props.pdfExport || !!firstComponent.props.pngExport)}
-    {@const dashboardToolbar = usesIocRegion(readyPage)?'hidden':readyPage.dashboardToolbar??(header.model?'visible':'hidden')}
+    {@const toolbarMode = compat.dashboardHeader.toolbarMode}
     {@const compatibleHeader = compatibilityHeaderSection(readyPage)}
     {@const leadingId = leadingHeaderSectionId(readyPage)}
     {@const projectedSections = presentation?.sections ?? readyPage.sections}
@@ -1796,12 +1797,10 @@
     <div
       class:layout-dashboard={layoutForm === 'dashboard'}
       class:with-report-date-toolbar={leadingDateToolbar}
-      class:dashboard-toolbar-hidden={
-        layoutForm === 'dashboard' && dashboardToolbar === 'hidden'
-      }
+      class:dashboard-toolbar-hidden={layoutForm === 'dashboard' && toolbarMode === 'hidden'}
       class="page-content"
       data-page-layout-form={layoutForm}
-      data-dashboard-toolbar={typeof dashboardToolbar==='string'?dashboardToolbar:dashboardToolbar.variant}
+      data-dashboard-toolbar={toolbarMode}
     >
       {#snippet headerControls(ids: string[])}
         <FilterBar confirmationIds={confirmationFilters} {timeContext} onretry={retryCandidates} readOnly={filterEditing?.readOnly} declarations={ids.flatMap(id=>presentation?.filters.find(f=>f.id===id)??[])} values={filterValues}
@@ -1829,7 +1828,7 @@
             const declaration = declarations.find(item => item.id === component.props.filterId);
             if (declaration?.type === 'dimension') writeDimension(declaration, [value]);
           }}
-          headerPeriod={(header)=>headerPeriod(header.props,declarations,filterValues,readyPage.schemaVersion)}
+          headerPeriod={(header)=>headerPeriod(header.props,declarations,filterValues,compat.legacyReportHeaderPeriod)}
           data={componentData(readyPage, component, slots)}
           snapshot={hostRenderSnapshot(component, slots)}
           pageSnapshots={snapshots}
