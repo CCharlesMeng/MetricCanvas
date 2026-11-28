@@ -44,8 +44,8 @@ interface CoordinatedFilterState extends FilterState, FilterCoordinator {
   readonly revision:number;
   clock():Date;
   candidate(filterId: string, status: 'loading' | 'ready' | 'empty' | 'error' | 'unavailable' | 'denied' | 'unconfigured', values?: readonly string[]): void;
-
 }
+function resolveUnrestrictedFilterClear(editing: { unrestrictedFilterClear?: boolean; schemaVersion?: string }): boolean { return editing.unrestrictedFilterClear ?? supportsUnrestrictedFilterClear(editing.schemaVersion); }
 
 export interface FilterState {
   /** Bind page-owned predicate semantics before coordinating query consumers. */
@@ -61,7 +61,7 @@ export interface FilterState {
   fromURL(search: string, declarations: readonly FilterDeclaration[]): void;
 }
 
-export function createFilterState(initial?: FilterValues, declarations: readonly FilterDeclaration[] = [], dimensionOptions: ReadonlyMap<string, readonly string[]> = new Map(), editing: { schemaVersion?: string; iocRegion?: boolean; readOnly?: () => boolean; candidates?: boolean; displayInputs?: () => DisplayInputsSnapshot | undefined; finalizationDates?: () => ReadonlyMap<string,string> | undefined; now?: () => Date } = {}): CoordinatedFilterState {
+export function createFilterState(initial?: FilterValues, declarations: readonly FilterDeclaration[] = [], dimensionOptions: ReadonlyMap<string, readonly string[]> = new Map(), editing: { unrestrictedFilterClear?: boolean; schemaVersion?: string; iocRegion?: boolean; readOnly?: () => boolean; candidates?: boolean; displayInputs?: () => DisplayInputsSnapshot | undefined; finalizationDates?: () => ReadonlyMap<string,string> | undefined; now?: () => Date } = {}): CoordinatedFilterState {
   function accepted(id: string, value: FilterValue | null | undefined): boolean {
     const options = dimensionOptions.get(id);
     return !options || !!value && value.type === 'dimension' && value.values.length === 1 && options.includes(value.values[0]!);
@@ -104,7 +104,7 @@ export function createFilterState(initial?: FilterValues, declarations: readonly
   let revision = 0, operationClock = editing.now?.() ?? new Date();
   const receipts = new Map<string, { status: string; values?: readonly string[] }>();
   const preparation=new Set<string>();
-  const skipUnrestrictedClearConfirmation = supportsUnrestrictedFilterClear(editing.schemaVersion);
+  const skipUnrestrictedClearConfirmation = resolveUnrestrictedFilterClear(editing);
   // A lost selection continues to require an explicit choice or clear.
   const confirmation = new Set<string>();
   let exclusions = new Set<string>();

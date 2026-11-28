@@ -8,7 +8,7 @@
   import {SOURCE_FILTER_CONTEXT,sourceFilterSelection,type SourceFilterReader} from './dashboard/source-filter-context';
   import FilterBar from './filters/FilterBar.svelte';
   import { compatibilityHeaderSection } from './ioc-header/render-plan';
-  import { iocHeaderDeclaration } from '@metriccanvas/page/internal';
+  import { iocHeaderDeclaration, resolvePageCompatibility } from '@metriccanvas/page/internal';
   import { resolvedIocHeader } from './ioc-header/model';
   import { placeHeaderFilterRows, selectHeaderFilters } from './ioc-header/filter-groups';
   import { visibleFilterDeclarations } from './filters/filter-bar';
@@ -40,6 +40,7 @@
     return component.type==='table'?{view:state.tables[component.id]??{pageIndex:0,sort:[],headerFilters:{}},filterOptions:{},paginationConfig:{mode:'none'},onpage:()=>{},onpagesize:()=>{},onsort:()=>{},onheaderfilter:()=>{},oncellselect:()=>{}}:undefined;
   }
   const legacyHeader=$derived(compatibilityHeaderSection(state.page,true));
+  const compat=$derived(resolvePageCompatibility(state.page));
   const header=$derived(iocHeaderDeclaration(state.page));
   const headerPlacement = $derived(header?.filterRows ? placeHeaderFilterRows(
     visibleFilterDeclarations(selectHeaderFilters(presentation.filters, header.filterIds)),
@@ -47,7 +48,7 @@
   ) : undefined);
   const nested:NestedComponentRender={summarySnapshot:c=>state.summaries[c.id],map:c=>exportComponentMap(state,c),data:c=>exportComponentData(state,c),snapshot:c=>exportComponentSnapshot(state,c),table,onchartclick:()=>undefined,onmetriclink:()=>undefined,metricHref:()=>()=>undefined};
 </script>
-<div class="export-view" data-page-layout-form={state.page.layout ?? 'report'} data-export-view style:width={`${width}px`} style:padding={padding}>
+<div class="export-view" data-page-layout-form={compat.layout} data-export-view style:width={`${width}px`} style:padding={padding}>
   {#snippet iocStaticControls(id:string,readOnly:boolean)}
     <FilterBar iocHeader timeContext={{snapshot:state.displaySnapshot,revision:state.filterRevision}} declarations={(state.page.filters??[]).filter(f=>f.id===id)} values={state.filters} candidates={new Map()} {readOnly}
       ondimension={()=>{}} ontimerange={()=>{}} ontimepoint={()=>{}} onboolean={()=>{}} onnumberrange={()=>{}} onsearch={()=>{}}/>
@@ -63,7 +64,7 @@
       }}
       pageSnapshots={state.snapshots} map={exportComponentMap(state,component)} exportMode={true} {nested} table={table(component)}
       summarySnapshot={component.type==='aiSummary'?state.summaries[component.id]:undefined}
-      headerPeriod={header=>headerPeriod(header.props,state.page.filters??[],state.filters,state.page.schemaVersion)}/>
+      headerPeriod={header=>headerPeriod(header.props,state.page.filters??[],state.filters,compat.legacyReportHeaderPeriod)}/>
     </div>
   {/snippet}
   {#if legacyHeader}<RuntimeSection section={legacyHeader} {componentContent}/>{/if}

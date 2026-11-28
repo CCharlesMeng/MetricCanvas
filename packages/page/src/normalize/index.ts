@@ -13,3 +13,4 @@ export * from '../upgrade-chart-filters';
 export * from '../upgrade-document';
 export * from '../upgrade-ioc-header';
 export * from '../upgrade-types';
+export * from './compatibility';

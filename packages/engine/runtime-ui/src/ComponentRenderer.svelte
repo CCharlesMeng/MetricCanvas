@@ -275,7 +275,7 @@
       title={'title' in component.props ? component.props.title : undefined}
       variant={component.props.variant}
       tabs={component.props.tabs.map((tab) => ({ id: tab.id, label: tab.label,
-        contentCount: 'components' in tab ? tab.components.length : 1 }))}
+        contentCount: tabChildren(tab).length }))}
       initialTab={initialTabs?.get(component.id)}
       defaultTab={component.props.defaultTab}
       activeTab={tabSelection ? selectedTab(component, tabSelection.selections()) : undefined}

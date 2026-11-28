@@ -1,75 +1,136 @@
-import type {TypedError} from './errors';
-import {documentIocHeader,headerDeclarations,iocHeaderDeclaration,mapIocHeader} from './header-binding';
-import type {Page} from './page';
-import {walkDocumentComponents} from './component-walk';
-import {standardIocRegionFilter,iocHeaderFilterIds,iocOfficeNavigation} from './ioc-header-controls';
+import { walkDocumentComponents } from './component-walk';
+import type { TypedError } from './errors';
+import {
+  documentIocHeader,
+  headerDeclarations,
+  iocHeaderDeclaration,
+  mapIocHeader,
+} from './header-binding';
+import {
+  iocHeaderFilterIds,
+  iocOfficeNavigation,
+  standardIocRegionFilter,
+} from './ioc-header-controls';
+import type { Page } from './page-types';
 
-type RecordValue=Record<string,unknown>;
-const officeNavigationProjections = new WeakSet<object>();
-function record(value:unknown):RecordValue|undefined {
-  return value!==null&&typeof value==='object'&&!Array.isArray(value)?value as RecordValue:undefined;
+type RecordValue = Record<string, unknown>;
+const OFFICE_NAVIGATION_PROJECTION = Symbol.for('metriccanvas.officeNavigationProjection');
+
+function record(value: unknown): RecordValue | undefined {
+  return value !== null && typeof value === 'object' && !Array.isArray(value)
+    ? (value as RecordValue)
+    : undefined;
 }
-function regionControls(header:RecordValue):boolean {
-  return Array.isArray(header.components)&&header.components.some(control=>record(control)?.type==='regionFilter');
+
+function markOfficeNavigationProjection(page: Page): Page {
+  const marked = { ...page };
+  Object.defineProperty(marked, OFFICE_NAVIGATION_PROJECTION, {
+    value: true,
+    enumerable: false,
+    configurable: true,
+  });
+  return marked;
+}
+
+function isOfficeNavigationProjection(input: unknown): input is Page {
+  return (
+    input !== null &&
+    typeof input === 'object' &&
+    Reflect.get(input, OFFICE_NAVIGATION_PROJECTION) === true
+  );
+}
+
+function regionControls(header: RecordValue): boolean {
+  return (
+    Array.isArray(header.components) &&
+    header.components.some((control) => record(control)?.type === 'regionFilter')
+  );
 }
 
 /** Expand only the runtime projection; retain the compact source and its version. */
-export function expandIocHeaderRegion(document:unknown):unknown {
-  const page=record(document),header=documentIocHeader(document);
-  if(!page||!header||!regionControls(header))return document;
-  if(page.filters!==undefined&&!Array.isArray(page.filters))return document;
-  const filters=(page.filters??[]) as unknown[];
-  if(filters.some(filter=>record(filter)?.id==='region'))return document;
-  return {...page,filters:[...filters,standardIocRegionFilter()]};
+export function expandIocHeaderRegion(document: unknown): unknown {
+  const page = record(document);
+  const header = documentIocHeader(document);
+  if (!page || !header || !regionControls(header)) return document;
+  if (page.filters !== undefined && !Array.isArray(page.filters)) return document;
+  const filters = (page.filters ?? []) as unknown[];
+  if (filters.some((filter) => record(filter)?.id === 'region')) return document;
+  return { ...page, filters: [...filters, standardIocRegionFilter()] };
 }
 
 /** Existing execution consumers receive the same canonical filter projection as before. */
-export function canonicalIocHeaderControls(page:Page):Page {
+export function canonicalIocHeaderControls(page: Page): Page {
   if (iocOfficeNavigation(iocHeaderDeclaration(page))) {
-    officeNavigationProjections.add(page);
-    return page;
+    return markOfficeNavigationProjection(page);
   }
-  return mapIocHeader(page,header=>{
-    if(!header.components)return header;
-    const {components,...rest}=header;
-    return {...rest,filterIds:iocHeaderFilterIds(header)};
+  return mapIocHeader(page, (header) => {
+    if (!header.components) return header;
+    const { components, ...rest } = header;
+    return { ...rest, filterIds: iocHeaderFilterIds(header) };
   });
 }
 
 /** A parsed Page can be parsed again without treating its expanded Region as authored. */
 export function sourceIocRegionDocument(input: unknown): unknown {
-  if (!input || typeof input !== 'object' || !officeNavigationProjections.has(input)) return input;
-  const page = input as Page;
-  return { ...page, filters: page.filters?.filter(filter => filter.id !== 'region') };
+  if (!isOfficeNavigationProjection(input)) return input;
+  return { ...input, filters: input.filters?.filter((filter) => filter.id !== 'region') };
 }
 
-function controlIdentityErrors(controls:unknown[],base:string,ids:Set<unknown>):TypedError[] {
-  const errors:TypedError[]=[],filters=new Set<unknown>();
-  controls.forEach((value,index)=>{
-    const control=record(value);if(!control)return;
-    const path=`${base}/components/${index}`;
-    if(ids.has(control.id))errors.push({type:'SCHEMA_ERROR',path:path+'/id',message:'页头子组件 id 不能与其他组件重复'});
+function controlIdentityErrors(controls: unknown[], base: string, ids: Set<unknown>): TypedError[] {
+  const errors: TypedError[] = [],
+    filters = new Set<unknown>();
+  controls.forEach((value, index) => {
+    const control = record(value);
+    if (!control) return;
+    const path = `${base}/components/${index}`;
+    if (ids.has(control.id))
+      errors.push({
+        type: 'SCHEMA_ERROR',
+        path: path + '/id',
+        message: '页头子组件 id 不能与其他组件重复',
+      });
     ids.add(control.id);
-    const filterId=control.type==='regionFilter'?'region':record(control.props)?.filterId;
-    if(filterId===undefined)return;
-    if(filters.has(filterId))errors.push({type:'SCHEMA_ERROR',path,message:'页头筛选不能重复认领'});
+    const filterId = control.type === 'regionFilter' ? 'region' : record(control.props)?.filterId;
+    if (filterId === undefined) return;
+    if (filters.has(filterId))
+      errors.push({ type: 'SCHEMA_ERROR', path, message: '页头筛选不能重复认领' });
     filters.add(filterId);
   });
   return errors;
 }
 
 /** Source-only checks run before expansion, so authored duplicates remain observable. */
-export function iocHeaderControlErrors(document:unknown):TypedError[] {
-  const errors:TypedError[]=[],ids=new Set<unknown>();
-  walkDocumentComponents(document,component=>ids.add(component.id));
-  const filters=record(document)?.filters;
-  for(const {props,path} of headerDeclarations(document)){
-    if(props.components===undefined)continue;
-    if(path==='/iocHeader')errors.push({type:'SCHEMA_ERROR',path:path+'/components',message:'页头子组件必须声明在首 section 的 iocHeader 组件中'});
-    if(props.filterIds!==undefined)errors.push({type:'SCHEMA_ERROR',path:path+'/components',message:'components 与 filterIds 不能同时声明'});
-    if(!Array.isArray(props.components))continue;
-    errors.push(...controlIdentityErrors(props.components,path,ids));
-    if(regionControls(props)&&Array.isArray(filters)&&filters.some(filter=>record(filter)?.id==='region'))errors.push({type:'SCHEMA_ERROR',path:'/filters',message:'RegionFilter 已拥有 region 筛选，不能再声明 filters.region'});
+export function iocHeaderControlErrors(document: unknown): TypedError[] {
+  const errors: TypedError[] = [],
+    ids = new Set<unknown>();
+  walkDocumentComponents(document, (component) => ids.add(component.id));
+  const filters = record(document)?.filters;
+  for (const { props, path } of headerDeclarations(document)) {
+    if (props.components === undefined) continue;
+    if (path === '/iocHeader')
+      errors.push({
+        type: 'SCHEMA_ERROR',
+        path: path + '/components',
+        message: '页头子组件必须声明在首 section 的 iocHeader 组件中',
+      });
+    if (props.filterIds !== undefined)
+      errors.push({
+        type: 'SCHEMA_ERROR',
+        path: path + '/components',
+        message: 'components 与 filterIds 不能同时声明',
+      });
+    if (!Array.isArray(props.components)) continue;
+    errors.push(...controlIdentityErrors(props.components, path, ids));
+    if (
+      regionControls(props) &&
+      Array.isArray(filters) &&
+      filters.some((filter) => record(filter)?.id === 'region')
+    )
+      errors.push({
+        type: 'SCHEMA_ERROR',
+        path: '/filters',
+        message: 'RegionFilter 已拥有 region 筛选，不能再声明 filters.region',
+      });
   }
   return errors;
 }

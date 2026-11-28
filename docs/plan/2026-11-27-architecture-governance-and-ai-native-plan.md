@@ -1,6 +1,6 @@
 # MetricCanvas 架构治理、AI-Native 升级与技术债清理主计划
 
-> **状态**：Wave 0 已合入 `main`（PR #199 @ `560b1d968`）；Wave 1A（`W1-1` ~ `W1-4`）已合入 `main`（PR #200 @ `5e41ea766`，CI 8/8 全绿）；`W1-5` 已拍板延后并与 `W4-1` 合并推进（按 D1 执行）；Wave 2A（`W2-1` + `W2-5`）已合入 `main`（PR #201 @ `e5deb5dcd`，CI 8/8 全绿）；Wave 2B `W2-2` 已合入 `main`（PR #202 @ `16ac8cfd5`，CI 8/8 全绿）；当前正在推进 Wave 2B（`W2-3`）  
+> **状态**：Wave 0 已合入 `main`（PR #199 @ `560b1d968`）；Wave 1A（`W1-1` ~ `W1-4`）已合入 `main`（PR #200 @ `5e41ea766`，CI 8/8 全绿）；`W1-5` 已拍板延后并与 `W4-1` 合并推进（按 D1 执行）；Wave 2A（`W2-1` + `W2-5`）已合入 `main`（PR #201 @ `e5deb5dcd`，CI 8/8 全绿）；Wave 2B `W2-2` 已合入 `main`（PR #202 @ `16ac8cfd5`，CI 8/8 全绿）；Wave 2B `W2-3` 已合入 `main`（PR #203 @ `1fa55eced`，CI 8/8 全绿）；当前正在推进 Wave 2B（`W2-4`）  
 > **立项日期**：2026-11-27  
 > **基线提交**：`origin/main` @ `8ce2dd52eaabc179bf195000cf3592e6b0f1b8f3`  
 > **唯一执行主入口**：本文为本轮“开发态转维护态”长周期治理的唯一主计划与进度台账。跨会话推进时就地更新勾选状态、提交 SHA 与复测指标，不再另起分稿。
@@ -212,7 +212,7 @@ flowchart LR
     - 把 `DisplayInputsSource`、`DisplayInputsSnapshot`、`DataPeriodFact` 等真正对外稳定的类型提升到 `@metriccanvas/page` 公共入口，彻底禁止 `embed` 与 `engine` 公开重导出 `@metriccanvas/page/internal`；
     - 为 `packages/page/src/data-source.ts` 与 `filter.ts` 补齐与 Zod Schema 的双向编译期等价断言（或改用 `z.infer`）。
   - **验收**：`pnpm packages:check`、`pnpm compatibility:check`、`pnpm check`、`pnpm test:page` 全绿。
-- [ ] **`W2-4` 建立统一入口反腐败层（ACL）收拢历史兼容**（负责：`boundary-architect`）
+- [x] **`W2-4` 建立统一入口反腐败层（ACL）收拢历史兼容**（负责：`boundary-architect`）
   - **范围**：`packages/page/src/normalize/`（整合 `legacy-compatibility.ts`、`layout-compatibility.ts`、`ioc-header-normalization.ts`、`header-binding.ts` 等）、`packages/engine/runtime/`、`packages/engine/runtime-ui/`、`packages/engine/widgets/`。
   - **动作**：在 `normalizePageDocument()` 入口一次性完成 `layoutForm`、`dashboardToolbar`、根 `iocHeader`、`back: 'auto'`、`tab.component`、`6.13/6.14` 日期、`legacyCandidateSearch`、`< 6.124` 清空确认等兼容归一化并产出显式规范态结构；移除 `ioc-header-normalization.ts` 的模块级全局 `WeakSet`，清空 `runtime-ui` / `widgets` 中的版本号分支判断。
   - **验收**：全部历史兼容测试（含 `5.x`/`6.x` 夹具回归）与 `pnpm test` 全绿。
@@ -287,4 +287,5 @@ flowchart LR
 | 2026-11-28 | `W1-1`~`W1-4` | 3 路 `repo-docs-curator`（2×`flash` + 1×`inherit`） | PR #200 (`5e41ea766`) | 清理 36 个误提交/临时文件、归档 22 份计划、`PAGE-METADATA.md` -78.7%、新增 `ARCHITECTURE.md`，远端 CI 8/8 全绿，已合入 `main` | 已合入 `main` |
 | 2026-11-28 | `W2-1` + `W2-5` | 4 路 `boundary-architect`（3×`inherit` + 1×`flash`）+ `verifier-auditor`（`flash`） | PR #201 (`e5deb5dcd`) | `architecture:check` 21→0 锁死、13 个转发空壳与 3 组原型/夹具迁出、`debug-warnings` 解耦 Vite、顺带平铺 `session.ts`（`subtreeCC` 266→16）、清除 `Table`/`MetricCard` 硬编码并抽离 `ioc-region-policy.ts`，远端 CI 8/8 全绿，已合入 `main` | 已合入 `main` |
 | 2026-11-28 | `W2-2` | `boundary-architect` | PR #202 (`16ac8cfd5`) | 新增 `runtime/src/internal.ts`、`widgets/src/internal.ts`（纯 TS，不含 `.svelte` 与 ECharts 图表）及 `widgets/src/internal-skeleton.ts`/`internal-summary.ts`（零公开 API 变更），清零 `runtime-ui` 全部 102 条跨层深路径导入边，并在 `tools/architecture/` 落地值+类型 `deep import` 0 违规门禁与单测，远端 CI 8/8 全绿，已合入 `main` | 已合入 `main` |
-| 2026-11-28 | `W2-3` | `boundary-architect` | 分支 `refactor/wave2b-w23-page-subdomains` | 提升 `DisplayInputsSource`/`DisplayInputsSnapshot`/`DataPeriodFact` 至 `@metriccanvas/page` 公开入口，清零 `embed`/`engine` 公开入口对 `@metriccanvas/page/internal` 的重导出并在 `tools/architecture/` 与 `tests/public-api.test.ts` 落地 `public internal leak` 门禁；抽离 8 个纯叶类型/常量模块将 `packages/page/src/` 静态类型 SCC 从 54+3 清零至 0，建立 `normalize/`、`validate/`、`query/`、`edit/` 子域入口并按子域重组 `internal.ts`；新增 `schema/type-parity.ts` 与 `schema-type-parity.test.ts` 锁定 `filter.ts`/`data-source.ts` 与 Zod Schema 的双向编译期等价断言 | 本地完成（待验真/PR） |
+| 2026-11-28 | `W2-3` | `boundary-architect` | PR #203 (`1fa55eced`) | 提升 `DisplayInputsSource`/`DisplayInputsSnapshot`/`DataPeriodFact` 至 `@metriccanvas/page` 公开入口，清零 `embed`/`engine` 公开入口对 `@metriccanvas/page/internal` 的重导出并在 `tools/architecture/` 与 `tests/public-api.test.ts` 落地 `public internal leak` 门禁；抽离 8 个纯叶类型/常量模块将 `packages/page/src/` 静态类型 SCC 从 54+3 清零至 0，建立 `normalize/`、`validate/`、`query/`、`edit/` 子域入口并按子域重组 `internal.ts`；新增 `schema/type-parity.ts` 与 `schema-type-parity.test.ts` 锁定 `filter.ts`/`data-source.ts` 与 Zod Schema 的双向编译期等价断言，远端 CI 8/8 全绿，已合入 `main` | 已合入 `main` |
+| 2026-11-28 | `W2-4` | `boundary-architect` | 分支 `refactor/wave2b-w24-entry-acl` | 移除 `ioc-header-normalization.ts` 模块级全局 `WeakSet`（改为浅拷贝非可枚举 `Symbol.for('metriccanvas.officeNavigationProjection')` 标记，零输入变更、幂等重解析）；在 `packages/page/src/normalize/compatibility.ts` 建立统一入口 ACL（`resolvePageCompatibility`、`resolveDashboardHeaderConfig`、`usesLegacyReportHeaderPeriod`），清空 `runtime-ui` / `runtime` / `widgets` 中的版本号分支、`dashboardToolbar` 直接读取、`tab.component` 分支与 `WeakSet`；新增 `normalize-acl.test.ts`（15 用例），零 Schema 变更与零公开入口变更 | 本地完成（待验真/PR） |

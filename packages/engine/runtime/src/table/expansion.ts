@@ -1,4 +1,4 @@
-import { expansionRowKey, rowExpansionPage, resolveDataSourceFields, validateContractRows, stableRowQuery, type Page, type TableComponent, type Row, type DataSnapshot, type EffectiveQuery } from '@metriccanvas/page/internal';
+import { expansionRowKey, resolvePageCompatibility, rowExpansionPage, resolveDataSourceFields, validateContractRows, stableRowQuery, type Page, type TableComponent, type Row, type DataSnapshot, type EffectiveQuery } from '@metriccanvas/page/internal';
 import type { DataGateway } from '../ports';
 import type { FilterValues } from '../filter-state';
 import { createFilterState } from '../filter-state';
@@ -135,7 +135,7 @@ export function createRowExpansionController(page: Page, parent: TableComponent,
         if(expansion.data.type!=='query')return;
         instance.filters=rowExpansionFilters(page,parent,instance.row,{filters,params},selection);
         const scopedGateway:DataGateway={...(parent.props.rowExpansion?.selection?limited:{}),fetchData(query,context,signal){return limited.fetchData(stableRowQuery(query,expansion.table.rowKey),context,signal);}};
-        const stream=orchestrate(instance.page,scopedGateway,createFilterState(instance.filters,instance.page.filters??[],new Map(),{schemaVersion:instance.page.schemaVersion}),undefined,undefined,
+        const stream=orchestrate(instance.page,scopedGateway,createFilterState(instance.filters,instance.page.filters??[],new Map(),{unrestrictedFilterClear:resolvePageCompatibility(instance.page).unrestrictedFilterClear}),undefined,undefined,
             {displayInputs:()=>displaySnapshot,filterRevision:()=>filterRevision??0},{},views);
         instance.stream=stream;
         instance.dispose=stream.subscribe(snapshots=>{
