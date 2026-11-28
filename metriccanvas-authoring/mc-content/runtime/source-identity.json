@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "4b123658676f49e8def22e3d22992c653d94fb36ad6f7271d85450fa0d305ab3",
+  "sha256": "33efb9638b68b2603492a076024afc9f0db549e3af7a33ca639ff256bb0e44b9",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -852,7 +852,7 @@
     },
     {
       "file": "package.json",
-      "sha256": "199bd5facc711a3e55c0cfb8cc262ba6d2404c86506ade634145a4cbab6bde0e"
+      "sha256": "64495cdd1460fb64e54754672e0efda4696c2546ee135da7527b015b6f9d6a3b"
     },
     {
       "file": "packages/page/fixtures/contract-valid/availability-page.json",
@@ -2184,7 +2184,7 @@
     },
     {
       "file": "packages/page/src/validate-cli.ts",
-      "sha256": "a945c3abcb3bee2a173315bb83c1a28d12c4abf5ad076ca140a0d981a08003e7"
+      "sha256": "968496e3fab3414d034ef95ef9121179add735861d0392c7db2ceb1e9bab07c6"
     },
     {
       "file": "packages/page/src/validate-compute-dependencies.ts",
@@ -3568,7 +3568,7 @@
     },
     {
       "file": "pnpm-lock.yaml",
-      "sha256": "e1e9ef0729a737c265413f1f0e6d9756930f1237a946ef6794cbcb89190d7881"
+      "sha256": "140d252ef26c282a1c6a2bc5ef9b3ddfa4e011ed566e776ecdc67ff67c4c822e"
     },
     {
       "file": "tools/fixtures/legacy-contracts/README.md",
