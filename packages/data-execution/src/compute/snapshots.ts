@@ -24,7 +24,7 @@ export function computedSnapshots(
     const snapshot = restoreSnapshot(raw.get(id));
     if (!source || !snapshot) return fail('页面数据源计算依赖不存在');
     visiting.add(id);
-    const dependencies = collectDependencies(source, sources, visit, options.allowZeroTotal === true);
+    const dependencies = collectDependencies(source, sources, raw, visit, options.allowZeroTotal === true);
     const computed = computeSnapshot(id, source, snapshot, dependencies, context, options.allowZeroTotal === true);
     visiting.delete(id);
     result.set(id, computed);
@@ -38,13 +38,17 @@ export function computedSnapshots(
 interface Dependencies { rows: Map<string, readonly DataRow[]>; warnings: DataWarning[]; state?: DataSnapshot }
 function fail(message: string): DataSnapshot { return {status:'error',error:{code:'UNKNOWN',message}}; }
 
-function collectDependencies(source: DataSource, sources: ReadonlyMap<string, DataSource>, visit: (id:string)=>DataSnapshot, allowZeroTotal: boolean): Dependencies {
+function collectDependencies(source: DataSource, sources: ReadonlyMap<string, DataSource>, raw: ReadonlyMap<string, DataSnapshot>, visit: (id:string)=>DataSnapshot, allowZeroTotal: boolean): Dependencies {
   const result: Dependencies = {rows:new Map(),warnings:[]};
   const unionSources = new Set((source.compute ?? []).flatMap(op => op.op === 'unionKeys' ? op.sources : []));
   const scalarSources = new Set((source.compute ?? []).flatMap(op => op.op === 'joinAggregate' && op.keys.length === 0 ? [op.source] : []));
   for (const dependency of computeDependencies(source.compute ?? [])) {
     const scalar = scalarSources.has(dependency);
-    const snapshot = completeDependency(sources.get(dependency), visit(dependency), scalar || unionSources.has(dependency), !scalar && allowZeroTotal);
+    const definition = sources.get(dependency);
+    const unionMember = unionSources.has(dependency);
+    const resultSnapshot = visit(dependency);
+    const input = unionMember ? pivotUnionInput(definition, raw.get(dependency), resultSnapshot, allowZeroTotal) : resultSnapshot;
+    const snapshot = completeDependency(definition, input, scalar || unionMember, !scalar && allowZeroTotal);
     if ('warnings' in snapshot) result.warnings.push(...(snapshot.warnings ?? []).filter(warning => warning.code === 'COMPUTE_MISSING_KEY_ROWS'));
     if (snapshot.status === 'error') result.state = snapshot;
     else if (snapshot.status === 'loading' && result.state?.status !== 'error') result.state = snapshot;
@@ -90,6 +94,17 @@ function validateComputedJoin(source:DataSource,rows:DataRow[]):void {
 function restoreSnapshot(snapshot: DataSnapshot | undefined): DataSnapshot | undefined {
   if (snapshot?.status === 'ready') restoreCellFallbacks(snapshot.rows, snapshot.cellFallbacks);
   return snapshot;
+}
+
+/** A pivot changes grain. Validate its service count against the original rows first. */
+function pivotUnionInput(source: DataSource | undefined, raw: DataSnapshot | undefined, result: DataSnapshot, allowZeroTotal: boolean): DataSnapshot {
+  if (source?.compute?.length !== 1 || source.compute[0].op !== 'pivot') return result;
+  if (raw?.status !== 'ready' || raw.totalCount === undefined) return result;
+  if (result.status !== 'ready' && result.status !== 'empty') return result;
+  if (raw.totalCount !== raw.rows.length && !(allowZeroTotal && hasZeroTotalRows(source, raw))) {
+    return {status:'error',error:{code:'DQE_ROW_CONTRACT_ERROR',message:'完整透视来源与 totalCount 不一致'}};
+  }
+  return { ...result, totalCount: result.status === 'ready' ? result.rows.length : 0 };
 }
 
 /** Screen computation may consume zero-total rows without rewriting the upstream receipt. */
