@@ -1,6 +1,6 @@
 # MetricCanvas 架构治理、AI-Native 升级与技术债清理主计划
 
-> **状态**：Wave 0（`W0-1` ~ `W0-5`）本地实施与独立验真已通过（待提交、推送与远端 CI 验收），下一阶段准备启动 Wave 1  
+> **状态**：Wave 0 已合入 `main`（PR #199 @ `560b1d968`）；Wave 1A（`W1-1` ~ `W1-4`）本地实施完成并待独立验真与交付，下一步推进 Wave 1B（`W1-5` 镜像收敛与 4 层闭环）  
 > **立项日期**：2026-11-27  
 > **基线提交**：`origin/main` @ `8ce2dd52eaabc179bf195000cf3592e6b0f1b8f3`  
 > **唯一执行主入口**：本文为本轮“开发态转维护态”长周期治理的唯一主计划与进度台账。跨会话推进时就地更新勾选状态、提交 SHA 与复测指标，不再另起分稿。
@@ -165,28 +165,21 @@ flowchart LR
 
 ### Wave 1｜仓库瘦身、文档消歧与镜像收敛（目标：清噪音、降上下文、砍大提交）
 
-- [ ] **`W1-1` 根目录杂项与误提交清理**（负责：`repo-docs-curator`）
-  - **范围**：根目录 `pelican-*.html`（3 个）、`.pnpm-store/v11/index.db`、已跟踪的 `.scratch/*`（2 个）与 `output/diagnostics/platform-route-hide-probe-20261014.js`、`.learnings/`、`.gitignore`、`pages/temporary/`（13 个临时子目录核对引用后清理）。
-  - **动作**：先全仓 grep 核对消费者引用，再移除无用跟踪文件并补齐 `.gitignore`（`.pnpm-store/`、`out/`）。
-  - **验收**：`pnpm validate`、`pnpm test`、`pnpm architecture:check` 通过；根误提交清零。
-- [ ] **`W1-2` 收口 `docs/plan/` 227 文件并修复归档/ADR 索引**（负责：`repo-docs-curator`）
-  - **范围**：`docs/plan/`、`docs/archive/README.md`、`docs/adr/README.md`、`docs/agents/domain.md`。
-  - **动作**：将 `docs/plan/` 中已标注完成/过期的历史分稿按 `docs/plan/README.md` 规则收口归档（核对测试引用不破坏冻结夹具），补全未索引计划项；重跑 `pnpm adr:index` 修正下一编号（`0133`）与文件数（131 份），修正 `docs/archive/README.md` 漏列批次与 `unified-authoring/` 文件数。
-  - **验收**：`pnpm adr:index:check` 通过，全仓无新增断链。
-- [ ] **`W1-3` 全仓文档矛盾消歧与 `PAGE-METADATA.md` 日志剥离**（负责：`repo-docs-curator`）
-  - **范围**：`CONTEXT.md`、`README.md`、`PAGE-METADATA.md`、`PAGE-PARAMETERS.md`、`docs/solution.md`、`docs/frontend-runtime-capabilities.md`、`docs/page-metadata/`、`docs/agents/playground-example-maintenance.md`。
-  - **动作**：
-    - 统一版本号真源表述（引用 `packages/page/src/version.ts` 不再各处硬写旧号）；
-    - 更新 `CONTEXT.md`：将已上线的组合卡、分类明细、表格置顶汇总行及 ADR-0049 移出“提议中的术语”；
-    - 更新 `README.md` 补全 `packages/ui` 与 `packages/data-execution`；
-    - 重写/合并严重失真的 `docs/frontend-runtime-capabilities.md`（消除禁用旧名 `Canvas` 及 5 处过时断言）与 `docs/solution.md`；
-    - 合并 5 份重叠参数文档，修复 `playground-example-maintenance.md:5` 断链；
-    - 将 `PAGE-METADATA.md` 中 400+ 行按小版本堆叠的变更历史剥离至 `docs/changelog/page-metadata.md`，正文精简至 < 35 KB。
-  - **验收**：`pnpm authoring:contracts:check`、`pnpm test tests/page-reference.test.ts` 通过，零死链。
-- [ ] **`W1-4` AI 上下文渐进式披露瘦身与维护者架构地图**（负责：`repo-docs-curator`）
-  - **范围**：`AGENTS.md`、`docs/agents/*.md`、新增根级 `ARCHITECTURE.md`。
-  - **动作**：精简 `AGENTS.md`（同步 `.agents/skills/` 真实清单，去重 `docs/agents/*` 中重复的 Skill 验收/Git 交付段落，将可机器校验条款转为命令指向）；编写简洁的 `ARCHITECTURE.md`（包职责、依赖方向、按模块跑最小测试矩阵、核心入口索引）。
-  - **验收**：核心治理+入口文档总字节较 402 KB 显著压缩；`AGENTS.md` 无与现行目录矛盾之处。
+- [x] **`W1-1` 根目录杂项与误提交清理**（负责：`repo-docs-curator` / `flash`）
+  - **范围**：根目录 `pelican-*.html`（3 个）、`.pnpm-store/v11/index.db`、已跟踪的 `.scratch/*`（2 个）与 `output/diagnostics/platform-route-hide-probe-20261014.js`、`.learnings/`（3 文件）、`.gitignore`、`pages/temporary/`（清理 5 个零引用子目录共 26 文件，保留 8 个仍有测试/文档消费者的目录）。
+  - **验收**：`pnpm validate`（263/263）、`pnpm verify:fast` 与 12 份消费者测试（100/100）通过；根误提交清零。
+- [x] **`W1-2` 收口 `docs/plan/` 历史分稿并修复归档/ADR 索引**（负责：`repo-docs-curator` / `flash`）
+  - **范围**：`docs/plan/`、`docs/archive/README.md`、`docs/archive/plan-cleanup-2026-11/`、`docs/adr/README.md`。
+  - **动作**：将 22 份已完成且无外部引用的历史分稿归档入 `docs/archive/plan-cleanup-2026-11/`（保留被 ADR/测试/原型引用的计划以零断链），清零 `docs/plan/` 未索引孤儿；修正 `docs/archive/README.md` 漏列批次与文件数；更新 `docs/adr/README.md` 下一编号至 `0133`。
+  - **验收**：`pnpm adr:index:check` 通过，全仓相对链接扫描零断链。
+- [x] **`W1-3` 全仓文档矛盾消歧与 `PAGE-METADATA.md` 日志剥离**（负责：`repo-docs-curator` / `inherit`）
+  - **范围**：`CONTEXT.md`、`README.md`、`PAGE-METADATA.md`、`PAGE-PARAMETERS.md`、`docs/README.md`、`docs/solution.md`、`docs/frontend-runtime-capabilities.md`、`docs/changelog/page-metadata.md`、`docs/page-metadata/`、`docs/agents/`。
+  - **动作**：统一版本号真源 `packages/page/src/version.ts`；将已上线的组合卡/分类明细/置顶汇总行移出 `CONTEXT.md` 提议区；`README.md` 补全 `packages/ui` 与 `packages/data-execution`；重写失真的 `docs/frontend-runtime-capabilities.md` 与 `docs/solution.md`（清零禁用旧名 `Canvas`/`宿主`）；修复断链与过时 ADR 计数；将 `PAGE-METADATA.md` 400+ 行历史日志剥离至 `docs/changelog/page-metadata.md`（**110.2 KB → 23.5 KB，-78.7%**）。
+  - **验收**：`tests/page-reference.test.ts`（9/9）、`pnpm authoring:contracts:check`、`pnpm verify:fast` 全绿，零死链、零禁用术语。
+- [x] **`W1-4` AI 上下文渐进式披露瘦身与维护者架构地图**（负责：`repo-docs-curator` / `inherit`）
+  - **范围**：`AGENTS.md`、`docs/agents/*.md`、新增根级 `ARCHITECTURE.md`（127 行 / 10.3 KB）。
+  - **动作**：精简 `AGENTS.md`（对齐 `.agents/skills/` 清单、指向自动化门禁与 `ARCHITECTURE.md`）；编写维护者架构图、职责边界、变更定位决策树与按包验证命令矩阵；核心入口+治理文档全集从 **343.7 KB 降至 277.3 KB（-19.3%，其中 `PAGE-METADATA.md` -78.7%）**。
+  - **验收**：`pnpm verify:fast` 通过，核心入口锚点全部保留。
 - [ ] **`W1-5` 5 份生成镜像收敛与 4 层构建验证闭环**（负责：`mirror-delivery-engineer`）
   - **范围**：`tools/scripts/export-authoring-contracts.ts`、`package.json`、`contracts/`、`metriccanvas-authoring/`、`.gitignore`、`.github/workflows/ci.yml`、`.github/workflows/ci-full.yml` 及相关测试。
   - **动作**：
@@ -290,4 +283,5 @@ flowchart LR
 | 日期 | 任务 ID | 执行 Agent | 提交 SHA / PR | 验收摘要（测试 / 复杂度 / 架构 / CI） | 状态 |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | 2026-11-27 | 立项 | `coordinator` + 5 路只读探查 | 基线 `8ce2dd52` | 完成阶段 0 量化基线采集、4 项架构决策拍板、主计划落盘 | 已立项 |
-| 2026-11-28 | `W0-1`~`W0-5` | 3 路 `guardrail-engineer` + `verifier-auditor` | 本地 worktree 待提交 | `verify:fast` / `validate` (268/268) / `check` (11/11) / `ci-workflow` & `validate-cli` (21/21) / `biome check` (12/12) 全绿；Python `radon` 段待远端 CI 复核 | 本地验真通过（待提交） |
+| 2026-11-28 | `W0-1`~`W0-5` | 3 路 `guardrail-engineer` + `verifier-auditor` + `delivery-runner` | PR #199 (`560b1d968`) | 远端 CI 8/8 全绿（含 Biome、`hygiene:check`、`packages:check`、Python `radon` + `subtreeCC`/`fileSize` 棘轮），已合入 `main` 并清理旧分支 | 已合入 `main` |
+| 2026-11-28 | `W1-1`~`W1-4` | 3 路 `repo-docs-curator`（2×`flash` + 1×`inherit`） | 本地分支 `chore/wave1-repo-docs-hygiene` | 清理 36 个误提交/临时文件、归档 22 份计划、`PAGE-METADATA.md` -78.7%、新增 `ARCHITECTURE.md`，`authoring:contracts:check` 绿，待独立验真与提交 | 本地完成（待验真/PR） |

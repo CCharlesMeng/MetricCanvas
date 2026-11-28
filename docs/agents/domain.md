@@ -5,7 +5,7 @@
 ## 探索前先读
 
 - 根目录 **`CONTEXT.md`**(领域词汇表)
-- **`docs/adr/README.md`**(ADR 基线入口)—— 两张由 `pnpm adr:index` 生成的表:速查表给出每份 ADR 今天的状态,主题索引指向 `docs/adr/topics/*.md`。**按主题定位,不要通读 83 份原文**:先在主题索引找到相关主题页读现行结论,再按它引用的编号打开 ADR 原文读背景和取舍
+- **`docs/adr/README.md`**(ADR 基线入口)—— 两张由 `pnpm adr:index` 生成的表:速查表给出每份 ADR 今天的状态,主题索引指向 `docs/adr/topics/*.md`。**按主题定位,不要通读全部 ADR 原文**:先在主题索引找到相关主题页读现行结论,再按它引用的编号打开 ADR 原文读背景和取舍
 
 ## 探索时默认不读
 
@@ -21,6 +21,7 @@
 
 ```
 /
+├── ARCHITECTURE.md
 ├── CONTEXT.md
 ├── PAGE-METADATA.md
 ├── docs/adr/

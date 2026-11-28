@@ -6,7 +6,7 @@
 
 <a id="页面参数维度与时间的现行方案"></a>
 
-本文是页面参数的使用专题，承接[页面元数据总规范](PAGE-METADATA.md)。当前作者协议为 **6.41**；版本与可读范围以总规范及生成契约为准。本文先说明当前分层参数、打开与保存、顶部时间筛选和共享窗口规则，再说明程序化提取，最后集中保留旧数组参数的兼容用法。字段表由Schema生成，见[参数参考](contracts/metriccanvas/page/reference/params-and-text-values.md)。
+本文是页面参数的使用专题，承接[页面元数据总规范](PAGE-METADATA.md)。当前作者协议版本与可读范围以 [`packages/page/src/version.ts`](packages/page/src/version.ts)（`versionPolicy.current` / `supportedVersions()`）为唯一真源。本文说明分层参数、打开与保存、顶部时间筛选、共享窗口规则、程序化提取与旧数组兼容用法；参数与文本取值的模块化字段语义和 Schema 结构参考以 [params-and-text-values.md](docs/page-metadata/params-and-text-values.md) 与生成的[参数参考](contracts/metriccanvas/page/reference/params-and-text-values.md)为准，避免与本文双处漂移。
 
 ## URL 缺参仍展示页面
 
@@ -14,7 +14,7 @@
 
 ## Embed 自动读取 URL
 
-Embed 的 `mount` 和完整 `update` 在省略 `initialSearch` 时自动读取当前 window 的 URL：合并 `location.search` 与 `#/...?...` / `#!/...?...` 路由查询串，同名键由 hash 路由整组覆盖，重复值保留；普通锚点不作为参数。显式 `initialSearch`（包括空串）优先且不再合并 URL，空串用于隔离宿主 URL。只在挂载/更新时读取，不监听地址变化、不读取父窗口。初始化通过后自动清理未声明的 URL 参数；地址回写与 Angular 适配规则见[URL 参数清理](docs/page-metadata/actions-and-navigation.md#url-参数清理与地址同步)。参数解析、必需/单值校验与执行回执输入的权威性沿现行规则；直接使用 RuntimeView 时仍由集成应用传入 initialSearch。合成入口 `/pages/embed-url-params?account-name=合成账号甲` 及 embed 的 `examples/url-params.html`，不访问真实账号或 DQE。
+Embed 的 `mount` 和完整 `update` 在省略 `initialSearch` 时自动读取当前 window 的 URL：合并 `location.search` 与 `#/...?...` / `#!/...?...` 路由查询串，同名键由 hash 路由整组覆盖，重复值保留；普通锚点不作为参数。显式 `initialSearch`（包括空串）优先且不再合并 URL，空串用于隔离集成应用 URL。只在挂载/更新时读取，不监听地址变化、不读取父窗口。初始化通过后自动清理未声明的 URL 参数；地址回写与 Angular 适配规则见[URL 参数清理](docs/page-metadata/actions-and-navigation.md#url-参数清理与地址同步)。参数解析、必需/单值校验与执行回执输入的权威性沿现行规则；直接使用 RuntimeView 时仍由集成应用传入 initialSearch。合成入口 `/pages/embed-url-params?account-name=合成账号甲` 及 embed 的 `examples/url-params.html`，不访问真实账号或 DQE。
 
 Schema 6.131 支持维度筛选器通过 `urlParams: false` 关闭本页 URL 读写。筛选器仍按初值规则和页内交互参与查询。见[维度筛选器关闭 URL 同步](docs/page-metadata/filters.md#dimension-filter-url-opt-out)。
 
@@ -242,7 +242,7 @@ Schema 6.131 支持维度筛选器通过 `urlParams: false` 关闭本页 URL 读
 | 文本位置的 `{ "param": "参数id" }` | 显示该参数的实际值 | 页面上的取值引用 |
 | `filters` 与查询的 `filterBindings` | 管理页面打开后的可变筛选状态 | 页内交互 |
 
-参数在一次初始化后固定。修改页内筛选不会反向修改参数；使用另一组参数，需要打开另一实例或由宿主重新初始化。跨页链接可以显式携带参数。
+参数在一次初始化后固定。修改页内筛选不会反向修改参数；使用另一组参数，需要打开另一实例或由集成应用重新初始化。跨页链接可以显式携带参数。
 
 ### 3. 参数怎样保存
 

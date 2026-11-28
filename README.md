@@ -23,12 +23,12 @@ MetricCanvas 是以页面为核心资产的 AI 原生数据分析与可视化平
   └─ 数据快照 → AI 总结组件 → AI 总结快照 → 纯渲染 View
 ```
 
-页面协议版本与可读范围以 [PAGE-METADATA.md](PAGE-METADATA.md) 和生成契约为准。维度与时间参数的现行方案见 [PAGE-PARAMETERS.md](PAGE-PARAMETERS.md)，整体协议见 [PAGE-METADATA.md](PAGE-METADATA.md)。页面顶层结构示意为：
+页面协议当前作者版本以 [`packages/page/src/version.ts`](./packages/page/src/version.ts) 的 `versionPolicy.current` 为唯一真源，可读范围与专题说明见 [PAGE-METADATA.md](PAGE-METADATA.md) 与 [PAGE-PARAMETERS.md](PAGE-PARAMETERS.md)。页面顶层结构示意为：
 
 ```json
 {
-  "schemaVersion": "6.16",
-  "layout": "report",
+  "schemaVersion": "<current>",
+  "layout": "dashboard",
   "id": "page-id",
   "meta": {},
   "dataSources": {},
@@ -91,12 +91,16 @@ Windows 连接 gray 时，两个应用均可在各自 `.env.local` 配置开关�
 ## 常用命令
 
 ```bash
+pnpm verify:fast  # 快速治理门禁（lint + hygiene:check + architecture:check）
+pnpm lint         # Biome 代码静态检查（修复用 pnpm lint:fix）
+pnpm hygiene:check # 仓库卫生门禁（单文件 ≤1MB 与 docs/evidence 路径约束）
+pnpm architecture:check # 源码包级循环与跨层依赖门禁
 pnpm validate     # 递归校验 pages/**/*.json
-pnpm test         # 自动化测试
+pnpm test         # 自动化测试（按包定向跑用 test:page / test:data-execution / test:engine / test:platform / test:playground）
 pnpm design:facts # 重新抽取设计稿字面量(docs/design-facts/)
 pnpm check        # 各包 TypeScript 与 Svelte 检查(pnpm -r check)
-pnpm build        # 构建四个引擎交付物和 Platform
-pnpm build:packages # 单独构建 page、engine、metric-canvas
+pnpm build        # 构建引擎交付物与 Platform
+pnpm build:packages # 单独构建 ui、data-execution、page、engine、metric-canvas
 pnpm packages:check # 检查实际 tarball 的入口、声明和组件
 pnpm dev:playground   # 按需启动页面试验场
 pnpm build:playground # 按需构建页面试验场
@@ -108,9 +112,12 @@ SVG 优化的参数、体积报告与应用方式见 [SVG 优化工具](docs/svg
 
 ## 最小仅内联页面
 
+以下示例展示最小仅内联页面结构；新建页面时 `schemaVersion` 写 `packages/page/src/version.ts` 中 `versionPolicy.current` 对应的当前作者版本（兼容读取版本由 `supportedVersions()` 定义）：
+
 ```json
 {
-  "schemaVersion": "6.0",
+  "schemaVersion": "<current>",
+  "layout": "dashboard",
   "id": "hello-revenue",
   "dataSources": {
     "overview": {
@@ -166,27 +173,29 @@ SVG 优化的参数、体积报告与应用方式见 [SVG 优化工具](docs/svg
 
 ## 仓库结构
 
-`packages/` 中 page、engine、metric-canvas、embed 是发布给集成应用的四个交付物；application-runtime 是平台与页面试验场共用的私有配置模块。旧 TypeScript 页面生命周期、Postgres 持久化与 Java 适配器已退出主线，页面资产由外部 Java 服务持有（[ADR-0071](./docs/adr/0071-four-release-artifacts-with-standalone-page-protocol.md)）。
+`packages/` 包含面向集成应用的交付物包与仓内共用基础包；`application-runtime` 是平台与页面试验场共用的私有配置模块。旧 TypeScript 页面生命周期、Postgres 持久化与 Java 适配器已退出主线，页面资产由外部 Java 服务持有（[ADR-0071](./docs/adr/0071-four-release-artifacts-with-standalone-page-protocol.md)）。各包依赖方向、边界门禁与改动定位见 [ARCHITECTURE.md](./ARCHITECTURE.md)。
 
-仓内直接消费源码，无需预构建；`pnpm pack` 将发布入口写成 `dist` 中的 JS、组件和类型声明。构建与打包门禁见 [引擎交付物构建](./tools/package-build/README.md)。四个包目前仍为 private，版本推进与真实发布另行验收。
+仓内直接消费源码，无需预构建；`pnpm pack` 将发布入口写成 `dist` 中的 JS、组件和类型声明。构建与打包门禁见 [引擎交付物构建](./tools/package-build/README.md)。
 
 | 路径 | 职责 |
 |---|---|
-| `packages/page/` | **交付物**：页面协议、类型、JSON Schema、校验器和能力推导 |
-| `packages/engine/` | **交付物**：渲染引擎，下列四份源码收入同一个包 |
-| `packages/engine/runtime/` | 页面数据编排和筛选状态 |
+| `packages/page/` | **交付物**（`@metriccanvas/page`）：页面协议、类型、JSON Schema、校验器、版本策略与能力推导 |
+| `packages/data-execution/` | **交付物**（`@metriccanvas/data-execution`）：共享取数编排、条件/定稿/候选准备、组合查询与 DQE 协议执行（含 Node CLI） |
+| `packages/ui/` | **基础组件库**（`@metriccanvas/ui`）：底层 UI 原语组件，供渲染组件与页面交互控件共用 |
+| `packages/engine/` | **交付物**（`@metriccanvas/engine`）：渲染引擎，下列子目录收入同一个包 |
+| `packages/engine/runtime/` | 页面数据编排、导航意图和筛选状态 |
 | `packages/engine/widgets/` | 纯渲染组件 |
 | `packages/engine/runtime-ui/` | 正式渲染入口 `RuntimeView`、共享渲染主体与布局 |
 | `packages/engine/runtime-ui/src/ai-summary/` | AI 总结垂直组件 Module 与私有 SSE Adapter |
-| `packages/engine/data-gateway/` | DQE 数据网关 |
-| [`packages/metric-canvas/`](./packages/metric-canvas/README.md) | **交付物**：独立创作组件 `MetricCanvas`，选中、拖拽和编辑意图回传 |
-| `packages/embed/` | **交付物**：浏览器嵌入产物 |
-| `packages/application-runtime/` | 平台与参考应用共用的私有运行配置读取器，不对外发布 |
+| `packages/engine/data-gateway/` | 面向浏览器的 DQE 数据网关 |
+| [`packages/metric-canvas/`](./packages/metric-canvas/README.md) | **交付物**（`@metriccanvas/metric-canvas`）：独立创作组件 `MetricCanvas`，选中、拖拽和编辑意图回传 |
+| `packages/embed/` | **交付物**（`@metriccanvas/embed`）：浏览器嵌入产物（ES / global 入口与 Shadow DOM 挂载） |
+| `packages/application-runtime/` | 平台与页面试验场共用的私有运行配置读取器，不对外发布 |
 | `apps/playground/` | 页面试验场：开发态仓库页面浏览与 JSON 即时预览 |
 | `apps/platform/` | 页面搭建与管理 |
 | `tools/dqe-sim/` | DQE HTTP 仿真 |
 | `tools/design-facts/` | 设计稿字面量抽取 |
-| `pages/` | 页面 |
+| `pages/` | 页面示例与能力验收场景 |
 | `docs/design-facts/` | 设计稿字面量取证产物(设计稿本身不随仓交付) |
 
 旧对话、会话存储、MCP、模板库及其播种、旧 Java 源码、TypeScript 页面生命周期、Postgres 持久化、compose 与纵切命令已退出主线。完整历史见 [固定基线](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/2026-09-08-legacy-baseline.md)。Platform 已是静态 SPA，目录、详情、保存和更新由浏览器直接消费外部 Java 页面资产接口；未确认的历史修订与差异能力显式不可用。
@@ -198,9 +207,10 @@ SVG 优化的参数、体积报告与应用方式见 [SVG 优化工具](docs/svg
 | 文档 | 内容 |
 |---|---|
 | [文档导航](./docs/README.md) | 按任务选择现行协议、接入说明、执行待办和历史依据 |
+| [代码架构与维护者指南](./ARCHITECTURE.md) | 包职责、依赖方向、自动化门禁、改动决策树与快速验证矩阵 |
 | [产品目标与边界](./origin.md) | 产品定位、能力和非目标 |
 | [领域词汇表](./CONTEXT.md) | 当前领域术语 |
-| [页面协议](./PAGE-METADATA.md) | 协议概览、版本边界、模块参考与专题导航 |
+| [页面协议](./PAGE-METADATA.md) | 协议概览、版本边界、模块参考与专题导航（演进记录见 [changelog](./docs/changelog/page-metadata.md)） |
 | [页面参数与筛选](./PAGE-PARAMETERS.md) | 分层参数、顶部时间筛选、期间文字、窗口与旧数组兼容 |
 | [级联查询](./docs/cascading-queries.md) | 查询结果绑定、执行顺序及完整声明示例 |
 | [报告导出与PDF下载](./docs/report-export.md) | 集成应用公共方法、下载范围与编码接线 |

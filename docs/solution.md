@@ -1,6 +1,6 @@
 # MetricCanvas 整体解决方案
 
-> 当前架构（2026-09-16）：Platform 是静态 SPA，页面资产遵循外部 Java YAML 与 [ADR-0080](./adr/0080-java-assets-single-attempt-save-and-status-publication.md)。本文描述已实现的本仓边界；真实 Java/Relay 联调与部署注入仍需独立验收。实现位置和验证证据见[实施记录](archive/java-page-assets/2026-09-16-java-page-assets-implementation.md)。
+> 现行架构边界：Platform 是静态 SPA，页面资产遵循外部 Java YAML 与 [ADR-0080](./adr/0080-java-assets-single-attempt-save-and-status-publication.md)。本文描述已实现的系统结构与职责边界；代码包级依赖规则、改动落点与验证矩阵见 [ARCHITECTURE.md](../ARCHITECTURE.md)。真实 Java/Relay 联调与部署注入仍需独立验收，历史实施记录见[归档](archive/java-page-assets/2026-09-16-java-page-assets-implementation.md)。
 
 ## 1. 系统定位
 
@@ -37,16 +37,16 @@ MetricCanvas 将数据查询、页面描述、运行时渲染和发布治理分�
           静态数据行                    数据网关 → DQE
 ```
 
-依赖方向：
+依赖方向（包级静态门禁由 `pnpm architecture:check` 守护，完整边界见 [ARCHITECTURE.md](../ARCHITECTURE.md)）：
 
 ```text
-apps
-  → application-runtime
-  → metric-canvas
+apps / packages/embed
+  → application-runtime (仅 apps)
+  → metric-canvas (仅页面搭建)
   → engine/runtime-ui
-    → runtime
-      → page
-      → DataGateway 端口
+      → engine/widgets → @metriccanvas/ui
+      → engine/runtime → @metriccanvas/data-execution → @metriccanvas/page
+      → engine/data-gateway → engine/runtime / @metriccanvas/data-execution / @metriccanvas/page
 
 platform(浏览器)
   → 页面资产内部接口 → TypeScript Java Adapter → Java 页面资产服务
@@ -56,23 +56,20 @@ Relay 可信创作程序
   → Python 内容工具 → 合法候选
   → 持久提交协调器 → 生命周期 → Python Java Adapter → Java 页面资产服务
   → 已验证回执 → 工作台（只应用，不再次保存）
-
-data-gateway
-  → runtime 的 DataGateway 端口
-  → page 的 EffectiveQuery
 ```
 
-领域层不依赖应用壳、浏览器框架或具体 DQE 地址。
+领域层（`@metriccanvas/page`）与共享取数层（`@metriccanvas/data-execution`）不依赖应用壳、浏览器框架、UI 组件库或具体 DQE 地址。
 
 ## 3. 页面
 
 页面是平台的聚合根。页面协议见 [PAGE-METADATA.md](../PAGE-METADATA.md)。
 
-顶层结构：
+顶层结构（`schemaVersion` 以 `packages/page/src/version.ts` 的 `versionPolicy.current` 为唯一真源）：
 
 ```json
 {
-  "schemaVersion": "6.0",
+  "schemaVersion": "<current>",
+  "layout": "dashboard",
   "id": "page-id",
   "meta": {},
   "dataSources": {},
@@ -195,13 +192,14 @@ Platform 页面搭建工作台持有工作副本、检查器、撤销和本地�
 
 | 模块 | 职责 |
 |---|---|
+| `@metriccanvas/page` | 页面协议、Schema、校验器、结果字段契约、版本策略与能力推导 |
+| `@metriccanvas/data-execution` | 跨运行时共享的取数规划、筛选/定稿/候选准备、组合查询与 DQE 协议执行 |
+| `@metriccanvas/ui` | 底层基础 UI 原语组件库，供渲染组件与页面交互控件共用 |
 | 页面仓储 | 加载页面文档和页面列表 |
-| 页面校验器 | 验证结构、引用和能力约束 |
-| 筛选状态 | 管理页面筛选值和 URL 序列化 |
-| 数据编排器 | 执行页面数据源并生成数据快照 |
-| 数据网关 | 执行生效查询 |
-| Runtime UI | 组合页面布局、状态和组件 |
-| Widgets | 纯渲染组件 |
+| 筛选状态与数据编排（`engine/runtime`） | 管理页面筛选值、URL 序列化、数据源编排与数据快照 |
+| 数据网关（`engine/data-gateway`） | 面向浏览器的生效查询执行与 DQE 适配 |
+| Runtime UI（`engine/runtime-ui`） | 组合页面布局、状态、交互与组件分发 |
+| Widgets（`engine/widgets`） | 纯渲染组件 |
 | AI Summary 垂直组件 Module | 关联数据解析、请求组装、生成会话、私有 SSE 适配与纯渲染 View |
 
 Runtime UI 内部按 DOM 所有权拆分：`RuntimeView` 是正式渲染入口，共享的 `RuntimeSurface` 负责页面校验结果、筛选状态、数据快照和组件分发；内容分区 Module 负责内容分区、网格、组件单元格和 `connectPrevious`。独立创作包 `@metriccanvas/metric-canvas` 通过 `MetricCanvas` 提供选中、拖拽、编辑触发和意图回传，复用同一渲染主体与布局；文档、属性面板、保存和撤销历史仍归集成应用。渲染包的 `./composition` 提供内容分区片段与单元格装饰接缝，渲染包不依赖创作包，正式渲染不加载创作专用代码（ADR-0065；包名和发布兼容策略仍需 #100 对账）。分区网格缺省为 12 列等权轨，Schema 5.3 起可把受控正整数权重列轨翻译为运行时 `fr` 模板；页面不能注入 CSS 字符串。纯渲染组件的内部 DOM 只能由对应组件 Module 设置样式；内容分区与组件外缘通过内部 CSS custom properties 协作，不使用全局 class 选择器穿透。
@@ -294,7 +292,7 @@ AI 总结组件是一个垂直组件 Module。Host 读取关联数据快照；�
 ## 15. 系统不变式
 
 1. 页面是统一运行时的唯一页面输入。
-2. 页面协议版本以 `packages/page/src/version.ts` 的 `versionPolicy.current` 为唯一真源(当前为 `5.3`)。
+2. 页面协议版本以 `packages/page/src/version.ts` 的 `versionPolicy.current` 为唯一真源，不在文档中另行硬编码“当前版本”。
 3. 页面数据源完整声明结果字段契约。
 4. 页面字段和 DQE 字段只通过显式映射对应。
 5. 筛选状态只通过显式筛选绑定影响查询。

@@ -1,5 +1,7 @@
 # 确定性时间参数（6.3）
 
+> **历史参考（已被现行规范取代）**：本文仅保留 6.3 / 6.4 交付时的历史时间参数说明，不再单独维护。时间参数、分层 `params.query.times`、窗口规则与顶部时间筛选的现行规范请统一阅读根目录 [PAGE-PARAMETERS.md](../../PAGE-PARAMETERS.md) 与模块化参考 [params-and-text-values.md](params-and-text-values.md)；当前协议版本以 [`packages/page/src/version.ts`](../../packages/page/src/version.ts) 为唯一真源。
+
 报告基准期由页面参数指定，统一运行时生成各查询的查询时间窗口。按指定期间查询；无数据由数据快照呈现空结果，不回退默认期或最新可用期。数据服务故障仍呈现查询错误，不伪装为空结果。
 
 ## 完整声明接缝

@@ -1,334 +1,58 @@
 # MetricCanvas 页面元数据规范
 
-表格单工作表导出支持 Embed 集成应用接收展示值，页面沿用现有导出声明。见[表格导出](docs/page-metadata/components/table.md#excel-导出621)。
+页面元数据是统一运行时消费的声明式 JSON 文档。当前作者协议版本、可读兼容范围与各能力的次版本下限，统一以 [`packages/page/src/version.ts`](packages/page/src/version.ts) 的 `versionPolicy.current`、`supportedVersions()` 和能力表为唯一真源；结构事实由 [`packages/page/src/schema/`](packages/page/src/schema/) 单向导出，未声明属性不被接受。
 
-Schema 6.142 支持用 `table.props.height` 指定屏幕表格的外框总高度（像素）。见[表格外框高度](docs/page-metadata/components/table.md#table-height)。
-
-Schema 6.141 的地图支持提示框按行展示指标和同排对比值，并在散点的组织名称后显示地图指标。地图可直接使用同轮数据源已经就绪的组织行，等待期间逐步补齐数值。见[地图提示与散点标签](docs/page-metadata/components/mapChart.md#map-tooltip-rows)及 `/pages/ioc-region-map-demo`。
-
-百分点格式与同比 P 格式统一在舍入前判断阈值。超过 `500P` 显示 `>500P`，低于 `-500P` 显示 `<-500P`，恰好等于 `±500P` 时正常显示。百分比在指标卡、地图提示、表格等位置同样默认严格越界才显示阈值，表格可用 `absoluteDisplayLimit` 覆盖。见[百分点差值](docs/page-metadata/field-bindings-and-formats.md#百分点差值677)与合成入口 `/pages/metric-card-value-color`、`/pages/yoy-p-format-demo`。
-
-Schema 6.140 支持 Dashboard 自然期间在 `default.finalizationName` 传入非空定稿名称数组。引擎一次查询，取有效当年日期中的最早月份，全部不可用时沿用当前月。见[多个定稿名称](docs/page-metadata/filters.md#multiple-finalization-names)与合成入口 `/pages/finalization-default-time`。
-
-IOC Region 地图可由集成应用注入视口资料。绑定 Region 的 `regionalOverview` 在缺少显式视口时根据组织地理范围或点位自动聚焦。地图点击使用当前候选节点切换页头 Region，查询和地图继续消费同一筛选状态。页面沿用现有声明，见[宿主地图视口](docs/page-metadata/components/mapChart.md#ioc-region-map-viewport)与合成入口 `/pages/ioc-region-map-demo`。
-
-Schema 6.139 支持页面根级 `mapOverrides`，按底图、组织层级和组织值覆盖集成应用的地理资料。参见[地图地理资料](docs/page-metadata/components/mapChart.md#map-geography)。
-
-集成应用可通过 Embed 挂载参数 `regionMap.displayNames` 为 Region 地图提供组织显示名。配置方法见[地图悬浮提示与散点标签](docs/page-metadata/components/mapChart.md#map-tooltip-rows)。
-
-Schema 6.138 支持在 `metricCard.props.rows[].colorRule` 复用正负与固定颜色规则给主值着色。`primaryDetail` 主指标的变化项默认纵排。见[主值着色](docs/page-metadata/components/metricCard.md#metric-card-value-color)与合成入口 `/pages/metric-card-value-color`。
-
-对当前引擎支持的 6.x 页面，实际配置可执行时，能力引入版本高于页面声明仅作为调试诊断。独立校验、保存和发布继续严格检查能力下限。本次沿用现有页面字段与 Schema 版本。见[运行时兼容读取](docs/page-metadata/validation.md#runtime-capability-floor)与合成入口 `/pages/bar-category-order`。
-
-Schema 6.137 支持正文分区的顶层表格声明 `props.expand: true`。点击表格右上角按钮可展开至整行并收起同行组件，再点还原。并排表格的横向滚动在自身边缘停止。见[表格展开](docs/page-metadata/components/table.md#table-expand)与合成入口 `/pages/table-expand`。
-
-页面搜索筛选、远程下拉候选、表头动态候选和表格工具栏搜索统一在停输 300 毫秒后自动生效。中文输入法组词期间等待确认。静态候选即时筛选。分页候选在依赖条件就绪后开始取数。工具栏搜索生效时隐藏本表的置顶汇总行，清空搜索后恢复。见[下拉搜索](docs/page-metadata/filters.md#下拉搜索与普通树643)和[表格搜索](docs/page-metadata/components/table.md#表格工具栏与搜索621)。
-
-Schema 6.136 支持指标卡在主、次指标行的 `changes[]` 上声明 `visibleWhen`。按已应用的统计期间切换同比和环比时，引擎合并卡片、地图与共享表格的字段需求，跳过无人使用的比较查询。独立槽的主值先于慢比较响应呈现。变化项的颜色规则应用于数值、单位和趋势箭头，标签沿用卡片的中性文字颜色。见[指标卡变化项显隐](docs/page-metadata/components/metricCard.md#metric-card-change-visibility)和 Playground 的 `/pages/metric-card-change-visibility`。
-
-Schema 6.135 支持 IOC 页头在 `props.filterRows` 中为已认领的筛选声明独立行和可选小标题。其余页头筛选保留首行，筛选值、默认值与查询绑定由现有声明控制。见[页头筛选行](docs/page-metadata/components/iocHeader.md#ioc-header-filter-rows)和 Playground 的 `/pages/ioc-header-filter-rows`。
-
-Schema 6.134 支持柱状图、折线图和柱线组合图在字段系列的 `tooltip.colorRule` 声明悬浮提示数值颜色。见[悬浮提示数字着色](docs/page-metadata/components/barChart.md#chart-tooltip-color-rule)与合成入口 `/pages/chart-tooltip-color-rule`。
-
-Schema 6.133 支持饼图和环形图在表格式图例的字段列声明 `colorRule`，复用表格和指标卡的正负与固定颜色规则。见[图例数字着色](docs/page-metadata/components/pieChart.md#pie-legend-color-rule)与合成入口 `/pages/pie-legend-color-rule`。
-
-Schema 6.132 支持普通柱状图在 `props.order` 声明排序字段和方向。按 `data.main` 结果字段在前端排序，支持计算字段，类别、系列、点击和图片导出使用相同顺序。见[柱图按字段排序](docs/page-metadata/components/barChart.md#bar-category-order)与合成入口 `/pages/bar-category-order`。
-
-Schema 6.131 支持维度筛选器设置 `urlParams: false`，关闭本页 URL 读取和写回。筛选状态继续参与现有查询，旧链接中的对应键在成功初始化后清理。见[维度筛选器关闭 URL 同步](docs/page-metadata/filters.md#dimension-filter-url-opt-out)和 Playground 的 `/pages/business-result-metrics`。
-
-Schema 6.130 支持可选动态多选排除项使用 `defaultWhen`。页面初始化及关联单选维度切换时，引擎按实际选值应用 `default` 名单或清空排除条件。符合分页条件时，候选依赖就绪后后台预加载首批，每批沿用查询的 `limit`。控件右侧固定用于展开，「清空」位于下拉面板内，已选项可逐项取消。下拉状态供辅助技术读取，失败时可通过图标重试。见[排除项联动默认值](docs/page-metadata/filters.md#conditional-exclusion-defaults)与合成入口 `/pages/filter-conditional-exclusion-default`。
-
-Schema 6.129 支持在指标卡的主、次指标行设置 `showDefinition: true`。该行沿 `valueField` 读取结果字段的 `metricCode`，在指标名称右侧显示问号。省略或设为 `false` 时隐藏。气泡的固定文案统一使用中文，服务端返回的内容按原文显示。同一页面会话内，成功获取的定义按指标编码复用。气泡随内容收缩，长内容可在气泡内滚动。见[指标定义气泡](docs/page-metadata/components/metricCard.md#metric-definition-tip)与合成入口 `/pages/metric-card-definition-tip`。
-
-Schema 6.128 为柱线组合图的字段折线系列增加可选 `markerColorRule`。圆点根据原始值小于零或大于等于零分别取色。规则、配置和合成场景见[折线圆点按数值正负着色](docs/page-metadata/components/barChart.md#bar-line-marker-color)。
-
-Schema 6.127 新增可选的 `metricCard.props.tipCode`。问号显示在主标题旁，无主标题的单行卡片显示在该行指标名称旁。集成应用提供指标定义查询端口后可查看定义、公式、解释人和管理链接。见[指标定义气泡](docs/page-metadata/components/metricCard.md#metric-definition-tip)与合成入口 `/pages/metric-card-definition-tip`。
-
-Schema 6.126 支持指标值切换同页 Tab。每个主、次指标行可声明 `action.selectTab` 并分别引用目标容器与页签。同一行的 `action` 和 `link: true` 互斥，其他行可以继续使用卡片级动作。切换沿用当前页面实例和筛选。见[指标值切换同页 Tab](docs/page-metadata/actions-and-navigation.md#metric-select-tab)与合成入口 `/pages/metric-card-select-tab`。
-
-6.124 的可选平面维度与金额范围在原值已归一为不限时，联动清空可自动继续。新范围仍须通过候选与执行准备。原有限制被清掉时继续等待显式确认。声明只使用现有筛选字段和 `schemaVersion`。合成入口为 `/pages/filter-source-query-pagination`。见[联动清空与确认](docs/page-metadata/filters.md#unrestricted-filter-clear)。
-
-6.123：普通数值展示默认千分位，包括未声明格式的真实数字及旧 number 精度/带符号格式；原精度不变。复用 format/defaultFormat 新增 number-ungrouped、number-0～5-ungrouped 及已有精度的 -signed 版本，显式关闭分组；number-grouped 保留最多三位小数。旧页面统一随引擎采用新默认，表格、指标卡、图表和 Excel 同步，原始值不变。见[数值格式](docs/page-metadata/field-bindings-and-formats.md#显式数值格式与精度)，合成入口 `/pages/number-default-grouping`。
-
-6.122：维度筛选器可用 `candidates.levelField` 从内联候选读取节点层级，单选结构树可放在 `filterGroup` 工具栏。选中父层或子层时，查询按已有的 `levelQueryFields` 选择目标字段。见[内联层级候选](docs/page-metadata/filters.md#source-candidate-levels)。
-
-6.121：来源页可用 `regionFilter.props.officeNavigate` 声明代表处下钻目标。页头选中代表处时从当前筛选状态直接下钻，返回保留原筛选。以代表处初始化时在概览渲染和查询前替换当前历史记录。引擎注入 `rep-office`，统计期间沿用显式导航参数。见 [代表处跨页下钻](docs/page-metadata/components/iocHeader.md#office-navigation)，合成入口 `/pages/ioc-office-drill-overview` 与 `/pages/ioc-office-drill-detail`。
-
-拿到合法页面 JSON 后，统一运行时立即挂载真实页头、筛选控件、内容分区和组件结构；外部默认条件、候选值及业务数据返回后原位填充，不显示独立整页骨架或“正在加载”文字。表格保留真实表头与工具栏，在表体内显示从左向右扫光的骨架行。图表保留真实绘图区，在组件内显示各自的静态加载形态。依赖未齐备的查询仍等待完整条件，无关查询独立执行。无需新增字段或 Schema 升版，见[屏幕加载](docs/page-metadata/data-sources.md#screen-loading)，合成场景 `/pages/loading-structure-demo` 与 `/pages/ioc-async-preparation`。
-IOC 页头重点国代名单兼容旧版页面。集成应用提供现有名单候选端口时，引擎可异步补齐标准重点国代筛选缺失的查询绑定；页面 JSON 和集成调用无需修改。相关查询等到名单齐备后执行，已有显式布尔绑定保留。未勾选不取名单，业务私有 ID 不自动接管。6.120 及以后的页面先按期间选择呈现表头，依赖定稿的查询等日期就绪后执行。可识别身份的 DQE 数据网关在浏览器内按自然日复用成功的定稿日期。见[异步条件准备](docs/page-metadata/filters.md#异步条件准备6120)，合成入口 `/pages/ioc-legacy-key-office`、`/pages/ioc-async-preparation`。
-
-运行时提供可选 `onAuthRequired` 接入：DQE HTTP 401、403、419 时终止当前页面请求并清理 MC 页面缓存，由集成应用跳登录；未传方法沿用既有错误处理。无需页面 JSON 字段或 Schema 升版。见[认证失败与页面失效](docs/page-metadata/validation.md#认证失败与页面失效)，本地仿真入口 `/auth-required-review`。
-
-6.119：表格字段列新增可选 `absoluteDisplayLimit`，按原始绝对值严格超限将主数值显示为 `> 阈值`；颜色、箭头及位置复用既有规则。原值、计算与排序保留，省略不影响旧页面。字段净增1，阈值判断及呈现由引擎承担。见[列级绝对值展示阈值](docs/page-metadata/components/table.md#table-absolute-display-limit)，合成入口 `/pages/table-absolute-display-limit`。
-
-DQE 就绪查询继续一请求一查询；引擎和内置数据网关默认不设固定并发上限，由浏览器或宿主网络层调度。显式接入限额、依赖、取消与后台预加载规则继续生效，不新增页面字段或动态并发。见[独立查询调度](docs/page-metadata/data-sources.md#screen-loading)，合成入口 `/pages/dqe-independent-requests`。
-
-6.118：记录组合源可声明 `pagination:{mode:"auto",pageSize:10}`。引擎在主查询可独立决定当前页时按需查询并渐进补列，否则完整关联，保留全部来源条件；旧模式不变。复用 records 的批次、字节和单批超时配置，无新增字段。见[自动分页](docs/page-metadata/data-sources.md#paged-join-auto-pagination)，业务验收 `/pages/rep-business-result`。
-
-条件显隐现按实际消费字段裁剪 `joinAggregate` 依赖：隐藏列／系列的关联输出没有其他消费者、计算或查询视图使用时，本轮不执行该关联及其独占查询，不参与主源状态传播；仍被消费的依赖保持严格失败。屏幕、单次执行与冻结导出共用规则，页面声明不变，无新增字段或版本。见[按需关联计算](docs/page-metadata/compute.md#conditional-compute-demand)，合成入口 `/pages/conditional-compute-demand`。
-
-6.117：`pagedJoin.records.timeoutMs` 上限放宽至180000毫秒；超过120000的声明须使用6.117及以后版本，旧版本保留原声明合法性限制；实际执行统一采用180秒下限。无新增字段，仍按每批独立计时。见[记录关联](docs/page-metadata/data-sources.md#审批记录与当前信息补列666)，业务场景 `/pages/rep-business-result`。
-
-DQE 网关请求及引擎内置读取超时默认且最少为180秒。页面和接入配置中不足180000毫秒的合法值忽略，旧页面直接生效；更长的合法配置保留，主动取消立即生效。字段净增0，由引擎统一计算预算，无需升级 Schema。见[数据源与查询超时](docs/page-metadata/data-sources.md)，合成入口 `/pages/dqe-request-timeout`。
-
-重点国代兼容旧筛选 ID `key-rep-only`，保留页面及 URL 标识，复用现有授权名单桥接并与 Region 取交集；勾选刷新全部已绑定查询，取消恢复，不新增 Schema 字段或版本。见[布尔筛选覆盖与交集](docs/page-metadata/filters.md#boolean-filter-overrides)，业务回归 `/pages/governance-compliance`。
-
-URL 缺少必需页面参数时保留页面结构，相关数据源及其依赖显示空态，不发送查询或复用旧数据；缺值文字显示“—”，无关内容正常工作。翻页、候选与导出共用空数据投影，补齐参数重新加载后恢复；无新增字段或 Schema 版本。见[缺参呈现](docs/page-metadata/params-and-text-values.md#url-缺参的页面呈现)，入口 `/pages/missing-url-inputs`。
-
-所有表头 select 筛选候选统一将显示名为 `--` 的选项放在列表最后，覆盖静态枚举、动态候选、搜索及失配已选项保留；其他选项保持原顺序，无新增 Schema 字段。见[列筛选候选值](docs/page-metadata/components/table.md#列筛选候选值)，合成入口 `/pages/table-header-placeholder-last`。
-
-IOC Header 期间控件分别记忆年、季、月最近已应用的完整期间。切回时恢复该模式的选择，季度和月份各自保留当时的年份。记忆限本次控件挂载。见[期间选择](docs/page-metadata/filters.md#dashboard-期间选择627)，合成入口 `/pages/ioc-header-flow-sticky`。
-
-按需 `pagedJoin` 复用 `toolbar.search`，由搜索字段所属成员搜索并分页，暂停其他成员排序、清除其列头条件；清空搜索回到第一页并恢复默认排序。搜索、分页和 Excel 统一执行，不新增 JSON 字段、不扫描完整匹配键；单字段包含搜索由默认 DQE 数据网关编码，多字段 OR 仍需搜索适配。见[组合查询成员搜索](docs/page-metadata/data-sources.md#paged-join-member-search)，合成入口 `/pages/paged-join-search`。
-
-Excel 表格导出复用数字格式并限制全工作簿自定义格式总量。数值、比例刻度、横杠文本与空值各自保留。无法原生缩放的数值按原始单位导出，列标题标注。见[数值与缺失值导出](docs/page-metadata/field-bindings-and-formats.md#numeric-value-display)和 `/pages/numeric-value-display`。
-
-Excel 基础数字精度统一：number-0 至 number-5 及已有带符号/千分位格式保留原值和数值类型，按最多小数位去尾零，编辑后数字格式继续生效；原生条件格式处理整数小数点及舍入零符号。页面基础数字同样统一负零为0，无新增字段或版本。见[数字精度](docs/page-metadata/field-bindings-and-formats.md#numeric-value-display)，合成入口 `/pages/number-precision-five`、`/pages/numeric-value-display`。
-
-柱图、折线图、柱线混合图及横向条形图统一数值轴单位：非百分比单位默认在数值轴末端水平显示，纵向左轴单位与刻度数字右对齐、右轴左对齐，默认字号下与下方最高刻度数字净距16px；百分号直接跟随每个刻度值（如 `10%`、`20%`），不再单独显示在轴顶；自适应格式整轴使用同一缩放档位，提示与标签保留原格式。旧页面随引擎采用新默认，显式 ECharts 配置优先，无新增字段或 Schema 版本。见[数值轴规则](docs/page-metadata/field-bindings-and-formats.md#chart-number-format)，合成入口 `/pages/chart-axis-unit`。
-
-6.116：对象字段绑定可省略 `data`，固定默认 `main`，与字符串简写一致；适用于共用字段绑定的组件及 `byFilter` 叶子，多源组件也不推断其他槽。组件数据源绑定和 `FieldReference` 约束保持，旧显式写法兼容。见[默认数据槽](docs/page-metadata/field-bindings-and-formats.md)，合成入口 `/pages/number-precision-five`。字段净增0。
-
-IOC 父子表层级选择复用“全球＝不限区域”：保留全部父行，按父行查询子表，界面与 URL 保留全球；完整父子 Excel 共用解析。内置 regionFilter 的标准三层树可使用 region-dept / office 联动，无需手写 hierarchy；普通组织树仍限两层。无新增 Schema 字段。见[层级筛选联动](docs/page-metadata/components/table.md#hierarchy-selection)，合成入口 `/pages/table-hierarchy-selection` 与 `/pages/table-hierarchy-standard-region`。
-
-层级联动父表在定位查询成功但没有归属记录，或父汇总没有匹配行时，保留表头并显示“暂无数据”。合成示例见 `/pages/table-hierarchy-standard-region?rep-office=O-empty`。
-
-行内子表格在筛选后的完整父结果只有一条可展开记录时默认展开，父结果重新加载后重新判断。计数基于分页前的明细父行。已有页面直接使用此默认行为，无需新增字段或升级 Schema。见[行内子表格](docs/page-metadata/components/table.md#row-expansion)，合成入口 `/pages/table-hierarchy-standard-region`、`/pages/table-child-keyless` 与 `/pages/table-row-expansion-inline`。
-
-6.115：IOC 页头通过 `identity.titleNavigate` 为标题配置跳转地址，复用普通 URL 导航、页面参数和筛选传参、目标校验及条件；无行上下文，省略时保持普通标题。见[标题跳转](docs/page-metadata/components/iocHeader.md#标题跳转6115)，合成入口 `/pages/ioc-header-title-link`。
-
-6.113：新增 `number-0`，四舍五入显示整数，默认加千分位、不缩放，正负半值均向远离零方向舍入，舍入零统一显示 `0`。复用 `format` / `defaultFormat`，原值、计算与排序保持；Excel 保留数值原值并展示同一整数。见[数值格式](docs/page-metadata/field-bindings-and-formats.md)，合成入口 `/pages/number-precision-five`。
-
-表格本地分页与查询分页统一使用数字页码。`pagination.mode:"local"` 的 `numbered` 保留历史兼容读取，true、false 或省略均显示数字页码，新页面无需填写；单页/空结果及不分页行为保持。字段净增0，无新增版本分支。见[分页说明](docs/page-metadata/components/table.md)，对照入口 `/pages/table-default-sort`、`/pages/table-row-number` 与 `/pages/paged-join-on-demand`。
-
-6.112：select 表头通过 `filterable.showSearch` 控制候选搜索，静态枚举和动态候选统一支持；新页面默认隐藏，旧页面保留动态搜索，显式升级时写入 true 保持原表现。全选开关独立。移除当前无法执行的“为空”菜单入口，内部空值条件的能力校验保留。见[列头候选搜索](docs/page-metadata/components/table.md#列头候选搜索6112)，入口 `/pages/table-header-filter-search` 与 `/pages/paged-join-on-demand`。
-
-表头筛选修复：所有表格变体的已生效筛选入口统一使用黑色 #191919；pagedJoin 查询分页的补充成员列支持按所属成员自动预加载候选，维度与对象 output_fields 查询均复用现有映射，不触发完整组合读取。全选继续显式配置 `filterable.showSelectAll:true`，省略或 false 隐藏。见[列筛选候选值](docs/page-metadata/components/table.md#列筛选候选值)，入口 `/pages/paged-join-on-demand`。
-
-6.109：表格搜索的 `options[].field` 支持复用 `{data,field}` 指向补充数据槽。引擎先在补充查询中完整查出匹配行键，再按每批最多1000个 ID（遵守更小的绑定 `maxValues`）分批读完主记录，统一筛选、排序、计数及分页；不反转页面 `resultBindings`。整次搜索独立限制累计100000行、64 MiB和180秒，超过1000条不再直接拒绝；完整成功结果供分页、候选和完整 Excel 导出复用，失败不发布部分结果。本次修订不新增页面字段，普通结果绑定规则保持。见[跨槽搜索](docs/page-metadata/components/table.md#跨数据槽搜索6109)，入口 `/pages/rep-business-result` 的“合同风险率明细”。
-
-表格搜索的 `toolbar.search.options` 只有一项时，固定使用该字段，只显示输入框及其 placeholder；两项及以上才显示字段选择器。无需新增 Schema 字段。见[静态搜索选项](docs/page-metadata/components/table.md#静态搜索选项642)，验收入口 `/pages/region-auth-norms-detail` 与 `/pages/table-search-options-demo`。
-
-6.108：完整本地表格通过 `props.defaultSort` 声明最终字段的初始排序，复用现有排序规则，在计算完成后先排序再分页；用户后续排序、清空和恢复视图优先。远程排序继续在查询或组合源声明。见[本地默认排序](docs/page-metadata/components/table.md#local-default-sort)，合成入口 `/pages/table-default-sort`。
-
-6.107：新增 `number-3/4/5` 与 `number-3/4/5-signed`，最多保留对应小数位并去尾零，默认加千分位；带符号格式按舍入后的展示结果统一正负号、颜色及箭头，舍入零为中性。复用 format/defaultFormat，无新增字段。见[数值格式](docs/page-metadata/field-bindings-and-formats.md)，合成入口 `/pages/number-precision-five`。
-
-按需组合查询分页允许可空字段排序，补列和完整导出沿用选页成员返回的顺序及空值位置，不再要求排序字段声明 `nullable:false`。Schema 字段净增0；关联键、窗口和准确总数校验保持。见[按需组合查询分页](docs/page-metadata/data-sources.md#按需组合查询分页676)，合成入口 `/pages/paged-join-on-demand?nulls=first` 与 `?nulls=last`。
-
-6.106：详情动作 `openDetail.title` 支持固定文字和多个当前行字段按 `parts` 顺序拼接，旧 `titleField` 保持兼容且与新字段互斥。见[详情组合标题](docs/page-metadata/components/table.md#detail-composed-title)，合成入口 `/pages/partner-health-interactions` 同时展示前端得分排序和堆叠合计。Schema 净增一个可选字段，不新增排序或图表开关。
-
-完整父子 Excel 使用同一工作表：每条父记录后紧跟子表表头和完整明细，子表从B列开始、A列留空缩进；保留格式、合并表头、序号及重复记录。沿用 `toolbar.export.rowExpansion`，无新增 Schema 字段；条件、完整性和异常说明规则保持。见[完整父子 Excel](docs/page-metadata/components/table.md#complete-hierarchy-excel)，入口 `/pages/table-child-keyless`。
-
-6.105：只读子表可省略 rowKey，按返回顺序保留重复记录；查询子表须沿用 order_by_field/type 显式声明默认排序，父表行键仍必需，显式子表行键继续严格校验。完整导出保留每条记录及父关联，无新增 Schema 字段。见[父子表格](docs/page-metadata/components/table.md#row-expansion)，合成入口 `/pages/table-child-keyless`。
-
-IOC Header Region 初始化优先选择合法候选中的“全球”，否则选择第一可用项；URL、显式默认值和恢复状态优先，用户清空后不补回。父子表首次展开与延迟回执的高度计算包含展开行，避免成功数据被裁出父表可视区。见 Region 与表格组件文档。
-
-6.104：时间筛选 default.finalizationName 按名称查询日级定稿日期，用于初始化日/月/季/年/近一年。Dashboard 期间选择的「月」模式默认禁选定稿月之后的月份，截止月仍查询完整自然月。「近一年」截至定稿月，定稿日期不可用时截至当前月，含截止月共十二个自然月。该规则适用于当前引擎读取的所有页面版本，沿用现有字段。下钻显式传递起止时保留已应用窗口。见[定稿日期默认值](docs/page-metadata/filters.md#定稿日期默认值6104)，合成入口 `/pages/finalization-default-time`。
-6.103：柱状图字段系列可声明 `aggregate: "avg"`，前端对当前图表全部有效字段值求均值，并在每个原类别显示同一均值柱；与普通当前值系列并排比较。见[前端均值柱系列](docs/page-metadata/components/barChart.md#bar-series-average)，合成入口 `/pages/sdt-period-aggregation`。
-
-6.102：字段绑定 `format` 支持 `{type:"time",pattern:"YYYY-MM-DD HH:mm:ss"}`，兼容常见时间结构并统一按固定 UTC+8 展示；无时区输入按 UTC，表格显示与导出共用格式，Excel 写为文本。旧格式保持。见[时间格式串](docs/page-metadata/field-bindings-and-formats.md#time-format)，合成入口 `/pages/table-time-format`。
-
-6.101：对象查询的期间绑定可只声明 `{target:"time"}`，引擎统一生成“周期类型＋账期”：年 yearly/年码、季 quarterly/YYYYQn、月 monthly/YYYYMM；单期等值，多期使用闭区间。复用 periodPolicy 表达固定粒度或能力限制；显式日期字段与手写对象条件保留。见[对象账期](docs/page-metadata/queries-and-bindings.md#标准对象账期6101)，合成入口 `/pages/object-period-query`。Schema 字段净增零。
-
-表格普通文本主值按列宽单行省略，溢出时鼠标悬停通过 tooltip 展示完整原文；取消字符数阈值与“更多”点击展开，静态导出保留全文。无需新增 Schema 字段。见[单元格溢出省略与悬浮提示](docs/page-metadata/components/table.md#单元格溢出省略与悬浮提示)，合成入口 `/pages/table-long-text`。
-
-6.100：维度查询绑定可用 `when` 复用筛选条件语法，仅条件允许时下推该绑定的谓词，保留筛选状态、URL 和按钮选择。组件显隐仍独立；旧绑定省略 `when` 保持原行为。见[查询绑定生效条件](docs/page-metadata/queries-and-bindings.md#filter-binding-when)，合成入口 `/pages/filter-binding-when`。
-
-6.99：表格字段列新增 `arrowRule`，与 `colorRule` 一样支持 `fixed` 与 `sign`；可配置上箭头、下箭头或不显示，正负映射可反向，箭头与颜色独立；默认放在数值前，可用 `position:"after"` 放在后面。省略规则不显示箭头。相对已发布协议列级字段净增1，方向/精度判断由引擎复用。见[表格上下箭头](docs/page-metadata/components/table.md#table-trend-arrows)，合成入口 `/pages/table-trend-arrows`。
-
-IOC Header 行内布局取消固定标题列，普通与紧凑页头均自然换行，主体不产生内部滚动条；所有屏幕页头滚出原位置后吸顶，静态导出不吸顶。无需新增 Schema 字段。见[唯一页头](docs/page-metadata/page.md#唯一页头641)，合成验收入口 `/pages/ioc-header-flow-sticky` 与 `/pages/ioc-header-section-sticky`。
-
-IOC Header 嵌套滚动边界识别跨越 ShadowRoot，保持[既有吸顶语义](docs/page-metadata/page.md#ioc-页头进入分区681)：挂载区域自身滚动时固定在该区域的可见顶部，保留外层公共页头。复现场景见 [Mount 滚动验收](pages/capabilities/ioc-header/section-component/README.md)。本次修复不改变页面声明、默认值或创作规则。
-
-表格列头弹层移除“清除筛选”按钮；取消勾选或清空日期/数值范围即可清空该列条件，无需新增配置。
-
-6.98：列头 `filterable.showSelectAll:true` 显式展示“全选”，省略或 false 不展示。静态和动态候选全选后该列不限，包含空值并保留其他条件；新配置无需 allBehavior，旧字段兼容保留。见[列头全选](docs/page-metadata/components/table.md#table-header-select-all)，合成入口 `/pages/table-header-select-all`。
-
-6.97：普通指标查询可用 `query.periodAggregation` 声明近一年按业务维度分组，每个数值字段统一配置 `field + aggregate: sum | avg`。统一数据执行层读取完整月度结果后聚合，表格和 Chart 共用输出；首版使用完整结果的本地分页。见[期间字段聚合](docs/page-metadata/queries-and-bindings.md#period-aggregation)，合成入口 `/pages/sdt-period-aggregation`。
-
-普通期间时间绑定默认跟随年／季／月，近一年按月，与旧 `dashboardToolbar` 或新旧 `iocHeader` 的位置无关；固定粒度复用 `periodPolicy`，自定义日期字段仍按原格式传入范围。无需新增字段或提升旧页 Schema 版本。见[期间查询策略](docs/page-metadata/queries-and-bindings.md#查询独立期间策略)，入口 `/pages/period-query-defaults-legacy`。
-
-多数据源表格的链接、筛选联动与详情入口优先定位当前实际行，同一 `rowKey` 可用于多条阶段明细关联补充数据；旧行回调仍只通过唯一有效行键重新定位。无需修改 Schema 或查询粒度。见[当前行定位与补充数据关联](docs/page-metadata/components/table.md#table-row-action-identity)，合成入口 `/pages/table-multi-source-navigation`。
-
-IOC 页头返回统一使用 `props.back:true`，默认按浏览器后退能力显示并调用 `history.back()`，可选 `navigation.back` 覆盖。6.111 起 `false` 显式隐藏，省略同样隐藏；6.96 的 `"auto"` 已废弃但兼容为 `true`，不再依赖下钻来源。见[IOC 公共页头](docs/page-metadata/page.md#ioc-公共页头632)，入口 `/pages/ioc-auto-back-source` 与 `/pages/ioc-back-hidden`。
-
-6.95：表格列 `selection.writes` 可用 `level` 显式选择目标维度筛选的组织层级；复用页头 Region 状态、候选校验和查询绑定。省略保持原默认层级行为。见[单元格点击与筛选联动](docs/page-metadata/components/table.md#单元格点击与筛选联动)，入口 `/pages/ioc-header-controls`。
-
-6.93：按可信字段语义全局选择金额、比率、人数、资源、存储与时长格式，组件显式格式优先；增加9个封闭预设，字段净增0。所有百分比在原始绝对值严格超过500时默认显示阈值文案，正值为 `>500%`，负值为 `<-500%`。表格箭头由列级 `arrowRule` 声明。同比/环比基期非正或缺失返回null，普通ratio保持。系统空值统一显示单个长横线 `—`，图表与百分比同样不追加百分号或单位。见[统一语义格式](docs/page-metadata/field-bindings-and-formats.md#numeric-value-display)，合成入口 `/pages/semantic-numeric-display`。
-
-普通查询表格首屏按 DQE `order.order_by_field/type` 回显列头方向，用户操作后沿用会话排序；不新增字段或改变查询。常量基线与指标排序可以同时使用。声明和边界见[查询默认排序](docs/page-metadata/components/table.md#查询默认排序的首屏方向)，入口 `/pages/query-sort-baseline`。
-
-6.92：期间比较可省略 `fact`，直接按页头已应用的完整期间查询本期、去年同期和上期，无需预览或宿主截止事实；旧显式 fact 仍保持进度对齐与缺失拒绝。见[完整期间比较](docs/page-metadata/queries-and-bindings.md#按页头完整期间比较692)，入口 `/pages/business-result-metrics-2`。
-
-可选 IOC Region 空选时首屏立即查询，不等待组织候选；有选值及显式候选上下文仍执行原校验。候选弹层固定搜索框，仅列表滚动。声明边界与业务页验收见[筛选器](docs/page-metadata/filters.md)，入口 `/pages/region-authorization-norms`；不新增 Schema 字段。
-
-维度下拉的空选文案显示在输入框。IOC 页头的具名固定枚举多选可只写 `label`，空选时显示「请选择」加名称，收起且全选时显示「全部」加名称；显式 `emptyLabel` 优先作为空选文案。见[下拉搜索与普通树](docs/page-metadata/filters.md#下拉搜索与普通树643)，合成入口 `/pages/ioc-header-demo`。
-
-6.91：IOC 页头通过 `props.components` 组合 `filterControl` 和内置标准 Region 的 `regionFilter`，复用现有筛选、查询与集成应用接线。旧 `filterIds` 继续读取。见[页头子控件](docs/page-metadata/components/iocHeader.md#页头子控件691)，合成验收 `/pages/ioc-header-controls`。
-
-6.90：普通维度筛选可从 inline/query 页面数据源指定输出读取完整候选，按稳定值去重；图表卡下拉复用该声明，树的父子节点按自身值独立单多选。见[数据源候选](docs/page-metadata/filters.md#source-candidates)，合成入口 `/pages/filter-source-candidates`。
-
-平面维度下拉可复用候选查询的 `order.offset:0` 和 `order.limit` 按需取候选值，滚动续页，已选值由后端单独校验。页面协议字段和版本不变。见[候选查询分页](docs/page-metadata/filters.md#source-candidate-query-pagination)，合成入口 `/pages/filter-source-query-pagination`。
-
-6.89：柱状图（含柱线组合）和折线图的 `props.series[].visibleWhen` 复用展示条件。条件不允许时移除系列、图例及悬浮提示中的该项，隐藏无可见系列使用的数值轴；恢复时沿用原系列颜色和高级样式对应关系。全部系列隐藏仍保留标题和容器，不改变查询定义。见[系列条件显隐](docs/page-metadata/components/barChart.md#chart-series-visibility)，合成入口 `/pages/chart-series-visibility`。
-
-6.88：新增 `cny-adaptive-trimmed`、`cny-adaptive-trimmed-no-yuan`、`usd-adaptive-km`，按原始绝对值选档、对称四舍五入、去尾零并加千分位。旧金额格式语义保持。声明与规则见[金额自适应](docs/page-metadata/field-bindings-and-formats.md#金额去尾零与美元km688)，合成验收入口 `/pages/operation-money-formats`。
-
-6.87 新增同比格式 `yoy-p-signed`：先四舍五入保留两位小数，再乘100显示整数并追加P；符号与按正负着色遵循舍入结果。声明与合成示例见[同比格式](docs/page-metadata/field-bindings-and-formats.md#同比格式687)。
-
-6.85：select 表头可用 `initialParam` 引用页面维度参数作为一次性初值；`allBehavior` 显式区分枚举全选的值集合与不限。用户清空后不补回初值，首请求、恢复及导出共用会话视图。见[表头参数初值](docs/page-metadata/components/table.md#table-header-params)。
-
-6.83 支持独立单行指标关联：`joinAggregate.keys: []` 将独立查询的整体均值等度量用于每个主行，仅允许 unique，空值、失败和多行结果沿完整依赖规则处理。无需新增图表专用字段；均值查询不绑定区域即可保持全局范围。语义见[具名算子](docs/page-metadata/compute.md#独立单行指标关联683)，合成入口 `/pages/chart-global-benchmark`。
-
-
-Embed 省略 `initialSearch` 时自动读取当前 URL（含 hash 路由 query），显式值或空串优先；初始化通过后清理未声明参数，保留页面参数、筛选、Tab 和宿主指定键；Embed 提供默认地址替换，宿主可覆盖。页面字段与 Schema 不变。地址同步见 [URL 参数清理](docs/page-metadata/actions-and-navigation.md#url-参数清理与地址同步)，规则和合成入口见 [URL 输入](docs/page-metadata/params-and-text-values.md#embed-的-url-输入)。
-
-6.82：select 列头筛选支持 `filterable.defaultValues` 固定原始值，首屏查询与选中态同步；清空后保持清空。声明、重置例外和数据源所有权见[列头筛选默认值](docs/page-metadata/components/table.md#列头筛选默认值682)，入口 `/pages/table-header-filter-defaults` 与 `/pages/table-header-filter-defaults-query`。
-
-按需组合分页忽略补充来源的空关联键行并明确告警，主行、分页和单账号条件保留；页面及导出共享告警，原始数量、身份和执行错误边界保持。无需新增页面字段，见[按需组合查询分页](docs/page-metadata/data-sources.md#按需组合查询分页676)，合成入口 `/pages/paged-join-on-demand?supplementKey=empty`。
-6.84 增加 boolean 筛选器 `overridesFilters`：勾选后以已绑定的布尔查询条件覆盖指定维度筛选，保留原选择，取消后恢复；查询、候选校验与完整导出使用同一生效范围。IOC 重点国代（`key-office` / `key-national-only` / `key-rep-only`）现统一与 Region 取交集，历史显式 Region 覆盖保持可读但不再生效，不增加字段或配置开关；中文值/客户级别映射见[布尔筛选覆盖](docs/page-metadata/filters.md#boolean-filter-overrides)，合成入口 `/pages/key-office-priority-demo`、`/pages/key-office-priority-target`。IOC Region 仅规范值 `全球` 不产生地区条件，中国/海外等节点仍过滤；其他筛选照常生效。真实组织与重点名单仍由集成应用提供。
-
-引擎统一兼容组织键计算中的空记录：`unionKeys`、`joinAggregate` 跳过空组织行，保留有效组织、零分、负分及脱值数量告警；页面 Schema 不新增字段或开关。限制及 `/pages/missing-organization-key` 合成验收入口见[空组织键兼容](docs/page-metadata/compute.md#空组织键兼容)。
-
-6.79 支持多条独立完整汇总查询组成同一置顶行：`pinnedTop.additionalData` 声明额外查询槽，列级 `pinnedTop.text` 声明固定纯文本。浏览器在汇总加载时先显示置顶占位行，汇总值就绪后原位填入。明细不参与汇总计算，任一汇总异常保留明细并拒绝完整导出。见[表格模块](docs/page-metadata/components/table.md#独立查询置顶行660)，可观察入口 `/pages/business-result-metrics`（真实 DQE 查询配置，内网取数另验）。
-
-
-IOC Header 认领的客户类型筛选由组件查询规则固定使用 `dim_name:"客户级别"`，覆盖页面误写的查询字段；既有绑定仍控制订阅范围，普通筛选不受影响。无需新增 Schema 字段，标识与边界见[筛选规则](docs/page-metadata/filters.md#business-filters)，合成入口 `/pages/ioc-customer-query-field?customer-category=战略`。
-
-IOC Header 默认用 `region-dept=value` / `rep-office=value` 表达地区部或代表处，页面无需增加 URL 映射字段。同组参数按 URL 顺序取最后项，旧 value/level 链接继续兼容，普通页面筛选保持原行为。见[Region 默认 URL 输入](docs/page-metadata/filters.md#region-level-url)，合成入口 `/pages/ioc-region-url-demo`。本更新不新增页面字段或 Schema 能力下限。
-
-IOC Region 的旧链接只传 `region=value` 时，从各层完整授权候选中唯一匹配稳定值后应用层级。匹配完成前阻断依赖查询，跨层同值时提示补充层级。存量页面无需迁移，合成入口 `/pages/ioc-region-url-demo?region=上海代表处`。见[Region 默认 URL 输入](docs/page-metadata/filters.md#region-level-url)。
-6.80：表格列支持 `enumValues` 前端枚举，统一用于单元格、静态筛选选项和导出；原始编码仍参与条件与交互。见[表格列枚举](docs/page-metadata/components/table.md#前端列枚举680)。
-
-数据加载时保留真实组件结构。独立 DQE 查询分别发送请求并受控并发；表格首次加载保留表头，表体和指标卡数值位置都显示从左向右扫光的灰色骨架。筛选、翻页或同一引擎实例内返回页面时，支持展示回执的组件可复用上一份完整展示，当前结果就绪后原位更新。指标卡首次取数和重查等待均显示灰色扫光骨架，当前结果就绪后直接显示最终值。系统启用减少动态效果时显示静态骨架。旧展示不进入查询、计算或导出。声明与边界见[加载时保留组件结构](docs/page-metadata/data-sources.md#screen-loading)，合成验收入口 `/pages/loading-structure-demo` 和 `/pages/metric-card-loading`。无需新增页面字段或升级 Schema。 级联表格在正确行集和顺序确定后，可通过独立展示通道渐进补列；失败列保留 `--`，正式查询及完整导出仍检查完整结果，见[级联表格渐进补列](docs/page-metadata/data-sources.md#progressive-table-columns)。
-
-6.78 支持期间比较按当前页业务键补查：复用 `pagedJoin.pagination.mode:query`，当期选页后补查上期/去年同期，组合源同层 `compute` 仅允许逐行 delta/ratio，投影字段可声明缺记录补零。主查询决定行域与总数，完整导出逐页补查；计算列不提供全局排序筛选。见[按页期间比较](docs/page-metadata/queries-and-bindings.md#period-comparison-query-page)，合成验收 `/pages/period-comparison-query-page`。
-
-6.77 增加期间比较查询 `periodComparison`、逐度量缺记录策略和百分点格式 `points-1-signed`。年/季/月/近一年按可信统计进度派生基期，完整结果关联后支持排序、筛选、分页及导出。见[自动同比环比查询](docs/page-metadata/queries-and-bindings.md)，合成验收 `/pages/period-comparison-demo`。 查询准备失败会发布数据源错误，其他独立查询继续完成；缺失宿主截止事实的可观察入口为 `/pages/period-comparison-demo?state=missing-fact`。
-
-6.75 增加 boolean 筛选器的 enabledWhen 和 boolean 候选依赖；候选约束传递显式 true/false，原本未选代表处时不因交集更新要求额外确认。跨页共享值由宿主显式接入，各页面独立管理候选与查询状态。见[重点国代筛选集成](docs/page-metadata/filters.md#boolean-candidate-context)，合成验收入口 `/pages/key-office-filter-demo` 和 `/pages/key-office-filter-target`。
-
-表格 select 表头候选的共用 DQE 网关已接入完整结果分批读取及前端去重：保留原指标与维度，默认最多扫描1000条原始结果、每批200条（最多5批），更大范围须在集成配置中显式提高上限；每批通过校验后可在打开的菜单中呈现已获选项，后续批次去重追加；超限、总数不一致、截断或权限失效时拒绝或撤回暂存项。完整后判定候选总数与失配。选项列表滚动到底部自动续载，不再显示“加载更多”按钮；搜索框固定，仅列表滚动，切换关键词后回到顶部。表格可见且绘制后空闲预加载、点击菜单按需获取；主查询可抢占后台候选，候选状态不阻塞整表渲染。页面声明不变。见[列筛选候选值](docs/page-metadata/components/table.md#列筛选候选值)，合成 DQE 验收入口 `/pages/table-column-candidates-query`。
-
-6.74 增加受控计算 `unionKeys`：从多个完整结果按同名稳定维度键取并集，再用 `joinAggregate` 补齐单项、`sumFields` 计算总分。单项缺失保留 null；查询数值空文本归为缺项并使用 missingText，真实 0 保留。见[组织键并集](docs/page-metadata/compute.md#组织键并集674)，验收入口 `/pages/union-keys-demo`、`/pages/partner-health-union-null-probe`（Mock）。
-
-6.73 为 `pagedUnion` 成员增加显式 `rowKeyGeneration: "uuid"`，与 `rowKey`、`rowKeyFields` 三选一。UUID 标识本次返回行，允许可空业务字段；业务重复及分页重叠由上游保证，计数、排序和完整批次校验保持。见[成员行键策略](docs/page-metadata/data-sources.md#分页合并成员行键策略673)，合成验收入口 `/pages/multi-source-generated-key`。
-
-6.72 为 `pagedUnion` 成员增加 `rowKeyFields` 组合行键，与旧 `rowKey` 二选一；组合字段全部非空、整个组合唯一，保留旧身份编码且不改变排序和分页规则。见[分页合并源](docs/page-metadata/data-sources.md#分页合并源-pagedunion661)，合成验收入口 `/pages/multi-source-composite-key`。
-
-6.71 为 `sumFields` 增加 `onMissing:"zero"` 与单字段列表；缺项及全部缺项按 0 相加，旧策略保持。声明与边界见[字段求和](docs/page-metadata/compute.md#字段求和与缺项归零671)，合成场景 `/pages/sum-fields-missing-values`，业务页 `/pages/partner-health`（组织并集及顶部国内/海外整体记录统一取回，分类与总分同范围计算，顶部切换只影响卡片；具体组织复用组织得分，图表仅保留代表处，表格双页签始终保留）。
-
-Schema 6.67 增加查询绑定 `periodPolicy`（固定粒度或按所选周期）与展示条件 `part:"mode"`。新策略独占时间粒度和起止，6.86 起季度按 `period:"quarter"` 与 `YYYY-Qn` 起止编码（如 `2026-Q3`），IOC 页头认领的普通期间绑定省略策略时默认跟随年/季/月，近一年按月，显式策略及比较/字段时间绑定优先，非 IOC 旧绑定保持行为；表格字段列及分组列复用 `visibleWhen` 读取已应用的期间模式。声明、映射与兼容规则见[查询独立期间策略](docs/page-metadata/queries-and-bindings.md#查询独立期间策略)、[期间选择](docs/page-metadata/filters.md#期间选择与查询消费)，验收页为 `period-query-columns-demo`。
-
-饼图 `pieChart`（6.64：左右表格式图例与图形整体居中、16px 列间距、可选列单位及对齐、默认保留输入顺序、显式排序与固定类别顺序；场景 `/pages/pie-table-legend`） → [模块参考](contracts/metriccanvas/page/reference/components/pieChart.md)。
-
-表格自 6.62 起在字段列和分组列上声明 `visibleWhen`，搜索、用户列操作与冻结导出随可见列同步；旧表格保持原规则。见[列条件显隐](docs/page-metadata/components/table.md#table-column-visibility)。
-
-表格列与柱状图／折线图系列显隐共同参与按需取数，不新增 Schema 字段：无其他消费者或执行依赖的数据停止查询，共享查询保留类别粒度及必要依赖，恢复显示按当前筛选读取。普通单项查询可裁剪独立指标输出，复杂查询保守保留；声明和完整结果字段契约不变。边界见[列显隐](docs/page-metadata/components/table.md#table-column-visibility)与[系列显隐](docs/page-metadata/components/barChart.md#chart-series-visibility)，合成验收入口 `/pages/conditional-query-demand`。
-
-图表配置项自 6.59 起可从字段或常量取值，`field` / `value`（或 `valueField` / `value`）互斥；覆盖全部图表及仪表，详见[组件取值与空态](docs/page-metadata/field-bindings-and-formats.md#chart-constant-values)。
-
-页面元数据是统一运行时消费的声明式JSON文档。当前作者协议为 **6.107**。读取兼容范围与各能力的版本下限由 `packages/page/src/version.ts` 的 `versionPolicy`、`supportedVersions()` 和能力表定义；结构事实由 `packages/page/src/schema/` 单向导出，未声明属性不被接受。
-
-高级图表呈现扩展自 6.32 起通过隐含 `props.echartsOption` 声明，仅用于明确的 ECharts 定制需求；见[高级扩展](docs/page-metadata/chart-option.md)。
-
-柱状图公共默认柱宽统一为16px，覆盖普通、横向、堆叠、预测和混合柱系列；显式高级覆盖仍生效。声明与验收入口见[柱状图默认柱宽](docs/page-metadata/components/barChart.md#默认柱宽)。
-
-6.41 将通用 DashboardToolbar 的呈现能力并入 IocHeader，只保留一个页头实现。6.81起新页面使用首 section 首组件 `type:"iocHeader"`，业务属性位于 `props`；根级 `iocHeader` 保留兼容读取，旧 `dashboardToolbar` 只作兼容读取；布局、更多筛选、只读和说明见[唯一页头](docs/page-metadata/page.md#唯一页头641)。仅选年份使用共享 `periodModes:["year"]`，见[现有期间页面](pages/capabilities/filters/dashboard-period-filter.json)。 Header组件默认自带16px底部外间距，声明和兼容边界见同一页头模块。
-
-6.63 为组合卡增加 `filterLayout:"toolbar"`。有可见左侧筛选时，标题独占首行，左右筛选在标题下方排列。只有右侧筛选时，空间足够则与标题同排并垂直居中。右组整体贴右、紧凑排列，窄屏整组回流。示例 `/pages/filter-group-parallel-selects` 与 `/pages/business-result-metrics`，见[组合卡](docs/page-metadata/components/compositeCard.md#筛选工具栏663)。
-
-6.47 为独立 `filterGroup` 增加 `display:"select"` 与 `align:"right"`，支持图表卡左侧按钮、右侧下拉共享查询筛选。入口 `/pages/filter-group-page`，声明与状态规则见[独立筛选](docs/page-metadata/components/filterGroup.md)。
-
-IOC Region 默认采用单个树形下拉，单选层级筛选在树内原子提交层级与业务值，不显示前置层级按钮。完整场景 `/pages/ioc-header-standard`，声明与兼容边界见[筛选结构树](docs/page-metadata/filters.md#business-filters)。
-
-6.46 补齐 `selection:{mode:"multiple",required:true}` 的非空多选：保持离散集合并拒绝清空，单选仍至多一个。七主题 IOC 合成验收入口为 `/ioc-header-review`；完整声明、主线迁移及证据边界见[筛选声明](docs/page-metadata/filters.md#ioc-业务批量场景与必选多选646)。
-
-6.50 新增 `query.queryModes`：固定单选筛选选择完整静态 DQE 查询，允许不同分支提交不同完整查询并共享稳定结果字段契约；真实表路由须实测，原始字段不同使用6.57页面响应映射。Chart 保持同一个 `data.main`，其他筛选按当前分支绑定下推；演示 `/pages/query-mode-chart-demo`，声明与限制见[查询分支](docs/page-metadata/queries-and-bindings.md#query-modes)。
-
-6.56 允许 DQE `output_dims` 中的现成计数或金额显式映射为页面数值度量，直接用于图表系列；不改写查询或自动聚合。声明与限制见[结果字段角色](docs/page-metadata/fields.md#dqe-output-measures)，验收入口 `/pages/stored-count-measures`。
-
-双数值轴默认对齐主副轴刻度且仅主轴绘制网格线，保留两侧标签、格式与单位；显式高级配置仍生效。见[双轴呈现](docs/page-metadata/components/barChart.md#双轴刻度与网格线)，验收入口 `/pages/dual-axis-alignment`。
-
-组合表格默认兼容动态异常数据：空值或缺字段局部补空，无效行跳过，同一来源重复 key 保留第一条；页面不额外展示诊断提示，诊断通过 console.warn 输出；Excel 附“数据异常说明”。先完整整理可用行再排序、计数、分页，配置、权限、网络和资源限制保持。无需新增页面字段；声明、限制及合成入口 `/pages/table-data-recovery` 见[组合表格异常兼容](docs/page-metadata/data-sources.md#table-result-recovery)。
-
-IOC 页头默认返回（2026-11-05）：`props.back:true` 默认调用浏览器 `history.back()`，浏览器判断不可后退时隐藏；可选 `navigation.back` 覆盖，不要求 `returnContext`。不增删 Schema 字段。合成入口 `/pages/ioc-default-back-source` → `/pages/ioc-default-back-target`，详见[IOC 公共页头](docs/page-metadata/page.md#ioc-公共页头632)。
-> IOC 页头的 note、只读原因及候选确认提示仅输出 console.warn，不在筛选组件外显示；组件内部的状态、禁用和重试保留。详见[IOC 公共页头](docs/page-metadata/page.md#ioc-公共页头636)。
+> 历次 `6.x` 次版本能力增量与零字段运行时行为变更已独立归集于 **[页面协议演进与变更日志](docs/changelog/page-metadata.md)**；查阅精确字段语义、Schema 结构表与合法/反例夹具请直接进入各模块参考。
 
 ## 从需求到页面
 
-记录模式组合源 `pagedJoin.records` 的查询参数按成员显式绑定：下钻审批人可仅进入主表，不创建审批人筛选器或候选查询；补列源仍按关联键补列。非记录模式的全员参数约束与业务筛选规则保持。此为参数消费校验修复，不新增字段或 Schema 版本；需同步更新引擎。声明、可选标题缺值与合成验收入口见[记录模式](docs/page-metadata/data-sources.md)和 `/pages/record-join-query-params`。
+创作先取得受治理的数据上下文，确定性工具按页面构建规格装配完整页面，经过校验后交统一运行时。数据上下文、会话、执行身份与修订信息不写进页面文档。页面协议可表达、Authoring 工具已支持、外部服务已接通分别举证。
 
-本地创作可先用页面 JSON 和指标说明 MD 识别组件用数、指标候选、取数条件与缺口；已有页面的局部呈现修改只查所涉属性，不要求重新读取全部数据协议。工具与证据分层见[本地 Skill 维护](docs/agents/local-authoring-skill-maintenance.md)，可观察页面见[指标匹配与字段呈现](pages/capabilities/layout/local-authoring-knowledge-demo.json)。匹配报告和查询候选是创作期产物，不新增页面字段，不等于真实查询已验证。 局部接数可按组件读取相关数据源及共享消费者，最终仍校验完整页面；已有可信绑定不要求重做全页指标报告。操作与范围边界见[局部接数示例](pages/capabilities/layout/README.md#局部接数共享指标与独立内容)。
+新建页面先明确布局形态（`dashboard` / `report`）并显式声明 `layout`；外框含义与默认值见[页面与布局](docs/page-metadata/page.md#创作时显式选择布局形态)。本地创作 Skill 在生成前完成用户确认并按形态读取成型页面范式；这不新增资产类别或协议字段。
 
-创作先取得受治理的数据上下文，确定性工具按页面构建规格装配完整页面，经过校验后交统一运行时。数据上下文、会话、执行身份与修订信息不写进页面文档。页面协议可表达、Authoring工具已支持、外部服务已接通分别举证。
+页面拥有命名数据源（`dataSources`）、筛选器（`filters`）、可选页面参数（`params`）和内容分区（`sections`）；组件的数据槽引用数据源，字段绑定引用结果字段契约。`queryField` 属于查询字段空间，页面字段 ID 和筛选器 `dimension` 不能靠同名隐式绑定。数据快照是运行状态，不是作者文档。
 
-装配失败回执区分输入块与候选页面的校验位置，详见[创作期诊断边界](docs/page-metadata/page.md)；可观察反例见[MC 内容包诊断](pages/capabilities/layout/README.md#mc-内容包布局与版本检查)。诊断不新增页面字段，也不改变 Relay 的状态、保存或产物交接职责。
+默认运行态保障（均由引擎承接，无需新增协议字段）：
 
-新建页面先明确布局形态（Dashboard／Report）并显式声明 `layout`；外框含义与默认值见[页面与布局](docs/page-metadata/page.md#创作时显式选择布局形态)。本地创作 Skill 在生成前完成用户确认并按形态读取成型页面范式；这不新增资产类别或协议字段。
-
-页面拥有命名数据源、筛选器和内容分区；组件的数据槽引用数据源，字段绑定引用结果字段契约。queryField属于查询字段空间，页面字段id和筛选器dimension不能靠同名隐式绑定。数据快照是运行状态，不是作者文档。
-
-浏览器缺少 `AbortSignal.any()` 时，取数与导出由运行时兼容，沿用原页面元数据。
-
-查询失败时，页面 UI 组件呈现空数据，具体错误打印到控制台，内部错误态及 `data-error` 事件保留。层级联动父表与已展开子表保留表头，没有可展示行时在表体显示“暂无数据”。普通查询的 `totalCount` 与返回行数不一致仅告警，继续渲染已有行；详见[查询异常与结果总数](docs/page-metadata/data-sources.md#查询异常与结果总数)。
-对象完整结果在页面显示时若 `total_count: 0` 但有返回行，保留原始总数和返回行，控制台输出带组件/数据源位置的 `TOTAL_COUNT_MISMATCH`，完整性标记为未确认。无窗口、声明完整结果的普通查询也可基于这些行执行组织并集、关联与得分计算；严格完整读取、对象导出与结果绑定的完整性检查保持。无需新增页面字段或升级Schema。父子表层级联动也保留这些父行并按已有行执行本地分页和父级投影，仍校验行键及唯一匹配；完整父子导出保持严格校验。验收入口 `/pages/query-zero-total-demo`、`/pages/query-zero-total-hierarchy`、`/pages/partner-health-union-null-probe?state=zeroTotal`，详见[零总数兼容](docs/page-metadata/data-sources.md#有返回行但总数为零)。
-
-
-页面搭建的拖动手柄、组件清单拖动排序、蓝色选框、就地操作条与删除属于创作期交互，不新增页面协议字段。组件顺序与宽度仍由 `sections[].components`、`layout.span` 声明；空分区草稿与删除行为见[内容分区与布局](docs/page-metadata/sections-and-layout.md#页面搭建中的移动与删除)，验收页面为 `pages/platform/platform-canvas-experience.json`。
-
-工作台标题与组件修改共同进入工作副本，确认保存后持久化；顶部“页面管理”与右侧“页面属性”分开。条件规则默认摘要、按需编辑，组件目录选择自动定位，查询组件形态按现有能力约束显示不可用原因；声明及验收入口见[工作台交互](docs/page-metadata/sections-and-layout.md#工作台中的保存与组件定位)与[条件编辑](docs/page-metadata/conditions.md#工作台中的条件编辑)。不新增页面协议字段。
-
-表格 select 列筛选统一从本表完整匹配结果取候选，保留其他条件并排除自身表头条件，不新增 scope 配置。候选分页和搜索独立于表格；已选值失配时保留。查询失败时保留表头筛选、静态枚举和独立候选入口，不注入未由用户配置的按钮或失败说明，失败后没有可展示明细行时也显示“暂无数据”；详细错误沿用控制台诊断；依赖失败结果的候选仍按原规则报错，不用残缺数据推断选项。弹层按内容自适应宽度。语义及远程能力边界见[明细表候选值](docs/page-metadata/components/table.md#列筛选候选值)，合成补查失败场景 `/pages/period-comparison-query-page?state=error`。
+- **结构优先加载与错误隔离**：拿到合法页面后立即挂载真实页头、筛选控件、分区与组件外壳；查询失败时保留组件结构、输出脱值控制台诊断与 `data-error` 事件，详见[屏幕加载与查询异常](docs/page-metadata/data-sources.md#screen-loading)。
+- **IOC 页头组件化**：新页面统一在首分区首位使用 `type: "iocHeader"`（业务属性在 `props`），旧根级 `iocHeader` 与 `dashboardToolbar` 仅保留兼容读取；详见[分区页头](docs/page-metadata/page.md#ioc-页头进入分区681)。
+- **按需取数与条件裁剪**：隐藏表格列、图表系列与无消费者的关联计算自动跳过取数，详见[条件显隐](docs/page-metadata/conditions.md)。
 
 ## 文档结构与维护分工
 
-表格 `selection.writes` 通过声明的维度筛选器联动下游查询；有真实值的选择列与链接列显示下划线；显示缺省文案的单元格为普通文本，不响应选择、导航或详情点击。完整声明、查询订阅与内联入口边界见[单元格点击与筛选联动](docs/page-metadata/components/table.md#单元格点击与筛选联动)，可观察示例为 [table-cell-selection](pages/capabilities/table/table-cell-selection.json)。
-
-所有表格默认最多显示十二行数据，超出部分表内滚动，表头和分页保留，静态导出展开完整内容；见[十二行可视高度](docs/page-metadata/components/table.md#十二行可视高度)，合成入口 `/pages/table-twelve-row-viewport`。无需新增字段。
-
-表格的普通、预测矩阵与内嵌变体采用 TinyVue OS 网格外观，`reportCompact` 保持既有紧凑外观；范围及可观察示例见[表格渲染外观与变体](docs/page-metadata/components/table.md#渲染外观与变体)。此调整不新增协议字段。
-
-本文件维护页面协议概览、版本边界与阅读导航。使用步骤与跨字段示例由专题文档维护，字段语义由模块维护，精确结构表从Schema生成；同一规则在所属文档维护后由其他入口引用。
+本文件维护页面协议概览、版本边界与阅读导航。使用步骤与跨字段示例由专题文档维护，字段语义由模块维护，精确结构表从 Schema 生成；同一规则在所属文档维护后由其他入口引用。
 
 | 文档层次 | 职责与入口 |
 |---|---|
-| 协议总览 | 本文件：页面组成、能力边界、版本与专题导航 |
+| 协议总览 | 本文件：页面组成、能力边界、版本边界与专题导航 |
+| 版本演进与变更日志 | [页面协议变更日志](docs/changelog/page-metadata.md)：历次 `6.x` 次版本增量、运行时容错与零字段引擎演进记录 |
 | 参数与筛选专题 | [PAGE-PARAMETERS.md](PAGE-PARAMETERS.md)：维度与时间输入、初始化、页内筛选、期间文字、时间窗口和兼容用法 |
 | 查询依赖专题 | [级联查询](docs/cascading-queries.md)：结果绑定、请求顺序、明细完整性、计算与完整示例 |
 | 集成应用接入专题 | [报告导出与PDF下载](docs/report-export.md)：内置下载、后台编码、运行环境及失败处理 |
-| 模块语义源与生成参考 | `docs/page-metadata/`维护作者语义；[模块参考](contracts/metriccanvas/page/reference/README.md)提供Schema生成的字段表、分支、合法示例和反例，同时分发到Authoring Bundle与Skill |
+| 模块语义源与生成参考 | `docs/page-metadata/` 维护作者语义；[模块参考](contracts/metriccanvas/page/reference/README.md)提供 Schema 生成的字段表、分支、合法示例和反例，同时分发到 Authoring Bundle 与 Skill |
 
-[机器索引](contracts/metriccanvas/page/reference/index.json)记录Schema位置、模块与示例覆盖；[完整Schema](contracts/metriccanvas/page/reference/schema.json)与参考正文同时生成。修改模块语义或示例索引后运行 `pnpm authoring:contracts`，不要手工维护分发副本。
-
-6.56 支持 AI Summary 作为组合卡子组件；`scope: "container"` 显式总结直接所属区域，摘要须位于区域或页面正文最前。文字不进入分析输入，容器嵌套与既有数据规则不变。见 [AI 总结](docs/page-metadata/components/aiSummary.md)，验收入口 `/pages/report-ai-summary-regions`。
-
-6.55 支持 DQE object 查询：显式 `object_type/output_fields/filter.fields`、对象时间字段绑定及共享交互/完整结果执行。见[对象查询契约](docs/page-metadata/queries-and-bindings.md#655-dqe-对象查询)，验收入口 `/pages/dqe-object-query-demo`。
+[机器索引](contracts/metriccanvas/page/reference/index.json)记录 Schema 位置、模块与示例覆盖；[完整 Schema](contracts/metriccanvas/page/reference/schema.json)与参考正文同时生成。修改模块语义或示例索引后运行 `pnpm authoring:contracts`，不要手工维护分发副本。
 
 ## 快速查阅与验证
 
-安装文件完整性、运行依赖和页面结构/语义分别检查；命令退出 0 不代替业务检查状态。边界见[文件与目录校验](docs/page-metadata/validation.md#文件与目录校验)，可观察入口 `/pages/mc-content-layout-demo`。本次安装防护不新增页面字段或改变 Schema 版本。
-
-页面数据源结构校验按 `source.type` 定位对应分支；单查询定义的 `dsl_list` 条数错误不再混入其他数据源类型的字段要求。规则见[分支诊断](docs/page-metadata/validation.md#页面数据源分支诊断)，可观察入口 `/pages/data-source-diagnostics`。
-
-需要先观察效果再查配置时，使用[页面示例与能力索引](pages/README.md#能力索引)。页面试验场按布局、独立组件目录和数据与联动三个维度查找推荐场景；数据主线覆盖取数、条件、关联、交互、结果范围与跨页输出，并按页面实际 Dashboard／Report 布局形态筛选具体功能与直接相关的演示。同一场景跨入口复用，集中展示实际演示、目录 README 操作说明、数据关系、组件配置和当前文档试改。全部实际文件在 `/files` 中自动发现，可按文件夹、组件、布局和数据来源组合查找；移动文件保留 id 和 `/pages/<id>` 地址，无需逐页登记。推荐场景的归属信息属于开发工具，不进入页面协议或本地创作 Skill 的运行依赖；目录递归校验见[文件与目录校验](docs/page-metadata/validation.md#文件与目录校验)。
+需要先观察效果再查配置时，使用[页面示例与能力索引](pages/README.md#能力索引)。页面试验场按布局、独立组件目录和数据与联动三个维度查找推荐场景；全部实际文件在 `/files` 中自动发现，移动文件保留 id 和 `/pages/<id>` 地址，无需逐页登记。文件与目录校验边界见[文件与目录校验](docs/page-metadata/validation.md#文件与目录校验)与[页面数据源分支诊断](docs/page-metadata/validation.md#页面数据源分支诊断)。
 
 | 使用场景 | 规则与用法 | 完整页面或接入示例 |
 |---|---|---|
 | 声明页面结构、布局与组件 | [页面与布局](contracts/metriccanvas/page/reference/page.md)、[组件参考](contracts/metriccanvas/page/reference/components/README.md) | [完整页面示例索引](contracts/metriccanvas/page/reference/examples/README.md) |
 | 打开时指定维度范围与报告期间 | [当前分层参数](PAGE-PARAMETERS.md#当前分层参数新页面) | [分层参数页面](packages/page/fixtures/contract-valid/grouped-params-page.json) |
 | 顶部切换月份或日期并联动查询与文字 | [时间参数与顶部筛选](PAGE-PARAMETERS.md#时间参数与顶部筛选) | [报告页头时间筛选页面](pages/capabilities/filters/report-date-filter-example.json)、[完整合成月报](pages/capabilities/filters/report-monthly-complete.json) |
-| 先查对象集合，再查明细并关联展示 | [级联查询](docs/cascading-queries.md) | [商务SDT报告](pages/business/report/sdt/business-sdt-cascade-example.json) |
+| 先查对象集合，再查明细并关联展示 | [级联查询](docs/cascading-queries.md) | [商务 SDT 报告](pages/business/report/sdt/business-sdt-cascade-example.json) |
 | 从其他页面通过 URL 打开指定 Tab（6.33） | [Tab 初值](docs/page-metadata/components/tabContainer.md#url-初始化页签633)、[链接传参](docs/page-metadata/actions-and-navigation.md#链接传参与目标页签) | [来源页](pages/capabilities/navigation/tab-url-source.json)、[目标页](pages/capabilities/navigation/tab-url-initialization.json) |
-| 配置每张表的独立搜索与完整Excel导出（全部匹配行，普通表每批请求 200 条，准备预算30分钟，支持宿主导出权限） | [表格工具区](docs/table-export.md) | [表格工具区示例](packages/page/fixtures/contract-valid/table-toolbar-page.json) |
-| 配置 IOC 公共页头（6.36） | [IOC 公共页头](docs/page-metadata/page.md#ioc-公共页头632) | [普通](pages/capabilities/ioc-header/scenarios/ioc-header-overview-demo.json)、[密集](pages/capabilities/ioc-header/scenarios/ioc-header-dense-filter-demo.json)、[详情](pages/capabilities/ioc-header/scenarios/ioc-header-detail-demo.json) |
+| 配置每张表的独立搜索与完整 Excel 导出（全部匹配行，普通表每批请求 200 条，准备预算 30 分钟，支持集成应用导出权限） | [表格工具区](docs/table-export.md) | [表格工具区示例](packages/page/fixtures/contract-valid/table-toolbar-page.json) |
+| 配置 IOC 公共页头（6.36 / 6.81 组件化） | [IOC 公共页头](docs/page-metadata/page.md#ioc-公共页头632)、[分区页头](docs/page-metadata/page.md#ioc-页头进入分区681) | [普通](pages/capabilities/ioc-header/scenarios/ioc-header-overview-demo.json)、[密集](pages/capabilities/ioc-header/scenarios/ioc-header-dense-filter-demo.json)、[详情](pages/capabilities/ioc-header/scenarios/ioc-header-detail-demo.json) |
 | 配置 PDF / PNG 导出按钮（6.31） | [报告页头](docs/page-metadata/components/reportHeader.md#导出按钮631) | [导出图片](pages/capabilities/export/report-png-export.json)、[单张长图](pages/capabilities/export/report-png-long-export.json) |
-| 配置 Report 工具带内置 PDF 下载与按钮文字（6.28） | [报告页头](docs/page-metadata/components/reportHeader.md#内置-pdf-下载628) | [内置PDF下载页面](pages/capabilities/export/report-pdf-export.json) |
-| 下载当前筛选范围内的完整报告PDF | [导出与PDF下载接入](docs/report-export.md) | [HTML接入示例](packages/embed/examples/report-export.html) |
+| 配置 Report 工具带内置 PDF 下载与按钮文字（6.28） | [报告页头](docs/page-metadata/components/reportHeader.md#内置-pdf-下载628) | [内置 PDF 下载页面](pages/capabilities/export/report-pdf-export.json) |
+| 下载当前筛选范围内的完整报告 PDF | [导出与 PDF 下载接入](docs/report-export.md) | [HTML 接入示例](packages/embed/examples/report-export.html) |
 
-1. 按场景进入专题；按JSON路径查[模块参考](contracts/metriccanvas/page/reference/README.md)。
-2. 使用完整JSON示例，保留显式数据、参数与筛选依赖；局部片段不能单独当作页面文档。
-3. 使用 `pnpm validate <页面 JSON 所在目录>` 校验。开发工具的入口与启动命令见[页面试验场](apps/playground/README.md)。静态校验、开发态演示和真实DQE/集成应用接通分别举证。
+1. 按场景进入专题；按 JSON 路径查[模块参考](contracts/metriccanvas/page/reference/README.md)。
+2. 使用完整 JSON 示例，保留显式数据、参数与筛选依赖；局部片段不能单独当作页面文档。
+3. 使用 `pnpm validate <页面 JSON 所在目录>` 校验。开发工具的入口与启动命令见[页面试验场](apps/playground/README.md)。静态校验、开发态演示和真实 DQE / 集成应用接通分别举证。
 
 ## 页面参数与筛选
 
@@ -340,7 +64,7 @@ IOC 页头默认返回（2026-11-05）：`props.back:true` 默认调用浏览器
 <a id="无数据与时间约束"></a>
 <a id="参数的打开保存与显示"></a>
 
-页面参数是打开时确定的不可变输入，筛选器是页内可变状态。当前分层参数以 `params.query.{dimensions,times}` 与 `params.display` 区分消费位置，查询在受控DQE位置显式引用参数；参数可以只为筛选器提供初值。声明、初始化、查询消费、保存与文本取值统一见[参数专题](PAGE-PARAMETERS.md)，旧数组兼容也在该专题内说明。
+页面参数是打开时确定的不可变输入，筛选器是页内可变状态。当前分层参数以 `params.query.{dimensions,times}` 与 `params.display` 区分消费位置，查询在受控 DQE 位置显式引用参数；参数可以只为筛选器提供初值。声明、初始化、查询消费、保存与文本取值统一见[参数专题](PAGE-PARAMETERS.md)与[参数模块参考](docs/page-metadata/params-and-text-values.md)，旧数组兼容也在该专题内说明。
 
 ### 顶部时间筛选
 
@@ -348,70 +72,49 @@ IOC 页头默认返回（2026-11-05）：`props.back:true` 默认调用浏览器
 <a id="月份范围示例"></a>
 <a id="运行行为与预览"></a>
 
-`filters` 声明输入，`filterBindings` 声明查询消费，`reportHeader.props.filterIds` 声明控件位置，文本取值显式引用当前参数或筛选状态。版本下限与完整配置统一见[时间参数与顶部筛选](PAGE-PARAMETERS.md#时间参数与顶部筛选)；字段表见[筛选声明](contracts/metriccanvas/page/reference/filters.md)和[报告页头](contracts/metriccanvas/page/reference/components/reportHeader.md)。
-
-`timePoint.min` 从6.24起声明可选的最早月份/日期，下限包含自身；选择器、手工提交、URL和筛选状态共同约束。字段语义见[筛选声明](docs/page-metadata/filters.md#时间点下限624)，可操作场景见[商务SDT单月报告](pages/business/report/sdt/business-sdt-report-monthly.json)。
+`filters` 声明输入，`filterBindings` 声明查询消费，`reportHeader.props.filterIds`（或 IOC 页头 `props.components` / `filterIds`）声明控件位置，文本取值显式引用当前参数或筛选状态。版本下限与完整配置统一见[时间参数与顶部筛选](PAGE-PARAMETERS.md#时间参数与顶部筛选)；字段表见[筛选声明](contracts/metriccanvas/page/reference/filters.md)和[报告页头](contracts/metriccanvas/page/reference/components/reportHeader.md)。
 
 ## 级联查询
 
-决策意见明细提供合同与商务记录合并分页的[合成预览说明](docs/page-metadata/components/table.md)及[运行入口](pages/capabilities/table/README.md#决策意见明细)：沿用现有 query、初始 order 与表格分页，通过 Playground 专用适配器演示全局排序和类型筛选；不增加通用合并源协议。
+查询结果绑定由下游 `source.query.resultBindings` 声明，读取上游原始维度集合形成查询输入；支持 `where` 独立筛选输入行，以及查询分页窗口与任意列查询排序驱动依赖更新；与用户筛选状态分别管理。完整声明、执行顺序、边界及与 `pivot` / `joinAggregate` 的协作见[级联查询专题](docs/cascading-queries.md)，字段表见[查询定义与显式绑定](contracts/metriccanvas/page/reference/queries-and-bindings.md)。
 
-查询结果绑定自6.14起由下游 `source.query.resultBindings` 声明，读取上游原始维度集合形成查询输入；6.19起可用where独立筛选输入行而保留上游结果；6.20起允许查询分页窗口输入及任意列查询排序驱动依赖更新；与用户筛选状态分别管理。完整声明、执行顺序、边界及与 `pivot`/`joinAggregate` 的协作见[级联查询专题](docs/cascading-queries.md)，字段表见[查询定义与显式绑定](contracts/metriccanvas/page/reference/queries-and-bindings.md)。
-
-逐字段配置讲解见[首轮查询、任意列排序与分页级联](docs/page-metadata/queries-and-bindings.md#配置解读首轮查询任意列排序与分页级联)：连起来配置字段映射、初始order、表格query分页与下游resultBindings。查询分页窗口提供本轮输入，totalCount表示业务总行数；sections顺序不决定查询执行顺序。
+逐字段配置讲解见[首轮查询、任意列排序与分页级联](docs/page-metadata/queries-and-bindings.md#配置解读首轮查询任意列排序与分页级联)：连起来配置字段映射、初始 `order`、表格 `query` 分页与下游 `resultBindings`。查询分页窗口提供本轮输入，`totalCount` 表示业务总行数；`sections` 顺序不决定查询执行顺序。
 
 ## 动态标题与文本组合（6.23）
 
-所有文本取值位置可使用 `{"parts":[{"filter":"report-month","format":"period"}," 经营分析报告"]}`，主标题随已应用的时间筛选更新。片段也可引用打开时固定的参数，声明和缺值语义见[文本组合](docs/page-metadata/params-and-text-values.md#文本片段组合623)。完整验收统一在 [Report 时间选择与联动](pages/capabilities/filters/report-date-filter-example.json)，按文字联动、范围查询和未来时间限制分节展示。
+所有文本取值位置可使用 `{"parts":[{"filter":"report-month","format":"period"}," 经营分析报告"]}`，主标题随已应用的时间筛选更新。片段也可引用打开时固定的参数，声明和缺值语义见[文本组合](docs/page-metadata/params-and-text-values.md#文本片段组合623)。完整验收统一在 [Report 时间选择与联动](pages/capabilities/filters/report-date-filter-example.json)。
 
 ## 多查询表格（6.22）
 
-`pagedJoin` 组合查询源复用普通查询定义，通过稳定业务键投影到独占组合表；支持完整行域的排序、跨源数值范围、搜索与分页。声明及边界见[数据源](docs/page-metadata/data-sources.md#多查询组合源-pagedjoin622)和[表格](docs/page-metadata/components/table.md#数值范围和组合表622)。可运行验收页为 [multi-query-table.json](pages/capabilities/table/multi-query-table.json)，打开方式和逐步预期见[页面验收场景](pages/README.md#多查询表格)。页面使用本地 DQE Sim，不证明真实 DQE 能力。
-
-组合成员错误诊断：控制台先用业务字段标签说明问题和处理提示，技术信息另起定位详情，包含组合源、成员、原始查询源、关联字段/DQE 字段、配置路径，以及适用的返回行号、实际类型或结果范围；不打印业务值。验收入口 `/pages/paged-join-diagnostics`，规则见[查询异常与结果总数](docs/page-metadata/data-sources.md#查询异常与结果总数)。
+`pagedJoin` 组合查询源复用普通查询定义，通过稳定业务键投影到独占组合表；支持完整行域排序、跨源数值范围、搜索、记录模式 `records` 与按需/自动分页。`pagedUnion`（6.61 起）支持多来源投影与逐行合并分页。声明及边界见[数据源](docs/page-metadata/data-sources.md#多查询组合源-pagedjoin622)、[分页合并源](docs/page-metadata/data-sources.md#paged-union)与[表格](docs/page-metadata/components/table.md#数值范围和组合表622)。可运行验收页为 [multi-query-table.json](pages/capabilities/table/multi-query-table.json) 与 [multi-source-table.json](pages/capabilities/table/multi-source-table.json)。
 
 新功能交付须按[必选验收要求](docs/agents/feature-acceptance.md)同步页面场景、本规范对应模块和本地创作 Skill。
 
-验收页同时对照当前排序序号与固定预签金额排名：前者使用 `ordinalField`；后者由普通查询返回排名字段，再通过 `projection` 关联，切换排序和表格筛选时保留原名次。排名范围与并列规则由提供该字段的查询定义，组合源不隐式重算。
-
 ## 报告下载与完整导出
 
-Report 顶层页头可用 `reportHeader.props.pdfExport`（6.28）启用引擎内置 PDF 下载，并按需配置按钮名称和文件名；声明、默认值与示例见[报告页头](docs/page-metadata/components/reportHeader.md#内置-pdf-下载628)。标准下载由引擎按原有布局连续保存，采用零外边距；主线程分批准备画面，Web Worker负责编码，移除取消按钮和旧withExportView入口。整页下载保留成功取得的内容，部分取数失败不阻断其余内容；下载成功不代表数据完整。下载范围、限制与演示统一见[报告导出与PDF下载接入](docs/report-export.md)。
-
-Report顶层页头统一声明`exportButtons`（6.31），每项配置`format`、`label?`、`filename?`、`scale?`；一项一个按钮，点击直接下载。PDF默认2倍、支持2/3/4倍；PNG默认3倍、支持3/4倍，始终只输出一张完整PNG。不支持的scale值按未配置处理，回退对应默认倍率，不阻止打开或下载。旧`pdfExport`/`pngExport`保留读取兼容；声明与限制见[报告页头](docs/page-metadata/components/reportHeader.md#导出按钮631)。
+Report 顶层页头统一通过 `exportButtons`（6.31，旧 `pdfExport` / `pngExport` 保留兼容读取）声明 PDF 与单张高清 PNG 下载，按项配置 `format`、`label?`、`filename?`、`scale?`。下载范围、编码限制与集成应用接入方法统一见[报告页头](docs/page-metadata/components/reportHeader.md#导出按钮631)与[报告导出与 PDF 下载接入](docs/report-export.md)。
 
 ## 版本、初始化与持久化
 
-JS 嵌入的重复挂载属于宿主生命周期：同一 DOM 元素重复 `mount` 更新完整输入并返回原句柄，不新增页面字段或改变页面文档校验。详见 [Embed 生命周期](packages/embed/README.md#生命周期)；页面示例 `/pages/embed-mount-lifecycle` 使用合成计数，宿主交互入口为 embed 的 `/examples/mount-lifecycle.html`。
+新文档写当前作者版本（见 `packages/page/src/version.ts` 的 `versionPolicy.current`）和 `layout`。已支持版本的 `layoutForm` 在输入边界兼容读取，双字段同时出现拒绝；布局兼容规范化不自动升级其他能力。历史修订先核验原文 hash，迁移结果另存新修订。详见[布局迁移](docs/page-metadata/layout-migration.md)。
 
-平台云宝创作入口的页面 ID 与会话 ID 分别定位页面资产与对话。每轮自然语言操作使用前端当前完整工作副本，包括未保存修改；会话、锁和可访问路径不写入页面协议，也不增加 Schema 版本。左上角标题直接更新 `meta.title` 并保留其他本地修改。详见[页面与创作身份边界](docs/page-metadata/page.md)、[接入说明](docs/pangu-agent-authoring.md)与[可观察场景](pages/platform/README.md#云宝创作与最新工作副本)。
-
-新文档写当前作者版本和 `layout`。已支持版本的 `layoutForm` 在输入边界兼容读取，双字段同时出现拒绝；布局兼容规范化不自动升级其他能力。历史修订先核验原文hash，迁移结果另存新修订。详见[布局迁移](docs/page-metadata/layout-migration.md)。
-
-使用 local-authoring 继续开发旧页面时，先运行独立 `upgrade-page.mjs` 检查；可迁移时保留原始字节与报告，再升级工作文件并继续原任务。升级规则、版本范围和语义缺口见[旧页面继续开发](docs/page-metadata/page.md#旧页面继续开发与显式升级)，可观察场景见[升级示例](pages/capabilities/layout/README.md#旧页面升级后继续开发)。此创作期能力不扩大运行时的旧版本读取范围。
-
-MC 内容包提供相同产品实现的版本检查和显式升级能力，输出读取兼容性、能力下限、升级结果及未验项；内容包、页面协议和模板分别记录版本。整体替换后先检查旧文件，迁移写入新目录，保留原始字节与报告，由 Skill 决定采用。该流程不改变既有保存、发布或旧修订读取策略。
+使用 `metriccanvas-local-authoring` 继续开发旧页面时，先运行独立 `upgrade-page.mjs` 检查；可迁移时保留原始字节与报告，再升级工作文件并继续原任务。升级规则、版本范围和语义缺口见[旧页面继续开发](docs/page-metadata/page.md#旧页面继续开发与显式升级)，可观察场景见[升级示例](pages/capabilities/layout/README.md#旧页面升级后继续开发)。此创作期能力不扩大运行时的旧版本读取范围。
 
 无值参数模板可以结构合法，必需输入完整性在执行前验证。执行时的查询副本与可变筛选状态不作为模板原文保存；提取、填值及旧绑定迁移见[参数专题](PAGE-PARAMETERS.md#程序化提取与填值)。
 
-Schema元数据另见[数据上下文规则](docs/schema-metadata.md)，页面构建规格与工具能力另见[Authoring Bundle](metriccanvas-authoring/README.md)。
+Schema 元数据另见[数据上下文规则](docs/schema-metadata.md)，页面构建规格与工具能力另见[Authoring Bundle](metriccanvas-authoring/README.md)。
 
 ## 字段绑定与展示格式
 
 <a id="百万单位的使用65"></a>
 
-缺失值默认显示 `—`（包括百分比和图表）；整数（含百分比、金额、缩放单位及舍入后整数）省略 `.0` / `.00`，非整数按声明精度四舍五入并舍弃小数末尾零；自定义缺失文字仍优先。无需新增字段或升级 Schema，场景 `/pages/numeric-value-display`。详见[整数与缺失值的统一显示](docs/page-metadata/field-bindings-and-formats.md#numeric-value-display)。
+缺失值默认显示 `—`（包括百分比和图表）；普通数值默认千分位，整数（含百分比、金额、缩放单位及舍入后整数）省略 `.0` / `.00`，非整数按声明精度四舍五入并舍弃小数末尾零；自定义缺失文字仍优先。详见[整数与缺失值的统一显示](docs/page-metadata/field-bindings-and-formats.md#numeric-value-display)。
 
-格式由组件字段绑定声明，页面数据源可以提供 `defaultFormat` 建议，原始数据保留基础单位。格式清单、覆盖优先级及百万单位的用法统一见[字段绑定与格式](contracts/metriccanvas/page/reference/field-bindings-and-formats.md)。
+格式由组件字段绑定声明，页面数据源可以提供 `defaultFormat` 建议，原始数据保留基础单位。格式清单、覆盖优先级、语义格式与时间格式串统一见[字段绑定与格式](contracts/metriccanvas/page/reference/field-bindings-and-formats.md)。
 
-创作期已确认的百分数刻度不因查询覆盖不完整而丢失百分号；来源格式建议、可信刻度与组件显式格式分别处理。微小非零值的精度限制见[百分比创作与覆盖边界](docs/page-metadata/field-bindings-and-formats.md#百分比创作与覆盖边界)，合成对照场景 `/pages/authoring-percent-coverage`。
-
-柱状图、折线图及混合图的标签、悬浮提示和同格式数值轴统一采用通用格式化；未配置格式时默认非整数两位小数，元数据可覆盖；旧柱图标签不再隐式缩放为万。规则及兼容说明见[柱线图数值格式一致性](docs/page-metadata/field-bindings-and-formats.md#chart-number-format)，场景 `/pages/chart-number-format`。
-
-饼图外围百分比标签统一使用通用 `percent-1`，按有效原值合计直接计算，零合计显示“- -%”；规则及边界见[饼图外围标签](docs/page-metadata/components/pieChart.md#percentage-labels)，对照场景 `/pages/chart-number-format`。
+图表标签、悬浮提示、数值轴单位与饼图外围百分比统一采用共享数值格式化规则，详见[柱线图数值格式一致性](docs/page-metadata/field-bindings-and-formats.md#chart-number-format)与[饼图外围标签](docs/page-metadata/components/pieChart.md#percentage-labels)。
 
 ## 旧锚点导航
-
 
 原章节已迁入模块，以下锚点保留旧链接定位；字段表以生成参考为准。
 
@@ -455,8 +158,6 @@ Schema元数据另见[数据上下文规则](docs/schema-metadata.md)，页面�
 
 4. 页面数据源与结果字段契约 → [模块参考](contracts/metriccanvas/page/reference/data-sources.md)。
 
-DQE 数据网关请求及引擎内置读取超时默认且最少为180秒，页面与接入配置中更短的合法值忽略，更长的合法配置保留；主动取消立即生效，记录模式每批独立计时。无需新增字段或升级 Schema。合成验收入口 `/pages/dqe-request-timeout`，详见[页面数据源](docs/page-metadata/data-sources.md)。
-
 <a id="41-数据模式"></a>
 
 4.1 数据模式 → [模块参考](contracts/metriccanvas/page/reference/data-sources.md)。
@@ -472,8 +173,6 @@ DQE 数据网关请求及引擎内置读取超时默认且最少为180秒，页�
 <a id="44-数据行契约"></a>
 
 4.4 数据行契约 → [模块参考](contracts/metriccanvas/page/reference/fields.md)。
-
-查询结果中的 `number` / `money` 度量采用单元格容错：异常值归一化为 `null`，数字字符串转换，保留全部数据行；`nullable: false` 的数值度量缺失改为非阻断告警。初始行、动态响应和组合结果共享顶层数值容错：响应漏返数值属性时保留列并置空，记录 `MISSING_NUMERIC_QUERY_FIELD`；嵌套数值明细的值异常沿用容错，缺少映射属性仍严格。维度、静态字段映射及结构仍严格校验。完整规则见[查询数值容错](docs/page-metadata/fields.md#查询数值度量的容错)，验收见 [query-numeric-tolerance](pages/capabilities/query/query-numeric-tolerance.json) 与 [query-missing-measures](pages/capabilities/query/query-missing-measures.json)。
 
 <a id="45-inline-页面数据源"></a>
 
@@ -496,8 +195,6 @@ DQE 数据网关请求及引擎内置读取超时默认且最少为180秒，页�
 4.9 `semanticHtml/detail` 受控语义 HTML → [模块参考](contracts/metriccanvas/page/reference/semantic-html.md)。
 
 <a id="410-受控计算阶段"></a>
-
-6.12 新增完整结果上的跨源 `joinAggregate`；依赖、组合键、聚合和缺行策略显式声明，查询源需要 `source.resultScope: "complete"`。约束与批次规则见 [ADR-0095](docs/adr/0095-cross-source-computation-and-ioc-schema-compatibility.md)。创作契约将在 IOC 实施最后阶段统一生成。
 
 4.10 受控计算阶段 → [模块参考](contracts/metriccanvas/page/reference/compute.md)。
 
@@ -545,23 +242,13 @@ DQE 数据网关请求及引擎内置读取超时默认且最少为180秒，页�
 
 7.4 `metricCard` → [模块参考](contracts/metriccanvas/page/reference/components/metricCard.md)。
 
-指标卡生成链接与点击时均按声明顺序选择首条满足条件的卡片级导航。每条导航可独立配置目标地址及查询参数。见[指标值条件导航](docs/page-metadata/actions-and-navigation.md#metric-conditional-navigation)与合成入口 `/pages/metric-card-select-tab`。
-
-6.65 新增 `variant: "primaryDetail"`：`rows` 恰好一个主指标，`secondaryRows` 为零到多行14px次级指标（指标名＋指标值，每行上方8px）；仅显式配置 `row.link: true` 及合法跳转或明细动作的非空数值和单位显示下划线，普通文本和缺失值不显示。同一栅格视觉行内卡面随最高内容等高，窄屏逐卡自然高度。字段和点击行为复用原有协议，见[指标卡语义](docs/page-metadata/components/metricCard.md)与[主次指标示例](pages/capabilities/layout/metric-card-primary-detail.json)。
-
-单面板 `compactStack` 与 `primaryDetail` 混排时，卡面同样按所在视觉行等高；保留各自的内部排版，只在短卡底部留白。无需高度字段或修改 variant；次级面板及进度环的既有布局保持，见上述示例的 `mixed-variants` 分区。
-
-6.34 支持 Dashboard 顶层指标卡 `layout.before` 连接文字，双侧间距缺省 8px，保留外层 12 列；整组自动拉宽至所占列宽，以 1px 灰边、16px 圆角白底区域包裹，每张小卡保留独立白底灰边，文字双侧 gap 固定；完整场景见 [指标卡连接排布](pages/capabilities/layout/metric-card-equation.json)。
-
 <a id="75-图表组件"></a>
 
 7.5 图表组件 → [模块参考](contracts/metriccanvas/page/reference/components/README.md)。
 
 <a id="柱状图-barchart"></a>
 
-柱状图 `barChart` → [模块参考](contracts/metriccanvas/page/reference/components/barChart.md)。 图例切换与堆叠合计标签的合成验收见[伙伴健康度交互](pages/capabilities/table/README.md#伙伴健康度计算排序与组合标题)。
-
-分类组合系列可复用查询筛选、`pivot` 与 `sumFields`：页头客户分类先下推查询，再将分类行转列，合计卓越、核心、战略为“华为 NA”，与“商业客户”并排展示。无新增 Schema，完整合成入口 `/pages/chart-customer-series`，声明与限制见[分类组合系列](docs/page-metadata/components/barChart.md#分类组合系列与页头筛选)。
+柱状图 `barChart` → [模块参考](contracts/metriccanvas/page/reference/components/barChart.md)。
 
 <a id="折线图-linechart"></a>
 
@@ -617,7 +304,7 @@ DQE 数据网关请求及引擎内置读取超时默认且最少为180秒，页�
 
 <a id="711-aisummary"></a>
 
-7.11 `aiSummary`（独立摘要完整复用 SDT 渐变背景、白框、浅紫内容区；6.56：组合卡内摘要、显式 scope: container 与顶部结构约束；6.51：Report 双模式、区域范围、异步调用与会话缓存；6.52：数据源 ID 直接引用；6.65：正式命名 relatedDataSources；6.54：非空 body 直接展示，否则根据提示词和范围生成，无需 mode） → [模块参考](contracts/metriccanvas/page/reference/components/aiSummary.md)。
+7.11 `aiSummary` → [模块参考](contracts/metriccanvas/page/reference/components/aiSummary.md)。
 
 <a id="8-数据槽字段绑定与有限交互"></a>
 
@@ -682,127 +369,3 @@ DQE 数据网关请求及引擎内置读取超时默认且最少为180秒，页�
 <a id="13-校验与错误"></a>
 
 13. 校验与错误 → [模块参考](contracts/metriccanvas/page/reference/validation.md)。
-
-6.3 新增确定性时间参数与查询窗口绑定。日期/月取值固定于初始化，按指定时间查询，不回退最新期；结构、窗口边界与实施限制见[时间参数](docs/page-metadata/time-parameters.md)。
-
-6.4新增 `yearToDate` / `monthToDate` 具名窗口，不带unit，终点为绑定参数的报告基准期；保留6.3旧窗口写法兼容。
-
-6.5新增 `compact-million-0/1/2` 数值展示格式，按百万缩放并保留指定小数位；不改变查询与原始数值。
-
-### 6.12 查询结果与页内交互增量
-
-- `sectionGroups` / `defaultSectionGroup` / `sectionGroupParam` / `sectionAnchors`：既有内容分区的有限切换和页内定位。
-- `detailViews`：snapshot 复用快照，query 以必需显式绑定隔离取数；`openDetail.view` 与旧 `fields` 互斥。表格列可声明互斥的独立 `openDetail` / `navigate`。 含表格的详情视图自动使用宽版弹窗／抽屉：当前文档窗口宽度的90%，最大1440px，窄屏保留32px宽度余量；加载、空结果和错误时保持一致。详情使用浏览器顶层模态弹层，遮罩覆盖同一文档内的集成应用侧栏，背景不可交互；保持 Shadow DOM 样式隔离，无需调整 mount 参数。规则见[详情表格浮层宽度](docs/page-metadata/components/table.md#详情表格的浮层宽度)，无需新增元数据字段。
-- `timeFill` / `selectField`：明确日/月范围补齐和有限模式字段选择。
-- 柱图 series 的 `kind` / `axis`：柱线混合、轴单位校验。
-- 字段绑定 `missingText`：消费者缺失文案，数值类型与刻度不变。
-
-具体约束见 [ADR-0096](docs/adr/0096-ioc-view-state-and-post-query-presentation.md)。6.11继续可读，但使用上述能力的文档必须写6.12。
-
-所有时间选择器默认禁止未来时间，覆盖点、范围、Dashboard 年／季／月及精确时间输入；URL 和手工输入同样受限。当前自然期间保持完整查询范围，详见[时间选择的默认上限](docs/page-metadata/filters.md#时间选择的默认上限)。
-
-`timePoint.disableFuture: true` 从6.25起禁止未来月份／日期，当前期间可选；上限随本地当前日期推进，控件、手工输入、URL与参数初始化共同约束。见[禁止未来时间](docs/page-metadata/filters.md#禁止未来时间625)及[交互验收页](pages/capabilities/filters/report-date-filter-example.json)。
-
-6.27 增量：Dashboard 顶部 timeRange 的年／季／月／近一年选择形态，声明、状态及查询规则见[期间筛选](docs/page-metadata/filters.md#dashboard-期间选择627)。
-6.29 曾引入图表 `props.filter`；该旧声明现已统一迁移为独立 `filterGroup`。固定按钮组可控制多个查询消费者，详见[独立筛选按钮组](docs/page-metadata/components/filterGroup.md)。
-
-6.37 新增[业务筛选](docs/page-metadata/filters.md#business-filters)：单多选、封闭枚举、结构树、候选依赖与hint；共用执行入口先核验当前候选再复用初始结果或查询，不在页头内另建规则解释器。
-
-6.38增加USD静态money、非递归FieldBinding.byFilter、numberRange约束/单位/预设及metricByFilter。参见[金额范围](docs/page-metadata/filters.md#amount-range)、[字段选择](docs/page-metadata/field-bindings-and-formats.md#field-selection)和`pages/capabilities/ioc-header/scenarios/ioc-header-currency-demo.json`。不同币种结果保持独立静态字段，不提供前端换汇；旧普通相等范围兼容。
-
-## 6.39 复杂时间与可信期间输入
-
-共用筛选新增 `timeRange.display:"modes"`、完整静态 `query.timeModes`、时间 `presets`、`availability` 和动态维度 `candidateWindow`；边界见[筛选语义](docs/page-metadata/filters.md)、[查询绑定](docs/page-metadata/queries-and-bindings.md)。实际验收为 `pages/capabilities/ioc-header/scenarios/ioc-header-time-modes-demo.json`、`ioc-header-time-presets-demo.json`、`ioc-header-availability-demo.json`、`ioc-header-calendar-window-demo.json`，均为本地合成数据。旧年季月/近一年、详情单月、离散月份和 datetime 保持各自语义。可信期间事实由 RuntimeView/embed 的可选稳定 `displayInputs` 源提供，不写入 Page/参数/URL；本批不开放 Condition、任意对象路径或权限表达式。
-
-### 6.40 跨页传值
-
-导航可显式配置`validateTargetInputs:true`，集成应用提供目标输入投影；校验row/param/filter映射，拒绝缺必需值、类型/粒度不兼容及无目标能力，普通URL兼容。目标独立校验并等待当前候选；显式开启`strictURLInputs:true`时，非法筛选URL不回退默认查询。见[交互与导航](docs/page-metadata/actions-and-navigation.md)。无视图恢复，B6挂起。
-
-`strictURLInputs:true`由页面显式开启，兼容规范化升版本不自动开启。来源和目标可分别选择该策略；本批三个验收页均开启。受控编辑使用`set_url_input_validation`，enabled=false仅删除该标记。
-条件呈现与动作资格见[条件规则](docs/page-metadata/conditions.md)：6.35就地声明visibleWhen/enabledWhen，父级约束后代，子项不反推父级。统一运行时在当前页面实例应用新的展示输入，更新权限修订号时页面继续渲染。
-
-表格静态搜索选项（6.42）：`props.toolbar.search.options` 声明静态枚举、每项单文本字段与 placeholder，`defaultValue` 可选。切换保留关键词并立即按所选字段做包含匹配；清空保留选项；与既有条件 AND，导出沿用已提交状态。`fields/placeholder` 按任一字段包含匹配。已有页面 JSON 可直接沿用。声明与限制见[明细表](docs/page-metadata/components/table.md#静态搜索选项642)，可观察页面见[字段切换示例](pages/capabilities/table/table-search-options-demo.json)。
-
-6.43：维度下拉默认支持本地搜索，`searchable:false` 关闭；普通树可声明 `treeSelection:descendants|independent|leaf`。`selection` 继续使用6.37的对象协议，`level`结构树不变。见[筛选声明](docs/page-metadata/filters.md)与IOC选择控件场景。
-
-6.44新增一层行内子表格，声明与限制见[表格：行内子表格](docs/page-metadata/components/table.md#row-expansion)。默认仅内容和分页，父行嵌套明细与按父行查询分页显式分支；模板取数与状态按展开实例隔离；查询子表成功后折叠重开可复用当前会话数据和页码，相关条件、父行数据及父表刷新变化时失效，每张父表最多保留20个折叠实例，验收入口 `/pages/table-row-expansion-cache`；6.70可显式启用层级筛选联动、父级定位及完整双工作表 Excel，未启用时保持旧语义。
-
-标题按页面layout分别呈现：Dashboard分区标题与text.heading使用黑色16px左对齐无装饰标题；Report保留独立标题层级。plain只表示分区无外壳，不表示共用标题。参见[分区与布局](docs/page-metadata/sections-and-layout.md)及[看板标题验收](pages/capabilities/layout/dashboard-title-styles.json)、[报表标题验收](pages/capabilities/layout/report-title-styles.json)。
-
-6.45 独立 `filterGroup` 将固定单选按钮组从图表属性提升为可布局组件，支持 Dashboard 正文、组合卡、多个查询消费者和统一显隐。旧 `chart.props.filter` 统一迁移，不保留兼容入口。声明、边界与验收见[筛选按钮组](docs/page-metadata/components/filterGroup.md)。
-
-## 表格自动序号（6.48）
-
-普通表格通过 `props.rowNumber: {}` 开启独立序号列，可设置标题、宽度和左固定；排序筛选后重新编号，跨页连续，完整导出从1开始。声明及边界见[表格自动序号列](docs/page-metadata/components/table.md#自动序号列648)，可运行场景为 [table-row-number](pages/capabilities/table/table-row-number.json)。
-
-Tab 6.49 支持普通内容与组合卡，显式 `props.contentLayout: "grid"` 复用12列栅格，旧纵向布局兼容；首次进入取数、切换保活、活动项URL恢复及Report全展开规则见[Tab容器](docs/page-metadata/components/tabContainer.md)。可观察场景：[tab-mixed-content](pages/capabilities/layout/tab-mixed-content.json)。多内容面板随内容展开，不另设滚动区域；表格保留自身滚动，见[多表格 Tab](pages/capabilities/layout/tab-multiple-tables.json)。筛选等数据变化后按各子组件的实际高度重新排布，见[表格动态高度](pages/capabilities/layout/tab-table-filter-growth.json)。
-
-单纯切回已访问的页签时复用仍有效的数据快照和 AI 总结。成功的空结果也可复用。
-
-Dashboard白底容器中的指标卡自动补充统一边框，组合卡只保留外框；声明与呈现边界见[指标卡](docs/page-metadata/components/metricCard.md)。
-
-普通柱图及组合图的柱系列默认16px，`reportForecast` 保留40px，见[柱状图](docs/page-metadata/components/barChart.md)。纯指标组合采用现有 `metricGrid` 自适应高度。
-
-指标卡与筛选的同框布局复用内容分区：card 提供白底无边框外观，section.title 在上，filterGroup 在其下左对齐，Before 四卡行自适应铺满所占列。连接排布盒在 card 内不重复绘制外框。见[指标连接排布](docs/page-metadata/sections-and-layout.md)与 `/pages/metric-card-equation`。
-
-6.57 查询分支响应映射：`queryModes.cases.*.fieldMappings` 在页面端连接不同原始字段与稳定结果字段；普通指标保留名称字符串，不支持 `{name,alias}`。见[查询定义与绑定](docs/page-metadata/queries-and-bindings.md#query-modes)。
-
-MC 内容包随本协议同步生成，包含同源字段语义、规则、例子、版本/迁移及工具契约；入口见 [MC 维护与验收](docs/agents/local-authoring-skill-maintenance.md#mc-同步完成条件)。本批未新增页面字段或改变页面语义，完整性与旧页诊断的可观察场景见 `/pages/mc-content-layout-demo`；静态成功、引擎回放与真实部署分别报告。
-
-## 表格原文容错与独立置顶行（6.60）
-
-表格的异常标量保留原文并告警，本地升降序统一将空白及纯横杠排最后；有效类型值继续用于计算和交互。props.pinnedTop 声明独立完整查询槽，列级 pinnedTop 显式绑定汇总字段；每页首行展示、无序号、不占分页计数，汇总失败不阻塞明细但阻止完整 Excel 导出。声明和限制见[表格模块](docs/page-metadata/components/table.md)，结果证据见[字段契约](docs/page-metadata/fields.md)。可观察页面为 table-value-tolerance、table-missing-sort、table-pinned-summary，均为合成数据。
-
-6.61 新增 `pagedUnion` 分页合并源：按成员显式字段/常量/null 投影统一列，逐行保留全部记录，在完整匹配范围整体排序、搜索、筛选、计数、分页和导出；表格可按来源选择详情导航。声明、执行限制与真实接入边界见[数据源](docs/page-metadata/data-sources.md#paged-union)和[表格](docs/page-metadata/components/table.md#source-navigation)，验收页为 [multi-source-table.json](pages/capabilities/table/multi-source-table.json)。
-
-`pagedUnion` 行契约诊断补充（2026-10-29）：重复/缺失行键与来源排序错误先用表格标题、字段标签说明原因和处理建议，后附技术定位中的合并源、成员、来源数据源、行键/查询字段和配置路径；重复错误区分批内重复与跨批重复并定位两次来源行号及 offset，不回显业务字段值。见[数据源](docs/page-metadata/data-sources.md#paged-union)，合成故障入口为 `/pages/multi-source-table?rowFailure=duplicate`、`missing-key`、`order`。
-
-6.66 增量：`pagedJoin.records` 支持主表逐条审批记录与多对一当前信息补列、独立记录标识、本地审批期间筛选和有预算的分批完整关联；成员可显式声明不适用的业务筛选。旧组合源行为保持。配置与限制见[记录关联](docs/page-metadata/data-sources.md#审批记录与当前信息补列666)，合成验收入口 `/pages/record-join-demo`。
-
-记录模式的 object 成员保留显式查询排序；无排序时仅按关联键升序，不自动生成多字段排序。完整关联后的表格排序与扫描顺序分别处理；对应合成验收页为 [object-record-join-demo](pages/capabilities/query/object-record-join-demo.json)，支持审批记录保留、指标补列及全局表格操作。
-
-DQE 排序适配修复（2026-10-27）：指标查询默认与交互排序统一使用 `order.order_by_field/type`，分页继续为 offset/limit；`order.by` 非指标 DQE 语法。分页合并、关联选页与子表格不自动追加第二排序字段，合并主排序相等时保留来源内返回次序。指标多字段排序发送前明确失败；不新增页面字段或改变 Schema 版本。参见[查询与绑定](docs/page-metadata/queries-and-bindings.md)、[分页合并](docs/page-metadata/data-sources.md#paged-union)及 `/pages/query-result-where-page`、`/pages/multi-source-table`。
-
-6.68：普通DQE可将time绑定显式指定到维度字段，下推日/月范围，详见[查询时间字段](docs/page-metadata/queries-and-bindings.md#metric-field-time)。审批记录示例 `record-join-demo` 在预算检查前筛选；既有records.timeFilters仍为读取后本地筛选。
-
-查询时间的年/月/日精度、合法日历及起止顺序在创作与运行时执行前保持一致；合法紧凑格式等价规范化，粒度不匹配不截断。见[查询时间精度与执行前校验](docs/page-metadata/queries-and-bindings.md#查询时间精度与执行前校验)与 `/pages/authoring-contract-reliability` 验收页。历史页面的读取兼容性与执行时合法性分开报告。
-
-6.69：记录关联的 `records.maxRows` 可省略，省略即不限制读取行数；显式数值继续限制主表记录数。字节、超时、完整窗口和准确总数检查保持，详见[记录关联](docs/page-metadata/data-sources.md#审批记录与当前信息补列666)。超过十万行的合成验收入口 `/pages/record-join-no-row-limit`。
-
-6.70：表格通过 `rowExpansion.selection` 显式定位父级、投影完整父行与保留共同条件刷新会话；私有 `source:selection` 明确不适用语义，`toolbar.export.rowExpansion` 完整导出父子双工作表。见[层级筛选联动](docs/page-metadata/components/table.md#hierarchy-selection)与 `/pages/table-hierarchy-selection`。
-
-`pagedJoin.records.timeoutMs` 按每次主表或补列表分页请求独立计时，每批重新获得完整预算，不再限制整轮累计耗时；任一批超时仍整轮失败且不缓存部分结果。`maxBytes` 继续整轮累计。配置形状与 Schema 版本不变，旧页面随运行时更新采用该语义。合成验收入口 `/pages/record-join-batch-timeout`（`?sourceTimeout=true` 为单批超时）；详见[记录关联](docs/page-metadata/data-sources.md#审批记录与当前信息补列666)。
-
-6.77：组合查询源通过 `pagination:{mode:"query",pageSize:10,batchSize:10}` 显式按需分页，后操作成员覆盖其他成员表格状态；记录模式需真实记录标识，不自动完整回退。候选预加载仅查询所属成员，不完整读取组合源。`isNull` 声明为空语义，未确认后端完整能力时明确不可用。见[按需查询分页](docs/page-metadata/data-sources.md#按需组合查询分页676)，合成入口 `/pages/paged-join-on-demand`、`/pages/record-join-on-demand`。
-
-对象查询参数确认（2026-10-30）：所有对象调用统一使用 query_type/object_type/output_fields、filter.fields 的 field_name/value_list/operator 以及 order；无条件和无排序仍显式发送空结构。对象表头候选通过同一协议仅投影目标字段，完整返回后去重，不读取其余明细输出字段；主查询仍每页10条。声明、限制及用户范例见[对象查询](docs/page-metadata/queries-and-bindings.md#object-query-parameters)，本地HTTP验收入口 `/pages/business-rejection-details-pagination-10`。
-
-6.81 IOC Header 组件化：首分区首位、全宽、最多一个，随 section 显隐；无声明不补页头。旧读、新写与迁移边界见[分区页头](docs/page-metadata/page.md#ioc-页头进入分区681)，完整入口见[验收场景](pages/capabilities/ioc-header/section-component/README.md)。
-
-## 创作期显式时间上下文
-
-纯产品工具校验时间敏感候选时，使用程序显式供给的 `evaluation`（instant、IANA timeZone），旧渲染期不传上下文的默认行为保持。该上下文不属于页面字段，也不进入查询定义；字段净增减为零。语义、专用诊断及跨年例子见[筛选的创作期评估上下文](docs/page-metadata/filters.md#创作期工具的评估时间与业务时区)，合成可观察入口 `/pages/authoring-evaluation-context`。
-
-## 创作关联、呈现与多槽装配
-
-创作报告关联需求、取数单元、结果与稳定用数身份；普通换源原子保留组件和字段意图。见[分析与换源](docs/page-metadata/authoring-analysis-rebind.md)，合成入口 `/pages/authoring-analysis-rebind`。新增创作接口不扩展 PageDocument。
-
-Tokens 百万选择、最终字段绑定检查及受控多槽表格装配见[创作呈现](docs/page-metadata/authoring-presentation.md)，合成入口 `/pages/relay-multislot-presentation`；旧合法引擎格式保留。页面 Schema 字段净增减为零。
-
-表格分页交互修复：启用分页后每页条数选择器在单页和空结果下仍保留；菜单按可视视口空间自动翻转并限制高度。无新增字段，查询分页语义不变。见[表格分页选择与弹层定位](docs/page-metadata/components/table.md)，内联合成验收 `/pages/table-pagination-popovers`。
-
-6.94 新增柱/线/混合图系列 `unit` 与表格字段列 `unit`，图例和数值可按组件显式展示单位；不执行缩放。见[展示单位](docs/page-metadata/field-bindings-and-formats.md#display-unit)，场景 `/pages/chart-table-unit`。
-
-图表与表格的整数展示复用统一数值格式化，去掉小数尾零；`unit` 在格式化后追加，`-2 天`、`0 天` 和 `12.5 天` 对照见 `/pages/chart-table-unit`。
-
-图表、表格、指标卡、进度环、仪表和期间占位共用单个长横线 `—`（U+2014）。既有业务自定义文案和真实字符串保持。无 Schema 字段增减，场景 `/pages/chart-table-unit`、`/pages/numeric-value-display` 和 `/pages/semantic-numeric-display`。
-
-外层明细表默认副标题为「— 代表本周期没有合同单/商务单」。通过既有 `props.subtitle` 自定义文案，或用空字符串隐藏。副标题以 12 px 灰字显示在标题右侧 16 px，无标题时左对齐。完整说明及合成场景见[表格标题与备注](docs/page-metadata/components/table.md#表格标题与备注)。
-
-维度绑定包含与排除（6.114）：`filterBindings` 的普通及层级 `dimension` 绑定支持可选 `operator:"=" | "!="`；省略维持原有包含，`!=` 排除整个所选集合，清空不生成条件。声明、静态条件归属和 DQE 编码见[维度绑定运算](docs/page-metadata/queries-and-bindings.md#dimension-binding-operator)，合成验收 `/pages/dimension-binding-operator`。
-
-Schema 6.125 的可选动态排除条件从既有 `operator:"!="` 推导候选独立加载与选值保留，不增加字段。仅排除消费时，候选请求不再阻断业务查询；混合消费、必选、层级及显式清空策略保持原规则。详见[动态排除候选独立加载](docs/page-metadata/filters.md#independent-exclusion-candidates)。
-
-单维度候选查询可以随候选值返回已映射的指标，仍按候选维度排序和分页。见[候选查询分页](docs/page-metadata/filters.md#source-candidate-query-pagination)。
-
-从 6.130 起，这类筛选器可用 `defaultWhen` 为 `default` 指定联动条件。详见[排除项联动默认值](docs/page-metadata/filters.md#conditional-exclusion-defaults)。

@@ -273,6 +273,14 @@ _Avoid_: 布局容器、组件分组、区块
 父表中某一业务行展开后呈现的一层独立表格，拥有自己的列结构、行集和浏览状态。内容可来自该父行的嵌套明细字段，或由父行显式输入约束的查询。它属于父表的阅读上下文，没有独立页面身份；与同列结构的树形表格及弹窗/抽屉详情视图区分。
 _Avoid_: 树形表格、嵌套页面、详情浮层、任意展开插槽
 
+**表格置顶汇总行 (Pinned Table Summary Row)**:
+在表格每页明细之前呈现的独立汇总记录。它拥有自己的取数单元和口径，不属于明细的排序、筛选和分页行域，默认不显示序号；共同业务条件与授权范围仍约束其取数。（[ADR-0120](docs/adr/0120-table-scalar-fallback-and-independent-pinned-row.md)）
+_Avoid_: 当前页求和、把明细第一行挪到顶部、无条件全国汇总
+
+**组合卡 (Composite Card)**:
+把若干组件框进同一张卡的组件级容器，自身不承载数据，卡内子组件沿用与内容分区同一条 12 列自动流。它是组件而不是分区，因此能与其他组件在同一条栅格里横向并排；分区容器的 `card` 档是分区级、只能纵向堆叠，两者按层次分工，不可互相替代。（[ADR-0053](docs/adr/0053-composite-card-component-level-grouping-container.md)）
+_Avoid_: 分区卡片、卡片组件、组件分组、布局容器
+
 **详情视图 (Detail View)**:
 
 同一页面内用于单层浮层的受控组件集合。快照模式复用页面当前数据快照；查询模式使用显式必需参数和隔离筛选状态，通过既有编排器取数。它不是独立页面，组件不查询，关闭不会新增返回栈。（ADR-0096）
@@ -461,6 +469,10 @@ _Avoid_: 参考线数据源、虚拟字段、通用表达式
 只消费数据快照、字段契约和展示属性，并通过事件上抛交互的组件。纯渲染组件不发起查询、不访问页面全局状态、不管理数据加载。
 _Avoid_: 智能组件、页面控制器
 
+**分类明细 (Category Breakdown)**:
+按类别逐行、按度量逐列列出一小组数据的组件，带列头与可选类别色点，是一份独立的数据展示而不是图表的附属物。与饼图并排时两者绑同一个类别字段，色点按类别取值取色，不按行序取色。（[ADR-0053](docs/adr/0053-composite-card-component-level-grouping-container.md)）
+_Avoid_: 图例、饼图图例、迷你表格、键值面板
+
 **行对齐 (Row Alignment)**:
 统一运行时的渲染不变量：同一视觉行内同类型、同 variant 且具备对齐能力的组件，内部行轨按序号等高对齐，堆叠后自动复原。对齐经由显式契约协作，组件自己测量并写回自己的 DOM；它不进入页面文档，也不是某类组件的特例。
 _Avoid_: 行高同步 family、排行行高特例、跨组件 DOM 操作
@@ -521,25 +533,12 @@ _Avoid_: 路由跳转、面包屑、导航历史
 
 以下词条属于**尚未生效**的决策或**系统尚不具备**的能力,列在此处是为了让讨论期间有统一措辞;生效或建成后并入上方对应章节,被否决则整条删除。
 
-[ADR-0046](docs/adr/0046-controlled-computation-with-named-operators.md)、[ADR-0047](docs/adr/0047-first-class-page-parameters.md)、[ADR-0048](docs/adr/0048-navigation-intent-and-host-routing.md)、[ADR-0050](docs/adr/0050-filter-type-closure-and-hierarchical-dimensions.md) 与 [ADR-0051](docs/adr/0051-additive-minor-versions-for-page-schema.md) 已 accepted,对应的**页面参数**、**文本取值**、**具名算子**、**层级维度筛选器**、**导航意图**已并入上方章节。[ADR-0049](docs/adr/0049-table-server-side-and-presentation-capabilities.md) 仍是 `proposed`:呈现已落地,查询分页下排序与表头筛选的拒绝仍在,主体决策未齐。[ADR-0045](docs/adr/0045-graphql-query-branch-with-structured-predicates.md) 的**查询谓词**尚未进入系统。[ADR-0053](docs/adr/0053-composite-card-component-level-grouping-container.md) 是 `proposed`:**组合卡**与同批的**分类明细**命名与边界已定,两个组件类型都尚未进入页面协议。
+[ADR-0046](docs/adr/0046-controlled-computation-with-named-operators.md)、[ADR-0047](docs/adr/0047-first-class-page-parameters.md)、[ADR-0048](docs/adr/0048-navigation-intent-and-host-routing.md)、[ADR-0049](docs/adr/0049-table-server-side-and-presentation-capabilities.md)（由 [ADR-0086](docs/adr/0086-server-side-sorting-and-header-filters-under-query-pagination.md) 修订，查询分页下的排序与表头筛选改由上游执行）、[ADR-0050](docs/adr/0050-filter-type-closure-and-hierarchical-dimensions.md)、[ADR-0051](docs/adr/0051-additive-minor-versions-for-page-schema.md)、[ADR-0053](docs/adr/0053-composite-card-component-level-grouping-container.md) 与 [ADR-0120](docs/adr/0120-table-scalar-fallback-and-independent-pinned-row.md) 均已 `现行`,对应的**页面参数**、**文本取值**、**具名算子**、**层级维度筛选器**、**导航意图**、**组合卡**、**分类明细**与**表格置顶汇总行**已并入上方章节。[ADR-0045](docs/adr/0045-graphql-query-branch-with-structured-predicates.md) 的**查询谓词**尚未进入系统。
 
 **查询谓词 (Query Predicate)**:
 查询定义中一条结构化的筛选条件,由目标字段、封闭闭集内的算子、值来源(字面量或绑定到筛选器与页面参数)和空值行为组成。绑定值为空时整条谓词消失,这是唯一的条件语义。谓词到具体协议请求形态的编译属于执行适配器,不属于页面文档。
 _Avoid_: WHERE 片段、查询模板、条件表达式
 
-**组合卡 (Composite Card)**:
-把若干组件框进同一张卡的组件级容器,自身不承载数据,卡内子组件沿用与内容分区同一条 12 列自动流。它是组件而不是分区,因此能与其他组件在同一条栅格里横向并排;分区容器的 `card` 档是分区级、只能纵向堆叠,两者按层次分工,不可互相替代。
-_Avoid_: 分区卡片、卡片组件、组件分组、布局容器
-
-**分类明细 (Category Breakdown)**:
-按类别逐行、按度量逐列列出一小组数据的组件,带列头与可选类别色点,是一份独立的数据展示而不是图表的附属物。与饼图并排时两者绑同一个类别字段,色点按类别取值取色,不按行序取色。
-_Avoid_: 图例、饼图图例、迷你表格、键值面板
-
 **改版 (Revise)**:
 在已沉淀页面上以自然语言发起 AI 修改的形态。与探索的区别在对象与后果:探索改临时页面态且不产生页面修订,改版改长期资产、保存后产生页面修订并因此受发布治理约束;与页面搭建的区别在驱动方,页面搭建是人直接改。**系统当前不具备这个能力**,词条先立以统一后续讨论措辞。
 _Avoid_: 探索、页面搭建、页面修订、把它当作渲染期能力
-
-
-**表格置顶汇总行 (Pinned Table Summary Row)**:
-在表格每页明细之前呈现的独立汇总记录。它拥有自己的取数单元和口径，不属于明细的排序、筛选和分页行域，默认不显示序号；共同业务条件与授权范围仍约束其取数。
-_Avoid_: 当前页求和、把明细第一行挪到顶部、无条件全国汇总
