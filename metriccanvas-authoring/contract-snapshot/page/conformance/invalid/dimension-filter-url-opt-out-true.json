@@ -1576,8 +1576,7 @@
           "rep-office-name": {
             "type": "string",
             "role": "dimension",
-            "label": "代表处",
-            "queryField": "代表处"
+            "label": "代表处"
           },
           "net-discount-rate": {
             "type": "number",
@@ -1615,7 +1614,7 @@
             "role": "measure",
             "label": "框架执行率",
             "defaultFormat": "percent-1",
-            "queryField": "框架执行率"
+            "nullable": true
           },
           "commercial-closure-rate": {
             "type": "number",
@@ -1636,64 +1635,63 @@
             "role": "measure",
             "label": "重大/高风险合同签署率",
             "defaultFormat": "percent-1",
-            "queryField": "重大高风险合同率"
+            "nullable": true
           },
           "forbidden-clause-sign-rate": {
             "type": "number",
             "role": "measure",
             "label": "禁止类条款签署率",
             "defaultFormat": "percent-1",
-            "queryField": "云计算BU禁止条款风险合同率"
+            "nullable": true
           }
         },
         "source": {
-          "type": "query",
-          "resultScope": "complete",
-          "query": {
-            "language": "dqe",
-            "body": {
-              "dsl_list": [
-                {
-                  "output_dims": [
-                    "代表处"
-                  ],
-                  "output_metrics": [
-                    "框架执行率",
-                    "重大高风险合同率",
-                    "云计算BU禁止条款风险合同率"
-                  ],
-                  "filter": {
-                    "dims": [],
-                    "metrics": [],
-                    "time": {
-                      "period": "month",
-                      "is_aggregate": true
-                    }
-                  },
-                  "order": {}
-                }
-              ]
-            },
-            "filterBindings": {
-              "region": {
-                "target": "dimension",
-                "levelQueryFields": {
-                  "geo": "geo_pc_code",
-                  "region-dept": "地区部",
-                  "office": "代表处"
-                }
-              },
-              "mtime": {
-                "target": "time"
-              },
-              "customer-class": {
-                "target": "dimension",
-                "queryField": "客户级别"
-              }
-            }
-          }
+          "type": "inline",
+          "rows": []
         },
         "compute": [
+          {
+            "op": "unionKeys",
+            "keys": [
+              "rep-office-name"
+            ],
+            "sources": [
+              "rep-office-framework-contract",
+              "decision-closure-rate",
+              "net-discount-rep-office-current",
+              "net-discount-rep-office-quarter-change",
+              "net-discount-rep-office-year-change",
+              "net-discount-rep-office-month-change"
+            ]
+          },
+          {
+            "op": "joinAggregate",
+            "source": "rep-office-framework-contract",
+            "keys": [
+              {
+                "local": "rep-office-name",
+                "foreign": "rep-office-name"
+              }
+            ],
+            "values": [
+              {
+                "field": "framework-execution-rate",
+                "output": "framework-execution-rate",
+                "aggregate": "unique"
+              },
+              {
+                "field": "major-contract-sign-rate",
+                "output": "major-contract-sign-rate",
+                "aggregate": "unique"
+              },
+              {
+                "field": "forbidden-clause-sign-rate",
+                "output": "forbidden-clause-sign-rate",
+                "aggregate": "unique"
+              }
+            ],
+            "onMissing": "null"
+          },
           {
             "op": "joinAggregate",
             "source": "decision-closure-rate",
@@ -3417,6 +3415,84 @@
             }
           }
         }
+      },
+      "rep-office-framework-contract": {
+        "fields": {
+          "rep-office-name": {
+            "type": "string",
+            "role": "dimension",
+            "label": "代表处",
+            "queryField": "代表处"
+          },
+          "framework-execution-rate": {
+            "type": "number",
+            "role": "measure",
+            "label": "框架执行率",
+            "defaultFormat": "percent-1",
+            "queryField": "框架执行率"
+          },
+          "major-contract-sign-rate": {
+            "type": "number",
+            "role": "measure",
+            "label": "重大/高风险合同签署率",
+            "defaultFormat": "percent-1",
+            "queryField": "重大高风险合同率"
+          },
+          "forbidden-clause-sign-rate": {
+            "type": "number",
+            "role": "measure",
+            "label": "禁止类条款签署率",
+            "defaultFormat": "percent-1",
+            "queryField": "云计算BU禁止条款风险合同率"
+          }
+        },
+        "source": {
+          "type": "query",
+          "resultScope": "complete",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "代表处"
+                  ],
+                  "output_metrics": [
+                    "框架执行率",
+                    "重大高风险合同率",
+                    "云计算BU禁止条款风险合同率"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": [],
+                    "time": {
+                      "period": "month",
+                      "is_aggregate": true
+                    }
+                  },
+                  "order": {}
+                }
+              ]
+            },
+            "filterBindings": {
+              "region": {
+                "target": "dimension",
+                "levelQueryFields": {
+                  "geo": "geo_pc_code",
+                  "region-dept": "地区部",
+                  "office": "代表处"
+                }
+              },
+              "mtime": {
+                "target": "time"
+              },
+              "customer-class": {
+                "target": "dimension",
+                "queryField": "客户级别"
+              }
+            }
+          }
+        }
       }
     },
     "sections": [
@@ -3995,7 +4071,8 @@
                   "contract",
                   "discount"
                 ]
-              }
+              },
+              "rowKey": "rep-office-name"
             }
           }
         ]

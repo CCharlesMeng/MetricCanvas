@@ -65,6 +65,17 @@ describe('完整快照边界', () => {
     expect(calculate({status:'ready',rows:[{org:'甲'},{org:'甲'}],totalCount:0},true).get('combined')?.status).toBe('error');
     expect(calculate({status:'empty',totalCount:0},true).get('combined')).toMatchObject({status:'empty',totalCount:0});
   });
+  it.each([[2, false, 'ready'], [1, false, 'error'], [3, true, 'error'], [0, false, 'error'], [0, true, 'ready']] as const)(
+    '透视前两条记录合并为一个组织，服务总数 %s、显示兼容 %s', (totalCount, allowZeroTotal, status) => {
+      const pivot: DataSource = {...query, compute: [{op:'pivot',keyFields:['org'],categoryField:'category',valueField:'score',
+        columns:[{output:'commercial',categories:['商务']},{output:'contract',categories:['合同']}]}]};
+      const raw = new Map<string, DataSnapshot>([['a',{status:'ready',totalCount,rows:[
+        {org:'甲',category:'商务',score:0},{org:'甲',category:'合同',score:10}]}],['b',{status:'empty'}],['combined',{status:'empty'}]]);
+      const actual = computedSnapshots(new Map([...sources,['a',pivot]]), raw, undefined, {allowZeroTotal});
+      expect(actual.get('combined')?.status).toBe(status);
+      if (status === 'ready') expect(actual.get('combined')).toMatchObject({totalCount:1,rows:[{org:'甲'}]});
+      expect(actual.get('a')).toMatchObject({totalCount});
+    });
   it('有显式查询窗口的零总数回执不能作为并集输入', () => {
     const windowed=structuredClone(query);
     if(windowed.source.type!=='query'||!windowed.source.query.body)throw Error('测试需要具备请求体的查询来源');
