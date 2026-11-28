@@ -1,14 +1,16 @@
 <svelte:options css="injected" />
 <script lang="ts">
   import type { Snippet } from 'svelte';
-  import type { FieldBinding, MetricCardProps, MetricCardRow, Row } from '@metriccanvas/page/internal';
-  import { fieldSlot, metricCardTipAnchor } from '@metriccanvas/page/internal';
+  import type { MetricCardProps, MetricCardRow, Row } from '@metriccanvas/page/internal';
+  import { metricCardTipAnchor } from '@metriccanvas/page/internal';
   import type { MetricDataSlots } from '../../shared/component-data';
-  import { fieldRow, fieldValue, resolveField } from '../../shared/component-data';
-  import { DEFAULT_NULL_TEXT, hasDisplayValue, finiteNumber, isSignedNumberFormat, valuePolarity } from '../../shared/value-format';
-  import { fieldUnitText, formatChangeValue, formatFieldValue, isPercentFormat } from '../../shared/field-presentation';
-  import { changeValueColor, valueColor, valueColorStyle } from '../../shared/value-color';
   import Skeleton from '../../shared/Skeleton.svelte';
+  import { DEFAULT_NULL_TEXT } from '../../shared/value-format';
+  import MetricCardActivityProgress from './MetricCardActivityProgress.svelte';
+  import MetricCardPrimaryDetail from './MetricCardPrimaryDetail.svelte';
+  import MetricCardRows from './MetricCardRows.svelte';
+  import MetricCardSummary from './MetricCardSummary.svelte';
+  import { resolveMetricProgress } from './metric-card-model';
   import ProgressRing from './ProgressRing.svelte';
 
   interface Props {
@@ -26,144 +28,33 @@
     onaction?: (action: NonNullable<MetricCardRow['action']>) => void;
   }
 
-  let { data, props, loading = false, animate: shimmer = true, definitionTip, rowDefinitionTip, onlink, linkHref, onaction }: Props = $props();
+  let {
+    data,
+    props,
+    loading = false,
+    animate: shimmer = true,
+    definitionTip,
+    rowDefinitionTip,
+    onlink,
+    linkHref,
+    onaction
+  }: Props = $props();
+
   const tipAnchor = $derived(definitionTip ? metricCardTipAnchor(props) : undefined);
   const titleAccessory = $derived(tipAnchor === 'title' ? definitionTip : undefined);
   const rowAccessory = $derived(tipAnchor === 'row' ? definitionTip : undefined);
-
-  function definitionCode(row: MetricCardRow): string | undefined {
-    if (!rowDefinitionTip || row.showDefinition !== true || !row.label.trim()) return;
-    const field = resolveField(row.valueField, data).definition;
-    return field?.role === 'measure' ? field.metricCode : undefined;
-  }
-
-  function fieldLoading(binding: FieldBinding): boolean {
-    if (!loading) return false;
-    const slot = fieldSlot(binding) as keyof MetricDataSlots;
-    return (data[slot]?.sourceStatus ?? 'loading') === 'loading';
-  }
-
-  function fieldText(field: FieldBinding, unit?: string): string {
-    const resolved = resolveField(field, data);
-    return formatFieldValue(fieldValue(field, data), resolved, unit);
-  }
-
-  const progressValue = $derived(
-    props.progress ? finiteNumber(fieldValue(props.progress.valueField, data)) : undefined
+  const progress = $derived(resolveMetricProgress(props.progress, data, loading));
+  const isPanelVariant = $derived(
+    props.variant === 'compactSummary' ||
+      props.variant === 'dualSummary' ||
+      props.variant === 'compactStrip' ||
+      props.variant === 'compactStack'
   );
-  const progressMissingText = $derived(props.progress ? resolveField(props.progress.valueField, data).missingText : undefined);
-  const progressFormat = $derived(props.progress ? resolveField(props.progress.valueField, data).format : undefined);
-
-  function activateLink(field: FieldBinding, event: MouseEvent) {
-    const row = fieldRow(field, data);
-    if (row) onlink?.(row, event);
-  }
-
+  const hasSecondaryPanel = $derived(Boolean(props.secondaryRows || props.secondaryTitle));
 </script>
 
-{#snippet loadingValue()}
-  <Skeleton width="2.25em" inline {shimmer} />
-{/snippet}
-
 {#snippet pendingOrMissing()}
-  {#if loading}{@render loadingValue()}{:else}{DEFAULT_NULL_TEXT}{/if}
-{/snippet}
-
-{#snippet metricValue(row: MetricCardProps['rows'][number])}
-  {#if row.context}<span class="row-context">{row.context}</span>{/if}
-  {@const raw = fieldValue(row.valueField, data)}
-  {@const field = resolveField(row.valueField, data)}
-  {@const pending = fieldLoading(row.valueField)}
-  {@const color = !pending && row.colorRule ? valueColor(raw, row.colorRule, field.format) : undefined}
-  {@const text = formatFieldValue(raw, field, row.unit)}
-  <span class="row-value" style:color={valueColorStyle(color)}>
-    {#if pending}
-      {@render loadingValue()}
-    {:else}
-      {text}
-    {/if}
-  </span>
-  {@const unit = hasDisplayValue(raw) ? fieldUnitText(row.unit, field.format, text) : undefined}
-  {#if !pending && unit}<span class="unit">{unit}</span>{/if}
-{/snippet}
-
-{#snippet metricRows(rows: MetricCardProps['rows'], accessory?: Snippet<[string]>)}
-  <div class="metric-values">
-    {#each rows as row, index (`${row.label}:${index}`)}
-      {@const rawValue = fieldValue(row.valueField, data)}
-      {@const action = row.action}
-      {@const code = definitionCode(row)}
-      <div class="metric-row">
-        <span class="row-label" class:with-title-accessory={accessory !== undefined || code !== undefined}>
-          {#if code}
-            <span>{row.label}</span>{@render rowDefinitionTip?.(row.label, code)}
-          {:else}
-            {row.label}{@render accessory?.(row.label)}
-          {/if}
-        </span>
-        {#if !fieldLoading(row.valueField) && rawValue != null && action && onaction}
-          <button
-            type="button"
-            class="value-line value-link"
-            data-metric-row-action
-            aria-label={`${row.label} ${fieldText(row.valueField, row.unit)}`}
-            onclick={() => onaction?.(action)}
-          >
-            {@render metricValue(row)}
-          </button>
-        {:else if !fieldLoading(row.valueField) && row.link === true && rawValue != null && linkHref}
-          <a
-            href={linkHref?.(fieldRow(row.valueField, data) ?? {})}
-            role={linkHref?.(fieldRow(row.valueField, data) ?? {}) ? undefined : 'button'}
-            tabindex={linkHref?.(fieldRow(row.valueField, data) ?? {}) ? undefined : 0}
-            onkeydown={(event) => {
-              if (!linkHref?.(fieldRow(row.valueField, data) ?? {}) && (event.key === 'Enter' || event.key === ' ')) {
-                event.preventDefault(); event.currentTarget.click();
-              }
-            }}
-            class="value-line value-link"
-            data-metric-row-link
-            aria-label={`${row.label} ${fieldText(row.valueField, row.unit)}`}
-            onclick={(event) => activateLink(row.valueField, event)}
-          >
-            {@render metricValue(row)}
-          </a>
-        {:else}
-          <span class="value-line">{@render metricValue(row)}</span>
-        {/if}
-        {#if row.changes?.length}
-          <div class="changes">
-            {#each row.changes as change, changeIndex (`${change.label}:${changeIndex}`)}
-              {@const pending = fieldLoading(change.field)}
-              {@const value = pending ? undefined : fieldValue(change.field, data)}
-              {@const field = resolveField(change.field, data)}
-              {@const text = formatChangeValue(value, field, change.tone === 'positive', change.unit)}
-              {@const color = changeValueColor(value, change, field.format)}
-              {@const direction = change.colorRule || isSignedNumberFormat(field.format) ? valuePolarity(value, field.format) : color === 'green' ? 'positive' : color === 'red' ? 'negative' : 'neutral'}
-              <span class:positive={color === 'green'} class:negative={color === 'red'} class="change">
-                <span class="change-label">{change.label}</span>
-                <span class="change-value" style:color={change.colorRule ? valueColorStyle(color) : undefined}>
-                  {#if !pending && props.showTrendArrows && direction !== 'neutral' && !isPercentFormat(field.format)}
-                    <span
-                      class:up={direction === 'positive'}
-                      class:down={direction === 'negative'}
-                      class="trend-arrow"
-                      aria-hidden="true"
-                    >{direction === 'positive' ? '↑' : '↓'}</span>
-                  {/if}
-                  {#if pending}
-                    {@render loadingValue()}
-                  {:else}
-                    <span>{text}{#if hasDisplayValue(value) && fieldUnitText(change.unit, field.format, text)}<span class="change-unit">{change.unit}</span>{/if}</span>
-                  {/if}
-                </span>
-              </span>
-            {/each}
-          </div>
-        {/if}
-      </div>
-    {/each}
-  </div>
+  {#if loading}<Skeleton width="2.25em" inline {shimmer} />{:else}{DEFAULT_NULL_TEXT}{/if}
 {/snippet}
 
 {#snippet heading(title: string | undefined, accessory?: Snippet<[string]>)}
@@ -180,7 +71,20 @@
   <section class="metric-panel">
     {@render heading(title, primary ? titleAccessory : undefined)}
     {#if rows}
-      {@render metricRows(rows, primary ? rowAccessory : undefined)}
+      <div class="metric-values">
+        <MetricCardRows
+          {rows}
+          {data}
+          {loading}
+          {shimmer}
+          showTrendArrows={props.showTrendArrows}
+          accessory={primary ? rowAccessory : undefined}
+          {rowDefinitionTip}
+          {onlink}
+          {linkHref}
+          {onaction}
+        />
+      </div>
     {:else}
       <div class="metric-values placeholder-values" aria-label={`${title ?? '指标'}数据待补充`}>
         <div class="metric-row">
@@ -191,50 +95,118 @@
   </section>
 {/snippet}
 
-<div
-  class:activity-progress={props.variant === 'activityProgress'}
-  class:summary={props.variant === 'summary'}
-  class:compact-summary={props.variant === 'compactSummary'}
-  class:dual-summary={props.variant === 'dualSummary'}
-  class:compact-strip={props.variant === 'compactStrip'}
-  class:compact-stack={props.variant === 'compactStack'}
-  class:primary-detail={props.variant === 'primaryDetail'}
-  class:two-column-panels={props.variant === 'dualSummary' && props.panelLayout === 'twoColumn'}
-  class="metric-card"
->
-  {#if props.variant === 'compactSummary' || props.variant === 'dualSummary' || props.variant === 'compactStrip' || props.variant === 'compactStack'}
-    {@render metricPanel(props.title, props.rows, true)}
-    {#if props.variant === 'dualSummary' || props.secondaryRows || props.secondaryTitle}
-      {@render metricPanel(props.secondaryTitle, props.secondaryRows)}
-    {/if}
-    {#if props.progress}
-      <div class="progress-slot">
-        <ProgressRing loading={fieldLoading(props.progress.valueField)} {shimmer} value={progressValue} format={progressFormat} missingText={progressMissingText} ringPercent={props.progress.ringPercent} label={props.progress.label ?? '完成率'} />
-      </div>
-    {/if}
-  {:else}
-    {@render heading(props.title, titleAccessory)}
-    <div class="metric-content">
-      {@render metricRows(props.rows, rowAccessory)}
-      {#if props.progress}
+{#snippet secondaryMetricPanel()}
+  {@render metricPanel(props.secondaryTitle, props.secondaryRows)}
+{/snippet}
+
+{#if props.variant === 'summary'}
+  <MetricCardSummary
+    {data}
+    {props}
+    {loading}
+    {shimmer}
+    {titleAccessory}
+    {rowAccessory}
+    {rowDefinitionTip}
+    {progress}
+    secondaryPanel={hasSecondaryPanel ? secondaryMetricPanel : undefined}
+    {onlink}
+    {linkHref}
+    {onaction}
+  />
+{:else if props.variant === 'activityProgress'}
+  <MetricCardActivityProgress
+    {data}
+    {props}
+    {loading}
+    {shimmer}
+    {titleAccessory}
+    {rowAccessory}
+    {rowDefinitionTip}
+    {progress}
+    secondaryPanel={hasSecondaryPanel ? secondaryMetricPanel : undefined}
+    {onlink}
+    {linkHref}
+    {onaction}
+  />
+{:else if props.variant === 'primaryDetail'}
+  <MetricCardPrimaryDetail
+    {data}
+    {props}
+    {loading}
+    {shimmer}
+    {titleAccessory}
+    {rowAccessory}
+    {rowDefinitionTip}
+    {progress}
+    {onlink}
+    {linkHref}
+    {onaction}
+  />
+{:else}
+  <div
+    class:compact-summary={props.variant === 'compactSummary'}
+    class:dual-summary={props.variant === 'dualSummary'}
+    class:compact-strip={props.variant === 'compactStrip'}
+    class:compact-stack={props.variant === 'compactStack'}
+    class:two-column-panels={props.variant === 'dualSummary' && props.panelLayout === 'twoColumn'}
+    class="metric-card"
+  >
+    {#if isPanelVariant}
+      {@render metricPanel(props.title, props.rows, true)}
+      {#if props.variant === 'dualSummary' || hasSecondaryPanel}
+        {@render metricPanel(props.secondaryTitle, props.secondaryRows)}
+      {/if}
+      {#if progress}
         <div class="progress-slot">
           <ProgressRing
-            loading={fieldLoading(props.progress.valueField)}
+            loading={progress.loading}
             {shimmer}
-            format={progressFormat}
-            value={progressValue}
-            missingText={progressMissingText}
-            ringPercent={props.progress.ringPercent}
-            label={props.progress.label ?? '完成率'}
+            value={progress.value}
+            format={progress.format}
+            missingText={progress.missingText}
+            ringPercent={progress.ringPercent}
+            label={progress.label}
           />
         </div>
       {/if}
-    </div>
-    {#if props.secondaryRows || props.secondaryTitle}
-      {@render metricPanel(props.secondaryTitle, props.secondaryRows)}
+    {:else}
+      {@render heading(props.title, titleAccessory)}
+      <div class="metric-content">
+        <div class="metric-values">
+          <MetricCardRows
+            rows={props.rows}
+            {data}
+            {loading}
+            {shimmer}
+            showTrendArrows={props.showTrendArrows}
+            accessory={rowAccessory}
+            {rowDefinitionTip}
+            {onlink}
+            {linkHref}
+            {onaction}
+          />
+        </div>
+        {#if progress}
+          <div class="progress-slot">
+            <ProgressRing
+              loading={progress.loading}
+              {shimmer}
+              format={progress.format}
+              value={progress.value}
+              missingText={progress.missingText}
+              ringPercent={progress.ringPercent}
+              label={progress.label}
+            />
+          </div>
+        {/if}
+      </div>
+      {#if hasSecondaryPanel}
+        {@render metricPanel(props.secondaryTitle, props.secondaryRows)}
+      {/if}
     {/if}
-  {/if}
-</div>
+  </div>
+{/if}
 
 <style>
   .with-title-accessory {
@@ -242,8 +214,10 @@
     align-items: center;
     gap: 4px;
   }
-  .with-title-accessory span { min-width: 0; overflow-wrap: anywhere; }
-  .row-label.with-title-accessory { display: inline-flex; }
+  .with-title-accessory span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
   .metric-card {
     box-sizing: border-box;
     display: flex;
@@ -255,95 +229,10 @@
     gap: 0.45rem;
     height: 100%;
   }
-  .metric-card:not(.compact-summary):not(.dual-summary):not(.compact-strip):not(.compact-stack):not(.primary-detail) {
+  .metric-card:not(.compact-summary):not(.dual-summary):not(.compact-strip):not(.compact-stack) {
     padding: var(--mc-metric-card-padding, 0);
     border: var(--mc-metric-card-border, 0);
     border-radius: var(--mc-metric-card-radius, 0);
-  }
-  .primary-detail {
-    flex: 1;
-    justify-content: flex-start;
-    gap: 0;
-    background: var(--mc-metric-panel-surface, var(--mc-color-surface, #fff));
-    padding: var(--mc-metric-panel-padding, 20px);
-    border: var(--mc-metric-panel-border-width, 1px) solid var(--mc-metric-panel-border-color, rgb(0 0 0 / 0.1));
-    border-radius: var(--mc-metric-panel-radius, 16px);
-  }
-  .primary-detail > .metric-content .metric-row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
-  }
-  .primary-detail > .metric-content .row-value {
-    color: #000;
-    font-size: 28px;
-    font-weight: 400;
-    line-height: 34px;
-  }
-  .primary-detail > .metric-content .changes {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 8px;
-    margin-top: 4px;
-  }
-  .primary-detail > .metric-content .change {
-    display: flex;
-    align-items: baseline;
-    gap: 8px;
-    font-family: "PingFang SC", sans-serif;
-    font-size: 14px;
-    font-weight: 400;
-  }
-  .primary-detail > .metric-content .change-label {
-    margin-right: 0;
-    line-height: 20px;
-  }
-  .primary-detail > .metric-content .change-value {
-    font-weight: 400;
-    line-height: 17px;
-  }
-  .primary-detail > .metric-panel {
-    min-height: 0;
-    padding: 0;
-    border: 0;
-    border-radius: 0;
-    background: transparent;
-  }
-  .primary-detail > .metric-panel .metric-values {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-  }
-  .primary-detail > .metric-panel .metric-row {
-    display: flex;
-    min-height: 0;
-    align-items: baseline;
-    gap: 8px;
-    margin-top: 8px;
-    font-family: "PingFang SC", sans-serif;
-    font-style: normal;
-    font-size: 14px;
-    font-weight: 400;
-    letter-spacing: 0;
-    text-align: left;
-  }
-  .primary-detail > .metric-panel .row-label {
-    color: rgba(0, 0, 0, 0.5);
-    font-size: 14px;
-    line-height: 20px;
-    white-space: normal;
-    overflow-wrap: anywhere;
-  }
-  .primary-detail > .metric-panel .value-line {
-    white-space: normal;
-    overflow-wrap: anywhere;
-  }
-  .primary-detail > .metric-panel .row-value,
-  .primary-detail > .metric-panel .unit {
-    color: #000;
-    font-size: 14px;
-    font-weight: 400;
-    line-height: 17px;
   }
   .metric-content {
     display: flex;
@@ -430,7 +319,7 @@
     grid-auto-flow: var(--mc-compact-summary-flow, row);
     gap: 0;
   }
-  .metric-panel .metric-row {
+  .metric-panel :global(.metric-row) {
     display: grid;
     min-height: 40px;
     grid-template-columns: var(
@@ -440,8 +329,8 @@
     align-items: baseline;
     gap: 6px;
   }
-  .compact-strip .metric-row,
-  .compact-stack .metric-row {
+  .compact-strip :global(.metric-row),
+  .compact-stack :global(.metric-row) {
     align-content: start;
     gap: 2px;
   }
@@ -452,21 +341,21 @@
     justify-content: space-between;
     gap: 20px;
   }
-  .compact-strip .metric-panel .metric-row,
-  .compact-stack .metric-panel .metric-row {
+  .compact-strip .metric-panel :global(.metric-row),
+  .compact-stack .metric-panel :global(.metric-row) {
     display: flex;
     min-width: 0;
     flex-direction: column;
     align-items: flex-start;
     gap: 0;
   }
-  .compact-strip .metric-panel .metric-row {
+  .compact-strip .metric-panel :global(.metric-row) {
     position: relative;
     /* 两个指标始终等分可用宽度，分隔线才会稳定落在中轴，
        不随两侧文案和数值宽度漂移。 */
     flex: 1 1 0;
   }
-  .compact-strip .metric-panel .metric-row + .metric-row::before {
+  .compact-strip .metric-panel :global(.metric-row + .metric-row::before) {
     position: absolute;
     top: 0;
     bottom: 0;
@@ -474,44 +363,44 @@
     border-left: 1px dashed #dcdbdb;
     content: '';
   }
-  .compact-stack .metric-panel .metric-row + .metric-row {
+  .compact-stack .metric-panel :global(.metric-row + .metric-row) {
     margin-top: 20px;
   }
-  .compact-strip .metric-panel .row-label,
-  .compact-stack .metric-panel .row-label {
+  .compact-strip .metric-panel :global(.row-label),
+  .compact-stack .metric-panel :global(.row-label) {
     font-size: 14px;
     line-height: 20px;
   }
-  .compact-strip .metric-panel .value-line,
-  .compact-stack .metric-panel .value-line {
+  .compact-strip .metric-panel :global(.value-line),
+  .compact-stack .metric-panel :global(.value-line) {
     margin-top: 4px;
   }
-  .compact-strip .metric-panel .row-value,
-  .compact-stack .metric-panel .row-value {
+  .compact-strip .metric-panel :global(.row-value),
+  .compact-stack .metric-panel :global(.row-value) {
     font-size: 28px;
     font-weight: 400;
     line-height: 34px;
   }
-  .compact-strip .metric-panel .unit,
-  .compact-stack .metric-panel .unit {
+  .compact-strip .metric-panel :global(.unit),
+  .compact-stack .metric-panel :global(.unit) {
     font-size: 14px;
     font-weight: 400;
     line-height: 20px;
   }
-  .compact-strip .metric-panel .changes {
+  .compact-strip .metric-panel :global(.changes) {
     margin-top: 12px;
   }
-  .compact-strip .metric-panel .row-context {
+  .compact-strip .metric-panel :global(.row-context) {
     margin-right: 4px;
     color: #595959;
     font-size: 12px;
     font-weight: 400;
     line-height: 22px;
   }
-  .compact-stack .metric-panel .changes {
+  .compact-stack .metric-panel :global(.changes) {
     margin-top: 12px;
   }
-  .compact-stack .change {
+  .compact-stack :global(.change) {
     display: inline-flex;
     align-items: baseline;
     gap: 8px;
@@ -519,7 +408,7 @@
     font-weight: 400;
     line-height: 22px;
   }
-  .compact-stack .change-label {
+  .compact-stack :global(.change-label) {
     margin: 0;
     color: #595959;
     font-size: 12px;
@@ -527,35 +416,35 @@
   }
   /* 指标行的三个排版量(标签 / 大数字 / 单位)两档形态取值不同,
      经 --mc-metric-* 下发;缺省值即报表形态的既有观感。 */
-  .metric-panel .row-label {
+  .metric-panel :global(.row-label) {
     color: var(--mc-metric-label-color, #505a84);
     font-size: var(--mc-metric-label-font-size, 16px);
     font-weight: 400;
     line-height: var(--mc-metric-label-line-height, 22px);
     white-space: nowrap;
   }
-  .metric-panel .value-line {
+  .metric-panel :global(.value-line) {
     min-width: 0;
     gap: 0;
     white-space: nowrap;
   }
-  .metric-panel .row-value {
+  .metric-panel :global(.row-value) {
     color: var(--mc-metric-value-color, var(--mc-color-text-strong, #0f1a4d));
     font-size: var(--mc-metric-value-font-size, 20px);
     font-weight: var(--mc-metric-value-font-weight, 500);
     line-height: var(--mc-metric-value-line-height, 40px);
   }
-  .metric-panel .unit {
+  .metric-panel :global(.unit) {
     color: var(--mc-metric-unit-color, #0f1a4d);
     font-size: var(--mc-metric-unit-font-size, 16px);
     font-weight: var(--mc-metric-unit-font-weight, 500);
     line-height: var(--mc-metric-unit-line-height, 40px);
   }
-  .metric-panel .changes {
+  .metric-panel :global(.changes) {
     display: block;
     min-width: 0;
   }
-  .metric-panel .change {
+  .metric-panel :global(.change) {
     display: inline-flex;
     gap: 4px;
     font-size: 18px;
@@ -563,12 +452,12 @@
     line-height: 22px;
     white-space: nowrap;
   }
-  .metric-panel .change-label {
+  .metric-panel :global(.change-label) {
     color: #505a84;
     font-size: 16px;
     font-weight: 400;
   }
-  .compact-strip .change {
+  .compact-strip :global(.change) {
     align-items: center;
     flex-direction: row;
     gap: 2px;
@@ -576,12 +465,12 @@
     line-height: 22px;
     white-space: nowrap;
   }
-  .compact-strip .change-label {
+  .compact-strip :global(.change-label) {
     color: #595959;
     font-size: 12px;
     line-height: 22px;
   }
-  .compact-strip .change-value {
+  .compact-strip :global(.change-value) {
     display: inline-flex;
     min-width: 48px;
     height: 22px;
@@ -591,11 +480,11 @@
     padding: 0 9px 0 5px;
     border-radius: 4px;
   }
-  .compact-strip .change.positive .change-value {
+  .compact-strip :global(.change.positive .change-value) {
     color: #3cc6c1;
     background: rgb(60 198 193 / 0.1);
   }
-  .compact-strip .change.negative .change-value {
+  .compact-strip :global(.change.negative .change-value) {
     color: #f23030;
     background: rgb(242 48 48 / 0.08);
   }
@@ -608,354 +497,40 @@
       padding-right: 7px;
       padding-left: 7px;
     }
-    .metric-panel .metric-row {
+    .metric-panel :global(.metric-row) {
       gap: 2px;
     }
     .metric-panel .metric-values {
       grid-auto-flow: row;
     }
-    .metric-panel .row-label {
+    .metric-panel :global(.row-label) {
       font-size: 13px;
     }
-    .metric-panel .row-value {
+    .metric-panel :global(.row-value) {
       font-size: 17px;
     }
-    .metric-panel .unit,
-    .metric-panel .change-label {
+    .metric-panel :global(.unit),
+    .metric-panel :global(.change-label) {
       font-size: 13px;
     }
-    .metric-panel .change {
+    .metric-panel :global(.change) {
       gap: 2px;
       font-size: 12px;
     }
-    .metric-panel .change-label {
+    .metric-panel :global(.change-label) {
       margin-right: 0;
     }
   }
   /* responsive-contract: metric-compact-stack-local-type */
   @container (max-width: 230px) {
-    .compact-stack .metric-panel .row-label {
+    .compact-stack .metric-panel :global(.row-label) {
       font-size: 14px;
     }
-    .compact-stack .metric-panel .row-value {
+    .compact-stack .metric-panel :global(.row-value) {
       font-size: 28px;
     }
-    .compact-stack .metric-panel .unit {
+    .compact-stack .metric-panel :global(.unit) {
       font-size: 14px;
     }
-  }
-  .metric-row {
-    display: flex;
-    align-items: baseline;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-    min-width: 0;
-  }
-  .activity-progress {
-    position: relative;
-    container-type: inline-size;
-    justify-content: flex-start;
-    gap: 0;
-    min-height: 164px;
-    padding: 17px 0 38px 17px;
-    background: var(--mc-color-surface, #fff);
-    border-radius: 12px;
-  }
-  .summary {
-    min-height: 200px;
-    justify-content: flex-start;
-    gap: 0;
-    padding: 11px 17px 16px;
-    background-color: transparent;
-    background-image: var(--mc-section-gradient, none);
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: 100% 100%;
-    border-radius: 16px;
-    text-align: left;
-    container-type: inline-size;
-  }
-  .summary .metric-content {
-    width: 100%;
-    height: 128px;
-    padding: 15px 0 13px 12px;
-    background: var(--mc-color-surface, #fff);
-    border-radius: 12px;
-  }
-  .summary .metric-values {
-    width: 100%;
-    flex-direction: row;
-    gap: 0;
-    padding-right: 12px;
-  }
-  .summary .metric-row {
-    min-width: 0;
-    flex: 1;
-    align-items: flex-start;
-    justify-content: flex-start;
-    flex-direction: column;
-    flex-wrap: nowrap;
-    gap: 0;
-    height: 100px;
-    margin-right: 12px;
-    padding: 14px 0 9px 13px;
-    background: var(--mc-color-surface-subtle, #f1f4ff);
-    border-radius: 8px;
-  }
-  .summary .metric-row:last-child {
-    margin-right: 0;
-  }
-  .summary h3 {
-    margin: 0 0 7px;
-    color: var(--mc-color-primary, #08359e);
-    font-size: 24px;
-    font-weight: 600;
-    line-height: 38px;
-    text-align: center;
-  }
-  .summary .row-label {
-    color: #0f1a4d;
-    font-size: 18px;
-    font-weight: 400;
-    line-height: 25px;
-    margin-bottom: 9px;
-  }
-  .summary .value-line {
-    align-items: baseline;
-    flex-direction: row;
-    gap: 0;
-    white-space: nowrap;
-  }
-  .summary .row-value {
-    font-size: 26px;
-    font-weight: 500;
-    line-height: 43px;
-  }
-  .summary .unit {
-    font-size: 18px;
-    font-weight: 500;
-    line-height: 43px;
-  }
-  /* responsive-contract: metric-summary-local-comfortable */
-  @container (max-width: 275px) {
-    .summary .metric-content {
-      padding-left: 7px;
-      padding-right: 7px;
-    }
-    .summary .metric-values {
-      padding-right: 0;
-    }
-    .summary .metric-row {
-      margin-right: 6px;
-      padding-left: 8px;
-    }
-    .summary .row-label {
-      font-size: 15px;
-    }
-    .summary .row-value {
-      font-size: 21px;
-    }
-    .summary .unit,
-    .summary .change {
-      font-size: 13px;
-    }
-    .summary .changes {
-      min-width: 0;
-      max-width: 100%;
-      gap: 0;
-    }
-    .summary .change {
-      max-width: 100%;
-      overflow-wrap: anywhere;
-      white-space: normal;
-    }
-  }
-  /* responsive-contract: metric-summary-local-tight */
-  @container (max-width: 235px) {
-    .summary .metric-content {
-      padding-right: 4px;
-      padding-left: 4px;
-    }
-    .summary .metric-row {
-      margin-right: 4px;
-      padding-left: 4px;
-    }
-    .summary .row-value {
-      font-size: 18px;
-    }
-    .summary .unit,
-    .summary .change {
-      font-size: 12px;
-    }
-  }
-  .activity-progress h3 {
-    margin: 0 0 1px;
-    color: #0f1a4d;
-    font-size: 18px;
-    font-weight: 400;
-    line-height: 25px;
-  }
-  .activity-progress .metric-content {
-    width: 100%;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 0;
-    margin-top: 26px;
-    padding-right: calc(clamp(44px, 16.715%, 59px) - 6px);
-  }
-  .activity-progress .metric-values {
-    flex: 0 0 125px;
-    gap: 0;
-  }
-  .activity-progress .progress-slot {
-    transform: none;
-  }
-  .activity-progress .metric-row {
-    align-items: flex-start;
-    flex-direction: column;
-    flex-wrap: nowrap;
-    gap: 0;
-  }
-  .activity-progress .row-label {
-    position: absolute;
-    top: 17px;
-    left: 17px;
-    color: #0f1a4d;
-    font-size: 18px;
-    font-weight: 400;
-    line-height: 25px;
-    white-space: nowrap;
-  }
-  .activity-progress .value-line {
-    margin: 17px 0 5px;
-    gap: 0;
-  }
-  .activity-progress .row-value {
-    font-size: 26px;
-    font-weight: 500;
-    line-height: 43px;
-  }
-  .activity-progress .unit {
-    font-size: 18px;
-    font-weight: 500;
-    line-height: 43px;
-  }
-  .activity-progress .changes {
-    gap: 0;
-    line-height: 22px;
-  }
-  .activity-progress .change {
-    font-size: 18px;
-    line-height: 22px;
-    white-space: nowrap;
-  }
-  .activity-progress .change-label {
-    margin-right: 4px;
-    color: #0f1a4d;
-  }
-  /* responsive-contract: metric-activity-progress-local-tight */
-  @container (max-width: 260px) {
-    .activity-progress .metric-content {
-      padding-right: 4px;
-    }
-    .activity-progress .metric-values {
-      flex-basis: 88px;
-    }
-    .activity-progress .row-value {
-      font-size: 22px;
-      line-height: 36px;
-    }
-    .activity-progress .unit,
-    .activity-progress .change {
-      font-size: 13px;
-      line-height: 18px;
-    }
-    .activity-progress .progress-slot {
-      --progress-ring-size: 80px;
-      --progress-ring-height: 81px;
-      --progress-ring-chart-size: 70px;
-      --progress-ring-inset: 5px;
-      --progress-ring-number-top: 35px;
-      --progress-ring-value-font-size: 20px;
-      --progress-ring-value-line-height: 20px;
-      --progress-ring-percent-font-size: 9px;
-      --progress-ring-label-bottom: 12px;
-      --progress-ring-label-font-size: 13px;
-      --progress-ring-label-line-height: 17px;
-    }
-  }
-  .change-unit {
-    margin-left: 2px;
-    color: inherit;
-  }
-  .value-line {
-    display: inline-flex;
-    align-items: baseline;
-    gap: 4px;
-  }
-  .value-link {
-    width: fit-content;
-    padding: 0;
-    color: inherit;
-    background: transparent;
-    border: 0;
-    cursor: pointer;
-    font: inherit;
-    text-align: left;
-    text-decoration: none;
-  }
-  .value-link .row-value {
-    text-decoration-line: underline;
-  }
-  .value-link:focus-visible {
-    outline: 2px solid var(--mc-color-primary, #08359e);
-    outline-offset: 2px;
-    border-radius: 4px;
-  }
-  .row-label {
-    color: #595959;
-    font-size: 0.875rem;
-  }
-  .row-value {
-    color: #0f1a4d;
-    font-size: 1.625rem;
-    font-weight: 400;
-    line-height: 1.35;
-    font-variant-numeric: tabular-nums;
-  }
-  .unit {
-    color: #0f1a4d;
-    font-size: 14px;
-    font-weight: 500;
-  }
-  .changes {
-    display: flex;
-    align-items: baseline;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-  }
-  .change {
-    color: #71717a;
-    font-size: 0.875rem;
-    font-variant-numeric: tabular-nums;
-  }
-  .change-label {
-    margin-right: 0.2rem;
-  }
-  .change-value {
-    display: inline-flex;
-    align-items: baseline;
-    gap: 2px;
-  }
-  .trend-arrow {
-    font-size: 0.9em;
-    font-weight: 700;
-    line-height: 1;
-  }
-  .change.positive .change-value {
-    color: var(--mc-color-positive, #5cb300);
-  }
-  .change.negative .change-value {
-    color: var(--mc-color-negative, #f21e1e);
   }
 </style>
