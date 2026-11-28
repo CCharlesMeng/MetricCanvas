@@ -1,0 +1,93 @@
+{
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true,
+    "defaultBranch": "origin/main"
+  },
+  "files": {
+    "ignoreUnknown": true,
+    "includes": [
+      "**/*.ts",
+      "**/*.mts",
+      "**/*.js",
+      "**/*.mjs",
+      "**/*.cjs",
+      "**/*.json",
+      "!**/*.svelte",
+      "!!**/dist",
+      "!!**/build",
+      "!!**/.svelte-kit",
+      "!!**/node_modules",
+      "!!contracts",
+      "!!metriccanvas-authoring",
+      "!!docs/archive",
+      "!!pages",
+      "!!tools/fixtures",
+      "!!.agents",
+      "!!packages/engine/runtime-ui/src/report-pdf-worker-source.ts",
+      "!!packages/engine/runtime-ui/src/report-png-worker-source.ts",
+      "!!packages/engine/runtime-ui/src/report-pdf-capture.ts"
+    ]
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 100
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "single",
+      "semicolons": "always"
+    }
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "preset": "none",
+      "correctness": {
+        "preset": "recommended",
+        "noEmptyCharacterClassInRegex": "off",
+        "noUnreachable": "off",
+        "noUnsafeOptionalChaining": "off",
+        "noUnusedFunctionParameters": "warn",
+        "noUnusedImports": "warn",
+        "noUnusedVariables": "warn",
+        "noVoidTypeReturn": "off"
+      },
+      "suspicious": {
+        "preset": "recommended",
+        "noAssignInExpressions": "off",
+        "noControlCharactersInRegex": "off",
+        "noExplicitAny": "off",
+        "noShadowRestrictedNames": "off",
+        "noSparseArray": "off",
+        "noTemplateCurlyInString": "off",
+        "useGetterReturn": "off",
+        "useIterableCallbackReturn": "off"
+      }
+    }
+  },
+  "css": {
+    "linter": { "enabled": false },
+    "formatter": { "enabled": false }
+  },
+  "html": {
+    "linter": { "enabled": false },
+    "formatter": { "enabled": false }
+  },
+  "markdown": {
+    "linter": { "enabled": false },
+    "formatter": { "enabled": false }
+  },
+  "yaml": {
+    "linter": { "enabled": false },
+    "formatter": { "enabled": false }
+  },
+  "graphql": {
+    "linter": { "enabled": false },
+    "formatter": { "enabled": false }
+  }
+}

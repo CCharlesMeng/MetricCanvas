@@ -15,6 +15,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-workspace
+      - name: 检查仓库卫生（单文件体积与证据目录）
+        run: pnpm hygiene:check
+      - name: 静态代码检查（Biome）
+        run: pnpm lint
+      - name: 检查设计事实结构
+        run: pnpm design:facts:check
       - name: 检查新增循环与跨层依赖路径
         env:
           METRICCANVAS_ARCHITECTURE_BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
@@ -71,6 +77,9 @@ jobs:
       - name: 检查创作 Skill 工具类型
         run: pnpm exec tsc --noEmit -p tools/tsconfig.skills.json
 
+      - name: 检查 ADR 索引与主题速查表
+        run: pnpm adr:index:check
+
   tests:
     runs-on: ubuntu-latest
     strategy:
@@ -109,6 +118,9 @@ jobs:
       # 产品构建包含四个引擎交付物与纯前端静态平台。
       - name: 产品构建
         run: pnpm build
+
+      - name: 校验工作区包导出与构建产物
+        run: pnpm packages:check
 
       - name: 严格校验 Embed 分发基线（每个 JS 原始体积不超过 1 MB）
         run: pnpm --filter @metriccanvas/embed check:dist

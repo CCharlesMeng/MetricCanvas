@@ -8,6 +8,8 @@
     "python": "radon/6.0.1"
   },
   "limit": 15,
+  "subtreeLimit": 45,
+  "fileSizeLimit": 600,
   "violations": [
     {
       "file": "apps/platform/scripts/dev-page-assets.ts",
@@ -1135,6 +1137,370 @@
       "qualifiedName": "main",
       "line": 8,
       "selfCC": 46
+    }
+  ],
+  "subtreeViolations": [
+    {
+      "file": "apps/platform/scripts/dev-page-assets.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "<anonymous@78:29>",
+      "line": 78,
+      "selfCC": 6,
+      "subtreeCC": 50,
+      "nestedFunctions": 8
+    },
+    {
+      "file": "apps/platform/src/lib/integration/navigation.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "createPlatformNavigation",
+      "line": 7,
+      "selfCC": 1,
+      "subtreeCC": 57,
+      "nestedFunctions": 32
+    },
+    {
+      "file": "apps/platform/src/lib/page-assets/java-adapter.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "createPageAssetsClient",
+      "line": 55,
+      "selfCC": 1,
+      "subtreeCC": 76,
+      "nestedFunctions": 28
+    },
+    {
+      "file": "apps/platform/src/lib/PageAuthoringWorkbench.svelte",
+      "language": "typescript-javascript",
+      "qualifiedName": "<anonymous@130:11>",
+      "line": 130,
+      "selfCC": 14,
+      "subtreeCC": 87,
+      "nestedFunctions": 41
+    },
+    {
+      "file": "apps/platform/src/lib/workbench/authoring-coordinator.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "createAuthoringCoordinator",
+      "line": 56,
+      "selfCC": 1,
+      "subtreeCC": 338,
+      "nestedFunctions": 81
+    },
+    {
+      "file": "apps/platform/src/lib/workbench/authoring-coordinator.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "createAuthoringCoordinator/beginPreparation",
+      "line": 265,
+      "selfCC": 4,
+      "subtreeCC": 47,
+      "nestedFunctions": 9
+    },
+    {
+      "file": "apps/platform/src/lib/workbench/authoring-language-recovery.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "createAuthoringLanguageRecovery",
+      "line": 34,
+      "selfCC": 1,
+      "subtreeCC": 103,
+      "nestedFunctions": 32
+    },
+    {
+      "file": "apps/platform/src/lib/workbench/authoring-language.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "createAuthoringLanguage",
+      "line": 56,
+      "selfCC": 1,
+      "subtreeCC": 110,
+      "nestedFunctions": 39
+    },
+    {
+      "file": "apps/platform/src/lib/workbench/authoring-publication.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "createAuthoringPublication",
+      "line": 38,
+      "selfCC": 1,
+      "subtreeCC": 92,
+      "nestedFunctions": 32
+    },
+    {
+      "file": "apps/platform/src/lib/workbench/authoring-sync.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "createAuthoringSync",
+      "line": 56,
+      "selfCC": 7,
+      "subtreeCC": 188,
+      "nestedFunctions": 49
+    },
+    {
+      "file": "apps/platform/src/lib/workbench/inline-parameter-publication.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "createInlineParameterPublication",
+      "line": 14,
+      "selfCC": 1,
+      "subtreeCC": 50,
+      "nestedFunctions": 18
+    },
+    {
+      "file": "apps/platform/src/lib/workbench/work-session.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "createWorkSession",
+      "line": 6,
+      "selfCC": 2,
+      "subtreeCC": 54,
+      "nestedFunctions": 34
+    },
+    {
+      "file": "metriccanvas-authoring/contracts/authored/publication-contract.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "validateCandidateRelations",
+      "line": 157,
+      "selfCC": 11,
+      "subtreeCC": 78,
+      "nestedFunctions": 22
+    },
+    {
+      "file": "packages/data-execution/src/candidate-validation.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "createCandidateValidator",
+      "line": 10,
+      "selfCC": 2,
+      "subtreeCC": 87,
+      "nestedFunctions": 20
+    },
+    {
+      "file": "packages/data-execution/src/dqe/dqe.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "createDqeGateway",
+      "line": 185,
+      "selfCC": 1,
+      "subtreeCC": 69,
+      "nestedFunctions": 30
+    },
+    {
+      "file": "packages/data-execution/src/query-runner.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "createQueryRunner",
+      "line": 41,
+      "selfCC": 1,
+      "subtreeCC": 52,
+      "nestedFunctions": 23
+    },
+    {
+      "file": "packages/data-execution/src/source-program/session.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "createSourceProgram",
+      "line": 86,
+      "selfCC": 12,
+      "subtreeCC": 266,
+      "nestedFunctions": 91
+    },
+    {
+      "file": "packages/data-execution/src/source-program/session.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "createSourceProgram/read",
+      "line": 229,
+      "selfCC": 15,
+      "subtreeCC": 169,
+      "nestedFunctions": 57
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+      "language": "typescript-javascript",
+      "qualifiedName": "run",
+      "line": 551,
+      "selfCC": 32,
+      "subtreeCC": 118,
+      "nestedFunctions": 45
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/table/controller.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "createTableController",
+      "line": 31,
+      "selfCC": 1,
+      "subtreeCC": 139,
+      "nestedFunctions": 89
+    },
+    {
+      "file": "packages/engine/runtime/src/filter-state.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "createFilterState",
+      "line": 64,
+      "selfCC": 2,
+      "subtreeCC": 160,
+      "nestedFunctions": 43
+    },
+    {
+      "file": "packages/engine/runtime/src/orchestrator.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "orchestrate",
+      "line": 39,
+      "selfCC": 5,
+      "subtreeCC": 150,
+      "nestedFunctions": 83
+    },
+    {
+      "file": "packages/engine/runtime/src/orchestrator.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "orchestrate/start",
+      "line": 49,
+      "selfCC": 5,
+      "subtreeCC": 121,
+      "nestedFunctions": 59
+    },
+    {
+      "file": "packages/engine/runtime/src/table/expansion.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "createRowExpansionController",
+      "line": 88,
+      "selfCC": 1,
+      "subtreeCC": 48,
+      "nestedFunctions": 27
+    },
+    {
+      "file": "packages/page/src/chart-option.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "chartOptionErrorsFor",
+      "line": 43,
+      "selfCC": 23,
+      "subtreeCC": 64,
+      "nestedFunctions": 5
+    },
+    {
+      "file": "packages/page/src/presentation-policy.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "presentationPolicyErrors",
+      "line": 83,
+      "selfCC": 1,
+      "subtreeCC": 65,
+      "nestedFunctions": 23
+    },
+    {
+      "file": "packages/page/src/query-param-references.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "queryParamReferenceErrors",
+      "line": 16,
+      "selfCC": 25,
+      "subtreeCC": 48,
+      "nestedFunctions": 12
+    },
+    {
+      "file": "packages/page/src/table/validate-expansion.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "rowExpansionErrors",
+      "line": 16,
+      "selfCC": 4,
+      "subtreeCC": 72,
+      "nestedFunctions": 20
+    },
+    {
+      "file": "packages/page/src/table/validate-expansion.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "rowExpansionErrors/<anonymous@20:30>",
+      "line": 20,
+      "selfCC": 4,
+      "subtreeCC": 67,
+      "nestedFunctions": 17
+    },
+    {
+      "file": "packages/page/src/validate.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "invariantErrors",
+      "line": 392,
+      "selfCC": 15,
+      "subtreeCC": 68,
+      "nestedFunctions": 25
+    },
+    {
+      "file": "packages/page/src/validate.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "computeErrors",
+      "line": 1136,
+      "selfCC": 7,
+      "subtreeCC": 87,
+      "nestedFunctions": 26
+    },
+    {
+      "file": "packages/page/src/validate.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "componentErrors",
+      "line": 1421,
+      "selfCC": 4,
+      "subtreeCC": 152,
+      "nestedFunctions": 51
+    },
+    {
+      "file": "tools/dqe-sim/src/multi-query-table.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "executeMultiQueryTable",
+      "line": 12,
+      "selfCC": 47,
+      "subtreeCC": 50,
+      "nestedFunctions": 12
+    },
+    {
+      "file": "tools/scripts/page-reference.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "buildPageReference",
+      "line": 281,
+      "selfCC": 9,
+      "subtreeCC": 80,
+      "nestedFunctions": 46
+    },
+    {
+      "file": "tools/scripts/verify-paged-join-real.ts",
+      "language": "typescript-javascript",
+      "qualifiedName": "main",
+      "line": 8,
+      "selfCC": 46,
+      "subtreeCC": 49,
+      "nestedFunctions": 12
+    }
+  ],
+  "fileSizeViolations": [
+    {
+      "file": "apps/platform/src/lib/PageAuthoringWorkbench.svelte",
+      "language": "typescript-javascript",
+      "lines": 813
+    },
+    {
+      "file": "packages/data-execution/src/dqe/dqe.ts",
+      "language": "typescript-javascript",
+      "lines": 1087
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/RuntimeSection.svelte",
+      "language": "typescript-javascript",
+      "lines": 649
+    },
+    {
+      "file": "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
+      "language": "typescript-javascript",
+      "lines": 2356
+    },
+    {
+      "file": "packages/engine/runtime/src/filter-state.ts",
+      "language": "typescript-javascript",
+      "lines": 739
+    },
+    {
+      "file": "packages/engine/widgets/src/components/metric-card/MetricCard.svelte",
+      "language": "typescript-javascript",
+      "lines": 967
+    },
+    {
+      "file": "packages/engine/widgets/src/components/table/Table.svelte",
+      "language": "typescript-javascript",
+      "lines": 1977
+    },
+    {
+      "file": "packages/page/src/validate.ts",
+      "language": "typescript-javascript",
+      "lines": 2701
+    },
+    {
+      "file": "packages/page/src/version.ts",
+      "language": "typescript-javascript",
+      "lines": 1631
     }
   ]
 }
