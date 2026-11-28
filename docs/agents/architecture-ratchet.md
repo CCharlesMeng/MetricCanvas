@@ -1,6 +1,6 @@
 # 源码依赖门禁
 
-`pnpm architecture:check` 对基准提交和候选源码使用同一套规则，**当前已锁定在 0 存量**：只要候选源码存在任何循环依赖或跨层依赖（`current.size > 0`），检查即退出 1 并打印从导入者到被导入者的文件路径。CI 的 `architecture` 任务参与总门禁。PR 比较目标分支 SHA 与候选合并结果，推送 main 比较推送前的 SHA 与推送结果。本地默认比较 HEAD 与工作树，包括维护目录里的未跟踪源码。复验已提交的分支时可指定基准：
+`pnpm architecture:check` 对基准提交和候选源码使用同一套规则，**当前已锁定在 0 存量**：只要候选源码存在任何循环依赖、跨层违规或跨层深路径绕过入口导入（`current.size > 0`），检查即退出 1 并打印从导入者到被导入者的文件路径。CI 的 `architecture` 任务参与总门禁。PR 比较目标分支 SHA 与候选合并结果，推送 main 比较推送前的 SHA 与推送结果。本地默认比较 HEAD 与工作树，包括维护目录里的未跟踪源码。复验已提交的分支时可指定基准：
 
 ```sh
 METRICCANVAS_ARCHITECTURE_BASE=origin/main pnpm architecture:check
@@ -23,6 +23,20 @@ node tools/architecture/check.mjs --list
 - 对前四个纯逻辑层，Svelte、图表和已列出的显示及文件编码依赖也形成禁止边。普通第三方包作为终点，不展开其 node_modules。跨出受检源码到其他工作区代码时同样以终点处理。
 
 跨层违规按起点层、禁止目标和途经的有向边记录。因此在已有路径旁边加一条通往同一目标的绕路也会失败。该门禁检查静态模块依赖；构建产物隔离仍由打包与独立消费者检查负责。动态模块注册、CSS 和资源引用不在源码图内。
+
+## 跨层深路径绕过（`deep import`）
+
+除上述值依赖跨层方向约束外，门禁还对**值导入与类型导入（`import type` / `export type` / `import(...)`）**统一检查跨层入口边界：只要模块 `from` 导入了另一层 `targetLayer` 的源码文件，目标文件必须是 `targetLayer` 显式声明的入口模块之一，禁止跨层直连私有内部路径：
+
+- `page`：`index.ts`、`internal.ts`
+- `data-execution`：`index.ts`、`runtime.ts`、`dqe/index.ts`、`node.ts`
+- `ui`：`index.ts`
+- `runtime`：`index.ts`、`internal.ts`
+- `widgets`：`index.ts`、`internal.ts`、`internal-skeleton.ts`、`internal-summary.ts`
+- `data-gateway`：`index.ts`
+- `runtime-ui`：`index.ts`、`types.ts`、`composition.ts`、`browser-drill-return.ts`、`ai-summary/adapters/yunbao-assistant.ts`
+
+同层内部导入（如 `runtime-ui/src/a.ts -> runtime-ui/src/sub/b.ts`）不受此限制；跨层绕过入口记录为 `deep import: <from> -> <to>`，同样锁定在 0 存量。
 
 ## 首次盘点与清零收口
 

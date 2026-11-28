@@ -2,10 +2,10 @@
 <script lang="ts">
   import { projectSnapshotRows } from '@metriccanvas/page/internal';
   import {onDestroy,untrack,setContext,getContext} from 'svelte';
-  import {compilePresentation} from '../../runtime/src/presentation';
+  import {compilePresentation} from '../../runtime/src/internal';
   import {PRESENTATION_CONTEXT} from './presentation-context';
   import type {DisplaySnapshot,FilterValues} from '../../runtime/src';
-  import { TABLE_EXPORT_ALLOWED } from '../../widgets/src/shared/export-context';
+  import { TABLE_EXPORT_ALLOWED } from '../../widgets/src/internal';
   import {detailExportData} from './table/export/prepare';
   import {deliverTableExport, TABLE_EXPORT_HANDLER, type TableExportHandler} from './table/export/host';
   import {createTableController} from './table/controller';
@@ -13,7 +13,7 @@
   import type {Page} from '@metriccanvas/page';
   import {resolveDataSourceFields,type Component,type DataSnapshot,type TableComponent,type Row} from '@metriccanvas/page/internal';
   import type {PageDataSnapshots} from '../../runtime/src';
-  import type {NamedDataSlots} from '../../widgets/src/shared/component-data';
+  import type {NamedDataSlots} from '../../widgets/src';
   import type {TableRenderBinding} from './component-render';
   import {hostRenderSnapshot,displayDataSnapshot} from './widget-host-state';
   import ComponentRenderer from './ComponentRenderer.svelte';

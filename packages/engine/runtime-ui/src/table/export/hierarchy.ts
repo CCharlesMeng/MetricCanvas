@@ -9,17 +9,17 @@ import {
   type TableComponent,
   tableColumnLeaves,
 } from '@metriccanvas/page/internal';
-import type { RuntimeDataGateway } from '../../../../runtime/src';
 import {
   EXPORT_MAX_ROWS,
   EXPORT_PREPARATION_TIMEOUT_MS,
   ExportViewError,
-} from '../../../../runtime/src/export-snapshots';
+  type RuntimeDataGateway,
+} from '../../../../runtime/src';
 import {
   type HierarchyContext,
   resolveHierarchySelection,
   rowExpansionFilters,
-} from '../../../../runtime/src/table/hierarchy-selection';
+} from '../../../../runtime/src/internal';
 import { abortable, prepareTableExport } from './prepare';
 import type { WorkbookTable } from './workbook-sheet';
 /** One frozen job owns timeout and cancellation across all parents. */

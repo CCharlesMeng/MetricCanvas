@@ -25,7 +25,7 @@
   import { TAB_SELECTION_CONTEXT, type TabSelectionContext } from './tab-selection';
   import { selectedTab, tabChildren, type TabContainerComponent } from '@metriccanvas/page/internal';
   const tabSelection = getContext<TabSelectionContext | undefined>(TAB_SELECTION_CONTEXT);
-  import { CHART_OPTION_PATHS } from '../../widgets/src/shared/chart-option-extension';
+  import { CHART_OPTION_PATHS, fieldRow } from '../../widgets/src/internal';
   import ExpandableTable from './table/views/ExpandableTable.svelte';
   import ReportHeaderView from './ReportHeaderView.svelte';
   import { isChartComponent, isIocRegionMapHierarchyFilter, type Component, type DataSnapshot, type Row } from '@metriccanvas/page/internal';
@@ -52,7 +52,6 @@
     type TextBlockLink
   } from '../../widgets/src';
   import { AiSummary, AiSummaryView, exportSummarySnapshot, type AiSummaryConfig } from './ai-summary';
-  import { fieldRow } from '../../widgets/src/shared/component-data';
   import WidgetHost from './WidgetHost.svelte';
   import { createRetainedScreenData, RETAINED_SCREEN_DATA, type RetainedScreenData } from './retained-screen-data';
   import { progressiveSlotData } from './table/screen-progress';

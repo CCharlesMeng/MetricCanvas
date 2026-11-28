@@ -1,13 +1,22 @@
-import { absoluteDisplayText } from '../../../../widgets/src/shared/absolute-display-limit';
-import { tableValueColor } from '../../../../widgets/src/shared/value-color';
 import type { FieldDefinition, FieldValue, TableColumn, TimeValueFormat } from '@metriccanvas/page/internal';
 import type { Cell, CellObject } from 'write-excel-file/universal';
-import type { NamedDataSlots } from '../../../../widgets/src/shared/component-data';
-import { resolveField } from '../../../../widgets/src/shared/component-data';
-import { alignedFallback, alignedFieldValue, alignedCellText, alignedCellArrow, tableRowColumn, type AlignedTableRow } from '../../../../widgets/src/components/table/rows';
-import { compatibleTableFormat, formatTableCell } from '../../../../widgets/src/components/table/cell-presentation';
-import { tableEnumLabel } from '../../../../widgets/src/components/table/enum-values';
-import { formatValue, hasDisplayValue } from '../../../../widgets/src/shared/value-format';
+import {
+  absoluteDisplayText,
+  alignedCellArrow,
+  alignedCellText,
+  alignedFallback,
+  alignedFieldValue,
+  compatibleTableFormat,
+  formatTableCell,
+  formatValue,
+  hasDisplayValue,
+  resolveField,
+  tableEnumLabel,
+  tableRowColumn,
+  tableValueColor,
+  type AlignedTableRow,
+  type NamedDataSlots,
+} from '../../../../widgets/src/internal';
 import { literalWorkbookFormat, numericWorkbookCell } from './workbook-numeric-cell';
 
 function plainText(html: string): string {

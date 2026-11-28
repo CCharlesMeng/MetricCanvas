@@ -2,7 +2,7 @@ import {
   finalizationMonthLimit, monthFinalizationName, resolvePeriodSelection, resolvedFinalizationDate,
   rollingFinalizationName, type FilterDeclaration, type PeriodMode
 } from '@metriccanvas/page/internal';
-import type { FilterValue } from '../../../runtime/src/filter-state';
+import type { FilterValue } from '../../../runtime/src';
 
 export type PendingPeriodChoice = { mode: 'month'; value: string } | { mode: 'last12Months' };
 

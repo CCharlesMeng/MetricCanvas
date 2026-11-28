@@ -1,10 +1,9 @@
-import {hierarchyRows,type HierarchySelection} from '../../../../runtime/src/table/hierarchy-selection';
+import { hierarchyRows, prepareExportSnapshots, type HierarchySelection } from '../../../../runtime/src/internal';
 import { flattenPageComponents, projectSnapshotRows, pinnedSnapshotError, tablePinnedSlots } from '@metriccanvas/page/internal';
 import type { EffectiveQuery, Page, TableComponent } from '@metriccanvas/page/internal';
 import { projectComponentFields,resolveDataSourceFields } from '@metriccanvas/page/internal';
-import type { RuntimeDataGateway } from '../../../../runtime/src';
-import { prepareExportSnapshots, ExportViewError, EXPORT_MAX_ROWS, EXPORT_PREPARATION_TIMEOUT_MS } from '../../../../runtime/src/export-snapshots';
-import type { NamedDataSlots } from '../../../../widgets/src/shared/component-data';
+import { ExportViewError, EXPORT_MAX_ROWS, EXPORT_PREPARATION_TIMEOUT_MS, type RuntimeDataGateway } from '../../../../runtime/src';
+import type { NamedDataSlots } from '../../../../widgets/src/internal';
 import { exportComponentData, type ExportRenderState } from '../../export-render-state';
 
 /** Freeze upstream inputs before any await. Fetch only this table's transitive dependency closure. */

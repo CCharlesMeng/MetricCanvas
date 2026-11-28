@@ -1,10 +1,10 @@
 <svelte:options css="injected" />
 <script lang="ts">
   import {REGION_MAP_CONTEXT,type RegionMapContext} from './region-map';
-  import {compilePresentation} from '../../runtime/src/presentation';
+  import {compilePresentation} from '../../runtime/src/internal';
   import {PRESENTATION_CONTEXT} from './presentation-context';
   import { chartOptionPaths } from '@metriccanvas/page/internal';
-  import { CHART_OPTION_PATHS } from '../../widgets/src/shared/chart-option-extension';
+  import { CHART_OPTION_PATHS, EXPORT_SCALE_CONTEXT, STATIC_EXPORT_CONTEXT } from '../../widgets/src/internal';
   import {SOURCE_FILTER_CONTEXT,sourceFilterSelection,type SourceFilterReader} from './dashboard/source-filter-context';
   import FilterBar from './filters/FilterBar.svelte';
   import { compatibilityHeaderSection } from './ioc-header/render-plan';
@@ -14,7 +14,6 @@
   import { visibleFilterDeclarations } from './filters/filter-bar';
   import { setContext, untrack } from 'svelte';
   import { projectFieldSelections, type Component } from '@metriccanvas/page/internal';
-  import { EXPORT_SCALE_CONTEXT, STATIC_EXPORT_CONTEXT } from '../../widgets/src/shared/export-context';
   import { headerPeriod } from './report-date-header';
   import { exportComponentData,exportComponentSnapshot,exportComponentMap,type ExportRenderState } from './export-render-state';
   import ComponentRenderer from './ComponentRenderer.svelte';

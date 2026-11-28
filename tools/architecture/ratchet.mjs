@@ -1,4 +1,4 @@
-import { layerOf } from './source-tree.mjs';
+import { layerOf, layerRelativePath } from './source-tree.mjs';
 
 // The UI composes the layers. Rules below constrain the direction from their consumers.
 const allowedLayers = new Map([
@@ -8,7 +8,26 @@ const allowedLayers = new Map([
   ['data-gateway', ['data-gateway', 'runtime', 'data-execution', 'page']],
   ['widgets', ['widgets', 'ui', 'page', 'data-execution']],
 ]);
-const presentationPackages = /^npm:(?:svelte|echarts|exceljs|write-excel-file|html2canvas|jspdf)(?:\/|$)/;
+const declaredEntries = new Map([
+  ['page', new Set(['index.ts', 'internal.ts'])],
+  ['data-execution', new Set(['index.ts', 'runtime.ts', 'dqe/index.ts', 'dqe.ts', 'node.ts'])],
+  ['ui', new Set(['index.ts'])],
+  ['runtime', new Set(['index.ts', 'internal.ts'])],
+  ['widgets', new Set(['index.ts', 'internal.ts', 'internal-skeleton.ts', 'internal-summary.ts'])],
+  ['data-gateway', new Set(['index.ts'])],
+  [
+    'runtime-ui',
+    new Set([
+      'index.ts',
+      'types.ts',
+      'composition.ts',
+      'browser-drill-return.ts',
+      'ai-summary/adapters/yunbao-assistant.ts',
+    ]),
+  ],
+]);
+const presentationPackages =
+  /^npm:(?:svelte|echarts|exceljs|write-excel-file|html2canvas|jspdf)(?:\/|$)/;
 
 function forbidden(origin, allowed, file) {
   if (file.startsWith('npm:@metriccanvas/')) return true;
@@ -30,7 +49,7 @@ function reverse(graph) {
 // Each parent map also provides a shortest diagnostic path.
 function visit(graph, roots, stop = () => false) {
   const queue = [...roots];
-  const parents = new Map(queue.map(root => [root, null]));
+  const parents = new Map(queue.map((root) => [root, null]));
   for (let i = 0; i < queue.length; i++) {
     const from = queue[i];
     if (stop(from)) continue;
@@ -64,8 +83,8 @@ function cycleEdges(graph, reversed, findings) {
 
 // Record every edge on a forbidden route, including a new detour to a previously reachable destination.
 function boundaryEdges(graph, origin, allowed, findings) {
-  const denied = file => forbidden(origin, allowed, file);
-  const roots = [...graph.keys()].filter(file => layerOf(file) === origin);
+  const denied = (file) => forbidden(origin, allowed, file);
+  const roots = [...graph.keys()].filter((file) => layerOf(file) === origin);
   const parents = visit(graph, roots, denied);
   const accessible = new Map([...graph].filter(([file]) => parents.has(file) && !denied(file)));
   const reversed = reverse(accessible);
@@ -82,10 +101,28 @@ function boundaryEdges(graph, origin, allowed, findings) {
   }
 }
 
-export function findingsFor(graph) {
+function deepImportEdges(allImports, findings) {
+  for (const [from, targets] of allImports) {
+    const origin = layerOf(from);
+    if (origin === 'outside') continue;
+    for (const to of targets) {
+      if (to.startsWith('npm:')) continue;
+      const target = layerRelativePath(to);
+      if (!target || target.layer === origin) continue;
+      if (declaredEntries.get(target.layer)?.has(target.relative)) continue;
+      findings.set(JSON.stringify(['deep import', from, to]), {
+        rule: 'deep import',
+        path: [from, to],
+      });
+    }
+  }
+}
+
+export function findingsFor(graph, allImports = graph) {
   const findings = new Map();
   cycleEdges(graph, reverse(graph), findings);
   for (const [origin, allowed] of allowedLayers) boundaryEdges(graph, origin, allowed, findings);
+  deepImportEdges(allImports, findings);
   return findings;
 }
 

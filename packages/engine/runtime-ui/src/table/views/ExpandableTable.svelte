@@ -2,10 +2,9 @@
 <script lang="ts">
   import { onDestroy, untrack } from 'svelte';
   import { resolveDataSourceFields, type DataSnapshot, type Row, type TableComponent } from '@metriccanvas/page/internal';
-  import type { NamedDataSlots } from '../../../../widgets/src/shared/component-data';
+  import { Table, type NamedDataSlots } from '../../../../widgets/src';
   import type { TableRenderBinding } from '../../component-render';
-  import { createRowExpansionController } from '../../../../runtime/src/table/expansion';
-  import Table from '../../../../widgets/src/components/table/Table.svelte';
+  import { createRowExpansionController } from '../../../../runtime/src/internal';
   import TableDataDiagnostic from './TableDataDiagnostic.svelte';
   import ScopedTableContent from './ScopedTableContent.svelte';
 

@@ -4,7 +4,7 @@ import {
   type FilterTextValueUsage, type FilterTextValueReference, type Page
 } from '@metriccanvas/page/internal';
 import type { FilterValues } from '../../runtime/src';
-import { DEFAULT_NULL_TEXT, formatValue } from '../../widgets/src/shared/value-format';
+import { DEFAULT_NULL_TEXT, formatValue } from '../../widgets/src/internal';
 
 /** 同一文本投影供页面呈现与导出捕获使用，读取已应用状态而非输入草稿。 */
 export function filterTextPage(page: Page, usages: readonly FilterTextValueUsage[], values: FilterValues, pending:ReadonlySet<string>=new Set()): Page {

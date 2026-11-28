@@ -5,7 +5,7 @@
     type MapViewport, type RegionMapAdapter, type RegionMapContext, type RegionMapViewportRequest
   } from './region-map';
 
-  import type {GeographyInput} from '../../widgets/src/components/map-chart/geography';
+  import type {GeographyInput} from '../../widgets/src/internal';
   let { enabled, basemap, children }: {
     enabled: boolean;
     basemap: RegionMapViewportRequest['basemap'];

@@ -1,4 +1,4 @@
-import { parseSemanticHtml } from '../../../../widgets/src/shared/semantic-html';
+import { parseSemanticHtml } from '../../../../widgets/src/internal';
 import type { AiSummarySnapshot } from '../types';
 import { hasAiSummaryBody, type AiSummaryProps } from '@metriccanvas/page/internal';
 

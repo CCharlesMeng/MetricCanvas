@@ -1,5 +1,5 @@
 import type {UiTreeNode} from '@metriccanvas/ui';
-import type {FilterCandidate} from '../../../runtime/src/ports';
+import type {FilterCandidate} from '../../../runtime/src';
 /** Explicit identities: never derive hierarchy from business codes or labels. */
 export function structuralTree(candidates:readonly FilterCandidate[],level:string):UiTreeNode[] {
   const key=(level:string|undefined,value:string)=>JSON.stringify([level??null,value]);

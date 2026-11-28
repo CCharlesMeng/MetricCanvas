@@ -9,11 +9,8 @@ import {
   readLevelURLSelection,
   usesIocRegion,
 } from '@metriccanvas/page/internal';
-import {
-  candidateScopeKey,
-  type DimensionValuesSnapshots,
-} from '../../runtime/src/dimension-values';
-import type { FilterValue, FilterValues } from '../../runtime/src/filter-state';
+import type { DimensionValuesSnapshots, FilterValue, FilterValues } from '../../runtime/src';
+import { candidateScopeKey } from '../../runtime/src/internal';
 import { hierarchyTreeSnapshot } from './filters/hierarchy-tree';
 
 /** Initialize once from a complete authorized tree; later clear/refresh never reseeds it. */

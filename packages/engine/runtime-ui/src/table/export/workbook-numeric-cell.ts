@@ -1,10 +1,13 @@
 import { basicNumberFormat, type ResolvedField, type ValueFormat } from '@metriccanvas/page/internal';
 import type { CellObject } from 'write-excel-file/universal';
-import { numericScale, type NumericScale } from '../../../../widgets/src/shared/numeric-scale';
-import { ratioLimitText } from '../../../../widgets/src/shared/absolute-display-limit';
-import { appendDisplayUnit } from '../../../../widgets/src/shared/display-unit';
-import { percentDigits } from '../../../../widgets/src/shared/numeric-presentation';
-import { resolvedUnit } from '../../../../widgets/src/shared/field-presentation';
+import {
+  appendDisplayUnit,
+  numericScale,
+  percentDigits,
+  ratioLimitText,
+  resolvedUnit,
+  type NumericScale,
+} from '../../../../widgets/src/internal';
 import { basicWorkbookNumberFormat, registerWorkbookFallback, registerWorkbookPrecision } from './workbook-number-format';
 
 interface NumberStyle {

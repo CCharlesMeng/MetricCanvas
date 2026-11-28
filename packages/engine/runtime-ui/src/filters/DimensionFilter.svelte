@@ -1,6 +1,6 @@
 <svelte:options css="injected" />
 <script lang="ts">
-  import TextSkeleton from '../../../widgets/src/shared/TextSkeleton.svelte';
+  import { TextSkeleton } from '../../../widgets/src/internal-skeleton';
   import { Selection, type UiTreeOption, type TreeSelection } from '@metriccanvas/ui';
   import {structuralTree} from './structural-tree';
   import type {DimensionSelectionExtension} from '@metriccanvas/page/internal';
