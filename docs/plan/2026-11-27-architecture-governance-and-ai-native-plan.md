@@ -1,6 +1,6 @@
 # MetricCanvas 架构治理、AI-Native 升级与技术债清理主计划
 
-> **状态**：Wave 0 已合入 `main`（PR #199 @ `560b1d968`）；Wave 1A（`W1-1` ~ `W1-4`）已合入 `main`（PR #200 @ `5e41ea766`，CI 8/8 全绿）；`W1-5` 已拍板延后并与 `W4-1` 合并推进（按 D1 执行）；Wave 2A（`W2-1` + `W2-5`）已合入 `main`（PR #201 @ `e5deb5dcd`，CI 8/8 全绿）；当前正在推进 Wave 2B（`W2-2`）  
+> **状态**：Wave 0 已合入 `main`（PR #199 @ `560b1d968`）；Wave 1A（`W1-1` ~ `W1-4`）已合入 `main`（PR #200 @ `5e41ea766`，CI 8/8 全绿）；`W1-5` 已拍板延后并与 `W4-1` 合并推进（按 D1 执行）；Wave 2A（`W2-1` + `W2-5`）已合入 `main`（PR #201 @ `e5deb5dcd`，CI 8/8 全绿）；Wave 2B `W2-2` 已合入 `main`（PR #202 @ `16ac8cfd5`，CI 8/8 全绿）；当前正在推进 Wave 2B（`W2-3`）  
 > **立项日期**：2026-11-27  
 > **基线提交**：`origin/main` @ `8ce2dd52eaabc179bf195000cf3592e6b0f1b8f3`  
 > **唯一执行主入口**：本文为本轮“开发态转维护态”长周期治理的唯一主计划与进度台账。跨会话推进时就地更新勾选状态、提交 SHA 与复测指标，不再另起分稿。
@@ -205,7 +205,7 @@ flowchart LR
   - **范围**：`packages/engine/runtime-ui/src/`、`packages/engine/widgets/src/`、`packages/engine/runtime/src/`、`tools/architecture/`。
   - **动作**：为 `widgets` 和 `runtime` 定义清晰的包内内部出口（`runtime/src/internal.ts`、`widgets/src/internal.ts` 及按资产隔离的 `widgets/src/internal-skeleton.ts` / `internal-summary.ts`），把全部 102 条跨层深路径导入边（含值导入与 `import type`/模板类型引用）收敛至显式入口；在 `tools/architecture/` 新增覆盖值导入与类型导入的 `deep import` 跨层绕过门禁规则并锁定 0 存量。
   - **验收**：`pnpm architecture:check`、Embed 构建门禁（`pnpm --filter @metriccanvas/embed check:dist`）与全部单测绿。
-- [ ] **`W2-3` 拆分 `@metriccanvas/page` 内部子域并收窄 `internal.ts`**（负责：`boundary-architect`）
+- [x] **`W2-3` 拆分 `@metriccanvas/page` 内部子域并收窄 `internal.ts`**（负责：`boundary-architect`）
   - **范围**：`packages/page/src/`、`packages/embed/src/types.ts`、`packages/engine/runtime-ui/src/index.ts`。
   - **动作**：
     - 将 `packages/page/src/` 内部按变化原因整理为清晰子域（`schema/`、`normalize/`、`validate/`、`query/`、`edit/`），打散 48 文件静态类型环；
@@ -286,4 +286,5 @@ flowchart LR
 | 2026-11-28 | `W0-1`~`W0-5` | 3 路 `guardrail-engineer` + `verifier-auditor` + `delivery-runner` | PR #199 (`560b1d968`) | 远端 CI 8/8 全绿（含 Biome、`hygiene:check`、`packages:check`、Python `radon` + `subtreeCC`/`fileSize` 棘轮），已合入 `main` 并清理旧分支 | 已合入 `main` |
 | 2026-11-28 | `W1-1`~`W1-4` | 3 路 `repo-docs-curator`（2×`flash` + 1×`inherit`） | PR #200 (`5e41ea766`) | 清理 36 个误提交/临时文件、归档 22 份计划、`PAGE-METADATA.md` -78.7%、新增 `ARCHITECTURE.md`，远端 CI 8/8 全绿，已合入 `main` | 已合入 `main` |
 | 2026-11-28 | `W2-1` + `W2-5` | 4 路 `boundary-architect`（3×`inherit` + 1×`flash`）+ `verifier-auditor`（`flash`） | PR #201 (`e5deb5dcd`) | `architecture:check` 21→0 锁死、13 个转发空壳与 3 组原型/夹具迁出、`debug-warnings` 解耦 Vite、顺带平铺 `session.ts`（`subtreeCC` 266→16）、清除 `Table`/`MetricCard` 硬编码并抽离 `ioc-region-policy.ts`，远端 CI 8/8 全绿，已合入 `main` | 已合入 `main` |
-| 2026-11-28 | `W2-2` | `boundary-architect` | 分支 `refactor/wave2b-w22-deep-imports` | 新增 `runtime/src/internal.ts`、`widgets/src/internal.ts`（纯 TS，不含 `.svelte` 与 ECharts 图表）及 `widgets/src/internal-skeleton.ts`/`internal-summary.ts`（零公开 API 变更），清零 `runtime-ui` 全部 102 条跨层深路径导入边，并在 `tools/architecture/` 落地值+类型 `deep import` 0 违规门禁与单测 | 本地完成（待验真/PR） |
+| 2026-11-28 | `W2-2` | `boundary-architect` | PR #202 (`16ac8cfd5`) | 新增 `runtime/src/internal.ts`、`widgets/src/internal.ts`（纯 TS，不含 `.svelte` 与 ECharts 图表）及 `widgets/src/internal-skeleton.ts`/`internal-summary.ts`（零公开 API 变更），清零 `runtime-ui` 全部 102 条跨层深路径导入边，并在 `tools/architecture/` 落地值+类型 `deep import` 0 违规门禁与单测，远端 CI 8/8 全绿，已合入 `main` | 已合入 `main` |
+| 2026-11-28 | `W2-3` | `boundary-architect` | 分支 `refactor/wave2b-w23-page-subdomains` | 提升 `DisplayInputsSource`/`DisplayInputsSnapshot`/`DataPeriodFact` 至 `@metriccanvas/page` 公开入口，清零 `embed`/`engine` 公开入口对 `@metriccanvas/page/internal` 的重导出并在 `tools/architecture/` 与 `tests/public-api.test.ts` 落地 `public internal leak` 门禁；抽离 8 个纯叶类型/常量模块将 `packages/page/src/` 静态类型 SCC 从 54+3 清零至 0，建立 `normalize/`、`validate/`、`query/`、`edit/` 子域入口并按子域重组 `internal.ts`；新增 `schema/type-parity.ts` 与 `schema-type-parity.test.ts` 锁定 `filter.ts`/`data-source.ts` 与 Zod Schema 的双向编译期等价断言 | 本地完成（待验真/PR） |

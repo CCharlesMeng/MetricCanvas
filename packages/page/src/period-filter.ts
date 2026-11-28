@@ -1,10 +1,15 @@
-import { validateCalendarTimeRange, type TimeRangeValue } from './filter';
-import { isFinalizationDefault, type FinalizationName } from './finalization-default';
+import { validateCalendarTimeRange } from './filter';
+import type {
+  AppliedPeriodSelection,
+  FinalizationName,
+  PeriodMode,
+  PeriodRange,
+  PeriodSelection,
+  TimeRangeValue,
+} from './filter-types';
+import { isFinalizationDefault } from './finalization-default';
 
-export type PeriodMode = 'year' | 'quarter' | 'month' | 'last12Months';
-export type PeriodSelection = { mode: 'year' | 'quarter' | 'month'; value?: string; finalizationName?: FinalizationName } | { mode: 'last12Months'; finalizationName?: FinalizationName; anchor?: string };
-export type AppliedPeriodSelection = { mode: 'year' | 'quarter' | 'month'; value: string } | { mode: 'last12Months'; anchor?: string };
-export type PeriodRange = TimeRangeValue & { selection: AppliedPeriodSelection };
+export type { AppliedPeriodSelection, PeriodMode, PeriodRange, PeriodSelection };
 const pad = (n: number) => String(n).padStart(2, '0');
 const yearText = (n: number) => String(n).padStart(4, '0');
 

@@ -6,7 +6,7 @@ import {visitTableColumns} from './table/columns';
 import {queryFilterIds} from './amount-filter';
 import { conditionDepth, conditionLeaves, conditionTestTypeError, type ConditionValue } from './condition';
 import type { Condition } from './schema/condition';
-import type { Page, Component } from './page';
+import type { Page, Component } from './page-types';
 import { resolveDataSourceFields } from './data-source';
 import type { FieldDefinition } from './field';
 import type { TypedError } from './errors';

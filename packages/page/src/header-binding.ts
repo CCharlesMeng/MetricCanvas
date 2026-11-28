@@ -1,4 +1,4 @@
-import type { IocHeaderComponent, Page } from './page';
+import type { IocHeaderComponent, Page } from './page-types';
 import type { IocHeaderDeclaration } from './schema/ioc-header';
 import { walkDocumentComponents } from './component-walk';
 import {iocHeaderFilterIds} from './ioc-header-controls';

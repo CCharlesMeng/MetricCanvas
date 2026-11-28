@@ -1,8 +1,9 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { artifacts, productReleaseGroup, renderSnapshot } from '../tools/package-build/surface';
+import ts from 'typescript';
 import { describe, expect, it } from 'vitest';
+import { artifacts, productReleaseGroup, renderSnapshot } from '../tools/package-build/surface';
 
 /**
  * 六个交付物的公开面快照门禁(ADR-0071)。
@@ -23,13 +24,16 @@ const update = process.env.UPDATE_PUBLIC_API === '1';
 
 describe('六个交付物的公开面', () => {
   it('发布交付物解除 private 并与页面协议包锁步同版', () => {
-    const page = JSON.parse(readFileSync(resolve(root, artifacts['@metriccanvas/page']!.manifest), 'utf8'));
+    const page = JSON.parse(
+      readFileSync(resolve(root, artifacts['@metriccanvas/page']!.manifest), 'utf8'),
+    );
     expect(page.version).toMatch(/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/);
     for (const [name, artifact] of Object.entries(artifacts)) {
       const manifest = JSON.parse(readFileSync(resolve(root, artifact.manifest), 'utf8'));
       expect(manifest.private, `${name} 必须允许发布`).not.toBe(true);
       expect(manifest.version).toMatch(/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/);
-      if (productReleaseGroup.includes(name)) expect(manifest.version, `${name} 必须与 @metriccanvas/page 同版`).toBe(page.version);
+      if (productReleaseGroup.includes(name))
+        expect(manifest.version, `${name} 必须与 @metriccanvas/page 同版`).toBe(page.version);
     }
   });
 
@@ -52,8 +56,48 @@ describe('六个交付物的公开面', () => {
       const manifest = JSON.parse(readFileSync(resolve(root, artifact.manifest), 'utf8')) as {
         exports?: Record<string, unknown>;
       };
-      expect(Object.keys(manifest.exports ?? {}).sort(), `${name} 的 exports 与快照入口不一致`)
-        .toEqual(Object.keys(artifact.entries).sort());
+      expect(
+        Object.keys(manifest.exports ?? {}).sort(),
+        `${name} 的 exports 与快照入口不一致`,
+      ).toEqual(Object.keys(artifact.entries).sort());
+    }
+  });
+
+  it('engine 与 embed 的公开入口禁止导入或重导出 @metriccanvas/page/internal', () => {
+    const publicEntries = [
+      ...Object.values(artifacts['@metriccanvas/engine']!.entries),
+      ...Object.values(artifacts['@metriccanvas/embed']!.entries),
+      'packages/embed/src/types.ts',
+    ];
+    for (const entry of publicEntries) {
+      const file = resolve(root, entry);
+      const source = ts.createSourceFile(
+        file,
+        readFileSync(file, 'utf8'),
+        ts.ScriptTarget.ESNext,
+        true,
+      );
+      const specifiers: string[] = [];
+      const visit = (node: ts.Node) => {
+        if (
+          (ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) &&
+          node.moduleSpecifier &&
+          ts.isStringLiteral(node.moduleSpecifier)
+        ) {
+          specifiers.push(node.moduleSpecifier.text);
+        } else if (
+          ts.isImportTypeNode(node) &&
+          ts.isLiteralTypeNode(node.argument) &&
+          ts.isStringLiteral(node.argument.literal)
+        ) {
+          specifiers.push(node.argument.literal.text);
+        }
+        ts.forEachChild(node, visit);
+      };
+      visit(source);
+      expect(specifiers, `${entry} 不得依赖 @metriccanvas/page/internal`).not.toContain(
+        '@metriccanvas/page/internal',
+      );
     }
   });
 });

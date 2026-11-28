@@ -10,14 +10,22 @@
  * 但 Java 与 Python 读的是 `contracts/metriccanvas/` 生成的快照而非 npm
  * （ADR-0061），所以它不需要出现在这个面上。
  */
+
+export { canonicalizeJson } from './canonical-json';
+export { componentCatalog } from './component-catalog';
+export type { TypedError } from './errors';
+export {
+  applyPageParamSelection,
+  type ExtractionContext,
+  extractPageParams,
+  type PageParamExtraction,
+  type ParameterCandidate,
+} from './extract-page-params';
+export { migrateParamBindings } from './migrate-param-bindings';
 export type { Page } from './page';
 export type { PageDocument } from './page-document';
-export type { TypedError } from './errors';
-export { parsePage, validate, normalizePageDocument } from './validate';
-export { versionPolicy, supportedVersions } from './version';
+export type { DataPeriodFact, DisplayInputsSnapshot, DisplayInputsSource } from './period-facts';
+export { type ResolvePageParamsResult, resolvePageParams } from './resolve-page-params';
 export { pageSchema } from './schema';
-export { componentCatalog } from './component-catalog';
-export { canonicalizeJson } from './canonical-json';
-export { resolvePageParams, type ResolvePageParamsResult } from './resolve-page-params';
-export { migrateParamBindings } from './migrate-param-bindings';
-export { extractPageParams, applyPageParamSelection, type ParameterCandidate, type ExtractionContext, type PageParamExtraction } from './extract-page-params';
+export { normalizePageDocument, parsePage, validate } from './validate';
+export { supportedVersions, versionPolicy } from './version';

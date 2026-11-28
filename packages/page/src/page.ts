@@ -1,258 +1,102 @@
 import { documentIocHeader, hasLegacyDefaultHeader } from './header-binding';
-import {filterHasObservableConsumer} from './presentation-policy';
-import type { z } from 'zod';
-import type { DataSourceMode, DataSources } from './data-source';
-import type { FilterDeclaration } from './filter';
-import type { PageParamDeclaration } from './page-param';
-import type { VersionPolicy } from './version';
-import {
-  iocHeaderComponentZ,
-  filterGroupComponentZ,
-  buttonComponentZ,
-  reportHeaderComponentZ,
-  metricCardComponentZ,
-  barChartComponentZ,
-  lineChartComponentZ,
-  pieChartComponentZ,
-  tableComponentZ,
-  mapChartComponentZ,
-  gaugeComponentZ,
-  tabContainerComponentZ,
-  compositeCardComponentZ,
-  rankingCardComponentZ,
-  rankingDetailCardComponentZ,
-  keyValuePanelComponentZ,
-  categoryBreakdownComponentZ,
-  fieldTextComponentZ,
-  textComponentZ,
-  aiSummaryComponentZ,
-  chartSeriesZ,
-  barChartSeriesZ,
-  type TableColumn,
-  type TableColumnGroup,
-  type TableColumnNode,
-  type TableCellSelection,
-  type TableSelectionWrite
-} from './schema/component';
-import { componentLayoutZ, mainDataZ, metricDataZ, tableDataZ } from './schema/primitives';
-import { writeFilterActionZ, navigateActionZ, openDetailActionZ } from './schema/actions';
-import {
-  dashboardToolbarZ,
-  pageLayoutFormZ,
-  pageMetaZ,
-  sectionContainerZ,
-  sectionZ
-} from './schema/page';
+import { filterHasObservableConsumer } from './presentation-policy';
+import type { DataSourceMode } from './data-source';
 import { flattenPageComponents } from './component-walk';
 import { hasMetricRowAction } from './metric-card';
-
-/*
- * 组件形状的单一真源在 `./schema/`（Zod 4 定义）：本文件的每个组件类型都
- * 从对应的 Zod 定义 `z.infer` 推导，不再手写第二份。三个例外需要在 z.infer
- * 之上做类型层的小修正（不影响 `../schema.ts` 的结构校验行为，只是把
- * 推导结果调整为原有的领域类型形状）：
- *  - reportHeader/text/aiSummary 组件的 Zod 定义里没有 `data` 键（额外键会被
- *    `additionalProperties:false` 拒绝），但 `Component` 联合类型需要所有分支
- *    都能访问 `.data`（哪怕值为 `never`），所以补一个 `data?: never`。
- *  - table 组件的 `data` 在 Zod 侧是 `Record<string,string>`（`main` 必填只在
- *    JSON Schema 的 `required` 里，`.meta()` 不影响 z.infer），这里补回
- *    `{ main: string }` 使类型层保留原有的强约束。
- * `dataSources`/`filters` 继续使用 `data-source.ts`/`filter.ts` 的手写领域
- * 类型——那两个文件不在本次收敛范围内，且 query 数据源的文档态分组字段形状
- * 只存在于 `page-document.ts`，不应该混入这里的领域类型。
- */
-
-export type ComponentLayout = z.infer<typeof componentLayoutZ>;
-export type ComponentData = Record<string, string>;
-export type MainDataBinding = z.infer<typeof mainDataZ>;
-export type TableDataBinding = z.infer<typeof tableDataZ> & { main: string };
-export type MetricDataBinding = z.infer<typeof metricDataZ>;
-
-export type ReportHeaderProps = z.infer<typeof reportHeaderComponentZ>['props'];
-export type ReportHeaderComponent = z.infer<typeof reportHeaderComponentZ> & { data?: never };
-
-export type MetricCardProps = z.infer<typeof metricCardComponentZ>['props'];
-export type MetricCardRow = MetricCardProps['rows'][number];
-export type MetricCardChange = NonNullable<MetricCardRow['changes']>[number];
-export type MetricCardProgress = NonNullable<MetricCardProps['progress']>;
-export type MetricCardComponent = z.infer<typeof metricCardComponentZ>;
-
-export type ChartSeries = z.infer<typeof chartSeriesZ>;
-export type BarChartSeries = z.infer<typeof barChartSeriesZ>;
-export type BarSeriesRole = NonNullable<BarChartSeries['role']>;
-
-export type BarChartProps = z.infer<typeof barChartComponentZ>['props'];
-export type BarChartComponent = z.infer<typeof barChartComponentZ>;
-
-export type LineChartProps = z.infer<typeof lineChartComponentZ>['props'];
-export type LineChartComponent = z.infer<typeof lineChartComponentZ>;
-
-export type PieChartProps = z.infer<typeof pieChartComponentZ>['props'];
-export type PieChartComponent = z.infer<typeof pieChartComponentZ>;
+import type {
+  ChartComponent,
+  Component,
+  ComponentAction,
+  ComponentCapabilities,
+  ComponentDataMode,
+  DataComponent,
+  Page,
+  PageCapabilities,
+  PageLayoutForm,
+  PageSection,
+  TableColumnNode,
+} from './page-types';
 
 export type {
+  AiSummaryComponent,
+  AiSummaryProps,
+  AiSummaryRelatedDataDefinition,
+  AiSummaryRelatedField,
+  BarChartComponent,
+  BarChartProps,
+  BarChartSeries,
+  BarSeriesRole,
+  ButtonComponent,
+  CategoryBreakdownColumn,
+  CategoryBreakdownComponent,
+  CategoryBreakdownProps,
+  ChartComponent,
+  ChartSeries,
+  Component,
+  ComponentAction,
+  ComponentCapabilities,
+  ComponentData,
+  ComponentDataMode,
+  ComponentLayout,
+  CompositeCardChild,
+  CompositeCardComponent,
+  CompositeCardProps,
+  DashboardToolbar,
+  DataComponent,
+  FieldTextComponent,
+  FieldTextProps,
+  FilterGroupComponent,
+  GaugeComponent,
+  GaugeProps,
+  IocHeaderComponent,
+  KeyValuePanelComponent,
+  KeyValuePanelItem,
+  KeyValuePanelProps,
+  LineChartComponent,
+  LineChartProps,
+  MainDataBinding,
+  MapChartComponent,
+  MapChartProps,
+  MetricCardChange,
+  MetricCardComponent,
+  MetricCardProgress,
+  MetricCardProps,
+  MetricCardRow,
+  MetricDataBinding,
+  NavigateAction,
+  OpenDetailAction,
+  Page,
+  PageCapabilities,
+  PageLayoutForm,
+  PageMeta,
+  PageSection,
+  PieChartComponent,
+  PieChartProps,
+  RankingCardComponent,
+  RankingCardProps,
+  RankingDetailCardComponent,
+  RankingDetailCardProps,
+  ReportHeaderComponent,
+  ReportHeaderProps,
+  SectionContainer,
+  SectionGroup,
+  TabContainerComponent,
+  TabContainerProps,
+  TabContentComponent,
+  TabItem,
+  TableCellSelection,
   TableColumn,
   TableColumnGroup,
   TableColumnNode,
-  TableCellSelection,
-  TableSelectionWrite
-};
-export type TableProps = z.infer<typeof tableComponentZ>['props'];
-export type TableComponent = z.infer<typeof tableComponentZ> & { data: TableDataBinding };
-
-export type MapChartProps = z.infer<typeof mapChartComponentZ>['props'];
-export type MapChartComponent = z.infer<typeof mapChartComponentZ>;
-
-export type GaugeProps = z.infer<typeof gaugeComponentZ>['props'];
-export type GaugeComponent = z.infer<typeof gaugeComponentZ>;
-
-export type TabContentComponent = FilterGroupComponent | ButtonComponent | TableComponent | MetricCardComponent | BarChartComponent |
-  LineChartComponent | PieChartComponent | MapChartComponent | GaugeComponent |
-  CompositeCardComponent | CategoryBreakdownComponent | RankingCardComponent |
-  RankingDetailCardComponent | KeyValuePanelComponent | TextComponent | FieldTextComponent | AiSummaryComponent;
-export type TabContainerProps = z.infer<typeof tabContainerComponentZ>['props'];
-type InferredTabItem = TabContainerProps['tabs'][number];
-export type TabItem =
-  | (Omit<Extract<InferredTabItem, { component: unknown }>, 'component'> & {
-      component: TabContentComponent;
-    })
-  | (Omit<Extract<InferredTabItem, { components: unknown }>, 'components'> & {
-      components: TabContentComponent[];
-    });
-export type TabContainerComponent = Omit<
-  z.infer<typeof tabContainerComponentZ>,
-  'props'
-> & {
-  data?: never;
-  props: Omit<TabContainerProps, 'tabs'> & { tabs: TabItem[] };
-};
-
-export type CompositeCardProps = z.infer<typeof compositeCardComponentZ>['props'];
-export type CompositeCardChild = CompositeCardProps['components'][number];
-export type CompositeCardComponent = z.infer<typeof compositeCardComponentZ> & {
-  data?: never;
-};
-
-export type CategoryBreakdownProps = z.infer<typeof categoryBreakdownComponentZ>['props'];
-export type CategoryBreakdownColumn = CategoryBreakdownProps['columns'][number];
-export type CategoryBreakdownComponent = z.infer<typeof categoryBreakdownComponentZ>;
-
-export type RankingCardProps = z.infer<typeof rankingCardComponentZ>['props'];
-export type RankingCardComponent = z.infer<typeof rankingCardComponentZ>;
-
-export type RankingDetailCardProps = z.infer<typeof rankingDetailCardComponentZ>['props'];
-export type RankingDetailCardComponent = z.infer<typeof rankingDetailCardComponentZ>;
-
-export type KeyValuePanelProps = z.infer<typeof keyValuePanelComponentZ>['props'];
-export type KeyValuePanelItem = KeyValuePanelProps['items'][number];
-export type KeyValuePanelComponent = z.infer<typeof keyValuePanelComponentZ>;
-
-export type FieldTextProps = z.infer<typeof fieldTextComponentZ>['props'];
-export type FieldTextComponent = z.infer<typeof fieldTextComponentZ>;
-
-export type TextProps = z.infer<typeof textComponentZ>['props'];
-export type TextLink = NonNullable<TextProps['links']>[number];
-export type TextComponent = z.infer<typeof textComponentZ> & { data?: never };
-
-export type AiSummaryProps = z.infer<typeof aiSummaryComponentZ>['props'];
-export type AiSummaryRelatedDataDefinition = NonNullable<AiSummaryProps['relatedData']>[string];
-export type AiSummaryRelatedField = AiSummaryRelatedDataDefinition['fields'][number];
-export type AiSummaryComponent = z.infer<typeof aiSummaryComponentZ> & { data?: never };
-
-export type FilterGroupComponent = z.infer<typeof filterGroupComponentZ> & { data?: never; props: z.infer<typeof filterGroupComponentZ>['props'] & {title?:never} };
-
-export type ButtonComponent = z.infer<typeof buttonComponentZ> & { data?: never; props: z.infer<typeof buttonComponentZ>['props'] & {title?:never} };
-
-export type IocHeaderComponent = z.infer<typeof iocHeaderComponentZ> & {data?:never;props:z.infer<typeof iocHeaderComponentZ>['props'] & {title?:never}};
-
-export type Component =
-  | IocHeaderComponent
-  | FilterGroupComponent
-  | ButtonComponent
-  | ReportHeaderComponent
-  | MetricCardComponent
-  | BarChartComponent
-  | LineChartComponent
-  | PieChartComponent
-  | TableComponent
-  | MapChartComponent
-  | GaugeComponent
-  | TabContainerComponent
-  | CompositeCardComponent
-  | RankingCardComponent
-  | RankingDetailCardComponent
-  | KeyValuePanelComponent
-  | CategoryBreakdownComponent
-  | FieldTextComponent
-  | TextComponent
-  | AiSummaryComponent;
-
-export type DataComponent = Exclude<
-  Component,
-  | IocHeaderComponent
-  | ReportHeaderComponent
-  | FilterGroupComponent
-  | ButtonComponent
-  | TextComponent
-  | AiSummaryComponent
-  | TabContainerComponent
-  | CompositeCardComponent
->;
-export type ChartComponent =
-  | BarChartComponent
-  | LineChartComponent
-  | PieChartComponent
-  | MapChartComponent;
-
-export type WriteFilterAction = z.infer<typeof writeFilterActionZ>;
-export type NavigateAction = z.infer<typeof navigateActionZ>;
-export type OpenDetailAction = z.infer<typeof openDetailActionZ>;
-export type ComponentAction = WriteFilterAction | NavigateAction | OpenDetailAction;
-
-export type PageMeta = z.infer<typeof pageMetaZ>;
-export type PageLayoutForm = z.infer<typeof pageLayoutFormZ>;
-export type DashboardToolbar = z.infer<typeof dashboardToolbarZ>;
-export type SectionContainer = z.infer<typeof sectionContainerZ>;
-export type PageSection = Omit<z.infer<typeof sectionZ>, 'components'> & {
-  components: Component[];
-};
-
-export interface SectionGroup {
-  visibleWhen?: import('./schema/condition').Condition;
-  id: string;
-  label: string;
-  sectionIds: string[];
-}
-
-export interface Page {
-  schemaVersion: VersionPolicy['current'];
-  id: string;
-  meta?: PageMeta;
-  /** 页面布局形态；缺省等价于 `report`。 */
-  layout?: PageLayoutForm;
-  /** dashboard 统一工具栏；缺省显示，页面有自有页头时可显式关闭。 */
-  /** @deprecated 新页面使用 iocHeader；旧声明由唯一页头兼容呈现。 */
-  dashboardToolbar?: DashboardToolbar;
-  iocHeader?: import('./schema/ioc-header').IocHeaderDeclaration;
-  strictURLInputs?:true;
-  /** 页面参数声明（ADR-0047）；取值在页面打开时由 URL 确定。 */
-  params?: PageParamDeclaration[];
-  dataSources: DataSources;
-  filters?: FilterDeclaration[];
-  detailViews?: Array<{
-    id: string;
-    mode: 'snapshot' | 'query';
-    /** Hidden page filter declarations; bound atomically in the overlay scope. */
-    filters?: string[];
-    components: Component[];
-  }>;
-  mapOverrides?: import('./schema/map-geography').MapGeography;
-  sectionGroups?: SectionGroup[];
-  defaultSectionGroup?: string;
-  sectionGroupParam?: string;
-  sectionAnchors?: Array<{ sectionId: string; label: string }>;
-  sections: PageSection[];
-}
+  TableComponent,
+  TableDataBinding,
+  TableProps,
+  TableSelectionWrite,
+  TextComponent,
+  TextLink,
+  TextProps,
+  WriteFilterAction,
+} from './page-types';
 
 /**
  * 页面布局形态的结构读取。宿主要在页面校验之前决定页面外框几何，因此
@@ -310,26 +154,6 @@ export function isChartComponent(component: Component): component is ChartCompon
     component.type === 'pieChart' ||
     component.type === 'mapChart'
   );
-}
-
-export type ComponentDataMode = DataSourceMode | 'none';
-
-export interface ComponentCapabilities {
-  dataMode: ComponentDataMode;
-  live: boolean;
-  filters: boolean;
-  actions: boolean;
-  remotePagination: boolean;
-}
-
-export interface PageCapabilities {
-  dataMode: DataSourceMode;
-  static: boolean;
-  live: boolean;
-  filters: boolean;
-  actions: boolean;
-  remotePagination: boolean;
-  components: Record<string, ComponentCapabilities>;
 }
 
 /**

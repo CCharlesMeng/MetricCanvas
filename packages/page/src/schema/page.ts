@@ -2,7 +2,7 @@ import { mapGeographyZ } from './map-geography';
 import { visibilityShape } from './condition';
 import { z } from 'zod';
 import { iocHeaderZ } from './ioc-header';
-import { supportedVersions } from '../version';
+import { supportedVersionsFor as supportedVersions } from '../version-bounds';
 import { idZ, nonEmptyTextValueZ, pageParamZ, groupedPageParamsZ } from './primitives';
 import { componentZ } from './component';
 import { filterDeclarationZ } from './filter';

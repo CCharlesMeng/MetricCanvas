@@ -10,8 +10,15 @@ import {
   queryResultFieldContract,
   type FieldContractIssue
 } from './result-field-contract';
-import type { Row } from './snapshot';
-import { setRowCellFallbacks, snapshotCellFallbacks, type CellFallbacks, type RowCellFallbacks } from './cell-fallback';
+import type {
+  CellFallbacks,
+  QueryRowNormalizationWarning,
+  Row,
+  RowCellFallbacks,
+} from './snapshot-types';
+import { setRowCellFallbacks, snapshotCellFallbacks } from './cell-fallback';
+
+export type { QueryRowNormalizationWarning };
 
 /**
  * 查询结果归一化的问题契约:查询字段映射问题以 DQE 输出字段名定位,
@@ -39,17 +46,6 @@ export type QueryRowNormalizationIssue =
       actualFields: string[];
     }
   | (FieldContractIssue & { queryField: string; itemQueryField?: string });
-
-/** 按字段和原因计数，不保留原始值、数据行或每行告警。 */
-export interface QueryRowNormalizationWarning {
-  code: 'MISSING_NUMERIC_QUERY_FIELD' | 'INVALID_NUMERIC_VALUE' | 'NUMERIC_NULL_NOT_ALLOWED' | 'SCALAR_TYPE_MISMATCH' | 'SCALAR_NULL_NOT_ALLOWED';
-  expectedType?: QueryFieldDefinition['type'];
-  fieldId: string;
-  queryField: string;
-  itemFieldId?: string;
-  itemQueryField?: string;
-  count: number;
-}
 
 export type QueryRowsNormalizationResult =
   | { ok: true; rows: Row[]; issues: []; warnings?: QueryRowNormalizationWarning[]; cellFallbacks?: CellFallbacks }

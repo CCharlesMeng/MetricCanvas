@@ -1,5 +1,5 @@
-import type {DqeQueryCase,DqeQueryDefinition} from './query';
-import type {Page} from './page';
+import type {DqeQueryCase,DqeQueryDefinition} from './query-primitives';
+import type {Page} from './page-types';
 import type {QueryDataSource} from './data-source';
 
 export interface QuerySelectorValue {type:string;mode?:string;values?:readonly string[]}

@@ -1,5 +1,5 @@
 import { fieldSlot, type FieldBinding } from '../field';
-import type { TableColumn, TableColumnNode } from '../page';
+import type { TableColumn, TableColumnNode } from '../page-types';
 import { walkDocumentComponents } from '../component-walk';
 type ColumnShape = {
     kind?: unknown;

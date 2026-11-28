@@ -9,7 +9,7 @@ import { record, pointer } from './inline-query-params';
 import { resolvePageParams, type ParamResolutionIssue } from './resolve-page-params';
 import type { GroupedPageParams, PageParamValue, TextValue } from './page-param';
 import type { PageDocument } from './page-document';
-import type { PageParamExtraction, ParameterCandidate } from './extract-page-params';
+import type { PageParamExtraction, ParameterCandidate } from './edit/param-extraction-types';
 
 type Failure = { ok: false; issues: ParamResolutionIssue[] };
 type Location = ParameterCandidate['locations'][number];

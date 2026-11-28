@@ -1,24 +1,20 @@
+import type { FilterDeclaration, PeriodMode } from './filter-types';
 import type { Condition, ConditionScalar, ConditionTest } from './schema/condition';
-import type { FilterDeclaration } from './filter';
+import type {
+  ConditionContext,
+  ConditionInput,
+  ConditionResult,
+  ConditionValue,
+  DisplaySnapshot,
+} from './condition-types';
 
-export type ConditionValue = ConditionScalar | null | ConditionScalar[];
-export type ConditionInput = { status: 'pending'; filterRevision?: number } | { status: 'error'; filterRevision?: number } | { status: 'ready'; value: ConditionValue; filterRevision?: number };
-export interface DisplaySnapshot {
-  timeZone?: string;
-  periods?: Readonly<Record<string, import('./period-facts').DataPeriodFact>>;
-  permissionRevision: string;
-  permissions: Readonly<Record<string, ConditionInput>>;
-  values: Readonly<Record<string, ConditionInput>>;
-}
-export interface ConditionContext {
-  declarations: readonly FilterDeclaration[];
-  filters: ReadonlyMap<string, { type: string; level?: string; values?: string[]; value?: unknown; query?: string; from?: string | number; to?: string | number; selection?: import('./period-filter').AppliedPeriodSelection }>;
-  periodModes?: ReadonlyMap<string, import('./period-filter').PeriodMode>;
-  displaySnapshot?: DisplaySnapshot;
-  filterRevision?: number;
-  row?: Readonly<Record<string, unknown>>;
-}
-export type ConditionResult = { status: 'allow' | 'deny' | 'pending' | 'error'; reason?: string };
+export type {
+  ConditionContext,
+  ConditionInput,
+  ConditionResult,
+  ConditionValue,
+  DisplaySnapshot,
+};
 const ready = (value: ConditionValue): ConditionInput => ({ status: 'ready', value });
 
 export function conditionLeaves(condition: Condition): Array<Exclude<Condition, {all: Condition[]} | {any: Condition[]} | {not: Condition}>> {
@@ -46,7 +42,7 @@ function filterInput(leaf: Extract<Condition, {filter: string}>, context: Condit
   const value = selected?.[leaf.part as 'from' | 'to'];
   return ready(value ?? null);
 }
-function periodModeInput(declaration: FilterDeclaration, mode: import('./period-filter').PeriodMode | undefined): ConditionInput {
+function periodModeInput(declaration: FilterDeclaration, mode: PeriodMode | undefined): ConditionInput {
   if (declaration.type !== 'timeRange' || declaration.display !== 'period') return {status:'error'};
   return mode ? ready(mode) : {status:'pending'};
 }

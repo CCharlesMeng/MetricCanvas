@@ -1,17 +1,13 @@
-import { resolvePeriodSelection, type PeriodRange } from './period-filter';
+import { resolvePeriodSelection } from './period-filter';
+import type { PeriodRange } from './filter-types';
+import {
+  QUERY_PERIODS,
+  type PeriodQueryPolicy,
+  type QueryPeriod,
+  type ResolvedPeriodQuery,
+} from './query-primitives';
 
-/** Query encodings are independent of the calendar window used by the picker. */
-export const QUERY_PERIODS = ['day', 'month', 'quarter', 'year'] as const;
-export type QueryPeriod = typeof QUERY_PERIODS[number];
-export type PeriodQueryPolicy =
-  | { kind: 'fixed'; period: QueryPeriod }
-  | { kind: 'selection'; supportedPeriods: QueryPeriod[] };
-export interface ResolvedPeriodQuery {
-  period: QueryPeriod;
-  from: string;
-  to: string;
-  expanded: boolean;
-}
+export { QUERY_PERIODS, type PeriodQueryPolicy, type QueryPeriod, type ResolvedPeriodQuery };
 
 function rejected(message: string): never {
   throw Object.assign(new Error(message), { code: 'DQE_QUERY_REJECTED' });
