@@ -1,6 +1,8 @@
 # 6.1 布局兼容与存量迁移
 
-当前页面协议6.1；读取接受6.0/6.1，新写出为6.1 + `layout`。四个引擎交付物锁步 `1.0.0-rc.2`，此为本地候选版本；Svelte公开支持范围仍为 `>=5.29.0 <6`。没有执行registry发布。
+> 历史迁移说明：本文记录 Schema 6.1 引入 `layout`（替代旧 `layoutForm`）时的布局兼容策略与存量迁移流程。当前作者协议版本、可读范围与能力下限以 [`packages/page/src/version.ts`](../../packages/page/src/version.ts) 的 `versionPolicy.current` / `supportedVersions()` 为唯一真源；当前包发布版本与构建门禁见 [`tools/package-build/README.md`](../../tools/package-build/README.md)。
+
+下表保留 6.0 / 6.1 布局兼容规范化的最小迁移语义（6.1 之后的新版本沿用 `layout`，并继续拒绝 `layout` 与 `layoutForm` 双字段并存）：
 
 | 原始文档 | 读取 | 规范化写出 |
 |---|---|---|

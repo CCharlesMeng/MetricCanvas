@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "33efb9638b68b2603492a076024afc9f0db549e3af7a33ca639ff256bb0e44b9",
+  "sha256": "4cb7e28b4465a528b4c12ca569621e0def179df94fc8d336ecd38dcd4b7b153c",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -140,7 +140,7 @@
     },
     {
       "file": "docs/page-metadata/layout-migration.md",
-      "sha256": "860ea46e11e5db225f260173e82cd7d1ffd1193c32e3d051b4a2d1c11735c42d"
+      "sha256": "aa8b2dd39932d9690351888bbf6742537c2ec707194ad236bba8110feb6e96b1"
     },
     {
       "file": "docs/page-metadata/page.md",
@@ -148,7 +148,7 @@
     },
     {
       "file": "docs/page-metadata/parameters.md",
-      "sha256": "af7fb6dc337ce29ebf83de1ed4d09195b32518c6073d1f1a2a7f9f6f5aaa512a"
+      "sha256": "4f2d0c1a31f769625d5b1ff9b65acd1ceb879d9c1791ccf2584e533101ff0c1f"
     },
     {
       "file": "docs/page-metadata/params-and-text-values.md",
@@ -172,7 +172,7 @@
     },
     {
       "file": "docs/page-metadata/time-parameters.md",
-      "sha256": "dcd9e92eb30b74700ef4ee7f23fc388f2a490e8fde064aec83f256801366d94f"
+      "sha256": "06116910bb18091ee037203fec5b1f0dffb916e6532899da8f47e3f184e51be0"
     },
     {
       "file": "docs/page-metadata/validation.md",
@@ -3391,14 +3391,6 @@
       "sha256": "841ca54573607957c7398a1c6f9e96f0b60e7c42dbb66e5ea68b899256f12436"
     },
     {
-      "file": "pages/temporary/contract-maturity-linkage-20261027/README.md",
-      "sha256": "b20066afb67b6e27c60b9521d3c7a3e1c6d1f8886a67b1d0d06dc09e805dd9d4"
-    },
-    {
-      "file": "pages/temporary/contract-maturity-linkage-20261027/contract-maturity-score-linked.json",
-      "sha256": "a52b0522d6c948ae730c00e6342d4d03ca2d622c9dab22434af232c280af3dbf"
-    },
-    {
       "file": "pages/temporary/contract-maturity-score-20261027/README.md",
       "sha256": "e9bf4f3d6ca373aa740120b080d505d26c7db1207885161400e38692c07612c8"
     },
@@ -3429,14 +3421,6 @@
     {
       "file": "pages/temporary/partner-health-without-voice-score.json",
       "sha256": "304c3ec828c9da776984d863641027e2f1f7aaf3b97d7f2e0ee153abe46f8a6e"
-    },
-    {
-      "file": "pages/temporary/report-container-principles-20261027-r3/README.md",
-      "sha256": "0d075f242298c172c05edb769b4b14710ba49966404e4a871e9025297ff1b8d1"
-    },
-    {
-      "file": "pages/temporary/report-container-principles-20261027-r3/field-maintenance-report-202611-r3.json",
-      "sha256": "bbdfd2bbf44cee4204d26ef7d7be62d6d3b9a1c4fcf03a9822c301a1703c8add"
     },
     {
       "file": "pages/temporary/report-layout-acceptance-20261027-qtlle05j/README.md",
@@ -3475,96 +3459,8 @@
       "sha256": "50fc7b40c77f52fca9ba1159168b03b98af90a5c6c1b1ea35490a4199d1acd74"
     },
     {
-      "file": "pages/temporary/report-layout-independent-20261027-r2/README.md",
-      "sha256": "177abaf2b1f9259ccac997ffa093671de266dba8ff21fd51b7514e3dbdfa2d46"
-    },
-    {
-      "file": "pages/temporary/report-layout-independent-20261027-r2/acceptance.json.txt",
-      "sha256": "d113d9e4fcfe0efb32ac207d285d78db45f0477ac4ca6a4076a51860e934c9f4"
-    },
-    {
-      "file": "pages/temporary/report-layout-independent-20261027-r2/first-pass-1280.png",
-      "sha256": "7871145f90419a4e2b3421ffa8c16cc62d7b9fe40d74753352e5cd9cf31d0d20"
-    },
-    {
-      "file": "pages/temporary/report-layout-independent-20261027-r2/first-pass-1440.png",
-      "sha256": "4ee183df4875f5990f965c641d86cccbcc3bf0ecfdb687338b8a063b4c045532"
-    },
-    {
-      "file": "pages/temporary/report-layout-independent-20261027-r2/operations-october-independent-20261027-r2.json",
-      "sha256": "5974830d3589deb4415a31c70177892741f39166f973e1eb166f181402f8291a"
-    },
-    {
       "file": "pages/temporary/report-layout-patterns-20261026/report-layout-patterns-1026.json",
       "sha256": "c3ac76357aa0efcf645eb71c2ded56dd165272c62ce26a22f8c1de7edda66e80"
-    },
-    {
-      "file": "pages/temporary/report-layout-refinement-20261027-qtlle05j/README.md",
-      "sha256": "a28dea65ea462c920dc4de3c38f9e27c336e8182d9c1cf82999048b594edddf1"
-    },
-    {
-      "file": "pages/temporary/report-layout-refinement-20261027-qtlle05j/acceptance.json.txt",
-      "sha256": "4ff082fa49e7273ec54be53cbdd29daf397f66ce2a916fbd6c9de2388e26670d"
-    },
-    {
-      "file": "pages/temporary/report-layout-refinement-20261027-qtlle05j/final-1280-full.jpg",
-      "sha256": "cf0fcc2ead66eecb73c5176312db6f77bfff34ef994d4064b55c5f06071f5da6"
-    },
-    {
-      "file": "pages/temporary/report-layout-refinement-20261027-qtlle05j/final-1280-stages-composition.jpg",
-      "sha256": "882cae018df942e8705358b1e4c851d7d692675e5483041be7dce49732f6e7d5"
-    },
-    {
-      "file": "pages/temporary/report-layout-refinement-20261027-qtlle05j/final-1440-full.jpg",
-      "sha256": "45e3d6feb3fc0b295c5b8b32b69f0c702664c99d1e9f26fa388da560c8bb05b6"
-    },
-    {
-      "file": "pages/temporary/report-layout-refinement-20261027-qtlle05j/final-1440-overview.jpg",
-      "sha256": "c5cf43cf3cf217883a686c0fb8a1a9b9f5e33082391917f3a8eee8888db9acf0"
-    },
-    {
-      "file": "pages/temporary/report-layout-refinement-20261027-qtlle05j/service-operations-report-202609-refined.json",
-      "sha256": "a4dd848a62d9e8e7e71270bf708c2e36b5b2997ecc85d57da028eefebd6a29b4"
-    },
-    {
-      "file": "pages/temporary/report-layout-structure-20261027-qtlle05j/README.md",
-      "sha256": "3c99c60e3c5394a0a773347498c2c08918651cbca52776ad93a5e413519219fe"
-    },
-    {
-      "file": "pages/temporary/report-layout-structure-20261027-qtlle05j/acceptance.json.txt",
-      "sha256": "a68b4eb72b5e3d72f94e11cb9c3fb7135bd983764c5bda2b919853bdf715d58c"
-    },
-    {
-      "file": "pages/temporary/report-layout-structure-20261027-qtlle05j/charts-1280-full.jpg",
-      "sha256": "e29bdfb5853f086ccf59809e72aeb526d2edf9b1e31d705f5ad1462a30eea8b8"
-    },
-    {
-      "file": "pages/temporary/report-layout-structure-20261027-qtlle05j/charts-1440-full.jpg",
-      "sha256": "5eefaa511290274f9d55edf36375e4a13c1e0da9083bc4a81791126277ae281c"
-    },
-    {
-      "file": "pages/temporary/report-layout-structure-20261027-qtlle05j/final-1280-full.jpg",
-      "sha256": "411409b852c66657b46e2dedb1e25a7781501f523467dcc7dfdd1a536db6213b"
-    },
-    {
-      "file": "pages/temporary/report-layout-structure-20261027-qtlle05j/final-1280-stages-composition.jpg",
-      "sha256": "1a76c6034eaa7b25fa68137a7c9bd33440488a714ab8acf4ad28ec27770f7807"
-    },
-    {
-      "file": "pages/temporary/report-layout-structure-20261027-qtlle05j/final-1440-full.jpg",
-      "sha256": "3ec6f003d64940c20b735f894b1ef1ec65d9ff022c5ea0ed00acd2e0f117916d"
-    },
-    {
-      "file": "pages/temporary/report-layout-structure-20261027-qtlle05j/outer-cards-1280-full.png",
-      "sha256": "d236e714dea8f4e47581d547467b78c4ed273fac2befeb2b291ed54b71087b81"
-    },
-    {
-      "file": "pages/temporary/report-layout-structure-20261027-qtlle05j/outer-cards-1440-full.png",
-      "sha256": "dc679a62e22c994bc4c769b8fff079a48fddd36318b1e49b2af90d8fe8cbacaa"
-    },
-    {
-      "file": "pages/temporary/report-layout-structure-20261027-qtlle05j/service-operations-report-202609-structured.json",
-      "sha256": "36504ea39a5c2b2db6f09a4530d2636b2f1f6f84baeb8fc4c8b122598d2734a8"
     },
     {
       "file": "pnpm-lock.yaml",

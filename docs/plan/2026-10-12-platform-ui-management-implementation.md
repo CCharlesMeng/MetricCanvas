@@ -4,7 +4,7 @@
 
 阅读顺序：[已确认交互](2026-10-12-platform-page-management-design.md) → [组件架构与视觉范围](2026-10-12-platform-os-theme-component-architecture.md) → 本文。仓库保存的[原型](https://github.com/CCharlesMeng/MetricCanvas/blob/09a7815c965bce921c2ef50202fa727ba9a8e705/docs/evidence/platform-page-management-interaction-2026-10-12/page-management-interaction-prototype.html)是交互来源；视觉真源是指定 TinyVue OS Theme 的对应组件。
 
-新会话接续时先读 [Handoff](2026-10-12-platform-ui-management-handoff.md)，其中记录当前起点、并行修改、阅读顺序和第一迭代推进步骤。
+新会话接续时先读 [历史 Handoff](../archive/plan-cleanup-2026-11/2026-10-12-platform-ui-management-handoff.md)，其中记录当时起点、并行修改、阅读顺序和第一迭代推进步骤。
 
 ## 目标与已确定范围
 

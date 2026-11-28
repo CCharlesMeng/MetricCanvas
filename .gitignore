@@ -1,7 +1,9 @@
 node_modules/
+.pnpm-store/
 .svelte-kit/
 build/
 dist/
+out/
 # Maven 构建产物（metriccanvas-page-assets）
 metriccanvas-page-assets/**/target/
 test-results/
