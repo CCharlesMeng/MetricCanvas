@@ -3,7 +3,7 @@ import {comparisonFilterIds} from '@metriccanvas/page/internal';
 import {reconcileTableSources} from './table/presentation-session';
 import {requiresQueryContext,hasPeriodQueryDefault} from '@metriccanvas/page/internal';
 import {fieldSelectionIds,flattenPageComponents} from '@metriccanvas/page/internal';
-import { createSourceProgram, composeEffectiveQuery, intersectQueryFilters, activeSourceIds, visibleSourceIds, compileSources, defaultSourceView, computedSnapshots, automaticQueryPageSize, initialTableViews, remoteHeaderDefaultSources } from '@metriccanvas/data-execution/runtime';
+import { createSourceProgram, composeEffectiveQuery, intersectQueryFilters, activeSourceIds, visibleSourceIds, compileSources, defaultSourceView, computedSnapshots, automaticQueryPageSize, initialTableViews, remoteHeaderDefaultSources, debugWarn, preservedQueryError } from '@metriccanvas/data-execution/runtime';
 import type { QueryHeaderFilters, ScreenProgress, SourceCandidateSession } from '@metriccanvas/data-execution/runtime';
 import { affectedSourceIds, conditionSourceIds, queryResultDependencies, type Page, type DataSnapshot, type EffectiveQuery, type QueryDataSource, type TabSelections, type TableQueryView } from '@metriccanvas/page/internal';
 import { executionSourceKey } from './execution';
@@ -145,7 +145,7 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
             if (source.source.type === 'query' && !intersectQueryFilters(composeEffectiveQuery({ now: timeContext.now ?? timeContext.clock?.() ?? new Date(), page:page,filters:page.filters, dataSource: source as QueryDataSource }, values, 0, [], {})))
               initial = { status: 'empty', totalCount: 0 };
           }
-          catch { /* 约束未就绪时沿用SourceProgram的候选与输入门禁。 */ }
+          catch (cause) { debugWarn('[MetricCanvas][ORCHESTRATOR] 初始化空交集预检跳过', { sourceId: id, cause }); }
         }
       }
     }
@@ -200,7 +200,7 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
       function fetchTargets(): void {
         for (const root of targets) {
           requests.get(root)?.abort();
-          void program.prepareInputs(root,values).catch(()=>{/* The source read publishes preparation failures. */});
+          void program.prepareInputs(root,values).catch((cause)=>{debugWarn('[MetricCanvas][ORCHESTRATOR] 预准备输入失败（将由源读取上报）',{sourceId:root,cause});});
           if (gated(root)) {
             raw.set(root, { status: 'loading' });
             publish();
@@ -236,9 +236,9 @@ export function orchestrate(page: Page, gateway: DataGateway, filters?: FilterSt
                 publish();
               }
             }
-            catch {
+            catch (cause) {
               if (!disposed && !controller.signal.aborted && tokens.get(root) === capturedTokens.get(root)) {
-                raw.set(root, { status: 'error', error: { code: 'UNKNOWN', message: '页面取数未完成' } });
+                raw.set(root, { status: 'error', error: preservedQueryError(cause, '页面取数未完成') });
                 publish();
               }
             }

@@ -75,7 +75,7 @@
   },
   "expected": [
     {
-      "type": "SCHEMA_ERROR",
+      "type": "FIELD_CONTRACT_ERROR",
       "path": "/dataSources/overview/source/rows/0/gmv",
       "message": "字段 gmv 的值不符合类型 number"
     }

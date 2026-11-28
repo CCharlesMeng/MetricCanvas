@@ -328,7 +328,7 @@
   },
   "expected": [
     {
-      "type": "SCHEMA_ERROR",
+      "type": "FIELD_CONTRACT_ERROR",
       "path": "/dataSources/notes/source/rows/0/body",
       "message": "字段 body 的值不符合类型 semanticHtml"
     }

@@ -1,25 +1,18 @@
-import { materializeMainBindingSlots } from './field-binding-defaults';
 import type { CellFallbacks } from './cell-fallback';
+import type { TypedError } from './errors';
 import type {
   QueryDataSourceFieldDefinition,
   QueryFieldDefinition,
-  QueryScalarFieldDefinition
+  QueryScalarFieldDefinition,
 } from './field';
-import type { GroupedQueryFields } from './page-document';
+import { materializeMainBindingSlots } from './field-binding-defaults';
 import type { FilterDeclaration } from './filter';
-import type { TypedError } from './errors';
-import { pageParamDeclarations, type GroupedPageParams } from './page-param';
 import { initialFilterTextValues } from './filter-text-value';
 import { removeAbsentMetricBefore } from './metric-before';
-import {
-  normalizeQueryRows,
-  type QueryRowNormalizationIssue
-} from './query-rows';
-import {
-  resolveTextValues,
-  validationResolution,
-  type TextValueResolution
-} from './text-value';
+import type { GroupedQueryFields } from './page-document';
+import { type GroupedPageParams, pageParamDeclarations } from './page-param';
+import { normalizeQueryRows, type QueryRowNormalizationIssue } from './query-rows';
+import { resolveTextValues, type TextValueResolution, validationResolution } from './text-value';
 
 export interface MaterializedPageDocument {
   document: unknown;
@@ -36,7 +29,7 @@ export interface MaterializedPageDocument {
  */
 export function materializePageDocument(
   input: unknown,
-  textValues?: TextValueResolution
+  textValues?: TextValueResolution,
 ): MaterializedPageDocument {
   if (!isRecord(input)) return { document: input, errors: [] };
 
@@ -44,11 +37,12 @@ export function materializePageDocument(
   // 页面已经通过结构校验，此处按 JSON 树逐层复制，仍保持不修改输入的纯计算边界。
   const cloned = cloneJsonTree(input) as Record<string, unknown>;
   const declarations = pageParamDeclarations(cloned.params as GroupedPageParams | undefined);
-  const document = resolveTextValues(
-    cloned,
-    { ...textValues ?? validationResolution(declarations),
-      filterValues: textValues?.filterValues ?? initialFilterTextValues((cloned.filters ?? []) as FilterDeclaration[]) }
-  ) as Record<string, unknown>;
+  const document = resolveTextValues(cloned, {
+    ...(textValues ?? validationResolution(declarations)),
+    filterValues:
+      textValues?.filterValues ??
+      initialFilterTextValues((cloned.filters ?? []) as FilterDeclaration[]),
+  }) as Record<string, unknown>;
   removeAbsentMetricBefore(document);
   materializeMainBindingSlots(document);
   const errors: TypedError[] = [];
@@ -71,7 +65,7 @@ export function materializePageDocument(
 
       function expandGroup(
         groupName: 'dimensions' | 'measures',
-        role: QueryScalarFieldDefinition['role']
+        role: QueryScalarFieldDefinition['role'],
       ): void {
         const group = grouped[groupName];
         if (!group) return;
@@ -102,91 +96,111 @@ export function materializePageDocument(
       if (normalized.cellFallbacks) initialFallbacks[sourceId] = normalized.cellFallbacks;
       if (normalized.warnings?.length) initialWarnings[sourceId] = normalized.warnings;
     } else {
-      errors.push(
-        ...normalized.issues.map((issue) => queryRowIssueError(sourceId, issue))
-      );
+      errors.push(...normalized.issues.map((issue) => queryRowIssueError(sourceId, issue)));
     }
   }
 
   return { document, errors, initialFallbacks, initialWarnings };
 }
 
-function queryRowIssueError(
-  sourceId: string,
-  issue: QueryRowNormalizationIssue
+function detailQueryRowIssueError(
+  fieldPath: string,
+  issue: Extract<
+    QueryRowNormalizationIssue,
+    {
+      code:
+        | 'DETAIL_LIST_TOO_LARGE'
+        | 'DETAIL_ITEM_NOT_OBJECT'
+        | 'MISSING_DETAIL_QUERY_FIELD'
+        | 'DETAIL_UNDECLARED_FIELD'
+        | 'DETAIL_MISSING_FIELD'
+        | 'DETAIL_NULL_NOT_ALLOWED'
+        | 'DETAIL_TYPE_MISMATCH';
+    }
+  >,
 ): TypedError {
-  const rowsPath =
-    `/dataSources/${escapePointer(sourceId)}/source/initial/rows`;
   switch (issue.code) {
-    case 'ROWS_NOT_ARRAY':
-      return schemaError(rowsPath, 'DQE 内嵌初始行必须是数组');
-    case 'ROW_NOT_OBJECT':
-      return schemaError(`${rowsPath}/${issue.rowIndex}`, 'DQE 内嵌初始行必须是对象');
-  }
-  const fieldPath = `${rowsPath}/${issue.rowIndex}/${escapePointer(issue.queryField)}`;
-  switch (issue.code) {
-    case 'MISSING_QUERY_FIELD':
-      return schemaError(fieldPath, `DQE 内嵌初始行缺少映射字段:${issue.queryField}`);
-    case 'NULL_NOT_ALLOWED':
-      return schemaError(
-        fieldPath,
-        `DQE 字段 ${issue.queryField} 为 null，页面字段 ${issue.fieldId} 声明 nullable=false`
-      );
-    case 'TYPE_MISMATCH':
-      return schemaError(
-        fieldPath,
-        `DQE 字段 ${issue.queryField} 不符合页面字段 ${issue.fieldId} 的类型 ${issue.expectedType}`
-      );
     case 'DETAIL_LIST_TOO_LARGE':
-      return schemaError(
+      return fieldContractError(
         fieldPath,
-        `DQE 嵌套明细字段 ${issue.queryField} 最多允许 ${issue.maximum} 项，实际 ${issue.actualLength} 项`
-      );
-    case 'SEMANTIC_HTML_TOO_LARGE':
-      return schemaError(
-        fieldPath,
-        `DQE 语义 HTML 字段 ${issue.queryField} 最多允许 ${issue.maximum} 字符，实际 ${issue.actualLength} 字符`
+        `DQE 嵌套明细字段 ${issue.queryField} 最多允许 ${issue.maximum} 项，实际 ${issue.actualLength} 项`,
       );
     case 'DETAIL_ITEM_NOT_OBJECT':
-      return schemaError(
+      return fieldContractError(
         `${fieldPath}/${issue.itemIndex}`,
-        `DQE 嵌套明细字段 ${issue.queryField} 的第 ${issue.itemIndex + 1} 项必须是对象`
+        `DQE 嵌套明细字段 ${issue.queryField} 的第 ${issue.itemIndex + 1} 项必须是对象`,
       );
     case 'MISSING_DETAIL_QUERY_FIELD':
-      return schemaError(
+      return fieldContractError(
         `${fieldPath}/${issue.itemIndex}/${escapePointer(issue.itemQueryField)}`,
-        `DQE 嵌套明细项缺少映射字段:${issue.itemQueryField}`
+        `DQE 嵌套明细项缺少映射字段:${issue.itemQueryField}`,
       );
-    case 'DETAIL_UNDECLARED_FIELD':
-    case 'DETAIL_MISSING_FIELD':
-    case 'DETAIL_NULL_NOT_ALLOWED':
+    case 'DETAIL_UNDECLARED_FIELD': {
+      const itemField = issue.itemQueryField ?? issue.itemFieldId;
+      return fieldContractError(
+        `${fieldPath}/${issue.itemIndex}/${escapePointer(itemField)}`,
+        `DQE 嵌套明细项包含未声明字段:${itemField}`,
+      );
+    }
+    case 'DETAIL_MISSING_FIELD': {
+      const itemField = issue.itemQueryField ?? issue.itemFieldId;
+      return fieldContractError(
+        `${fieldPath}/${issue.itemIndex}/${escapePointer(itemField)}`,
+        `DQE 嵌套明细项缺少字段:${itemField}`,
+      );
+    }
+    case 'DETAIL_NULL_NOT_ALLOWED': {
+      const itemField = issue.itemQueryField ?? issue.itemFieldId;
+      return fieldContractError(
+        `${fieldPath}/${issue.itemIndex}/${escapePointer(itemField)}`,
+        `DQE 嵌套明细字段 ${itemField} 为 null，页面字段 ${issue.itemFieldId} 声明 nullable=false`,
+      );
+    }
     case 'DETAIL_TYPE_MISMATCH': {
       const itemField = issue.itemQueryField ?? issue.itemFieldId;
-      const itemPath = `${fieldPath}/${issue.itemIndex}/${escapePointer(itemField)}`;
-      if (issue.code === 'DETAIL_UNDECLARED_FIELD') {
-        return schemaError(itemPath, `DQE 嵌套明细项包含未声明字段:${itemField}`);
-      }
-      if (issue.code === 'DETAIL_MISSING_FIELD') {
-        return schemaError(itemPath, `DQE 嵌套明细项缺少字段:${itemField}`);
-      }
-      if (issue.code === 'DETAIL_NULL_NOT_ALLOWED') {
-        return schemaError(
-          itemPath,
-          `DQE 嵌套明细字段 ${itemField} 为 null，页面字段 ${issue.itemFieldId} 声明 nullable=false`
-        );
-      }
-      return schemaError(
-        itemPath,
-        `DQE 嵌套明细字段 ${itemField} 不符合页面字段 ${issue.itemFieldId} 的类型 ${issue.expectedType}`
+      return fieldContractError(
+        `${fieldPath}/${issue.itemIndex}/${escapePointer(itemField)}`,
+        `DQE 嵌套明细字段 ${itemField} 不符合页面字段 ${issue.itemFieldId} 的类型 ${issue.expectedType}`,
       );
     }
   }
 }
 
+function queryRowIssueError(sourceId: string, issue: QueryRowNormalizationIssue): TypedError {
+  const rowsPath = `/dataSources/${escapePointer(sourceId)}/source/initial/rows`;
+  if (issue.code === 'ROWS_NOT_ARRAY') {
+    return fieldContractError(rowsPath, 'DQE 内嵌初始行必须是数组');
+  }
+  if (issue.code === 'ROW_NOT_OBJECT') {
+    return fieldContractError(`${rowsPath}/${issue.rowIndex}`, 'DQE 内嵌初始行必须是对象');
+  }
+  const fieldPath = `${rowsPath}/${issue.rowIndex}/${escapePointer(issue.queryField)}`;
+  switch (issue.code) {
+    case 'MISSING_QUERY_FIELD':
+      return fieldContractError(fieldPath, `DQE 内嵌初始行缺少映射字段:${issue.queryField}`);
+    case 'NULL_NOT_ALLOWED':
+      return fieldContractError(
+        fieldPath,
+        `DQE 字段 ${issue.queryField} 为 null，页面字段 ${issue.fieldId} 声明 nullable=false`,
+      );
+    case 'TYPE_MISMATCH':
+      return fieldContractError(
+        fieldPath,
+        `DQE 字段 ${issue.queryField} 不符合页面字段 ${issue.fieldId} 的类型 ${issue.expectedType}`,
+      );
+    case 'SEMANTIC_HTML_TOO_LARGE':
+      return fieldContractError(
+        fieldPath,
+        `DQE 语义 HTML 字段 ${issue.queryField} 最多允许 ${issue.maximum} 字符，实际 ${issue.actualLength} 字符`,
+      );
+    default:
+      return detailQueryRowIssueError(fieldPath, issue);
+  }
+}
+
 function isGroupedQueryFields(value: unknown): value is GroupedQueryFields {
   return (
-    isRecord(value) &&
-    (Object.hasOwn(value, 'dimensions') || Object.hasOwn(value, 'measures'))
+    isRecord(value) && (Object.hasOwn(value, 'dimensions') || Object.hasOwn(value, 'measures'))
   );
 }
 
@@ -202,12 +216,16 @@ function cloneJsonTree(value: unknown): unknown {
   if (Array.isArray(value)) return value.map(cloneJsonTree);
   if (!isRecord(value)) return value;
   return Object.fromEntries(
-    Object.entries(value).map(([key, child]) => [key, cloneJsonTree(child)])
+    Object.entries(value).map(([key, child]) => [key, cloneJsonTree(child)]),
   );
 }
 
 function schemaError(path: string, message: string): TypedError {
   return { type: 'SCHEMA_ERROR', path, message };
+}
+
+function fieldContractError(path: string, message: string): TypedError {
+  return { type: 'FIELD_CONTRACT_ERROR', path, message };
 }
 
 function escapePointer(value: string): string {

@@ -16,6 +16,7 @@ import {
 import { linkAbortSignals } from '../abort-signals';
 import { createCandidateValidator } from '../candidate-validation';
 import { computedSnapshots } from '../compute/snapshots';
+import { debugWarn } from '../debug-warnings';
 import { composeEffectiveQuery, emptyBooleanMembership } from '../effective-query';
 import { intersectQueryFilters } from '../intersect-filters';
 import { preservedQueryError } from '../query-error';
@@ -192,10 +193,14 @@ function appliedSource(ctx: ReadContext, id: string, source: DataSource): DataSo
 function rejectCandidate(ctx: ReadContext, id: string, cause: unknown): void {
   if (ctx.request.signal.aborted) throw cause;
   ctx.candidateRejected.add(id);
-  ctx.raw.set(id, {
-    status: 'error',
-    error: { ...preservedQueryError(cause), message: '筛选候选校验失败' },
+  const error = preservedQueryError(cause, '筛选候选校验失败');
+  debugWarn('[MetricCanvas][SOURCE_PROGRAM] 筛选候选校验失败', {
+    sourceId: id,
+    code: error.code,
+    message: error.message,
+    cause,
   });
+  ctx.raw.set(id, { status: 'error', error });
 }
 
 function contradictorySource(ctx: ReadContext, source: DataSource): boolean {

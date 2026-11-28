@@ -366,12 +366,12 @@
   },
   "expected": [
     {
-      "type": "SCHEMA_ERROR",
+      "type": "FIELD_CONTRACT_ERROR",
       "path": "/dataSources/orders/source/initial/rows/0/extra",
       "message": "行缺少字段:extra"
     },
     {
-      "type": "SCHEMA_ERROR",
+      "type": "FIELD_CONTRACT_ERROR",
       "path": "/dataSources/orders/source/initial/rows/1/extra",
       "message": "行缺少字段:extra"
     },

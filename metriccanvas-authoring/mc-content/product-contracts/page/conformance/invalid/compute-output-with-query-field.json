@@ -412,12 +412,12 @@
       "message": "算子产出字段 online 不来自外部响应，不得声明 queryField"
     },
     {
-      "type": "SCHEMA_ERROR",
+      "type": "FIELD_CONTRACT_ERROR",
       "path": "/dataSources/pivoted/source/initial/rows/0/online",
       "message": "算子产出字段 online 不得出现在数据行中，它由计算阶段产出"
     },
     {
-      "type": "SCHEMA_ERROR",
+      "type": "FIELD_CONTRACT_ERROR",
       "path": "/dataSources/pivoted/source/initial/rows/0/online",
       "message": "行包含未声明字段:online"
     },

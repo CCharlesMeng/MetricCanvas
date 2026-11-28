@@ -3,7 +3,7 @@
   "invariant": "pie-legend-color-rule",
   "expected": [
     {
-      "type": "SCHEMA_ERROR",
+      "type": "FIELD_CONTRACT_ERROR",
       "message": "行缺少字段:note",
       "paths": [
         "/dataSources/customers-by-region/source/rows/0/note",

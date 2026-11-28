@@ -3,7 +3,7 @@
   "invariant": "query-initial-rows-normalize",
   "expected": [
     {
-      "type": "SCHEMA_ERROR",
+      "type": "FIELD_CONTRACT_ERROR",
       "message": "DQE 嵌套明细字段 event_title 不符合页面字段 title 的类型 string",
       "paths": [
         "/dataSources/customers/source/initial/rows/0/events/0/event_title"

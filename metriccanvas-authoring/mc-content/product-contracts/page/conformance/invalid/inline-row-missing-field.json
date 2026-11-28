@@ -327,7 +327,7 @@
   },
   "expected": [
     {
-      "type": "SCHEMA_ERROR",
+      "type": "FIELD_CONTRACT_ERROR",
       "path": "/dataSources/current/source/rows/0/yoy",
       "message": "行缺少字段:yoy"
     }

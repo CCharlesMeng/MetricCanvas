@@ -405,7 +405,7 @@
   },
   "expected": [
     {
-      "type": "SCHEMA_ERROR",
+      "type": "FIELD_CONTRACT_ERROR",
       "path": "/dataSources/customers/source/initial/rows/0/reason",
       "message": "DQE 语义 HTML 字段 reason 最多允许 64000 字符，实际 64001 字符"
     }

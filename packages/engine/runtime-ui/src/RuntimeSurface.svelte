@@ -1,6 +1,5 @@
 <script module lang="ts">
-  import { tableColumnNavigation } from '@metriccanvas/page/internal';
- import {selectTimeQuery} from '@metriccanvas/page/internal';
+  import { selectTimeQuery, tableColumnNavigation } from '@metriccanvas/page/internal';
 </script>
 <svelte:options css="injected" />
 <script lang="ts">
@@ -8,10 +7,10 @@
   import {createAuthRequiredGateway, notifyAuthRequired, type AuthRequiredEvent} from './auth-required';
   import {invalidateAiSummaryPage} from './ai-summary/runtime/session';
   import {debugWarn,createFinalizationPreparation,inheritFinalizationCache,supportsMembershipCandidates} from '@metriccanvas/data-execution/runtime';
+  import {classifyRuntimeError,warnRuntimeFallback} from './runtime-errors';
   import {preparationBlocksPage,preparationBlocksFilter,discardPreparingData} from './preparation-blocked';
   import { isOfficeNavigationFeedback, officeNavigationInput, officeNavigationTarget, sameNavigationAddress, type OfficeNavigationInput } from './ioc-header/office-navigation';
-  import {nativeSourceFilterIds,nativeIocRuntimePage} from '@metriccanvas/page/internal';
-  import { hierarchyLevelOf } from '@metriccanvas/page/internal';
+  import {hierarchyLevelOf,nativeIocRuntimePage,nativeSourceFilterIds} from '@metriccanvas/page/internal';
   import { projectSnapshotRows, snapshotCellFallbacks, tablePinnedSlots, restoreCellFallbacks, pinnedSnapshotError } from '@metriccanvas/page/internal';
   import { AI_SUMMARY_RUNTIME_CONTEXT, type AiSummaryRuntimeReader } from './ai-summary';
   import { initialTabSelections, tabSearch } from '@metriccanvas/page/internal';
@@ -312,7 +311,7 @@
     const controller=new AbortController();targetInputs=new Map();
     if(provider)for(const href of hrefs)void Promise.resolve().then(()=>provider(href,{signal:controller.signal})).then(contract=>{
       if(!controller.signal.aborted&&contract)targetInputs=new Map(targetInputs).set(href,structuredClone(contract));
-    }).catch(()=>{/* Unavailable target contracts keep guarded links closed. */});
+    }).catch((cause)=>{if(!controller.signal.aborted)warnRuntimeFallback('NAVIGATION_TARGET_INPUTS','读取目标页面输入契约失败',{href,cause});});
     return()=>controller.abort();
   });
 
@@ -376,8 +375,8 @@
     try {
       unsubscribe=source.subscribe(update);
       update(source.getSnapshot());
-    } catch {
-      clearDisplaySnapshot();
+    } catch (cause) {
+      warnRuntimeFallback('DISPLAY_INPUTS','订阅展示上下文快照失败',cause);clearDisplaySnapshot();
     }
     return ()=>{stopped=true;unsubscribe();};
   });
@@ -524,11 +523,11 @@
     for (const [id, options] of optionsById) {
       const value = values.get(id);
       if (value && !singleOptionSelected(value, options)) {
-        if (strict) return {type:'SCHEMA_ERROR',path:'/filters/'+id,message:'目标筛选取值不在可用候选中'};
+        if (strict) return {type:'DATA_CONTEXT_ERROR',path:'/filters/'+id,message:'目标筛选取值不在可用候选中'};
         values.delete(id);
       }
       if (bootstrap && !singleOptionSelected(bootstrap.filters.get(id), options))
-        return {type:'SCHEMA_ERROR',path:'/filters',message:'执行快照中的筛选按钮组值不在候选项中'};
+        return {type:'DATA_CONTEXT_ERROR',path:'/filters',message:'执行快照中的筛选按钮组值不在候选项中'};
     }
   }
 
@@ -536,9 +535,9 @@
     return value?.type === 'dimension' && value.values.length === 1 && options.includes(value.values[0]!);
   }
 
-  function failTimeInitialization(mySession:number, signal:AbortSignal, emit:((event:RuntimeViewEvent)=>void)|undefined) {
+  function failTimeInitialization(mySession:number, signal:AbortSignal, emit:((event:RuntimeViewEvent)=>void)|undefined, cause?:unknown) {
     if(session!==mySession||signal.aborted)return;
-    pageState={phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters',message:'时间默认值或可信初始期间不符合声明精度和边界'}]};
+    pageState={phase:'invalid',errors:[classifyRuntimeError(cause,'/filters','时间默认值或可信初始期间不符合声明精度和边界')]};
     emit?.({type:'invalid',errors:pageState.errors});
   }
 
@@ -575,7 +574,7 @@
     candidateClock=new Date();
 
     if (bootstrap && canonicalizeJson(raw) !== canonicalizeJson(bootstrap.document)) {
-      pageState = {phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/',message:'执行快照与页面文档不匹配'}]};
+      pageState = {phase:'invalid',errors:[{type:'DATA_CONTEXT_ERROR',path:'/',message:'执行快照与页面文档不匹配'}]};
       emit?.({type:'invalid',errors:pageState.errors});
       return;
     }
@@ -613,8 +612,8 @@
     try {
       loaded = nativeIocRuntimePage(initializeRenderablePage(parsed.page, params.values, params.missing),supportsMembershipCandidates(gatewayOverride));
       selectedGroup = initialSectionGroup(loaded, params.values);
-    } catch {
-      pageState = {phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/params',message:'页面参数无法生成合法查询条件或内容组，请检查输入值与窗口范围'}]};
+    } catch (cause) {
+      pageState = {phase:'invalid',errors:[classifyRuntimeError(cause,'/params','页面参数无法生成合法查询条件或内容组，请检查输入值与窗口范围')]};
       emit?.({type:'invalid',errors:pageState.errors});
       return;
     }
@@ -654,12 +653,12 @@
     declarations = loaded.filters ?? [];
 
     const message=initialFilterInputIssue(loaded,search,candidateClock);
-    if(message){pageState={phase:'input-invalid',message};emit?.({type:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters',message}]});return;}
+    if(message){pageState={phase:'input-invalid',message};emit?.({type:'invalid',errors:[{type:'DATA_CONTEXT_ERROR',path:'/filters',message}]});return;}
     // 旧数组参数的显式 value 固定本次输入；分组参数仍允许 URL 参数与独立筛选初始化。
     let fromURL:Map<string,FilterValue>, rollingInputs:ReadonlySet<string>, pendingRegion:ReturnType<typeof pendingIocRegionURL>;
     try{({fromURL,rollingInputs,pendingRegion}=readInitialFilterURL(loaded,search,candidateClock,
       capabilities.filters && !paramDeclarations.some(p => !p.path && p.value !== undefined),bootstrap));}
-    catch{pageState={phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters',message:'时间模式URL必须为合法完整mode/from/to'}]};emit?.({type:'invalid',errors:pageState.errors});return;}
+    catch(cause){pageState={phase:'invalid',errors:[classifyRuntimeError(cause,'/filters','时间模式URL必须为合法完整mode/from/to')]};emit?.({type:'invalid',errors:pageState.errors});return;}
     const explicit=bootstrap?.filters??fromURL;
     const preparation=createFinalizationPreparation(loaded,activeGateway,explicit,candidateClock,finalizationController.signal,displaySnapshot,rollingInputs);
     const localOptions = filterGroupOptions(loaded);
@@ -670,7 +669,7 @@
       return;
     }
     let fromDeclarations:Map<string,FilterValue>;
-    try{fromDeclarations=initialFilterValues((loaded.filters??[]).filter(needsInitialFilterValue),candidateClock,displaySnapshot,0,undefined,explicit);}catch{failTimeInitialization(mySession,finalizationController.signal,emit);return;}
+    try{fromDeclarations=initialFilterValues((loaded.filters??[]).filter(needsInitialFilterValue),candidateClock,displaySnapshot,0,undefined,explicit);}catch(cause){failTimeInitialization(mySession,finalizationController.signal,emit,cause);return;}
     function needsInitialFilterValue(filter: FilterDeclaration): boolean {
       return !fromURL.has(filter.id) && !preparation.unresolved.has(filter.id) && !(pendingRegion && isIocRegionFilterId(filter.id));
     }
@@ -687,12 +686,12 @@
       if (!prepared) return;
       ({ finalizationDates, initialFilters } = prepared);
       resolvedFinalizationDates = finalizationDates;
-    } catch {failTimeInitialization(mySession,finalizationController.signal,emit);return;}
+    } catch (cause) {failTimeInitialization(mySession,finalizationController.signal,emit,cause);return;}
     let state:ReturnType<typeof createFilterState>;
     try {
       state = createFilterState(initialFilters, declarations, localOptions, { unrestrictedFilterClear:resolvePageCompatibility(loaded).unrestrictedFilterClear, iocRegion:usesIocRegion(loaded), candidates:true, displayInputs:()=>displaySnapshot,finalizationDates:()=>resolvedFinalizationDates,readOnly: () => filterEditing?.readOnly === true || pageFiltersReadOnly(loaded) });
-    } catch {
-      pageState={phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/filters',message:'筛选初始化值不符合声明或日期边界'}]};
+    } catch (cause) {
+      pageState={phase:'invalid',errors:[classifyRuntimeError(cause,'/filters','筛选初始化值不符合声明或日期边界')]};
       emit?.({type:'invalid',errors:pageState.errors});return;
     }
     state.configurePage(loaded);
@@ -784,7 +783,7 @@
           search = nextSearch;
           replaceRuntimeSearch(navigationAdapter, nextSearch);
           emit?.({ type: 'filter-change', search: nextSearch,filterRevision:state.revision });
-          try { bootstrap?.recordFilters?.(values); } catch { /* 记录失败不能回滚当前筛选或中止查询 */ }
+          try { bootstrap?.recordFilters?.(values); } catch (cause) { warnRuntimeFallback('BOOTSTRAP_RECORD_FILTERS','记录筛选快照失败（已忽略）',cause); }
           if (changedFilters(previous, values).size > 0) closeDetail(false);
           for (const component of flattenPageComponents({sections:loaded.sections})) if(component.type==='table') tableController?.reset(component,previous,values);
         }
@@ -824,9 +823,9 @@
       applyPendingPeriods(state, loaded, dates);
       state.completePreparation(preparation.values(dates, state.preparation()));
       emit?.({type:'ready',pageId:loaded.id});
-    }).catch(()=>{
+    }).catch((cause)=>{
       if(session!==mySession||finalizationController.signal.aborted)return;
-      const errors:TypedError[]=[{type:'SCHEMA_ERROR',path:'/filters',message:'定稿日期无法生成合法的时间默认值'}];
+      const errors:TypedError[]=[classifyRuntimeError(cause,'/filters','定稿日期无法生成合法的时间默认值')];
       pageState={phase:'invalid',errors};emit?.({type:'invalid',errors});
     });
     const pendingInitial=new Set(declarations.filter(f=>(f.type==='timePoint'||f.type==='timeRange')&&f.availability?.initial&&!filterValues.has(f.id)&&!fromURL.has(f.id)).map(f=>f.id));
@@ -836,7 +835,7 @@
       const key=canonicalizeJson([next?.periods??{},next?.timeZone??null]);if(key===periodKey)return;periodKey=key;
       // Invalidate authorizing receipts before publishing a new fact context.
       for(const declaration of declarations)if(declaration.type==='dimension'&&declaration.candidateWindow)state.candidate(declaration.id,'loading');
-      let defaults:Map<string,FilterValue>;try{defaults=initialFilterValues(declarations,new Date(),displaySnapshot,state.revision,finalizationDates);}catch{defaults=new Map();}
+      let defaults:Map<string,FilterValue>;try{defaults=initialFilterValues(declarations,new Date(),displaySnapshot,state.revision,finalizationDates);}catch(cause){warnRuntimeFallback('PERIOD_FACTS','刷新统计期间默认值失败，回退空默认值',cause);defaults=new Map();}
       const seeded=new Map(filterValues);
       for(const id of pendingInitial){if(filterValues.has(id)){pendingInitial.delete(id);continue;}const value=defaults.get(id);if(value){seeded.set(id,value);pendingInitial.delete(id);}}
       if(seeded.size!==filterValues.size)state.commit({type:'initialize',values:seeded});
@@ -1132,7 +1131,8 @@
         let request:ReturnType<typeof filterCandidatesRequest>;
         try {
           request = withSourceCandidateSelection(input.page,declaration,values,filterCandidatesRequest(declaration,declarations,values,level,input));
-        } catch {
+        } catch (cause) {
+          warnRuntimeFallback('FILTER_CANDIDATES','构造筛选候选请求失败，标记候选不可用',{filterId:declaration.id,level,cause});
           const dimension = declaration.hierarchy?.find(item=>item.id===level)?.dimension ?? declaration.dimension;
           loader.unavailable(dimension,{filterId:declaration.id,level,context});
           continue;
@@ -1343,8 +1343,8 @@
             if (generation === detailGeneration && openDetail) detailSnapshots = value;
           });
         } else detailSnapshots = snapshots;
-      } catch {
-        openDetail = { ...openDetail, error: '详情参数不完整或无效，请重新选择。' };
+      } catch (cause) {
+        warnRuntimeFallback('DETAIL_VIEW','打开详情视图失败',{componentId:component.id,cause});openDetail = { ...openDetail, error: '详情参数不完整或无效，请重新选择。' };
       }
     }
   }
@@ -1450,7 +1450,7 @@
     if(target.validateTargetInputs&&Object.values(target.query??{}).some(b=>b.source==='filter'&&blockedFilters.includes(b.id)&&!(verifiedRegion&&isIocRegionFilterId(b.id))))return {ok:false as const,code:'NAVIGATION_INPUT_INVALID' as const,message:'来源筛选尚未通过当前候选确认'};
     const result=resolveNavigationTarget(target,filters,pageParams,row,targetInputs.get(target.href),candidateClock);
     if(!result.ok)return result;
-    try{return {ok:true as const,href:navigation?.resolveHref?.(result.href)??result.href};}catch{return {ok:false as const,code:'NAVIGATION_INPUT_UNAVAILABLE' as const,message:'目标页面路由不可用'};}
+    try{return {ok:true as const,href:navigation?.resolveHref?.(result.href)??result.href};}catch(cause){warnRuntimeFallback('NAVIGATION_RESOLVE','解析目标页面路由失败',{href:result.href,cause});return {ok:false as const,code:'NAVIGATION_INPUT_UNAVAILABLE' as const,message:'目标页面路由不可用'};}
   }
   function targetHref(target:NavigationTarget,row:Row={}) {const result=targetResult(target,row);return result.ok?result.href:undefined;}
   function navigateTarget(target:NavigationTarget,row:Row={},event?:MouseEvent){

@@ -3,7 +3,7 @@
   "invariant": "detail-item-object",
   "expected": [
     {
-      "type": "SCHEMA_ERROR",
+      "type": "FIELD_CONTRACT_ERROR",
       "message": "DQE 嵌套明细字段 events 的第 1 项必须是对象",
       "paths": [
         "/dataSources/customers/source/initial/rows/0/events/0"

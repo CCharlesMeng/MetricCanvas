@@ -2055,7 +2055,7 @@ def _computed_row_issues(data_source, source_path, fields, produced, issues):
                     if raw_key in row:
                         issues.append(
                             PageContractIssue(
-                                "SCHEMA_ERROR",
+                                "FIELD_CONTRACT_ERROR",
                                 f"{rows_path}/{row_index}/{_escape_pointer(field_id)}",
                                 f"computed field {field_id} cannot be present in rows",
                             )
@@ -2362,7 +2362,7 @@ def _query_initial_row_issues(value: Any) -> list[PageContractIssue]:
                     path = f"{rows_path}/{row_index}/{_escape_pointer(field_id)}"
                     issues.append(
                         PageContractIssue(
-                            "SCHEMA_ERROR",
+                            "FIELD_CONTRACT_ERROR",
                             path,
                             f"row is missing field: {field_id}",
                         )
@@ -2372,7 +2372,7 @@ def _query_initial_row_issues(value: Any) -> list[PageContractIssue]:
                 if query_field not in row:
                     issues.append(
                         PageContractIssue(
-                            "SCHEMA_ERROR",
+                            "FIELD_CONTRACT_ERROR",
                             path,
                             f"DQE embedded row is missing mapped field: {query_field}",
                         )
@@ -2396,7 +2396,7 @@ def _query_initial_row_issues(value: Any) -> list[PageContractIssue]:
                 if isinstance(query_field, str) and query_field in row:
                     issues.append(
                         PageContractIssue(
-                            "SCHEMA_ERROR",
+                            "FIELD_CONTRACT_ERROR",
                             f"{rows_path}/{row_index}/{_escape_pointer(field_id)}",
                             f"row contains computed field: {field_id}",
                         )
@@ -2445,7 +2445,7 @@ def _inline_row_issues(value: Any) -> list[PageContractIssue]:
                 if str(field_id) not in input_fields:
                     issues.append(
                         PageContractIssue(
-                            "SCHEMA_ERROR",
+                            "FIELD_CONTRACT_ERROR",
                             f"{rows_path}/{row_index}/{_escape_pointer(field_id)}",
                             f"row contains undeclared field: {field_id}",
                         )
@@ -2455,7 +2455,7 @@ def _inline_row_issues(value: Any) -> list[PageContractIssue]:
                 if field_id not in row:
                     issues.append(
                         PageContractIssue(
-                            "SCHEMA_ERROR", path, f"row is missing field: {field_id}"
+                            "FIELD_CONTRACT_ERROR", path, f"row is missing field: {field_id}"
                         )
                     )
                     continue
@@ -2478,20 +2478,20 @@ def _field_value_issues(
         return []
     violation = _scalar_violation(value, field)
     if violation == "null":
-        return [PageContractIssue("SCHEMA_ERROR", path, "field does not allow null")]
+        return [PageContractIssue("FIELD_CONTRACT_ERROR", path, "field does not allow null")]
     if violation == "type":
         return [
             PageContractIssue(
-                "SCHEMA_ERROR", path, f"field value does not match {field.get('type')}"
+                "FIELD_CONTRACT_ERROR", path, f"field value does not match {field.get('type')}"
             )
         ]
     field_type = field.get("type")
     if field_type == "semanticHtml" and isinstance(value, str) and len(value) > 64_000:
-        return [PageContractIssue("SCHEMA_ERROR", path, "semantic HTML is too large")]
+        return [PageContractIssue("FIELD_CONTRACT_ERROR", path, "semantic HTML is too large")]
     if field_type != "recordList" or not isinstance(value, list):
         return []
     if len(value) > 100:
-        return [PageContractIssue("SCHEMA_ERROR", path, "detail list is too large")]
+        return [PageContractIssue("FIELD_CONTRACT_ERROR", path, "detail list is too large")]
     item_fields = field.get("items", {}).get("fields", {})
     if not isinstance(item_fields, Mapping):
         return []
@@ -2500,7 +2500,7 @@ def _field_value_issues(
         item_path = f"{path}/{item_index}"
         if not isinstance(item, Mapping):
             issues.append(
-                PageContractIssue("SCHEMA_ERROR", item_path, "detail item must be an object")
+                PageContractIssue("FIELD_CONTRACT_ERROR", item_path, "detail item must be an object")
             )
             return
         if not query_mapping:
@@ -2508,7 +2508,7 @@ def _field_value_issues(
                 if str(item_field_id) not in item_fields:
                     issues.append(
                         PageContractIssue(
-                            "SCHEMA_ERROR",
+                            "FIELD_CONTRACT_ERROR",
                             f"{item_path}/{_escape_pointer(item_field_id)}",
                             f"detail item contains undeclared field: {item_field_id}",
                         )
@@ -2525,7 +2525,7 @@ def _field_value_issues(
             if source_name not in item:
                 issues.append(
                     PageContractIssue(
-                        "SCHEMA_ERROR", child_path, f"detail item is missing field: {source_name}"
+                        "FIELD_CONTRACT_ERROR", child_path, f"detail item is missing field: {source_name}"
                     )
                 )
                 continue
