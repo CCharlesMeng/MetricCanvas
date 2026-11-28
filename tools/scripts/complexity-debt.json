@@ -1289,15 +1289,6 @@
       "nestedFunctions": 89
     },
     {
-      "file": "packages/engine/runtime/src/filter-state.ts",
-      "language": "typescript-javascript",
-      "qualifiedName": "createFilterState",
-      "line": 64,
-      "selfCC": 2,
-      "subtreeCC": 160,
-      "nestedFunctions": 43
-    },
-    {
       "file": "packages/engine/runtime/src/orchestrator.ts",
       "language": "typescript-javascript",
       "qualifiedName": "orchestrate",
@@ -1444,11 +1435,6 @@
       "file": "packages/engine/runtime-ui/src/RuntimeSurface.svelte",
       "language": "typescript-javascript",
       "lines": 2349
-    },
-    {
-      "file": "packages/engine/runtime/src/filter-state.ts",
-      "language": "typescript-javascript",
-      "lines": 739
     },
     {
       "file": "packages/engine/widgets/src/components/metric-card/MetricCard.svelte",
