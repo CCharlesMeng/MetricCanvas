@@ -2,9 +2,9 @@
 <script lang="ts">
   import { onDestroy, tick, untrack } from 'svelte';
   import { resolveDataSourceFields, type Row } from '@metriccanvas/page/internal';
-  import type { RowTableInstance } from '../../../../runtime/src/table/expansion';
+  import type { RowTableInstance } from '../../../../runtime/src/internal';
   import { createTableController } from '../controller';
-  import Table from '../../../../widgets/src/components/table/Table.svelte';
+  import { Table, type MainDataSlots } from '../../../../widgets/src';
   import { createRetainedScreenData } from '../../retained-screen-data';
   import TableDataDiagnostic from './TableDataDiagnostic.svelte';
   import { usableTableProgress } from '../screen-progress';
@@ -56,7 +56,7 @@
   <Table nested view={{pageIndex:0,sort:[],headerFilters:{}}} props={table.props} data={{main:{fields:{},snapshot:{status:'ready',rows:[]}}}} />
 {:else}
   <div bind:this={content} style="display:contents" inert={screen.retained}>
-  <Table nested data={screen.data as import('../../../../widgets/src/shared/component-data').MainDataSlots}
+  <Table nested data={screen.data as MainDataSlots}
     props={table.props} view={screen.table?.view ?? view} pagination={screen.table?.pagination ?? pagination}
     searchOption={binding.searchOption} onsearchoption={binding.onsearchoption}
     searchDraft={binding.searchDraft} onsearchdraft={binding.onsearchdraft} onsearch={binding.onsearch}

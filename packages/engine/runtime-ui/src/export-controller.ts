@@ -1,4 +1,4 @@
-import { ExportViewError } from '../../runtime/src/export-snapshots';
+import { ExportViewError } from '../../runtime/src';
 export interface ExportTaskState { busy: boolean; error?: string; }
 /** Task lifecycle only. Capture and data/DOM/file adapters stay at their existing seams. */
 export function createExportController(changed: (state: Record<string, ExportTaskState>) => void) {

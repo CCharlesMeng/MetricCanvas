@@ -12,7 +12,7 @@ import {
   type Page,
   readLevelURLSelection,
 } from '@metriccanvas/page/internal';
-import type { FilterValue } from '../../../runtime/src/filter-state';
+import type { FilterValue } from '../../../runtime/src';
 
 export function officeNavigationTarget(
   page: Page,

@@ -1,6 +1,6 @@
 import type { FilterCandidate, FilterCandidatesResult } from '@metriccanvas/data-execution';
 import { debugWarn, preservedQueryError } from '@metriccanvas/data-execution/runtime';
-import { scheduleCandidateIdle, type IdleSchedule } from '../../../runtime/src/table/candidate-preload';
+import { scheduleCandidateIdle, type IdleSchedule } from '../../../runtime/src/internal';
 
 export interface CandidatePageReader {
   key: string;

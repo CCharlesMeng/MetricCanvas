@@ -1,18 +1,16 @@
 import {isPagedJoinQuery,pagedJoinCandidateView,pagedJoinPausedFields,legacyTableCandidateSearch,type PagedJoinDataSource} from '@metriccanvas/page/internal';
 import { declaredQuerySort } from './query-sort';
-import { createHierarchySelectionSession, hierarchyRows, type HierarchyContext, type HierarchySelection } from '../../../runtime/src/table/hierarchy-selection';
+import { createColumnCandidatesSession, createHierarchySelectionSession, createTableSession, hierarchyRows, type HierarchyContext, type HierarchySelection, type TableSession } from '../../../runtime/src/internal';
 import {normalizeTableSelectView,columnBindingKey,mainColumnField,tableColumnLeaves,type TableColumn} from '@metriccanvas/page/internal';
 import { flattenPageComponents, hasColumnConditions, type TableComponent as DeclaredTable } from '@metriccanvas/page/internal';
 import { tableColumnPresentation } from '@metriccanvas/data-execution/runtime';
 import { fieldSelectionIds, sourceFilterIds, canonicalizeJson, conditionSourceIds, tableHeaders, tableSearchOption, tableSearchValue, type Page, type TableHeaderFilters, type TableQueryView, type TableComponent } from '@metriccanvas/page/internal';
-import { createColumnCandidatesSession } from '../../../runtime/src/table/column-candidates';
 import type { TableRenderBinding } from '../component-render';
 import { evaluateTableView, defaultSourceView, defaultTableView, tableDefaultInputsPending, type ColumnCandidatesRead } from '@metriccanvas/data-execution/runtime';
 import {hasHeaderDefaults,tableDefaultsRemote} from '@metriccanvas/page/internal';
-import { createTableSession, type TableSession } from '../../../runtime/src/table/session';
 import { remoteTableSearch } from './search';
-import type { PageSnapshotStream, FilterValues } from '../../../runtime/src';
-import { shouldApplyTableHeaderFilter, type TableHeaderFilterValue, type TableViewState } from '../../../widgets/src/components/table/view-state';
+import type { DataGateway, PageSnapshotStream, FilterValues } from '../../../runtime/src';
+import { shouldApplyTableHeaderFilter, type TableHeaderFilterValue, type TableViewState } from '../../../widgets/src/internal';
 export function normalizeHeaderDraft(value: TableHeaderFilterValue): TableHeaderFilters[string] | undefined {
     if (!shouldApplyTableHeaderFilter(value))
         return undefined;
@@ -28,7 +26,7 @@ function renderHeaders(headers: TableHeaderFilters): Record<string, TableHeaderF
             : value.mode === 'select' ? { ...value, values: [...value.values] } : value]));
 }
 /** Draft ownership and event adaptation; committed values live exclusively in TableSession. */
-export function createTableController(page: Page, stream: () => PageSnapshotStream | null, changed: () => void, conditions: () => FilterValues = () => new Map(), candidateContext: () => Pick<ColumnCandidatesRead, 'now' | 'displayInputs' | 'filterRevision'> = () => ({}), hierarchyContext?: () => HierarchyContext & {gateway:import('../../../runtime/src/ports').DataGateway}) {
+export function createTableController(page: Page, stream: () => PageSnapshotStream | null, changed: () => void, conditions: () => FilterValues = () => new Map(), candidateContext: () => Pick<ColumnCandidatesRead, 'now' | 'displayInputs' | 'filterRevision'> = () => ({}), hierarchyContext?: () => HierarchyContext & {gateway:DataGateway}) {
     const declarations = new Map(flattenPageComponents(page).filter((node): node is DeclaredTable => node.type === 'table').map(node => [node.id, node]));
     const context = () => ({ declarations: page.filters ?? [], filters: conditions(), displaySnapshot: candidateContext().displayInputs, filterRevision: candidateContext().filterRevision });
     const columns = (table: TableComponent) => tableColumnPresentation(page, declarations.get(table.id) ?? table, context());

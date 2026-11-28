@@ -1,5 +1,5 @@
 import type { TableComponent } from '@metriccanvas/page/internal';
-import type { NamedDataSlots } from '../../../../widgets/src/shared/component-data';
+import type { NamedDataSlots } from '../../../../widgets/src/internal';
 import { tableWorkbookSheet, warningWorkbookSheet, type WorkbookTable } from './workbook-sheet';
 import { paginateWorkbookSheets } from './workbook-pages';
 import { hierarchyWorkbookSheet } from './workbook-hierarchy';

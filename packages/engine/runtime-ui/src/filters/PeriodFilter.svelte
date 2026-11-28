@@ -1,6 +1,6 @@
 <svelte:options css="injected" />
 <script lang="ts">
-  import { DEFAULT_NULL_TEXT } from '../../../widgets/src/shared/value-format';
+  import { DEFAULT_NULL_TEXT } from '../../../widgets/src/internal';
   import { untrack } from 'svelte';
   import type { PendingPeriodChoice } from './pending-period-mode';
   import { DatePicker } from '@metriccanvas/ui';

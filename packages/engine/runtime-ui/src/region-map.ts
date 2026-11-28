@@ -6,15 +6,15 @@ import {
 } from '@metriccanvas/page/internal';
 import {
   type GeographyInput,
+  type MapViewport,
   organizationEntries,
   type RegionMapDisplayNames,
-} from '../../widgets/src/components/map-chart/geography';
+} from '../../widgets/src/internal';
 
 export type { MapGeography } from '@metriccanvas/page/internal';
-export type { RegionMapDisplayNames } from '../../widgets/src/components/map-chart/geography';
+export type { RegionMapDisplayNames } from '../../widgets/src/internal';
 
 import type { DimensionValuesSnapshot, FilterValue } from '../../runtime/src';
-import type { MapViewport } from '../../widgets/src/components/map-chart/options';
 
 export interface RegionMapViewportRequest {
   level: IocOrganizationLevel;

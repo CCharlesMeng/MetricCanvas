@@ -2,7 +2,7 @@ import {
   conditionSourceIds, resolveDataSourceFields, sourceFilterIds, tableHeaderParamReferences,
   type Page, type PageParamValue
 } from '@metriccanvas/page/internal';
-import { initializePageParams } from '../../runtime/src/page-params';
+import { initializePageParams } from '../../runtime/src';
 
 /** Query references and legacy bindings are inspected only after document validation. */
 function consumesMissingParam(value: unknown, missing: ReadonlySet<string>): boolean {

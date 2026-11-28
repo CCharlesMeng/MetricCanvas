@@ -19,20 +19,15 @@
   import { resolvePendingPeriodChoice, visiblePendingPeriodModes, type PendingPeriodChoice } from './filters/pending-period-mode';
   import type { PeriodMode } from '@metriccanvas/page/internal';
   import { TABLE_EXPORT_HANDLER } from './table/export/host';
-  import { TABLE_EXPORT_ALLOWED } from '../../widgets/src/shared/export-context';
-  import { withExportPermission } from '../../runtime/src/display-inputs';
-  import { compilePresentation, resolvePresentationRow } from '../../runtime/src/presentation';
-  import type { DisplaySnapshot } from '../../runtime/src/display-inputs';
+  import { CHART_OPTION_PATHS, TABLE_EXPORT_ALLOWED } from '../../widgets/src/internal';
+  import { candidateScopeKey, compilePresentation, detailViewInput, requestsRollingFinalization, resolvePresentationRow, singleExpandableParent, withExportPermission } from '../../runtime/src/internal';
   import { PRESENTATION_CONTEXT } from './presentation-context';
   import { chartOptionPaths, isChartOptionError } from '@metriccanvas/page/internal';
-  import { CHART_OPTION_PATHS } from '../../widgets/src/shared/chart-option-extension';
   import {createSourceCandidateSession,sourceCandidateWindow,withSourceCandidateSelection} from '@metriccanvas/data-execution/runtime';
   import type {CandidatePageReader} from './filters/candidate-paging';
   let candidateSession:ReturnType<typeof createSourceCandidateSession>|undefined;
   import {initialFilterInputIssue} from './initial-filter-input';
-  import {requestsRollingFinalization} from '../../runtime/src/filter-state';
   import { filterCandidatesRequest } from '@metriccanvas/data-execution/runtime';
-  import { candidateScopeKey } from '../../runtime/src/dimension-values';
   import { createIocRegionDefault, pendingIocRegionURL, resolveIocRegionURL } from './ioc-region-default';
   import { createTableController } from './table/controller';
   import { createExportController } from './export-controller';
@@ -40,7 +35,6 @@
   import { applyTableSearch, remoteTableSearch } from './table/search';
   import { exportVisibleTable } from './table/export/task';
   import { tablePagination } from './table/pagination';
-  import { singleExpandableParent } from '../../runtime/src/table/expansion';
   import { tick, untrack, setContext, onDestroy } from 'svelte';
   const rowScopeInstanceId = $props.id();
   import { initialSectionGroup, selectedSectionGroup, sectionGroupFor, visibleSections } from './section-navigation';
@@ -82,7 +76,9 @@
   import {
     createDimensionValuesLoader,
     createFilterState,
+    ExportViewError,
     resolveNavigationTarget,
+    type DisplaySnapshot,
     type NavigationInputContract,
     parseFilterSearch,
     type PageParamValues,
@@ -114,12 +110,10 @@
   import { REPORT_EXPORT_CONTEXT, reportExportFilename, downloadReportBlob, type ReportExportContext } from './report-export-context';
   import { downloadReportPdf } from './report-pdf-client';
   import { SUMMARY_EXPORT_CAPTURE, type SummaryCapture } from './export-render-state';
-  import { ExportViewError } from '../../runtime/src/export-snapshots';
   import ComponentRenderer from './ComponentRenderer.svelte';
   import { initialTabsFromSearch } from './initial-tabs';
   import { initializeURLSearch, pageURLSearch, replaceRuntimeSearch } from './url-search';
   import DetailContent from './DetailContent.svelte';
-  import { detailViewInput } from '../../runtime/src/detail-view';
   import { detailTitle } from './detail-title';
   import type { NestedComponentRender, TableRenderBinding } from './component-render';
   import {

@@ -1,9 +1,20 @@
 import type { FieldBinding, TableColumn, TableComponent, ValueFormat } from '@metriccanvas/page/internal';
-import { resolveField, semanticHtmlFieldPresentation, type NamedDataSlots } from '../../../../widgets/src/shared/component-data';
-import { parseSemanticHtml, semanticDataPresentation, type SemanticHtmlNode } from '../../../../widgets/src/shared/semantic-html';
-import { buildTableColumnLayout } from '../../../../widgets/src/components/table/columns';
-import { alignedCellArrow, alignedCellText, alignedFieldValue, projectTableRows, tableRowColumn, type AlignedTableRow } from '../../../../widgets/src/components/table/rows';
-import { tableDataWarnings } from '../../../../widgets/src/components/table/warnings';
+import {
+  alignedCellArrow,
+  alignedCellText,
+  alignedFieldValue,
+  buildTableColumnLayout,
+  parseSemanticHtml,
+  projectTableRows,
+  resolveField,
+  semanticDataPresentation,
+  semanticHtmlFieldPresentation,
+  tableDataWarnings,
+  tableRowColumn,
+  type AlignedTableRow,
+  type NamedDataSlots,
+  type SemanticHtmlNode
+} from '../../../../widgets/src/internal';
 import { abortable } from './prepare';
 import { downloadTableWorkbook, tableExportFilename } from './workbook';
 import { EXCEL_SHEET_ROWS } from './workbook-pages';

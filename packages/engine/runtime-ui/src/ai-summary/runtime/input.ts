@@ -2,7 +2,7 @@ import { aiSummaryRegion, aiSummaryRelatedData, aiSummarySourceReferences, hasAi
   type AiSummaryProps, type DataSnapshot, type Page, type EffectiveQuery, type TabSelections } from '@metriccanvas/page/internal';
 import type { PageDataSnapshots, FilterValue, FilterValues } from '../../../../runtime/src';
 import type { AiSummaryContextInfo, AiSummaryDataSource } from '../types';
-import { semanticHtmlInstructions } from '../../../../widgets/src/shared/semantic-html';
+import { semanticHtmlInstructions } from '../../../../widgets/src/internal';
 
 
 export const AI_SUMMARY_RUNTIME_CONTEXT = Symbol('metriccanvas.aiSummaryRuntime');

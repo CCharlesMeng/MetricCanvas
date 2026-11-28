@@ -1,11 +1,11 @@
 <svelte:options css="injected" />
 <script lang="ts">
   import { Button } from '@metriccanvas/ui';
-  import ReportSummary from '../../../../widgets/src/shared/ReportSummary.svelte';
   import { getContext } from 'svelte';
-  import { STATIC_EXPORT_CONTEXT } from '../../../../widgets/src/shared/export-context';
+  import { TextBlock } from '../../../../widgets/src';
+  import { STATIC_EXPORT_CONTEXT } from '../../../../widgets/src/internal';
+  import { ReportSummary } from '../../../../widgets/src/internal-summary';
   const staticExport = Boolean(getContext(STATIC_EXPORT_CONTEXT));
-  import TextBlock from '../../../../widgets/src/components/text/TextBlock.svelte';
   import type { AiSummarySnapshot } from '../types';
 
   let { props, data, onretry }: {

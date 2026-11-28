@@ -1,9 +1,10 @@
 import type { Snippet } from 'svelte';
 import type { ResolvedIocHeader } from './model';
+import type { TextBlockLink } from '../../../widgets/src/internal';
 import type { ResolvedHeaderFilterRow } from './filter-groups';
 export interface IocHeaderRenderBinding {
   model:ResolvedIocHeader;
-  titleLink?:import('../../../widgets/src/components/text/links').TextBlockLink;
+  titleLink?:TextBlockLink;
   filterIds:string[];
   overflowIds?:string[];
   filterRows?:ResolvedHeaderFilterRow[];

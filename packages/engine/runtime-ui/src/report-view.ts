@@ -1,8 +1,8 @@
 import { debugWarn } from '@metriccanvas/data-execution/runtime';
 import { mount, unmount, tick } from 'svelte';
 import type { EffectiveQuery } from '@metriccanvas/page/internal';
-import type { RuntimeDataGateway } from '../../runtime/src';
-import { prepareExportSnapshots, ExportViewError } from '../../runtime/src/export-snapshots';
+import { ExportViewError, type RuntimeDataGateway } from '../../runtime/src';
+import { prepareExportSnapshots } from '../../runtime/src/internal';
 import ExportView from './ExportView.svelte';
 import type { ExportRenderState } from './export-render-state';
 

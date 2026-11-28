@@ -1,5 +1,5 @@
 import type { Page } from '@metriccanvas/page';
-import type { PageParamValues } from '../../runtime/src/page-params';
+import type { PageParamValues } from '../../runtime/src';
 
 export function initialSectionGroup(page: Page, params: PageParamValues): string | undefined {
   const value = page.sectionGroupParam ? params.get(page.sectionGroupParam) : undefined;

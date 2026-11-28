@@ -1,5 +1,5 @@
 import { fieldName, type OpenDetailAction, type Row } from '@metriccanvas/page/internal';
-import { formatValue } from '../../widgets/src/shared/value-format';
+import { formatValue } from '../../widgets/src/internal';
 
 /** Resolve only declared row references; the result is rendered as plain text. */
 export function detailTitle(detail: OpenDetailAction['openDetail'], row: Row, fallback = '详情'): string {

@@ -1,5 +1,5 @@
 import { canonicalizeJson, tablePinnedSlots, type Component, type DataSnapshot, type Page } from '@metriccanvas/page/internal';
-import type { NamedDataSlots } from '../../widgets/src/shared/component-data';
+import type { NamedDataSlots } from '../../widgets/src/internal';
 import type { TableRenderBinding } from './component-render';
 
 export const RETAINED_SCREEN_DATA = Symbol('retained-screen-data');

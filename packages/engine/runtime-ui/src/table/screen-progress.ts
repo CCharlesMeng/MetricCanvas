@@ -1,7 +1,6 @@
 import { fieldBindingLeaves, fieldName, tableColumnLeaves, tablePinnedSlots, type Component, type TableComponent } from '@metriccanvas/page/internal';
 import type { ScreenProgress } from '@metriccanvas/data-execution/runtime';
-import type { NamedDataSlots } from '../../../widgets/src/shared/component-data';
-import type { TableViewState } from '../../../widgets/src/components/table/view-state';
+import type { NamedDataSlots, TableViewState } from '../../../widgets/src/internal';
 
 /** Defer local row membership/order when any condition still depends on pending values. */
 export function usableTableProgress(component: TableComponent, progress: ScreenProgress | undefined, view: TableViewState | undefined): ScreenProgress | undefined {

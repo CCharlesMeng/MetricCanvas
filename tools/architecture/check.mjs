@@ -3,9 +3,10 @@ import { additions, findingsFor } from './ratchet.mjs';
 import { committedTree, workingTree } from './source-tree.mjs';
 
 const baseRef = process.env.METRICCANVAS_ARCHITECTURE_BASE ?? 'HEAD';
-const base = findingsFor(dependencyGraph(committedTree(baseRef)).graph);
-const { graph, typeReferences } = dependencyGraph(workingTree());
-const current = findingsFor(graph);
+const baseGraph = dependencyGraph(committedTree(baseRef));
+const base = findingsFor(baseGraph.graph, baseGraph.allImports);
+const { graph, allImports, typeReferences } = dependencyGraph(workingTree());
+const current = findingsFor(graph, allImports);
 const added = additions(current, base);
 console.log(
   `Architecture vs ${baseRef}: ${graph.size} source modules, ${typeReferences} type references, ${current.size} existing or new findings, ${added.length} added, ${additions(base, current).length} removed.`,
