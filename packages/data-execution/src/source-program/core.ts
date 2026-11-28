@@ -31,6 +31,7 @@ import {
 } from '@metriccanvas/page/internal';
 import { withAbortSignals } from '../abort-signals';
 import { createCandidateValidator } from '../candidate-validation';
+import { debugWarn } from '../debug-warnings';
 import { bindQueryResultValues, composeEffectiveQuery } from '../effective-query';
 import {
   applyConditionalDimensionDefaults,
@@ -118,8 +119,12 @@ function buildDefaultFilterValues(
       )) {
         defaults.set(id, value);
       }
-    } catch {
+    } catch (cause) {
       /* An unavailable dynamic default cannot override an explicit valid selection. */
+      debugWarn('[MetricCanvas][SOURCE_PROGRAM] 跳过暂不可用的动态筛选默认值', {
+        filterId: filter.id,
+        cause,
+      });
     }
   }
   applyConditionalDimensionDefaults(page.filters ?? [], defaults);
@@ -289,8 +294,9 @@ function captureSourceQuery(
     const inputs = resolveQueryResultInputs(source, raw, sources, limits);
     if (inputs.status === 'ready') bindQueryResultValues(query, inputs.values);
     return structuredClone(query);
-  } catch {
+  } catch (cause) {
     // read owns rejected-source diagnostics; an invalid query cannot be captured.
+    debugWarn('[MetricCanvas][SOURCE_PROGRAM] 无法捕获数据源查询定义', { sourceId: id, cause });
     return undefined;
   }
 }

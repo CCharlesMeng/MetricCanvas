@@ -3,7 +3,7 @@
   "invariant": "query-initial-rows-normalize",
   "expected": [
     {
-      "type": "SCHEMA_ERROR",
+      "type": "FIELD_CONTRACT_ERROR",
       "message": "DQE 内嵌初始行缺少映射字段:样例",
       "paths": [
         "/dataSources/samples/source/initial/rows/0/样例"

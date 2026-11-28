@@ -328,7 +328,7 @@
   },
   "expected": [
     {
-      "type": "SCHEMA_ERROR",
+      "type": "FIELD_CONTRACT_ERROR",
       "path": "/dataSources/notes/source/rows/0/at",
       "message": "字段 at 的值不符合类型 datetime"
     }

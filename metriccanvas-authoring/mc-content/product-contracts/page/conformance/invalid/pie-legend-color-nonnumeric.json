@@ -152,22 +152,22 @@
   },
   "expected": [
     {
-      "type": "SCHEMA_ERROR",
+      "type": "FIELD_CONTRACT_ERROR",
       "path": "/dataSources/customers-by-region/source/rows/0/note",
       "message": "行缺少字段:note"
     },
     {
-      "type": "SCHEMA_ERROR",
+      "type": "FIELD_CONTRACT_ERROR",
       "path": "/dataSources/customers-by-region/source/rows/1/note",
       "message": "行缺少字段:note"
     },
     {
-      "type": "SCHEMA_ERROR",
+      "type": "FIELD_CONTRACT_ERROR",
       "path": "/dataSources/customers-by-region/source/rows/2/note",
       "message": "行缺少字段:note"
     },
     {
-      "type": "SCHEMA_ERROR",
+      "type": "FIELD_CONTRACT_ERROR",
       "path": "/dataSources/customers-by-region/source/rows/3/note",
       "message": "行缺少字段:note"
     },

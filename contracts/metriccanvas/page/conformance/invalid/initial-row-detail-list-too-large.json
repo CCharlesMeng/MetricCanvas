@@ -904,7 +904,7 @@
   },
   "expected": [
     {
-      "type": "SCHEMA_ERROR",
+      "type": "FIELD_CONTRACT_ERROR",
       "path": "/dataSources/customers/source/initial/rows/0/events",
       "message": "DQE 嵌套明细字段 events 最多允许 100 项，实际 101 项"
     }

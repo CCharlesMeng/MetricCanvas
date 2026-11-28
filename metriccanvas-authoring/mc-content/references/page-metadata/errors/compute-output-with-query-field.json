@@ -10,14 +10,14 @@
       ]
     },
     {
-      "type": "SCHEMA_ERROR",
+      "type": "FIELD_CONTRACT_ERROR",
       "message": "算子产出字段 online 不得出现在数据行中，它由计算阶段产出",
       "paths": [
         "/dataSources/pivoted/source/initial/rows/0/online"
       ]
     },
     {
-      "type": "SCHEMA_ERROR",
+      "type": "FIELD_CONTRACT_ERROR",
       "message": "行包含未声明字段:online",
       "paths": [
         "/dataSources/pivoted/source/initial/rows/0/online"

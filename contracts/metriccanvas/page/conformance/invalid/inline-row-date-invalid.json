@@ -328,7 +328,7 @@
   },
   "expected": [
     {
-      "type": "SCHEMA_ERROR",
+      "type": "FIELD_CONTRACT_ERROR",
       "path": "/dataSources/notes/source/rows/0/day",
       "message": "字段 day 的值不符合类型 date"
     }

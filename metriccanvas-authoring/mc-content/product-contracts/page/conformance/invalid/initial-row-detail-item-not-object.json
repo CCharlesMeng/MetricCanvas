@@ -400,7 +400,7 @@
   },
   "expected": [
     {
-      "type": "SCHEMA_ERROR",
+      "type": "FIELD_CONTRACT_ERROR",
       "path": "/dataSources/customers/source/initial/rows/0/events/0",
       "message": "DQE 嵌套明细字段 events 的第 1 项必须是对象"
     }

@@ -3,7 +3,7 @@
   "invariant": "inline-rows-contract",
   "expected": [
     {
-      "type": "SCHEMA_ERROR",
+      "type": "FIELD_CONTRACT_ERROR",
       "message": "字段 region 声明 nullable=false,不允许为 null",
       "paths": [
         "/dataSources/targets/source/rows/0/region"

@@ -802,65 +802,26 @@ function rowContractErrors(
 }
 
 
-/** 共享校验的结构化问题 → 指向页面文档数据行的定位错误。 */
+/** 共享校验的结构化问题 → 指向页面文档数据行的字段契约错误。 */
 function rowContractError(issue: RowContractIssue, rowsPath: string): TypedError {
+  const fail = (path: string, message: string) => typedError('FIELD_CONTRACT_ERROR', path, message);
   switch (issue.code) {
-    case 'ROWS_NOT_ARRAY':
-      return schemaError(rowsPath, '数据行必须是数组');
-    case 'ROW_NOT_OBJECT':
-      return schemaError(`${rowsPath}/${issue.rowIndex}`, '数据行必须是对象');
+    case 'ROWS_NOT_ARRAY': return fail(rowsPath, '数据行必须是数组');
+    case 'ROW_NOT_OBJECT': return fail(`${rowsPath}/${issue.rowIndex}`, '数据行必须是对象');
   }
   const fieldPath = `${rowsPath}/${issue.rowIndex}/${escapePointer(issue.fieldId)}`;
   switch (issue.code) {
-    case 'UNDECLARED_FIELD':
-      return schemaError(fieldPath, `行包含未声明字段:${issue.fieldId}`);
-    case 'MISSING_FIELD':
-      return schemaError(fieldPath, `行缺少字段:${issue.fieldId}`);
-    case 'NULL_NOT_ALLOWED':
-      return schemaError(
-        fieldPath,
-        `字段 ${issue.fieldId} 声明 nullable=false,不允许为 null`
-      );
-    case 'TYPE_MISMATCH':
-      return schemaError(
-        fieldPath,
-        `字段 ${issue.fieldId} 的值不符合类型 ${issue.expectedType}`
-      );
-    case 'DETAIL_LIST_TOO_LARGE':
-      return schemaError(
-        fieldPath,
-        `嵌套明细字段 ${issue.fieldId} 最多允许 ${issue.maximum} 项，实际 ${issue.actualLength} 项`
-      );
-    case 'SEMANTIC_HTML_TOO_LARGE':
-      return schemaError(
-        fieldPath,
-        `语义 HTML 字段 ${issue.fieldId} 最多允许 ${issue.maximum} 字符，实际 ${issue.actualLength} 字符`
-      );
-    case 'DETAIL_ITEM_NOT_OBJECT':
-      return schemaError(
-        `${fieldPath}/${issue.itemIndex}`,
-        `嵌套明细字段 ${issue.fieldId} 的第 ${issue.itemIndex + 1} 项必须是对象`
-      );
-    case 'DETAIL_UNDECLARED_FIELD':
-      return schemaError(
-        `${fieldPath}/${issue.itemIndex}/${escapePointer(issue.itemFieldId)}`,
-        `嵌套明细项包含未声明字段:${issue.itemFieldId}`
-      );
-    case 'DETAIL_MISSING_FIELD':
-      return schemaError(
-        `${fieldPath}/${issue.itemIndex}/${escapePointer(issue.itemFieldId)}`,
-        `嵌套明细项缺少字段:${issue.itemFieldId}`
-      );
-    case 'DETAIL_NULL_NOT_ALLOWED':
-      return schemaError(
-        `${fieldPath}/${issue.itemIndex}/${escapePointer(issue.itemFieldId)}`,
-        `嵌套明细项字段 ${issue.itemFieldId} 声明 nullable=false,不允许为 null`
-      );
-    case 'DETAIL_TYPE_MISMATCH':
-      return schemaError(
-        `${fieldPath}/${issue.itemIndex}/${escapePointer(issue.itemFieldId)}`,
-        `嵌套明细项字段 ${issue.itemFieldId} 的值不符合类型 ${issue.expectedType}`
-      );
+    case 'UNDECLARED_FIELD': return fail(fieldPath, `行包含未声明字段:${issue.fieldId}`);
+    case 'MISSING_FIELD': return fail(fieldPath, `行缺少字段:${issue.fieldId}`);
+    case 'NULL_NOT_ALLOWED': return fail(fieldPath, `字段 ${issue.fieldId} 声明 nullable=false,不允许为 null`);
+    case 'TYPE_MISMATCH': return fail(fieldPath, `字段 ${issue.fieldId} 的值不符合类型 ${issue.expectedType}`);
+    case 'DETAIL_LIST_TOO_LARGE': return fail(fieldPath, `嵌套明细字段 ${issue.fieldId} 最多允许 ${issue.maximum} 项，实际 ${issue.actualLength} 项`);
+    case 'SEMANTIC_HTML_TOO_LARGE': return fail(fieldPath, `语义 HTML 字段 ${issue.fieldId} 最多允许 ${issue.maximum} 字符，实际 ${issue.actualLength} 字符`);
+    case 'DETAIL_ITEM_NOT_OBJECT': return fail(`${fieldPath}/${issue.itemIndex}`, `嵌套明细字段 ${issue.fieldId} 的第 ${issue.itemIndex + 1} 项必须是对象`);
+    case 'DETAIL_UNDECLARED_FIELD': return fail(`${fieldPath}/${issue.itemIndex}/${escapePointer(issue.itemFieldId)}`, `嵌套明细项包含未声明字段:${issue.itemFieldId}`);
+    case 'DETAIL_MISSING_FIELD': return fail(`${fieldPath}/${issue.itemIndex}/${escapePointer(issue.itemFieldId)}`, `嵌套明细项缺少字段:${issue.itemFieldId}`);
+    case 'DETAIL_NULL_NOT_ALLOWED': return fail(`${fieldPath}/${issue.itemIndex}/${escapePointer(issue.itemFieldId)}`, `嵌套明细项字段 ${issue.itemFieldId} 声明 nullable=false,不允许为 null`);
+    case 'DETAIL_TYPE_MISMATCH': return fail(`${fieldPath}/${issue.itemIndex}/${escapePointer(issue.itemFieldId)}`, `嵌套明细项字段 ${issue.itemFieldId} 的值不符合类型 ${issue.expectedType}`);
   }
 }
 
@@ -1232,10 +1193,7 @@ function computeErrors(dataSource: DataSource, sourcePath: string): TypedError[]
       for (const fieldId of Object.keys(row)) {
         if (!produced.has(fieldId)) continue;
         errors.push(
-          schemaError(
-            `${rows.path}/${rowIndex}/${escapePointer(fieldId)}`,
-            `算子产出字段 ${fieldId} 不得出现在数据行中，它由计算阶段产出`
-          )
+          typedError('FIELD_CONTRACT_ERROR', `${rows.path}/${rowIndex}/${escapePointer(fieldId)}`, `算子产出字段 ${fieldId} 不得出现在数据行中，它由计算阶段产出`)
         );
       }
     });

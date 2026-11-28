@@ -410,12 +410,12 @@
       "message": "算子产出字段重复:rate"
     },
     {
-      "type": "SCHEMA_ERROR",
+      "type": "FIELD_CONTRACT_ERROR",
       "path": "/dataSources/targets/source/rows/0/gap",
       "message": "行缺少字段:gap"
     },
     {
-      "type": "SCHEMA_ERROR",
+      "type": "FIELD_CONTRACT_ERROR",
       "path": "/dataSources/targets/source/rows/1/gap",
       "message": "行缺少字段:gap"
     }

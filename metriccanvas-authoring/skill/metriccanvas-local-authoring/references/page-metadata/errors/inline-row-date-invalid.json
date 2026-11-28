@@ -3,7 +3,7 @@
   "invariant": "inline-rows-contract",
   "expected": [
     {
-      "type": "SCHEMA_ERROR",
+      "type": "FIELD_CONTRACT_ERROR",
       "message": "字段 day 的值不符合类型 date",
       "paths": [
         "/dataSources/notes/source/rows/0/day"

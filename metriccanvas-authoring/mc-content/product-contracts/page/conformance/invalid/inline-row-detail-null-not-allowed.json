@@ -328,7 +328,7 @@
   },
   "expected": [
     {
-      "type": "SCHEMA_ERROR",
+      "type": "FIELD_CONTRACT_ERROR",
       "path": "/dataSources/notes/source/rows/0/items/0/value",
       "message": "嵌套明细项字段 value 声明 nullable=false,不允许为 null"
     }
