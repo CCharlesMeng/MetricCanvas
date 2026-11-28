@@ -1,11 +1,9 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
+
 afterEach(() => vi.useRealTimers());
+
 import type { EffectiveQuery, JsonObject } from '@metriccanvas/page/internal';
-import {
-  DqeGatewayError,
-  createDqeGateway,
-  createInMemoryDqeDiagnostics
-} from '../src/dqe';
+import { createDqeGateway, createInMemoryDqeDiagnostics, DqeGatewayError } from '../src/index';
 
 const flush = () => new Promise((resolve) => setTimeout(resolve, 0));
 
@@ -13,17 +11,19 @@ function numberQuery(metric: string): EffectiveQuery {
   return {
     language: 'dqe',
     body: {
-      dsl_list: [{
-        output_dims: [],
-        output_metrics: [metric],
-        filter: { dims: [], metrics: [] },
-        order: {}
-      }]
+      dsl_list: [
+        {
+          output_dims: [],
+          output_metrics: [metric],
+          filter: { dims: [], metrics: [] },
+          order: {},
+        },
+      ],
     },
     fieldMappings: {
-      value: { queryField: metric, type: 'number', role: 'measure' }
+      value: { queryField: metric, type: 'number', role: 'measure' },
     },
-    filterValues: []
+    filterValues: [],
   };
 }
 
@@ -43,16 +43,13 @@ function hangingUpstream(): { fetchImpl: typeof fetch; requests: UpstreamRequest
   const fetchImpl = ((_input: unknown, init?: RequestInit) =>
     new Promise<Response>((resolve, reject) => {
       const signal = init?.signal ?? undefined;
-      signal?.addEventListener('abort', () =>
-        reject(new DOMException('请求已中止', 'AbortError'))
-      );
+      signal?.addEventListener('abort', () => reject(new DOMException('请求已中止', 'AbortError')));
       requests.push({
-        dslList: (JSON.parse(String(init?.body)) as { dsl_list: unknown[] })
-          .dsl_list,
+        dslList: (JSON.parse(String(init?.body)) as { dsl_list: unknown[] }).dsl_list,
         signal,
         respond(results) {
           resolve(new Response(JSON.stringify({ retCode: 'CBC.0000', results })));
-        }
+        },
       });
     })) as typeof fetch;
   return { fetchImpl, requests };
@@ -64,7 +61,7 @@ function captured(promise: Promise<unknown>): Promise<unknown> {
     () => {
       throw new Error('该查询必须被取消');
     },
-    (cause: unknown) => cause
+    (cause: unknown) => cause,
   );
 }
 
@@ -77,7 +74,7 @@ describe('DQE 数据网关的取消信号(issue #53)', () => {
     controller.abort();
 
     const failure = await captured(
-      gateway.fetchData(numberQuery('金额'), undefined, controller.signal)
+      gateway.fetchData(numberQuery('金额'), undefined, controller.signal),
     );
 
     expect(failure).toBeInstanceOf(DqeGatewayError);
@@ -87,7 +84,7 @@ describe('DQE 数据网关的取消信号(issue #53)', () => {
     expect(diagnostics.records()).toHaveLength(1);
     expect(diagnostics.records()[0]).toMatchObject({
       status: 'error',
-      errorCode: 'DQE_CANCELLED'
+      errorCode: 'DQE_CANCELLED',
     });
     expect(diagnostics.records()[0]!.batchId).toBeUndefined();
   });
@@ -98,9 +95,7 @@ describe('DQE 数据网关的取消信号(issue #53)', () => {
     const gateway = createDqeGateway({ fetchImpl, diagnostics });
     const controller = new AbortController();
 
-    const pending = captured(
-      gateway.fetchData(numberQuery('金额'), undefined, controller.signal)
-    );
+    const pending = captured(gateway.fetchData(numberQuery('金额'), undefined, controller.signal));
     controller.abort();
 
     expect(await pending).toMatchObject({ code: 'DQE_CANCELLED' });
@@ -116,9 +111,7 @@ describe('DQE 数据网关的取消信号(issue #53)', () => {
     const gateway = createDqeGateway({ fetchImpl, diagnostics });
     const controller = new AbortController();
 
-    const pending = captured(
-      gateway.fetchData(numberQuery('金额'), undefined, controller.signal)
-    );
+    const pending = captured(gateway.fetchData(numberQuery('金额'), undefined, controller.signal));
     await flush();
     expect(requests).toHaveLength(1);
     expect(requests[0]!.signal?.aborted).toBe(false);
@@ -134,7 +127,7 @@ describe('DQE 数据网关的取消信号(issue #53)', () => {
     expect(diagnostics.records()[0]).toMatchObject({
       status: 'error',
       errorCode: 'DQE_CANCELLED',
-      batchId: expect.stringMatching(/^dqe-batch-/)
+      batchId: expect.stringMatching(/^dqe-batch-/),
     });
   });
 
@@ -145,7 +138,7 @@ describe('DQE 数据网关的取消信号(issue #53)', () => {
     const controller = new AbortController();
 
     const cancelled = captured(
-      gateway.fetchData(numberQuery('金额'), undefined, controller.signal)
+      gateway.fetchData(numberQuery('金额'), undefined, controller.signal),
     );
     const surviving = gateway.fetchData(numberQuery('数量'));
     await flush();
@@ -161,7 +154,7 @@ describe('DQE 数据网关的取消信号(issue #53)', () => {
     requests[1]!.respond([successItem('数量', 7)]);
     await expect(surviving).resolves.toEqual({
       rows: [{ value: 7 }],
-      totalCount: 1
+      totalCount: 1,
     });
     await flush();
 
@@ -185,7 +178,7 @@ describe('DQE 数据网关的取消信号(issue #53)', () => {
 
     const failures = [
       captured(gateway.fetchData(numberQuery('金额'), undefined, first.signal)),
-      captured(gateway.fetchData(numberQuery('数量'), undefined, second.signal))
+      captured(gateway.fetchData(numberQuery('数量'), undefined, second.signal)),
     ];
     await flush();
     expect(requests).toHaveLength(2);

@@ -5,8 +5,8 @@
   import { goto } from '$app/navigation';
   import { Button, Select } from '@metriccanvas/ui';
   import PrototypeSwitcher from '$lib/prototypes/PrototypeSwitcher.svelte';
-  import LegendChart from '../../../../../../../packages/engine/widgets/src/components/pie-chart/prototype/LegendChart.svelte';
-  import { bands, variants, orderedBands, moveBand, type Order, type Position } from '../../../../../../../packages/engine/widgets/src/components/pie-chart/prototype/model';
+  import LegendChart from './_prototype/LegendChart.svelte';
+  import { bands, variants, orderedBands, moveBand, type Order, type Position } from './_prototype/model';
 
   const variant = $derived(variants.find(item => item.key === page.url.searchParams.get('variant')) ?? variants[0]!);
   let position = $state<Position>('right');

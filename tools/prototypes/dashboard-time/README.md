@@ -2,9 +2,9 @@
 
 这是供讨论的设计稿，尚未接入页面协议、筛选状态或查询执行。
 
-运行：`pnpm --filter @metriccanvas/ui exec vite --host 127.0.0.1 --port 4183`
+运行：`pnpm --filter @metriccanvas/ui exec vite --host 127.0.0.1 --port 4183 ../../tools/prototypes`
 
-打开：<http://127.0.0.1:4183/prototypes/dashboard-time/index.html>
+打开：<http://127.0.0.1:4183/dashboard-time/index.html>
 
 统一放在 Dashboard 顶部通用筛选栏内，不再提供页头或分析区布局变体。筛选栏按当前 `FilterBar.svelte` 的 12px 16px 内边距、20px 间距、边框及 10px 圆角呈现。
 
@@ -27,4 +27,4 @@
 
 浏览器检查项及截图见 `evidence/`。原型不代表正式功能验收，也未提交、推送或部署。
 
-类型检查：`pnpm --filter @metriccanvas/ui exec svelte-check --tsconfig ./prototypes/dashboard-time/tsconfig.json`
+类型检查：`pnpm --filter @metriccanvas/ui exec svelte-check --tsconfig ../../tools/prototypes/dashboard-time/tsconfig.json`

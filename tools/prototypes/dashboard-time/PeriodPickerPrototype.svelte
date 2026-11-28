@@ -1,8 +1,8 @@
 <script lang="ts">
   // PROTOTYPE: year/quarter extensions only. Month uses the existing OS DatePicker. Rolling mode has no picker.
   import { tick, untrack } from 'svelte';
-  import { DatePicker } from '../../src';
-  import DatePickerIcon from '../../src/components/date-picker/DatePickerIcon.svelte';
+  import { DatePicker } from '../../../packages/ui/src';
+  import DatePickerIcon from '../../../packages/ui/src/components/date-picker/DatePickerIcon.svelte';
   let { mode, anchor, onchange }: { mode: string; anchor: string; onchange: (date: string) => void } = $props();
   let open = $state(false);
   let yearView = $state(false);

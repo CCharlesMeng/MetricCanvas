@@ -31,7 +31,7 @@
   let candidateSession:ReturnType<typeof createSourceCandidateSession>|undefined;
   import {initialFilterInputIssue} from './initial-filter-input';
   import {requestsRollingFinalization} from '../../runtime/src/filter-state';
-  import { filterCandidatesRequest } from '../../runtime/src/filter-candidates';
+  import { filterCandidatesRequest } from '@metriccanvas/data-execution/runtime';
   import { candidateScopeKey } from '../../runtime/src/dimension-values';
   import { createIocRegionDefault, pendingIocRegionURL, resolveIocRegionURL } from './ioc-region-default';
   import { createTableController } from './table/controller';
@@ -59,7 +59,7 @@
     dataSourceMode,
     derivePageCapabilities,
     fieldName,
-    filterURLKeys,
+    filterURLKeys, IOC_REGION_FILTER_ID, IOC_REGION_LEVELS, isIocOrganizationLevel, isIocRegionFilterId,
     isChartComponent,
     resolveDataSourceFields,
     flattenPageComponents,
@@ -69,7 +69,7 @@
     type ComponentCapabilities,
     type DataSnapshot,
     type FieldReference,
-    type FilterDeclaration,
+    type FilterDeclaration, type IocOrganizationLevel,
     type MapChartProps,
     type OpenDetailAction,
     type Row,
@@ -405,7 +405,7 @@
     return declarations.every(filter => {
       if (!dependencies.includes(filter.id)) return true;
       if (filterValues.has(filter.id)) return true;
-      if (filter.id === 'region') {
+      if (isIocRegionFilterId(filter.id)) {
         const key = filterURLKeys(filter, !!declarationPage && usesIocRegion(declarationPage)).value;
         return key !== undefined && new URLSearchParams(appliedInput?.initialSearch).get(key) === '';
       }
@@ -678,10 +678,10 @@
     let fromDeclarations:Map<string,FilterValue>;
     try{fromDeclarations=initialFilterValues((loaded.filters??[]).filter(needsInitialFilterValue),candidateClock,displaySnapshot,0,undefined,explicit);}catch{failTimeInitialization(mySession,finalizationController.signal,emit);return;}
     function needsInitialFilterValue(filter: FilterDeclaration): boolean {
-      return !fromURL.has(filter.id) && !preparation.unresolved.has(filter.id) && !(pendingRegion && filter.id === 'region');
+      return !fromURL.has(filter.id) && !preparation.unresolved.has(filter.id) && !(pendingRegion && isIocRegionFilterId(filter.id));
     }
     filterValues=new Map([...fromDeclarations,...preparation.immediate]);
-    const officeRedirect = officeNavigationTarget(loaded, filterValues.get('region'));
+    const officeRedirect = officeNavigationTarget(loaded, filterValues.get(IOC_REGION_FILTER_ID));
     initialPeriodModes = preparation.periodModes;
     preparingFilters=[...preparation.unresolved];
     tableController=createTableController(loaded,()=>stream,()=>syncTableState(loaded),()=>filterValues,candidateTimeContext,()=>({gateway:activeGateway,filters:filterValues,params:pageParams,blocked:initializing?declarations.map(filter=>filter.id):blockedFilters,displaySnapshot,filterRevision}));
@@ -705,7 +705,7 @@
     primePendingFilters();
     function primePendingFilters() {
       for (const id of preparation.pending) state.preparing(id, true);
-      if (pendingRegion) state.preparing('region', true);
+      if (pendingRegion) state.preparing(IOC_REGION_FILTER_ID, true);
     }
     filterState = state;
     initializing=false;
@@ -715,7 +715,7 @@
     function loadCandidates(loader: NonNullable<typeof candidatesLoader>, values: FilterValues) {
       for (const declaration of declarations) {
         if (declaration.type !== 'dimension' || localOptions.has(declaration.id) || declaration.options) continue;
-        if (declaration.candidates && regionDefault.waiting() && preparationBlocksFilter(declaration,declarations,['region'])) continue;
+        if (declaration.candidates && regionDefault.waiting() && preparationBlocksFilter(declaration,declarations,[IOC_REGION_FILTER_ID])) continue;
         loadDimensionCandidates(loader, declaration, values);
       }
     }
@@ -726,11 +726,11 @@
           resolvePendingRegion(pendingRegion, next);
           return;
         }
-        const region = declarations.find(declaration => declaration.id === 'region');
+        const region = declarations.find(declaration => isIocRegionFilterId(declaration.id));
         if (region?.type === 'dimension') {
           const waiting = regionDefault.waiting();
           const value = regionDefault.take(next, cascadeContext(region, declarations, filterValues, filterCandidateContext()));
-          if (value) state.commit({ type: 'initialize', values: new Map([...filterValues, ['region', value]]) });
+          if (value) state.commit({ type: 'initialize', values: new Map([...filterValues, [IOC_REGION_FILTER_ID, value]]) });
           else if (waiting && !regionDefault.waiting() && candidatesLoader) loadCandidates(candidatesLoader,filterValues);
         }
     }
@@ -750,7 +750,7 @@
     }
 
     function resolvePendingRegion(input: NonNullable<typeof pendingRegion>, next: DimensionValuesSnapshots) {
-      if (!state.preparation().has('region') || redirectingRegion) return;
+      if (!state.preparation().has(IOC_REGION_FILTER_ID) || redirectingRegion) return;
       const context = cascadeContext(input.declaration, declarations, filterValues, filterCandidateContext());
       const resolved = resolveIocRegionURL(input, next, context);
       regionURLIssue = resolved && 'issue' in resolved ? resolved.issue : '';
@@ -759,16 +759,16 @@
       if (target) {
         if ([...preparation.pending].some(id => state.preparation().has(id))) return;
         redirectingRegion = true;
-        navigateOffice(target, new Map([...filterValues, ['region', resolved.value]]), { replace: true, sourcePageId: loaded.id }, true);
+        navigateOffice(target, new Map([...filterValues, [IOC_REGION_FILTER_ID, resolved.value]]), { replace: true, sourcePageId: loaded.id }, true);
         return;
       }
-      state.completePreparation(new Map([['region', resolved.value]]));
+      state.completePreparation(new Map([[IOC_REGION_FILTER_ID, resolved.value]]));
     }
 
     let primed = false;
     function reconcileRegionInitialization(previous: FilterValues, values: FilterValues) {
-      regionDefault.cancel(primed, changedFilters(previous, values).has('region'));
-      if (!state.preparation().has('region')) regionURLIssue = '';
+      regionDefault.cancel(primed, changedFilters(previous, values).has(IOC_REGION_FILTER_ID));
+      if (!state.preparation().has(IOC_REGION_FILTER_ID)) regionURLIssue = '';
     }
     disposers.push(
       state.subscribe((values) => {
@@ -1021,7 +1021,7 @@
     const rollingInputs=new Set<string>(), query=new URLSearchParams(search);
     const pendingRegion = bootstrap ? undefined : pendingIocRegionURL(page, search);
     const filters=(page.filters??[]).filter(filter=>{
-      if (pendingRegion && filter.id === 'region') return false;
+      if (pendingRegion && isIocRegionFilterId(filter.id)) return false;
       if(bootstrap||!requestsRollingFinalization(filter,query))return true;
       rollingInputs.add(filter.id);
       return false;
@@ -1055,11 +1055,11 @@
   }
 
   function selectHeaderDimension(declaration: Extract<FilterDeclaration, { type: 'dimension' }>, values: string[], level?: string) {
-    if (pageState.phase === 'ready' && declaration.id === 'region') {
+    if (pageState.phase === 'ready' && isIocRegionFilterId(declaration.id)) {
       const region: FilterValue = { type: 'dimension', dimension: declaration.dimension, values, level };
       const target = officeNavigationTarget(pageState.page, region);
       if (target) {
-        navigateOffice(target, new Map([...filterValues, ['region', region]]));
+        navigateOffice(target, new Map([...filterValues, [IOC_REGION_FILTER_ID, region]]));
         return;
       }
     }
@@ -1386,16 +1386,16 @@
 
   function currentRegionMapSelection() {
     if (pageState.phase !== 'ready' || !usesIocRegion(pageState.page)) return;
-    const selected = regionMapSelection(filterValues.get('region'));
+    const selected = regionMapSelection(filterValues.get(IOC_REGION_FILTER_ID));
     if (!selected) return;
-    const declaration = declarations.find(item => item.id === 'region');
+    const declaration = declarations.find(item => isIocRegionFilterId(item.id));
     if (!isHierarchyDeclaration(declaration)) return;
     if (regionMapCandidate(sourceFilterCandidates(declaration), selected.level, selected.value)) return selected;
   }
 
   function selectRegionFromMap(
     declaration: Extract<FilterDeclaration, { type: 'dimension' }>,
-    level: 'region-dept' | 'office',
+    level: IocOrganizationLevel,
     value: unknown,
     parent?: { value: unknown }
   ) {
@@ -1410,9 +1410,9 @@
     const declaration = declarations.find(item => item.id === props.hierarchyFilter);
     if (!isHierarchyDeclaration(declaration)) return false;
     const value = filterValues.get(declaration.id);
-    if (declaration.id === 'region' && regionMapActive() && props.parentField && props.codeField &&
-        value?.type === 'dimension' && (value.level === 'region-dept' || value.level === 'office')) {
-      selectRegionFromMap(declaration, 'office', row[fieldName(props.codeField)], { value: row[fieldName(props.parentField)] });
+    if (isIocRegionFilterId(declaration.id) && regionMapActive() && props.parentField && props.codeField &&
+        value?.type === 'dimension' && isIocOrganizationLevel(value.level)) {
+      selectRegionFromMap(declaration, IOC_REGION_LEVELS.office, row[fieldName(props.codeField)], { value: row[fieldName(props.parentField)] });
       return true;
     }
     const decision = resolveMapClick(props, declaration, value, row);
@@ -1429,8 +1429,8 @@
     const target = declarations.find(declaration => declaration.id === action.writeFilter);
     if (clicked == null || target?.type !== 'dimension') return;
     const level = action.level;
-    if (component.type === 'mapChart' && target.id === 'region' && regionMapActive() &&
-        (level === 'region-dept' || level === 'office')) {
+    if (component.type === 'mapChart' && isIocRegionFilterId(target.id) && regionMapActive() &&
+        isIocOrganizationLevel(level)) {
       selectRegionFromMap(target, level, clicked);
       return;
     }
@@ -1453,7 +1453,7 @@
   }
 
   function targetResult(target:NavigationTarget,row:Row={},filters=filterValues,verifiedRegion=false) {
-    if(target.validateTargetInputs&&Object.values(target.query??{}).some(b=>b.source==='filter'&&blockedFilters.includes(b.id)&&!(verifiedRegion&&b.id==='region')))return {ok:false as const,code:'NAVIGATION_INPUT_INVALID' as const,message:'来源筛选尚未通过当前候选确认'};
+    if(target.validateTargetInputs&&Object.values(target.query??{}).some(b=>b.source==='filter'&&blockedFilters.includes(b.id)&&!(verifiedRegion&&isIocRegionFilterId(b.id))))return {ok:false as const,code:'NAVIGATION_INPUT_INVALID' as const,message:'来源筛选尚未通过当前候选确认'};
     const result=resolveNavigationTarget(target,filters,pageParams,row,targetInputs.get(target.href),candidateClock);
     if(!result.ok)return result;
     try{return {ok:true as const,href:navigation?.resolveHref?.(result.href)??result.href};}catch{return {ok:false as const,code:'NAVIGATION_INPUT_UNAVAILABLE' as const,message:'目标页面路由不可用'};}
@@ -1478,7 +1478,7 @@
       return;
     }
     navigationMessage = '';
-    const office = entry ? undefined : dimensionValueOf(filters, 'region').values[0];
+    const office = entry ? undefined : dimensionValueOf(filters, IOC_REGION_FILTER_ID).values[0];
     navigate(result.href, undefined, entry, office ? officeNavigationInput(target, office) : undefined);
   }
 

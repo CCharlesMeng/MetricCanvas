@@ -1,11 +1,11 @@
-import { describe, expect, it } from 'vitest';
 import type { EffectiveQuery, JsonObject } from '@metriccanvas/page/internal';
+import { describe, expect, it } from 'vitest';
 import {
-  DqeGatewayError,
   createDqeGateway,
   createInMemoryDqeDiagnostics,
-  effectiveDqeItem
-} from '../src/dqe';
+  DqeGatewayError,
+  effectiveDqeItem,
+} from '../src/index';
 
 const fullDslItem: JsonObject = {
   output_metrics: ['NA客户数'],
@@ -15,18 +15,18 @@ const fullDslItem: JsonObject = {
       period: 'month',
       is_aggregate: true,
       start: '2026-07',
-      end: '2026-07'
+      end: '2026-07',
     },
     dims: [
       { dim_name: '地区部', dim_value_list: ['中国地区部'] },
       {
         dim_name: '客户级别',
-        dim_value_list: ['卓越NA', '战略NA', '核心NA']
-      }
+        dim_value_list: ['卓越NA', '战略NA', '核心NA'],
+      },
     ],
-    metrics: []
+    metrics: [],
   },
-  order: {}
+  order: {},
 };
 
 function dqeQuery(
@@ -35,20 +35,20 @@ function dqeQuery(
     'customer-level': {
       queryField: '客户级别',
       type: 'string',
-      role: 'dimension'
+      role: 'dimension',
     },
     'na-customer-count': {
       queryField: 'NA客户数',
       type: 'number',
-      role: 'measure'
-    }
-  }
+      role: 'measure',
+    },
+  },
 ): EffectiveQuery {
   return {
     language: 'dqe',
     body: { dsl_list: [item] },
     fieldMappings: fields,
-    filterValues: []
+    filterValues: [],
   };
 }
 
@@ -61,9 +61,9 @@ describe('DQE 数据网关', () => {
         ...(fullDslItem.filter as JsonObject),
         dims: [
           { dim_name: '地区部', dim_value_list: ['中国地区部'] },
-          { dim_name: '客户级别', dim_value_list: ['卓越TOP', '战略TOP'] }
-        ]
-      }
+          { dim_name: '客户级别', dim_value_list: ['卓越TOP', '战略TOP'] },
+        ],
+      },
     };
     const gateway = createDqeGateway({
       endpoint: '/rest/cdi/cdinl2databuilderservice/v1/dsl/execute',
@@ -77,29 +77,31 @@ describe('DQE 数据网关', () => {
             results: [
               {
                 code: 'SUCCESS',
-                data: body.dsl_list[0].filter.dims[1].dim_value_list[0] === '卓越NA'
-                  ? [{ 客户级别: '卓越NA', NA客户数: 15 }] : [{ 客户级别: '卓越TOP', NA客户数: 8 }],
-                total_count: 1
-              }
-            ]
-          })
+                data:
+                  body.dsl_list[0].filter.dims[1].dim_value_list[0] === '卓越NA'
+                    ? [{ 客户级别: '卓越NA', NA客户数: 15 }]
+                    : [{ 客户级别: '卓越TOP', NA客户数: 8 }],
+                total_count: 1,
+              },
+            ],
+          }),
         );
-      }) as typeof fetch
+      }) as typeof fetch,
     });
 
     const [naRows, topRows] = await Promise.all([
       gateway.fetchData(dqeQuery(fullDslItem)),
-      gateway.fetchData(dqeQuery(secondItem))
+      gateway.fetchData(dqeQuery(secondItem)),
     ]);
 
     expect(sent).toEqual([{ dsl_list: [fullDslItem] }, { dsl_list: [secondItem] }]);
     expect(naRows).toEqual({
       rows: [{ 'customer-level': '卓越NA', 'na-customer-count': 15 }],
-      totalCount: 1
+      totalCount: 1,
     });
     expect(topRows).toEqual({
       rows: [{ 'customer-level': '卓越TOP', 'na-customer-count': 8 }],
-      totalCount: 1
+      totalCount: 1,
     });
   });
 
@@ -110,42 +112,45 @@ describe('DQE 数据网关', () => {
         new Response(
           JSON.stringify({
             retCode: 'CBC.0000',
-            results: [++call === 1 ? { code: 'FAILED', data: [], total_count: 'ignored' } : {
-                code: 'SUCCESS',
-                data: [{ 客户级别: '卓越NA', NA客户数: 15 }],
-                total_count: 1
-              }
-            ]
-          })
-        )) as typeof fetch
+            results: [
+              ++call === 1
+                ? { code: 'FAILED', data: [], total_count: 'ignored' }
+                : {
+                    code: 'SUCCESS',
+                    data: [{ 客户级别: '卓越NA', NA客户数: 15 }],
+                    total_count: 1,
+                  },
+            ],
+          }),
+        )) as typeof fetch,
     });
 
     const [failed, succeeded] = await Promise.allSettled([
       gateway.fetchData(dqeQuery(fullDslItem)),
-      gateway.fetchData(dqeQuery(fullDslItem))
+      gateway.fetchData(dqeQuery(fullDslItem)),
     ]);
 
     expect(failed.status).toBe('rejected');
-    expect(
-      failed.status === 'rejected' ? (failed.reason as DqeGatewayError).code : ''
-    ).toBe('DQE_QUERY_REJECTED');
+    expect(failed.status === 'rejected' ? (failed.reason as DqeGatewayError).code : '').toBe(
+      'DQE_QUERY_REJECTED',
+    );
     expect(succeeded).toEqual({
       status: 'fulfilled',
       value: {
         rows: [{ 'customer-level': '卓越NA', 'na-customer-count': 15 }],
-        totalCount: 1
-      }
+        totalCount: 1,
+      },
     });
   });
 
   it('拒绝 results 数量不匹配，避免错位回填', async () => {
     const gateway = createDqeGateway({
       fetchImpl: (async () =>
-        new Response(JSON.stringify({ retCode: 'CBC.0000', results: [] }))) as typeof fetch
+        new Response(JSON.stringify({ retCode: 'CBC.0000', results: [] }))) as typeof fetch,
     });
 
     await expect(gateway.fetchData(dqeQuery(fullDslItem))).rejects.toMatchObject({
-      code: 'DQE_ENVELOPE_ERROR'
+      code: 'DQE_ENVELOPE_ERROR',
     });
   });
 
@@ -156,31 +161,30 @@ describe('DQE 数据网关', () => {
       {
         target: 'dimension',
         queryField: '客户级别',
-        values: ['核心NA']
+        values: ['核心NA'],
       },
       {
         target: 'time',
-        value: { from: '2026-08', to: '2026-08' }
-      }
+        value: { from: '2026-08', to: '2026-08' },
+      },
     ];
 
     const effective = effectiveDqeItem(query);
     expect(
       ((effective.filter as JsonObject).dims as JsonObject[]).find(
-        (item) => item.dim_name === '客户级别'
-      )?.dim_value_list
+        (item) => item.dim_name === '客户级别',
+      )?.dim_value_list,
     ).toEqual(['核心NA']);
     expect((effective.filter as JsonObject).time).toMatchObject({
       period: 'month',
       is_aggregate: true,
       start: '2026-08',
-      end: '2026-08'
+      end: '2026-08',
     });
     expect(effective.order).toEqual({ offset: 20, limit: 10 });
     expect(fullDslItem.order).toEqual({});
     expect(
-      (((fullDslItem.filter as JsonObject).dims as JsonObject[])[1] as JsonObject)
-        .dim_value_list
+      (((fullDslItem.filter as JsonObject).dims as JsonObject[])[1] as JsonObject).dim_value_list,
     ).toEqual(['卓越NA', '战略NA', '核心NA']);
   });
 
@@ -189,7 +193,7 @@ describe('DQE 数据网关', () => {
       output_metrics: ['未考察占比'],
       output_dims: ['最近一次公司考察时间'],
       filter: { dims: [], metrics: [] },
-      order: {}
+      order: {},
     };
     const gateway = createDqeGateway({
       fetchImpl: (async () =>
@@ -200,11 +204,11 @@ describe('DQE 数据网关', () => {
               {
                 code: 'SUCCESS',
                 data: [{ 未考察占比: '41.67%', 最近一次公司考察时间: null }],
-                total_count: 1
-              }
-            ]
-          })
-        )) as typeof fetch
+                total_count: 1,
+              },
+            ],
+          }),
+        )) as typeof fetch,
     });
 
     await expect(
@@ -213,19 +217,19 @@ describe('DQE 数据网关', () => {
           'missing-rate': {
             queryField: '未考察占比',
             type: 'string',
-            role: 'measure'
+            role: 'measure',
           },
           'last-inspection': {
             queryField: '最近一次公司考察时间',
             type: 'date',
             role: 'dimension',
-            nullable: true
-          }
-        })
-      )
+            nullable: true,
+          },
+        }),
+      ),
     ).resolves.toEqual({
       rows: [{ 'missing-rate': '41.67%', 'last-inspection': null }],
-      totalCount: 1
+      totalCount: 1,
     });
   });
 
@@ -234,29 +238,35 @@ describe('DQE 数据网关', () => {
       output_metrics: ['流水', '云服务流水归因明细'],
       output_dims: ['客户名称'],
       filter: { dims: [], metrics: [] },
-      order: {}
+      order: {},
     };
     const gateway = createDqeGateway({
       fetchImpl: (async () =>
         new Response(
           JSON.stringify({
             retCode: 'CBC.0000',
-            results: [{
-              code: 'SUCCESS',
-              data: [{
-                '客户名称': '客户A',
-                '流水': 100,
-                '云服务流水归因明细': [{
-                  '云服务': 'ModelArts',
-                  '归因波动金额': -20,
-                  '原因': '到期未续订',
-                  '未映射的追加字段': '不泄漏到快照'
-                }]
-              }],
-              total_count: 1
-            }]
-          })
-        )) as typeof fetch
+            results: [
+              {
+                code: 'SUCCESS',
+                data: [
+                  {
+                    客户名称: '客户A',
+                    流水: 100,
+                    云服务流水归因明细: [
+                      {
+                        云服务: 'ModelArts',
+                        归因波动金额: -20,
+                        原因: '到期未续订',
+                        未映射的追加字段: '不泄漏到快照',
+                      },
+                    ],
+                  },
+                ],
+                total_count: 1,
+              },
+            ],
+          }),
+        )) as typeof fetch,
     });
 
     await expect(
@@ -265,12 +275,12 @@ describe('DQE 数据网关', () => {
           customer: {
             queryField: '客户名称',
             type: 'string',
-            role: 'dimension'
+            role: 'dimension',
           },
           revenue: {
             queryField: '流水',
             type: 'number',
-            role: 'measure'
+            role: 'measure',
           },
           attributions: {
             queryField: '云服务流水归因明细',
@@ -281,30 +291,32 @@ describe('DQE 数据网关', () => {
                 service: {
                   queryField: '云服务',
                   type: 'string',
-                  role: 'dimension'
+                  role: 'dimension',
                 },
                 delta: {
                   queryField: '归因波动金额',
                   type: 'number',
-                  role: 'measure'
+                  role: 'measure',
                 },
                 reason: {
                   queryField: '原因',
                   type: 'string',
-                  role: 'dimension'
-                }
-              }
-            }
-          }
-        })
-      )
+                  role: 'dimension',
+                },
+              },
+            },
+          },
+        }),
+      ),
     ).resolves.toEqual({
-      rows: [{
-        customer: '客户A',
-        revenue: 100,
-        attributions: [{ service: 'ModelArts', delta: -20, reason: '到期未续订' }]
-      }],
-      totalCount: 1
+      rows: [
+        {
+          customer: '客户A',
+          revenue: 100,
+          attributions: [{ service: 'ModelArts', delta: -20, reason: '到期未续订' }],
+        },
+      ],
+      totalCount: 1,
     });
   });
 
@@ -313,26 +325,29 @@ describe('DQE 数据网关', () => {
       output_metrics: ['流水', '云服务流水归因明细'],
       output_dims: ['客户名称'],
       filter: { dims: [], metrics: [] },
-      order: {}
+      order: {},
     };
-    const semanticHtml =
-      '<span class="detail-value tone-negative">-12.0万</span>';
+    const semanticHtml = '<span class="detail-value tone-negative">-12.0万</span>';
     const gateway = createDqeGateway({
       fetchImpl: (async () =>
         new Response(
           JSON.stringify({
             retCode: 'CBC.0000',
-            results: [{
-              code: 'SUCCESS',
-              data: [{
-                '客户名称': '客户A',
-                '流水': 100,
-                '云服务流水归因明细': semanticHtml
-              }],
-              total_count: 1
-            }]
-          })
-        )) as typeof fetch
+            results: [
+              {
+                code: 'SUCCESS',
+                data: [
+                  {
+                    客户名称: '客户A',
+                    流水: 100,
+                    云服务流水归因明细: semanticHtml,
+                  },
+                ],
+                total_count: 1,
+              },
+            ],
+          }),
+        )) as typeof fetch,
     });
 
     await expect(
@@ -341,23 +356,23 @@ describe('DQE 数据网关', () => {
           customer: {
             queryField: '客户名称',
             type: 'string',
-            role: 'dimension'
+            role: 'dimension',
           },
           revenue: {
             queryField: '流水',
             type: 'number',
-            role: 'measure'
+            role: 'measure',
           },
           attributions: {
             queryField: '云服务流水归因明细',
             type: 'semanticHtml',
-            role: 'detail'
-          }
-        })
-      )
+            role: 'detail',
+          },
+        }),
+      ),
     ).resolves.toEqual({
       rows: [{ customer: '客户A', revenue: 100, attributions: semanticHtml }],
-      totalCount: 1
+      totalCount: 1,
     });
   });
 
@@ -370,27 +385,27 @@ describe('DQE 数据网关', () => {
           {
             dim_name: '最近一次公司考察时间',
             dim_value_list: ['2024-01-01'],
-            operator: '<'
-          }
+            operator: '<',
+          },
         ],
-        metrics: []
+        metrics: [],
       },
-      order: {}
+      order: {},
     };
     const query = dqeQuery(item, {
       'last-inspection': {
         queryField: '最近一次公司考察时间',
         type: 'date',
         role: 'dimension',
-        nullable: true
-      }
+        nullable: true,
+      },
     });
     query.filterValues = [
       {
         target: 'dimension',
         queryField: '最近一次公司考察时间',
-        values: ['2026-01-01']
-      }
+        values: ['2026-01-01'],
+      },
     ];
 
     expect(effectiveDqeItem(query)).toMatchObject({
@@ -399,10 +414,10 @@ describe('DQE 数据网关', () => {
           {
             dim_name: '最近一次公司考察时间',
             dim_value_list: ['2026-01-01'],
-            operator: '<'
-          }
-        ]
-      }
+            operator: '<',
+          },
+        ],
+      },
     });
   });
 
@@ -417,15 +432,19 @@ describe('DQE 数据网关', () => {
               {
                 code: 'SUCCESS',
                 data: [{ 客户级别: '卓越NA', NA客户数: { value: sentinel } }],
-                total_count: 1
-              }
-            ]
-          })
-        )) as typeof fetch
+                total_count: 1,
+              },
+            ],
+          }),
+        )) as typeof fetch,
     });
 
     const outcome = await gateway
-      .fetchData(dqeQuery(fullDslItem, { 'na-customer-count': { queryField: 'NA客户数', type: 'number', role: 'dimension' } }))
+      .fetchData(
+        dqeQuery(fullDslItem, {
+          'na-customer-count': { queryField: 'NA客户数', type: 'number', role: 'dimension' },
+        }),
+      )
       .then(() => {
         throw new Error('行契约违规必须拒绝');
       })
@@ -436,11 +455,11 @@ describe('DQE 数据网关', () => {
     expect(outcome.detail).toMatchObject({
       rowIndex: 0,
       fieldId: 'na-customer-count',
-      expectedType: 'number'
+      expectedType: 'number',
     });
-    expect(
-      JSON.stringify({ message: outcome.message, detail: outcome.detail })
-    ).not.toContain(sentinel);
+    expect(JSON.stringify({ message: outcome.message, detail: outcome.detail })).not.toContain(
+      sentinel,
+    );
   });
 
   it('nullable=false 的数值维度保留 null 并返回聚合告警', async () => {
@@ -455,41 +474,48 @@ describe('DQE 数据网关', () => {
               {
                 code: 'SUCCESS',
                 data: [{ 客户级别: '卓越NA', NA客户数: null }],
-                total_count: 1
-              }
-            ]
-          })
-        )) as typeof fetch
+                total_count: 1,
+              },
+            ],
+          }),
+        )) as typeof fetch,
     });
 
     const result = await gateway.fetchData(
-        dqeQuery(fullDslItem, {
-          'customer-level': {
-            queryField: '客户级别',
-            type: 'string',
-            role: 'dimension'
-          },
-          'na-customer-count': {
-            queryField: 'NA客户数',
-            type: 'number',
-            role: 'dimension',
-            nullable: false
-          }
-        })
-      );
+      dqeQuery(fullDslItem, {
+        'customer-level': {
+          queryField: '客户级别',
+          type: 'string',
+          role: 'dimension',
+        },
+        'na-customer-count': {
+          queryField: 'NA客户数',
+          type: 'number',
+          role: 'dimension',
+          nullable: false,
+        },
+      }),
+    );
     expect(result.rows).toEqual([{ 'customer-level': '卓越NA', 'na-customer-count': null }]);
-    expect(result.warnings).toEqual([{
-      code: 'SCALAR_NULL_NOT_ALLOWED',
-      fieldId: 'na-customer-count',
-      queryField: 'NA客户数',
-      expectedType: 'number',
-      count: 1
-    }]);
+    expect(result.warnings).toEqual([
+      {
+        code: 'SCALAR_NULL_NOT_ALLOWED',
+        fieldId: 'na-customer-count',
+        queryField: 'NA客户数',
+        expectedType: 'number',
+        count: 1,
+      },
+    ]);
     expect(result.cellFallbacks).toBeUndefined();
     expect(diagnostics.records()[0]).toMatchObject({
       status: 'success',
-      warnings: [expect.objectContaining({ fieldId: 'na-customer-count', code: 'SCALAR_NULL_NOT_ALLOWED', count: 1 })]
+      warnings: [
+        expect.objectContaining({
+          fieldId: 'na-customer-count',
+          code: 'SCALAR_NULL_NOT_ALLOWED',
+          count: 1,
+        }),
+      ],
     });
   });
-
 });

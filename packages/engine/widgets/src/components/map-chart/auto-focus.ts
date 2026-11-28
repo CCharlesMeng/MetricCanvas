@@ -1,5 +1,12 @@
-import { fieldName, type MapChartProps } from '@metriccanvas/page/internal';
-import { organizationBinding, organizationEntries, resolvePlacement, type GeographyInput, type OrganizationLevel, type mapRows } from './geography';
+import { fieldName, isIocRegionDeptLevel, type MapChartProps } from '@metriccanvas/page/internal';
+import {
+  type GeographyInput,
+  type mapRows,
+  type OrganizationLevel,
+  organizationBinding,
+  organizationEntries,
+  resolvePlacement,
+} from './geography';
 import type { MapViewport } from './options';
 
 type Point = [number, number];
@@ -15,7 +22,10 @@ function include(bounds: Bounds, [x, y]: Point) {
 }
 
 function emptyBounds(): Bounds {
-  return [[Infinity, Infinity], [-Infinity, -Infinity]];
+  return [
+    [Infinity, Infinity],
+    [-Infinity, -Infinity],
+  ];
 }
 
 export function polygonBounds(polygons: Point[][][]): Bounds {
@@ -35,7 +45,12 @@ function fit(bounds: Bounds): MapFocus | undefined {
   // ECharts fits the padded geographic rectangle to the actual chart or its safe area.
   const padX = Math.max(width, height * 0.1) * 0.12;
   const padY = Math.max(height, width * 0.1) * 0.12;
-  return { boundingCoords: [[west - padX, south - padY], [east + padX, north + padY]] };
+  return {
+    boundingCoords: [
+      [west - padX, south - padY],
+      [east + padX, north + padY],
+    ],
+  };
 }
 
 interface FocusMap {
@@ -43,7 +58,12 @@ interface FocusMap {
   bounds: ReadonlyMap<string, Bounds>;
 }
 
-function childExtent(parentField: string, parent: string, locations: ReturnType<typeof mapRows>, map: FocusMap) {
+function childExtent(
+  parentField: string,
+  parent: string,
+  locations: ReturnType<typeof mapRows>,
+  map: FocusMap,
+) {
   const bounds = emptyBounds();
   for (const [row, placement] of locations.placements) {
     if (row[parentField] !== parent) continue;
@@ -55,7 +75,10 @@ function childExtent(parentField: string, parent: string, locations: ReturnType<
 }
 
 function selectedPlacement(
-  props: MapChartProps, selection: OrganizationSelection, geography: GeographyInput, locations: ReturnType<typeof mapRows>
+  props: MapChartProps,
+  selection: OrganizationSelection,
+  geography: GeographyInput,
+  locations: ReturnType<typeof mapRows>,
 ) {
   const binding = organizationBinding(props);
   if (binding?.level === selection.level) {
@@ -63,26 +86,37 @@ function selectedPlacement(
       if (row[binding.field] === selection.value) return placement;
     }
   }
-  const { host, page } = organizationEntries(geography, props.map, selection.level, selection.value);
+  const { host, page } = organizationEntries(
+    geography,
+    props.map,
+    selection.level,
+    selection.value,
+  );
   return resolvePlacement(host, page, props.nameMap?.[selection.value], selection.value);
 }
 
 export function automaticMapFocus(
-  props: MapChartProps, selection: OrganizationSelection, geography: GeographyInput,
-  locations: ReturnType<typeof mapRows>, map: FocusMap
+  props: MapChartProps,
+  selection: OrganizationSelection,
+  geography: GeographyInput,
+  locations: ReturnType<typeof mapRows>,
+  map: FocusMap,
 ): MapFocus | undefined {
   const { level, value } = selection;
   const placement = selectedPlacement(props, selection, geography, locations);
   const bounds = emptyBounds();
   for (const feature of placement.features) {
     const area = map.bounds.get(feature);
-    if (area) { include(bounds, area[0]); include(bounds, area[1]); }
+    if (area) {
+      include(bounds, area[0]);
+      include(bounds, area[1]);
+    }
   }
   if (Number.isFinite(bounds[0][0])) {
     if ('lngLat' in placement.point) include(bounds, placement.point.lngLat);
     return fit(bounds);
   }
-  if (level === 'region-dept' && props.parentField) {
+  if (isIocRegionDeptLevel(level) && props.parentField) {
     const children = childExtent(fieldName(props.parentField), value, locations, map);
     if (children) return children;
   }

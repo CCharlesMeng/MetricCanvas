@@ -1,16 +1,25 @@
-import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
+import { expect, test } from '@playwright/test';
 
-const requireEngine = createRequire(new URL('../../../packages/engine/package.json', import.meta.url));
+const requireEngine = createRequire(
+  new URL('../../../packages/engine/package.json', import.meta.url),
+);
 const ExcelJS = requireEngine('exceljs');
 const { strFromU8, unzipSync } = requireEngine('fflate');
 
-const fixture = JSON.parse(readFileSync(new URL('../../../pages/capabilities/data/numeric-value-display.json', import.meta.url), 'utf8'));
+const fixture = JSON.parse(
+  readFileSync(
+    new URL('../../../pages/capabilities/data/numeric-value-display.json', import.meta.url),
+    'utf8',
+  ),
+);
 
-test('numeric consumers omit integer fractions and share the em dash placeholder', async ({ page }) => {
+test('numeric consumers omit integer fractions and share the em dash placeholder', async ({
+  page,
+}) => {
   const errors: string[] = [];
-  page.on('pageerror', error => errors.push(error.message));
+  page.on('pageerror', (error) => errors.push(error.message));
   await page.goto(`/pages/${fixture.id}`);
   const rows = page.locator('[data-component$="/values-table"] tbody tr');
   await expect(rows).toHaveCount(5);
@@ -19,7 +28,7 @@ test('numeric consumers omit integer fractions and share the em dash placeholder
     ['小数', '12.5', '12.5%', '12.5万', '12.5', '—'],
     ['零', '0', '0%', '0万', '0', '–'],
     ['负整数', '-12', '-12%', '-12万', '-12', '—'],
-    ['缺失', '—', '—', '—', '未提供', '--']
+    ['缺失', '—', '—', '—', '未提供', '--'],
   ].entries()) {
     await expect(rows.nth(index).locator('td')).toHaveText(expected);
   }
@@ -36,8 +45,8 @@ test('table remarks bottom-align with the title or align left when untitled', as
 
   const titled = page.locator('[data-component$="/values-table"] .table-heading');
   const title = titled.getByRole('heading', { name: '统一格式' });
-  const defaultSubtitle = '— 代表本周期没有合同单/商务单';
-  const remark = titled.getByText(defaultSubtitle, { exact: true });
+  const explicitSubtitle = '— 代表本周期暂无数值';
+  const remark = titled.getByText(explicitSubtitle, { exact: true });
   await expect(remark).toHaveCSS('font-size', '12px');
   await expect(remark).toHaveCSS('color', 'rgb(89, 89, 89)');
   const titleBox = (await title.boundingBox())!;
@@ -46,22 +55,23 @@ test('table remarks bottom-align with the title or align left when untitled', as
   expect(remarkBox.y + remarkBox.height).toBeCloseTo(titleBox.y + titleBox.height, 1);
 
   const untitled = page.locator('[data-component$="/untitled-table"] .table-heading');
-  const untitledRemark = untitled.getByText(defaultSubtitle, { exact: true });
+  const untitledRemark = untitled.getByText(explicitSubtitle, { exact: true });
   await expect(untitled.getByRole('heading')).toHaveCount(0);
   await expect(untitled.getByRole('searchbox', { name: '表格搜索' })).toBeVisible();
   expect((await untitledRemark.boundingBox())!.x).toBe((await untitled.boundingBox())!.x);
 
   const custom = page.locator('[data-component$="/custom-subtitle-table"] .table-heading');
   await expect(custom.getByText('数值来自内联合成数据', { exact: true })).toBeVisible();
-  await expect(custom.getByText(defaultSubtitle, { exact: true })).toHaveCount(0);
+  await expect(custom.getByText(explicitSubtitle, { exact: true })).toHaveCount(0);
 
   const hidden = page.locator('[data-component$="/hidden-subtitle-table"] .table-heading');
   await expect(hidden.getByRole('heading', { name: '关闭副标题' })).toBeVisible();
   await expect(hidden.locator('.subtitle')).toHaveCount(0);
 });
 
-
-test('downloads numeric values, literal dashes and missing cells with reusable formats', async ({ page }, info) => {
+test('downloads numeric values, literal dashes and missing cells with reusable formats', async ({
+  page,
+}, info) => {
   await page.goto(`/pages/${fixture.id}`);
   const table = page.locator('[data-component$="/values-table"]');
   const pending = page.waitForEvent('download');

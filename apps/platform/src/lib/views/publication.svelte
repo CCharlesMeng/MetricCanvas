@@ -2,7 +2,7 @@
  const dev = import.meta.env.DEV;
  import {onMount} from 'svelte';
  import PageAuthoringWorkbench from '$lib/PageAuthoringWorkbench.svelte';
- import type { createPublicationFixture } from '$lib/workbench/publication-fixture';
+ import type { createPublicationFixture } from '../../../tests/fixtures/publication-fixture';
  import { confirmedPageAssetCapabilities, type AuthoringPort } from '$lib/workbench/authoring-coordinator';
  import type { PageRevision } from '$lib/page-assets/contract';
  import PublicationReview from '$lib/workbench/PublicationReview.svelte';
@@ -20,7 +20,7 @@
   if(!dev)return;
   if(new URLSearchParams(location.search).has('inline')){void import('$lib/workbench/InlineParameterFixture.svelte').then(module=>{inlineFixture=module.default;});return;}
   let disposed=false,cleanup=()=>{};
-  void import('$lib/workbench/publication-fixture').then(({createPublicationFixture})=>{
+  void import('../../../tests/fixtures/publication-fixture').then(({createPublicationFixture})=>{
    if(disposed)return;const fixture=createPublicationFixture();fixtureRef=fixture;let scope='1';
    const revision:PageRevision={...fixture.ref,document:fixture.document,revisionNumber:1,baseRevisionId:null,contentHash:'fixture',createdAt:'',createdBy:'',dataContextVersion:null};
    authoringPort={capabilities:{...confirmedPageAssetCapabilities,exactRead:true},getLatest:async()=>structuredClone(revision),getRevision:async()=>structuredClone(revision),saveRevision:async()=>{throw Error('fixture manual save unavailable');}};

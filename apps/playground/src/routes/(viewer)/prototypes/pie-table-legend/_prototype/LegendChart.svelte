@@ -1,5 +1,5 @@
 <script lang="ts">
-  import EChart from '../../../shared/EChart.svelte';
+  import EChart from '../../../../../../../../packages/engine/widgets/src/shared/EChart.svelte';
   import { makeOption, type CustomerBand, type Settings } from './model';
   let { rows, settings }: { rows: CustomerBand[]; settings: Settings } = $props();
   let width = $state(760);

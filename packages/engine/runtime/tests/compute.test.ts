@@ -1,13 +1,13 @@
-import { describe, expect, it } from 'vitest';
+import { applyComputation } from '@metriccanvas/data-execution/runtime';
 import type { ComputeOperator, DataRow, RatioScale } from '@metriccanvas/page/internal';
-import { applyComputation } from '../src/compute';
+import { describe, expect, it } from 'vitest';
 
 describe('ratio:分母为零的语义必须显式声明', () => {
   const rows: DataRow[] = [
     { done: 100, plan: 150 },
     { done: 3, plan: 0 },
     { done: 5, plan: null },
-    { done: null, plan: 10 }
+    { done: null, plan: 10 },
   ];
 
   it('onZeroDenominator=null 时分母为零或缺失取空', () => {
@@ -16,14 +16,14 @@ describe('ratio:分母为零的语义必须显式声明', () => {
       numerator: 'done',
       denominator: 'plan',
       output: 'rate',
-      onZeroDenominator: 'null'
+      onZeroDenominator: 'null',
     };
 
     expect(applyComputation([operator], rows).map((row) => row.rate)).toEqual([
       100 / 150,
       null,
       null,
-      null
+      null,
     ]);
   });
 
@@ -33,14 +33,14 @@ describe('ratio:分母为零的语义必须显式声明', () => {
       numerator: 'done',
       denominator: 'plan',
       output: 'rate',
-      onZeroDenominator: 'zero'
+      onZeroDenominator: 'zero',
     };
 
     expect(applyComputation([operator], rows).map((row) => row.rate)).toEqual([
       100 / 150,
       0,
       0,
-      null
+      null,
     ]);
   });
 });
@@ -50,14 +50,11 @@ describe('ratio.scale:输出刻度只作用于算出来的商', () => {
     { done: 100, plan: 150 },
     { done: 3, plan: 0 },
     { done: 5, plan: null },
-    { done: null, plan: 10 }
+    { done: null, plan: 10 },
   ];
 
   /** 未声明刻度时 `scale` 真的不在文档里,不是显式的 undefined。 */
-  const ratioOp = (
-    onZeroDenominator: 'null' | 'zero',
-    scale?: RatioScale
-  ): ComputeOperator =>
+  const ratioOp = (onZeroDenominator: 'null' | 'zero', scale?: RatioScale): ComputeOperator =>
     scale === undefined
       ? { op: 'ratio', numerator: 'done', denominator: 'plan', output: 'rate', onZeroDenominator }
       : {
@@ -66,7 +63,7 @@ describe('ratio.scale:输出刻度只作用于算出来的商', () => {
           denominator: 'plan',
           output: 'rate',
           onZeroDenominator,
-          scale
+          scale,
         };
 
   const rates = (operator: ComputeOperator) =>
@@ -76,7 +73,7 @@ describe('ratio.scale:输出刻度只作用于算出来的商', () => {
     for (const onZeroDenominator of ['null', 'zero'] as const) {
       const unscaled = rates(ratioOp(onZeroDenominator));
       expect(rates(ratioOp(onZeroDenominator, 100))).toEqual(
-        unscaled.map((value) => (typeof value === 'number' ? value * 100 : value))
+        unscaled.map((value) => (typeof value === 'number' ? value * 100 : value)),
       );
     }
 
@@ -107,7 +104,7 @@ describe('delta', () => {
       op: 'delta',
       minuend: 'current',
       subtrahend: 'last',
-      output: 'mom'
+      output: 'mom',
     };
 
     expect(
@@ -116,9 +113,9 @@ describe('delta', () => {
         [
           { current: 350, last: 320 },
           { current: 350, last: null },
-          { current: null, last: 320 }
-        ]
-      ).map((row) => row.mom)
+          { current: null, last: 320 },
+        ],
+      ).map((row) => row.mom),
     ).toEqual([30, null, null]);
   });
 });
@@ -127,14 +124,14 @@ describe('groupSubtotal', () => {
   const rows: DataRow[] = [
     { type: '类型A', sub: '子类1', jan: 100, feb: null },
     { type: '类型B', sub: '子类3', jan: 5, feb: 5 },
-    { type: '类型A', sub: '子类2', jan: 200, feb: 50 }
+    { type: '类型A', sub: '子类2', jan: 200, feb: 50 },
   ];
   const operator: ComputeOperator = {
     op: 'groupSubtotal',
     groupBy: 'type',
     measures: ['jan', 'feb'],
     rowKind: { field: 'kind', value: 'subtotal' },
-    labelSuffix: '合计'
+    labelSuffix: '合计',
   };
 
   it('每组明细原序保留，其后追加一行小计', () => {
@@ -145,7 +142,7 @@ describe('groupSubtotal', () => {
       ['类型A', '子类2', null],
       ['类型A合计', null, 'subtotal'],
       ['类型B', '子类3', null],
-      ['类型B合计', null, 'subtotal']
+      ['类型B合计', null, 'subtotal'],
     ]);
   });
 
@@ -153,7 +150,7 @@ describe('groupSubtotal', () => {
     const result = applyComputation([operator], rows);
     expect(result[2]).toMatchObject({ jan: 300, feb: 50 });
     expect(
-      applyComputation([operator], [{ type: 'A', sub: null, jan: null, feb: null }])[1]
+      applyComputation([operator], [{ type: 'A', sub: null, jan: null, feb: null }])[1],
     ).toMatchObject({ jan: null, feb: null });
   });
 
@@ -168,13 +165,13 @@ describe('grandTotal', () => {
     groupBy: 'type',
     measures: ['jan'],
     rowKind: { field: 'kind', value: 'subtotal' },
-    labelSuffix: '合计'
+    labelSuffix: '合计',
   };
   const total: ComputeOperator = {
     op: 'grandTotal',
     measures: ['jan'],
     rowKind: { field: 'kind', value: 'total' },
-    label: { field: 'type', value: '合计' }
+    label: { field: 'type', value: '合计' },
   };
 
   it('只累加明细行，不把小计行计第二遍', () => {
@@ -183,8 +180,8 @@ describe('grandTotal', () => {
       [
         { type: '类型A', jan: 100 },
         { type: '类型A', jan: 200 },
-        { type: '类型B', jan: 50 }
-      ]
+        { type: '类型B', jan: 50 },
+      ],
     );
 
     expect(result.map((row) => [row.type, row.jan, row.kind])).toEqual([
@@ -193,7 +190,7 @@ describe('grandTotal', () => {
       ['类型A合计', 300, 'subtotal'],
       ['类型B', 50, null],
       ['类型B合计', 50, 'subtotal'],
-      ['合计', 350, 'total']
+      ['合计', 350, 'total'],
     ]);
   });
 
@@ -210,8 +207,8 @@ describe('pivot', () => {
     columns: [
       { output: 'high-level-visit', categories: ['高层拜访'] },
       { output: 'workshop-exchange', categories: ['专题交流', '技术交流'] },
-      { output: 'summit-meeting', categories: ['高层峰会'] }
-    ]
+      { output: 'summit-meeting', categories: ['高层峰会'] },
+    ],
   };
 
   it('缺省把整个行集折成一行，未命中的目标列取空', () => {
@@ -220,12 +217,10 @@ describe('pivot', () => {
         [operator],
         [
           { activity: '高层拜访', count: 5 },
-          { activity: '技术交流', count: 2 }
-        ]
-      )
-    ).toEqual([
-      { 'high-level-visit': 5, 'workshop-exchange': 2, 'summit-meeting': null }
-    ]);
+          { activity: '技术交流', count: 2 },
+        ],
+      ),
+    ).toEqual([{ 'high-level-visit': 5, 'workshop-exchange': 2, 'summit-meeting': null }]);
   });
 
   it('有序类别取第一个命中的：专题交流优先于技术交流', () => {
@@ -234,9 +229,9 @@ describe('pivot', () => {
         [operator],
         [
           { activity: '技术交流', count: 2 },
-          { activity: '专题交流', count: 9 }
-        ]
-      )[0]
+          { activity: '专题交流', count: 9 },
+        ],
+      )[0],
     ).toMatchObject({ 'workshop-exchange': 9 });
   });
 
@@ -247,12 +242,12 @@ describe('pivot', () => {
         [keyed],
         [
           { party: 'P1', activity: '高层拜访', count: 5 },
-          { party: 'P2', activity: '高层峰会', count: 1 }
-        ]
-      )
+          { party: 'P2', activity: '高层峰会', count: 1 },
+        ],
+      ),
     ).toEqual([
       { party: 'P1', 'high-level-visit': 5, 'workshop-exchange': null, 'summit-meeting': null },
-      { party: 'P2', 'high-level-visit': null, 'workshop-exchange': null, 'summit-meeting': 1 }
+      { party: 'P2', 'high-level-visit': null, 'workshop-exchange': null, 'summit-meeting': 1 },
     ]);
   });
 
@@ -266,9 +261,15 @@ describe('算子按声明顺序作用', () => {
     const result = applyComputation(
       [
         { op: 'delta', minuend: 'current', subtrahend: 'last', output: 'gap' },
-        { op: 'ratio', numerator: 'gap', denominator: 'last', output: 'rate', onZeroDenominator: 'null' }
+        {
+          op: 'ratio',
+          numerator: 'gap',
+          denominator: 'last',
+          output: 'rate',
+          onZeroDenominator: 'null',
+        },
       ],
-      [{ current: 120, last: 100 }]
+      [{ current: 120, last: 100 }],
     );
 
     expect(result[0]).toMatchObject({ gap: 20, rate: 0.2 });
@@ -278,7 +279,7 @@ describe('算子按声明顺序作用', () => {
     const rows: DataRow[] = [{ current: 120, last: 100 }];
     applyComputation(
       [{ op: 'delta', minuend: 'current', subtrahend: 'last', output: 'gap' }],
-      rows
+      rows,
     );
     expect(rows[0]).toEqual({ current: 120, last: 100 });
   });
@@ -286,57 +287,136 @@ describe('算子按声明顺序作用', () => {
 
 describe('IOC F1 已确认的缺失与数值边界', () => {
   it('T-11/T-31：缺上期不当零，明确零才参与减法', () => {
-    expect(applyComputation([{ op: 'delta', minuend: 'current', subtrahend: 'last', output: 'delta' }],
-      [{ current: 100, last: null }, { current: 100 }, { current: 100, last: 0 }, { current: 100, last: 80 }]
-    ).map(row => row.delta)).toEqual([null, null, 100, 20]);
+    expect(
+      applyComputation(
+        [{ op: 'delta', minuend: 'current', subtrahend: 'last', output: 'delta' }],
+        [
+          { current: 100, last: null },
+          { current: 100 },
+          { current: 100, last: 0 },
+          { current: 100, last: 80 },
+        ],
+      ).map((row) => row.delta),
+    ).toEqual([null, null, 100, 20]);
   });
 
   it('负数保留；有效输入计算溢出不向展示传递 Infinity', () => {
-    const ratio: ComputeOperator = { op: 'ratio', numerator: 'a', denominator: 'b', output: 'rate', onZeroDenominator: 'null' };
-    expect(applyComputation([ratio], [{ a: -1200, b: 100 }, { a: 1e308, b: 1e-308 }]).map(r => r.rate)).toEqual([-12, null]);
-    expect(applyComputation([{ op: 'delta', minuend: 'a', subtrahend: 'b', output: 'gap' }],
-      [{ a: 1e308, b: -1e308 }])[0].gap).toBeNull();
+    const ratio: ComputeOperator = {
+      op: 'ratio',
+      numerator: 'a',
+      denominator: 'b',
+      output: 'rate',
+      onZeroDenominator: 'null',
+    };
+    expect(
+      applyComputation(
+        [ratio],
+        [
+          { a: -1200, b: 100 },
+          { a: 1e308, b: 1e-308 },
+        ],
+      ).map((r) => r.rate),
+    ).toEqual([-12, null]);
+    expect(
+      applyComputation(
+        [{ op: 'delta', minuend: 'a', subtrahend: 'b', output: 'gap' }],
+        [{ a: 1e308, b: -1e308 }],
+      )[0].gap,
+    ).toBeNull();
   });
 });
 
 describe('6.12 字段合计与 CAGR', () => {
   it('合计保留真实0/负数，全空为null，部分缺失按消费者声明', () => {
-    const rows: DataRow[] = [{ a: 8000, b: 2000 }, { a: null, b: null }, { a: -1200, b: 0 }, { a: 100 }];
-    const op: ComputeOperator = { op: 'sumFields', fields: ['a', 'b'], output: 'total', onMissing: 'null' };
-    expect(applyComputation([op], rows).map(r => r.total)).toEqual([10000, null, -1200, null]);
-    expect(applyComputation([{ ...op, onMissing: 'ignore' }], rows).map(r => r.total)).toEqual([10000, null, -1200, 100]);
+    const rows: DataRow[] = [
+      { a: 8000, b: 2000 },
+      { a: null, b: null },
+      { a: -1200, b: 0 },
+      { a: 100 },
+    ];
+    const op: ComputeOperator = {
+      op: 'sumFields',
+      fields: ['a', 'b'],
+      output: 'total',
+      onMissing: 'null',
+    };
+    expect(applyComputation([op], rows).map((r) => r.total)).toEqual([10000, null, -1200, null]);
+    expect(applyComputation([{ ...op, onMissing: 'ignore' }], rows).map((r) => r.total)).toEqual([
+      10000,
+      null,
+      -1200,
+      100,
+    ]);
   });
   it('CAGR 用显式期数字段，零基期/非正期数/缺失不输出 Infinity', () => {
-    const op: ComputeOperator = { op: 'cagr', beginning: 'begin', ending: 'end', periods: 'n', output: 'rate', scale: 100 };
-    const result = applyComputation([op], [{ begin: 100, end: 200, n: 6 }, { begin: 0, end: 200, n: 6 },
-      { begin: 100, end: 200, n: 0 }, { begin: 100, end: 0, n: 6 }, { begin: 100, n: 6 }]);
+    const op: ComputeOperator = {
+      op: 'cagr',
+      beginning: 'begin',
+      ending: 'end',
+      periods: 'n',
+      output: 'rate',
+      scale: 100,
+    };
+    const result = applyComputation(
+      [op],
+      [
+        { begin: 100, end: 200, n: 6 },
+        { begin: 0, end: 200, n: 6 },
+        { begin: 100, end: 200, n: 0 },
+        { begin: 100, end: 0, n: 6 },
+        { begin: 100, n: 6 },
+      ],
+    );
     expect(result[0].rate).toBeCloseTo(12.2462, 4);
-    expect(result.slice(1).map(r => r.rate)).toEqual([null, null, -100, null]);
+    expect(result.slice(1).map((r) => r.rate)).toEqual([null, null, -100, null]);
   });
 });
 
 describe('折叠汇总的显式全空策略', () => {
   const operators: ComputeOperator[] = [
-    { op: 'groupSubtotal', groupBy: 'group', measures: ['amount'], rowKind: { field: 'kind', value: 'subtotal' } },
-    { op: 'grandTotal', measures: ['amount'], rowKind: { field: 'kind', value: 'total' }, label: { field: 'group', value: '合计' } }
+    {
+      op: 'groupSubtotal',
+      groupBy: 'group',
+      measures: ['amount'],
+      rowKind: { field: 'kind', value: 'subtotal' },
+    },
+    {
+      op: 'grandTotal',
+      measures: ['amount'],
+      rowKind: { field: 'kind', value: 'total' },
+      label: { field: 'group', value: '合计' },
+    },
   ];
   it('缺省/显式null保留空；zero只影响汇总，不改明细或空行集', () => {
     const input: DataRow[] = [{ group: 'A', amount: null }, { group: 'A' }];
     for (const policy of [undefined, 'null', 'zero'] as const) {
-      const configured = operators.map(op => ({ ...op, allMissing: policy }));
+      const configured = operators.map((op) => ({ ...op, allMissing: policy }));
       const result = applyComputation(configured, input);
-      expect(result.slice(0, 2).map(row => row.amount)).toEqual([null, undefined]);
-      expect(result.slice(2).map(row => row.amount)).toEqual(policy === 'zero' ? [0, 0] : [null, null]);
+      expect(result.slice(0, 2).map((row) => row.amount)).toEqual([null, undefined]);
+      expect(result.slice(2).map((row) => row.amount)).toEqual(
+        policy === 'zero' ? [0, 0] : [null, null],
+      );
       expect(applyComputation(configured, [])).toEqual([]);
     }
     expect(input).toEqual([{ group: 'A', amount: null }, { group: 'A' }]);
   });
   it('zero策略仍保留负数、真实零、溢出null，不重复累加小计', () => {
-    const configured = operators.map(op => ({ ...op, allMissing: 'zero' as const }));
-    expect(applyComputation(configured, [{ group: 'A', amount: -20 }, { group: 'A', amount: 0 }, { group: 'B', amount: 5 }]).at(-1)?.amount).toBe(-15);
+    const configured = operators.map((op) => ({ ...op, allMissing: 'zero' as const }));
+    expect(
+      applyComputation(configured, [
+        { group: 'A', amount: -20 },
+        { group: 'A', amount: 0 },
+        { group: 'B', amount: 5 },
+      ]).at(-1)?.amount,
+    ).toBe(-15);
     for (const amount of [NaN, Infinity, 'bad']) {
       expect(applyComputation(configured, [{ group: 'A', amount }]).at(-1)?.amount).toBeNull();
     }
-    expect(applyComputation(configured, [{ group: 'A', amount: Number.MAX_VALUE }, { group: 'A', amount: Number.MAX_VALUE }]).at(-1)?.amount).toBeNull();
+    expect(
+      applyComputation(configured, [
+        { group: 'A', amount: Number.MAX_VALUE },
+        { group: 'A', amount: Number.MAX_VALUE },
+      ]).at(-1)?.amount,
+    ).toBeNull();
   });
 });

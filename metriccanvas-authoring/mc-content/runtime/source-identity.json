@@ -1,6 +1,6 @@
 {
   "kind": "public-build-inputs",
-  "sha256": "4cb7e28b4465a528b4c12ca569621e0def179df94fc8d336ecd38dcd4b7b153c",
+  "sha256": "278b4d69a3925645e114221e941baf5168b575b484c28231741f6f704aee2878",
   "files": [
     {
       "file": "docs/examples/schema-metadata.example.json",
@@ -104,7 +104,7 @@
     },
     {
       "file": "docs/page-metadata/components/table.md",
-      "sha256": "b517c4b5ca4f0797d202201a8583abbdb941085f022bad822d2968dcd12134bd"
+      "sha256": "296bcf0d33f2c774ae4a45ce07d49df4ccd3a09b8899d10ccd558ad6264de32a"
     },
     {
       "file": "docs/page-metadata/components/text.md",
@@ -1640,7 +1640,7 @@
     },
     {
       "file": "packages/page/src/filter-overrides.ts",
-      "sha256": "bae1b7ea4e80d5e539daececa60a9408cb7973426097e4d468feee61d938caa0"
+      "sha256": "816f289fa470a611fd9e7f55c41d8d825d1e434a5fe7ed320fd7a6d30eeafea0"
     },
     {
       "file": "packages/page/src/filter-text-value.ts",
@@ -1672,7 +1672,7 @@
     },
     {
       "file": "packages/page/src/internal.ts",
-      "sha256": "7be2c79dae3448e009a207811f7fab98958172202ee9ced2fdbe5af59667fe33"
+      "sha256": "3316609867c1dfedf99e162f5bed1e006578fb70b0f52ffbd41504d0986fc0bd"
     },
     {
       "file": "packages/page/src/ioc-header-controls.ts",
@@ -1689,6 +1689,10 @@
     {
       "file": "packages/page/src/ioc-period-query.ts",
       "sha256": "748ba005788e8870d7846deced542f732c148d3a79c9096f6e86580066a73c80"
+    },
+    {
+      "file": "packages/page/src/ioc-region-policy.ts",
+      "sha256": "ab5ba90e453a89f295bc64b52932f873db738262265d2bc1c6e2bb0327af2ded"
     },
     {
       "file": "packages/page/src/layout-compatibility.ts",
@@ -1736,7 +1740,7 @@
     },
     {
       "file": "packages/page/src/object-query-params.ts",
-      "sha256": "442c6b7fbd05443b81e87ab83b6802e4f80d2021fd67c05212f3adfa29f66acc"
+      "sha256": "01e166d24e582da59bbe3b889b443bf3bde04c3593820c80f648a014f4db8fcd"
     },
     {
       "file": "packages/page/src/page-document.ts",
@@ -1835,6 +1839,10 @@
       "sha256": "adbcc9ad402a2334cce308069969f4eeb2a5e94ae3435cdc99d25cac0fe3a548"
     },
     {
+      "file": "packages/page/src/query-bindings.ts",
+      "sha256": "f1ac8ecaad45e5420464689c9856ce31c65f0dcc0ab14dfd31530b164723bd13"
+    },
+    {
       "file": "packages/page/src/query-dependencies.ts",
       "sha256": "b9a54c69a79e8be07018aa7b70780b37abf6610a5362b36c7e3e9c7fb3ac1dc8"
     },
@@ -1848,7 +1856,7 @@
     },
     {
       "file": "packages/page/src/query-param-references.ts",
-      "sha256": "60733a3b4876946710479cdd981da1f77108af7f9f208a9b6d5b3998aa59a03b"
+      "sha256": "522244111a373f3f0d725ac7c1c9ed79d61b4690d6cde492d0831583c7d32c8e"
     },
     {
       "file": "packages/page/src/query-result-limits.ts",
@@ -1876,7 +1884,7 @@
     },
     {
       "file": "packages/page/src/query.ts",
-      "sha256": "e954f862a94898abfd191f3d7d3e4ee304717db5f49e70fd127dcc77e3330e43"
+      "sha256": "cc42c0451df30b6ccc4d7096a4866f5e8dc9d7d0825ac52924977151f759594d"
     },
     {
       "file": "packages/page/src/report-date-filters.ts",
@@ -2108,7 +2116,7 @@
     },
     {
       "file": "packages/page/src/table/header-params.ts",
-      "sha256": "adf946f4658af52cae484d7325905d47c1077c6b8a82fd10ce40c82f9d46cdd3"
+      "sha256": "fc9cb46286d2a1ef6089ff5c94364d9066cb00d414fa3cb6ae0199dd2fa0611f"
     },
     {
       "file": "packages/page/src/table/query-view.ts",
@@ -2224,7 +2232,7 @@
     },
     {
       "file": "pages/README.md",
-      "sha256": "432802e408981c5905836feddf998362b6db256f72ef76aa7f58ce0866b4ade6"
+      "sha256": "d5e9ed60c2ecae766f9093add5de2b6d2009e183aadafb3b42bdab43e0a2b784"
     },
     {
       "file": "pages/business-rejection-details.json",
@@ -2468,7 +2476,7 @@
     },
     {
       "file": "pages/capabilities/data/README.md",
-      "sha256": "b4c8e67d2f93055ff95d43079566da77878911470ef2a1afe021ecf8511fd7bc"
+      "sha256": "50b55958bfb917ba78f090a5d2acb7a818be9fe4c9551d6e63ce22eabf816f31"
     },
     {
       "file": "pages/capabilities/data/authoring-percent-coverage.json",
@@ -2500,7 +2508,7 @@
     },
     {
       "file": "pages/capabilities/data/numeric-value-display.json",
-      "sha256": "5bc6dcc714146157e946bba8daa89f8a0ab32f0a07c93b981b7cf4eee7039444"
+      "sha256": "fbbf91558d1e4a933bf579b0a04318395318d8b5c1705f2820b4d4b31667b33e"
     },
     {
       "file": "pages/capabilities/data/operation-money-formats.json",

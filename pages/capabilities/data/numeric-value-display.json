@@ -176,6 +176,7 @@
           },
           "props": {
             "title": "统一格式",
+            "subtitle": "— 代表本周期暂无数值",
             "columns": [
               {
                 "field": "case",
@@ -228,6 +229,7 @@
             "main": "sample"
           },
           "props": {
+            "subtitle": "— 代表本周期暂无数值",
             "toolbar": {
               "search": {
                 "fields": [

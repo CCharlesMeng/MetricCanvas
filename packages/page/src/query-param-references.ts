@@ -1,90 +1,144 @@
 import { isObjectDqeItem } from './dqe-object';
-import { objectParamReferenceErrors, objectConditions, resolveObjectParamReferences } from './object-query-params';
-import {ordinaryQuery,queryLeaves,querySelection} from './query-selection';
 import type { TypedError } from './errors';
-import { isQueryInputDeclaration, pageParamDeclarations, type GroupedPageParams, type PageParamDeclaration, type PageParamValue } from './page-param';
-import { bindingQueryFields, type PageQuery } from './query';
+import {
+  objectConditions,
+  objectParamReferenceErrors,
+  resolveObjectParamReferences,
+} from './object-query-params';
+import {
+  type GroupedPageParams,
+  isQueryInputDeclaration,
+  type PageParamDeclaration,
+  type PageParamValue,
+  pageParamDeclarations,
+} from './page-param';
+import type { PageQuery } from './query';
+import { bindingQueryFields } from './query-bindings';
+import { ordinaryQuery, queryLeaves, querySelection } from './query-selection';
 import { timeWindowZ } from './schema/data-source';
-import { resolveTimeWindow, timeWindowCompatible, type TimeWindow } from './time-param';
+import { resolveTimeWindow, type TimeWindow, timeWindowCompatible } from './time-param';
 
 function record(value: unknown): Record<string, unknown> | undefined {
-  return value !== null && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : undefined;
+  return value !== null && typeof value === 'object' && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : undefined;
 }
-function pointer(value: string): string { return value.replaceAll('~', '~0').replaceAll('/', '~1'); }
+function pointer(value: string): string {
+  return value.replaceAll('~', '~0').replaceAll('/', '~1');
+}
 
 /** 查询中的参数引用只允许出现在维度值列表和 filter.time。 */
 export function queryParamReferenceErrors(document: unknown): TypedError[] {
-  const page = document as {params?: GroupedPageParams | PageParamDeclaration[]; dataSources: Record<string, {source: {type: string; query?: PageQuery}}>};
-  const declarations = new Map(pageParamDeclarations(page.params).map(p => [p.id, p]));
+  const page = document as {
+    params?: GroupedPageParams | PageParamDeclaration[];
+    dataSources: Record<string, { source: { type: string; query?: PageQuery } }>;
+  };
+  const declarations = new Map(pageParamDeclarations(page.params).map((p) => [p.id, p]));
   const layered = !!page.params && !Array.isArray(page.params);
   /** 分层声明下,「能不能进查询」按声明位置判——类型对但放在 display 下的参数也不行。 */
-  const outsideQueryLayer = (p: PageParamDeclaration | undefined) => layered && !!p && !isQueryInputDeclaration(p);
+  const outsideQueryLayer = (p: PageParamDeclaration | undefined) =>
+    layered && !!p && !isQueryInputDeclaration(p);
   const errors: TypedError[] = [];
-  const error = (path: string, message: string) => errors.push({type: 'SCHEMA_ERROR', path, message});
+  const error = (path: string, message: string) =>
+    errors.push({ type: 'SCHEMA_ERROR', path, message });
   for (const [sourceId, source] of Object.entries(page.dataSources)) {
     const definition = source.source.query;
     if (source.source.type !== 'query' || !definition) continue;
-    for(const query of queryLeaves(definition)){
-    const root = `/dataSources/${pointer(sourceId)}/source/query/body`;
-    if(isObjectDqeItem(ordinaryQuery(query).body.dsl_list[0])){
-      errors.push(...objectParamReferenceErrors(query,declarations,root,outsideQueryLayer,layered));
-      continue;
+    for (const query of queryLeaves(definition)) {
+      const root = `/dataSources/${pointer(sourceId)}/source/query/body`;
+      if (isObjectDqeItem(ordinaryQuery(query).body.dsl_list[0])) {
+        errors.push(
+          ...objectParamReferenceErrors(query, declarations, root, outsideQueryLayer, layered),
+        );
+        continue;
+      }
+      const allowed = new Set<string>();
+      const filter = record(ordinaryQuery(query).body.dsl_list[0].filter);
+      const filterPath = `${root}/dsl_list/0/filter`;
+      const dims = Array.isArray(filter?.dims) ? filter.dims : [];
+      dims.forEach((raw, index) => {
+        const dim = record(raw);
+        const ref = record(dim?.dim_value_list);
+        if (!ref || !('param' in ref)) return;
+        const path = `${filterPath}/dims/${index}/dim_value_list`;
+        allowed.add(path);
+        const p = declarations.get(String(ref.param));
+        if (Object.keys(ref).length !== 1 || typeof ref.param !== 'string')
+          error(path, '维度引用只能声明 param');
+        if (outsideQueryLayer(p)) error(path, `引用的参数不在 params.query 下:${ref.param}`);
+        else if (p?.type !== 'dimension' || !p.required || !p.dimName)
+          error(path, '原位维度引用必须使用必需的分组维度参数');
+        if (p?.dimName !== dim?.dim_name) error(path, '维度参数 dim_name 必须与查询目标一致');
+        if (
+          Object.values(query.filterBindings ?? {}).some((b) =>
+            bindingQueryFields(b).includes(String(dim?.dim_name)),
+          ) ||
+          Object.values(query.paramBindings ?? {}).some(
+            (b) => b.target === 'dimension' && b.queryField === dim?.dim_name,
+          )
+        )
+          error(path, '同一维度不能同时由原位引用和筛选/旧参数绑定控制');
+        if (dims.some((other, i) => i !== index && record(other)?.dim_name === dim?.dim_name))
+          error(path, '原位参数目标不能另有同维度条件');
+      });
+      const time = record(filter?.time);
+      if (typeof time?.param === 'string') {
+        // 时间引用:参数值原样用;声明 window 时以参数值为基准点派生区间,
+        // 派生规则因此留在文档里,不必在创作层把日历算术再算一遍。
+        const path = `${filterPath}/time`;
+        allowed.add(path);
+        const p = declarations.get(time.param);
+        if (
+          Object.keys(time).some(
+            (key) => !['period', 'is_aggregate', 'param', 'window'].includes(key),
+          )
+        )
+          error(path, '时间引用不得与查询体起止并存');
+        if (outsideQueryLayer(p)) error(path, `引用的参数不在 params.query 下:${time.param}`);
+        else if (p?.type !== 'timeRange' || !p.required)
+          error(path, '时间引用必须指向必需的 times 参数');
+        if (time.period !== (p?.granularity === 'month' ? 'month' : 'day'))
+          error(path, '查询 period 与时间参数精度不兼容');
+        timeReferenceWindowErrors(time, p, path, error);
+        if (
+          Object.values(query.filterBindings ?? {}).some((b) => b.target === 'time') ||
+          Object.values(query.paramBindings ?? {}).some((b) => b.target === 'time')
+        )
+          error(path, '时间原位引用不能与筛选/旧参数绑定共同控制');
+      }
+      function visit(value: unknown, path: string): void {
+        if (Array.isArray(value)) {
+          value.forEach((v, i) => visit(v, `${path}/${i}`));
+          return;
+        }
+        const node = record(value);
+        if (!node) return;
+        if ('param' in node && !allowed.has(path)) error(path, '此查询位置不允许页面参数引用');
+        for (const [key, child] of Object.entries(node)) visit(child, `${path}/${pointer(key)}`);
+      }
+      visit(query.body, root);
+      if (allowed.size && Object.keys(query.paramBindings ?? {}).length)
+        error(root, '同一查询不得混用原位引用和paramBindings');
+      if (allowed.size && (!page.params || Array.isArray(page.params)))
+        error(root, '原位引用需要 6.6 分组参数声明');
     }
-    const allowed = new Set<string>();
-    const filter = record(ordinaryQuery(query).body.dsl_list[0].filter);
-    const filterPath = `${root}/dsl_list/0/filter`;
-    const dims = Array.isArray(filter?.dims) ? filter.dims : [];
-    dims.forEach((raw, index) => {
-      const dim = record(raw);
-      const ref = record(dim?.dim_value_list);
-      if (!ref || !('param' in ref)) return;
-      const path = `${filterPath}/dims/${index}/dim_value_list`;
-      allowed.add(path);
-      const p = declarations.get(String(ref.param));
-      if (Object.keys(ref).length !== 1 || typeof ref.param !== 'string') error(path, '维度引用只能声明 param');
-      if (outsideQueryLayer(p)) error(path, `引用的参数不在 params.query 下:${ref.param}`);
-      else if (p?.type !== 'dimension' || !p.required || !p.dimName) error(path, '原位维度引用必须使用必需的分组维度参数');
-      if (p?.dimName !== dim?.dim_name) error(path, '维度参数 dim_name 必须与查询目标一致');
-      if (Object.values(query.filterBindings ?? {}).some(b => bindingQueryFields(b).includes(String(dim?.dim_name))) ||
-          Object.values(query.paramBindings ?? {}).some(b => b.target === 'dimension' && b.queryField === dim?.dim_name)) error(path, '同一维度不能同时由原位引用和筛选/旧参数绑定控制');
-      if (dims.some((other, i) => i !== index && record(other)?.dim_name === dim?.dim_name)) error(path, '原位参数目标不能另有同维度条件');
-    });
-    const time = record(filter?.time);
-    if (typeof time?.param === 'string') {
-      // 时间引用:参数值原样用;声明 window 时以参数值为基准点派生区间,
-      // 派生规则因此留在文档里,不必在创作层把日历算术再算一遍。
-      const path = `${filterPath}/time`;
-      allowed.add(path);
-      const p = declarations.get(time.param);
-      if (Object.keys(time).some(key => !['period', 'is_aggregate', 'param', 'window'].includes(key))) error(path, '时间引用不得与查询体起止并存');
-      if (outsideQueryLayer(p)) error(path, `引用的参数不在 params.query 下:${time.param}`);
-      else if (p?.type !== 'timeRange' || !p.required) error(path, '时间引用必须指向必需的 times 参数');
-      if (time.period !== (p?.granularity === 'month' ? 'month' : 'day')) error(path, '查询 period 与时间参数精度不兼容');
-      timeReferenceWindowErrors(time,p,path,error);
-      if (Object.values(query.filterBindings ?? {}).some(b => b.target === 'time') || Object.values(query.paramBindings ?? {}).some(b => b.target === 'time')) error(path, '时间原位引用不能与筛选/旧参数绑定共同控制');
-    }
-    function visit(value: unknown, path: string): void {
-      if (Array.isArray(value)) { value.forEach((v, i) => visit(v, `${path}/${i}`)); return; }
-      const node = record(value);
-      if (!node) return;
-      if ('param' in node && !allowed.has(path)) error(path, '此查询位置不允许页面参数引用');
-      for (const [key, child] of Object.entries(node)) visit(child, `${path}/${pointer(key)}`);
-    }
-    visit(query.body, root);
-    if (allowed.size && Object.keys(query.paramBindings ?? {}).length) error(root, '同一查询不得混用原位引用和paramBindings');
-    if (allowed.size && (!page.params || Array.isArray(page.params))) error(root, '原位引用需要 6.6 分组参数声明');
-  }
   }
   return errors;
 }
 
 export function hasQueryParamReferences(query: PageQuery): boolean {
-  if(querySelection(query))return queryLeaves(query).some(hasQueryParamReferences);
-  const item=ordinaryQuery(query).body.dsl_list[0];
-  if(isObjectDqeItem(item))return objectConditions(item).some(field=>typeof record(field.value_list)?.param==='string');
+  if (querySelection(query)) return queryLeaves(query).some(hasQueryParamReferences);
+  const item = ordinaryQuery(query).body.dsl_list[0];
+  if (isObjectDqeItem(item))
+    return objectConditions(item).some(
+      (field) => typeof record(field.value_list)?.param === 'string',
+    );
   const filter = record(item.filter);
-  return typeof record(filter?.time)?.param === 'string' ||
-    (Array.isArray(filter?.dims) && filter.dims.some(d => !!record(record(d)?.dim_value_list)?.param));
+  return (
+    typeof record(filter?.time)?.param === 'string' ||
+    (Array.isArray(filter?.dims) &&
+      filter.dims.some((d) => !!record(record(d)?.dim_value_list)?.param))
+  );
 }
 
 function isRange(value: unknown): value is { start: string; end: string } {
@@ -93,38 +147,63 @@ function isRange(value: unknown): value is { start: string; end: string } {
 }
 
 /** 调用前须通过页面校验；只改查询副本，查询粒度、聚合设置和指标保持原样。 */
-export function resolveQueryParamReferences(query: PageQuery, values: ReadonlyMap<string, PageParamValue>): void {
-  if(querySelection(query)){for(const leaf of queryLeaves(query))resolveQueryParamReferences(leaf,values);return;}
-  if(isObjectDqeItem(ordinaryQuery(query).body.dsl_list[0])){resolveObjectParamReferences(query,values);return;}
+export function resolveQueryParamReferences(
+  query: PageQuery,
+  values: ReadonlyMap<string, PageParamValue>,
+): void {
+  if (querySelection(query)) {
+    for (const leaf of queryLeaves(query)) resolveQueryParamReferences(leaf, values);
+    return;
+  }
+  if (isObjectDqeItem(ordinaryQuery(query).body.dsl_list[0])) {
+    resolveObjectParamReferences(query, values);
+    return;
+  }
   const filter = record(ordinaryQuery(query).body.dsl_list[0].filter);
   if (!filter) return;
-  if (Array.isArray(filter.dims)) for (const raw of filter.dims) {
-    const dim = record(raw), ref = record(dim?.dim_value_list);
-    if (!dim || !ref || typeof ref.param !== 'string') continue;
-    const value = values.get(ref.param);
-    if (!Array.isArray(value)) throw new Error(`维度参数缺失或类型错误:${ref.param}`);
-    dim.dim_value_list = [...value];
-  }
-  resolveTimeReference(filter,values);
+  if (Array.isArray(filter.dims))
+    for (const raw of filter.dims) {
+      const dim = record(raw),
+        ref = record(dim?.dim_value_list);
+      if (!dim || !ref || typeof ref.param !== 'string') continue;
+      const value = values.get(ref.param);
+      if (!Array.isArray(value)) throw new Error(`维度参数缺失或类型错误:${ref.param}`);
+      dim.dim_value_list = [...value];
+    }
+  resolveTimeReference(filter, values);
 }
-function resolveTimeReference(filter:Record<string,unknown>,values:ReadonlyMap<string,PageParamValue>):void {
+function resolveTimeReference(
+  filter: Record<string, unknown>,
+  values: ReadonlyMap<string, PageParamValue>,
+): void {
   const time = record(filter.time);
   if (typeof time?.param !== 'string') return;
   const value = record(values.get(time.param));
-  if (typeof value?.start !== 'string' || typeof value?.end !== 'string') throw new Error(`时间参数缺失或类型错误:${time.param}`);
+  if (typeof value?.start !== 'string' || typeof value?.end !== 'string')
+    throw new Error(`时间参数缺失或类型错误:${time.param}`);
   const window = time.window as TimeWindow | undefined;
-  if (window && value.start !== value.end) throw new Error(`窗口派生要求基准时间参数为单点:${time.param}`);
-  const range = window ? resolveTimeWindow(value.end, window) : { start: value.start, end: value.end };
+  if (window && value.start !== value.end)
+    throw new Error(`窗口派生要求基准时间参数为单点:${time.param}`);
+  const range = window
+    ? resolveTimeWindow(value.end, window)
+    : { start: value.start, end: value.end };
   delete time.param;
   delete time.window;
   time.start = range.start;
   time.end = range.end;
 }
 
-function timeReferenceWindowErrors(time: Record<string,unknown>, p: PageParamDeclaration | undefined, path: string, error: (path:string,message:string)=>void): void {
-  if(time.window===undefined)return;
-  const window=timeWindowZ.safeParse(time.window);
+function timeReferenceWindowErrors(
+  time: Record<string, unknown>,
+  p: PageParamDeclaration | undefined,
+  path: string,
+  error: (path: string, message: string) => void,
+): void {
+  if (time.window === undefined) return;
+  const window = timeWindowZ.safeParse(time.window);
   if (!window.success) error(`${path}/window`, '时间窗口不是合法的具名窗口');
-  else if (p?.granularity && !timeWindowCompatible(p.granularity, window.data)) error(`${path}/window`, '时间窗口单位与参数精度不相容');
-  else if (isRange(p?.value) && p.value.start !== p.value.end) error(`${path}/window`, '窗口派生要求基准时间参数为单点');
+  else if (p?.granularity && !timeWindowCompatible(p.granularity, window.data))
+    error(`${path}/window`, '时间窗口单位与参数精度不相容');
+  else if (isRange(p?.value) && p.value.start !== p.value.end)
+    error(`${path}/window`, '窗口派生要求基准时间参数为单点');
 }

@@ -1,17 +1,33 @@
-import { seriesDisplayName, chartLegendVisible } from '../../shared/display-unit';
-import { chartDeclaration, chartSeriesAxis, chartSeriesIndex, chartAxisFormats } from '../../../../runtime/src/chart-series-state';
-import { chartSeriesColor } from '../../shared/chart-series-presentation';
-import { resolveComponentValue } from '../../shared/component-value';
-import { chartAxisField } from '../../shared/chart-axis-presentation';
+import {
+  chartAxisFormats,
+  chartDeclaration,
+  chartSeriesAxis,
+  chartSeriesIndex,
+} from '@metriccanvas/data-execution/runtime';
 import type { LineChartProps } from '@metriccanvas/page/internal';
 import type { EChartsOption } from 'echarts';
+import { chartAxisField } from '../../shared/chart-axis-presentation';
+import {
+  CHART_PALETTE,
+  categoryWindow,
+  dualOrSingleAxis,
+  formatChartNumber,
+  formatterValue,
+  GRID,
+} from '../../shared/chart-option';
+import { type ColorList, serialColor } from '../../shared/chart-palette';
+import {
+  categoryLabelOption,
+  pointValueLabel,
+  valueLabelLayout,
+} from '../../shared/chart-presentation';
+import { chartSeriesColor } from '../../shared/chart-series-presentation';
+import { chartTooltip, seriesTooltipValue } from '../../shared/chart-tooltip';
 import type { MainDataSlots } from '../../shared/component-data';
 import { fieldLabel, resolveField } from '../../shared/component-data';
+import { resolveComponentValue } from '../../shared/component-value';
+import { chartLegendVisible, seriesDisplayName } from '../../shared/display-unit';
 import { finiteNumber, formatValue } from '../../shared/value-format';
-import { CHART_PALETTE, GRID, categoryWindow, dualOrSingleAxis, formatterValue, formatChartNumber } from '../../shared/chart-option';
-import { serialColor, type ColorList } from '../../shared/chart-palette';
-import { categoryLabelOption, pointValueLabel, valueLabelLayout } from '../../shared/chart-presentation';
-import { chartTooltip, seriesTooltipValue } from '../../shared/chart-tooltip';
 
 /**
  * 已解析命名数据槽 + 折线图 props → ECharts option 的纯翻译。
@@ -22,39 +38,62 @@ import { chartTooltip, seriesTooltipValue } from '../../shared/chart-tooltip';
 export function lineOption(
   data: MainDataSlots,
   props: LineChartProps,
-  palette?: ColorList
+  palette?: ColorList,
 ): EChartsOption {
   const rows = data.main.snapshot.rows;
   const x = resolveField(props.xField, data);
-  const entries = props.series.map(series => ({ series, field: resolveComponentValue(series, data, props.emptyBehavior) }));
+  const entries = props.series.map((series) => ({
+    series,
+    field: resolveComponentValue(series, data, props.emptyBehavior),
+  }));
 
   return {
     ...(palette ? { color: [...palette] } : {}),
     ...(props.categoryLabels?.mode === 'all' ? {} : categoryWindow(rows.length)),
-    grid: { ...GRID, ...(props.showPointLabels ? { top: 36, right: 30 } : {}),
-      ...(rows.length > 20 && props.categoryLabels?.mode !== 'all' ? { bottom: 36 } : {}) },
+    grid: {
+      ...GRID,
+      ...(props.showPointLabels ? { top: 36, right: 30 } : {}),
+      ...(rows.length > 20 && props.categoryLabels?.mode !== 'all' ? { bottom: 36 } : {}),
+    },
     tooltip: chartTooltip(entries, props.echartsOption?.tooltip, { hideDelay: 200 }),
     ...(chartLegendVisible(chartDeclaration(props).series) ? { legend: { top: 0, left: 0 } } : {}),
     xAxis: {
       type: 'category',
       name: fieldLabel(props.xField, data),
       data: rows.map((row) => formatValue(row[x.field], x.format, x.missingText)),
-      ...categoryLabelOption(props.categoryLabels, props.showValueLabels)
+      ...categoryLabelOption(props.categoryLabels, props.showValueLabels),
     },
-    yAxis: dualOrSingleAxis(props.dualAxis, chartDeclaration(props).series.length, props.hideYAxis,
-      chartAxisFormats(props, entries.map(({ field, series }) => chartAxisField(field, rows, series.unit)))),
+    yAxis: dualOrSingleAxis(
+      props.dualAxis,
+      chartDeclaration(props).series.length,
+      props.hideYAxis,
+      chartAxisFormats(
+        props,
+        entries.map(({ field, series }) => chartAxisField(field, rows, series.unit)),
+      ),
+    ),
     series: entries.map((entry, i) => {
       const { series, field } = entry;
       return {
         name: seriesDisplayName(series.label ?? field.label, series.unit),
         type: 'line' as const,
         smooth: props.smooth ?? false,
-        ...(props.showValueLabels ? { label: pointValueLabel(field.format, field.missingText, field.unit, series.unit),
-          labelLayout: valueLabelLayout(rows.map(row => finiteNumber(field.read(row))), true), showAllSymbol: true } : {}),
+        ...(props.showValueLabels
+          ? {
+              label: pointValueLabel(field.format, field.missingText, field.unit, series.unit),
+              labelLayout: valueLabelLayout(
+                rows.map((row) => finiteNumber(field.read(row))),
+                true,
+              ),
+              showAllSymbol: true,
+            }
+          : {}),
         ...(props.stacked ? { stack: 'total' } : {}),
         yAxisIndex: chartSeriesAxis(props, i),
         itemStyle: { color: chartSeriesColor(props, i, palette) },
-        ...(props.areaGradient ? { areaStyle: gradientArea(chartSeriesIndex(props, i), palette) } : {}),
+        ...(props.areaGradient
+          ? { areaStyle: gradientArea(chartSeriesIndex(props, i), palette) }
+          : {}),
         ...(props.showPointLabels
           ? {
               label: {
@@ -63,16 +102,26 @@ export function lineOption(
                 color: '#191919',
                 fontSize: 12,
                 formatter: (params: unknown) =>
-                  formatChartNumber(formatterValue(params), field.format, field.missingText, field.unit, series.unit)
-              }
+                  formatChartNumber(
+                    formatterValue(params),
+                    field.format,
+                    field.missingText,
+                    field.unit,
+                    series.unit,
+                  ),
+              },
             }
           : {}),
         tooltip: {
-          valueFormatter: (value: unknown) => seriesTooltipValue(entry, value)
+          valueFormatter: (value: unknown) => seriesTooltipValue(entry, value),
         },
-        data: rows.map((row) => props.showValueLabels ? finiteNumber(field.read(row)) ?? null : finiteNumber(field.read(row)))
+        data: rows.map((row) =>
+          props.showValueLabels
+            ? (finiteNumber(field.read(row)) ?? null)
+            : finiteNumber(field.read(row)),
+        ),
       };
-    })
+    }),
   };
 }
 
@@ -92,9 +141,9 @@ function gradientArea(seriesIndex: number, palette?: ColorList) {
       y2: 1,
       colorStops: [
         { offset: 0, color: withAlpha(color, 0.35) },
-        { offset: 1, color: withAlpha(color, 0.02) }
-      ]
-    }
+        { offset: 1, color: withAlpha(color, 0.02) },
+      ],
+    },
   };
 }
 

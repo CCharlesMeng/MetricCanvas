@@ -1,5 +1,5 @@
 <script lang="ts">
-  import DatePicker from '../../src/components/date-picker/DatePicker.svelte';
+  import DatePicker from '../../../packages/ui/src/components/date-picker/DatePicker.svelte';
   let {mode,from,to,onchange,disabled=false}:{mode:string;from:string;to:string;onchange:(from:string,to:string)=>void;disabled?:boolean}=$props();
   function end(month:string){return month+'-'+new Date(Number(month.slice(0,4)),Number(month.slice(5,7)),0).getDate();}
   function isoWeek(value:string){const d=new Date(value+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+3-(d.getUTCDay()+6)%7);const y=d.getUTCFullYear();const start=new Date(Date.UTC(y,0,4));return `${y}-W${String(1+Math.round((d.getTime()-start.getTime())/86400000/7)).padStart(2,'0')}`;}

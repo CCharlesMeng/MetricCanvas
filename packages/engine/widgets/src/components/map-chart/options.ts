@@ -1,16 +1,20 @@
-import type { MapFocus } from './auto-focus';
-import { mapRows, organizationBinding } from './geography';
-import { resolveComponentValue, type ResolvedComponentValue } from '../../shared/component-value';
-import type { MapChartProps, Row } from '@metriccanvas/page/internal';
+import { isIocOfficeLevel, type MapChartProps, type Row } from '@metriccanvas/page/internal';
 import type { EChartsOption } from 'echarts';
+import { formatChartNumber, formatterValue } from '../../shared/chart-option';
+import type { ColorList } from '../../shared/chart-palette';
 import type { MainDataSlots } from '../../shared/component-data';
 import { resolveField } from '../../shared/component-data';
-import { formatChartNumber } from '../../shared/chart-option';
+import { type ResolvedComponentValue, resolveComponentValue } from '../../shared/component-value';
 import { finiteNumber } from '../../shared/value-format';
-import { formatterValue } from '../../shared/chart-option';
-import type { ColorList } from '../../shared/chart-palette';
+import type { MapFocus } from './auto-focus';
+import { mapRows, organizationBinding } from './geography';
 import { mapLegendLevels, mapLegendPieces } from './legend';
-import { groupedMapTooltip, mapTooltipMarkup, mapTooltipRows, type MapTooltipField } from './tooltip';
+import {
+  groupedMapTooltip,
+  type MapTooltipField,
+  mapTooltipMarkup,
+  mapTooltipRows,
+} from './tooltip';
 
 /**
  * 维度值 → 底图区域名。页面文档经 props.nameMap 声明式改名,
@@ -19,7 +23,7 @@ import { groupedMapTooltip, mapTooltipMarkup, mapTooltipRows, type MapTooltipFie
 export function geoRegionName(
   row: Row,
   nameField: string,
-  nameMap?: Record<string, string>
+  nameMap?: Record<string, string>,
 ): string {
   const raw = String(row[nameField] ?? '');
   return nameMap?.[raw] ?? raw;
@@ -44,16 +48,14 @@ export interface MapSafeArea {
 export interface MapProjectionRect extends MapSafeArea {}
 
 /** safeArea → 以其中心为中心、边长取短边的正方形投影；无正面积时回退。 */
-export function projectionRect(
-  safeArea: MapSafeArea | undefined
-): MapProjectionRect | undefined {
+export function projectionRect(safeArea: MapSafeArea | undefined): MapProjectionRect | undefined {
   if (!safeArea || safeArea.width <= 0 || safeArea.height <= 0) return undefined;
   const size = Math.min(safeArea.width, safeArea.height);
   return {
     x: safeArea.x + (safeArea.width - size) / 2,
     y: safeArea.y + (safeArea.height - size) / 2,
     width: size,
-    height: size
+    height: size,
   };
 }
 
@@ -67,9 +69,9 @@ function geoLayout(projection?: MapProjectionRect) {
   return {
     layoutCenter: [
       `${projection.x + projection.width / 2}px`,
-      `${projection.y + projection.height / 2}px`
+      `${projection.y + projection.height / 2}px`,
     ] as [string, string],
-    layoutSize: projection.width
+    layoutSize: projection.width,
   };
 }
 
@@ -91,7 +93,7 @@ export function mapOption(
   scale?: ColorList,
   /** 地域概览定位针由 Svelte 资源管线解析，纯 option 层只消费 URL。 */
   regionalPinUrl?: string,
-  geography?: ReturnType<typeof mapRows>
+  geography?: ReturnType<typeof mapRows>,
 ): EChartsOption {
   const rows = data.main.snapshot.rows;
   const name = resolveField(props.nameField, data);
@@ -104,7 +106,10 @@ export function mapOption(
   const lo = rawMin < rawMax ? rawMin : Math.min(0, rawMin);
   const hi = rawMax > rawMin ? rawMax : Math.max(1, rawMax);
   const regionalOverview = props.variant === 'regionalOverview';
-  const inlinePin = regionalOverview && organizationBinding(props)?.level === 'office' ? regionalPinUrl : undefined;
+  const inlinePin =
+    regionalOverview && isIocOfficeLevel(organizationBinding(props)?.level)
+      ? regionalPinUrl
+      : undefined;
   const pinnedMatch = props.pinnedSummary
     ? resolveField(props.pinnedSummary.matchField, data)
     : undefined;
@@ -118,17 +123,20 @@ export function mapOption(
     if (!cp) return [];
     const rawName = String(row[name.field] ?? '');
     const pinned =
-      pinnedMatch !== undefined &&
-      row[pinnedMatch.field] === props.pinnedSummary?.matchValue;
-    return [{
-      name: rawName,
-      value: [...cp, pendingValue ? null : (finiteNumber(value.read(row)) ?? 0)],
-      ...(pinned ? {
-        label: { show: false },
-        emphasis: { label: { show: false } },
-        ...(inlinePin ? mapScatterSymbol(true, inlinePin) : {})
-      } : {})
-    }];
+      pinnedMatch !== undefined && row[pinnedMatch.field] === props.pinnedSummary?.matchValue;
+    return [
+      {
+        name: rawName,
+        value: [...cp, pendingValue ? null : (finiteNumber(value.read(row)) ?? 0)],
+        ...(pinned
+          ? {
+              label: { show: false },
+              emphasis: { label: { show: false } },
+              ...(inlinePin ? mapScatterSymbol(true, inlinePin) : {}),
+            }
+          : {}),
+      },
+    ];
   });
 
   /* 档位既是图例的档,也是着色的档:声明了 `legend` 就按档位取色,不再把取值
@@ -148,9 +156,9 @@ export function mapOption(
       itemStyle: { borderColor: '#d4d4d8', areaColor: '#fafafa' },
       emphasis: {
         label: { show: true },
-        itemStyle: { areaColor: '#dbeafe' }
+        itemStyle: { areaColor: '#dbeafe' },
       },
-      select: { disabled: true }
+      select: { disabled: true },
     },
     visualMap: pieces
       ? {
@@ -159,37 +167,37 @@ export function mapOption(
           // DOM 画(设计源的图例是「标题 + 四档色点区间」),关掉图表库这一块。
           pieces,
           seriesIndex: 0,
-          show: false
+          show: false,
         }
       : scale
-      ? {
-          type: 'piecewise',
-          min: lo,
-          max: hi,
-          // 档数由色列长度决定:色列是分档的定义,不是渐变的取样
-          splitNumber: scale.length,
-          seriesIndex: 0,
-          left: 8,
-          bottom: 8,
-          // inRange 从低到高,而色列从高到低——这里翻过来
-          inRange: { color: [...scale].reverse() }
-        }
-      : {
-          type: 'continuous',
-          min: lo,
-          max: hi,
-          seriesIndex: 0,
-          left: 8,
-          bottom: 8,
-          itemHeight: 80,
-          inRange: { color: ['#dbeafe', '#2563eb'] }
-        },
+        ? {
+            type: 'piecewise',
+            min: lo,
+            max: hi,
+            // 档数由色列长度决定:色列是分档的定义,不是渐变的取样
+            splitNumber: scale.length,
+            seriesIndex: 0,
+            left: 8,
+            bottom: 8,
+            // inRange 从低到高,而色列从高到低——这里翻过来
+            inRange: { color: [...scale].reverse() },
+          }
+        : {
+            type: 'continuous',
+            min: lo,
+            max: hi,
+            seriesIndex: 0,
+            left: 8,
+            bottom: 8,
+            itemHeight: 80,
+            inRange: { color: ['#dbeafe', '#2563eb'] },
+          },
     series: [
       {
         type: 'map',
         map: props.map,
         geoIndex: 0,
-        data: pendingValue ? [] : mapSeriesRows(rows, locations, props, name.field, value.read)
+        data: pendingValue ? [] : mapSeriesRows(rows, locations, props, name.field, value.read),
       },
       ...(props.scatter
         ? [
@@ -202,7 +210,7 @@ export function mapOption(
                 ? {
                     show: true,
                     ...pointLabel,
-                    position: inlinePin ? 'inside' as const : 'top' as const,
+                    position: inlinePin ? ('inside' as const) : ('top' as const),
                     distance: 2,
                     padding: [2, 8],
                     color: '#191919',
@@ -211,7 +219,7 @@ export function mapOption(
                     backgroundColor: '#fff',
                     borderColor: 'rgba(97, 119, 228, 0.35)',
                     borderWidth: 1,
-                    borderRadius: 11
+                    borderRadius: 11,
                   }
                 : { show: !compact, ...pointLabel, position: 'top' as const },
               emphasis: regionalOverview
@@ -220,21 +228,24 @@ export function mapOption(
                     label: {
                       show: true,
                       backgroundColor: '#eef3ff',
-                      borderColor: '#6177e4'
-                    }
+                      borderColor: '#6177e4',
+                    },
                   }
                 : undefined,
-              data: scatterData
-            }
+              data: scatterData,
+            },
           ]
-        : [])
-    ]
+        : []),
+    ],
   };
 }
 
 function mapValuePending(props: MapChartProps, data: MainDataSlots): boolean {
   const pending = data.main.progress?.pendingFields;
-  return props.valueField !== undefined && pending?.includes(resolveField(props.valueField, data).field) === true;
+  return (
+    props.valueField !== undefined &&
+    pending?.includes(resolveField(props.valueField, data).field) === true
+  );
 }
 
 function mapScatterSymbol(regionalOverview: boolean, pinUrl?: string, inlinePin?: string) {
@@ -245,7 +256,7 @@ function mapScatterSymbol(regionalOverview: boolean, pinUrl?: string, inlinePin?
     ...(pinUrl ? { symbol: `image://${pinUrl}` } : {}),
     symbolSize: [15.51, 20],
     symbolOffset: [0, 10],
-    itemStyle: { color: '#6177e4' }
+    itemStyle: { color: '#6177e4' },
   };
 }
 
@@ -253,14 +264,16 @@ function mapPointLabel(
   props: MapChartProps,
   value: ResolvedComponentValue,
   locations: ReturnType<typeof mapRows>,
-  inlinePin?: string
+  inlinePin?: string,
 ) {
   const showValue = props.pointLabel === 'nameAndValue';
   if (!showValue && !inlinePin && !locations.displayNames.size) return { formatter: '{b}' };
   return {
     rich: {
       ...(showValue ? { metric: { fontWeight: 400, color: '#000' } } : {}),
-      ...(inlinePin ? { pin: { backgroundColor: { image: inlinePin }, width: 9.3, height: 12 } } : {})
+      ...(inlinePin
+        ? { pin: { backgroundColor: { image: inlinePin }, width: 9.3, height: 12 } }
+        : {}),
     },
     formatter: (params: unknown) => {
       const name = itemName(params);
@@ -272,46 +285,79 @@ function mapPointLabel(
       const metric = value.read(row);
       if (finiteNumber(metric) === undefined) return label;
       return `${label} {metric|${formatChartNumber(metric, value.format, value.missingText, value.unit)}}`;
-    }
+    },
   };
 }
 
-function mapDisplayName(locations: ReturnType<typeof mapRows>, row: Row | undefined, original: string): string {
-  return row ? locations.displayNames.get(row) ?? original : original;
+function mapDisplayName(
+  locations: ReturnType<typeof mapRows>,
+  row: Row | undefined,
+  original: string,
+): string {
+  return row ? (locations.displayNames.get(row) ?? original) : original;
 }
 
 function mapTooltip(
-  data: MainDataSlots, props: MapChartProps, nameField: string, value: ResolvedComponentValue,
-  locations: ReturnType<typeof mapRows>
+  data: MainDataSlots,
+  props: MapChartProps,
+  nameField: string,
+  value: ResolvedComponentValue,
+  locations: ReturnType<typeof mapRows>,
 ): EChartsOption['tooltip'] {
-  const hovered = (params: unknown) => (isScatterItem(params) ? locations.points : locations.areas).get(itemName(params));
+  const hovered = (params: unknown) =>
+    (isScatterItem(params) ? locations.points : locations.areas).get(itemName(params));
   const title = (row: Row) => mapDisplayName(locations, row, String(row[nameField] ?? ''));
   if (props.tooltipRows) {
     const markup = groupedMapTooltip(props.tooltipRows, data, props.emptyBehavior);
-    return { trigger: 'item', borderWidth: 0, formatter: (params: unknown) => {
-      const row = hovered(params);
-      return row ? markup(title(row), row) : '';
-    } };
+    return {
+      trigger: 'item',
+      borderWidth: 0,
+      formatter: (params: unknown) => {
+        const row = hovered(params);
+        return row ? markup(title(row), row) : '';
+      },
+    };
   }
-  const fields: MapTooltipField[] = (props.tooltipFields ?? []).map(entry => ({
-    ...resolveComponentValue(entry, data, props.emptyBehavior), label: entry.label
+  const fields: MapTooltipField[] = (props.tooltipFields ?? []).map((entry) => ({
+    ...resolveComponentValue(entry, data, props.emptyBehavior),
+    label: entry.label,
   }));
-  if (!fields.length && !locations.displayNames.size) return {
+  if (!fields.length && !locations.displayNames.size)
+    return {
+      trigger: 'item',
+      valueFormatter: (raw: unknown) =>
+        formatChartNumber(
+          mapFormatterValue(raw),
+          value.format ?? 'number',
+          value.missingText,
+          value.unit,
+        ),
+    };
+  return {
     trigger: 'item',
-    valueFormatter: (raw: unknown) =>
-      formatChartNumber(mapFormatterValue(raw), value.format ?? 'number', value.missingText, value.unit)
+    formatter: (params: unknown) => {
+      const row = hovered(params);
+      return mapTooltipMarkup(row ? title(row) : itemName(params), [
+        {
+          label: value.label,
+          value: formatChartNumber(
+            row ? value.read(row) : undefined,
+            value.format,
+            value.missingText,
+            value.unit,
+          ),
+        },
+        ...mapTooltipRows(row, fields),
+      ]);
+    },
   };
-  return { trigger: 'item', formatter: (params: unknown) => {
-    const row = hovered(params);
-    return mapTooltipMarkup(row ? title(row) : itemName(params), [
-      { label: value.label, value: formatChartNumber(row ? value.read(row) : undefined, value.format, value.missingText, value.unit) },
-      ...mapTooltipRows(row, fields)
-    ]);
-  } };
 }
 
 /** A resolved viewport is a rendering input, independent of the page and metric rows. */
-export function withMapViewport(option: EChartsOption, viewport: MapFocus | undefined): EChartsOption {
+export function withMapViewport(
+  option: EChartsOption,
+  viewport: MapFocus | undefined,
+): EChartsOption {
   if (!viewport || !option.geo || Array.isArray(option.geo)) return option;
   return { ...option, geo: { ...option.geo, ...viewport } };
 }
@@ -328,10 +374,22 @@ function mapFormatterValue(value: unknown): string | number | null | undefined {
 }
 
 function isScatterItem(params: unknown) {
-  return (params as {seriesIndex?: number} | null)?.seriesIndex === 1;
+  return (params as { seriesIndex?: number } | null)?.seriesIndex === 1;
 }
 
-function mapSeriesRows(rows: Row[], locations: ReturnType<typeof mapRows>, props: MapChartProps, field: string, read: (row: Row) => Parameters<typeof finiteNumber>[0]) {
-  if (!locations.shared) return rows.map(row => ({name:geoRegionName(row,field,props.nameMap),value:finiteNumber(read(row)) ?? 0}));
-  return Array.from(locations.areas).flatMap(([name,row]) => row ? [{name,value:finiteNumber(read(row)) ?? 0}] : []);
+function mapSeriesRows(
+  rows: Row[],
+  locations: ReturnType<typeof mapRows>,
+  props: MapChartProps,
+  field: string,
+  read: (row: Row) => Parameters<typeof finiteNumber>[0],
+) {
+  if (!locations.shared)
+    return rows.map((row) => ({
+      name: geoRegionName(row, field, props.nameMap),
+      value: finiteNumber(read(row)) ?? 0,
+    }));
+  return Array.from(locations.areas).flatMap(([name, row]) =>
+    row ? [{ name, value: finiteNumber(read(row)) ?? 0 }] : [],
+  );
 }
